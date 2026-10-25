@@ -1,0 +1,88 @@
+Browser tab: 47, Title: "Install Theme | LetBuyy Themes", URL: "http://themes.letbuyy-local.localhost:9015/install?[query-redacted]".
+1 AXWebArea Install Theme | LetBuyy Themes, URL: themes.letbuyy-local.localhost:9015/install?[query-redacted]
+	2 container
+		3 link Description: LetBuyy Themes home, Value: themes.letbuyy-local.localhost:9015/
+		4 container Main navigation
+			5 button (collapsed) Browse, Secondary Actions: Expand
+			6 button (collapsed) Build, Secondary Actions: Expand
+			7 link Description: Pricing, Value: themes.letbuyy-local.localhost:9015/pricing
+			8 link Description: Support, Value: themes.letbuyy-local.localhost:9015/support
+		9 button Search themes
+		10 button Toggle color theme
+		11 button (collapsed) Description: Account menu, Secondary Actions: Expand
+	12 container
+		13 link Description: Back to Threadline, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-sense
+		14 heading Install Threadline, Value: 1
+			15 text Install  Threadline
+		16 text Add this theme to the selected store’s private library. Customize and publish separately. Version  2.0.0
+		17 text Store
+		18 pop up button (collapsed, settable) Store, Value: Threadline - syn-threadline-ui-202c08c0.letbuyy.com - draft, ID: store_id, Secondary Actions: Expand
+			19 menu
+				20 (disabled) Select a store
+				21 (selected) Threadline - syn-threadline-ui-202c08c0.letbuyy.com - draft
+		22 text Adding creates a private library instance. Your current live theme, catalog and existing drafts stay in place. Customize and publish in the merchant theme editor.
+		23 link Description: Review theme before install, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-sense
+		24 container
+			25 checkbox (settable, integer) Description: Add this design to the selected store’s library. Publication is a separate action., Value: 1
+			26 text Add this design to the selected store’s library. Publication is a separate action.
+		27 button Install Theme
+	28 container LetBuyy Themes footer
+		29 heading LetBuyy Themes footer, Value: 2, ID: site-footer-heading
+			30 text LetBuyy Themes footer
+		31 link Description: LetBuyy Themes home, Value: themes.letbuyy-local.localhost:9015/
+		32 text Reviewed themes for LetBuyy stores, portfolios, resumes, landing pages and SaaS consoles — previewed with your own products before you install.
+		33 container Browse
+			34 heading Browse, Value: 3
+				35 text Browse
+			36 content list
+				37 link Description: All themes, Value: themes.letbuyy-local.localhost:9015/themes
+				38 link Description: Store themes, Value: themes.letbuyy-local.localhost:9015/themes/category/store
+				39 link Description: Portfolio themes, Value: themes.letbuyy-local.localhost:9015/themes/category/portfolio
+				40 link Description: Landing pages, Value: themes.letbuyy-local.localhost:9015/themes/category/landing
+				41 link Description: Compare themes, Value: themes.letbuyy-local.localhost:9015/themes/compare
+		42 container Build
+			43 heading Build, Value: 3
+				44 text Build
+			45 content list
+				46 link Description: Theme docs, Value: themes.letbuyy-local.localhost:9015/docs
+				47 link Description: API reference, Value: themes.letbuyy-local.localhost:9015/docs/api
+				48 link Description: Developer console, Value: themes.letbuyy-local.localhost:9015/developer
+				49 link Description: Submit a theme, Value: themes.letbuyy-local.localhost:9015/developer/listings/new
+		50 container Platform
+			51 heading Platform, Value: 3
+				52 text Platform
+			53 content list
+				54 link Description: LetBuyy, Value: letbuyy.com/
+				55 link Description: Platform pricing, Value: letbuyy.com/pricing
+				56 link Description: App Marketplace, Value: letbuyy.com/sitemap
+				57 link Description: Theme pricing, Value: themes.letbuyy-local.localhost:9015/pricing
+		58 container Support
+			59 heading Support, Value: 3
+				60 text Support
+			61 content list
+				62 link Description: Help centre, Value: themes.letbuyy-local.localhost:9015/support
+				63 link Description: Contact us, Value: themes.letbuyy-local.localhost:9015/contact
+				64 link Description: About Themes, Value: themes.letbuyy-local.localhost:9015/about
+				65 link Description: Your account, Value: themes.letbuyy-local.localhost:9015/dashboard
+		66 container Region and language
+			67 button Change region and language
+				68 text India
+				69 text English
+		70 container Legal links
+			71 link Description: Terms, Value: themes.letbuyy-local.localhost:9015/legal/terms
+			72 link Description: Privacy, Value: themes.letbuyy-local.localhost:9015/legal/privacy
+			73 link Description: Refunds, Value: themes.letbuyy-local.localhost:9015/legal/refund
+			74 link Description: Licence, Value: themes.letbuyy-local.localhost:9015/legal/license
+			75 link Description: support@letbuyy.com, Value: mailto:support@letbuyy.com
+			76 button Your Privacy Choices
+		77 container Social links
+			78 link Description: Facebook, Value: facebook.com/share/14tEGNoJSXR/
+			79 link Description: X, Value: x.com/letbuyyhq
+			80 link Description: YouTube, Value: youtube.com/@letbuyyhq
+			81 link Description: Instagram, Value: instagram.com/letbuyyhq
+		82 container
+			83 text ©  2026  LetBuyy. All rights reserved.
+	84 pop up button (collapsed) Description: Open Next.js Dev Tools, ID: next-logo, Secondary Actions: Expand
+		85 image
+
+The focused UI element is 1 AXWebArea Install Theme | LetBuyy Themes, URL: themes.letbuyy-local.localhost:9015/install?[query-redacted]

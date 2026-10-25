@@ -1,0 +1,1017 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "\"Red Hat Text\", sans-serif",
+    "fontSize": "12px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Back",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Back",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Back",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Back",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Bordeaux",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "White",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Praline",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Vanilla",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Duck Green",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Ocean",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Espresso",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Ocean",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Patent Bordeaux",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Red",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Praline",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Khaki",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Espresso",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Patent Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Bordeaux",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Patent Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Patent Bordeaux",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Patent Sage",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Red",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Espresso",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Smoky Plum",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Vintage Yellow",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Suede Espresso",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Bordeaux",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Etoupe",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Off White",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Patent Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Patent Bordeaux",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Praline",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slider",
+      "tag": "INPUT",
+      "type": "range"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Learn",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Connect",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 1,
+      "line": "72px",
+      "size": "72px",
+      "tag": "H1",
+      "text": "Atelier",
+      "weight": "200",
+      "width": 1,
+      "x": -1,
+      "y": -1
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 216,
+      "line": "72px",
+      "size": "72px",
+      "tag": "H1",
+      "text": "The Elements\nof Style",
+      "weight": "200",
+      "width": 358,
+      "x": 16,
+      "y": 216
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "New this season",
+      "weight": "200",
+      "width": 358,
+      "x": 16,
+      "y": 2227.75
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 61.59375,
+      "line": "30.8px",
+      "size": "28px",
+      "tag": "H2",
+      "text": "Premium materials and\nhand-selected finishing touches",
+      "weight": "200",
+      "width": 343.5390625,
+      "x": 16,
+      "y": 3383.84375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 30.796875,
+      "line": "30.8px",
+      "size": "28px",
+      "tag": "H2",
+      "text": "A size for every occasion",
+      "weight": "200",
+      "width": 270.84375,
+      "x": 59.578125,
+      "y": 3561.234375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Sign up for our newsletter",
+      "weight": "200",
+      "width": 240.859375,
+      "x": 16,
+      "y": 4496.4375
+    }
+  ],
+  "links": [
+    {
+      "text": "SKIP TO CONTENT",
+      "url": "https://theme-atelier-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/sera-mia-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/monolit-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/neo-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-black"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-earth"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-vanilla"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-tan"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/mini-bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/shoulder-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/tote-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/crossbody-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/clutches-pouches"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/sera-mia-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/neo-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/pandora"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/atlas"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-her"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-him"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-earth"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-cappuccino"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-bordeaux"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/mini-flex-bag-mirror"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/flats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/heels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-south-america"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-denim"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-buttermilk"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-black-gray"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/wallets-small-leather-goods"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/belts"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-charm-bordeaux"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-charm-dove"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-charm-latte"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-charm-patent-black"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-bordeaux"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-black"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-off-white"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new"
+    },
+    {
+      "text": "Shoulder Bags 12",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/shoulder-bags"
+    },
+    {
+      "text": "Tote bags 17",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/tote-bags"
+    },
+    {
+      "text": "Crossbody Bags 12",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/crossbody-bags"
+    },
+    {
+      "text": "Clutches & Pouches 6",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/clutches-pouches"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/shoulder-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/tote-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/crossbody-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/clutches-pouches"
+    },
+    {
+      "text": "Mini Isla - Suede Caramel",
+      "url": "https://theme-atelier-demo.myshopify.com/products/mini-isla-suede-caramel?variant=50126854848810"
+    },
+    {
+      "text": "Mini Sera Éclat",
+      "url": "https://theme-atelier-demo.myshopify.com/products/mini-sera-eclat-bordeaux?variant=50454283551018"
+    },
+    {
+      "text": "Flex Bag",
+      "url": "https://theme-atelier-demo.myshopify.com/products/flex-bag-ocean?variant=50454295314730"
+    },
+    {
+      "text": "Mini Pandora",
+      "url": "https://theme-atelier-demo.myshopify.com/products/mini-pandora-patent-black?variant=50454304457002"
+    },
+    {
+      "text": "Isla Belt",
+      "url": "https://theme-atelier-demo.myshopify.com/products/isla-belt-suede-espresso?variant=50126810186026"
+    },
+    {
+      "text": "EXPLORE OUR PROCESS",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "SHOP NOW",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/sera-mia-1"
+    },
+    {
+      "text": "NEW THIS SEASON",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new"
+    },
+    {
+      "text": "ACCESSORIES",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "ALL BAGS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "GIFTS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-her"
+    },
+    {
+      "text": "SHIPPING",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "RETURNS",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "BLOG",
+      "url": "https://theme-atelier-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "ABOUT US",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "CONTACT US",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Atelier",
+      "url": "https://theme-atelier-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035649834__hero_iyt6zg",
+      "rect": {
+        "height": 588,
+        "width": 390,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "SECTION",
+      "text": "The Elements\nof Style"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035649834__collection_links_Ut4aMz",
+      "rect": {
+        "height": 778.296875,
+        "width": 390,
+        "x": 0,
+        "y": 588
+      },
+      "tag": "DIV",
+      "text": "Shoulder Bags 12\nTote bags 17\nCrossbody Bags 12\nClutches & Pouches 6"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035649834__featured_product_mTUbKC",
+      "rect": {
+        "height": 802.65625,
+        "width": 390,
+        "x": 0,
+        "y": 1366.296875
+      },
+      "tag": "DIV",
+      "text": "Mini Isla - Suede Caramel\n\nMINI ISLA - SUEDE CARAMEL\n\n$525.00"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035649834__product_list_UwRqN4",
+      "rect": {
+        "height": 774.8828125,
+        "width": 390,
+        "x": 0,
+        "y": 2168.953125
+      },
+      "tag": "DIV",
+      "text": "New this season\nMini Sera Éclat\nMINI SERA ÉCLAT\n$580.00\nFlex Bag\nFLEX BAG\n$615.00\nMini Pandora\nMINI PANDORA\n$535.00\nIsla Belt\nISLA BELT\n$195.00"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035649834__hero_MVUtj6",
+      "rect": {
+        "height": 560,
+        "width": 390,
+        "x": 0,
+        "y": 2943.8359375
+      },
+      "tag": "SECTION",
+      "text": "Premium materials and\nhand-selected finishing touches\n\nEXPLORE OUR PROCESS"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035649834__section_K7gyKH",
+      "rect": {
+        "height": 400.65625,
+        "width": 390,
+        "x": 0,
+        "y": 3503.8359375
+      },
+      "tag": "DIV",
+      "text": "A size for every occasion\nSHOP NOW"
+    }
+  ],
+  "title": "Atelier",
+  "url": "https://theme-atelier-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    "",
+    "",
+    "",
+    ""
+  ],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "390px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 588,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 412.3984375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n    resource-list\n    \n    \n    resource-list--grid\n  ",
+      "columns": "173px 173px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 595.6875,
+      "tag": "DIV",
+      "width": 358
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 291.84375,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 291.84375,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 291.84375,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 291.84375,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "hero__media-grid",
+      "columns": "390px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 560,
+      "tag": "DIV",
+      "width": 390
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 588,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Shoulder Bags",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 447.5,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Tote bags",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 447.5,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Crossbody Bags",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 447.5,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Clutches & Pouches",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 447.5,
+        "width": 358
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1512,
+      "rect": {
+        "height": 390.2578125,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Mini Isla - Suede Caramel",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 350,
+        "width": 350
+      }
+    },
+    {
+      "alt": "Mini Isla - Suede Caramel",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 350,
+        "width": 350
+      }
+    },
+    {
+      "alt": "Mini Isla - Suede Caramel",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 350,
+        "width": 350
+      }
+    },
+    {
+      "alt": "Mini Isla - Suede Caramel",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 350,
+        "width": 350
+      }
+    },
+    {
+      "alt": "Mini Isla - Suede Caramel",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 350,
+        "width": 350
+      }
+    },
+    {
+      "alt": "Mini Sera Éclat",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    }
+  ],
+  "bodyText": "SKIP TO CONTENT\nAtelier\nTotal items in cart: 0\nThe Elements\nof Style\nShoulder Bags 12\nTote bags 17\nCrossbody Bags 12\nClutches & Pouches 6\nMini Isla - Suede Caramel\n\nMINI ISLA - SUEDE CARAMEL\n\n$525.00\nNew this season\nMini Sera Éclat\nMINI SERA ÉCLAT\n$580.00\nFlex Bag\nFLEX BAG\n$615.00\nMini Pandora\nMINI PANDORA\n$535.00\nIsla Belt\nISLA BELT\n$195.00\nPremium materials and\nhand-selected finishing touches\n\nEXPLORE OUR PROCESS\n\nA size for every occasion\nSHOP NOW\nShop\nNEW THIS SEASON\nACCESSORIES\nALL BAGS\nGIFTS\nLearn\nSHIPPING\nRETURNS\nBLOG\nABOUT US\nConnect\nFACEBOOK\nINSTAGRAM\nTIKTOK\nCONTACT US\nSign up for our newsletter\nEmail\n© 2026 Atelier, Powered by Shopify"
+}

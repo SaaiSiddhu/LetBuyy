@@ -1,0 +1,129 @@
+- status
+- status: Blog posts
+- link "Skip to content":
+  - /url: "#AppFrameMain"
+  - strong:
+    - generic: Skip to content
+- generic "Navigation":
+  - img "Shopify"
+  - button "Collapse navigation" [expanded]:
+  - button "Search":
+    - generic: Search
+    - generic: ⌘K
+  - navigation:
+    - list:
+      - link "Home":
+        - /url: /store/[test-store]
+        - generic: Home
+      - link "Orders":
+        - /url: /store/[test-store]/orders
+        - generic: Orders
+      - link "Products":
+        - /url: /store/[test-store]/products
+        - generic: Products
+      - link "Customers":
+        - /url: /store/[test-store]/customers
+        - generic: Customers
+      - link "Growth":
+        - /url: /store/[test-store]/growth
+        - generic: Growth
+      - link "Discounts":
+        - /url: /store/[test-store]/discounts
+        - generic: Discounts
+      - link "Content" [expanded]:
+        - /url: /store/[test-store]/content/metaobjects
+        - generic: Content
+      - list:
+        - link "Metaobjects":
+          - /url: /store/[test-store]/content/metaobjects
+          - generic: Metaobjects
+        - link "Files":
+          - /url: /store/[test-store]/content/files
+          - generic: Files
+        - link "Menus":
+          - /url: /store/[test-store]/content/menus
+          - generic: Menus
+        - link "Blog posts":
+          - /url: /store/[test-store]/content/articles
+          - generic: Blog posts
+      - link "Markets":
+        - /url: /store/[test-store]/markets
+        - generic: Markets
+      - link "Analytics":
+        - /url: /store/[test-store]/analytics
+        - generic: Analytics
+    - list:
+      - button "Sales channels":
+        - generic: Sales channels
+      - list:
+        - button "Online Store":
+          - list:
+            - link "Online Store":
+              - /url: /store/[test-store]/themes?[query omitted]
+              - generic: Online Store
+        - button "Agentic":
+          - list:
+            - link "Agentic":
+              - /url: /store/[test-store]/apps/agentic?[query omitted]
+              - generic: Agentic
+      - status
+      - button "Apps":
+        - generic: Apps
+      - button "Add":
+        - text: Add
+    - list:
+      - link "Settings":
+        - /url: /store/[test-store]/settings
+        - generic: Settings
+      - button "[test identity]":
+        - img "[test identity]":
+          - generic: MS4
+        - paragraph: [test identity]
+      - generic: View Dev Dashboard
+      - button "Alerts Feed - 0 unread alerts":
+      - generic: Mark all as read
+      - generic: Alerts about your store and account will show here
+    - link "Trial ends in 2 days Subscribe for ₹20":
+      - /url: /store/[test-store]/subscribe/checkout
+      - generic: Trial ends in 2 days
+      - generic: Subscribe for ₹20
+- main:
+  - heading [level=1]: Blog posts
+  - link "Manage blogs":
+    - /url: /store/[test-store]/content/blogs
+    - generic: Manage blogs
+  - heading "Blog posts" [level=1]
+  - paragraph: Write a blog post
+  - generic: Blog posts are a great way to build a community around your products and your brand.
+  - link "Learn more":
+    - /url: https://help.shopify.com/en/manual/sell-online/online-store/blogs/writing-blogs
+    - generic: Learn more
+  - link "Create blog post":
+    - /url: /store/[test-store]/content/articles/new
+    - generic: Create blog post
+  - status
+- generic: General shortcuts
+- generic: Adding items to your store
+- generic: Navigating your admin panel
+- generic: Navigating settings
+- separator "Resize sidebar"
+- complementary "Sidekick":
+  - button "Recents":
+    - generic: Recents
+  - button "Memory settings":
+  - generic: Memory
+  - generic: Allow Sidekick to update and access preferences you've shared.
+  - button "Expand":
+  - button "Close Sidekick":
+  - status
+  - heading "Where should we begin?" [level=2]:
+    - generic: Where should we begin?
+  - status
+  - paragraph
+  - button "Close" [disabled]:
+  - generic: Work with Sidekick
+  - textbox "Work with Sidekick" [active]
+  - button "Add files and more":
+  - button "Voice":
+- status
+- alert

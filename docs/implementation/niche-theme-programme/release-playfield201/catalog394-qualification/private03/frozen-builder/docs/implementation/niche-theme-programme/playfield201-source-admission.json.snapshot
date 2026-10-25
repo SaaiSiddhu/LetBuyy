@@ -1,0 +1,75 @@
+{
+  "recordedAt": "2026-10-23T18:54:09.256383+00:00",
+  "status": "ROOT_PLAYFIELD_201_SOURCE_ADMITTED_DISTRIBUTION_AND_BROWSER_PENDING",
+  "ownerRelease": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/v201-source-repair-2026-10-23/SOURCE_RELEASE.json",
+    "sha256": "222d37e7f7826ca47e7e883e311305e3ad8ab75c64a57396cc790ab6b7194217"
+  },
+  "sourceFiles": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "beforeSha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "beforeSha256": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513",
+      "sha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "beforeSha256": "dde42a5fa7ee6a578b636e9be533c8e2bb92cd708c60daf58cf0e88eebfa15cf",
+      "sha256": "829f6f49e4330c819a640ef11be87cd0f48eca02c03722c6072234c6c14b35dd"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "beforeSha256": "d91217543a463ba70ff8ec294f18cd27bb688a8f62e23f06edc9349997e13aca",
+      "sha256": "40b12590447f6689d59197e52f7f35841589d1b1b7da3e1ae3e11b84a50e9864"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "beforeSha256": null,
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-v201.test.ts",
+      "beforeSha256": null,
+      "sha256": "5253b640529109e96ce4c04c76085f79160f77be90bff06be992e7198ed20eae"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/playfield-v201-facts.test.ts",
+      "beforeSha256": null,
+      "sha256": "d71ff4afa6fbd7417f7d836589a25b55f78fdb43ce8889b0cd3d382b48eb72e0"
+    }
+  ],
+  "rootIndependentlyChecked": {
+    "sourceFiles": 7,
+    "evidenceFiles": 34,
+    "exactBeforeFiles": 4,
+    "f607NamedSources": 17,
+    "unchangedMainFrozenSources": 12,
+    "sourcePassingTests": 73,
+    "fail": 0,
+    "skip": 0,
+    "realLiquidNativeSourceHtmlStates": 9,
+    "freshHistoricalBuilderOutputs": 20,
+    "freshNewBuilderSha256": "c8a1defdf97a0d8d9bf1060c86d5a1727d458747e56353db88f44b456a8bfc5d"
+  },
+  "review": [
+    "Append-only 2.0.1 requires explicit catalog opt-in; all previous output bytes independently rebuilt unchanged.",
+    "Uses canonical resolved ToyFacts, data-only bounded carriers, existing total/per-row budgets and text-only scoped DOM consumers.",
+    "Selection scoping uses the owned product, section and actual variant list; disposal restores original nodes.",
+    "Carrier budget failure produces honest unavailable facts; setting-off and unknown states do not fabricate claims."
+  ],
+  "independentPeerReview": "Circuit reported CLEAN; source/evidence review only, no installed/browser acceptance.",
+  "laterSourceEpoch": "liquid-hydration-islands.tsx is now under a separate explicit URL-restoration lease. Its historical 9e87 pin is verified against f607, not asserted as current MAIN.",
+  "distribution": "NOT_GENERATED_NOT_RESERVED",
+  "migrationMaximumAtAllocation": "Recheck actual files; latest recorded 392. No 393 reserved by this admission.",
+  "installedBrowserVisualCases": "NOT_RUN_ON_201",
+  "f607OrMarketplaceRuntimeChanged": false,
+  "requiredNext": [
+    "Allocate append-only immutable capture and promotion proposal through the existing pipeline.",
+    "Native install/update/rollback and Liquid security qualification before source promotion.",
+    "Normal installed PF05 and responsive visual retest on a separately admitted candidate."
+  ]
+}

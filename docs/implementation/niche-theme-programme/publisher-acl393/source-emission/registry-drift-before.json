@@ -1,0 +1,70 @@
+{
+  "status": "READ_ONLY_REGISTRY_DRIFT_ANALYSIS_BEFORE_GENERATOR",
+  "registryPath": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
+  "beforeCount": 317,
+  "derivedCount": 317,
+  "migration393ChangesAnyEntry": false,
+  "added": [],
+  "removed": [],
+  "changed": [
+    {
+      "table": "carts",
+      "before": {
+        "table": "carts",
+        "scopeColumns": [
+          "store_id"
+        ],
+        "tenantColumn": "store_id",
+        "ownerColumns": [],
+        "sourceFiles": [
+          "000_baseline.sql",
+          "156_executable_cart_channel_handoff.sql",
+          "277_marketplace_cart_sales_origin.sql"
+        ]
+      },
+      "after": {
+        "table": "carts",
+        "scopeColumns": [
+          "store_id"
+        ],
+        "tenantColumn": "store_id",
+        "ownerColumns": [],
+        "sourceFiles": [
+          "000_baseline.sql",
+          "156_executable_cart_channel_handoff.sql",
+          "277_marketplace_cart_sales_origin.sql",
+          "388_cart_order_fact_snapshots.sql"
+        ]
+      }
+    },
+    {
+      "table": "theme_editor_drafts",
+      "before": {
+        "table": "theme_editor_drafts",
+        "scopeColumns": [
+          "store_id"
+        ],
+        "tenantColumn": "store_id",
+        "ownerColumns": [],
+        "sourceFiles": [
+          "000_baseline.sql",
+          "087_theme_template_drafts.sql"
+        ]
+      },
+      "after": {
+        "table": "theme_editor_drafts",
+        "scopeColumns": [
+          "store_id"
+        ],
+        "tenantColumn": "store_id",
+        "ownerColumns": [],
+        "sourceFiles": [
+          "000_baseline.sql",
+          "087_theme_template_drafts.sql",
+          "384_theme_editor_template_keys.sql"
+        ]
+      }
+    }
+  ],
+  "semanticChanges": []
+}

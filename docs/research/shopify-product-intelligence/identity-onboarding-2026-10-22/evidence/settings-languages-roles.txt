@@ -1,0 +1,21 @@
+- heading [level=1]: Languages
+- button "Add language":
+- heading "Languages" [level=1]
+- paragraph: Adding translations to your store improves cross-border conversion by an average of 13%
+- heading "Languages" [level=2]:
+- table:
+- button "1 domain":
+- button "More actions":
+- paragraph:
+- link "languages":
+- link "manage account":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

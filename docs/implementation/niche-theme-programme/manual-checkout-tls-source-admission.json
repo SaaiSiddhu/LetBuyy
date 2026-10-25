@@ -1,0 +1,64 @@
+{
+  "recordedAt": "2026-10-23T16:13:18.278015+00:00",
+  "status": "ROOT_SOURCE_REVIEWED_FROZEN_HELPER_RELEASE_ACCEPTED_FOR_NEXT_CANDIDATE",
+  "handoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/madeyours/local-checkout-tls-proposal/source-handoff.json",
+    "sha256": "ca782193a266ea902207d3d26cab0214e7d5a8026a113e0f39855f78e1eeefd3"
+  },
+  "files": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "3cd5e06a69fe97d6094a0b5dda168b7a67908ba975166008f9638b1e42eae445"
+    }
+  ],
+  "rootIndependentByteReview": {
+    "defaultNativeBodyExact": true,
+    "defaultNativeBodySha256": "4ccb520b0f107520b42f788aef862b84befd11e06c817eeb611349bd77ce71bf",
+    "ownershipBindingPrefixExact": true,
+    "ownershipBindingPrefixSha256": "77d9dfb051678a2eb55f9a2e68faf7de0e44150748139814661cde568b33f8c1"
+  },
+  "ownerReportedAndReceiptInspected": {
+    "owned-guard-lane-contracts.tap": {
+      "tests": 33,
+      "pass": 33,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "existing-fixture-unit-contracts.tap": {
+      "tests": 17,
+      "pass": 17,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "proposal-control-test-results.json": {
+      "passed": 8,
+      "failed": 0,
+      "classification": "V2_ADMITTED_SOURCE_CONTRACT_ONLY_NO_CRYPTO_OS_BROWSER_EXECUTION"
+    },
+    "proposal-real-leaf-test-results.json": {
+      "passed": 24,
+      "failed": 0,
+      "classification": "V2_ACTUAL_DISPOSABLE_NON_CA_LEAF_CRYPTO_FILES_AND_OS_DENIAL_NO_TRUST_INSTALL"
+    }
+  },
+  "review": [
+    "Fixed private preissued leaf/key only; bound real owned handle remains mandatory; no issuer/CAkey/bootstrap/toolinstall/trustsetting operation",
+    "Single exact checkout.localhost nonCA serverAuth leaf/currentvalidity/keypair/private nofollowboundedfiles; immutablepublicleaf snapshot verified by OS SSL hostname policy without anchor/bypass",
+    "Only explicit existing Editor manual optin; normal nativecertgeneration and verifiedfixturebinding byteexact",
+    "Actualcrypto/ownfiles/OSdenial receipt inspected; positiveOSstepstubbed; fixturebindingnativeintegration and normalbrowser/CODnotproven"
+  ],
+  "notGranted": [
+    "Toolinstall/CA/trustchange",
+    "Current9cdfinal02copy/runtime modifications",
+    "Anybrowser/CODacceptance claim"
+  ],
+  "native391Precondition": "Source released/hashstable;Threadline can run its alreadygrantedonefreshthrough390lease"
+}

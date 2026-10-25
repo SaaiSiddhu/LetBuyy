@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: applied private factory adds a canonical opt-in toggle while retaining every existing default and template
+ok 1 - applied private factory adds a canonical opt-in toggle while retaining every existing default and template
+  ---
+  duration_ms: 22.990167
+  type: 'test'
+  ...
+# Subtest: negative control: unchanged current factory ignores heading edits on a populated named collection
+ok 2 - negative control: unchanged current factory ignores heading edits on a populated named collection
+  ---
+  duration_ms: 94.302083
+  type: 'test'
+  ...
+# Subtest: enabled heading A/B edits affect normal populated search rows despite a nonblank collection title
+ok 3 - enabled heading A/B edits affect normal populated search rows despite a nonblank collection title
+  ---
+  duration_ms: 54.6645
+  type: 'test'
+  ...
+# Subtest: enabled heading A/B edits affect the intended populated collection rows while preserving product and page resources
+ok 4 - enabled heading A/B edits affect the intended populated collection rows while preserving product and page resources
+  ---
+  duration_ms: 47.187125
+  type: 'test'
+  ...
+# Subtest: empty search and collection results retain a custom heading and honest empty state without invented products
+ok 5 - empty search and collection results retain a custom heading and honest empty state without invented products
+  ---
+  duration_ms: 50.21525
+  type: 'test'
+  ...
+# Subtest: cleared and whitespace headings fall back to the current collection title when enabled
+ok 6 - cleared and whitespace headings fall back to the current collection title when enabled
+  ---
+  duration_ms: 97.622
+  type: 'test'
+  ...
+# Subtest: an omitted title retains the existing schema default rather than treating omission as an explicit clear
+ok 7 - an omitted title retains the existing schema default rather than treating omission as an explicit clear
+  ---
+  duration_ms: 45.541541
+  type: 'test'
+  ...
+# Subtest: enabled blank heading plus missing collection title never emits an empty heading
+ok 8 - enabled blank heading plus missing collection title never emits an empty heading
+  ---
+  duration_ms: 43.80375
+  type: 'test'
+  ...
+# Subtest: hostile markup and Hindi/Tamil text remain escaped heading text through the canonical sanitizer
+ok 9 - hostile markup and Hindi/Tamil text remain escaped heading text through the canonical sanitizer
+  ---
+  duration_ms: 45.932708
+  type: 'test'
+  ...
+# Subtest: unchanged defaults render byte-identical body and style for home, PDP, collection and search, populated and empty
+ok 10 - unchanged defaults render byte-identical body and style for home, PDP, collection and search, populated and empty
+  ---
+  duration_ms: 309.854042
+  type: 'test'
+  ...
+# Subtest: explicit false or legacy omitted toggle preserves the original row display even with a supplied title
+ok 11 - explicit false or legacy omitted toggle preserves the original row display even with a supplied title
+  ---
+  duration_ms: 82.152916
+  type: 'test'
+  ...
+# Subtest: actual schema manifest, JSON wire, ThemeDocument and portable compile retain enabled edits and explicit false
+ok 12 - actual schema manifest, JSON wire, ThemeDocument and portable compile retain enabled edits and explicit false
+  ---
+  duration_ms: 28.753875
+  type: 'test'
+  ...
+# Subtest: Main source remains byte-identical and the executed factory is the materialized private module
+ok 13 - Main source remains byte-identical and the executed factory is the materialized private module
+  ---
+  duration_ms: 0.280042
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1488.572292

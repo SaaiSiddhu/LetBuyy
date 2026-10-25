@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: stage qualification executes the pinned actual function with recording-only seams
+ok 1 - stage qualification executes the pinned actual function with recording-only seams
+  ---
+  duration_ms: 0.493
+  type: 'test'
+  ...
+# Subtest: stage normal path stops three sequential clients, closes streams and validates manifests before serving permit
+ok 2 - stage normal path stops three sequential clients, closes streams and validates manifests before serving permit
+  ---
+  duration_ms: 3.697958
+  type: 'test'
+  ...
+# Subtest: stage failed log open still stops the exact returned child
+ok 3 - stage failed log open still stops the exact returned child
+  ---
+  duration_ms: 0.40425
+  type: 'test'
+  ...
+# Subtest: stage failed stream construction closes only the untransferred FD and stops child
+ok 4 - stage failed stream construction closes only the untransferred FD and stops child
+  ---
+  duration_ms: 0.43525
+  type: 'test'
+  ...
+# Subtest: stage stdout pipe failure closes owned stream and stops child
+ok 5 - stage stdout pipe failure closes owned stream and stops child
+  ---
+  duration_ms: 0.38875
+  type: 'test'
+  ...
+# Subtest: stage stderr pipe failure closes owned stream and stops child
+ok 6 - stage stderr pipe failure closes owned stream and stops child
+  ---
+  duration_ms: 1.117458
+  type: 'test'
+  ...
+# Subtest: stage underlying child error remains primary and triggers cleanup
+ok 7 - stage underlying child error remains primary and triggers cleanup
+  ---
+  duration_ms: 0.524125
+  type: 'test'
+  ...
+# Subtest: stage nonzero child completion cannot publish staged readiness
+ok 8 - stage nonzero child completion cannot publish staged readiness
+  ---
+  duration_ms: 0.785875
+  type: 'test'
+  ...
+# Subtest: stage async stream failure while child is pending is observable and stops child
+ok 9 - stage async stream failure while child is pending is observable and stops child
+  ---
+  duration_ms: 0.711458
+  type: 'test'
+  ...
+# Subtest: stage end cleanup failure remains observable without skipping child stop
+ok 10 - stage end cleanup failure remains observable without skipping child stop
+  ---
+  duration_ms: 0.723708
+  type: 'test'
+  ...
+# Subtest: stage primary IO failure remains cause when FD cleanup also fails
+ok 11 - stage primary IO failure remains cause when FD cleanup also fails
+  ---
+  duration_ms: 0.398625
+  type: 'test'
+  ...
+# Subtest: stage primary IO failure remains cause when stopping the exact child also fails
+ok 12 - stage primary IO failure remains cause when stopping the exact child also fails
+  ---
+  duration_ms: 0.331833
+  type: 'test'
+  ...
+# Subtest: stage stop-only cleanup failure stays observable while owned stream still closes
+ok 13 - stage stop-only cleanup failure stays observable while owned stream still closes
+  ---
+  duration_ms: 0.354958
+  type: 'test'
+  ...
+# Subtest: stage failed manifest read has already stopped the exact build child
+ok 14 - stage failed manifest read has already stopped the exact build child
+  ---
+  duration_ms: 0.361584
+  type: 'test'
+  ...
+# Subtest: stage invalid final permit cannot claim listener readiness after successful build cleanup
+ok 15 - stage invalid final permit cannot claim listener readiness after successful build cleanup
+  ---
+  duration_ms: 0.483
+  type: 'test'
+  ...
+# Subtest: stage ordinary dev kind remains refused before starting a client
+ok 16 - stage ordinary dev kind remains refused before starting a client
+  ---
+  duration_ms: 0.300917
+  type: 'test'
+  ...
+# Subtest: stage start failure never attempts stopping an unrelated handle
+ok 17 - stage start failure never attempts stopping an unrelated handle
+  ---
+  duration_ms: 0.30925
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 166.131875

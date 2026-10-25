@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-23T18:32:53.718282+00:00",
+  "classification": "ROOT_EXPLICIT_FUTURE_EXECUTION_RESERVATION_NOT_ACTIVE_LEASE",
+  "theme": "Marginalia",
+  "queuePosition": 9,
+  "runtime": "f6074d90e894",
+  "browserAndDataController": {
+    "chat": "Theme Editor — End-to-End",
+    "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53"
+  },
+  "marginaliaRole": "Direct exact16 sequence and independently audit actual acknowledged receipts; no browser transfer",
+  "entryGates": [
+    "Preceding Trailmark slice completed",
+    "Canonical active-cart restoration/rebaseline receipt acknowledged",
+    "Current owned product/collection/variant bindings read back",
+    "Fresh named Marginalia grant from Editor or Themes"
+  ],
+  "activeLease": false,
+  "fixedTimePromise": false,
+  "sequence": [
+    "Canonical existing book2 editions refined with old UUIDs; add only missing OOS third; separate notebook and exact two-product collection; no invented ISBN/common bibliography",
+    "Installed Marginalia resources/save/publish/fullreload",
+    "Selected English/Hindi/OOS edition UUID-specific facts/price/stock; stationery ruling/gsm/dimensions/pages/sheets",
+    "Author-language/format same-variant discovery witnesses; filters/search/sort/query and independent clears; OOS rejection",
+    "Canonical exact hardback x1 + notebook x2 cart/reload; normal trusted hosted local COD",
+    "Bind accepted order/line IDs; verify buyer and merchant original snapshots before later edits",
+    "Normal same-UUID Edition/title and metadata/price edits; preserve actual post-order stock; notebook dotted/new dimensions/pages/sheets/price",
+    "Buyer and merchant old order facts/options/prices remain original despite live edits",
+    "Normal UI owned-line cleanup and acknowledged semantic Pink cart restoration"
+  ],
+  "scopeLimits": [
+    "F607 source stays immutable at old apparel helper b583; normal origin Save/reload and normal browser HTTPS already proven",
+    "Separate updated marketplace fixture may provide only finite true-absence live repair control, never F607 update or MG execution",
+    "No queue jump, concurrent controller/runtime, API mutation substitute or synthetic primary order",
+    "No case credit before actual execution and evidence; retain failures and subsequent retests"
+  ],
+  "sourceRepairControl": "installed-lifecycle-readiness/runtime-update-handoff.json",
+  "cases": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-24T20:25:17.401192+00:00",
+  "status": "GRANTED_ONE_PRIVATE_SOURCE_AMENDMENT_AND_PURE_VERIFICATION_ONLY",
+  "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "authority": "Verified human finish shared blockers mandate; explicit owner request for performance prep review/amendment",
+  "privateRoot": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02",
+  "sealedBeforeRoot": "/private/tmp/letbuyy-circuit-performance-prep-20261025-01",
+  "sealedBeforeHashes": {
+    "handoff": "7a0c046f1e40b68ee7abafd8dd30a014ef207cc7a6c002bd22ebcda4dc17b1c2",
+    "protocol": "1da0007250957533dbde78864f268ad20d0437594503c28e8eefc816a547795d",
+    "suite": "f311aaaaa156dc9cbf21dd19efce7b9a1fa8eb4cd7dbc80056c177498e8d148d",
+    "manifest": "b10330b6bb862339ef678d5d9a437e48c038e3a47d57736bd70615c574c84488"
+  },
+  "review": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/CIRCUIT_PERFORMANCE_PREPARATION_REVIEW_01.json",
+  "expiresAt": "2026-10-24T22:25:17.401192+00:00",
+  "ends": "First sealed amended handoff or expiry",
+  "allowedPrivateFiles": [
+    "PERFORMANCE_PROTOCOL.json",
+    "SOURCE_MANIFEST.json",
+    "HANDOFF.json",
+    "circuit-indexed-performance-qualification.manual.ts",
+    "plan-parser.ts",
+    "plan-parser.test.ts"
+  ],
+  "permitted": [
+    "Copy exact sealed V1 preparation into fresh02; preserve V1 unchanged",
+    "Resolve PERF-R01 through PERF-R06 only; incorporate the accepted relative guard and preliminary600s native envelope",
+    "Run bounded pure parser/source semantic/type/transpile checks only; imported current canonical code remains read-only",
+    "Record exact remaining actual module/log preflight and full-closure/native admission requirements; no hypothetical PASS",
+    "Return sealed amended files/hashes and no-new-native evidence to existing shared review retrieval files"
+  ],
+  "mainOrSealedCandidateWritesGranted": false,
+  "dockerOrNativeOrDatabaseOrModuleProbeGranted": false,
+  "browserOrProviderOrPublicExposureGranted": false,
+  "heavyBuildOrNewStackGranted": false,
+  "sourceSQLOrIndexRepairGranted": false,
+  "followupNativeResourceGrantRequired": true,
+  "doNotInterruptCurrentPurchases": true
+}

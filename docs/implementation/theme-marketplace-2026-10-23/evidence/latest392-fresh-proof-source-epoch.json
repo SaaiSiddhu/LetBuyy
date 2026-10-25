@@ -1,0 +1,96 @@
+{
+  "recordedAt": "2026-10-23T19:35:06.935647+00:00",
+  "status": "TWELVE_DELTA_SEALED_AFTER_OWN_STANDALONE_STOP",
+  "candidateRoot": "/private/tmp/theme-marketplace-latest392-20261023-retry02",
+  "immutableBase": {
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+    "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+    "dependencyProofSha256": "61e45a69e01e2a7a47cc7dcb7787408609c1067a0e1980252813428229a90ac3",
+    "sourceFiles": 17233
+  },
+  "admittedDeltas": [
+    {
+      "path": "apps/platform/identity/src/lib/auth/return-to.ts",
+      "bytes": 1548,
+      "sha256": "93dee983286c667e2ed190cf4c8dd4f4123ff2cdaadb41f12fd52d45aca6bc17"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/marketplace-return-to.test.ts",
+      "bytes": 3219,
+      "sha256": "5e35f915770f1d66a3b396d87b44b8bc82b3a6e1b0ec507731469ee7d82b944a"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "bytes": 23039,
+      "sha256": "70f20dd157bb05a697af9c9b458cb7846ea6b012f72a2c7845382adf8344e835"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts",
+      "bytes": 12173,
+      "sha256": "c89814b2b93712d85008c87530d029066e6433e09d855a6cdc25c41a6823136c"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.ts",
+      "beforeSha256": "b583ab3cd95324f4185ecec375090b2a80a162eec233e5854cf5a2728bd42271",
+      "sha256": "a4833276eb2647dca6ad6ab5e9b30e0f68f235ac7188516c98aea5f8c8b4288d",
+      "bytes": 6561
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+      "beforeSha256": "39af44e95883715648cbbe0e5c0ffcc58779f35f7ce802e1e278b5f928534eca",
+      "sha256": "fa4501f2fb40731df8b7a91dfa2c8353e2bb14dbb22bd98b87f67bdeefab3127",
+      "bytes": 14685
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "beforeSha256": "2cd027c295b74e62f4f4212f49b572c2c67dcfeb36bd2050b6cdd488a2484dd7",
+      "sha256": "b95d0d9be33bbca45467084766369ed9a0a4f616469733a463e2802e1b50e8e6",
+      "bytes": 77966
+    },
+    {
+      "path": "apps/frozen/theme-store/src/proxy.ts",
+      "sha256": "b79e2e1b5f33b6e960a61c29c1ca652fd5448b37cd44889542a75e3cb71445f2",
+      "bytes": 1212
+    },
+    {
+      "path": "apps/frozen/theme-store/tests/session-recovery.test.mjs",
+      "sha256": "84a2df63a046433a4fb4bb9b64eee52956ae7158ee80a913f2f74f466973cac8",
+      "bytes": 8420
+    },
+    {
+      "path": "tests/auth/sso-redirects.test.mjs",
+      "sha256": "6a45f2413a3b8ff40a87c953c2e69d1cfa89600d23479e1f6775cfb088941e40",
+      "bytes": 3470
+    },
+    {
+      "path": "apps/frozen/theme-store/src/lib/api/client.ts",
+      "beforeSha256": "5a052214b6dfba7716cdfecf6adde79a290f0bd9fd67bb80e74bfdd8b00f10c4",
+      "sha256": "33701a5a5a8a90ac1c58dbdbd6d1dced37b45b3fd36af55203c6eb57081804c1",
+      "bytes": 3742
+    },
+    {
+      "path": "apps/frozen/theme-store/tests/api-client-scope.test.mjs",
+      "beforeSha256": "02a6deb7e55130d880b5c837204f732689c2b5a4d045bc7a4f34cce2475851c4",
+      "sha256": "cba24b7c4cb3bcb26bdcfa2d053493e8b373165510fa5de4e5c60ca4238979f5",
+      "bytes": 12544
+    }
+  ],
+  "sourceMax": 392,
+  "workspaceLinksInsideCandidate": 256,
+  "launchPerformed": false,
+  "sourceEpoch": "standalone-fresh-proof",
+  "parentSourceProof": {
+    "path": "/private/tmp/theme-marketplace-latest392-20261023-retry02/marketplace-standalone-proxy02-source-proof.json",
+    "sha256": "971e114e5ce317d2b9d8c3e671c6e46bfc94894d471b2d13e7a304a4260f150e",
+    "unexpectedChangesBeforeAmendment": []
+  },
+  "backendRunId": "555b91e19691",
+  "backendRestarted": false,
+  "standaloneLaunchPerformed": false,
+  "protectedStateBeforeSha256": "d573f7a7109fa17661faa6ead967ca6abd799558c2b591027dbeb2ac68757ab3",
+  "sourceFilesChecked": 17234,
+  "proof": {
+    "path": "/private/tmp/theme-marketplace-latest392-20261023-retry02/marketplace-standalone-fresh-proof-source.json",
+    "sha256": "8c89302c8b1991d8bde035d9debe099f8460d24255a794c51a4157daec4f2082"
+  }
+}

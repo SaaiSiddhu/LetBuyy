@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-23T16:35:29.010421+00:00",
+  "status": "ROOT_EVIDENCE_ONLY_SUITE_REVIEWED_EXACT392_NATIVE_LEASE_RECONFIRMED",
+  "previousSuiteSha256": "c75705b8d13c909286930140462530f11fcbe9192815e2ada9949151acdff407",
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "sha256": "f0893696d1104c7f46e382eab4eb44ea48758eceeed223e52a6f052385ce1617",
+    "topLevelTests": 8
+  },
+  "release": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-release.json",
+    "sha256": "5b45fb36212709435dfb387ad9c76703f04e46d96f34b7ffb5c6a786f816144b"
+  },
+  "admission": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/admission.json",
+    "previousSha256": "dd6938775517ce7eeec78156db8641eccdda1c9a2d5c49297762d553456d0b10",
+    "sha256": "7365adc5beeb9a86c2b05f43e1aefde8a7342fa2384579da0a971f21625b6afe"
+  },
+  "rootIndependentASTReview": {
+    "ownedSqlCallsByteExact": 36,
+    "testNamesExact": 8,
+    "assertionKindOrderExact": 101
+  },
+  "diffReview": "Only private run-bound structured provenance; raw13functioncatalog+defaultAST/rawACL, exactSQL/query/publicHTTPmetadata/rowhash/refusals persisted; no oracle/SQL/fixture/assertion/retry/phasechanges",
+  "ownerChecks": {
+    "sourceAndValidatorPass": 6,
+    "fail": 0,
+    "skip": 0,
+    "gatewayNoEmitExit": 0,
+    "sqlOracleConservation": "evidence-writer-conservation.json"
+  },
+  "lease": "Onefreshownedthrough391/jobs1/no-reap/600s/prepared2;current9cd/d4eb/ff994unchanged;no392emission"
+}

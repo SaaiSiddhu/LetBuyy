@@ -594,7 +594,8 @@ export default function MarketingCampaignsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="marketing"
+                recipe="index"
                 eyebrow="Marketing"
                 title="Email Campaigns"
                 description="Send emails to your subscribed customers. Emails are sent in sandbox mode until a live Resend API key is configured."

@@ -1,0 +1,1187 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Made to move\nwith you."
+    ],
+    "height": 1000,
+    "scrollHeight": 1233,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "01-home-top",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Made to move\nwith you."
+    ],
+    "height": 1112,
+    "scrollHeight": 1132,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Made to move with you."
+    ],
+    "height": 844,
+    "scrollHeight": 1224,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "408px 408px 408px"
+      }
+    ],
+    "headings": [],
+    "height": 1000,
+    "scrollHeight": 2500,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "244px 244px 244px"
+      }
+    ],
+    "headings": [],
+    "height": 1112,
+    "scrollHeight": 2297,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "168px 168px"
+      }
+    ],
+    "headings": [],
+    "height": 844,
+    "scrollHeight": 3071,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "03-collection",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "408px 408px 408px"
+      }
+    ],
+    "headings": [
+      "Considered essentials."
+    ],
+    "height": 1000,
+    "scrollHeight": 1697,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "03-collection",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "375.5px 375.5px"
+      }
+    ],
+    "headings": [
+      "Considered essentials."
+    ],
+    "height": 1112,
+    "scrollHeight": 2413,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "03-collection",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "168px 168px"
+      }
+    ],
+    "headings": [
+      "Considered essentials."
+    ],
+    "height": 844,
+    "scrollHeight": 2001,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "04-product-main",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "pdp-grid",
+        "columns": "739.133px 476.867px"
+      }
+    ],
+    "headings": [
+      "The Everyday\nLinen Shirt"
+    ],
+    "height": 1000,
+    "scrollHeight": 1152,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "05-product-fit",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Room to move.\nRoom to be you."
+    ],
+    "height": 1000,
+    "scrollHeight": 1645,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "06-product-outfit",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Wear it your way."
+    ],
+    "height": 1000,
+    "scrollHeight": 1872,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "07-cart",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Your bag (2)"
+    ],
+    "height": 1000,
+    "scrollHeight": 1365,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-grid",
+        "columns": "624.164px 445.828px"
+      }
+    ],
+    "headings": [
+      "Where should it go?"
+    ],
+    "height": 1000,
+    "scrollHeight": 1480,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": false,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Welcome back."
+    ],
+    "height": 1000,
+    "scrollHeight": 1000,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": false,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "height": 1000,
+    "scrollHeight": 1000,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "12-profile",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "230px 985px"
+      }
+    ],
+    "headings": [
+      "Good to see you, Asha."
+    ],
+    "height": 1000,
+    "scrollHeight": 1416,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "13-orders",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "230px 985px"
+      }
+    ],
+    "headings": [
+      "Your orders."
+    ],
+    "height": 1000,
+    "scrollHeight": 1329,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "230px 985px"
+      }
+    ],
+    "headings": [
+      "Every detail, in one place."
+    ],
+    "height": 1000,
+    "scrollHeight": 1743,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "230px 985px"
+      }
+    ],
+    "headings": [
+      "Your saved addresses."
+    ],
+    "height": 1000,
+    "scrollHeight": 1043,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "04-product-main",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "pdp-grid",
+        "columns": "389.883px 348.117px"
+      }
+    ],
+    "headings": [
+      "The Everyday\nLinen Shirt"
+    ],
+    "height": 1112,
+    "scrollHeight": 1152,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "05-product-fit",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Room to move.\nRoom to be you."
+    ],
+    "height": 1112,
+    "scrollHeight": 1717,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "06-product-outfit",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Wear it your way."
+    ],
+    "height": 1112,
+    "scrollHeight": 1882,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "07-cart",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Your bag (2)"
+    ],
+    "height": 1112,
+    "scrollHeight": 1488,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-grid",
+        "columns": "650px"
+      }
+    ],
+    "headings": [
+      "Where should it go?"
+    ],
+    "height": 1112,
+    "scrollHeight": 1567,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": false,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Welcome back."
+    ],
+    "height": 1112,
+    "scrollHeight": 1112,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": false,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "height": 1112,
+    "scrollHeight": 1112,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "12-profile",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "170px 575px"
+      }
+    ],
+    "headings": [
+      "Good to see you, Asha."
+    ],
+    "height": 1112,
+    "scrollHeight": 1710,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "13-orders",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "170px 575px"
+      }
+    ],
+    "headings": [
+      "Your orders."
+    ],
+    "height": 1112,
+    "scrollHeight": 1532,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "170px 575px"
+      }
+    ],
+    "headings": [
+      "Every detail, in one place."
+    ],
+    "height": 1112,
+    "scrollHeight": 2139,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "15-addresses",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "170px 575px"
+      }
+    ],
+    "headings": [
+      "Your saved addresses."
+    ],
+    "height": 1112,
+    "scrollHeight": 1459,
+    "scrollWidth": 834,
+    "width": 834
+  },
+  {
+    "scene": "04-product-main",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "pdp-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "The Everyday\nLinen Shirt"
+    ],
+    "height": 844,
+    "scrollHeight": 1589,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "05-product-fit",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Room to move.\nRoom to be you."
+    ],
+    "height": 844,
+    "scrollHeight": 2296,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "06-product-outfit",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Wear it your way."
+    ],
+    "height": 844,
+    "scrollHeight": 2278,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "07-cart",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Your bag (2)"
+    ],
+    "height": 844,
+    "scrollHeight": 2030,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Where should it go?"
+    ],
+    "height": 844,
+    "scrollHeight": 1405,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": false,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Welcome back."
+    ],
+    "height": 844,
+    "scrollHeight": 844,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": false,
+      "status": "loaded"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "height": 844,
+    "scrollHeight": 844,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "12-profile",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Good to see you, Asha."
+    ],
+    "height": 844,
+    "scrollHeight": 1816,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "13-orders",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Your orders."
+    ],
+    "height": 844,
+    "scrollHeight": 1586,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Every detail, in one place."
+    ],
+    "height": 844,
+    "scrollHeight": 2158,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "gridColumns": [
+      {
+        "class": "account-shell",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Your saved addresses."
+    ],
+    "height": 844,
+    "scrollHeight": 1424,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "height": 1000,
+    "scrollHeight": 1137,
+    "scrollWidth": 1440,
+    "summaryBeforePayment": false,
+    "width": 1440
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "height": 1112,
+    "scrollHeight": 1636,
+    "scrollWidth": 834,
+    "summaryBeforePayment": true,
+    "width": 834
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "brokenImages": [],
+    "dpr": 1,
+    "fonts": {
+      "inter": true,
+      "playfair": true,
+      "status": "loaded"
+    },
+    "height": 844,
+    "scrollHeight": 1500,
+    "scrollWidth": 390,
+    "summaryBeforePayment": true,
+    "width": 390
+  }
+]

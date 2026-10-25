@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: unregistered transaction cannot bind an actor or invoke the capability
+ok 1 - unregistered transaction cannot bind an actor or invoke the capability
+  ---
+  duration_ms: 3.819167
+  type: 'test'
+  ...
+# Subtest: ordinary withTenantTx callback behavior and initial role/GUC setup remain unchanged
+ok 2 - ordinary withTenantTx callback behavior and initial role/GUC setup remain unchanged
+  ---
+  duration_ms: 34.968458
+  type: 'test'
+  ...
+# Subtest: invalid resolved actor poisons commit even if callback catches refusal
+ok 3 - invalid resolved actor poisons commit even if callback catches refusal
+  ---
+  duration_ms: 14.03375
+  type: 'test'
+  ...
+# Subtest: unknown publisher profile poisons the full outer update before privilege use
+ok 4 - unknown publisher profile poisons the full outer update before privilege use
+  ---
+  duration_ms: 10.195292
+  type: 'test'
+  ...
+# Subtest: governance source guard detects rejected baseline and confines elevation to fixed canonical helpers
+ok 5 - governance source guard detects rejected baseline and confines elevation to fixed canonical helpers
+  ---
+  duration_ms: 0.981084
+  type: 'test'
+  ...
+# Subtest: read-only tenant catalogue permissions permit the guarded publisher without global UPDATE grants
+ok 6 - read-only tenant catalogue permissions permit the guarded publisher without global UPDATE grants
+  ---
+  duration_ms: 7.384708
+  type: 'test'
+  ...
+# Subtest: shadow profile refusal precedes global locking and privilege use even with read-only tenant captures
+ok 7 - shadow profile refusal precedes global locking and privilege use even with read-only tenant captures
+  ---
+  duration_ms: 6.529625
+  type: 'test'
+  ...
+# Subtest: changedSelection: trusted recheck refuses a changed publication target before the RPC
+ok 8 - changedSelection: trusted recheck refuses a changed publication target before the RPC
+  ---
+  duration_ms: 11.021833
+  type: 'test'
+  ...
+# Subtest: changedPrior: trusted recheck refuses a changed publication target before the RPC
+ok 9 - changedPrior: trusted recheck refuses a changed publication target before the RPC
+  ---
+  duration_ms: 5.53575
+  type: 'test'
+  ...
+# Subtest: publisher failure restores tenant context and cannot be swallowed into an outer commit
+ok 10 - publisher failure restores tenant context and cannot be swallowed into an outer commit
+  ---
+  duration_ms: 4.658834
+  type: 'test'
+  ...
+# Subtest: fixed catalogue read uses service permissions and restores its resolved tenant without writes
+ok 11 - fixed catalogue read uses service permissions and restores its resolved tenant without writes
+  ---
+  duration_ms: 7.079958
+  type: 'test'
+  ...
+# Subtest: catalogue read refuses a foreign private theme before returning its data
+ok 12 - catalogue read refuses a foreign private theme before returning its data
+  ---
+  duration_ms: 4.970958
+  type: 'test'
+  ...
+# Subtest: catalogue read refuses an unbound actor before entering trusted permissions
+ok 13 - catalogue read refuses an unbound actor before entering trusted permissions
+  ---
+  duration_ms: 5.858334
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 744.80925

@@ -1,0 +1,151 @@
+- main:
+  - link "Back to themes":
+    - /url: /syn-threadline-ui-ae3f0477/online-store/themes
+  - button "Toggle navigation panel" [pressed]:
+  - button "Sections":
+  - button "Theme settings":
+  - button "Theme styles":
+  - button "Versions":
+  - generic: Habitat
+  - text: Active
+  - generic "Draft changes save automatically. Publishing updates the storefront.": Saved
+  - generic "Template":
+    - combobox "Template":
+      - option "Habitat rooms and furniture" [selected]
+      - option "Habitat spatial product"
+      - option "Habitat furniture collection"
+      - option "Page"
+      - option "LetBuyy Core cart"
+      - option "Blog"
+      - option "Article"
+      - option "Policy page"
+      - option "LetBuyy Core search"
+      - option "Contact"
+      - option "Password"
+      - option "404 Not Found"
+      - option "Login"
+      - option "Order detail"
+      - option "Order history"
+      - option "All collections"
+      - option "Account"
+      - option "Register"
+      - option "Account settings"
+      - option "Wishlist"
+      - option "Addresses"
+  - button "Undo" [disabled]:
+  - button "Redo" [disabled]:
+  - button "Save" [disabled]:
+    - text: Save
+  - button "Publish":
+    - text: Publish
+  - complementary "Theme editor navigation":
+    - heading "Habitat rooms and furniture" [level=2]
+    - text: v4
+    - tree "Theme sections":
+      - paragraph: Header
+      - treeitem "Announcement Bar Toggle Announcement Bar visibility" [level=1] [selected]:
+        - button "Announcement Bar":
+          - generic: Announcement Bar
+        - button "Toggle Announcement Bar visibility" [pressed]:
+      - treeitem "Header" [level=1]:
+        - button "Header":
+          - generic: Header
+      - paragraph: Template
+      - group "Template sections":
+        - treeitem "Room index and panorama" [level=1]:
+          - button "Room index and panorama":
+            - generic: Room index and panorama
+        - treeitem "Furniture object grid" [level=1]:
+          - button "Furniture object grid":
+            - generic: Furniture object grid
+        - treeitem "Materials and care editorial" [level=1]:
+          - button "Materials and care editorial":
+            - generic: Materials and care editorial
+        - treeitem "Measurement guide" [level=1]:
+          - button "Measurement guide":
+            - generic: Measurement guide
+        - treeitem "Supplied service information" [level=1]:
+          - button "Supplied service information":
+            - generic: Supplied service information
+      - combobox:
+        - option "Marquee" [selected]
+        - option "404 Not Found"
+        - option "Spotlight"
+        - option "Search"
+        - option "Video Hero"
+        - option "Call to Action"
+        - option "Room index and panorama"
+        - option "Blog Listing"
+        - option "Cart"
+        - option "Contact Form"
+        - option "Page Content"
+        - option "Furniture object grid"
+        - option "Rich Content"
+        - option "Testimonials"
+        - option "Supplied service information"
+        - option "Materials and care editorial"
+        - option "Brand Marquee"
+        - option "Category Grid"
+        - option "FAQ Accordion"
+        - option "Password Gate"
+        - option "Services Grid"
+        - option "App Block Slot"
+        - option "Customer Login"
+        - option "Policy Content"
+        - option "Portfolio Grid"
+        - option "Product Detail"
+        - option "Skills Section"
+        - option "Article Content"
+        - option "Banner Carousel"
+        - option "Order History"
+        - option "Announcement Bar"
+        - option "Customer Account"
+        - option "Collection Banner"
+        - option "Room and furniture discovery"
+        - option "Customer Register"
+        - option "Account Settings"
+        - option "Wishlist"
+        - option "Independent related furniture"
+        - option "Newsletter Signup"
+        - option "Addresses"
+        - option "Experience Timeline"
+        - option "Order Detail"
+        - option "Furniture search results"
+        - option "Measurement guide"
+      - button "Add":
+        - text: Add
+      - paragraph: Footer
+      - treeitem "Footer" [level=1]:
+        - button "Footer":
+          - generic: Footer
+  - region "Live theme preview":
+    - strong: Live preview
+    - generic: syn-threadline-ui-ae3f0477.localhost - 1440px
+    - group "Preview device":
+      - button "Desktop" [pressed]:
+        - text: Desktop
+      - button "Tablet":
+        - text: Tablet
+      - button "Mobile":
+        - text: Mobile
+    - generic: syn-threadline-ui-ae3f0477.localhost
+    - button "Inspect preview" [pressed]:
+      - text: Inspect
+    - iframe
+    - alert:
+      - generic: The preview could not finish loading. Your saved draft is kept. Retry to open a fresh preview.
+      - button "Retry preview"
+  - complementary "Theme properties":
+    - paragraph: Selected section
+    - heading "Announcement Bar" [level=2]
+    - group "Smart defaults":
+      - generic "Smart defaults"
+    - generic: Message
+    - textbox "Message": Habitat Runtime07 A — considered rooms
+    - generic: Link URL
+    - textbox "Link URL":
+      - /placeholder: https://…
+    - generic: Link label
+    - textbox "Link label"
+    - paragraph: Blocks
+- alert

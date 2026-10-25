@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-23T08:53:20.140Z",
+  "classification": "IN_PROCESS_RENDER_FORMDATA_CANONICAL_QUERY_ONLY_NOT_SQL_BROWSER_OR_INSTALLED_ACCEPTANCE",
+  "networkCalls": 0,
+  "sources": [
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "643581f20c99ee39717a6db888309da0d3e5579c63a663ef5d583f5b829d6669"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "90bc326720b962d3a43ccd6625dcb153ab1507eecbc3151ec65698774b40eb1c"
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863"
+    },
+    {
+      "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+      "sha256": "87705315461c3095df91f28a2b05064451aefb1907a1591c59ff6da236ab8b96"
+    }
+  ],
+  "observations": []
+}

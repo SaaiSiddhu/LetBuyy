@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-23T20:09:32.810551+00:00",
+  "runId": "f6074d90e894",
+  "classification": "SOURCE_CONSTRAINT_NOT_OBSERVED_INVENTORY_RESET",
+  "candidate": "/private/tmp/theme-editor-merchant-axis-20261024-01",
+  "case": "HI-16",
+  "finding": "Current normal edit serializer always includes product stock and eachvariantstock, including metadata-only updates; page preserves those fields in exact pending command. Frozen lateredit expectation requiresstockomission.",
+  "references": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "lines": [
+        429,
+        447,
+        477
+      ],
+      "sha256": "bebce783d3bd28990ac691a180f5ef85d60de14d76021a3c4be04daa43920af3"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "lines": [
+        676,
+        682,
+        687
+      ],
+      "sha256": "6963ac68ee0e4eb76704372dd65d46742efdcc9485157ee9ad2a509b365857c4"
+    }
+  ],
+  "rootAndEditorNotified": true,
+  "inventoryResetObserved": false,
+  "sourceChanged": false,
+  "independentCasesContinue": "COD/exactretry and separateacceptedcart beforelateedit; otherHI/HQ unaffected",
+  "noSubstitution": "No requestinterception/directAPIedit to manufacture normalUI omission",
+  "disposition": "Root canonicalsharedform review or explicit HI16 limitation before normal lateredit; sourcefreeze remains."
+}

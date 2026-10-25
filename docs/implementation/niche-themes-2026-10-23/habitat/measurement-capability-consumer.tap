@@ -1,0 +1,184 @@
+TAP version 13
+# Subtest: collection: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+ok 1 - collection: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+  ---
+  duration_ms: 323.131
+  type: 'test'
+  ...
+# Subtest: collection: selected and unselected choices retain supplied merchant labels and normalized values
+ok 2 - collection: selected and unselected choices retain supplied merchant labels and normalized values
+  ---
+  duration_ms: 162.891042
+  type: 'test'
+  ...
+# Subtest: collection: actual independent clears, clear-all and pagination keep unrelated query values
+ok 3 - collection: actual independent clears, clear-all and pagination keep unrelated query values
+  ---
+  duration_ms: 181.91425
+  type: 'test'
+  ...
+# Subtest: collection: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+ok 4 - collection: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+  ---
+  duration_ms: 339.799083
+  type: 'test'
+  ...
+# Subtest: collection: independent admitted axis capabilities enable cm controls without categorical facets or rounding
+ok 5 - collection: independent admitted axis capabilities enable cm controls without categorical facets or rounding
+  ---
+  duration_ms: 398.316416
+  type: 'test'
+  ...
+# Subtest: collection: numeric facets never substitute for absent/false capabilities and the merchant toggle preserves carriers
+ok 6 - collection: numeric facets never substitute for absent/false capabilities and the merchant toggle preserves carriers
+  ---
+  duration_ms: 348.68975
+  type: 'test'
+  ...
+# Subtest: collection: zero results recover each active threshold while a positive past-end cohort retains capability
+ok 7 - collection: zero results recover each active threshold while a positive past-end cohort retains capability
+  ---
+  duration_ms: 226.118875
+  type: 'test'
+  ...
+# Subtest: collection: malformed present or contradictory zero-total capabilities fail before Liquid
+ok 8 - collection: malformed present or contradictory zero-total capabilities fail before Liquid
+  ---
+  duration_ms: 1.73275
+  type: 'test'
+  ...
+# Subtest: search: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+ok 9 - search: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+  ---
+  duration_ms: 123.627916
+  type: 'test'
+  ...
+# Subtest: search: selected and unselected choices retain supplied merchant labels and normalized values
+ok 10 - search: selected and unselected choices retain supplied merchant labels and normalized values
+  ---
+  duration_ms: 105.999
+  type: 'test'
+  ...
+# Subtest: search: actual independent clears, clear-all and pagination keep unrelated query values
+ok 11 - search: actual independent clears, clear-all and pagination keep unrelated query values
+  ---
+  duration_ms: 118.983083
+  type: 'test'
+  ...
+# Subtest: search: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+ok 12 - search: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+  ---
+  duration_ms: 259.980292
+  type: 'test'
+  ...
+# Subtest: search: independent admitted axis capabilities enable cm controls without categorical facets or rounding
+ok 13 - search: independent admitted axis capabilities enable cm controls without categorical facets or rounding
+  ---
+  duration_ms: 314.649333
+  type: 'test'
+  ...
+# Subtest: search: numeric facets never substitute for absent/false capabilities and the merchant toggle preserves carriers
+ok 14 - search: numeric facets never substitute for absent/false capabilities and the merchant toggle preserves carriers
+  ---
+  duration_ms: 313.012083
+  type: 'test'
+  ...
+# Subtest: search: zero results recover each active threshold while a positive past-end cohort retains capability
+ok 15 - search: zero results recover each active threshold while a positive past-end cohort retains capability
+  ---
+  duration_ms: 198.315334
+  type: 'test'
+  ...
+# Subtest: search: malformed present or contradictory zero-total capabilities fail before Liquid
+ok 16 - search: malformed present or contradictory zero-total capabilities fail before Liquid
+  ---
+  duration_ms: 0.66425
+  type: 'test'
+  ...
+# Subtest: pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+ok 17 - pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+  ---
+  duration_ms: 50.765792
+  type: 'test'
+  ...
+# Subtest: actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+ok 18 - actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+  ---
+  duration_ms: 318.504667
+  type: 'test'
+  ...
+# Subtest: PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+ok 19 - PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+  ---
+  duration_ms: 92.713833
+  type: 'test'
+  ...
+# Subtest: missing facts/media never become invented sizes/materials/delivery promises
+ok 20 - missing facts/media never become invented sizes/materials/delivery promises
+  ---
+  duration_ms: 69.694334
+  type: 'test'
+  ...
+# Subtest: merchant content/resource settings survive document roundtrip and change actual output
+ok 21 - merchant content/resource settings survive document roundtrip and change actual output
+  ---
+  duration_ms: 165.190916
+  type: 'test'
+  ...
+# Subtest: furniture filters require real server capability and preserve supported search/query values
+ok 22 - furniture filters require real server capability and preserve supported search/query values
+  ---
+  duration_ms: 129.843833
+  type: 'test'
+  ...
+# Subtest: related furniture requires explicit canonical section products and never invents bundles
+ok 23 - related furniture requires explicit canonical section products and never invents bundles
+  ---
+  duration_ms: 155.547541
+  type: 'test'
+  ...
+# Subtest: scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+ok 24 - scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+  ---
+  duration_ms: 13.875333
+  type: 'test'
+  ...
+# Subtest: nested variant facts require a bounded display projection; renderer depth cap stays intact
+ok 25 - nested variant facts require a bounded display projection; renderer depth cap stays intact
+  ---
+  duration_ms: 166.005666
+  type: 'test'
+  ...
+# Subtest: room context is an explicit merchant media choice, never inferred from a second photo
+ok 26 - room context is an explicit merchant media choice, never inferred from a second photo
+  ---
+  duration_ms: 129.25375
+  type: 'test'
+  ...
+# Subtest: declared product display projection renders supplied measures without inventing missing raw material
+ok 27 - declared product display projection renders supplied measures without inventing missing raw material
+  ---
+  duration_ms: 87.026584
+  type: 'test'
+  ...
+# Subtest: current finish panel follows the real picker, precedes purchase and starts with explicit common/unknown facts
+ok 28 - current finish panel follows the real picker, precedes purchase and starts with explicit common/unknown facts
+  ---
+  duration_ms: 91.3735
+  type: 'test'
+  ...
+# Subtest: retained addable FAQ and standalone badge keep exact preview IDs on native roots, absent publicly
+ok 29 - retained addable FAQ and standalone badge keep exact preview IDs on native roots, absent publicly
+  ---
+  duration_ms: 117.464583
+  type: 'test'
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4930.169084

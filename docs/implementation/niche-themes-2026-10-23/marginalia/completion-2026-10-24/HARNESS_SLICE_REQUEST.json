@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T11:34:15.882325+00:00",
+  "classification": "REQUESTED_FINITE_SOURCE_ONLY_REUSE_NOT_EXECUTABLE_OR_ADMITTED_MANIFEST",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "coordinationReceipt": {
+    "tool": "mcp__codex_app__send_message_to_thread",
+    "destination": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "hostId": "local",
+    "outcome": "ACCEPTED",
+    "subject": "Resumption, exact badge contexts and bounded source-only harness admission"
+  },
+  "sharedHarness": {
+    "readme": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/README.md",
+    "entryPoint": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/run.mjs",
+    "function": "runThemeDataContract",
+    "clonedHere": false,
+    "executedHere": false
+  },
+  "requiredInputAdmission": {
+    "slug": "letbuyy-dawn",
+    "version": null,
+    "bundleSha256": null,
+    "factoryExportAndOptions": null,
+    "canonicalAdapterPathsAndPins": null,
+    "explicitExistingTemplate": null,
+    "serialSourceSlot": null,
+    "outputScope": null
+  },
+  "historicalArtifactIsNotCurrentAdmission": "Accepted immutable2.0.0 and its prior lineage may be referenced by the allocator; no current expected identity or runtime binding is guessed from the old factory output.",
+  "proposedScope": [
+    "Actual declared flat section/block settings and canonical save/document roundtrip; false/zero/clear/resource UUID retention within exact descriptors.",
+    "One finite lightweight serial source run only after explicit input/pin admission, with fresh own output directory.",
+    "Keep failures/refusals and exact input identity; no automatic retry on source drift."
+  ],
+  "excludedClaims": [
+    "No UI actions, nesting permission matrix or resource ownership proof.",
+    "No install, publication, identity, cart, COD, Razorpay, webhook, order history, browser responsiveness or certification credit.",
+    "No copying Circuit source tests/results as Marginalia passes."
+  ],
+  "resourcesStarted": [],
+  "browserDatabaseProviderCalls": 0,
+  "mainSourceWrites": 0,
+  "installedOrExpandedStatusChanges": 0,
+  "status": "ADMITTED_ONE_RUN_COMPLETED_EXIT0_SLOT_ENDED_REVIEW_PENDING",
+  "reservation": "docs/implementation/niche-theme-programme/completion-circuit-central-source-preparation-20261024-02.json",
+  "proposedIdentityFromRoot": {
+    "slug": "letbuyy-dawn",
+    "version": "2.0.0",
+    "factory": "createFirstPartyCatalogBundle",
+    "args": [
+      "letbuyy-dawn",
+      {
+        "designVersion": "2.0.0"
+      }
+    ],
+    "rawBundleJsonSha256ReportedByRoot": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0",
+    "hashClass": "RAW_JSON_BUNDLE_HASH_NOT_FULL_ARTIFACT_FILE_OR_CANONICAL_SORTED_BUNDLE_HASH",
+    "ownRehashOrExecution": false,
+    "rootFinalManifestPending": true
+  },
+  "caseMapping": "SOURCE_HARNESS_CASE_MAP.json",
+  "fixtureCandidates": "SOURCE_HARNESS_FIXTURE_CANDIDATES.json",
+  "actualAllocation": "docs/implementation/niche-theme-programme/completion-marginalia-shared-source-allocation-20261024-01.json",
+  "actualHandoff": "SHARED_SOURCE_RUN01_HANDOFF.md"
+}

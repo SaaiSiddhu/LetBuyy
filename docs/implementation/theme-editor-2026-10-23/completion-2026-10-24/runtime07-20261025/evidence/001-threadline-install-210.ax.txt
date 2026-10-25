@@ -1,0 +1,18 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 63-145
+~			149 pop up button (disabled, collapsed) Description: More current theme actions, Secondary Actions: Expand
+~			150 link Description: Edit theme, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor
+~			167 link Description: Visit Theme Store, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/marketplace
+~			168 button (disabled) Import theme
+~				192 button (disabled) Add Threadline
+~				201 button (disabled) Add Dewdrop
+~				210 button (disabled) Add Habitat
+~				219 button (disabled) Add Pantry
+~				228 button (disabled) Add Trailmark
+~				237 button (disabled) Add Marginalia
+~				246 button (disabled) Add Playfield
+~				255 button (disabled) Add Kindred
+~				264 button (disabled) Add Circuit
+~				273 link Description: Customize, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor
+The focused UI element is 0 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes

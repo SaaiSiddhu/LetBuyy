@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: public projection returns only a strict, bounded personalization namespace
+ok 1 - public projection returns only a strict, bounded personalization namespace
+  ---
+  duration_ms: 2.91075
+  type: 'test'
+  ...
+# Subtest: rejects duplicate identifiers, unbounded arrays, invalid limits and extra nested fields
+ok 2 - rejects duplicate identifiers, unbounded arrays, invalid limits and extra nested fields
+  ---
+  duration_ms: 0.73225
+  type: 'test'
+  ...
+# Subtest: revalidates against current catalog method/style/placement without accepting client price or labels
+ok 3 - revalidates against current catalog method/style/placement without accepting client price or labels
+  ---
+  duration_ms: 1.185542
+  type: 'test'
+  ...
+# Subtest: valid boundary text is echoed exactly: no trimming, case folding or punctuation substitution
+ok 4 - valid boundary text is echoed exactly: no trimming, case folding or punctuation substitution
+  ---
+  duration_ms: 1.038459
+  type: 'test'
+  ...
+# Subtest: Unicode policy is explicit and NFC changes require review rather than silent normalization
+ok 5 - Unicode policy is explicit and NFC changes require review rather than silent normalization
+  ---
+  duration_ms: 1.519417
+  type: 'test'
+  ...
+# Subtest: invalid edit retains exact draft and last valid illustration; catalog revision invalidates stale illustration
+ok 6 - invalid edit retains exact draft and last valid illustration; catalog revision invalidates stale illustration
+  ---
+  duration_ms: 0.192584
+  type: 'test'
+  ...
+# Subtest: fingerprint input is deterministic and distinguishes same SKU configurations and revisions
+ok 7 - fingerprint input is deterministic and distinguishes same SKU configurations and revisions
+  ---
+  duration_ms: 0.277292
+  type: 'test'
+  ...
+# Subtest: long and malformed inputs fail before becoming accepted snapshots
+ok 8 - long and malformed inputs fail before becoming accepted snapshots
+  ---
+  duration_ms: 0.265166
+  type: 'test'
+  ...
+# Subtest: pure v2 factory preserves Core and every canonical template, with stable catalog identity
+ok 9 - pure v2 factory preserves Core and every canonical template, with stable catalog identity
+  ---
+  duration_ms: 24.394292
+  type: 'test'
+  ...
+# Subtest: fresh factory removes only the undeclared inherited font alias and roundtrips declared Inter typography over JSON
+ok 10 - fresh factory removes only the undeclared inherited font alias and roundtrips declared Inter typography over JSON
+  ---
+  duration_ms: 153.385041
+  type: 'test'
+  ...
+# Subtest: actual Liquid rendering gives a distinct workspace and real catalog identity
+ok 11 - actual Liquid rendering gives a distinct workspace and real catalog identity
+  ---
+  duration_ms: 29.578792
+  type: 'test'
+  ...
+# Subtest: personalized PDP keeps canonical gallery/variant/cart controls and visible specification/review hooks
+ok 12 - personalized PDP keeps canonical gallery/variant/cart controls and visible specification/review hooks
+  ---
+  duration_ms: 41.493458
+  type: 'test'
+  ...
+# Subtest: missing product facts produce honest copy without an invented configurator or delivery promise
+ok 13 - missing product facts produce honest copy without an invented configurator or delivery promise
+  ---
+  duration_ms: 53.554125
+  type: 'test'
+  ...
+# Subtest: untrusted product and merchant text is escaped; no Liquid evaluation or executable markup
+ok 14 - untrusted product and merchant text is escaped; no Liquid evaluation or executable markup
+  ---
+  duration_ms: 24.123042
+  type: 'test'
+  ...
+# Subtest: validated pre-serialized facts survive actual attribute sanitization exactly once, including hostile labels
+ok 15 - validated pre-serialized facts survive actual attribute sanitization exactly once, including hostile labels
+  ---
+  duration_ms: 38.977084
+  type: 'test'
+  ...
+# Subtest: editor settings, ordered blocks, media and product limits survive roundtrip and change output
+ok 16 - editor settings, ordered blocks, media and product limits survive roundtrip and change output
+  ---
+  duration_ms: 57.249333
+  type: 'test'
+  ...
+# Subtest: semantic settings change real rendered tokens and fonts without global theme CSS
+ok 17 - semantic settings change real rendered tokens and fonts without global theme CSS
+  ---
+  duration_ms: 29.127584
+  type: 'test'
+  ...
+# Subtest: collection GET filters use canonical names and preserve the current sort
+ok 18 - collection GET filters use canonical names and preserve the current sort
+  ---
+  duration_ms: 24.663375
+  type: 'test'
+  ...
+# Subtest: packaging is deterministic and owned sections introduce no linter errors or undeclared controls
+ok 19 - packaging is deterministic and owned sections introduce no linter errors or undeclared controls
+  ---
+  duration_ms: 13.973334
+  type: 'test'
+  ...
+# Subtest: editable process roots expose actual block identities only in preview mode
+ok 20 - editable process roots expose actual block identities only in preview mode
+  ---
+  duration_ms: 52.747791
+  type: 'test'
+  ...
+# Subtest: related bases exclude the current PDP identity and apply the limit after excluding it
+ok 21 - related bases exclude the current PDP identity and apply the limit after excluding it
+  ---
+  duration_ms: 86.2045
+  type: 'test'
+  ...
+# Subtest: retained cart/account/content source keeps canonical islands and scoped styling
+ok 22 - retained cart/account/content source keeps canonical islands and scoped styling
+  ---
+  duration_ms: 5.054125
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1145.925166

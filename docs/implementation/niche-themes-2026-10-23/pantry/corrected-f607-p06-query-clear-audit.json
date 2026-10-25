@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-10-23T19:39:13.754925+00:00",
+  "classification": "ACTUAL_SETTLED_QUERY_AND_CLEAR_NAVIGATION_COMPONENT_AUDIT_WITH_EARLY_CAPTURE_CORRECTION",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "caseId": "P06",
+  "componentStatus": "PASS_SETTLED_SORT_RESET_AND_ALL_SIX_CLEAR_NAVIGATIONS",
+  "fullCaseStatus": "NOT RUN_PENDING_REMAINING_COLLECTION_METADATA_AND_PLATFORM_ORIGIN_RECEIPTS",
+  "checks": {
+    "settledSortNamePageOmittedDefault1": true,
+    "bothConnectorValuesAndAllUneditedFieldsPreserved": true,
+    "scalarFieldsNoDuplicates": true,
+    "allSixClearNavigationsExactlyRemoveOnlySpecifiedFiltersAndResetPage": true,
+    "clearAllPreservesSearchSortLimitFixedCollection": true,
+    "absentSelectedPackHonestRemovableStateNoInventedPickerOption": true
+  },
+  "correction": {
+    "earlyQuerySnapshotPage": "2",
+    "earlySort": "price-asc",
+    "settledActualSort": "name",
+    "settledActualPage": "omitted",
+    "outcome": "Early pre-navigation capture is preserved; settled owner navigation addendum supersedes it. No product page-reset failure inferred."
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-sort-apply-query.json",
+      "sha256": "ce2f2d84d14d591b1ef1d5991dbbeeab9c2f86a75df7490ef57c602cf7262541"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-sort-apply-navigation-addendum.json",
+      "sha256": "38c3326625dc393729994984c3aaf17fdc553f9c7027819554cb64e92f4fe880"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-sort-apply-zero.ax.txt",
+      "sha256": "dd14dae8779948a4c87417aa345939bc8d3c55eeabe7e86d6b80e059bdb4cd24"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-actual-results.json",
+      "sha256": "ebc67c6561edbf7d798a7a817f224863be0631e66f84cc2d13325a9e4fe04abf"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-zero-repeated-connectors.ax.txt",
+      "sha256": "b44a070200822f18ac9934d3779c53f20f61ac35c3235b1d8dfdc4fadfb974ba"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-1.ax.txt",
+      "sha256": "24c6142c5391087e5c1f80c4d98980ac9990d91490857e5e09a901f8d5dda898"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-2.ax.txt",
+      "sha256": "8f147cfff2a879153d6bfa356d022e1a5cc53dfa21cdd7211d10e5588f52b049"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-3.ax.txt",
+      "sha256": "7862adaf8862b080e7ce3fe93b54aade9015d140ece5e10ce04d1dc339800ad8"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-4.ax.txt",
+      "sha256": "bef178e9b2911dc2b9f5ba8f60a97bf49102150521af2243b810b0840e94af07"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-5.ax.txt",
+      "sha256": "d0e290171cc7b38195051192c6b3814d1981e089667559d2d81a6b22dd2cff77"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-6.ax.txt",
+      "sha256": "1b983e4b878eb3cb83a2ca6c53574bdcf191ecdfe596cb0b3ebf943170f318e1"
+    }
+  ],
+  "limits": [
+    "Saved owner navigation URLs/AX independently compared; no browser or HTTP reexecution by Pantry.",
+    "Actual rice collection membership, same-response metadata/canonical positive receipt, and platform origin Apply/Clear settled queries still needed for whole P06.",
+    "One category-clear navigation occurred despite a wait-argument error; actual destination was saved and independently compared."
+  ],
+  "sourceChangesByPantry": []
+}

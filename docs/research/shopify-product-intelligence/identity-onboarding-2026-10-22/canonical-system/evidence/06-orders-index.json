@@ -1,0 +1,335 @@
+{
+  "controls": [
+    {
+      "class": "Polaris-Button Polaris-Button--pressable Polaris-Button--variantPrimary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter Polaris-Button--adminNext Polaris-Button--adminNe",
+      "label": "Subscribe for ₹20",
+      "rect": {
+        "h": 28,
+        "w": 126.6484375,
+        "x": 762.671875,
+        "y": 417
+      },
+      "role": null,
+      "style": {
+        "bg": "rgb(16, 16, 16)",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "9999px",
+        "color": "rgb(255, 255, 255)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "2px",
+        "lineHeight": "20px",
+        "padding": "6px 12px",
+        "position": "relative",
+        "shadow": "rgba(0, 0, 0, 0.13) 0px 1px 0.5px -0.5px, rgba(0, 0, 0, 0.13) 0px 1px 2px -0.5px, rgba(0, 0, 0, 0.13) 0px 4px 6px -2px, rgba(0, 0, 0, 0.13) 0px 2px 3px -1.5px, rgb(16, 16, 16) 0px 0px 4px 1px inset, rgba(255, 255, 255, 0.1) 0px 0px 4px 2px inset, rgba(255, 255, 255, 0.75) 0px 0px 12px -6px inset",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "A"
+    },
+    {
+      "class": "button admin-next size-base tone-auto variant-tertiary",
+      "label": "",
+      "rect": {
+        "h": 28,
+        "w": 163.40625,
+        "x": 744.296875,
+        "y": 545
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "9999px",
+        "color": "rgb(16, 16, 16)",
+        "display": "inline-flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "2px",
+        "lineHeight": "16px",
+        "padding": "6px 12px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "dialogs": [],
+  "headerAncestors": [
+    {
+      "class": "heading",
+      "label": "Orders",
+      "rect": {
+        "h": 28,
+        "w": 40.9453125,
+        "x": 264,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "28px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "H1"
+    },
+    {
+      "class": "",
+      "label": "Orders",
+      "rect": {
+        "h": 0,
+        "w": 0,
+        "x": 0,
+        "y": 0
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "contents",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "S-GRID"
+    },
+    {
+      "class": "heading-wrapper",
+      "label": "Orders",
+      "rect": {
+        "h": 28,
+        "w": 68.9453125,
+        "x": 236,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "",
+      "label": "Orders",
+      "rect": {
+        "h": 0,
+        "w": 0,
+        "x": 0,
+        "y": 0
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "contents",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "S-GRID"
+    },
+    {
+      "class": "breadcrumbs-and-heading",
+      "label": "Orders",
+      "rect": {
+        "h": 28,
+        "w": 68.9453125,
+        "x": 236,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "heading-and-accessory",
+      "label": "Orders",
+      "rect": {
+        "h": 28,
+        "w": 1172,
+        "x": 236,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "header-content",
+      "label": "Orders",
+      "rect": {
+        "h": 28,
+        "w": 1180,
+        "x": 236,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    }
+  ],
+  "headings": [
+    {
+      "class": "heading",
+      "label": "Orders",
+      "rect": {
+        "h": 28,
+        "w": 40.9453125,
+        "x": 264,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "28px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "H1"
+    }
+  ],
+  "layout": [],
+  "main": {
+    "class": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+    "label": "Your orders will show here To get orders and accept payments from customers, you need to subscribe. ",
+    "rect": {
+      "h": 992,
+      "w": 1216,
+      "x": 220,
+      "y": 4
+    },
+    "role": null,
+    "style": {
+      "bg": "rgb(255, 255, 255)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "16px",
+      "color": "rgb(16, 16, 16)",
+      "display": "flex",
+      "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "position": "relative",
+      "shadow": "none",
+      "top": "0px",
+      "zIndex": "auto"
+    },
+    "tag": "MAIN"
+  },
+  "path": "/store/[store]/orders",
+  "viewport": {
+    "dpr": 1,
+    "h": 1000,
+    "w": 1440
+  }
+}

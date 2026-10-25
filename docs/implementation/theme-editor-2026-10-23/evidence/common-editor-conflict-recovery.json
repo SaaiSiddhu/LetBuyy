@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-23T15:52:34.230121+00:00",
+  "runId": "9cd50e893016",
+  "classification": "ACTUAL_CURRENT_FIXTURE_COMMON_EDITOR_BROWSER_CHECK",
+  "status": "PASS",
+  "sequence": [
+    {
+      "step": "Open two normal editor tabs",
+      "versions": [
+        11,
+        11
+      ]
+    },
+    {
+      "step": "Second tab changes template Heading and autosaves",
+      "version": 12,
+      "text": "Unpublished conflict control 9cd50e893016"
+    },
+    {
+      "step": "Stale tab changes Heading",
+      "expectedVersion": 11,
+      "localText": "Stale tab pending draft 9cd50e893016",
+      "actual": "Draft conflict; autosave stopped; local edits retained; Review latest version / Reload latest / Keep editing available"
+    },
+    {
+      "step": "Review latest version",
+      "actual": "Server draft12; explicit Replace version12 only after review; no replacement performed"
+    },
+    {
+      "step": "Reload latest and discard local edits",
+      "actual": "Latest server12 loaded; selecting Care introduction shows Unpublished conflict control9cd50e893016"
+    },
+    {
+      "step": "Restore original B marker through normal field edit",
+      "version": 13,
+      "text": "Dewdrop saved heading B 9cd50e893016"
+    },
+    {
+      "step": "Full reload other normal editor tab",
+      "version": 13,
+      "actual": "B marker exact; saved"
+    }
+  ],
+  "publicIsolation": {
+    "recordedAt": "2026-10-23T15:48:04.064148+00:00",
+    "runId": "9cd50e893016",
+    "request": "Unauthenticated public GET, no cookies or Authorization header",
+    "status": 200,
+    "bodySha256": "903d48b049022d1584080e463c49c9925789b8d7b80b58609100e8076388a56d",
+    "publishedBPresent": true,
+    "unpublishedSecondTabPresent": false,
+    "staleDraftPresent": false
+  },
+  "evidence": [
+    "common-conflict-second-tab-initial.ax.txt",
+    "common-stale-tab-conflict.ax.txt",
+    "common-stale-tab-conflict.jpg",
+    "common-conflict-reviewed-version.ax.txt",
+    "common-conflict-restored-B-reload.ax.txt"
+  ],
+  "limits": [
+    "Actual conflict reload/review path passed; guarded replacement/racing third-session variant not exercised.",
+    "Preview still blocked by known parent origin mismatch; no preview pass inferred.",
+    "No local publication was changed in this common check."
+  ]
+}

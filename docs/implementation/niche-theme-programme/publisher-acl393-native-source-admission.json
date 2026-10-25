@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-24T03:52:02.012535+00:00",
+  "status": "ROOT_ACL393_PAIR_AND_NATIVE_SOURCE_ADMITTED_ONE_FRESH_OWNED_QUALIFICATION_NOT_SQL_OR_BEHAVIORAL_ACCEPTANCE",
+  "release": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-release.json",
+    "sha256": "e714e172769147f23b644940c10867a666ee5913a9f0c104796510fc26e34f57"
+  },
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+    "sha256": "24d1b0cc9e8b0ce76aa6a14adc9466420f52b1069a9ae0b3b885dbab1312a58a"
+  },
+  "manifest": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/manifest.json",
+    "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f"
+  },
+  "closure": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+    "sha256": "3697c9d176e60eed801ea72529e387810b3c5e372d27c3a083e9232b85660262",
+    "filesRehashed": 1071
+  },
+  "review": [
+    "Read full UP and paired DOWN diff: only single direct tenant EXECUTE revoke/historical inverse; exact unchanged known376 profile and expected ACL-role dependency delta.",
+    "Existing provider-admin fence is validated, no new role/function/schema/policy/runtime/defaultprivilege/journal alteration. Unknown profiles fail closed and whole transaction rolls back.",
+    "Dedicated parent+7ordered phases=8TAP expected; full metadata before assertions, positive own-row then actual valid-payload42501 denial, real service publish/rollback/CAS/replay/private draft, ordinaryDDL mutant-refusal controls, full business/unrelated profile parity and real DOWN/re-UP/replays/finaldenial.",
+    "AST read independently confirmed cooked psql VERBOSITY metacommands have exactly one leading backslash (no source mutation or SQL execution).",
+    "All1071 closure hashes and supplied raw8pass/TAP/type logs verified; final native semantic compile supplements earlier fullGateway before native-only snapshotaggregation correction."
+  ],
+  "sourceChecks": {
+    "pass": 8,
+    "fail": 0,
+    "skipped": 0,
+    "fullGatewayBeforeFinalNativeOnlyAggregationCorrection": 0,
+    "exactFinalNativeSemanticNoEmit": 0,
+    "newNativeLintErrors": 0
+  },
+  "lease": "ONE fresh official defaultLATEST392/noceiling gateway-db jobs1/no-reap/prepared2/600s, require_escalated Docker access, explicit candidate393 outside source scan, exact admitted suite.",
+  "sourceEmitted": false,
+  "394Granted": false,
+  "current936OrMarketplaceActions": false,
+  "stopRule": "Any positive/protected-profile/permission/SQL failure stops; preserve exact raw diagnostics/profiles/cleanup. No guard weakening, new grants/policies/fallback, source repair or rerun without Root scope."
+}

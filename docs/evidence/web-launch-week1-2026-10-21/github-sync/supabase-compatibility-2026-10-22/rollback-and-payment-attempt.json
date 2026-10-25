@@ -1,0 +1,197 @@
+{
+  "runId": "e4d24ee8252d",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-22804-mviid04b-8243c5"
+  ],
+  "reaped": [],
+  "suites": 4,
+  "gatewayDbSuites": 4,
+  "failedSuites": 1,
+  "tests": 23,
+  "assertionsPassed": 22,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 40.1,
+  "suiteSeconds": 38.7,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "subscription-checkout-rollback-admission.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-rollback-admission.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-22804-mviid04b-8243c5",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 2.8,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_checkout_rollback_admission_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.7,
+      "rest": {
+        "container": "letbuyy-exec-e4d24ee8252d-rest-2",
+        "upstreamPort": 58553,
+        "proxyPort": 58554
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 12,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "subscription-checkout-rollback-writer.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-rollback-writer.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-22804-mviid04b-8243c5",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 2.3,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_checkout_rollback_writer_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.7,
+      "rest": {
+        "container": "letbuyy-exec-e4d24ee8252d-rest-3",
+        "upstreamPort": 58576,
+        "proxyPort": 58577
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 3,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "subscription-payment-ownership.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-payment-ownership.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-22804-mviid04b-8243c5",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 7.9,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_payment_ownership_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.7,
+      "rest": {
+        "container": "letbuyy-exec-e4d24ee8252d-rest-4",
+        "upstreamPort": 58593,
+        "proxyPort": 58594
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 125,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "managed-supabase-migration-admission.postgres",
+      "path": "tests/owned-db/managed-supabase-migration-admission.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-22804-mviid04b-8243c5",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 11,
+      "pass": 10,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 25.7,
+      "firstFailure": "not ok 1 - managed migrations require provider-admin provisioning and retain native locks, sourc",
+      "failures": [
+        "not ok 1 - managed migrations require provider-admin provisioning and retain native locks, source custody and tax receipts"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_managed_supabase_migration_admission_postgres",
+      "templateSeconds": 14.8,
+      "provisionSeconds": 0.8,
+      "rest": {
+        "container": "letbuyy-exec-e4d24ee8252d-rest-1",
+        "upstreamPort": 58493,
+        "proxyPort": 58494
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 3,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

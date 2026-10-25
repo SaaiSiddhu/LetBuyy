@@ -1,0 +1,477 @@
+{
+  "recordedAt": "2026-10-25T00:14:10.020343+00:00",
+  "classification": "ADDITIVE_PARTIAL_SUBCHECK_OVERLAY_NO_BASELINE_REWRITE",
+  "runId": "49ada80bc494",
+  "version": "2.1.0",
+  "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "wholeOriginalRowsPromoted": 0,
+  "wholeExpandedRowsPromoted": 0,
+  "original19": [
+    {
+      "id": "G01",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": true,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "PARTIAL",
+      "newEvidenceLimit": "Current run/site/Kindred UI identity corroborated. Shipping, buyer, productcurrentversion and full runtime/package binding clauses remain open."
+    },
+    {
+      "id": "G02",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": true,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "PARTIAL",
+      "newEvidenceLimit": "Install/name and marker/save/fullreload/private-public boundary/publish subchecks supported. Exact installed package-version/manifest lineage, collector/catalog provenance and all original publication clauses remain incomplete."
+    },
+    {
+      "id": "G03",
+      "retainedRun936FullCaseResult": "PASS",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G04",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": true,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G05",
+      "retainedRun936FullCaseResult": "PASS",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G06",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": true,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G07",
+      "retainedRun936FullCaseResult": "PASS",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G08",
+      "retainedRun936FullCaseResult": "FAIL",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "PARTIAL_WITH_PREVIEW_ERROR",
+      "newEvidenceLimit": "No allocated fullG08retetst. Fresh desktop1440labelled fullreload snapshot still records preview loading failure. This is a new error-state observation, not new HTTP404attribution, measured responsive proof or KQA-01retetst."
+    },
+    {
+      "id": "G09",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G10",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G11",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G12",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G13",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G14",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G15",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G16",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G17",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G18",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": false,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "NOT_RUN",
+      "newEvidenceLimit": "Not exercised by this editor-only slice. Historical evidence remains preserved."
+    },
+    {
+      "id": "G19",
+      "retainedRun936FullCaseResult": "NOT_RUN",
+      "retainedPartialEvidence": true,
+      "currentSliceFullCaseAcceptance": "NOT_RUN",
+      "currentDiagnostic": "PARTIAL",
+      "newEvidenceLimit": "New temporary UI subtree absent atfinalpublication; no stale merchant product-version conflict or actual controller lease return. Shared browser remainsRoot-owned."
+    }
+  ],
+  "expandedMappings": [
+    {
+      "caseId": "KSET-announcement-bar-text",
+      "diagnostic": "PARTIAL",
+      "observedOperations": [
+        "valid_value",
+        "save_full_reload"
+      ],
+      "partialOperations": [
+        "preview_publish_public_readback"
+      ],
+      "remaining": "Limits/invalid/clear/conditional/recovery and repeatable signed-preview behavior unexercised; no whole rowPASS."
+    },
+    {
+      "caseId": "KSEC-announcement-bar",
+      "diagnostic": "PARTIAL",
+      "observedOperations": [
+        "edit",
+        "save",
+        "full_reload",
+        "publish",
+        "public_readback"
+      ],
+      "remaining": "Announcement section add/reorder/hide/show/delete/readd/undo/recovery not exercised."
+    },
+    {
+      "caseId": "KSET-global-block-badge-label",
+      "diagnostic": "PARTIAL",
+      "observedOperations": [
+        "valid_value",
+        "save_full_reload"
+      ],
+      "partialOperations": [
+        "preview_publish_public_readback"
+      ],
+      "remaining": "Only label values on one current210host; field limits/clear/recovery and stable signed preview not closed."
+    },
+    {
+      "caseId": "KGLOBALBLOCK-badge",
+      "diagnostic": "PARTIAL",
+      "observedOperations": [
+        "add_apply",
+        "edit",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "publish",
+        "public_readback"
+      ],
+      "partialOperations": [
+        "reorder",
+        "private_preview",
+        "delete",
+        "absence_after_reload_publish",
+        "re_add_rebind",
+        "undo_redo",
+        "recovery"
+      ],
+      "remaining": "One trust-badges/badge/badge witness; exact childIDs and some action/intermediate-state proofs missing, preview error afterfullreload; no general/global rowPASS."
+    },
+    {
+      "caseId": "KSEC-trust-badges",
+      "diagnostic": "PARTIAL_HOST_OBSERVATION_ONLY",
+      "observedOperations": [],
+      "remaining": "Existing host rendered new global blocks; no inference of section add/edit/reorder/hide/show/delete/full lifecycle."
+    },
+    {
+      "caseId": "KINST-index-kindred-trust-badges-5",
+      "diagnostic": "PARTIAL_HOST_OBSERVATION_ONLY",
+      "observedOperations": [],
+      "remaining": "Actual host section selection/content observed; full captured instanceUUID/binding lifecycle not exercised."
+    },
+    {
+      "caseId": "KTM-index",
+      "diagnostic": "PARTIAL",
+      "observedOperations": [
+        "open_correct_resource_context",
+        "select_exact_section_and_block",
+        "save_full_reload",
+        "publish_public_readback"
+      ],
+      "partialOperations": [
+        "private_preview"
+      ],
+      "remaining": "Signed session/revision/resource binding not pinned and postreload preview error; missing/denied/empty recovery not exercised."
+    }
+  ],
+  "actualChildContext": {
+    "section": "trust-badges",
+    "parent": "global badge",
+    "child": "global badge",
+    "scope": "New current210witness, not a substitute for retained11declared-context cohorts"
+  },
+  "retainedChildAddendumContexts": [
+    {
+      "id": "KR-CHILD-01",
+      "section": "banner-carousel",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-02",
+      "section": "brand-marquee",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-03",
+      "section": "experience-timeline",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-04",
+      "section": "faq-accordion",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-05",
+      "section": "footer",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-06",
+      "section": "header",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-07",
+      "section": "portfolio-grid",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-08",
+      "section": "services-grid",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-09",
+      "section": "skills-section",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-10",
+      "section": "spotlight",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    },
+    {
+      "id": "KR-CHILD-11",
+      "section": "testimonials",
+      "currentSliceResult": "NOT_RUN_HOST_NOT_EXERCISED"
+    }
+  ],
+  "producerAtomicChecks": [
+    {
+      "id": "KG-R07-INSTALL",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Installed Kindred210 through normal catalog Add/Customize",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Current Kindred editor/name observed; normal catalog action/version210 is controller-reported. Saved receipt does not bind installed package-versionUUID or manifest digest.",
+      "evidence": [
+        "kindred-editor-marker-saved-reloaded-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-MARKER_ROUNDTRIP",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Announcement marker saved and fullreload exact",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-editor-marker-saved-reloaded-20261025.ax.txt",
+        "kindred-published-home-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-DRAFT_ISOLATION",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Public page still Marginalia before Kindred publish",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-private-draft-public-still-marginalia-20261025.ax.txt",
+        "kindred-editor-marker-saved-reloaded-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-PUBLISH",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Normal publish and fullpublicreload Kindred marker/hero",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-home-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-ROOT_ADD_EDIT",
+      "controllerStatus": "PASS",
+      "controllerObservation": "New Badge root on existing trust-badges host; no original block",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-nested-reordered-hidden-saved-20261025.ax.txt",
+        "kindred-published-nested-hidden-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CHILD_ADD_EDIT",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Two new nested Badge children A/B edited",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-reloaded-three-labels-20261025.ax.txt",
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-REORDER",
+      "controllerStatus": "PASS",
+      "controllerObservation": "B moved before A; exactfullreloadtree values RootA,B,A",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Public shown order is RootA,B,A and reloaded tree has2children; before/after UUID conservation is not present in listed captures.",
+      "evidence": [
+        "kindred-reloaded-three-labels-20261025.ax.txt",
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-HIDE",
+      "controllerStatus": "PASS",
+      "controllerObservation": "A hidden; visibilitytrue,true,false survivedfullreload",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-reloaded-three-labels-20261025.ax.txt",
+        "kindred-published-nested-hidden-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CHILD_LIQUID",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Published RootA+B visible; A absent",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-nested-hidden-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-SHOW",
+      "controllerStatus": "PASS",
+      "controllerObservation": "A shown and actualpublicreload visible withB",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-REMOVE_CHILD",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Normal selectedblock confirmation removedonlyA; B preservedpublicly",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "A disappears while B remains in the next publicAX; hide and remove share this same output. Exact normal remove action is controller-reported without saved intermediate post-delete tree/UUID receipt.",
+      "evidence": [
+        "kindred-child-removed-public-sibling-retained-20261025.ax.txt",
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-READD_CHILD",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Fresh A2 child added/edited/published; actualpublicvisible",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "A2 new label appears with RootA/B; fresh childUUID/new binding is not independently pinned by listed captures.",
+      "evidence": [
+        "kindred-child-readded-published-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CLEANUP_OWN_SUBTREE",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Verified exactrootlabel before removal; onlyownednewroot+children removed",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Final publicAX exactly equals first Kindred published baseline and all temporary labels absent; serialized original configuration/DB conservation is controller-reported, not a saved bounded equality proof.",
+      "evidence": [
+        "kindred-published-home-20261025.ax.txt",
+        "kindred-temporary-subtree-cleaned-undo-redo-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-UNDO_REDO",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Undo restored2nestedrows; Redoremovedall",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Root reports Undo2nested/Redo0; listed evidence supplies finalcleanpublic state, not intermediateUndo/Redo tree counts/IDs.",
+      "evidence": [
+        "kindred-temporary-subtree-cleaned-undo-redo-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CLEAN_PUBLIC",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Finalpublication no temporarytext; intendedhero+marker retained",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-home-20261025.ax.txt",
+        "kindred-temporary-subtree-cleaned-undo-redo-20261025.ax.txt"
+      ]
+    }
+  ],
+  "KQA01": "OPEN P2; no long-brand768pxbranch or corrective source applied",
+  "certificate": "NOT_ISSUED"
+}

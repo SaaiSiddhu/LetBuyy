@@ -1,0 +1,127 @@
+TAP version 13
+# Subtest: restored accepted input requires a fresh context and deliberate Review
+ok 1 - restored accepted input requires a fresh context and deliberate Review
+  ---
+  duration_ms: 28.669
+  type: 'test'
+  ...
+# Subtest: invalid Unicode draft preserves exact input and last valid preview; normalization is explicit
+ok 2 - invalid Unicode draft preserves exact input and last valid preview; normalization is explicit
+  ---
+  duration_ms: 17.545167
+  type: 'test'
+  ...
+# Subtest: revoked saved choices remain unavailable instead of silently becoming the first current option
+ok 3 - revoked saved choices remain unavailable instead of silently becoming the first current option
+  ---
+  duration_ms: 14.209584
+  type: 'test'
+  ...
+# Subtest: context failure and late variant context cannot expose a reviewed cart draft
+ok 4 - context failure and late variant context cannot expose a reviewed cart draft
+  ---
+  duration_ms: 23.636334
+  type: 'test'
+  ...
+# Subtest: lb-cart: actual edit control saves one replacement and preserves unrelated Kabir
+not ok 5 - lb-cart: actual edit control saves one replacement and preserves unrelated Kabir
+  ---
+  duration_ms: 0.391708
+  type: 'test'
+  location: '/private/tmp/madeyours-configured-cart-edit-20261024-02-fmj81g78/apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts:1:10369'
+  failureType: 'testCodeFailure'
+  error: "The requested module './variant-options-carrier' does not provide an export named 'parsePickerVariants'"
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+    async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+  ...
+# Subtest: lb-cart-drawer: actual edit control saves one replacement and preserves unrelated Kabir
+not ok 6 - lb-cart-drawer: actual edit control saves one replacement and preserves unrelated Kabir
+  ---
+  duration_ms: 0.070167
+  type: 'test'
+  location: '/private/tmp/madeyours-configured-cart-edit-20261024-02-fmj81g78/apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts:1:10369'
+  failureType: 'testCodeFailure'
+  error: "The requested module './variant-options-carrier' does not provide an export named 'parsePickerVariants'"
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+    async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+  ...
+# Subtest: Cancel and Escape return focus without a mutation or accepted-line loss
+not ok 7 - Cancel and Escape return focus without a mutation or accepted-line loss
+  ---
+  duration_ms: 0.102375
+  type: 'test'
+  location: '/private/tmp/madeyours-configured-cart-edit-20261024-02-fmj81g78/apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts:1:11088'
+  failureType: 'testCodeFailure'
+  error: "The requested module './variant-options-carrier' does not provide an export named 'parsePickerVariants'"
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+    async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+  ...
+# Subtest: unknown acknowledgement keeps same command/key; retry confirms once and blocks navigation/cancel
+not ok 8 - unknown acknowledgement keeps same command/key; retry confirms once and blocks navigation/cancel
+  ---
+  duration_ms: 0.081458
+  type: 'test'
+  location: '/private/tmp/madeyours-configured-cart-edit-20261024-02-fmj81g78/apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts:1:11816'
+  failureType: 'testCodeFailure'
+  error: "The requested module './variant-options-carrier' does not provide an export named 'parsePickerVariants'"
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+    async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+  ...
+# Subtest: stale-tab refusal preserves accepted cart and exact draft and requires fresh read/review
+not ok 9 - stale-tab refusal preserves accepted cart and exact draft and requires fresh read/review
+  ---
+  duration_ms: 0.085209
+  type: 'test'
+  location: '/private/tmp/madeyours-configured-cart-edit-20261024-02-fmj81g78/apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts:1:12867'
+  failureType: 'testCodeFailure'
+  error: "The requested module './variant-options-carrier' does not provide an export named 'parsePickerVariants'"
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+    async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+  ...
+# Subtest: changing actual variant UUID invalidates Review and keeps old line until acknowledgement
+not ok 10 - changing actual variant UUID invalidates Review and keeps old line until acknowledgement
+  ---
+  duration_ms: 0.149
+  type: 'test'
+  location: '/private/tmp/madeyours-configured-cart-edit-20261024-02-fmj81g78/apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts:1:13526'
+  failureType: 'testCodeFailure'
+  error: "The requested module './variant-options-carrier' does not provide an export named 'parsePickerVariants'"
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+    async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+  ...
+# Error: A resource generated asynchronous activity after the test ended. This activity created the error "SyntaxError: The requested module './variant-options-carrier' does not provide an export named 'parsePickerVariants'" which triggered an unhandledRejection event, caught by the test runner.
+# (node:94423) PromiseRejectionHandledWarning: Promise rejection was handled asynchronously (rejection id: 3)
+# (Use `node --trace-warnings ...` to show where the warning was created)
+1..10
+# tests 10
+# suites 0
+# pass 4
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1036.587375

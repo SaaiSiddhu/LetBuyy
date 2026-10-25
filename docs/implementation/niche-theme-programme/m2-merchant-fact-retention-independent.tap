@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: facts save preserves private siblings and other namespaces while deliberate clear removes the namespace
+ok 1 - facts save preserves private siblings and other namespaces while deliberate clear removes the namespace
+  ---
+  duration_ms: 2.439208
+  type: 'test'
+  ...
+# Subtest: invalid draft remains editable but cannot become a validated mutation or inject unsupported namespaces
+ok 2 - invalid draft remains editable but cannot become a validated mutation or inject unsupported namespaces
+  ---
+  duration_ms: 1.059625
+  type: 'test'
+  ...
+# Subtest: retained drafts and exact pending commands preserve new raw facts and upgrade old snapshots without clearing server facts
+ok 3 - retained drafts and exact pending commands preserve new raw facts and upgrade old snapshots without clearing server facts
+  ---
+  duration_ms: 2.670792
+  type: 'test'
+  ...
+# Subtest: gift image identity rebases a changed order while preserving malformed content and sibling facts
+ok 4 - gift image identity rebases a changed order while preserving malformed content and sibling facts
+  ---
+  duration_ms: 1.068583
+  type: 'test'
+  ...
+# Subtest: removed and ambiguous gift views clear without guessing or manufacturing empty facts
+ok 5 - removed and ambiguous gift views clear without guessing or manufacturing empty facts
+  ---
+  duration_ms: 0.308208
+  type: 'test'
+  ...
+# Subtest: retention removes bearer image URLs without shifting closed-view identity or losing invalid input
+ok 6 - retention removes bearer image URLs without shifting closed-view identity or losing invalid input
+  ---
+  duration_ms: 0.2465
+  type: 'test'
+  ...
+# Subtest: legacy or corrupt image associations require review and never silently adopt filtered indices
+ok 7 - legacy or corrupt image associations require review and never silently adopt filtered indices
+  ---
+  duration_ms: 0.174791
+  type: 'test'
+  ...
+# Subtest: legacy pending command identity remains byte-exact while only its presentation snapshot upgrades
+ok 8 - legacy pending command identity remains byte-exact while only its presentation snapshot upgrades
+  ---
+  duration_ms: 0.104042
+  type: 'test'
+  ...
+# Subtest: raw variant drafts keep partial invalid fields and contain no product defaults
+ok 9 - raw variant drafts keep partial invalid fields and contain no product defaults
+  ---
+  duration_ms: 2.879792
+  type: 'test'
+  ...
+# Subtest: clearing one namespace preserves the rest and final removal remains explicit empty metadata
+ok 10 - clearing one namespace preserves the rest and final removal remains explicit empty metadata
+  ---
+  duration_ms: 0.215334
+  type: 'test'
+  ...
+# Subtest: explicit inherit/clear markers remain exact through updates and canonical variant validation
+ok 11 - explicit inherit/clear markers remain exact through updates and canonical variant validation
+  ---
+  duration_ms: 0.4945
+  type: 'test'
+  ...
+# Subtest: unsupported raw fields and identities remain invalid rather than being silently discarded
+ok 12 - unsupported raw fields and identities remain invalid rather than being silently discarded
+  ---
+  duration_ms: 0.279833
+  type: 'test'
+  ...
+# Subtest: unreadable top-level drafts are never replaced by an empty object during read/update/validation
+ok 13 - unreadable top-level drafts are never replaced by an empty object during read/update/validation
+  ---
+  duration_ms: 0.155458
+  type: 'test'
+  ...
+# Subtest: own data reading does not invoke accessor fields or grant prototype keys namespace authority
+ok 14 - own data reading does not invoke accessor fields or grant prototype keys namespace authority
+  ---
+  duration_ms: 0.120333
+  type: 'test'
+  ...
+# Subtest: the category list derives from the public variant registry and cannot introduce other product namespaces
+ok 15 - the category list derives from the public variant registry and cannot introduce other product namespaces
+  ---
+  duration_ms: 0.090417
+  type: 'test'
+  ...
+# Subtest: row intent omits unchanged and reverted facts, validates edits, and emits the final empty clear
+ok 16 - row intent omits unchanged and reverted facts, validates edits, and emits the final empty clear
+  ---
+  duration_ms: 1.503125
+  type: 'test'
+  ...
+# Subtest: old persisted rows keep an unknown baseline and cannot manufacture an empty override
+ok 17 - old persisted rows keep an unknown baseline and cannot manufacture an empty override
+  ---
+  duration_ms: 0.50725
+  type: 'test'
+  ...
+# Subtest: authoritative API rows hydrate known empty or raw malformed metadata without sibling loss
+ok 18 - authoritative API rows hydrate known empty or raw malformed metadata without sibling loss
+  ---
+  duration_ms: 0.421041
+  type: 'test'
+  ...
+# Subtest: late acknowledgement rebases only matching UUID baselines and retains newer raw drafts
+ok 19 - late acknowledgement rebases only matching UUID baselines and retains newer raw drafts
+  ---
+  duration_ms: 0.427417
+  type: 'test'
+  ...
+# Subtest: combination changes retain the original bound matrix; only a proven value addition keeps row objects
+ok 20 - combination changes retain the original bound matrix; only a proven value addition keeps row objects
+  ---
+  duration_ms: 0.633125
+  type: 'test'
+  ...
+# Subtest: snapshot upgrades keep raw drafts and immutable pending body, key and signatures byte exact
+ok 21 - snapshot upgrades keep raw drafts and immutable pending body, key and signatures byte exact
+  ---
+  duration_ms: 0.540958
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 443.968375

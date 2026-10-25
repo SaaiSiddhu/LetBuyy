@@ -1,0 +1,87 @@
+{
+  "recordedAt": "2026-10-24T03:10:26.054513+00:00",
+  "status": "ACTUAL_BASELINE392_PUBLISHER_DIRECT_TENANT_GRANT_QUALIFIED_READ_ONLY",
+  "fixture": {
+    "runId": "936e5f577646",
+    "runnerPid": 90680,
+    "pgContainer": "letbuyy-exec-90680-mvlt19zv-639d8d",
+    "database": "letbuyy_exec_theme_editor_browser_manual_ts",
+    "restContainer": "letbuyy-exec-936e5f577646-rest-1",
+    "restUrl": "http://127.0.0.1:50469",
+    "network": "letbuyy-exec-936e5f577646-1-net",
+    "volume": "letbuyy-exec-936e5f577646-1-data",
+    "pgImage": "postgres:16-alpine",
+    "restImage": "public.ecr.aws/supabase/postgrest:v16.2"
+  },
+  "evidenceScope": "Read-only metadata in separate fresh stable392 Editor936e, not recovered profile of cleaned failed515b native DB. Same canonical321 migration source; no procedure invocation or UI/data mutation.",
+  "publisher": {
+    "acl": [
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "app_tenant",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "owner": "postgres",
+    "runId": "936e5f577646",
+    "bodyMd5": "56a6b7b15e8a7ec159341fe0331ac593",
+    "settings": [
+      "search_path=public"
+    ],
+    "signature": "publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)",
+    "securityDefiner": true,
+    "effectiveExecute": {
+      "anon": false,
+      "app_tenant": true,
+      "service_role": true,
+      "authenticated": false
+    },
+    "privilegeJournal": [
+      {
+        "action": "granted",
+        "grantee": "app_tenant",
+        "migration": "256",
+        "privilege": "EXECUTE",
+        "signature": "publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)"
+      },
+      {
+        "action": "revoked",
+        "grantee": "PUBLIC",
+        "migration": "256",
+        "privilege": "EXECUTE",
+        "signature": "publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)"
+      },
+      {
+        "action": "revoked",
+        "grantee": "anon",
+        "migration": "256",
+        "privilege": "EXECUTE",
+        "signature": "publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)"
+      },
+      {
+        "action": "revoked",
+        "grantee": "authenticated",
+        "migration": "256",
+        "privilege": "EXECUTE",
+        "signature": "publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)"
+      }
+    ],
+    "appTenantInheritsServiceRole": false
+  },
+  "sourceCause": "Migration256 explicitly journals PUBLIC EXECUTE transition to app_tenant and service_role; later344/366/376 preserve direct app_tenant grant by omission from REVOKE.",
+  "actions": "Unchanged guard reverified; one BEGIN READ ONLY metadata SELECT; no DDL/DML/role/grant/source/runtime mutation.",
+  "decision": "Do not accept the privilege or weaken guard. Minimal paired ACL closure proposal and sequential migration allocation needed before updater native qualification."
+}

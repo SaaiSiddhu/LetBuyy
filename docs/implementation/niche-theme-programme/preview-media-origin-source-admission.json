@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-23T18:44:27.032243+00:00",
+  "status": "ROOT_COMMERCE_PREVIEW_MEDIA_ORIGIN_SOURCE_ADMITTED_FUTURE_BROWSER_PENDING",
+  "source": {
+    "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+    "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+    "bytes": 23081
+  },
+  "priorSha256": "70f20dd157bb05a697af9c9b458cb7846ea6b012f72a2c7845382adf8344e835",
+  "ownerRelease": {
+    "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/source-release.json",
+    "sha256": "349bfb090f702612d85baa66eeee126dae992431306f1453e19aa126b153ab7b"
+  },
+  "independentExactDelta": "Removing ONLY NEXT_PUBLIC_STOREFRONT_URL:commerceOrigin reconstructs exact70f source bytes",
+  "sourceTests": {
+    "pass": 29,
+    "fail": 0,
+    "skip": 0,
+    "gatewayNoEmitExit": 0
+  },
+  "policy": "No globalCSP or renderer/security changes; existing configured-origin contract receives exact verified own tenant origin",
+  "activeF607OrMarketplaceCopyChanged": false,
+  "normalImageLoad": "NOT_RUN_REQUIRES_FUTURE_CORRECTED_RUNTIME",
+  "lease": "RELEASED"
+}

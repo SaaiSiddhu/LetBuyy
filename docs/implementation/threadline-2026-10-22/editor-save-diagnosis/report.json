@@ -1,0 +1,143 @@
+{
+  "createdAt": "2026-10-23T15:23:59.034Z",
+  "classification": "IN_PROCESS_ACTUAL_HELPER_CALLBACK_CLIENT_CHARACTERIZATION_NOT_SQL_OR_BROWSER_EXECUTION",
+  "sourceHashes": {
+    "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c",
+    "services/api-gateway/src/execution/schema-registry-execution.adapter.ts": "a742187900a03f2c1c74745c06bf46d797653d4e1309d98762332286972d5a43",
+    "database/supabase/migrations/384_theme_editor_template_keys.sql": "e7304c2306956dd3784175d4f735e3d8f9029ddc1631f97b9d396d1ee9f55cca",
+    "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-aura-2.0.0.json": "9c274b283c2fc36b42658033e79004b4c9ccbf84ad3417aabca6174c7e1674e7",
+    "apps/merchant/web/src/lib/theme-draft-client.ts": "f65d8a3334d58eb76c05fbb30eb674cb705796d23a60e546dc9e3ea3d741e310",
+    "apps/merchant/web/src/app/api/themes/[themeId]/editor/draft/route.ts": "aab0ffe0570f75bf9a93ace444fff146110c086533d0cff72087a1f719aa3f56",
+    "packages/theme-engine/src/portable-to-liquid.ts": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+    "apps/commerce/web/src/lib/store-service.ts": "ff9ed354467fd8d0ca3a89fd3890d14b554a945243f07fa200415bcd73a852f5",
+    "services/api-gateway/src/lib/theme-release-bundle.ts": "e7c2023c7b7706fcad832a44c120567ee5bfbf9d21d592b21da742fae4003f59"
+  },
+  "candidateEditorSha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c",
+  "productionInputsUnchanged": true,
+  "actualCallbacks": {
+    "updateSectionSetting": "(sectionId: string, key: string, value: unknown) => {\n        const field = sectionSchemas[getSectionById(editorState, sectionId)?.type || '']?.settings_schema?.[key]\n        applyChange((current) => updateSectionById(current, sectionId, (section) => ({\n            ...section,\n            settings: {\n                ...section.settings,\n                [key]: coerceFieldValue(field, value),\n            },\n        })))\n    }",
+    "saveDraft": "async (reviewedVersion?: number, ensurePreviewDraft = false) => {\n        const client = draftClientRef.current\n        if (!client || draftClientScopeRef.current !== `${client.actorId}:${client.storeId}:${themeId}:${selectedTemplateKey}:${store}`) throw new Error('Reload the current owned editor before saving.')\n        const snapshot = editorState\n        const draftConfig = buildDraftConfig(baseConfig, themeId, snapshot, selectedTemplateKey)\n        try {\n            const ack = await client.save(draftConfig, reviewedVersion, ensurePreviewDraft)\n            if (draftClientRef.current !== client) return ack\n            setBaseConfig((current) => JSON.stringify(current) === JSON.stringify(draftConfig) ? current : draftConfig)\n            setSavedState(snapshot)\n            setDraftVersion(ack.version)\n            if (ack.savedAt) setSavedAt(ack.savedAt)\n            // Autosave confirms persistence; it must not erase the merchant's\n            // ability to undo and redo changes made in this editor session.\n            setIsDirty(latestEditorState.current !== snapshot)\n            return ack\n        } catch (error) {\n            if (error instanceof ThemeDraftConflictError && draftClientRef.current === client) {\n                setReplacementVersion(null)\n                setHasConflict(true)\n                setConflictSource('manual-save')\n            }\n            throw error\n        }\n    }"
+  },
+  "actualStoreMapperProjection": "const liquidBundleResult = LiquidThemePackageBundleSchema.safeParse(templateConfig.liquidBundle);\nconst liquidBundle = liquidBundleResult.success\n        ? compilePortableToLiquidBundle(templateConfig, { baseBundle: liquidBundleResult.data }).bundle\n        : undefined;",
+  "passed": 15,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "main and actual candidate editor bytes match",
+      "passed": true
+    },
+    {
+      "name": "header-announcement: actual settings callback preserves edit in EditorState",
+      "passed": true
+    },
+    {
+      "name": "header-announcement: actual save callback/client wire keeps edited root template",
+      "passed": true
+    },
+    {
+      "name": "header-announcement: actual client ack advances v2 and marks edited snapshot clean",
+      "passed": true
+    },
+    {
+      "name": "header-announcement: unchanged server echo reloads the edited root field",
+      "passed": true
+    },
+    {
+      "name": "header-announcement: embedded captured bundle remains unchanged while root overlay changes",
+      "passed": true
+    },
+    {
+      "name": "header-announcement: existing canonical compiler projects edit correctly when invoked",
+      "passed": true
+    },
+    {
+      "name": "header-announcement: actual store mapper projection fragment renders saved overlay",
+      "passed": true
+    },
+    {
+      "name": "template-local-heading: actual settings callback preserves edit in EditorState",
+      "passed": true
+    },
+    {
+      "name": "template-local-heading: actual save callback/client wire keeps edited root template",
+      "passed": true
+    },
+    {
+      "name": "template-local-heading: actual client ack advances v2 and marks edited snapshot clean",
+      "passed": true
+    },
+    {
+      "name": "template-local-heading: unchanged server echo reloads the edited root field",
+      "passed": true
+    },
+    {
+      "name": "template-local-heading: embedded captured bundle remains unchanged while root overlay changes",
+      "passed": true
+    },
+    {
+      "name": "template-local-heading: existing canonical compiler projects edit correctly when invoked",
+      "passed": true
+    },
+    {
+      "name": "template-local-heading: actual store mapper projection fragment renders saved overlay",
+      "passed": true
+    }
+  ],
+  "results": [
+    {
+      "edit": {
+        "name": "header-announcement",
+        "group": "header",
+        "sectionId": "announcement-default",
+        "key": "text",
+        "value": "Dewdrop fixture A 9cd50e893016"
+      },
+      "original": "A considered routine. Your own pace.",
+      "callbackState": "Dewdrop fixture A 9cd50e893016",
+      "wireRoot": "Dewdrop fixture A 9cd50e893016",
+      "wireEmbeddedLiquid": "A considered routine. Your own pace.",
+      "explicitCanonicalCompiler": "Dewdrop fixture A 9cd50e893016",
+      "echoReload": "Dewdrop fixture A 9cd50e893016",
+      "ackVersion": 2,
+      "uiDirtyAfterAck": false,
+      "validationIssues": []
+    },
+    {
+      "edit": {
+        "name": "template-local-heading",
+        "group": "index",
+        "sectionId": "aura-care-introduction",
+        "key": "heading",
+        "value": "Dewdrop local fixture B 9cd50e893016"
+      },
+      "callbackState": "Dewdrop local fixture B 9cd50e893016",
+      "wireRoot": "Dewdrop local fixture B 9cd50e893016",
+      "explicitCanonicalCompiler": "Dewdrop local fixture B 9cd50e893016",
+      "echoReload": "Dewdrop local fixture B 9cd50e893016",
+      "ackVersion": 2,
+      "uiDirtyAfterAck": false,
+      "validationIssues": []
+    }
+  ],
+  "sqlEvidence": {
+    "path": "database/supabase/migrations/384_theme_editor_template_keys.sql",
+    "sha256": "e7304c2306956dd3784175d4f735e3d8f9029ddc1631f97b9d396d1ee9f55cca",
+    "statements": [
+      "IF d.id IS NOT NULL THEN v_templates:=v_templates||coalesce(d.working_manifest->'templates','{}'); END IF;",
+      "IF jsonb_typeof(v_input->'templates'->p_template_key)='object' THEN",
+      "v_templates:=jsonb_set(v_templates,ARRAY[p_template_key],v_input->'templates'->p_template_key,true);"
+    ]
+  },
+  "claimLimits": [
+    "Controlled client transport ack; no DB/network/browser/React render or actual server receipt executed.",
+    "An echoed header edit reloads correctly in actual normalization. store-service.ts660 projects root overlays with the canonical compiler; unchanged captured bundle is not a second bug.",
+    "Owner-provided read-only9cd saved patches confirm canonical header loss; incoming network payload was not captured.",
+    "Explicit compiler success is a narrow projection proof, not a complete frontend/SQL repair or release gate."
+  ],
+  "ownerServerEvidence": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-shared-header-readonly-diagnostic.json",
+    "sha256": "b7ef0862a0c11e076c05123a42259f406ef5e55de3ce849d02dbc0c29a7a11b9",
+    "observed": "Saved patch revisions2/3 have edited compatibility sections.header.text but canonical templates.header original; embedded bundle original expected; later active11 original. Incoming transport not captured."
+  },
+  "conclusion": "Shared global-group SQL merge is the concrete durability defect; actual editor callbacks/client and commerce mapper preserve/project root edits. Unchanged embedded package is intentional; no second renderer bug established."
+}

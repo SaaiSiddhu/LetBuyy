@@ -1,0 +1,80 @@
+{
+  "recordedAt": "2026-10-24T03:01:39.521700+00:00",
+  "status": "ROOT_FRESH_STABLE392_EDITOR_RUNTIME_ADMITTED_DEWDROP_FULL30_FIRST",
+  "runId": "936e5f577646",
+  "candidate": "/private/tmp/theme-editor-stable392-20261024-02",
+  "sourceProofSha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+  "runtimeReadback": {
+    "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-readback.json",
+    "sha256": "ef4bf9a0c316e79b3c8f3d54c7696c0c57b7a6c976a212e8f4c6b329730c46e7"
+  },
+  "origins": {
+    "identity": "http://accounts.threadline-936e5f577646.localhost:50492",
+    "merchant": "http://admin.threadline-936e5f577646.localhost:50493",
+    "commerce": "http://syn-threadline-ui-6815276b.localhost:50494",
+    "checkout": "https://checkout.localhost:50497",
+    "api": "http://127.0.0.1:50498"
+  },
+  "site": {
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "locationId": "d1829143-baea-4ca4-b08b-a6f1d4f97de9",
+    "subdomain": "syn-threadline-ui-6815276b"
+  },
+  "syntheticEntitlement": "Actual canonical seeded enterprise active; no provider payment or paid-upgrade claim. No extra provision necessary.",
+  "initialState": {
+    "orders": 0,
+    "installedThemes": 0,
+    "published": false
+  },
+  "effectiveSqlMd5": {
+    "391": "f14f2252157119e56f6614decef4c4aa",
+    "392": "bdaec8db8f836e94294e4bdd9c449346"
+  },
+  "migrationMode": "Source321 UP files/defaultLATEST392/no ceiling; final runner applied receipt pending run completion. No393 source present.",
+  "sourceFilesRehashedAfterAllBuilds": 17243,
+  "changedSource": [],
+  "normalOsTls": {
+    "hostname": "checkout.localhost",
+    "httpsRootResponse": 404,
+    "certificateValidation": "NATIVE_MACOS_CURL_AND_SECURITY_SUCCESS_WITH_EXISTING_APPROVED_LEAF",
+    "browserCheckoutAcceptance": "NOT_RUN"
+  },
+  "lifecycle": {
+    "runnerShellStartUtc": "2026-10-24T02:53:40Z",
+    "testNodeStartUtc": "2026-10-24T02:54:18Z",
+    "outerTimeoutSeconds": 43200,
+    "outerTimerStarts": "Actual tsx launcher spawn after template/provision; includes builds. Root shell start is not timer start.",
+    "outerDeadlineConservativeIntervalUtc": [
+      "2026-10-24T14:53:40Z",
+      "2026-10-24T14:54:19Z"
+    ],
+    "innerHoldSeconds": 21600,
+    "readyExactTime": "NOT_CAPTURED",
+    "readyBoundEvidence": "Commerce supervisor actual start02:55:37 <= ready <= Root first ready observation02:57:25. No state mtime used.",
+    "innerAndEffectiveDeadlineIntervalUtc": [
+      "2026-10-24T08:55:37Z",
+      "2026-10-24T08:57:25Z"
+    ],
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "guardsOrTimeoutsModified": false
+  },
+  "soleController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "allocation": "Fresh Dewdrop full30 FIRST with B00, normal merchant/BuyerA/checkout auth, real COD first order and retry, distinct accepted pre-edit cart, later stock-omitting metadata edit, exact failure capture and both histories. Control subcases bound by explicit own-row positives. No other theme UI until finite boundary report.",
+  "limitations": [
+    "Normal browser sign-in, full B00 and checkout yet unrun.",
+    "S02 synthetic legacy setup only after H01/H02+separate accepted pre-edit cart and finite actual-ID boundary grant.",
+    "D02 absent/malformed metadata transport is unreachable in this stack; record live partial and separate compatibility test evidence, not whole PASS.",
+    "Other owners get no UI/data lease. No retiredf607 IDs/storage/cookies reused, source/guard/timeout changes, providers or real payments.",
+    "Persistent Marketplace independent, accepted and untouched.",
+    "All10 not accepted."
+  ],
+  "projectionProvenance": {
+    "source": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+    "sourceSha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174",
+    "omittedReferenceFields": [
+      "privateState",
+      "privateOwnedAnnouncement"
+    ],
+    "privateReferencesNotOpened": true
+  }
+}

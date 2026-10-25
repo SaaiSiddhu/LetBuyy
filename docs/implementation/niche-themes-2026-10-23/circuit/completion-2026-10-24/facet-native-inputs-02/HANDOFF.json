@@ -1,0 +1,90 @@
+{
+  "recordedAt": "2026-10-24T13:11:26.899385+00:00",
+  "status": "FULL_CURRENT_SOURCE_AND_NATIVE_ADMISSION_PROPOSAL_READY_NOT_EXECUTION_GRANT",
+  "sourceFiles": 1074,
+  "runtimeModules": 475,
+  "literalEdges": 3720,
+  "migrationCount": 322,
+  "migrationMaximum": 393,
+  "migrationCeiling": null,
+  "inputClosure": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-inputs-02/source-closure.json",
+    "sha256": "f1b4c7945a1f60588026dd43a43a90fb0cb366e699eec0a0d85140391850f6a6",
+    "bytes": 1091989
+  },
+  "verification": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-inputs-02/verify.stdout",
+    "sha256": "9af0cb25b8dbf07c6d467bbbab865667367403202ec0d021bf584ed6fdb9723e",
+    "bytes": 226
+  },
+  "negativeGuards": 3,
+  "tools": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-inputs-02/capture.mjs",
+      "sha256": "d30b24faa6e168b1bc104acf9937413dcac4d785e973336f2e6f7a0a2eef17cd",
+      "bytes": 6954
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-inputs-02/verify.mjs",
+      "sha256": "311f218a3c4c11ab30dcc9342b441b0824c805de7eb4dc4c4ddabe73e8a1296b",
+      "bytes": 2117
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-inputs-02/preflight.mjs",
+      "sha256": "b90f69e803c16b539dc0d34e5bb87349805af234c69c8460030694559444506c",
+      "bytes": 3052
+    }
+  ],
+  "admissionProposal": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-inputs-02/admission.PROPOSAL.json",
+    "sha256": "9e4a8ca57f2abee2f0bb157cf8c32595324d4e47b02808e60d58507fbb7b7134",
+    "bytes": 188662
+  },
+  "RootMustWriteActualAdmissionAt": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/admission.json",
+  "separatePreflightCommand": [
+    "node",
+    "--import",
+    "tsx",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-inputs-02/preflight.mjs",
+    "<FRESH_ROOT_EXECUTION_GRANT_PATH>"
+  ],
+  "proposedArgvNotExecuted": [
+    "node",
+    "scripts/governance/run-executable-suites.mjs",
+    "--suite",
+    "services/api-gateway/src/__tests__/owned-db/circuit-facets-qualification.manual.ts",
+    "--kind",
+    "gateway-db",
+    "--jobs",
+    "1",
+    "--no-reap",
+    "--prepared-transactions",
+    "2",
+    "--timeout",
+    "600",
+    "--log-dir",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/01/logs",
+    "--json-out",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/01/result.json",
+    "--run-receipt",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/01/run-receipt.json",
+    "--json"
+  ],
+  "sandboxPermissions": "require_escalated",
+  "resourceOrder": "Reserved facet slot after actual catalogue06terminal and emptycleanup (observed run9a1393559a57); still requires newRootgrant before preflight/runner",
+  "sourceReadOnly": true,
+  "modulesBuildDatabaseProviderNotExecuted": true,
+  "lineageLimit": "Captured current393/322 before future394 canonical emission. If source/SQL set moves, refuse and rebind a NEW input epoch; do not silently retry old closure.",
+  "nativeExecuted": false,
+  "browserAcceptance": false,
+  "allTenCertified": false,
+  "supersedesInputEpoch01ForExecution": true,
+  "sourceChangesSinceEpoch01": [
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "oldSha256": "688528ed24f777061103094e286f239010d256fc27b2cbf031a960b672644e70",
+      "currentSha256": "e8a84bd3cde2b4d64e872465ebf35a9dae487a30f9ce82bda58ac26179aec39a"
+    }
+  ],
+  "sameMainCircuitThreeFileSeal": "main-facet-integration-03/source-result.json"
+}

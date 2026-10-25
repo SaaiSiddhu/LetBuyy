@@ -23,10 +23,12 @@ test('merchant control plane bounds session read retries and identifies query-co
 test('merchant store layout degrades optional store switcher list on query-cost limits', () => {
   const layout = read('apps/merchant/web/src/app/[store]/layout.tsx');
 
-  assert.match(layout, /isQueryCostRateLimited/);
-  assert.match(layout, /getUserStores\(user\.id\)\.then/);
-  assert.match(layout, /if \(!isQueryCostRateLimited\(storeList\.error\)\)/);
-  assert.match(layout, /throw storeList\.error/);
+  assert.match(layout, /const currentStorePromise = getStoreForUser\(store\)/);
+  assert.match(layout, /Promise\.all\(\[userPromise, currentStorePromise\]\)/);
+  assert.match(layout, /stores => \(\{ stores, unavailable: false \}\)/);
+  assert.match(layout, /\(\) => \(\{ stores: \[\], unavailable: true \}\)/);
+  assert.match(layout, /if \(!storeData\) \{\s*notFound\(\)/);
+  assert.match(layout, /userStoresPromise=\{userStoresPromise\}/);
   assert.match(layout, /id: storeData\.id/);
   assert.match(layout, /subdomain: storeData\.subdomain/);
   assert.match(layout, /status: storeData\.status/);

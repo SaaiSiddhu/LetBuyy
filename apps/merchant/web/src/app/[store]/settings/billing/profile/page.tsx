@@ -5,6 +5,8 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
+    Section,
+    Card,
     Badge,
     Banner,
     Button,
@@ -146,13 +148,13 @@ export default function BillingProfilePage() {
 
     if (loading) {
         return (
-            <SettingsPane title="Billing profile" description="Your payment methods, tax ID, and billing currency." store={store}>
+            <SettingsPane navigationKey="billing" title="Billing profile" description="Your payment methods, tax ID, and billing currency." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="settings-home-card">
-                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
+                        <Card key={i}>
+                            <Section><Skeleton variant="text" lines={1} /></Section>
                             <div className="settings-form-body"><Skeleton variant="text" lines={2} /></div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </SettingsPane>
@@ -163,6 +165,7 @@ export default function BillingProfilePage() {
 
     return (
         <SettingsPane
+                navigationKey="billing"
             title="Billing profile"
             description="Your payment methods, tax ID, and billing currency."
             store={store}
@@ -179,22 +182,20 @@ export default function BillingProfilePage() {
             )}
 
             {/* ── Payment methods ───────────────────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Payment methods</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Payment methods" >
+
                     <div className="settings-general-hint">For purchases and subscription bills in LetBuyy.</div>
                     <BillingPaymentMethods
                         store={store}
                         mandates={mandates}
                         onChanged={() => void loadData({ quiet: true })}
                     />
-                </div>
-            </div>
+
+            </Section>
 
             {/* ── Tax ID (GSTIN) ────────────────────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Tax ID</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Tax ID" >
+
                     <div className="settings-general-hint">
                         Subscription prices include applicable taxes. Your billing details appear on the invoice;
                         entering a GSTIN does not by itself make a subscription exempt from GST.
@@ -244,13 +245,12 @@ export default function BillingProfilePage() {
                             </div>
                         </div>
                     )}
-                </div>
-            </div>
+
+            </Section>
 
             {/* ── Currency ──────────────────────────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Currency</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Currency" >
+
                     <div className="settings-general-hint">
                         Your billing currency is determined by your business country (India).
                     </div>
@@ -266,8 +266,8 @@ export default function BillingProfilePage() {
                         <CheckCircle2 className="letbuyy-icon" aria-hidden="true" />
                         <span>All LetBuyy subscription charges and invoices are issued in INR.</span>
                     </div>
-                </div>
-            </div>
+
+            </Section>
 
             <div className="billing-profile-foot">
                 <Info className="letbuyy-icon" aria-hidden="true" />

@@ -35,6 +35,7 @@ function exists(rel) {
 const MCP_BASE = 'apps/merchant/web/src';
 const BLOCK_CHILD_ROW = `${MCP_BASE}/components/theme-editor/BlockChildRow.tsx`;
 const SECTION_TREE_PANEL = `${MCP_BASE}/components/theme-editor/SectionTreePanel.tsx`;
+const EDITOR_VIEW_STATE = `${MCP_BASE}/components/theme-editor/editor-view-state.ts`;
 
 // ── New file exists ────────────────────────────────────────────────────────────
 
@@ -98,7 +99,7 @@ test('phase-t: SectionTreePanel exposes onMoveChildBlock callback prop', () => {
 test('phase-t: SectionTreePanel exports BlockEntry type for BlockChildRow import', () => {
     assert.match(
         read(SECTION_TREE_PANEL),
-        /export type BlockEntry/,
+        /export type \{ BlockEntry \} from '\.\/editor-view-state'/,
         'SectionTreePanel must export BlockEntry so BlockChildRow can import it',
     );
 });
@@ -106,7 +107,7 @@ test('phase-t: SectionTreePanel exports BlockEntry type for BlockChildRow import
 // ── BlockEntry carries children field ─────────────────────────────────────────
 
 test('phase-t: BlockEntry type includes optional children field (Phase T instance nesting)', () => {
-    const src = read(SECTION_TREE_PANEL);
+    const src = read(EDITOR_VIEW_STATE);
     assert.match(src, /children\?.*BlockEntry/, 'BlockEntry must have children?: BlockEntry[] field');
 });
 

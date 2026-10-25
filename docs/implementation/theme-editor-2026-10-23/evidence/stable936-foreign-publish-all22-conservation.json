@@ -1,0 +1,236 @@
+{
+  "recordedAt": "2026-10-24T03:52:05.187Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "baseline": "stable936-dewdrop-lifecycle-after-legacy-setup.json",
+  "exclusion": "Only exact newly declared foreign store_id/site_id/product_id rows; all pre-existing global fixture rows compared",
+  "foreignSiteId": "b346088a-948f-445d-8522-47c97e0bb9a6",
+  "foreignProductId": "83c61708-7b06-473e-b04c-8e7ab79b6f1a",
+  "all22PreexistingScopesExact": true,
+  "changedTables": [],
+  "before": [
+    {
+      "count": 0,
+      "table": "ad_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 3,
+      "table": "carts",
+      "sha256": "a564419a8a50f17b75a59fea04581b84d80fb366ae1b2b7292119bb076ce9e9d"
+    },
+    {
+      "count": 2,
+      "table": "checkout_sessions",
+      "sha256": "39754a7e793a18534eecaccf3dbd3ce8883d752f1cfd3d45dbe957a4b8388556"
+    },
+    {
+      "count": 0,
+      "table": "gift_card_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 39,
+      "table": "inventory_adjustments",
+      "sha256": "521b3e2d4bbc27d284a302ab87be4f784199dd57b6d08c68b44fbb5a08332cc8"
+    },
+    {
+      "count": 1,
+      "table": "inventory_events",
+      "sha256": "0500ab44cc84e43d942d79ed0ef2318188f5e76019871089dfe5bb9536114ecb"
+    },
+    {
+      "count": 44,
+      "table": "inventory_levels",
+      "sha256": "0c5748d4c06e90e42093976cf44e56974870a82606f618777da9ff81c8854475"
+    },
+    {
+      "count": 1,
+      "table": "inventory_reservations",
+      "sha256": "cf6113a00983a4eef6e33c34f15887b8fd6416eca62e407bc43ffca1fe2cba0c"
+    },
+    {
+      "count": 0,
+      "table": "ledger_accounts",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "loyalty_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_batches",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_traversal",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_site_reconciliations",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 2,
+      "table": "order_items",
+      "sha256": "2bb2c78e6bbc03e39d4ca14d0f4fad860cc74f3ca30892989a6a2e2a61bf8700"
+    },
+    {
+      "count": 2,
+      "table": "orders",
+      "sha256": "bcd82404e64e15593eb04637dcc41bffe42a00bc2f6b0c557844ae83780bb013"
+    },
+    {
+      "count": 124,
+      "table": "outbox_events",
+      "sha256": "2beb8f8de70d68dab651b987f71fec5ddc88e28d0f84b3aa35a03f7c43094a4c"
+    },
+    {
+      "count": 0,
+      "table": "partner_payout_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "payout_statement_source_ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "store_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "wallet_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ],
+  "afterExcludingDeclaredForeignRows": [
+    {
+      "count": 0,
+      "table": "ad_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 3,
+      "table": "carts",
+      "sha256": "a564419a8a50f17b75a59fea04581b84d80fb366ae1b2b7292119bb076ce9e9d"
+    },
+    {
+      "count": 2,
+      "table": "checkout_sessions",
+      "sha256": "39754a7e793a18534eecaccf3dbd3ce8883d752f1cfd3d45dbe957a4b8388556"
+    },
+    {
+      "count": 0,
+      "table": "gift_card_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 39,
+      "table": "inventory_adjustments",
+      "sha256": "521b3e2d4bbc27d284a302ab87be4f784199dd57b6d08c68b44fbb5a08332cc8"
+    },
+    {
+      "count": 1,
+      "table": "inventory_events",
+      "sha256": "0500ab44cc84e43d942d79ed0ef2318188f5e76019871089dfe5bb9536114ecb"
+    },
+    {
+      "count": 44,
+      "table": "inventory_levels",
+      "sha256": "0c5748d4c06e90e42093976cf44e56974870a82606f618777da9ff81c8854475"
+    },
+    {
+      "count": 1,
+      "table": "inventory_reservations",
+      "sha256": "cf6113a00983a4eef6e33c34f15887b8fd6416eca62e407bc43ffca1fe2cba0c"
+    },
+    {
+      "count": 0,
+      "table": "ledger_accounts",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "loyalty_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_batches",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_traversal",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_site_reconciliations",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 2,
+      "table": "order_items",
+      "sha256": "2bb2c78e6bbc03e39d4ca14d0f4fad860cc74f3ca30892989a6a2e2a61bf8700"
+    },
+    {
+      "count": 2,
+      "table": "orders",
+      "sha256": "bcd82404e64e15593eb04637dcc41bffe42a00bc2f6b0c557844ae83780bb013"
+    },
+    {
+      "count": 124,
+      "table": "outbox_events",
+      "sha256": "2beb8f8de70d68dab651b987f71fec5ddc88e28d0f84b3aa35a03f7c43094a4c"
+    },
+    {
+      "count": 0,
+      "table": "partner_payout_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "payout_statement_source_ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "store_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "wallet_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

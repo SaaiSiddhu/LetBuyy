@@ -1,0 +1,1 @@
+Run 2f44dd5a1a08: baseline through385, resources fully cleaned. Migration admission failed atomically before completion: ambiguous p.pronamespace because a PL/pgSQL row variable and a query alias shared p. Renamed only the admission query alias.

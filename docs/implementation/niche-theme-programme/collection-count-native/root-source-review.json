@@ -1,0 +1,45 @@
+{
+  "recordedAt": "2026-10-24T06:14:52.662450+00:00",
+  "status": "ROOT_REVIEWED_CURRENT393_PUBLISHER_AND_COUNT_JOINT_SOURCE",
+  "sourceMax": 393,
+  "migrationFiles": 322,
+  "migrationCeiling": null,
+  "suitePins": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/collection-list-read.postgres.test.ts",
+      "sha256": "f7f3584c947b1b84ef643f530f4e9d9fa7230bd8ede3e5c177ea30aff7c49887"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+      "sha256": "e033cc5a609cc7e7384d729a339161355a0c8b125ff91cd92e1852d9e78a36a3"
+    }
+  ],
+  "inputClosure": {
+    "path": "docs/implementation/niche-theme-programme/collection-count-native/source-input-closure.json",
+    "sha256": "14e347034c0f58efe02103af2fb3a2cda7ce6ad90251b3e3772010c6ebe97e67",
+    "files": 1070,
+    "allActualHashesVerified": true
+  },
+  "literalGraph": {
+    "path": "docs/implementation/niche-theme-programme/collection-count-native/literal-import-graph.json",
+    "sha256": "6ee2f83ae70b948925256042a8c26d6fd24f5cde67f2e9a5413462a709cbc162",
+    "edges": 2016,
+    "runtimeWorkspaceChecks": 337,
+    "unresolvedInternal": 0,
+    "nonliteral": 0,
+    "appsImported": 0
+  },
+  "review": "Read continuous count source, direct account/owner positive controls, true counts/unavailable/>100/paging/ties, app_tenant own-positive42501 junction/RPC/DML denial, missingpool/noREST, real22012rollback/samebackendB-A reuse, mountedHTTPclassification and authority/alltable hash invariants. Reviewed publisher currententry and shared qualified proof conservation, emitted393header-only difference and317unchangedregistrysemantics.",
+  "qualificationModel": "Ordinary continuous owned tests without stale Root/fixed392 gate. This external exact source/invocation admission controls initial qualification.",
+  "gates": {
+    "ownerMainFocused": 36,
+    "ownerGatewaySDKSelectedMerchantNativeNoEmit": 0,
+    "rootDependencyValidator": 0,
+    "rootDSValidator": 0,
+    "sourceChecksPublisher": 22,
+    "CIClassificationChecks": 14,
+    "wholeRepoLintGreen": false
+  },
+  "remainingWorkflowGates": "Untracked382\u2013393 migration workflow gate remains; no staging to hide it. Existing388TRUNCATEliteral falsepositive under private exactclassifier repair. No destructive SQL introduced by393.",
+  "notNativeOrBrowserAcceptanceYet": true
+}

@@ -1,0 +1,626 @@
+{
+  "body": {
+    "background": "rgb(244, 244, 244)",
+    "color": "rgba(43, 44, 45, 0.75)",
+    "font": "Jost, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "United States | USD $",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "English",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load image 1 in gallery view",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load image 2 in gallery view",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Product features",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Materials and care",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Merchandising tips",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Light Grey",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Light Grey",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Light Grey",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for White",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for White",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for White",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Natural",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Natural",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Natural",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Blush",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Blush",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Blush",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "United States | USD $",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "English",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "500",
+      "width": 1,
+      "x": 920.3125,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Language",
+      "weight": "500",
+      "width": 1,
+      "x": 1098.9140625,
+      "y": 48
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 282,
+      "x": 948,
+      "y": -99.296875
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 54,
+      "line": "54px",
+      "size": "42px",
+      "tag": "H1",
+      "text": "Baby Washcloth",
+      "weight": "500",
+      "width": 555,
+      "x": 170,
+      "y": 137.6322479248047
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 21,
+      "line": "20.25px",
+      "size": "15.75px",
+      "tag": "H2",
+      "text": "Product features",
+      "weight": "500",
+      "width": 134.5859375,
+      "x": 201.5,
+      "y": 464.6166076660156
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 21,
+      "line": "20.25px",
+      "size": "15.75px",
+      "tag": "H2",
+      "text": "Materials and care",
+      "weight": "500",
+      "width": 148.078125,
+      "x": 201.5,
+      "y": 516.6165771484375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 21,
+      "line": "20.25px",
+      "size": "15.75px",
+      "tag": "H2",
+      "text": "Merchandising tips",
+      "weight": "500",
+      "width": 152.65625,
+      "x": 201.5,
+      "y": 568.6165771484375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "Ordering",
+      "weight": "500",
+      "width": 358.6640625,
+      "x": 170,
+      "y": 1587.6953125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "Resources",
+      "weight": "500",
+      "width": 358.671875,
+      "x": 540.6640625,
+      "y": 1587.6953125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "About",
+      "weight": "500",
+      "width": 358.6640625,
+      "x": 911.3359375,
+      "y": 1587.6953125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 187.328125,
+      "x": 170,
+      "y": 1894.078125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Language",
+      "weight": "400",
+      "width": 103.625,
+      "x": 367.328125,
+      "y": 1894.078125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-trade-demo.myshopify.com/products/baby-washcloth#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    },
+    {
+      "text": "Marketing resources",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Become a wholesale partner",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-trade-demo.myshopify.com/products/baby-washcloth#ProductInfo-template--22715911405590__main"
+    },
+    {
+      "text": "View cart",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-trade-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-trade-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "Returns",
+      "url": "https://theme-trade-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-trade-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Marketing resources",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Become a wholesale partner",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-trade-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-trade-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-trade-demo",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911405590__main",
+      "rect": {
+        "height": 833.5,
+        "width": 1440,
+        "x": 0,
+        "y": 99
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\nBaby Washcloth\nRegular price\n$9.00 USD\n\nThis is a demonstration store. You can purchase products like this from Parachute.\n\nTurn b"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911405590__quick-order-list",
+      "rect": {
+        "height": 499.1953125,
+        "width": 1440,
+        "x": 0,
+        "y": 932.5
+      },
+      "tag": "DIV",
+      "text": "Your cart\nVARIANT\tQUANTITY\tPRICE\tVARIANT TOTAL\n\nLight Grey\nTWLBABGRYWSH\nQuantity\nDecrease quantity for Light Grey\nIncrease quantity for Light Grey\n\t\n$9.00/ea\n\t\n$0.00\n\n\nWhite\nTWLBAB"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911405590__related-products",
+      "rect": {
+        "height": 80,
+        "width": 1440,
+        "x": 0,
+        "y": 1431.6953125
+      },
+      "tag": "SECTION",
+      "text": ""
+    }
+  ],
+  "title": "Baby Washcloth – theme-trade-demo",
+  "url": "https://theme-trade-demo.myshopify.com/products/baby-washcloth",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "product product--small product--right product--thumbnail_slider product--mobile-hide grid grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 761.5,
+      "tag": "DIV",
+      "width": 1100
+    },
+    {
+      "className": "product__media-list contains-media grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 618.25,
+      "tag": "UL",
+      "width": 495
+    },
+    {
+      "className": "thumbnail-list list-unstyled slider slider--mobile slider--tablet-up",
+      "columns": "repeat(4, 1fr)",
+      "display": "flex",
+      "gap": "10px",
+      "height": 123.25,
+      "tag": "UL",
+      "width": 495
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 495,
+      "rect": {
+        "height": 616.25,
+        "width": 493
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": true,
+      "naturalWidth": 145,
+      "rect": {
+        "height": 111.25,
+        "width": 111.25
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": true,
+      "naturalWidth": 145,
+      "rect": {
+        "height": 111.25,
+        "width": 111.25
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 43,
+        "width": 43
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 43,
+        "width": 43
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 43,
+        "width": 43
+      }
+    },
+    {
+      "alt": "Baby Washcloth",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 43,
+        "width": 43
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree towel display with orders over $2,500\n\nShop\nMarketing resources\nBecome a wholesale partner\nCountry/region\nUnited States | USD $\nLanguage\nEnglish\nCart\nSkip to product information\nOpen media 1 in modal\nBaby Washcloth\nRegular price\n$9.00 USD\n\nThis is a demonstration store. You can purchase products like this from Parachute.\n\nTurn bath time into quality time with this gentle terry washcloth. Made from soft, natural long-staple Turkish cotton that will soothe your little one. Free of any harmful chemicals or synthetic materials.\n\nProduct features\nMaterials and care\nMerchandising tips\nShare\nYour cart\nVARIANT\tQUANTITY\tPRICE\tVARIANT TOTAL\n\nLight Grey\nTWLBABGRYWSH\nQuantity\nDecrease quantity for Light Grey\nIncrease quantity for Light Grey\n\t\n$9.00/ea\n\t\n$0.00\n\n\nWhite\nTWLBABWHTWSH\nQuantity\nDecrease quantity for White\nIncrease quantity for White\n\t\n$9.00/ea\n\t\n$0.00\n\n\nNatural\nTWLBABNATWSH\nQuantity\nDecrease quantity for Natural\nIncrease quantity for Natural\n\t\n$9.00/ea\n\t\n$0.00\n\n\nBlush\nTWLBABPNKWSH\nQuantity\nDecrease quantity for Blush\nIncrease quantity for Blush\n\t\n$9.00/ea\n\t\n$0.00\n\nLoading...\n\nView cart\n0\n\nTotal items\n\n$0.00\n\nProduct subtotal\n\nTaxes, discounts and shipping calculated at checkout.\nOrdering\nShop all\nShipping\nReturns\nResources\nFAQ\nMarketing resources\nBecome a wholesale partner\nAbout\nAbout us\nContact\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nCountry/region\nUnited States | USD $\nLanguage\nEnglish\nPayment methods\n© 2026, theme-trade-demo Powered by Shopify"
+}

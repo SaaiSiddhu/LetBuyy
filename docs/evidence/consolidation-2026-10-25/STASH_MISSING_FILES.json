@@ -1,0 +1,252 @@
+[
+  {
+    "path": "apps/merchant/mobile/android/app/src/main/res/drawable/ic_merchant_notification.xml",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/integration_test/merchant_local_actions_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/integration_test/merchant_local_screen_audit_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/integration_test/merchant_native_flows_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/lib/services/native_push_service.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/lib/widgets/shared/merchant_export_share.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/lib/widgets/shared/merchant_search_sheet.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/test/help_screen_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/test/live_preview_unavailable_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/test/merchant_media_picker_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/test/revenue_history_push_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "apps/merchant/mobile/test_driver/local_screen_audit.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "database/supabase/migrations/365_merchant_daily_revenue_history.sql",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "database/supabase/rollback/365_merchant_daily_revenue_history.rollback.sql",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/analysis-and-direction.json",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/changelog-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/contact-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/contact-mobile-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/create-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/demo-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/demo-mobile-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/home-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/home-mobile-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/legal-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/legal-privacy-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/manifest.json",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/marketing-before-redesign.tar.gz",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/pricing-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/proposed-palette.svg",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/releases-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/resource-article-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/resource-category-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/resource-search-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/resources-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/resources-mobile-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "docs/design/marketing-reference-2026-10-20/sitemap-desktop-before.png",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "packages/dart/api_client/test/merchant_export_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "packages/dart/models/test/store_portable_template_test.dart",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "packages/shared-types/tests/app-store-uuid.test.mjs",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/export-storage.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/owned-db/marketplace-installation.postgres.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-actions.postgres.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-screen-reads.postgres.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/request-scoped-sql.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/execution/navigation-mutation.adapter.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "services/api-gateway/src/execution/page-mutation.adapter.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "tests/contracts/api-client-fresh-headers.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  },
+  {
+    "path": "tests/owned-db/merchant-push-preferences.postgres.test.ts",
+    "comparison": "absent",
+    "tracked_now": false
+  }
+]

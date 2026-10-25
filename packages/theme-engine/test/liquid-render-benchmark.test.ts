@@ -38,6 +38,14 @@
 // vs pre-F1/F2 certified full-stack baseline (~897ms total / ~15ms steady): production full-stack
 // steady-state improved ~15ms -> 11ms (~27%), total 897ms -> 288ms on this hardware. Reference rows
 // are LiquidJS+DOMPurify-only partial measurements (see measurement-domains note above).
+//
+// 2026-10-22 head extraction follow-up (separate Forge empty-catalog fixture,
+// Node22.23.3, same dependencies; 28 observations, first3 warmups retained):
+// old/new head median 7.324/2.128ms; full-render median 18.229/12.353ms.
+// All 56 rendered HTML and CSS hashes matched exactly. These local CPU medians
+// are not hosted/field latency and are not comparable to the Urban Kicks F9 rows.
+// Reproduce: scripts/profile-liquid-head.ts. Raw samples and browser comparisons:
+// docs/evidence/web-launch-week1-2026-10-21/core-read-performance/resume/.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Liquid } from 'liquidjs';

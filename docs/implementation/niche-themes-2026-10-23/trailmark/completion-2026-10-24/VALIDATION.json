@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:07:28.881674+00:00",
+  "classification": "PRIVATE_SOURCE_PROPOSAL_EVIDENCE_LINK_AND_FREEZE_CHECK_NOT_INSTALLED_ACCEPTANCE",
+  "checks": {
+    "mainInputsStillFrozen": true,
+    "privateFinal8SourceTestsPassed": true,
+    "privateProposalHashMatches": true,
+    "privateDiffHashMatches": true,
+    "certificationCoverageLink": true,
+    "all433InstalledStillNotRun": true
+  },
+  "sourceTestCountsDoNotEnterLifecycleCounts": true,
+  "newInstalledCasesExecuted": 0,
+  "mainSourceEdits": [],
+  "allChecksPassed": true
+}

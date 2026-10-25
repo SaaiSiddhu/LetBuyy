@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-23",
+  "environment": "retained local development DB/backends, normal identity login, no cookie injection",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "journeys": [
+    {
+      "name": "General safe-field work protection",
+      "sizes": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ],
+      "steps": [
+        "temporary Tagline edit",
+        "guarded local Settings departure",
+        "Stay retains input",
+        "Save and leave waits acknowledged clean",
+        "destination arrival",
+        "return and exact saved readback",
+        "restore original empty Tagline through normal Save",
+        "temporary edit and Discard"
+      ],
+      "final_state": "Original empty Tagline restored; clean SaveBar absent"
+    },
+    {
+      "name": "Product draft work protection",
+      "sizes": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ],
+      "steps": [
+        "create named unpublished synthetic Draft on desktop",
+        "main-sidebar or mobile drawer departure",
+        "Stay retains title",
+        "Save and leave waits acknowledged clean",
+        "destination arrival",
+        "product list/editor saved readback",
+        "temporary edit and Discard",
+        "restore synthetic name after tablet/mobile suffixes"
+      ],
+      "final_state": {
+        "name": "UX Premium Canonical Acceptance 2026-10-23",
+        "status": "Draft",
+        "price_inr": 1290,
+        "quantity": 10,
+        "retained": true
+      }
+    },
+    {
+      "name": "Final visual-only product edit",
+      "sizes": [
+        "desktop"
+      ],
+      "steps": [
+        "edit title for SaveBar screenshot",
+        "Discard",
+        "verify original title and handle restored",
+        "clean bar removed",
+        "focus returned to task heading"
+      ],
+      "final_state": "no additional persisted mutation"
+    },
+    {
+      "name": "Theme workbench composition",
+      "sizes": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ],
+      "steps": [
+        "library header/card geometry",
+        "canonical Customize white-on-plum styles",
+        "configured-origin editor preview loading",
+        "clean mobile Sections/Preview/Settings switching",
+        "tablet toolbar non-overlap measurement"
+      ],
+      "final_state": "Saved; no draft or publication command invoked"
+    }
+  ],
+  "measurement_scope": {
+    "mobile_savebar_action_height_px": 44,
+    "tablet_savebar_action_height_px": 32,
+    "document_overflow_px": 0,
+    "ordinary_route_main_count": 1,
+    "theme_card_radius_px": 16,
+    "theme_heading_px": 24
+  },
+  "separate_evidence": [
+    "component tests with synthetic HTTP",
+    "governance structural validators",
+    "isolated Postgres dependency suite",
+    "read-only rendered DOM geometry"
+  ],
+  "limits": [
+    "CSS viewport emulation is not physical mobile/keyboard acceptance",
+    "create unknown-outcome recovery is not edit-equivalent",
+    "frozen Apps and deferred custom-data are not activated",
+    "no exhaustive role/provider/record matrix",
+    "preview loading is not renderer parity: header styling and unresolved shop-name footer literal remain",
+    "no deployment or consistent latency speedup claimed"
+  ],
+  "temporary_issuer_interruption": "Normal login was refreshed after localhost issuer-cookie interference; interrupted attempts not credited",
+  "source_pin": "source-snapshot.json"
+}

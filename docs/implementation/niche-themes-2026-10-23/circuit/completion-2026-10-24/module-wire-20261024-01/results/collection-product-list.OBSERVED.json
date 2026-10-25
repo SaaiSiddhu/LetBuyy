@@ -1,0 +1,64 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "collection-product-list",
+  "group": "template",
+  "originalId": "section-d5fd6242-b864-4d38-93b3-06b8e74c1caa",
+  "finalId": "section-0e4eab60-b0a7-4421-9942-1c38a2705fc6",
+  "sectionFieldsExercised": [
+    "title"
+  ],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

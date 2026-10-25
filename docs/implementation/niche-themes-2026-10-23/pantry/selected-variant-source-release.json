@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-23",
+  "status": "RELEASED_TO_COORDINATOR",
+  "noPendingSharedEdits": true,
+  "files": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "sha256": "dde42a5fa7ee6a578b636e9be533c8e2bb92cd708c60daf58cf0e88eebfa15cf"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "03548b1907c4d0a27ef88c693f293affaa83b64c565fc591718b72715ce5c89e"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "d91217543a463ba70ff8ec294f18cd27bb688a8f62e23f06edc9349997e13aca"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.test.ts",
+      "sha256": "3490b2af15498ede89d2720a69751eaa229e2a35f57f901b155e7a43d84d68b5"
+    }
+  ],
+  "ownedPantryHook": {
+    "path": "packages/theme-engine/src/pantry-theme.ts",
+    "sha256": "9b26be01a73c36fd4338823282d8ff5982aee881ba5ad65b91e202a911bb78d0"
+  },
+  "rendererDependency": {
+    "path": "packages/theme-engine/src/theme-renderer.ts",
+    "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "owner": "Editor; existing json filter now Unicode-escapes both brackets and ampersand, sanitizer/depth/limits unchanged"
+  },
+  "tests": {
+    "rootRetained": 27,
+    "newNativeDOM": 8,
+    "integratedTotal": 35,
+    "pass": 35,
+    "fail": 0,
+    "skip": 0,
+    "cancel": 0,
+    "log": "variant-integrated-cohort.log",
+    "cwd": "apps/commerce/web",
+    "command": "node --import tsx --test src/lib/theme-engine/liquid-buy-now.test.ts src/lib/theme-engine/liquid-cart-island.test.ts src/lib/theme-engine/product-liquid-drop.test.ts src/lib/theme-engine/variant-options-carrier.test.ts src/lib/theme-engine/variant-facts-controller.test.ts"
+  },
+  "typecheck": {
+    "command": "pnpm --filter @letbuyy/customer-web typecheck",
+    "exitCode": 2,
+    "ownedDiagnostics": 0,
+    "externalDiagnostics": "four discoveryPreviewToken prop mismatches in collections/products/search/shop page callers; composition/query integration belongs other owner",
+    "log": "variant-facts-typecheck.log"
+  },
+  "semanticDelta": [
+    "Preserved one existing data-variants/options_json UUID protocol; removed unconsumed alternate picker_variants_json prototype, no base bundle edit",
+    "Bounded whitelisted server-derived facts_json per variant; existing domain resolver whole-group semantics retained; no private metadata copied",
+    "Native picker updates a section-scoped controller directly; quantity context uses existing foodPackSummary; no facts fetch/window fact state",
+    "Food absent contents never inherit common quantity; missing/incomplete/unmatched selection clears prior current display; known OOS shows own facts explicitly unavailable and purchase stays blocked",
+    "Habitat exact seven-slot common/selected/unavailable contract supported; generic optional host and existing no-JS/read-only comparisons retained",
+    "Dispose removes listeners/created nodes and restores initial fallback/common text plus original host UUID/state attributes; reconnect initializes existing UUID selection once"
+  ],
+  "resources": "No DB, shared IAB, headless server/browser or heavy build started in this lease"
+}

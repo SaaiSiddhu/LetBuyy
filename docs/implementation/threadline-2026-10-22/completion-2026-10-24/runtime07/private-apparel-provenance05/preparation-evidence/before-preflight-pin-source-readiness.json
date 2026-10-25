@@ -1,0 +1,12 @@
+{
+  "status": "COMPLETE_SOURCE_AND_CANONICAL_LAUNCHER_READINESS_NO_NATIVE_ADMISSION",
+  "closureSha256": "9017688003e9ac078bbbc2c231d104b46b58bd6ad132fb3e949770ac419e6088",
+  "sourceFiles": 1124,
+  "runtimeModules": 480,
+  "edges": 3749,
+  "vendorPins": 5411,
+  "migrations": 322,
+  "max": 393,
+  "nativeStarts": 0,
+  "applicationModulesExecuted": false
+}

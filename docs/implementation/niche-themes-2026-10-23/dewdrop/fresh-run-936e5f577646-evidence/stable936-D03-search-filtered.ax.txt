@@ -1,0 +1,80 @@
+Browser tab: 53, Title: "Search results for \"Fixture\" | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=colour&format=lip+tint&shade=pink+clay&sort=name&limit=1&category=Care&country_of_origin=India".
+1 AXWebArea Search results for "Fixture" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=colour&format=lip+tint&shade=pink+clay&sort=name&limit=1&category=Care&country_of_origin=India
+	2 container
+		3 text Dewdrop 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=colour&format=lip+tint&shade=pink+clay&sort=name&limit=1&category=Care&country_of_origin=India
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 1 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				14 button Apply filter
+				15 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=1&search=Fixture&category=Care&sort=name&routine_stage=colour&format=lip+tint&shade=pink+clay
+		16 text THE ROUTINE SHELF
+		17 heading Search products, Value: 1
+			18 text Search products
+		19 text Browse by use. Each product is sold independently.
+		20 container
+			21 text Search care products
+			22 search text field (settable) Search care products, Value: Fixture
+			23 text Routine stage
+			24 pop up button (collapsed, settable) Routine stage, Value: colour, Secondary Actions: Expand
+				25 menu
+					26 All stages
+					27 (selected) colour
+			28 text Format
+			29 pop up button (collapsed, settable) Format, Value: Lip tint, Secondary Actions: Expand
+				30 menu
+					31 All formats
+					32 (selected) Lip tint
+			33 text Shade name
+			34 pop up button (collapsed, settable) Shade name, Value: Pink Clay, Secondary Actions: Expand
+				35 menu
+					36 All named shades
+					37 (selected) Pink Clay
+			38 text Sort
+			39 pop up button (collapsed, settable) Sort, Value: Name, Secondary Actions: Expand
+				40 menu
+					41 Featured
+					42 Price: low to high
+					43 Price: high to low
+					44 Newest
+					45 (selected) Name
+			46 button Apply filters
+		47 container Applied filters
+			48 link Description: Remove Category: Care, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&country_of_origin=India&sort=name&routine_stage=colour&format=lip+tint&shade=pink+clay
+			49 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&sort=name&routine_stage=colour&format=lip+tint&shade=pink+clay
+			50 link Description: Remove Routine stage: colour, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name&format=lip+tint&shade=pink+clay
+			51 link Description: Remove Format: Lip tint, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name&routine_stage=colour&shade=pink+clay
+			52 link Description: Remove Shade: Pink Clay, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name&routine_stage=colour&format=lip+tint
+		53 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&sort=name
+		54 text 1 products
+		55 heading Search results, Value: 2
+			56 text Search results
+		57 container Colour products
+			58 text 03
+			59 heading Colour, Value: 2
+				60 text Colour
+			61 container
+				62 link Description: Fixture Soft Colour, Value: syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e
+				63 text LIP TINT
+				64 heading Fixture Soft Colour, Value: 3
+					65 link Description: Fixture Soft Colour, Value: syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e
+				66 text INR 520.00 6 ml 3 named shades
+				67 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e
+		68 container Product pages
+			69 text Page 1
+		70 heading Threadline, Value: 3
+			71 text Threadline
+		72 text Dewdrop 936 B footer saved
+		73 heading CONTACT, Value: 4
+			74 text CONTACT
+		75 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		76 text © Threadline. All rights reserved.
+		77 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search results for "Fixture" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=colour&format=lip+tint&shade=pink+clay&sort=name&limit=1&category=Care&country_of_origin=India

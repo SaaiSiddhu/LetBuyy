@@ -1,5 +1,7 @@
 'use client'
 
+import { NicheOrderFacts } from '@/components/orders/niche-order-facts'
+import { readOrderLineItems as readLineItems } from '@/components/orders/order-line-items'
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -27,18 +29,7 @@ import {
 // The gateway returns a normalizeOrderRecord() result which has these fields.
 // ---------------------------------------------------------------------------
 
-interface OrderLineItem {
-    product_id: string | null
-    variant_id: string | null
-    title: string | null
-    name: string | null
-    sku: string | null
-    quantity: number
-    unit_price: number
-    total: number
-    variant_title: string | null
-    image_url: string | null
-}
+type OrderLineItem = ReturnType<typeof readLineItems>[number]
 
 interface OrderAddress {
     full_name?: string
@@ -119,24 +110,6 @@ function readAddress(raw: unknown): OrderAddress | null {
     return raw as OrderAddress
 }
 
-function readLineItems(raw: unknown): OrderLineItem[] {
-    if (!Array.isArray(raw)) return []
-    return raw.map((item: unknown): OrderLineItem => {
-        const r = (typeof item === 'object' && item !== null ? item : {}) as Record<string, unknown>
-        return {
-            product_id: readNullableString(r, 'product_id'),
-            variant_id: readNullableString(r, 'variant_id'),
-            title: readNullableString(r, 'title') ?? readNullableString(r, 'name'),
-            name: readNullableString(r, 'name'),
-            sku: readNullableString(r, 'sku'),
-            quantity: readNumber(r, 'quantity') || 1,
-            unit_price: readNumber(r, 'unit_price') || readNumber(r, 'price'),
-            total: readNumber(r, 'total'),
-            variant_title: readNullableString(r, 'variant_title'),
-            image_url: readNullableString(r, 'image_url') ?? readNullableString(r, 'image'),
-        }
-    })
-}
 
 function mapOrderDetail(raw: Record<string, unknown>): OrderDetail {
     // The gateway normalizeOrderRecord() puts items at both raw.items and raw.order_items
@@ -507,6 +480,7 @@ function LineItemsCard({ items }: { items: OrderLineItem[] }) {
                                     {formatInrCurrency(item.total) ?? '—'}
                                 </div>
                             </div>
+                            <NicheOrderFacts facts={item.niche_snapshot?.facts} personalization={item.niche_snapshot?.personalization} options={Object.fromEntries((item.niche_snapshot?.selected_options ?? []).map(option => [option.name, option.value]))} itemName={item.title ?? undefined} />
                         </div>
                     ))}
                 </div>
@@ -629,7 +603,8 @@ export default function OrderDetailPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="orders"
+                    recipe="record"
                     eyebrow="Operations"
                     title="Order"
                     breadcrumbs={breadcrumbs}
@@ -653,7 +628,8 @@ export default function OrderDetailPage() {
     if (error || !order) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="orders"
+                    recipe="record"
                     eyebrow="Operations"
                     title="Order"
                     breadcrumbs={breadcrumbs}
@@ -684,7 +660,8 @@ export default function OrderDetailPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="orders"
+                recipe="record"
                 eyebrow="Operations"
                 title={`Order #${order.order_number}`}
                 description={`Placed ${formatIndiaDateWithTime(order.created_at, { emptyValue: '' })}`}

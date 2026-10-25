@@ -71,6 +71,7 @@ function isDevOnlySource(file) {
     file.includes("/test/") ||
     file.includes("/tests/") ||
     file.startsWith("tests/") ||
+    /\.(?:test|spec)\.(?:[cm]?[jt]s|[jt]sx)$/.test(base) ||
     base.includes(".config.") ||
     base === "eslint.config.mjs" ||
     base === "next.config.ts" ||

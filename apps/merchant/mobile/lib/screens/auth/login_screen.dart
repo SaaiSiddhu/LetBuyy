@@ -319,6 +319,30 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
+  Future<void> _openPasswordReset() async {
+    final auth = context.read<StoreAuthService>();
+    await showDialog<void>(
+      context: context,
+      builder: (_) => PasswordResetDialog(
+        initialEmail: _emailController.text,
+        requestReset: (email) async {
+          final proof = await _resolveTurnstileToken();
+          if (proof == null)
+            throw StateError('Complete the security check and retry.');
+          try {
+            await auth.resetPassword(email, turnstileToken: proof);
+          } finally {
+            if (mounted)
+              setState(() {
+                _turnstileToken = null;
+                _turnstileExpired = true;
+              });
+          }
+        },
+      ),
+    );
+  }
+
   Future<String?> _resolveTurnstileToken() async {
     // 1. Compile-time bypass token (local dev)
     if (AppConfig.hasTurnstileToken) return AppConfig.turnstileToken.trim();
@@ -575,7 +599,7 @@ class _LoginScreenState extends State<LoginScreen>
                                       child: GestureDetector(
                                         onTap: () {
                                           HapticFeedback.lightImpact();
-                                          // TODO: navigate to forgot-password
+                                          _openPasswordReset();
                                         },
                                         child: Text(
                                           'Forgot password?',
@@ -1094,23 +1118,15 @@ class _LoginScreenState extends State<LoginScreen>
     return _SocialButton(
       isDark: isDark,
       colors: colors,
-      onTap: () {
-        HapticFeedback.lightImpact();
-        // TODO: trigger Google OAuth flow
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Google sign-in coming soon'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      },
+      disabled: true,
+      onTap: () {},
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset('assets/icons/google.png', width: 20, height: 20),
           const SizedBox(width: 10),
           Text(
-            'Continue with Google',
+            'Google sign-in unavailable',
             style: TextStyle(
               color: colors.textPrimary,
               fontSize: 14,
@@ -1555,4 +1571,95 @@ String _turnstileHtml(String siteKey, {required bool isDark}) {
 </body>
 </html>
 ''';
+}
+
+/// Uses the canonical Identity reset flow and reports success only after its reply.
+class PasswordResetDialog extends StatefulWidget {
+  const PasswordResetDialog({
+    super.key,
+    required this.initialEmail,
+    required this.requestReset,
+  });
+  final String initialEmail;
+  final Future<void> Function(String email) requestReset;
+  @override
+  State<PasswordResetDialog> createState() => _PasswordResetDialogState();
+}
+
+class _PasswordResetDialogState extends State<PasswordResetDialog> {
+  late final _email = TextEditingController(text: widget.initialEmail);
+  final _form = GlobalKey<FormState>();
+  bool _busy = false, _sent = false;
+  String? _error;
+  @override
+  void dispose() {
+    _email.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_busy || !_form.currentState!.validate()) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await widget.requestReset(_email.text.trim());
+      if (mounted) setState(() => _sent = true);
+    } catch (_) {
+      if (mounted)
+        setState(
+          () => _error =
+              'Reset instructions could not be requested. Complete the security check and try again.',
+        );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Reset password'),
+    content: _sent
+        ? const Text(
+            'If an account exists, reset instructions have been requested for this email.',
+          )
+        : Form(
+            key: _form,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _email,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  enabled: !_busy,
+                  validator: (value) =>
+                      RegExp(
+                        r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+                      ).hasMatch(value?.trim() ?? '')
+                      ? null
+                      : 'Enter a valid email',
+                  onFieldSubmitted: (_) => _submit(),
+                ),
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(_error!),
+                  ),
+              ],
+            ),
+          ),
+    actions: [
+      TextButton(
+        onPressed: _busy ? null : () => Navigator.pop(context),
+        child: Text(_sent ? 'Done' : 'Cancel'),
+      ),
+      if (!_sent)
+        FilledButton(
+          onPressed: _busy ? null : _submit,
+          child: Text(_busy ? 'Requesting…' : 'Request reset'),
+        ),
+    ],
+  );
 }

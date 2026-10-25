@@ -1,0 +1,80 @@
+{
+  "status": "CURRENT_ADAPTER_RESOLVES_EDITOR03_NO_REBIND_NEEDED",
+  "stages": [
+    {
+      "name": "Existing explicit public-domain externals all defined",
+      "passed": true,
+      "names": [
+        "getDefaultStorefrontThemeTemplate",
+        "hasRenderableThemeTemplate",
+        "isUnchangedCoreDemoCategoryBlocks",
+        "isFirstPartyCoreBundleSlug",
+        "MAX_BUNDLE_BLOCK_NESTING_DEPTH",
+        "ThemeEditorTemplateKeySchema",
+        "normalizeEditorSchemaField",
+        "resolveFieldDefault"
+      ]
+    },
+    {
+      "name": "All extracted imported runtime identifiers resolve the existing seam",
+      "passed": true,
+      "imports": [
+        {
+          "local": "isUnchangedCoreDemoCategoryBlocks",
+          "imported": "isUnchangedCoreDemoCategoryBlocks",
+          "module": "@letbuyy/theme-engine"
+        },
+        {
+          "local": "isFirstPartyCoreBundleSlug",
+          "imported": "isFirstPartyCoreBundleSlug",
+          "module": "@letbuyy/theme-engine"
+        },
+        {
+          "local": "letbuyyPrimitiveTokens",
+          "imported": "letbuyyPrimitiveTokens",
+          "module": "@letbuyy/ui"
+        },
+        {
+          "local": "getDefaultStorefrontThemeTemplate",
+          "imported": "getDefaultStorefrontThemeTemplate",
+          "module": "@letbuyy/theme-engine"
+        },
+        {
+          "local": "hasRenderableThemeTemplate",
+          "imported": "hasRenderableThemeTemplate",
+          "module": "@letbuyy/theme-engine"
+        },
+        {
+          "local": "MAX_BUNDLE_BLOCK_NESTING_DEPTH",
+          "imported": "MAX_BUNDLE_BLOCK_NESTING_DEPTH",
+          "module": "@letbuyy/theme-engine"
+        },
+        {
+          "local": "normalizeEditorSchemaField",
+          "imported": "normalizeEditorSchemaField",
+          "module": "@letbuyy/theme-engine"
+        },
+        {
+          "local": "resolveFieldDefault",
+          "imported": "resolveFieldDefault",
+          "module": "@letbuyy/theme-engine"
+        }
+      ]
+    },
+    {
+      "name": "Current Marginalia source normalization and save/compile probe",
+      "passed": true,
+      "templateKey": "index",
+      "actualUIActions": false
+    }
+  ],
+  "pinsExact": 100,
+  "bundleIdentity": {
+    "slug": "letbuyy-dawn",
+    "version": "2.0.0",
+    "bundleSha256": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0"
+  },
+  "historicalHarnessChanged": false,
+  "MarginaliaFullHarnessExecuted": false,
+  "installedAcceptance": false
+}

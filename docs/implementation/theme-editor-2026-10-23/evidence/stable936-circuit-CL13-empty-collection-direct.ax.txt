@@ -1,0 +1,51 @@
+Browser tab: 70, Title: "Circuit lifecycle intentional empty | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/b7d740f6-24e3-4bf3-8e82-4f7a14ee2784?collection_id=b7d740f6-24e3-4bf3-8e82-4f7a14ee2784".
+1 AXWebArea Circuit lifecycle intentional empty | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/b7d740f6-24e3-4bf3-8e82-4f7a14ee2784?collection_id=b7d740f6-24e3-4bf3-8e82-4f7a14ee2784
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, ID: lb-product-origin-filter
+				16 button Apply filter
+		17 text THE CONNECTION DESK
+		18 heading Circuit lifecycle intentional empty, Value: 1
+			19 text Circuit lifecycle intentional empty
+		20 text 0 products
+		21 container
+			22 text Search products, models and connectors
+			23 search text field (settable) Search products, models and connectors, ID: ct-search-forge-discovery-collection
+			24 button Search
+		25 container
+			26 text Sort by
+			27 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-collection, Secondary Actions: Expand
+				28 menu
+					29 (selected) Featured
+					30 Price: low to high
+					31 Price: high to low
+					32 Newest
+					33 Name
+			34 button Sort
+		35 heading No products match this selection., Value: 2
+			36 text No products match this selection.
+		37 text Your query is kept above. Try another model or a broader category.
+		38 link Description: Explore all products, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+		39 container Product pages
+			40 text Page 1 of 0
+		41 heading Threadline, Value: 3
+			42 text Threadline
+		43 text Circuit 936 B footer saved
+		44 heading CONTACT, Value: 4
+			45 text CONTACT
+		46 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		47 text © Threadline. All rights reserved.
+		48 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Circuit lifecycle intentional empty | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/b7d740f6-24e3-4bf3-8e82-4f7a14ee2784?collection_id=b7d740f6-24e3-4bf3-8e82-4f7a14ee2784

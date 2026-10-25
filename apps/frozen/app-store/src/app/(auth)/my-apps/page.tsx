@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer';
 import { InstalledAppsGrid } from '@/components/InstalledAppsGrid';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { createAppMarketplaceApiClient } from '@/lib/api/client';
-import { KeyRound, Package } from '@letbuyy/ui';
+import { Button, KeyRound, Package, Select } from '@letbuyy/ui';
 import Link from 'next/link';
 
 export const metadata = {
@@ -11,18 +11,23 @@ export const metadata = {
     description: 'Manage your installed apps.',
 };
 
-export default async function MyAppsPage() {
+export default async function MyAppsPage({ searchParams }: { searchParams?: Promise<{ store_id?: string }> }) {
+    const params = await searchParams;
     const result = await createAppMarketplaceApiClient({ requireSession: true })
-        .then((api) => api.appStore.installations())
-        .then((installations) => ({ isAuthenticated: true, installedApps: installations }))
+        .then(async (api) => {
+            const stores = (await api.stores.list({ limit: 50 })).data;
+            const selectedStoreId = params?.store_id || stores[0]?.id;
+            const installedApps = selectedStoreId ? await api.appStore.installations({ store_id: selectedStoreId }) : [];
+            return { isAuthenticated: true, unavailable: false, installedApps, stores, selectedStoreId };
+        })
         .catch((error) => {
             if (error instanceof LetbuyyApiError && error.status === 401) {
-                return { isAuthenticated: false, installedApps: [] };
+                return { isAuthenticated: false, unavailable: false, installedApps: [], stores: [], selectedStoreId: undefined };
             }
-            return { isAuthenticated: true, installedApps: [] };
+            return { isAuthenticated: true, unavailable: true, installedApps: [], stores: [], selectedStoreId: undefined };
         });
 
-    const { isAuthenticated, installedApps } = result;
+    const { isAuthenticated, unavailable, installedApps, stores, selectedStoreId } = result;
 
     return (
         <>
@@ -32,6 +37,14 @@ export default async function MyAppsPage() {
                     <div className="marketplace-page-header">
                         <h1 className="marketplace-page-title">My Apps</h1>
                         <p className="marketplace-page-subtitle">Manage the apps installed on your store.</p>
+                        {stores.length > 0 && (
+                            <form method="get" className="app-install-plan-option">
+                                <label htmlFor="my-apps-store">Store</label>
+                                <Select unstyled id="my-apps-store" name="store_id" defaultValue={selectedStoreId}
+                                    options={stores.map(store => ({ value: store.id, label: store.store_name || store.name || store.subdomain }))} />
+                                <Button unstyled type="submit" className="appstore-header-btn">Show apps</Button>
+                            </form>
+                        )}
                     </div>
 
                     {!isAuthenticated ? (
@@ -41,6 +54,11 @@ export default async function MyAppsPage() {
                             </div>
                             <h3>Sign in required</h3>
                             <p>Please sign in to view your installed apps.</p>
+                        </div>
+                    ) : unavailable ? (
+                        <div className="empty-state" role="alert">
+                            <h3>Installed apps temporarily unavailable</h3>
+                            <p>Reload this page to retry. Your installed apps have not been removed.</p>
                         </div>
                     ) : installedApps.length > 0 ? (
                         <InstalledAppsGrid installations={installedApps} />

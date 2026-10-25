@@ -1,0 +1,100 @@
+{
+  "recordedAt": "2026-10-23T18:00:06.214291+00:00",
+  "classification": "ACTUAL_COMMON_ORIGIN_SAVE_RELOAD_RESTORE_AUDIT_NOT_PANTRY_P01_ACCEPTANCE",
+  "runId": "f6074d90e894",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "sourceEvidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-merchant-save-smoke.json",
+      "sha256": "e33cfe560e4e703a11234fd10f88ad960ae3a684a415f91bb509be38492fda2d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-saved-reload.ax.txt",
+      "sha256": "d536c00870d1a27cd3c77f9d3877112f21678faf4fd69e679e96aa66c4828f3a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-restored-reload.ax.txt",
+      "sha256": "c101bb2475092a9f7791fcea0cc3898a3c8fb1205ad6454847b807bb75b6b6d0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-before-readback.json",
+      "sha256": "dd8b0d74e948798cc89e11dd5b2b3d391b303a4a063a0821e3caeb2b00006c36"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-saved-readback.json",
+      "sha256": "dc32bf6a2b8654b8ab23e5f06cca295b93ada45e6f88e273f392c290039427fc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-restored-readback.json",
+      "sha256": "eb11067b9098c4df2c7df7651684acbed2a6329724556d81c62af5f7824fd587"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-saved-details-readback.json",
+      "sha256": "6c834e56899d354813aaa2ac0288b22f57ea54a8b98093ed0878bc90a32b4157"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-restored-details-readback.json",
+      "sha256": "a3691c76575f3d5ccd14553c34d47f33848c0273e1553642db526785d5eb728e"
+    }
+  ],
+  "observedOwnerUiAcknowledgement": "PASS",
+  "independentlyCheckedFromSavedEvidence": {
+    "guardAndReadOnlyFlags": true,
+    "sameProductAndSiteAcrossReadbacks": true,
+    "onlyBeautyDirectionsChanged": true,
+    "savedReloadNativeAxContainsExactSavedValue": true,
+    "restoredReloadNativeAxContainsExactOriginalAndNotSavedValue": true,
+    "beautyFactsRestoredExactly": true,
+    "productVersions": [
+      3,
+      6,
+      9
+    ],
+    "stockMirror": [
+      12,
+      12,
+      12
+    ],
+    "priceUnchanged": true,
+    "siteOrders": [
+      0,
+      0,
+      0
+    ],
+    "savedToRestoredInventoryBusinessEqual": true,
+    "savedToRestoredInventoryEventsAndAdjustmentsEqual": true
+  },
+  "actualNetworkHttpStatusCapturedByPantry": false,
+  "databaseOrBrowserChecksReplayedByPantry": false,
+  "metadataNormalizationConcern": {
+    "otherMetadataBeforeHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "otherMetadataAfterHash": "f55a6e66153e489f1023a0b5ac53c7a9a2c9710d2679a9a518ef8b8631a2b1e1",
+    "afterShape": {
+      "apparel": {
+        "kind": "object",
+        "empty": false,
+        "childKeys": [
+          "fit",
+          "care",
+          "unit",
+          "fabric",
+          "measurements"
+        ]
+      }
+    },
+    "fullInventoryHashesDiffer": true,
+    "fullBeforeInventoryBusinessFields": "NOT_CAPTURED; do not retrospectively claim exact full before invariance"
+  },
+  "limits": [
+    "Only Directions was edited; not full M01 six-field/unknown-private-sibling/CAS acceptance.",
+    "Original pre-save private full product/inventory body was not saved; public whitelisted baseline and hashes only.",
+    "First reload Playwright summary locator failed; premature coordinator claim withdrawn, native AX actual reload then verified.",
+    "No existing unknown sibling-private marker was present in baseline otherMetadata hash(emptyobject); apparel keys added during normal form save require scoped review, not a silent exact-preservation pass.",
+    "Shared beauty-product Directions smoke only; Pantry common food/variant/negative validation rows remain NOT RUN."
+  ],
+  "normalBrowserCheckoutProven": false,
+  "pantryRowsChanged": false,
+  "sharedSourceEdits": false,
+  "P12": "REQUIRED_NOT_RUN",
+  "acceptanceComplete": false
+}

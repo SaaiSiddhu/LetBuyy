@@ -1,0 +1,72 @@
+{
+  "activatedAt": "2026-10-23T13:48:48.859537+00:00",
+  "conditions": "A_AND_B_VERIFIED",
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+    "sha256": "6b3714ce235e832abd91a22220192d0ab4df8b6ac69e27ddc210507144deb852",
+    "lines": 365,
+    "topLevelTests": 1,
+    "dependentNativePhases": 4
+  },
+  "acceptedInputs": [
+    {
+      "key": "rootReceipt",
+      "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+      "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+    },
+    {
+      "key": "manifest",
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+      "sha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515"
+    },
+    {
+      "key": "generator",
+      "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3"
+    },
+    {
+      "key": "389UP",
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61"
+    },
+    {
+      "key": "389DOWN",
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927"
+    },
+    {
+      "key": "390UP",
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    {
+      "key": "390DOWN",
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    }
+  ],
+  "all9ArtifactAnd47SourcePinsExact": true,
+  "inventory14Green": true,
+  "startupRelease": {
+    "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/current-runtime-startup-lease-release.json",
+    "sha256": "6b340d3059981b63db1172421ed83787fad55e31e05006a7c7958afe8051bb1e",
+    "runId": "d4eb85047858",
+    "status": "STARTUP_READY_VERIFICATION_LANE_RELEASED",
+    "evidence": [
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/theme-marketplace-2026-10-23/evidence/current-runtime-http-health.json",
+        "sha256": "094eaf55e8937453d1fac3a08e586741cfb11878170d64dc2297361ca3c893dc"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/theme-marketplace-2026-10-23/evidence/current-runtime-explicit-origin.json",
+        "sha256": "1c5ccd57efc8307182258e6a2a767a6ab3a134d80e166d4f7cc7a15c7c572ac2"
+      }
+    ]
+  },
+  "normalOwnerOutputCorroboration": {
+    "threadId": "01a166fc-411f-7092-b982-a055c186d87d",
+    "messageId": "msg_052b9901c8ebf0c5016adb64ad53c881918a7a1d3d9113dd4a",
+    "observation": "Owner reports fresh API and demo ready and reconnecting9005; saved health confirms API/accounts/admin/commerce and parent/demo/install responses."
+  },
+  "limits": "Only fresh through388 nativepromotion suite,jobs1,no-reap; no heldruntime stop/browser/build/provider changes"
+}

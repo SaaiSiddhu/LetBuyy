@@ -1,0 +1,7 @@
+{
+  "journey": "Fill unsaved product, click Products, return Add product",
+  "confirmationObserved": false,
+  "restoredTitle": "",
+  "expectedTitle": "UX Audit Sample Product",
+  "result": "draft not restored"
+}

@@ -1,0 +1,178 @@
+{
+  "recordedAt": "2026-10-24T06:23:09.864Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "phase": "all",
+  "actual": {
+    "id": "01f56eb8-89fa-4fc5-be47-02f3ec591f2f",
+    "title": "Lifecycle accessories",
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "productIds": [
+      "3551ce5c-cead-4b90-a315-fe2c0371101d",
+      "53431d13-9339-471d-a8f1-c10a95b0dae1",
+      "61d34f39-5c67-4e1f-88c8-549674f35b24",
+      "8e65cb28-74c6-41cf-9702-05348faf5f26"
+    ]
+  },
+  "publicResponse": {
+    "status": 200,
+    "requestId": "5c66610e-b9a5-42da-b8a7-7118b3216d83",
+    "meta": {
+      "page": 1,
+      "per_page": 20,
+      "total": 4,
+      "total_pages": 1,
+      "has_next": false,
+      "has_prev": false
+    },
+    "discovery": {
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "sort": "display_order",
+        "collection_id": "01f56eb8-89fa-4fc5-be47-02f3ec591f2f"
+      },
+      "facets": [
+        {
+          "key": "category",
+          "value": "Accessories",
+          "label": "Accessories",
+          "count": 4
+        },
+        {
+          "key": "connector",
+          "value": "ac-plug",
+          "label": "ac-plug",
+          "count": 1
+        },
+        {
+          "key": "connector",
+          "value": "usb-a",
+          "label": "usb-a",
+          "count": 1
+        },
+        {
+          "key": "connector",
+          "value": "usb-c",
+          "label": "usb-c",
+          "count": 3
+        },
+        {
+          "key": "country_of_origin",
+          "value": "india",
+          "label": "India",
+          "count": 4
+        },
+        {
+          "key": "data_rate_mbps",
+          "value": "480",
+          "label": "480",
+          "count": 1
+        },
+        {
+          "key": "electronics_kind",
+          "value": "cable",
+          "label": "cable",
+          "count": 1
+        },
+        {
+          "key": "electronics_kind",
+          "value": "charger",
+          "label": "charger",
+          "count": 1
+        },
+        {
+          "key": "electronics_kind",
+          "value": "hub",
+          "label": "hub",
+          "count": 1
+        },
+        {
+          "key": "length_mm",
+          "value": "1000",
+          "label": "1000",
+          "count": 1
+        },
+        {
+          "key": "pass_through_output_w",
+          "value": "60",
+          "label": "60",
+          "count": 1
+        },
+        {
+          "key": "power_capacity_w",
+          "value": "100",
+          "label": "100",
+          "count": 1
+        },
+        {
+          "key": "power_input_w",
+          "value": "65",
+          "label": "65",
+          "count": 1
+        },
+        {
+          "key": "power_input_w",
+          "value": "70",
+          "label": "70",
+          "count": 1
+        },
+        {
+          "key": "power_output_w",
+          "value": "45",
+          "label": "45",
+          "count": 1
+        },
+        {
+          "key": "power_output_w",
+          "value": "65",
+          "label": "65",
+          "count": 1
+        }
+      ],
+      "matches": [
+        {
+          "product_id": "3551ce5c-cead-4b90-a315-fe2c0371101d",
+          "price": 400,
+          "variant_ids": []
+        },
+        {
+          "product_id": "53431d13-9339-471d-a8f1-c10a95b0dae1",
+          "price": 600,
+          "variant_ids": []
+        },
+        {
+          "product_id": "61d34f39-5c67-4e1f-88c8-549674f35b24",
+          "price": 1200,
+          "variant_ids": []
+        },
+        {
+          "product_id": "8e65cb28-74c6-41cf-9702-05348faf5f26",
+          "price": 1900,
+          "variant_ids": [
+            "24f3540b-5292-4c16-9d4a-f7d8ccd09a83"
+          ]
+        }
+      ],
+      "measurement_capabilities": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "max_width_cm": {
+          "available": false
+        },
+        "max_depth_cm": {
+          "available": false
+        }
+      }
+    },
+    "productIds": [
+      "3551ce5c-cead-4b90-a315-fe2c0371101d",
+      "53431d13-9339-471d-a8f1-c10a95b0dae1",
+      "61d34f39-5c67-4e1f-88c8-549674f35b24",
+      "8e65cb28-74c6-41cf-9702-05348faf5f26"
+    ]
+  }
+}

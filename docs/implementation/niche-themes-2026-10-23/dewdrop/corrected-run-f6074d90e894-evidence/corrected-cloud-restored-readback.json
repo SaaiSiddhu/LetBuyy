@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-23T17:53:47.963Z",
+  "runId": "f6074d90e894",
+  "phase": "restored",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Approved beauty fields plus sibling-metadata/options/inventory digests; no private supplier content or credentials",
+  "actual": {
+    "id": "aa02e0ad-1151-4999-90b0-5fd61aa96260",
+    "name": "Fixture Cloud Rinse",
+    "price": 640,
+    "stock": 12,
+    "beauty": {
+      "format": "Gel cleanser",
+      "shades": [],
+      "warnings": "Fixture warning v1: external use only.",
+      "directions": "Fixture directions v1: use as supplied.",
+      "ingredients": "Cloud v1: Aqua, Glycerin.",
+      "netQuantity": {
+        "unit": "ml",
+        "value": 150
+      },
+      "routineStage": "cleanse",
+      "schemaVersion": 1,
+      "shadeOptionName": "Shade"
+    },
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "siteOrders": 0,
+    "variantRows": 0,
+    "optionsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "productVersion": 9,
+    "inventorySha256": "af014e59d4692d56984794a6b9da3cd1a0191c98b38017d13d97bca741d048e4",
+    "otherMetadataSha256": "f55a6e66153e489f1023a0b5ac53c7a9a2c9710d2679a9a518ef8b8631a2b1e1"
+  }
+}

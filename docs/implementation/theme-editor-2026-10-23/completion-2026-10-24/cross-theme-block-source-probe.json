@@ -1,0 +1,4520 @@
+{
+  "recordedAt": "2026-10-24T09:29:59.776Z",
+  "classification": "ACTUAL_CURRENT_MAIN_SOURCE_ACTION_PROBE_NOT_INSTALLED_OR_BROWSER_PROOF",
+  "factory": "createFirstPartyCatalogBundle designVersion2.0.0",
+  "actionPath": "/Volumes/Projects/LetBuyy/apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+  "actionSHA256": "4666df7afa9ad9a594c946ea5e5f350294e84606978809d3035ddcc391de34e3",
+  "runtimeResolution": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/index.ts",
+  "scope": "Bounded source actions against every section schema and declared first-party root block in10 generated current Main bundles; safety refusals and immutable visibility. No field/default validation, UI save, publication or purchase credit. Playfield2.0.0 is historical compatibility only and does not qualify proposed2.0.1.",
+  "rows": [
+    {
+      "theme": "Threadline",
+      "slug": "letbuyy-sense",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 11,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Pantry",
+      "slug": "letbuyy-refresh",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "6b05ab842f55dd6fcc7b99991a5e5160a5214e4417aedd46c343e94a3041a718",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 12,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [
+            {
+              "blockType": "note",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Dewdrop",
+      "slug": "letbuyy-aura",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "e1f8ee24971241d472ec34e50b855fdb94cea769cdde777bd119ba3c1d17619c",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 12,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Habitat",
+      "slug": "letbuyy-craft",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "4e068c69808b5cb82b8caaabbb9197580c425c1edc43b298fb667959ab050497",
+      "sectionTypes": 46,
+      "firstPartyPlacements": 11,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "habitat-measurement-guide",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Circuit",
+      "slug": "letbuyy-forge",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "cadab65d5351e1d5f8506d3620df481700ff38ae7e23c19f7282d1f31be79b46",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 11,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Trailmark",
+      "slug": "letbuyy-ride",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "127a261320b208ec845277abe51c176921767934988f98a2ce73188bfa95c224",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 11,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Marginalia",
+      "slug": "letbuyy-dawn",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 13,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "subject",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Kindred",
+      "slug": "letbuyy-summit",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "4702e911bbc5d90b9ec46b9ff3d902249d7411b699e0a0c81283a713f91c1655",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 11,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "MadeYours",
+      "slug": "letbuyy-nova",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "a06efcb494f2d8b47d901b57388743de7a1bece20afe818255e8c03ae60597f8",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 12,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "step",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [
+            {
+              "blockType": "badge",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    },
+    {
+      "theme": "Playfield",
+      "slug": "letbuyy-bloom",
+      "version": "2.0.0",
+      "sourceBundleSHA256": "eb21c6b0e48b40cb11b5f3ba1e45f6f2ec8c50667175e82c8edb6bbe36299efc",
+      "sectionTypes": 45,
+      "firstPartyPlacements": 10,
+      "sections": [
+        {
+          "sectionType": "customer-orders",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-order-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-account",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-login",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-register",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-settings",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-wishlist",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "customer-addresses",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "policy-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cart-summary",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "search-box",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-product-list",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "blog-listing",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "article-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "page-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "404-page",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "password-gate",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "announcement-bar",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "about-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "app-block-slot",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "banner-carousel",
+          "firstPartyPlacements": [
+            {
+              "blockType": "slide",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "brand-marquee",
+          "firstPartyPlacements": [
+            {
+              "blockType": "brand",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "category-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "collection-filter",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "contact-form",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "cta-section",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "featured-products",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "experience-timeline",
+          "firstPartyPlacements": [
+            {
+              "blockType": "experience",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "faq-accordion",
+          "firstPartyPlacements": [
+            {
+              "blockType": "faq-item",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "footer",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "header",
+          "firstPartyPlacements": [
+            {
+              "blockType": "link",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "hero-banner",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "marquee",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "portfolio-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "project",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-detail",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "product-grid",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "rich-content",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "services-grid",
+          "firstPartyPlacements": [
+            {
+              "blockType": "service",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "skills-section",
+          "firstPartyPlacements": [
+            {
+              "blockType": "skill",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "testimonials",
+          "firstPartyPlacements": [
+            {
+              "blockType": "testimonial",
+              "rootAdd": "PASS",
+              "immutableVisibility": "PASS",
+              "undeclaredNestingRefused": true
+            }
+          ],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "trust-badges",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "newsletter-signup",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "spotlight",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        },
+        {
+          "sectionType": "video-hero",
+          "firstPartyPlacements": [],
+          "appUnknownRefusals": "PASS",
+          "explicitChildDeclarations": {
+            "badge": []
+          }
+        }
+      ]
+    }
+  ],
+  "wholeThemeCertified": false,
+  "browserActions": 0,
+  "fixtureActions": 0
+}

@@ -1,0 +1,29 @@
+{
+  "classification": "INDEPENDENT_OFFLINE_ABSENT_APPAREL_SOURCE_REVIEW_NOT_LIVE_ACCEPTANCE",
+  "recordedAt": "2026-10-23T18:23:27.969339+00:00",
+  "release": {
+    "path": "docs/implementation/niche-themes-2026-10-23/marginalia/absent-apparel-facts/source-release.json",
+    "sha256": "c11ced80152c238b1c08e9034e2e201cd575f788228ef7c9ef5f73e173de3be9"
+  },
+  "result": "PASS_BOUNDED_SOURCE_DIFF_AND_RECORDED_EVIDENCE_INTEGRITY",
+  "checks": {
+    "exactThreeReleasedSourceHashes": true,
+    "exactBeforeCopies": true,
+    "hashedReleaseOutputs": 9,
+    "protectedSourcePinsUnchanged": 7,
+    "productionDiffExactlyScopedToConditionalApparelMerge": true,
+    "allExistingTestBodiesRetained": true,
+    "recordedSharedTests": 95,
+    "recordedFocusedTests": 16,
+    "twoPreservedRedReproductions": true,
+    "currentF607HelperStillBeforeBytes": true
+  },
+  "review": [
+    "Canonical Apparel validation precedes optional-namespace absence decision.",
+    "Existing apparel property and explicit nonempty raw garment draft keep canonical writing and existing clearing semantics.",
+    "Absent apparel plus untouched raw empty object is preserved; private and niche sibling merge/validation is retained."
+  ],
+  "testsExecutedByThisAudit": 0,
+  "runtimeOrDatabaseCallsExecuted": 0,
+  "requiredLiveRetest": "Controlled Root update then normal save/reload against a truly absent-apparel baseline; current f607 observation remains historical and source-only repair does not earn live acceptance."
+}

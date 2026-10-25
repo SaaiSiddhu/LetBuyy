@@ -1,0 +1,132 @@
+TAP version 13
+# Subtest: one emitted Sense-only payload, exact prior210/version6 and paired byte hashes
+ok 1 - one emitted Sense-only payload, exact prior210/version6 and paired byte hashes
+  ---
+  duration_ms: 6.308917
+  type: 'test'
+  ...
+# Subtest: all ten deterministic restored fields have exact emitted guards in both directions
+ok 2 - all ten deterministic restored fields have exact emitted guards in both directions
+  ---
+  duration_ms: 2.2675
+  type: 'test'
+  ...
+# Subtest: valid original merchant config stays exact without default reconstruction
+ok 3 - valid original merchant config stays exact without default reconstruction
+  ---
+  duration_ms: 1.895125
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved name
+ok 4 - source predicate model refuses forged saved name
+  ---
+  duration_ms: 1.353458
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved category
+ok 5 - source predicate model refuses forged saved category
+  ---
+  duration_ms: 0.616292
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved version
+ok 6 - source predicate model refuses forged saved version
+  ---
+  duration_ms: 0.552875
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved default_template
+ok 7 - source predicate model refuses forged saved default_template
+  ---
+  duration_ms: 38.721292
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved section_schemas
+ok 8 - source predicate model refuses forged saved section_schemas
+  ---
+  duration_ms: 14.473917
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved block_schemas
+ok 9 - source predicate model refuses forged saved block_schemas
+  ---
+  duration_ms: 1.252375
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved settings_schema
+ok 10 - source predicate model refuses forged saved settings_schema
+  ---
+  duration_ms: 1.074667
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved renderer_manifest
+ok 11 - source predicate model refuses forged saved renderer_manifest
+  ---
+  duration_ms: 0.838291
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved schema_version
+ok 12 - source predicate model refuses forged saved schema_version
+  ---
+  duration_ms: 0.878334
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved renderer_version
+ok 13 - source predicate model refuses forged saved renderer_version
+  ---
+  duration_ms: 0.745792
+  type: 'test'
+  ...
+# Subtest: strict prior/journal shapes refuse missing/extra/null/array checkpoints
+ok 14 - strict prior/journal shapes refuse missing/extra/null/array checkpoints
+  ---
+  duration_ms: 1.997834
+  type: 'test'
+  ...
+# Subtest: original-config drift, nested checkpoint and wrong promotion hash are refused
+not ok 15 - original-config drift, nested checkpoint and wrong promotion hash are refused
+  ---
+  duration_ms: 5.787125
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-five-theme211-20261025-01/sql-contract.test.mjs:59:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(sql.includes("(t.config-'firstPartySense211') IS DISTINCT FROM prior->'config'"))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-five-theme211-20261025-01/sql-contract.test.mjs:63:29)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: joint manifest only references four immutable heading payloads plus new Sense
+ok 16 - joint manifest only references four immutable heading payloads plus new Sense
+  ---
+  duration_ms: 5.118958
+  type: 'test'
+  ...
+# Subtest: paired source restores all11 metadata fields and never deletes captures/installed data or changes authority
+ok 17 - paired source restores all11 metadata fields and never deletes captures/installed data or changes authority
+  ---
+  duration_ms: 3.6905
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 16
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 256.566

@@ -1,4 +1,9 @@
+import 'package:share_plus/share_plus.dart';
+import 'package:letbuyy_store/widgets/shared/merchant_export_share.dart';
 import 'package:letbuyy_store/screens/settings/settings_screen.dart';
+import 'package:letbuyy_store/screens/auth/login_screen.dart';
+import 'package:letbuyy_store/widgets/shared/merchant_search_sheet.dart';
+import 'package:letbuyy_store/screens/money/money_screen.dart';
 import 'dart:io';
 import 'dart:convert';
 
@@ -116,6 +121,86 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'support/loyalty_fixture.dart' show MemoryStorage;
 
 void main() {
+  test('blog form omits absent SEO fields and sends strings when blank', () {
+    const absent = BlogPostInput(storeId: 'store', title: 'Synthetic', content: 'Body');
+    expect(absent.toJson(includeStoreId: true).containsKey('seo_title'), isFalse);
+    const blank = BlogPostInput(storeId: 'store', title: 'Synthetic', content: 'Body', seoTitle: '', seoDescription: '');
+    final payload = blank.toJson(includeStoreId: true);
+    expect(payload['seo_title'], '');
+    expect(payload['seo_description'], '');
+    expect(payload.values.contains(null), isFalse);
+  });
+
+  test('CSV sharing downloads through the authenticated API and attaches file bytes', () async {
+    final api=_FakeApiClient(raw:{'/export/jobs/synthetic-job/download':'name,stock\nSynthetic,3\n'});
+    ShareParams? captured;
+    final result=await shareMerchantExport(api:api,job:{'id':'synthetic-job','status':'completed','filename':'products.csv','download_url':'https://worker.invalid/v1/export/jobs/synthetic-job/download?token=synthetic-proof'},share:(params) async {captured=params;return const ShareResult('dismissed',ShareResultStatus.dismissed);});
+    expect(result.status,ShareResultStatus.dismissed);
+    expect(api.paths.single,'/export/jobs/synthetic-job/download');
+    expect(api.queries[api.paths.single]?['token'],'synthetic-proof');
+    expect(captured!.text,isNull);
+    expect(captured!.fileNameOverrides,['products.csv']);
+    expect(await captured!.files!.single.readAsString(),'name,stock\nSynthetic,3\n');
+  });
+  test('CSV sharing rejects a mismatched job link before reading credentials or sharing', () async {
+    final api=_FakeApiClient();
+    await expectLater(shareMerchantExport(api:api,job:{'id':'one','status':'completed','download_url':'https://worker.invalid/v1/export/jobs/two/download?token=synthetic-proof'}),throwsA(isA<ApiException>()));
+    expect(api.paths,isEmpty);
+  });
+
+  test('coupon validation submits the checkout order-total field', () async {
+    final api = _FakeApiClient(json: {'/coupons/validate': {'valid': true}});
+    await CouponService(api: api).validateCoupon(storeId: 'store_1', code: 'AUDIT', subtotal: 1000);
+    expect((api.bodies['/coupons/validate'] as Map)['order_total'], 1000);
+    expect((api.bodies['/coupons/validate'] as Map).containsKey('subtotal'), isFalse);
+  });
+
+  test('inventory commands preserve purchase/transfer identity and address readbacks', () {
+    final po = PurchaseOrderContract.fromJson({'purchase_order': {'id': 'po_1', 'site_id': 'store_1', 'status': 'received'}, 'lines': [{'id': 'line_1', 'quantity': 2, 'received_quantity': 2}]});
+    expect(po.id, 'po_1'); expect(po.status, 'received'); expect(po.lines.single.remainingQuantity, 0);
+    final transfer = InventoryTransferContract.fromJson({'transfer': {'id': 'transfer_1', 'site_id': 'store_1', 'status': 'shipped'}, 'lines': []});
+    expect(transfer.id, 'transfer_1'); expect(transfer.status, 'shipped');
+    final location = InventoryLocationContract.fromJson({'id': 'loc_1', 'store_id': 'store_1', 'address': {'address': 'Warehouse', 'city': 'Chennai', 'state': 'TN', 'country': 'IN'}});
+    expect(location.address, 'Warehouse'); expect(location.city, 'Chennai'); expect(location.state, 'TN');
+  });
+
+  testWidgets('password reset validates input and only acknowledges successful backend reply', (tester) async {
+    var attempts = 0;
+    await tester.pumpWidget(MaterialApp(home: PasswordResetDialog(initialEmail: 'invalid', requestReset: (_) async {
+      attempts++; if (attempts == 1) throw StateError('Synthetic unavailable');
+    })));
+    await tester.tap(find.text('Request reset')); await tester.pump();
+    expect(attempts, 0); expect(find.text('Enter a valid email'), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField), 'synthetic@example.invalid');
+    await tester.tap(find.text('Request reset')); await tester.pumpAndSettle();
+    expect(find.textContaining('could not be requested'), findsOneWidget);
+    expect(find.textContaining('If an account exists'), findsNothing);
+    await tester.tap(find.text('Request reset')); await tester.pumpAndSettle();
+    expect(attempts, 2); expect(find.textContaining('If an account exists'), findsOneWidget);
+  });
+
+  testWidgets('merchant search calls bounded scoped product/order APIs and retires old store results', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final api = _FakeApiClient(paginated: {
+      '/stores': [_storeJson(), _storeJson(id: 'store_2', name: 'Second Store', subdomain: 'second')],
+      '/products': [_productJson()], '/orders': [_orderJson()],
+    });
+    final scope = StoreContext(storeService: StoreService(api: api));
+    await scope.loadStores(); addTearDown(scope.dispose);
+    await tester.pumpWidget(MultiProvider(providers: [
+      Provider<ApiClient>.value(value: api), ChangeNotifierProvider<StoreContext>.value(value: scope),
+    ], child: const MaterialApp(home: Scaffold(body: MerchantSearchSheet()))));
+    await tester.enterText(find.byType(TextField), 'Synthetic');
+    await tester.pump(const Duration(milliseconds: 400)); await tester.pumpAndSettle();
+    expect(api.queries['/products']?['search'], 'Synthetic');
+    expect(api.queries['/orders']?['store_id'], 'store_1');
+    expect(api.queries['/products']?['limit'], 10);
+    expect(find.text('Product'), findsOneWidget);
+    await scope.selectStoreById('store_2'); await tester.pumpAndSettle();
+    expect(find.text('Product'), findsNothing);
+    expect(find.textContaining('selected store changed'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('mobile gateway services', () {
@@ -3000,6 +3085,24 @@ void main() {
       expect(AppRoutes.isKnownRoute('/not-a-route'), isFalse);
     });
 
+    test('PushService reports denied OS permission without registering a token', () async {
+      final api = _FakeApiClient();
+      final service = PushService(api:api,tokenProvider:()=>throw const PushPermissionDenied());
+      expect(await service.registerCurrentDeviceToken(),isFalse);
+      expect(service.registrationState,PushRegistrationState.permissionDenied);
+      expect(api.paths,isEmpty);
+    });
+
+    test('PushService registers refreshed token then removes the old account token', () async {
+      final api = _FakeApiClient();
+      final service=PushService(api:api);
+      await service.registerDeviceToken(token:'synthetic-old-token');
+      await service.registerDeviceToken(token:'synthetic-new-token');
+      expect(service.registrationState,PushRegistrationState.registered);
+      expect(api.paths.where((p)=>p=='/notifications/device-tokens').length,3);
+      expect(api.bodies['/notifications/device-tokens'],{'token':'synthetic-old-token'});
+    });
+
     test('ProductService keeps canonical ProductContract payloads', () async {
       final api = _FakeApiClient(
         paginated: {
@@ -3011,6 +3114,17 @@ void main() {
 
       expect(products.single['store_id'], 'store_1');
       expect(products.single.containsKey('salePrice'), isFalse);
+    });
+
+    test('ProductService deletes a fetched cached product without mutating a fixed list', () async {
+      final api = _FakeApiClient(paginated: {'/products': [_productJson()]});
+      final service = ProductService(api: api);
+      await service.fetchProducts('store_1');
+      final id = service.products.single['id'] as String;
+      await service.deleteProduct(id);
+      expect(service.products, isEmpty);
+      expect(service.productContracts, isEmpty);
+      expect(api.paths, contains('/products/$id'));
     });
 
     test('high-volume lists preserve cursor pagination metadata', () async {
@@ -3780,6 +3894,80 @@ void main() {
         api.bodies['/returns/return_1/refund/complete'],
         containsPair('provider_refund_id', 'rfnd_1'),
       );
+    });
+
+    test('product fallback never carries another store catalog into a failed read', () async {
+      final errors = <String, ApiException>{};
+      final api = _FakeApiClient(paginated: {'/products': [_productJson()]}, errors: errors);
+      final service = ProductService(api: api, cache: CacheService.memory());
+      expect(await service.fetchProducts('store_1'), isNotEmpty);
+      errors['/products'] = const ApiException(message: 'Network unavailable', statusCode: 503, code: 'UNAVAILABLE');
+      await expectLater(service.fetchProducts('store_2'), throwsA(isA<ApiException>()));
+      expect(service.products, isEmpty);
+    });
+
+    testWidgets('products show a retry state for failed reads instead of an empty catalog', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]},
+        errors: {'/products': const ApiException(message: 'Unavailable', statusCode: 503, code: 'UNAVAILABLE')});
+      await tester.pumpWidget(MultiProvider(providers: [..._storeProviders(api),
+        ChangeNotifierProvider(create: (_) => ProductService(api: api))],
+        child: const MaterialApp(home: ProductsScreen())));
+      await tester.pumpAndSettle();
+      expect(find.text('Retry products'), findsOneWidget);
+      expect(find.text('0 Total'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('database product cards fit the S26 viewport without clipping', (tester) async {
+      final errors = <FlutterErrorDetails>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = errors.add;
+      addTearDown(() => FlutterError.onError = previous);
+      SharedPreferences.setMockInitialValues({});
+      tester.view.physicalSize = const Size(411, 891);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()],
+        '/products': [{..._productJson(), 'name': 'Bengaluru Street Runner'}]});
+      await tester.pumpWidget(MultiProvider(providers: [..._storeProviders(api),
+        ChangeNotifierProvider(create: (_) => ProductService(api: api))],
+        child: const MaterialApp(home: ProductsScreen())));
+      await tester.pumpAndSettle();
+      FlutterError.onError = previous;
+      expect(find.text('Bengaluru Street Runner'), findsOneWidget);
+      expect(errors.map((e) => e.toString()), isEmpty);
+    });
+
+    testWidgets('money keeps payouts available when wallet reconciliation is required', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final api = _FakeApiClient(
+        paginated: {'/stores': [_storeJson()]},
+        json: {
+          '/payouts': {'payouts': [], 'summary': {'provider_mode': 'sandbox'}},
+          '/commission': _commissionJson(),
+          '/cod/reconciliation': _codJson(),
+        },
+        errors: {'/wallet': const ApiException(message: 'Needs reconciliation',
+          statusCode: 409, code: 'LEDGER_RECONCILIATION_REQUIRED')},
+      );
+      await tester.pumpWidget(MultiProvider(
+        providers: [..._storeProviders(api),
+          ChangeNotifierProvider(create: (_) => MoneyService(api: api))],
+        child: const MaterialApp(home: MoneyScreen()),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('No payout statements yet.'), findsOneWidget);
+      // Refresh must never create a payout statement.
+      await tester.widget<RefreshIndicator>(find.byType(RefreshIndicator)).onRefresh();
+      await tester.pumpAndSettle();
+      expect(api.requestOptions['/payouts']!.every((o) => o?.method != HttpMethod.post), isTrue);
+      await tester.tap(find.text('Wallet'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('ledger reconciliation is verified'), findsOneWidget);
+      expect(find.text('Available balance'), findsNothing);
+      expect(tester.takeException(), isNull);
     });
 
     test(
@@ -5813,6 +6001,15 @@ void main() {
         expect(service.lastAttempt, isNull);
       },
     );
+
+    test('background push registration failures are reported without escaping sign-in', () async {
+      final failing = PushService(api: _FakeApiClient(errors: {'/notifications/device-tokens': const ApiException(message:'unavailable',statusCode:503,code:'SERVICE_UNAVAILABLE')}), tokenProvider: ()=>'synthetic-token');
+      expect(await failing.registerCurrentDeviceToken(), isFalse);
+      expect(failing.registrationState, PushRegistrationState.failed);
+      final sourceFailure = PushService(api:_FakeApiClient(), tokenProvider:() async=>throw StateError('native provider unavailable'));
+      expect(await sourceFailure.registerCurrentDeviceToken(), isFalse);
+      expect(sourceFailure.registrationState, PushRegistrationState.failed);
+    });
 
     test('AnalyticsService assembles dashboard metrics', () async {
       final api = _FakeApiClient(
@@ -8158,6 +8355,17 @@ void main() {
     expect(find.text('New coupon'), findsOneWidget);
     expect(find.text('Create coupon'), findsOneWidget);
     expect(find.text('Code'), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField).at(0), 'SYNTHETIC10');
+    await tester.enterText(find.byType(TextFormField).at(2), '10');
+    await tester.tap(find.text('Create coupon'));
+    await tester.pumpAndSettle();
+    final payload = api.bodies['/coupons'] as Map;
+    expect(payload['type'], 'percentage');
+    expect(payload['per_customer_limit'], 1);
+    expect(payload.containsKey('maximum_discount'), isFalse);
+    expect(payload.containsKey('minimum_order_amount'), isFalse);
+    expect(payload.containsKey('expires_at'), isFalse);
+    expect(payload.values.contains(null), isFalse);
   });
 
   testWidgets('GiftCardsScreen renders balances and issue action', (
@@ -8220,7 +8428,10 @@ void main() {
     expect(find.text('New order received'), findsOneWidget);
     expect(find.text('Mark all read'), findsOneWidget);
     expect(find.text('Channels'), findsOneWidget);
+    expect(find.textContaining('Push delivery is not configured'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('New orders'), 180);
     expect(find.text('New orders'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Low stock'), 120);
     expect(find.text('Low stock'), findsOneWidget);
   });
 

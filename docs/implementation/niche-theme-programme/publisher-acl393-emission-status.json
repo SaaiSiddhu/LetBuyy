@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-24T06:02:37.666993+00:00",
+  "status": "ACL393_CANONICAL_SOURCE_EMITTED_CURRENT_REGRESSION_BATCH_STABLE_PENDING_ROOT_REVIEW_NO_NEW_NATIVE_OR_GLOBAL_CLOSURE",
+  "issue": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/additional-qualifier-discovery.json",
+  "nativeExecuted": false,
+  "newClosureSealed": false,
+  "source394Emitted": false,
+  "additionalQualifierClassifiedWithRootGrant": true,
+  "registrySemanticChanges": 0,
+  "registryProvenanceOrigins": [
+    384,
+    388
+  ],
+  "currentSourceStable": true,
+  "pendingMigrationSafetyIssue": "Existing388 closed privilege_type IN ACL read includes TRUNCATE literal; migration-safety validator rejects it.393 has no finding.",
+  "pendingSequentialGate": "Untracked382\u2013393 source files; no staging/commit performed. Full source sequence322/max393 has no gap or duplicate.",
+  "publisherAndPlayfieldClassificationPass": true,
+  "currentGatewayLaneGate": "13/14: newly arrived concurrent collection-list-read.postgres.test.ts missing from reviewed inventory; owned/no-skip guard checks pass. Registering the admitted concurrent current suite as inventory-only change.",
+  "sourceRelease": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/source-release.json",
+    "sha256": "93456d93edbe6307a6aa5073efb1d16eb152bb29affe9c7f3a58fa00693e7041",
+    "bytes": 14109
+  },
+  "sourceStable": true,
+  "pureChecks": "22/22",
+  "laneGovernance": "14/14",
+  "tenantIsolation": "PASS317/0bypasses",
+  "actualFactoryPinsUnchanged": true
+}

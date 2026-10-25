@@ -1,0 +1,53 @@
+{
+  "emittedAt": "2026-10-23T14:23:07.978668+00:00",
+  "status": "EXACT_QUALIFIED390_SOURCE_PAIR_EMITTED_NOT_HOSTED_APPLIED",
+  "admitted389Receipt": {
+    "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+    "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+  },
+  "combinedQualification": {
+    "runId": "1a4e6e2c85ad",
+    "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/result.json",
+    "sha256": "5fe9172f3af72be38fb45c5024270b048adce6d2eeea451b73be6e26bcea7797",
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "before": {
+    "maxMigration": 389,
+    "active390Up": 0,
+    "active390Down": 0
+  },
+  "files": [
+    {
+      "source": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+      "path": "database/supabase/migrations/390_storefront_measurement_capabilities.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+      "bytes": 26476,
+      "exclusiveCreate": true,
+      "byteIdentical": true
+    },
+    {
+      "source": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+      "path": "database/supabase/rollback/390_storefront_measurement_capabilities.rollback.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a",
+      "bytes": 24601,
+      "exclusiveCreate": true,
+      "byteIdentical": true
+    }
+  ],
+  "noSqlContentOrCommentChange": true,
+  "hostedDatabaseApplied": false,
+  "buildOrBrowserStarted": false,
+  "heldResourcesTouched": false,
+  "verificationLaneReleased": true
+}

@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-23T18:07:10.746922+00:00",
+  "runId": "f6074d90e894",
+  "observedImageDom": {
+    "complete": true,
+    "naturalWidth": 0,
+    "naturalHeight": 0,
+    "src": "http://syn-threadline-ui-33be9d94.localhost:62076/theme-assets/dewdrop/v2/cloud-rinse.webp"
+  },
+  "exactObservedResourceAndKnownPlatformCounterpart": [
+    {
+      "url": "http://syn-threadline-ui-33be9d94.localhost:62076/theme-assets/dewdrop/v2/cloud-rinse.webp",
+      "httpStatus": 200,
+      "contentType": "image/webp",
+      "contentSecurityPolicy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' http://accounts.threadline-f6074d90e894.localhost:62074 http://admin.threadline-f6074d90e894.localhost:62075 http://127.0.0.1:62083 https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: http://accounts.threadline-f6074d90e894.localhost:62074 http://admin.threadline-f6074d90e894.localhost:62075 http://127.0.0.1:62083; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com http://accounts.threadline-f6074d90e894.localhost:62074 http://admin.threadline-f6074d90e894.localhost:62075 http://127.0.0.1:62083; frame-ancestors 'self' http://admin.threadline-f6074d90e894.localhost:62075; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "bytes": 77310,
+      "sha256": "214cf097fe6933dc068f12624fff6c2444f88305efffd4b954614bc4519126e1",
+      "webpMagic": true
+    },
+    {
+      "url": "http://localhost:62076/theme-assets/dewdrop/v2/cloud-rinse.webp",
+      "httpStatus": 200,
+      "contentType": "image/webp",
+      "contentSecurityPolicy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' http://accounts.threadline-f6074d90e894.localhost:62074 http://admin.threadline-f6074d90e894.localhost:62075 http://127.0.0.1:62083 https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: http://accounts.threadline-f6074d90e894.localhost:62074 http://admin.threadline-f6074d90e894.localhost:62075 http://127.0.0.1:62083; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com http://accounts.threadline-f6074d90e894.localhost:62074 http://admin.threadline-f6074d90e894.localhost:62075 http://127.0.0.1:62083; frame-ancestors 'self' http://admin.threadline-f6074d90e894.localhost:62075; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "bytes": 77310,
+      "sha256": "214cf097fe6933dc068f12624fff6c2444f88305efffd4b954614bc4519126e1",
+      "webpMagic": true
+    }
+  ],
+  "candidateAsset": {
+    "exists": true,
+    "sha256": "214cf097fe6933dc068f12624fff6c2444f88305efffd4b954614bc4519126e1"
+  },
+  "noReplacementOrPolicyChange": true
+}

@@ -1,0 +1,15 @@
+Browser tab: 49, Title: "Secure Checkout", URL: "https://checkout.localhost:50497/checkout?[query-redacted]".
+1 AXWebArea Secure Checkout, URL: checkout.localhost:50497/checkout?[query-redacted]
+	2 container
+		3 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		4 text Secure checkout
+	5 heading Order Confirmed!, Value: 1
+		6 text Order Confirmed!
+	7 text Thank you for your purchase. We will send order updates to the contact details you provided.
+	8 container
+		9 text Order Number:  ORD-20261024-10000
+	10 text COD order confirmed. Keep the order amount ready for the delivery partner.
+	11 link Description: Track Your Order, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/orders
+	12 link Description: Continue Shopping, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+
+The focused UI element is 1 AXWebArea Secure Checkout, URL: checkout.localhost:50497/checkout?[query-redacted]

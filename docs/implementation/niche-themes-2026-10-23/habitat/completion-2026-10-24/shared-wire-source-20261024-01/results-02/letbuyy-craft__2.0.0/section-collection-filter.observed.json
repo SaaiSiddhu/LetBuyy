@@ -1,0 +1,74 @@
+{
+  "id": "section-collection-filter",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "collection-filter",
+    "group": "template",
+    "firstId": "section-652c0640-a4e2-47f9-b366-aa7ded0b1ea1",
+    "finalId": "section-8069553c-fec6-4e10-9d1a-2a55ababb8ff",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "collection-filter",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "collection-filter",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "collection-filter",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "collection-filter",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

@@ -1,0 +1,126 @@
+- link "Skip to content":
+  - /url: "#MainContent"
+- banner:
+  - heading "Horizon" [level=1]
+  - generic "Menu" [active]:
+  - button "Close":
+  - navigation:
+    - list:
+      - link "Shop":
+        - /url: /collections/all
+        - generic: Shop
+      - link "Contact":
+        - /url: /pages/contact
+        - generic: Contact
+  - button "Search":
+  - link "Horizon":
+    - /url: /
+    - generic: Horizon
+  - button "Account":
+  - button "Cart":
+    - status:
+      - generic: "Total items in cart: 0"
+- main:
+  - img "Two models wearing sweaters from our latest collection."
+  - heading "New arrivals" [level=2]
+  - link "Shop now":
+    - /url: /collections/all
+  - heading "Featured products" [level=3]
+  - link "View all":
+    - /url: /collections/front-page
+  - link "Michael Shaggy Wool Cardigan":
+    - /url: /products/michael-shaggy-wool-cardigan-324-1?variant=50385529667905
+    - generic: Michael Shaggy Wool Cardigan
+  - link "Michael Shaggy Wool Cardigan":
+    - /url: /products/michael-shaggy-wool-cardigan-324-1?variant=50385529667905
+    - img "Pumice | Michael Shaggy Wool Cardigan"
+  - status
+  - heading "Michael Shaggy Wool Cardigan" [level=4]
+  - generic: $285.00
+  - link "Sofia Lightweight Turtleneck Top":
+    - /url: /products/sofia-lightweight-turtleneck-top-324-1?variant=50385562468673
+    - generic: Sofia Lightweight Turtleneck Top
+  - link "Sofia Lightweight Turtleneck Top":
+    - /url: /products/sofia-lightweight-turtleneck-top-324-1?variant=50385562468673
+    - img "Black | Sofia Lightweight Turtleneck Top"
+  - status
+  - heading "Sofia Lightweight Turtleneck Top" [level=4]
+  - generic: $93.00
+  - link "Mohair Shaggy Knit":
+    - /url: /products/mohair-shaggy-knit-424-2?variant=50385483596097
+    - generic: Mohair Shaggy Knit
+  - link "Mohair Shaggy Knit":
+    - /url: /products/mohair-shaggy-knit-424-2?variant=50385483596097
+    - img "Lavender | Mohair Shaggy Knit | Saturdays NYC"
+  - status
+  - heading "Mohair Shaggy Knit" [level=4]
+  - generic: $233.00
+  - link "Striped Waffle LS Tee":
+    - /url: /products/striped-waffle-ls-tee-324-1?variant=50385573314881
+    - generic: Striped Waffle LS Tee
+  - link "Striped Waffle LS Tee":
+    - /url: /products/striped-waffle-ls-tee-324-1?variant=50385573314881
+    - img "French Vanilla | Striped Waffle LS Tee"
+  - status
+  - heading "Striped Waffle LS Tee" [level=4]
+  - generic: $76.00
+  - link "Denim Jacket":
+    - /url: /products/denim-jacket-324?variant=50385506468161
+    - generic: Denim Jacket
+  - link "Denim Jacket":
+    - /url: /products/denim-jacket-324?variant=50385506468161
+    - img "Indigo | Denim Jacket"
+  - status
+  - heading "Denim Jacket" [level=4]
+  - generic: $236.00
+  - link "Leah Cashmere Zip Sweater":
+    - /url: /products/leah-cashmere-zip-sweater-324-1?variant=50385565352257
+    - generic: Leah Cashmere Zip Sweater
+  - link "Leah Cashmere Zip Sweater":
+    - /url: /products/leah-cashmere-zip-sweater-324-1?variant=50385565352257
+    - img "Ash Heather | Leah Cashmere Zip Sweater"
+  - status
+  - heading "Leah Cashmere Zip Sweater" [level=4]
+  - generic: $214.00
+  - link "Jahmad Long Sleeve Polo":
+    - /url: /products/jahmad-linen-long-sleeve-polo-324-1?variant=50385524556097
+    - generic: Jahmad Long Sleeve Polo
+  - link "Jahmad Long Sleeve Polo":
+    - /url: /products/jahmad-linen-long-sleeve-polo-324-1?variant=50385524556097
+    - img "Fern | Jahmad Linen Long Sleeve Polo"
+  - status
+  - heading "Jahmad Long Sleeve Polo" [level=4]
+  - generic: $214.00
+  - link "Mole Yarn Stripe Skipper Knit":
+    - /url: /products/mole-yarn-stripe-skipper-knit-424-1?variant=50385464787265
+    - generic: Mole Yarn Stripe Skipper Knit
+  - link "Mole Yarn Stripe Skipper Knit":
+    - /url: /products/mole-yarn-stripe-skipper-knit-424-1?variant=50385464787265
+    - img "Brick/White | Mole Yarn Stripe Skipper Knit | Saturdays NYC"
+  - status
+  - heading "Mole Yarn Stripe Skipper Knit" [level=4]
+  - generic: $207.00
+- heading "Join the club" [level=2]
+- paragraph: Get exclusive deals and early access to new products.
+- generic: Email
+- textbox "Email":
+  - /placeholder: Email address
+- button "Sign up":
+- text: © 2026
+- link "Horizon":
+  - /url: /
+- text: ","
+- link "Powered by Shopify":
+  - /url: https://www.shopify.com
+- link "Facebook":
+  - /url: https://www.facebook.com/shopify
+- link "Instagram":
+  - /url: https://www.instagram.com/shopify
+- link "Youtube":
+  - /url: https://www.youtube.com/shopify
+- link "Tiktok":
+  - /url: https://www.tiktok.com/@shopify
+- link "Twitter":
+  - /url: https://x.com/shopify
+- dialog:
+  - button "Close dialog":

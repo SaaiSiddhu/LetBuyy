@@ -1,0 +1,33 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "browse",
+  "value": {
+    "siteId": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+    "query": {
+      "page": 1,
+      "limit": 20,
+      "sort": "display_order",
+      "color": "Silver",
+      "electronics_manufacturer": "Synthetic Variant Lab",
+      "compatibility_evidence": "supplied"
+    },
+    "raw": {
+      "data": [],
+      "count": 0,
+      "facets": [],
+      "matches": [],
+      "measurement_capabilities": {
+        "max_depth_cm": {
+          "available": false
+        },
+        "max_width_cm": {
+          "available": false
+        },
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        }
+      }
+    }
+  }
+}

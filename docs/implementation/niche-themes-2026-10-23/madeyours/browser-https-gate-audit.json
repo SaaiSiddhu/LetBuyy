@@ -1,0 +1,70 @@
+{
+  "recordedAt": "2026-10-23T18:17:39.900873+00:00",
+  "classification": "SHARED_FIXTURE_NORMAL_BROWSER_HTTPS_GATE_PASS_NO_MADEYOURS_CASE_OR_PURCHASE_CREDIT",
+  "runId": "f6074d90e894",
+  "controller": "Editor / 01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "observedByThisChat": "Public receipt and AX audited; saved screenshot visually inspected. No browser/OS/runtime operation by this chat.",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-exact-leaf-browser-attempt.json",
+      "sha256": "dc4a2705b09d2c57845d2e81ed82fa4965084d3dee0016d2a1fda4b407265794",
+      "bytes": 416
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-exact-leaf-hosted-form.ax.txt",
+      "sha256": "347853672d7393b74221fbe22c275e7418d5d7a6f904727516d01ce205272633",
+      "bytes": 2322
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-exact-leaf-hosted-form.jpg",
+      "sha256": "a7df4ba8c52d07d766c919c612d0f4a10146b1361e12d89f7d63bd7b90d1ef26",
+      "bytes": 38130
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-normal-checkout-tls-failure.json",
+      "sha256": "eef0122062a946fd621fe9930f2f35f49debd9d09401d6156df39c0bee17e503",
+      "bytes": 619
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/trusted-checkout-exact-leaf-result.json",
+      "sha256": "23c21b45b0efafe82e55f7ff9ed2f26cdbe468bd7c73b72ed563499fae89f475",
+      "bytes": 2018
+    }
+  ],
+  "observed": {
+    "normalCartCheckoutNavigation": true,
+    "hostedOrigin": "https://checkout.localhost:62082",
+    "realDeliveryAddressForm": true,
+    "stateAndDeliveryOptionsAndPaymentControl": true,
+    "summarySubtotal": 1120,
+    "securityBypass": false,
+    "orderConfirmed": false,
+    "buyerRegistrationProven": false
+  },
+  "preservedFailure": {
+    "runId": "f6074d90e894",
+    "normalHostedFormReached": false,
+    "actualErrorCodes": [],
+    "exactCodeWithdrawn": "Do not reuse old9cd ERR_CERT_AUTHORITY_INVALID for this f607 attempt; the fresh exact code was not retained.",
+    "priorFailedTabPreserved": 17
+  },
+  "trustScopeReceipt": {
+    "status": "EXACT_NON_CA_LEAF_SSL_TRUST_INSTALLED_AND_SCOPE_VERIFIED_BROWSER_PENDING",
+    "leafSha256": "ED:31:FA:12:CC:B5:9E:65:9D:02:B6:7C:7D:C5:B6:4D:88:90:6A:B3:00:BD:05:FF:F1:99:3F:AD:D0:F6:F3:0B",
+    "nonCA": true,
+    "singleDNS": "checkout.localhost",
+    "correctHostOsExit": 0,
+    "wrongHostAndDescendantOsDenials": true
+  },
+  "runtimeMadeYours": {
+    "run": 0,
+    "passed": 0,
+    "failed": 0,
+    "notRun": 23
+  },
+  "remaining": [
+    "Editor sole controller; no MadeYours controller transfer",
+    "Normal buyer registration and actual buyer purchase remain required",
+    "Position7 all23 actual cases with UI setup2, purchase2, edit3 and MY21 beforeMY20"
+  ]
+}

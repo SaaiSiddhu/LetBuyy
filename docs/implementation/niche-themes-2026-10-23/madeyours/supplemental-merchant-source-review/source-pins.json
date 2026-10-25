@@ -1,0 +1,98 @@
+[
+  {
+    "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+    "workspaceSha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12",
+    "sealedF607Sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12",
+    "equal": true
+  },
+  {
+    "path": "scripts/governance/owned-client-launcher.mjs",
+    "workspaceSha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f",
+    "sealedF607Sha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f",
+    "equal": true
+  },
+  {
+    "path": "scripts/governance/owned-fixture-guard.mjs",
+    "workspaceSha256": "c94f451113535b4c89a1a37d441453ba7803b08e46a328097c7086e1d22835f8",
+    "sealedF607Sha256": "c94f451113535b4c89a1a37d441453ba7803b08e46a328097c7086e1d22835f8",
+    "equal": true
+  },
+  {
+    "path": "scripts/governance/owned-next-directory.mjs",
+    "workspaceSha256": "461eed7dcfa671e2f9bd9c1e8a854cd9afabe7a0bc66b1c7acf6e1230a902ad2",
+    "sealedF607Sha256": "461eed7dcfa671e2f9bd9c1e8a854cd9afabe7a0bc66b1c7acf6e1230a902ad2",
+    "equal": true
+  },
+  {
+    "path": "scripts/governance/owned-next-production.mjs",
+    "workspaceSha256": "faca5a456437e6bc0979530cd28e712ad002d880e357215f2334aed7e5e68772",
+    "sealedF607Sha256": "faca5a456437e6bc0979530cd28e712ad002d880e357215f2334aed7e5e68772",
+    "equal": true
+  },
+  {
+    "path": "scripts/governance/owned-client-url-policy.mjs",
+    "workspaceSha256": "cf3d6fa3bc83216b1a4f979b2cd13b6f8184f80da2b204b7467f176868d837d0",
+    "sealedF607Sha256": "cf3d6fa3bc83216b1a4f979b2cd13b6f8184f80da2b204b7467f176868d837d0",
+    "equal": true
+  },
+  {
+    "path": "scripts/governance/owned-client-host-policy.mjs",
+    "workspaceSha256": "84859974f97664e41dac86b9e32106d2fd39151e36cb4728937b2311a2ff63e3",
+    "sealedF607Sha256": "84859974f97664e41dac86b9e32106d2fd39151e36cb4728937b2311a2ff63e3",
+    "equal": true
+  },
+  {
+    "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+    "workspaceSha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+    "sealedF607Sha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+    "equal": true
+  },
+  {
+    "path": "apps/merchant/web/src/lib/api/client.ts",
+    "workspaceSha256": "457924c8030764792c525d1315c18c67ef1fd525b24d1bab7af19bfa7b6df09d",
+    "sealedF607Sha256": "457924c8030764792c525d1315c18c67ef1fd525b24d1bab7af19bfa7b6df09d",
+    "equal": true
+  },
+  {
+    "path": "apps/merchant/web/src/lib/api/merchant-security-scope.ts",
+    "workspaceSha256": "80fd5ab0a93394bbcb313df5014f35eef3d19d99a58c8223abc07421ef12ef56",
+    "sealedF607Sha256": "80fd5ab0a93394bbcb313df5014f35eef3d19d99a58c8223abc07421ef12ef56",
+    "equal": true
+  },
+  {
+    "path": "apps/merchant/web/src/proxy.ts",
+    "workspaceSha256": "faecfb0fa26c588fa710e337929b0ea7f2eea17afd91d1110f0e30aef4fd80cb",
+    "sealedF607Sha256": "faecfb0fa26c588fa710e337929b0ea7f2eea17afd91d1110f0e30aef4fd80cb",
+    "equal": true
+  },
+  {
+    "path": "apps/merchant/web/src/lib/public-urls.ts",
+    "workspaceSha256": "846168c2bc590f96c8128efcb6b7189d583e26712ea8731e13975a43e878dc74",
+    "sealedF607Sha256": "846168c2bc590f96c8128efcb6b7189d583e26712ea8731e13975a43e878dc74",
+    "equal": true
+  },
+  {
+    "path": "apps/platform/identity/src/lib/auth/return-to.ts",
+    "workspaceSha256": "93dee983286c667e2ed190cf4c8dd4f4123ff2cdaadb41f12fd52d45aca6bc17",
+    "sealedF607Sha256": "c1e89618ebd065f30848a783092266e2dda3f914ddf7081952bae6c7e8ab7705",
+    "equal": false
+  },
+  {
+    "path": "apps/platform/identity/src/lib/auth/cookies.ts",
+    "workspaceSha256": "64be94c3028ae6fe89e9d0f342fb63c595926bf68510664b3bea9a11157e8a5a",
+    "sealedF607Sha256": "64be94c3028ae6fe89e9d0f342fb63c595926bf68510664b3bea9a11157e8a5a",
+    "equal": true
+  },
+  {
+    "path": "packages/auth-core/src/index.ts",
+    "workspaceSha256": "f482c31a5c14a0c0e57ed8bd2c72a82f76eef7d6f2006ba50ae6931228273f3c",
+    "sealedF607Sha256": "f482c31a5c14a0c0e57ed8bd2c72a82f76eef7d6f2006ba50ae6931228273f3c",
+    "equal": true
+  },
+  {
+    "path": "apps/commerce/web/next.config.ts",
+    "workspaceSha256": "7dfdff73080fd82a194cfe7d516f8e765e38948726b4849bbe42187601dd0ced",
+    "sealedF607Sha256": "7dfdff73080fd82a194cfe7d516f8e765e38948726b4849bbe42187601dd0ced",
+    "equal": true
+  }
+]

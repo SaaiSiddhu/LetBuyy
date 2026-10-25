@@ -121,6 +121,7 @@ test('Liquid commerce and embed surfaces stay wired through the storefront compo
     assert.match(rendererSource, /content_for_footer: contentForFooter/);
     assert.match(rendererSource, /buildLiquidCommerceDrops\(input\.liquidContext\)/);
     assert.match(rendererSource, /engine\.registerFilter\('money_with_currency'/);
-    assert.match(compositionSource, /liquidAppEmbeds: buildLiquidAppEmbeds\(store\.templateConfig\.appBlocks\)/);
-    assert.match(compositionSource, /liquidContext:\s*(?:await\s+)?buildLiquidCommerceContext\(\{[\s\S]*sectionData/);
+    assert.match(compositionSource, /liquidAppEmbeds: catalogDemo \? \{ header: \[\], footer: \[\] \} : buildLiquidAppEmbeds\(store\.templateConfig\.appBlocks\)/);
+    assert.match(compositionSource, /const commerceContext = await buildLiquidCommerceContext\(\{[\s\S]*sectionData/);
+    assert.match(compositionSource, /liquidContext: commerceContext/);
 });

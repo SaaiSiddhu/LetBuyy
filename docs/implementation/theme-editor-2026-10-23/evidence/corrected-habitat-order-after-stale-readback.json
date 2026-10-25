@@ -1,0 +1,88 @@
+{
+  "recordedAt": "2026-10-23T20:53:11.459Z",
+  "runId": "f6074d90e894",
+  "phase": "after-stale",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Whitelisted order money/status and public niche provenance plus full private snapshot/order hashes; no raw private snapshot/contact/payment data",
+  "actual": {
+    "items": [
+      {
+        "id": "b80fabaf-67a0-4a6c-9bfc-a87b73748729",
+        "name": "Habitat lifecycle desk",
+        "niche": {
+          "facts": {
+            "furniture": {
+              "care": "Natural finish: wipe dry.",
+              "finish": "Natural",
+              "weight": {
+                "unit": "kg",
+                "value": 11.5
+              },
+              "package": {
+                "unit": "in",
+                "depth": 25,
+                "width": 50
+              },
+              "assembly": {
+                "tools": "4 mm hex key",
+                "status": "required",
+                "instructions": "Use the supplied sample instructions."
+              },
+              "assembled": {
+                "unit": "in",
+                "depth": 30,
+                "width": 48,
+                "height": 29.5
+              },
+              "materials": [
+                "Wood"
+              ]
+            }
+          },
+          "version": 1,
+          "selected_options": [
+            {
+              "name": "Finish",
+              "value": "Natural"
+            },
+            {
+              "name": "Width",
+              "value": "48 in"
+            }
+          ]
+        },
+        "price": 8900,
+        "title": "Habitat lifecycle desk",
+        "total": 17800,
+        "quantity": 2,
+        "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+        "unitPrice": 8900,
+        "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "variantTitle": "48 in / Natural",
+        "snapshotSha256": "436431a4e61c70fd6cd1dd5a650f9bfe5d2f1f3f5bbbcaa1caecbb1d50665cb9"
+      }
+    ],
+    "order": {
+      "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+      "tax": 0,
+      "total": 17820,
+      "number": "ORD-20261023-10000",
+      "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+      "status": "pending_cod",
+      "buyerId": null,
+      "currency": "INR",
+      "discount": 0,
+      "shipping": 20,
+      "subtotal": 17800,
+      "paymentMethod": "cod",
+      "paymentStatus": "pending",
+      "orderRowSha256": "3795596fc3159cccff7c3311a2d873f7030d906f8c01ff72ad32195a6753518f"
+    },
+    "siteOrders": 1,
+    "originalCart": {
+      "id": "59e347bf-98cc-4477-95e4-6aedb233f6f6",
+      "status": "converted"
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "recordedAt": "2026-10-23T14:41:52.585115+00:00",
+  "status": "Complete: canonical-session recovery and configured client/server URLs verified",
+  "origin": "http://localhost:9005/themes",
+  "nativeDatabaseResult": {
+    "runId": "898e86436b36",
+    "pass": 10,
+    "fail": 0,
+    "skip": 0,
+    "throughMigration": 387
+  },
+  "runtime": {
+    "runId": "d4eb85047858",
+    "throughMigration": 388,
+    "retained": true,
+    "sessions": {
+      "fixture": 77059,
+      "marketplace": 94331
+    },
+    "holdMaximumMs": 21600000,
+    "privateStateReferenceOnly": "/private/tmp/threadline-marketplace-current-20261023-02-state.json"
+  },
+  "productionCandidateMatchesMain": true,
+  "tests": {
+    "packageStaticPass": 24,
+    "packageFocusedPass": 23,
+    "postRenameRecoveryPass": 3,
+    "targetedLint": "exit0",
+    "typecheck": "exit0"
+  },
+  "browser": {
+    "runId": "d4eb85047858",
+    "canonicalStaleSessionRecovery": {
+      "signInVisible": true,
+      "staleAccountHidden": true,
+      "unavailableStoreFormAbsent": true,
+      "actualReturn": {
+        "origin": "http://admin.threadline-d4eb85047858.localhost:59595",
+        "path": "/syn-threadline-ui-add631c7/dashboard",
+        "returnTo": null
+      }
+    },
+    "detail": {
+      "loaded": true,
+      "sampleRendered": true,
+      "noHydrationError": true,
+      "noRefusedConnection": true,
+      "exactVersionAdd": true
+    },
+    "privateAddMutationClaimed": false,
+    "cookiesOrStorageInspectedOrReset": false
+  },
+  "finalHttp": {
+    "checkedAt": "2026-10-23T14:15:49.609Z",
+    "runId": "d4eb85047858",
+    "origin": "http://localhost:9005",
+    "checks": [
+      {
+        "name": "marketplace",
+        "status": 200,
+        "redirect": null
+      },
+      {
+        "name": "catalog",
+        "status": 200,
+        "redirect": null
+      },
+      {
+        "name": "liveDemo",
+        "status": 200,
+        "redirect": null
+      },
+      {
+        "name": "installEntry",
+        "status": 307,
+        "redirect": "http://accounts.threadline-d4eb85047858.localhost:59594/lookup?return_to=http%3A%2F%2Flocalhost%3A9005%2Finstall%3Ftheme%3Dletbuyy-sense%26version%3D2.0.0"
+      }
+    ],
+    "retained": true,
+    "mainRepositoryWrites": false
+  },
+  "limits": [
+    "Private Add mutation/browser completion is not claimed; normal canonical sign-in selected the owned merchant store.",
+    "No389/390 or nine-theme v2 catalog promotion in this retained through388 runtime.",
+    "Protected user/ff994/e359 resources and old browser sessions preserved."
+  ],
+  "files": [
+    {
+      "path": "apps/frozen/theme-store/src/app/layout.tsx",
+      "bytes": 5733,
+      "sha256": "07bda3d2285517ade9dbd4faa77efb9e17a44d77b09db0bad493108fca1f7587"
+    },
+    {
+      "path": "apps/frozen/theme-store/src/app/install/page.tsx",
+      "bytes": 12155,
+      "sha256": "c1ab1bf7498a0782ba82df029e889f4974b749175e84e625ae840ccefa60d624"
+    },
+    {
+      "path": "apps/frozen/theme-store/src/lib/public-urls.ts",
+      "bytes": 4809,
+      "sha256": "786923034bc51e4515ffcbff71abed42228970bf6ede9eb11101fdd09d4f4678"
+    },
+    {
+      "path": "apps/frozen/theme-store/tests/session-recovery.test.mjs",
+      "bytes": 5968,
+      "sha256": "1fd65f1323b72be3bedfc91dd7a16bdbc364942b0ad63b4a48e655cc3c38d372"
+    },
+    {
+      "path": "apps/frozen/theme-store/package.json",
+      "bytes": 1479,
+      "sha256": "09da91c69c242d1f5c08363ea1fb407fdb6df2537542037fe142083ba8eff442"
+    }
+  ]
+}

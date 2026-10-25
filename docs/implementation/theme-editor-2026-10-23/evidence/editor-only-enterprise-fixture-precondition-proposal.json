@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-23T16:28:03.029864+00:00",
+  "classification": "DOCS_ONLY_PROPOSAL_NOT_APPLIED_OR_EXECUTED",
+  "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+  "beforeSha256": "3cd5e06a69fe97d6094a0b5dda168b7a67908ba975166008f9638b1e42eae445",
+  "proposedAfterSha256": "8a58c5d250239434ab52cd63540e8d9ba1160c26df75168fc5b82ba207c24910",
+  "scope": "ONLY editor opt-in; exact synthetic user/site ownership and no eligible existing subscription; one native-pattern Enterprise row, no plan/limit/payment changes",
+  "defaultAndThreadlineQa": "No branch executes; existing profile flag selection and setup unchanged",
+  "sourceTests": "Not claimed: proposal only. After source grant, run existing17 fixture profile/observer tests +gateway noEmit and actual next fixture readback/install.",
+  "futureManifestRequired": [
+    "localTestEntitlement.plan=enterprise",
+    "localTestEntitlement.paymentOperation=false",
+    "canonicalAllowanceReadback",
+    "syntheticUserSiteBinding",
+    "subscriptionIdPrivateOrWhitelisted",
+    "notPaidUpgradeAcceptance"
+  ],
+  "currentRunMutation": false
+}

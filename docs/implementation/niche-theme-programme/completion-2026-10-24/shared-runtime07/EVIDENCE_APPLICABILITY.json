@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-24T19:43:59.873164+00:00",
+  "priorRunId": "63c55b066db3",
+  "currentRunId": "49ada80bc494",
+  "exactSourceDeltas": [
+    "apps/commerce/web/next.config.ts",
+    "config/security/next-security-headers.ts",
+    "tests/contracts/security-headers.test.ts"
+  ],
+  "cartEditApplicationSourceUnchanged": true,
+  "cartEditOrdinaryPagePolicyUnchanged": true,
+  "reusedActualBrowserEvidence": "shared-runtime06/BROWSER_SMOKE.json 13 actual canary operations including normal buyer SSO, configured variant/text edit, save/reload/remove/re-add",
+  "reusedSecurityAndBackend": "Exact accepted native and source receipts; no retrospective relabel of execution run",
+  "requiresFreshEvidence": "Current hosted-checkout CSP/PSP popup/full UI purchase, actual merchant count and per-theme matrices",
+  "fullThemeCertified": false
+}

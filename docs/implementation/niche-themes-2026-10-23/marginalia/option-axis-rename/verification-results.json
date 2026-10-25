@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-10-24T03:51:50.526900+00:00",
+  "pure": {
+    "command": "TSX_TSCONFIG_PATH=apps/merchant/web/tsconfig.json node --import tsx --test <option-name, option-rename, option-axis, stock-intent test files>",
+    "exitCode": 0,
+    "tests": 33,
+    "pass": 33,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "mounted": {
+    "command": "TSX_TSCONFIG_PATH=apps/merchant/web/tsconfig.json node --import tsx --test --test-name-pattern='axis name|option rename|Finish|stock|quantity|metadata-only|unsent metadata|legacy retained' apps/merchant/web/src/components/products/product-conflict.test.tsx",
+    "exitCode": 0,
+    "tests": 18,
+    "pass": 18,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "realRedBeforeRepair": {
+    "missingNameControls": {
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "reservedSetterKey": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0
+    }
+  },
+  "merchantNoEmit": {
+    "command": "pnpm --dir apps/merchant/web exec tsc --noEmit --incremental false",
+    "exitCode": 0,
+    "logBytes": 0
+  },
+  "eslint": {
+    "exitCode": 0,
+    "baselineErrors": 0,
+    "baselineWarnings": 11,
+    "finalErrors": 0,
+    "finalWarnings": 11,
+    "introduced": [],
+    "removed": []
+  },
+  "selectionReason": "New helper/modal affect names, serializer keys, sparse UUID tuples, old value/add controls, retained stock and pending-body recovery. Related existing controls rerun; no duplicate full124/native19 loop.",
+  "finalCommentOnlyChange": "After behavior/type checks, exact persisted shade-data values received scoped no-hardcoded-hex justifications; final lint passes with unchanged 11 pre-existing warnings."
+}

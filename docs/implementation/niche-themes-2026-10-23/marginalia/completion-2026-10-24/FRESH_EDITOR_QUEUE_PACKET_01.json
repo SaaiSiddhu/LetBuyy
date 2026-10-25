@@ -1,0 +1,717 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-24T12:16:04.166022+00:00",
+  "classification": "RUNTIME07_FINITE_MARGINALIA_QUEUE_REQUEST_AWAITING_EXACT_THEME_RECORD_GRANT",
+  "authority": "Direct human in this chat: get Root independent review then finish actual E2E through fresh Editor queue, including Razorpay and order history; preserve evidence and certify only after required tests pass.",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "soleController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "rootIndependentSourceReview": {
+    "status": "REQUESTED_PENDING",
+    "handoff": "SHARED_SOURCE_RUN01_HANDOFF.md",
+    "sourcePass": 46,
+    "sourceFail": 0,
+    "sourceChecksNotInstalledCases": true,
+    "currentRequest": "E2E_REVIEW_QUEUE_REQUEST_01.json; review original sealed cohort, not current210 controls"
+  },
+  "runtimeAdmission": {
+    "candidateSourceArtifactSchemaBuild": {
+      "generalCandidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/source-runtime-admission.json",
+      "installedMarginaliaReadback": null
+    },
+    "runId": "49ada80bc494",
+    "siteId": {
+      "generalSharedSite": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "marginaliaRecordScope": null
+    },
+    "actors": null,
+    "draftId": null,
+    "productVariantCollectionBindings": null,
+    "cartOrderBindings": null,
+    "normalTLSAuth": {
+      "sharedSmoke": "PASS_RECORDED",
+      "marginaliaNormalActorAndSignup": "NOT_RUN",
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    "protectedBaseline": null,
+    "expiry": "2026-10-24T22:20:00Z receiver only; finite Editor allocation may end earlier",
+    "cleanupOwner": null,
+    "controllerLease": null
+  },
+  "unrevived": "Old936 grants, ports, actors, product/cart/order IDs are historical only. Do not touch or adopt cached tabs/sessions.",
+  "queueSlices": [
+    {
+      "sliceId": "MG-E2E-EDITOR",
+      "purpose": "All declared editor/template/chrome/media/recovery controls",
+      "expandedCaseIds": [
+        "MG-C-TEMPLATE-ARTICLE",
+        "MG-C-TEMPLATE-BLOG",
+        "MG-C-TEMPLATE-CART",
+        "MG-C-TEMPLATE-COLLECTION",
+        "MG-C-TEMPLATE-CONTACT",
+        "MG-C-TEMPLATE-CUSTOMERS-ACCOUNT",
+        "MG-C-TEMPLATE-CUSTOMERS-ADDRESSES",
+        "MG-C-TEMPLATE-CUSTOMERS-LOGIN",
+        "MG-C-TEMPLATE-CUSTOMERS-ORDER",
+        "MG-C-TEMPLATE-CUSTOMERS-ORDERS",
+        "MG-C-TEMPLATE-CUSTOMERS-REGISTER",
+        "MG-C-TEMPLATE-CUSTOMERS-SETTINGS",
+        "MG-C-TEMPLATE-CUSTOMERS-WISHLIST",
+        "MG-C-TEMPLATE-FOOTER",
+        "MG-C-TEMPLATE-HEADER",
+        "MG-C-TEMPLATE-INDEX",
+        "MG-C-TEMPLATE-LIST-COLLECTIONS",
+        "MG-C-TEMPLATE-NOT-FOUND",
+        "MG-C-TEMPLATE-PAGE",
+        "MG-C-TEMPLATE-PASSWORD",
+        "MG-C-TEMPLATE-POLICY",
+        "MG-C-TEMPLATE-PRODUCT",
+        "MG-C-TEMPLATE-SEARCH",
+        "MG-C-SECTION-404-PAGE",
+        "MG-C-SECTION-ABOUT-SECTION",
+        "MG-C-FIELD-ABOUT-SECTION-EYEBROW",
+        "MG-C-FIELD-ABOUT-SECTION-TITLE",
+        "MG-C-FIELD-ABOUT-SECTION-CONTENT",
+        "MG-C-FIELD-ABOUT-SECTION-IMAGE",
+        "MG-C-FIELD-ABOUT-SECTION-IMAGEALT",
+        "MG-C-FIELD-ABOUT-SECTION-LINKLABEL",
+        "MG-C-FIELD-ABOUT-SECTION-LINKURL",
+        "MG-C-SECTION-ANNOUNCEMENT-BAR",
+        "MG-C-FIELD-ANNOUNCEMENT-BAR-TEXT",
+        "MG-C-FIELD-ANNOUNCEMENT-BAR-LINKLABEL",
+        "MG-C-FIELD-ANNOUNCEMENT-BAR-LINKHREF",
+        "MG-C-SECTION-APP-BLOCK-SLOT",
+        "MG-C-FIELD-APP-BLOCK-SLOT-TITLE",
+        "MG-C-FIELD-APP-BLOCK-SLOT-SLOT",
+        "MG-C-BLOCK-APP-BLOCK-SLOT-APP",
+        "MG-C-SECTION-ARTICLE-CONTENT",
+        "MG-C-SECTION-BANNER-CAROUSEL",
+        "MG-C-FIELD-BANNER-CAROUSEL-TITLE",
+        "MG-C-FIELD-BANNER-CAROUSEL-AUTOPLAY",
+        "MG-C-BLOCK-BANNER-CAROUSEL-SLIDE",
+        "MG-C-BLOCK-FIELD-BANNER-CAROUSEL-SLIDE-HEADING",
+        "MG-C-BLOCK-FIELD-BANNER-CAROUSEL-SLIDE-IMAGE",
+        "MG-C-BLOCK-FIELD-BANNER-CAROUSEL-SLIDE-LINK",
+        "MG-C-SECTION-BLOG-LISTING",
+        "MG-C-FIELD-BLOG-LISTING-HEADING",
+        "MG-C-SECTION-BRAND-MARQUEE",
+        "MG-C-FIELD-BRAND-MARQUEE-TITLE",
+        "MG-C-BLOCK-BRAND-MARQUEE-BRAND",
+        "MG-C-BLOCK-FIELD-BRAND-MARQUEE-BRAND-NAME",
+        "MG-C-SECTION-CART-SUMMARY",
+        "MG-C-FIELD-CART-SUMMARY-HEADING",
+        "MG-C-SECTION-CATEGORY-GRID",
+        "MG-C-FIELD-CATEGORY-GRID-TITLE",
+        "MG-C-FIELD-CATEGORY-GRID-EYEBROW",
+        "MG-C-FIELD-CATEGORY-GRID-PRODUCT1",
+        "MG-C-FIELD-CATEGORY-GRID-REQUIRESELECTION",
+        "MG-C-FIELD-CATEGORY-GRID-EMPTYTEXT",
+        "MG-C-FIELD-CATEGORY-GRID-LINKLABEL",
+        "MG-C-BLOCK-CATEGORY-GRID-SUBJECT",
+        "MG-C-BLOCK-FIELD-CATEGORY-GRID-SUBJECT-LABEL",
+        "MG-C-BLOCK-FIELD-CATEGORY-GRID-SUBJECT-HREF",
+        "MG-C-SECTION-COLLECTION-BANNER",
+        "MG-C-FIELD-COLLECTION-BANNER-SHOWDESCRIPTION",
+        "MG-C-SECTION-COLLECTION-FILTER",
+        "MG-C-SECTION-COLLECTION-PRODUCT-LIST",
+        "MG-C-FIELD-COLLECTION-PRODUCT-LIST-TITLE",
+        "MG-C-SECTION-CONTACT-FORM",
+        "MG-C-FIELD-CONTACT-FORM-TITLE",
+        "MG-C-FIELD-CONTACT-FORM-SUBTITLE",
+        "MG-C-FIELD-CONTACT-FORM-SHOWPHONE",
+        "MG-C-SECTION-CTA-SECTION",
+        "MG-C-FIELD-CTA-SECTION-HEADING",
+        "MG-C-FIELD-CTA-SECTION-SUBHEADING",
+        "MG-C-FIELD-CTA-SECTION-CTATEXT",
+        "MG-C-FIELD-CTA-SECTION-CTALINK",
+        "MG-C-SECTION-CUSTOMER-ACCOUNT",
+        "MG-C-FIELD-CUSTOMER-ACCOUNT-HEADING",
+        "MG-C-SECTION-CUSTOMER-ADDRESSES",
+        "MG-C-FIELD-CUSTOMER-ADDRESSES-HEADING",
+        "MG-C-SECTION-CUSTOMER-LOGIN",
+        "MG-C-FIELD-CUSTOMER-LOGIN-HEADING",
+        "MG-C-SECTION-CUSTOMER-ORDER-DETAIL",
+        "MG-C-FIELD-CUSTOMER-ORDER-DETAIL-HEADING",
+        "MG-C-SECTION-CUSTOMER-ORDERS",
+        "MG-C-FIELD-CUSTOMER-ORDERS-HEADING",
+        "MG-C-SECTION-CUSTOMER-REGISTER",
+        "MG-C-FIELD-CUSTOMER-REGISTER-HEADING",
+        "MG-C-SECTION-CUSTOMER-SETTINGS",
+        "MG-C-FIELD-CUSTOMER-SETTINGS-HEADING",
+        "MG-C-SECTION-CUSTOMER-WISHLIST",
+        "MG-C-FIELD-CUSTOMER-WISHLIST-HEADING",
+        "MG-C-SECTION-EXPERIENCE-TIMELINE",
+        "MG-C-FIELD-EXPERIENCE-TIMELINE-TITLE",
+        "MG-C-BLOCK-EXPERIENCE-TIMELINE-EXPERIENCE",
+        "MG-C-BLOCK-FIELD-EXPERIENCE-TIMELINE-EXPERIENCE-TITLE",
+        "MG-C-BLOCK-FIELD-EXPERIENCE-TIMELINE-EXPERIENCE-COMPANY",
+        "MG-C-BLOCK-FIELD-EXPERIENCE-TIMELINE-EXPERIENCE-PERIOD",
+        "MG-C-SECTION-FAQ-ACCORDION",
+        "MG-C-FIELD-FAQ-ACCORDION-TITLE",
+        "MG-C-FIELD-FAQ-ACCORDION-ALLOWMULTIPLEOPEN",
+        "MG-C-BLOCK-FAQ-ACCORDION-FAQ-ITEM",
+        "MG-C-BLOCK-FIELD-FAQ-ACCORDION-FAQ-ITEM-QUESTION",
+        "MG-C-BLOCK-FIELD-FAQ-ACCORDION-FAQ-ITEM-ANSWER",
+        "MG-C-SECTION-FEATURED-PRODUCTS",
+        "MG-C-FIELD-FEATURED-PRODUCTS-TITLE",
+        "MG-C-FIELD-FEATURED-PRODUCTS-SUBTITLE",
+        "MG-C-FIELD-FEATURED-PRODUCTS-COLUMNS",
+        "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCTLIMIT",
+        "MG-C-FIELD-FEATURED-PRODUCTS-COLLECTIONID",
+        "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCT1",
+        "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCT2",
+        "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCT3",
+        "MG-C-FIELD-FEATURED-PRODUCTS-REQUIRESELECTION",
+        "MG-C-SECTION-FOOTER",
+        "MG-C-FIELD-FOOTER-STORENAME",
+        "MG-C-FIELD-FOOTER-TAGLINE",
+        "MG-C-FIELD-FOOTER-CONTACTEMAIL",
+        "MG-C-FIELD-FOOTER-CONTACTPHONE",
+        "MG-C-FIELD-FOOTER-INSTAGRAMURL",
+        "MG-C-FIELD-FOOTER-FACEBOOKURL",
+        "MG-C-FIELD-FOOTER-TWITTERURL",
+        "MG-C-BLOCK-FOOTER-LINK",
+        "MG-C-BLOCK-FIELD-FOOTER-LINK-LABEL",
+        "MG-C-BLOCK-FIELD-FOOTER-LINK-HREF",
+        "MG-C-SECTION-HEADER",
+        "MG-C-FIELD-HEADER-STORENAME",
+        "MG-C-FIELD-HEADER-SHOWSEARCH",
+        "MG-C-FIELD-HEADER-SHOWCART",
+        "MG-C-FIELD-HEADER-BEHAVIOR",
+        "MG-C-FIELD-HEADER-MENU",
+        "MG-C-FIELD-HEADER-LAYOUT",
+        "MG-C-BLOCK-HEADER-LINK",
+        "MG-C-BLOCK-FIELD-HEADER-LINK-LABEL",
+        "MG-C-BLOCK-FIELD-HEADER-LINK-HREF",
+        "MG-C-SECTION-HERO-BANNER",
+        "MG-C-FIELD-HERO-BANNER-EYEBROW",
+        "MG-C-FIELD-HERO-BANNER-HEADING",
+        "MG-C-FIELD-HERO-BANNER-SUBHEADING",
+        "MG-C-FIELD-HERO-BANNER-SEARCHLABEL",
+        "MG-C-FIELD-HERO-BANNER-SEARCHPLACEHOLDER",
+        "MG-C-FIELD-HERO-BANNER-SEARCHBUTTON",
+        "MG-C-FIELD-HERO-BANNER-SEARCHHINT",
+        "MG-C-SECTION-MARQUEE",
+        "MG-C-FIELD-MARQUEE-TEXT",
+        "MG-C-SECTION-NEWSLETTER-SIGNUP",
+        "MG-C-FIELD-NEWSLETTER-SIGNUP-TITLE",
+        "MG-C-FIELD-NEWSLETTER-SIGNUP-SUBTITLE",
+        "MG-C-FIELD-NEWSLETTER-SIGNUP-BUTTONLABEL",
+        "MG-C-SECTION-PAGE-CONTENT",
+        "MG-C-SECTION-PASSWORD-GATE",
+        "MG-C-FIELD-PASSWORD-GATE-HEADING",
+        "MG-C-SECTION-POLICY-CONTENT",
+        "MG-C-SECTION-PORTFOLIO-GRID",
+        "MG-C-FIELD-PORTFOLIO-GRID-TITLE",
+        "MG-C-BLOCK-PORTFOLIO-GRID-PROJECT",
+        "MG-C-BLOCK-FIELD-PORTFOLIO-GRID-PROJECT-TITLE",
+        "MG-C-BLOCK-FIELD-PORTFOLIO-GRID-PROJECT-SUMMARY",
+        "MG-C-BLOCK-FIELD-PORTFOLIO-GRID-PROJECT-LINK",
+        "MG-C-SECTION-PRODUCT-DETAIL",
+        "MG-C-FIELD-PRODUCT-DETAIL-SHOWGALLERY",
+        "MG-C-FIELD-PRODUCT-DETAIL-SHOWDESCRIPTION",
+        "MG-C-FIELD-PRODUCT-DETAIL-SHOWREVIEWS",
+        "MG-C-FIELD-PRODUCT-DETAIL-SHOWBOOKFACTS",
+        "MG-C-FIELD-PRODUCT-DETAIL-SHOWEXCERPT",
+        "MG-C-SECTION-PRODUCT-GRID",
+        "MG-C-FIELD-PRODUCT-GRID-TITLE",
+        "MG-C-FIELD-PRODUCT-GRID-SUBTITLE",
+        "MG-C-FIELD-PRODUCT-GRID-COLUMNS",
+        "MG-C-FIELD-PRODUCT-GRID-PRODUCTLIMIT",
+        "MG-C-FIELD-PRODUCT-GRID-COLLECTIONID",
+        "MG-C-SECTION-RICH-CONTENT",
+        "MG-C-FIELD-RICH-CONTENT-TITLE",
+        "MG-C-FIELD-RICH-CONTENT-BODY",
+        "MG-C-SECTION-SEARCH-BOX",
+        "MG-C-FIELD-SEARCH-BOX-PLACEHOLDER",
+        "MG-C-SECTION-SERVICES-GRID",
+        "MG-C-FIELD-SERVICES-GRID-TITLE",
+        "MG-C-BLOCK-SERVICES-GRID-SERVICE",
+        "MG-C-BLOCK-FIELD-SERVICES-GRID-SERVICE-TITLE",
+        "MG-C-BLOCK-FIELD-SERVICES-GRID-SERVICE-DESCRIPTION",
+        "MG-C-BLOCK-FIELD-SERVICES-GRID-SERVICE-LINK",
+        "MG-C-SECTION-SKILLS-SECTION",
+        "MG-C-FIELD-SKILLS-SECTION-TITLE",
+        "MG-C-BLOCK-SKILLS-SECTION-SKILL",
+        "MG-C-BLOCK-FIELD-SKILLS-SECTION-SKILL-NAME",
+        "MG-C-BLOCK-FIELD-SKILLS-SECTION-SKILL-LEVEL",
+        "MG-C-SECTION-SPOTLIGHT",
+        "MG-C-FIELD-SPOTLIGHT-HEADING",
+        "MG-C-FIELD-SPOTLIGHT-SUBHEADING",
+        "MG-C-BLOCK-SPOTLIGHT-BADGE",
+        "MG-C-BLOCK-SPOTLIGHT-APP",
+        "MG-C-SECTION-TESTIMONIALS",
+        "MG-C-FIELD-TESTIMONIALS-TITLE",
+        "MG-C-BLOCK-TESTIMONIALS-TESTIMONIAL",
+        "MG-C-BLOCK-FIELD-TESTIMONIALS-TESTIMONIAL-QUOTE",
+        "MG-C-BLOCK-FIELD-TESTIMONIALS-TESTIMONIAL-AUTHOR",
+        "MG-C-SECTION-TRUST-BADGES",
+        "MG-C-FIELD-TRUST-BADGES-TITLE",
+        "MG-C-BLOCK-TRUST-BADGES-BADGE",
+        "MG-C-BLOCK-FIELD-TRUST-BADGES-BADGE-LABEL",
+        "MG-C-BLOCK-FIELD-TRUST-BADGES-BADGE-DESCRIPTION",
+        "MG-C-SECTION-VIDEO-HERO",
+        "MG-C-FIELD-VIDEO-HERO-HEADING",
+        "MG-C-FIELD-VIDEO-HERO-SUBHEADING",
+        "MG-C-FIELD-VIDEO-HERO-VIDEOURL",
+        "MG-C-GLOBAL-BLOCK-BADGE",
+        "MG-C-GLOBAL-BLOCK-FIELD-BADGE-LABEL",
+        "MG-C-THEME-SETTING-APPEARANCE-BORDERRADIUS",
+        "MG-C-THEME-SETTING-COLORS-ACCENTCOLOR",
+        "MG-C-THEME-SETTING-COLORS-BACKGROUNDCOLOR",
+        "MG-C-THEME-SETTING-COLORS-PRIMARYCOLOR",
+        "MG-C-THEME-SETTING-COLORS-SECONDARYCOLOR",
+        "MG-C-THEME-SETTING-COLORS-SURFACECOLOR",
+        "MG-C-THEME-SETTING-COLORS-TEXTCOLOR",
+        "MG-C-THEME-SETTING-SEO-FAVICONURL",
+        "MG-C-THEME-SETTING-SEO-METADESCRIPTION",
+        "MG-C-THEME-SETTING-SEO-SOCIALIMAGEURL",
+        "MG-C-THEME-SETTING-TYPOGRAPHY-BODYFONTFAMILY",
+        "MG-C-THEME-SETTING-TYPOGRAPHY-HEADINGFONTFAMILY",
+        "MG-C-EDITOR-RECOVERY",
+        "MG-C-CHROME",
+        "MG-C-MEDIA"
+      ],
+      "expandedCount": 227,
+      "originalCaseIds": [
+        "MG-ID-01",
+        "MG-INSTALL-01"
+      ],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    },
+    {
+      "sliceId": "MG-E2E-CATALOGUE",
+      "purpose": "Exact book editions, stationery, discovery and niche reading facts",
+      "expandedCaseIds": [
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-AUTHORS",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-SUBJECTS",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-LANGUAGE",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-FORMAT",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-EDITION",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-PUBLISHER",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-PUBLICATION-YEAR",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-PAGES",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-DIMENSIONS-MM-WIDTH",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-DIMENSIONS-MM-HEIGHT",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-ISBN",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-EXCERPT-TEXT",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-EXCERPT-PERMISSION",
+        "MG-C-FACT-COMMON-PRODUCT-BOOK-EXCERPT-ATTRIBUTION",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-PAPER-GSM",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-DIMENSIONS-MM-WIDTH",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-DIMENSIONS-MM-HEIGHT",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-PAGE-COUNT",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-SHEET-COUNT",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-RULING",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-BINDING",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-INCLUDED",
+        "MG-C-FACT-COMMON-PRODUCT-STATIONERY-MATERIALS",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-AUTHORS",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-SUBJECTS",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-LANGUAGE",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-FORMAT",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-EDITION",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-PUBLISHER",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-PUBLICATION-YEAR",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-PAGES",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-DIMENSIONS-MM-WIDTH",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-DIMENSIONS-MM-HEIGHT",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-ISBN",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-PAPER-GSM",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-DIMENSIONS-MM-WIDTH",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-DIMENSIONS-MM-HEIGHT",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-PAGE-COUNT",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-SHEET-COUNT",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-RULING",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-BINDING",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-INCLUDED",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-MATERIALS",
+        "MG-C-NICHE",
+        "MG-C-FACT-COMMON-PRODUCT-TYPE-KIND",
+        "MG-C-FACT-CANONICAL-VARIANT-UUID-TYPE-KIND"
+      ],
+      "expandedCount": 46,
+      "originalCaseIds": [
+        "MG-BK-EN-01",
+        "MG-BK-HI-01",
+        "MG-PAPER-01",
+        "MG-RULING-01",
+        "MG-AUTHOR-01",
+        "MG-QUERY-01",
+        "MG-CLEAR-01"
+      ],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    },
+    {
+      "sliceId": "MG-E2E-IDENTITY",
+      "purpose": "Normal LetBuyy buyer/customer identity and denials",
+      "expandedCaseIds": [
+        "MG-C-IDENTITY",
+        "MG-C-IDENTITY-DENIAL"
+      ],
+      "expandedCount": 2,
+      "originalCaseIds": [],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    },
+    {
+      "sliceId": "MG-E2E-CART-COD",
+      "purpose": "OOS no-effect, canonical cart/reload, quotes and primary COD",
+      "expandedCaseIds": [
+        "MG-C-CART-CHECKOUT",
+        "MG-C-UNCERTAINTY"
+      ],
+      "expandedCount": 2,
+      "originalCaseIds": [
+        "MG-BK-OOS-01",
+        "MG-CART-01",
+        "MG-CART-RELOAD-01",
+        "MG-COD-01"
+      ],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    },
+    {
+      "sliceId": "MG-E2E-RAZORPAY-REVERSAL",
+      "purpose": "Actual Test Mode purchase and separately admitted adversarial/reversal checks",
+      "expandedCaseIds": [
+        "MG-C-RAZORPAY",
+        "MG-C-PROVIDER-ADVERSARIAL",
+        "MG-C-REVERSAL"
+      ],
+      "expandedCount": 3,
+      "originalCaseIds": [],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    },
+    {
+      "sliceId": "MG-E2E-LATE-EDIT-HISTORY",
+      "purpose": "Initial both-view histories, stock-preserving same-UUID edit, unchanged old snapshots",
+      "expandedCaseIds": [
+        "MG-C-HISTORY"
+      ],
+      "expandedCount": 1,
+      "originalCaseIds": [
+        "MG-HIST-BASELINE-01",
+        "MG-LATE-EDIT-01",
+        "MG-HIST-AFTER-EDIT-01"
+      ],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    },
+    {
+      "sliceId": "MG-E2E-QUALITY-SECURITY",
+      "purpose": "Rendered responsive, accessibility, performance, sandbox/privacy/tenancy",
+      "expandedCaseIds": [
+        "MG-C-RESPONSIVE",
+        "MG-C-ACCESSIBILITY",
+        "MG-C-SECURITY",
+        "MG-C-PERFORMANCE"
+      ],
+      "expandedCount": 4,
+      "originalCaseIds": [],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    },
+    {
+      "sliceId": "MG-E2E-FINAL-REVIEW",
+      "purpose": "Exact lineage, preservation, owned cleanup and independent review",
+      "expandedCaseIds": [
+        "MG-C-LINEAGE-CLEANUP-REVIEW"
+      ],
+      "expandedCount": 1,
+      "originalCaseIds": [],
+      "status": "NOT_RUN_NO_CURRENT_CONTROLLER_GRANT",
+      "executionBound": "Root must allocate finite exact case IDs/record scope/expiry per actual batch; this complete queue packet is not an unlimited grant."
+    }
+  ],
+  "orderingAndEvidence": [
+    {
+      "step": 0,
+      "action": "Root reviews sealed source evidence, admits coherent current candidate, and names the exact fresh controller fixture/actor/record scope.",
+      "gate": "No browser action or source rewrite from this packet alone."
+    },
+    {
+      "step": 1,
+      "action": "Normal merchant auth and actual installed package/resource/schema/draft/release readback. Complete B00 A/B Save/fullreload/private/public/Recovery retain-B/reapply behavior and every declared control through finite scoped batches.",
+      "scope": "227 expanded editor rows; original ID/INSTALL. A header/footer group stays pinned, dormant app activation stays excluded with guard acceptance, and missing promised controls remain open."
+    },
+    {
+      "step": 2,
+      "action": "Normal merchant UI acknowledges existing book and notebook, existing two book UUIDs and actual option tuples. Refine those records, add only the missing OOS edition, and bind the exact two-product collection.",
+      "scope": "46 catalogue/niche rows and seven original selection/discovery rows. No product recreation, variant delete/recreate, invented ISBN, cached ID or stock reset."
+    },
+    {
+      "step": 3,
+      "action": "Normal new LetBuyy buyer signup/verification/signin/consent and supported store-customer relationship; own profile/addresses/logout/recovery and positive-control-first buyer/store/realm denial.",
+      "gate": "Use assigned normal auth/inbox paths and secure fixture delivery; no bearer/cookie injection, private-state extraction or second identity system."
+    },
+    {
+      "step": 4,
+      "action": "Exercise the complete OOS purchase/no-accepted-effect clause via an admitted normal UI path; canonical cart, exact selected UUID/facts/price/quantity, reload and server quote review. Complete primary COD.",
+      "gate": "Disabled controls alone retain only their observed subchecks; no forced click, direct API mutation or inferred rejection status. If the matrix attempt clause remains unexercisable, keep it incomplete and obtain the canonical owner correction."
+    },
+    {
+      "step": 5,
+      "action": "Before any later catalogue edit, capture expanded owned buyer AND merchant history for the actual COD order and Root-owned immutable line/facts/price/options snapshot receipt.",
+      "gate": "No credit from protected unrelated old orders or seeded primary orders."
+    },
+    {
+      "step": 6,
+      "action": "Use a normally acknowledged new canonical cart where needed for this theme's actual Razorpay Test Mode browser purchase. Capture provider/local IDs, amount/currency/captured state, actual verified provider-delivered HTTPS webhook and exact ledger/inventory/outbox/order effects. Capture both histories before later catalogue edits.",
+      "gate": "Only designated secure runtime/receiver owner binds keys and webhook secret. Test API HTTP200, mocks, COD, another theme's payment or synthetic webhook POSTs do not certify this case."
+    },
+    {
+      "step": 7,
+      "action": "Normal same-UUID edition/title/facts/price and notebook edits; omit untouched stock. Save/fullreload/acknowledge current catalogue, then compare both buyer and merchant old COD/Razorpay histories and canonical immutable projections exactly.",
+      "gate": "Preserve actual consumed stock. Do not refill original quantities or compare whole mutable order status as if every legitimate payment/reversal state must remain frozen."
+    },
+    {
+      "step": 8,
+      "action": "Execute cancellation/refund applicability/reversal only in Root's specifically admitted owned synthetic Test Mode scope; verify exactly-once inventory/ledger/reconciliation, reusing the single compatible adversarial cohort with exact lineage.",
+      "gate": "Keep primary before/after catalogue-edit history comparison before reversal state changes; no real fulfillment or production payment."
+    },
+    {
+      "step": 9,
+      "action": "Measure actual desktop/tablet/mobile content viewport,320px,text200%, long multilingual titles, font/media readiness, keyboard/focus/semantics, useful-task performance and sandbox/privacy/tenancy. Record actual HTTP/status only when captured.",
+      "gate": "A source data roundtrip, nominal frame dimensions or another theme's screen is not rendered acceptance."
+    },
+    {
+      "step": 10,
+      "action": "Perform only Root-owned acknowledged cleanup/restoration through normal workflows, preserve evidence, seal current source/artifact/runtime lineage and obtain independent review of all required cases.",
+      "gate": "Restore only the actually acknowledged fresh semantic baseline; never resurrect old936 data. All required cases must pass before certification."
+    },
+    {
+      "step": "Original-lane exception to combined-provider sequencing",
+      "action": "Root may allocate the original COD/history/late-edit sequence while provider work is unavailable. Keep expanded MG-C-HISTORY open until actual Razorpay orders also have their own acknowledged before/after same-UUID edit proof.",
+      "gate": "Obtain an additional explicit finite normal-UI edit scope for the later Razorpay-history comparison; never invent, auto-reset or silently reuse before-purchase snapshots. Preserve consumed stock and every earlier record."
+    }
+  ],
+  "canonicalCatalogueRecipeToConfirmNormally": {
+    "commonBook": "Essays subject; no invented ISBN or common bibliography that contradicts variant-specific facts.",
+    "EN": {
+      "author": "Mira Sen",
+      "language": "English",
+      "format": "hardback",
+      "edition": "Illustrated second printing",
+      "pages": 192,
+      "dimensions_mm": {
+        "width": 156,
+        "height": 234
+      },
+      "price": 590,
+      "initialStockRecipe": 4
+    },
+    "HI": {
+      "author": "सिंथेटिक लेखक",
+      "language": "Hindi",
+      "format": "paperback",
+      "edition": "First printing",
+      "pages": 160,
+      "dimensions_mm": {
+        "width": 140,
+        "height": 216
+      },
+      "price": 420,
+      "initialStockRecipe": 4
+    },
+    "OOS": {
+      "author": "Dev Rao",
+      "language": "English",
+      "format": "paperback",
+      "edition": "Third printing",
+      "pages": 176,
+      "dimensions_mm": {
+        "width": 148,
+        "height": 210
+      },
+      "price": 450,
+      "initialStockRecipe": 0
+    },
+    "notebook": {
+      "ruling": "lined",
+      "paper_gsm": 100,
+      "dimensions_mm": {
+        "width": 148,
+        "height": 210
+      },
+      "page_count": 96,
+      "sheet_count": 48,
+      "binding": "Thread sewn",
+      "included": "One notebook",
+      "price": 320,
+      "initialStockRecipe": 6
+    },
+    "stockRule": "Initial recipe values are not permission to reset consumed inventory. Root fresh readback and actual stock ownership govern.",
+    "primaryCOD": "EN590×1 plus notebook320×2 only if actual prices confirm. Line subtotal1230 is not an asserted final total; server computes taxes/shipping/discounts.",
+    "RazorpayCart": "Root must acknowledge its actual canonical line/variant/quantity/quote scope separately; no extra order or quantity is guessed.",
+    "laterEN_sameUUID": {
+      "editionLabel": "Marathi spiral edition",
+      "author": "Revised catalogue author",
+      "language": "Marathi",
+      "format": "spiral-bound",
+      "edition": "Revised fixture printing",
+      "pages": 224,
+      "dimensions_mm": {
+        "width": 170,
+        "height": 240
+      },
+      "price": 690
+    },
+    "laterNotebook": {
+      "ruling": "dotted",
+      "paper_gsm": 120,
+      "dimensions_mm": {
+        "width": 150,
+        "height": 215
+      },
+      "page_count": 120,
+      "sheet_count": 60,
+      "price": 380
+    },
+    "laterStock": "Omitted for non-inventory edits; actual post-order quantities retained."
+  },
+  "existingCorrectionsNotDuplicated": [
+    "Kindred/Editor reusable badge and nested descriptor/render/control repair",
+    "Canonical shared order-heading opt-in/versioned successor",
+    "Canonical token and safe metadata ownership for radius/favicon",
+    "MadeYours checkout recovery and designated Razorpay runtime/HTTPS setup",
+    "Circuit current adapter/source harness"
+  ],
+  "evidenceRecordPerAttempt": [
+    "Actual case/operation and candidate/runtime/actor/record identities",
+    "Normal UI action and acknowledged revision/resource/variant tuple",
+    "Expected and observed output/business effect plus exact captured HTTP only where available",
+    "Actual before/after owned canonical receipt and preservation where required",
+    "Retained failures/refusals, review disposition and scoped correction/retest"
+  ],
+  "counts": {
+    "expanded": 286,
+    "original": 16,
+    "sourceOnlyResultsSeparate": {
+      "PASS": 46,
+      "FAIL": 0
+    },
+    "originalHistorical": {
+      "PASS": 9,
+      "FAIL": 0,
+      "NOT_RUN": 7
+    },
+    "expandedExecuted": 0,
+    "currentE2EPasses": 0
+  },
+  "allRequiredExecuted": false,
+  "FULL_THEME_CERTIFIED": false,
+  "production": "NOT_REQUESTED",
+  "originalExpandedLaneAddendum": "ORIGINAL_EXPANDED_LANE_RECONCILIATION_01.json",
+  "runtimeAdmissionDecision": "docs/implementation/niche-theme-programme/completion-original-matrix-runtime-admission-decision-20261024-01.json",
+  "updatedAt": "2026-10-24T19:57:53.280467+00:00",
+  "currentResumption": "RESUMPTION_ACK_20261025.json",
+  "runtime07": {
+    "generalAdmission": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+    "runtimeIdentity": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNTIME_READY_REDACTED.json",
+    "sourceAdmission": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/source-runtime-admission.json",
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "sharedSiteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "targetPackage": "letbuyy-dawn 2.1.0 explicit admitted successor; actual installed FK/manifest/release readback still required",
+    "packageVersionHistory": "Original2.0.0 run936 remains historical9PASS/7NOT_RUN; source46 checks retain original2.0.0 cohort. No retrospective210 pass.",
+    "themeSpecificActorDraftProductVariantCartOrderBindings": null,
+    "exactControllerGrant": null,
+    "receiverExpiryUtc": "2026-10-24T22:20:00Z",
+    "noExtension": true,
+    "controlApplicability": "RUNTIME07_210_APPLICABILITY.json",
+    "nestedContextPrediction": {
+      "inlineOnly": 11,
+      "existingReusableBadgeHosts": 2,
+      "observedInstalledCount": null
+    }
+  },
+  "finiteNextSlice": {
+    "status": "READY_FOR_ALLOCATOR_AND_SOLE_EDITOR_QUEUE_NOT_EXECUTED",
+    "originalIds": [
+      "MG-BK-OOS-01",
+      "MG-CART-01",
+      "MG-CART-RELOAD-01",
+      "MG-COD-01",
+      "MG-HIST-BASELINE-01",
+      "MG-LATE-EDIT-01",
+      "MG-HIST-AFTER-EDIT-01"
+    ],
+    "expandedIds": [
+      "MG-C-IDENTITY",
+      "MG-C-CART-CHECKOUT",
+      "MG-C-UNCERTAINTY",
+      "MG-C-RAZORPAY",
+      "MG-C-HISTORY"
+    ],
+    "priority": "After Root exact finite record/controller grant, prioritize actual Marginalia Test purchase before receiver expiry; retain original COD and all expanded obligations.",
+    "entryChecks": [
+      "Root independently dispositions preserved46-check source run using historical sealed artifacts; no rerun/current-Main hash substitution.",
+      "Root accepts current shared readiness peer review and names finite Marginalia controller/site/draft/actor/product/variant/cart/order scope and cleanup boundary.",
+      "Editor acknowledges actual installed210 package/immutable version/manifest/release and current B/P/C product IDs plus existing2book UUID option tuples from normal UI; old936 IDs never reused.",
+      "Refine only owned fresh book+notebook through normal merchant UI; add only missing OOS third, remove sampleISBN/common contradictory bibliography, retain all original fresh UUIDs/consumed inventory."
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "action": "Normal intended Marginalia storefront, normal buyer identity entry and exact EN/HI/OOS/paper facts readback. Normal new signup/verification is required; existing-buyer SSO stays separate, never counted as signup.",
+        "credit": "Original positive rows only after exact210 applicability/readback; historical9 retained unchanged."
+      },
+      {
+        "n": 2,
+        "action": "OOS normal affordance/owner-admitted canonical negative stock control; capture exact no-line/no-stock effects. Disabled UI alone does not finish MG-BK-OOS-01; do not force controls or invent HTTP status.",
+        "ids": [
+          "MG-BK-OOS-01"
+        ]
+      },
+      {
+        "n": 3,
+        "action": "Build exact EN590x1 + notebook320x2 cart only after actual current prices and scope confirm; canonical UUIDs/line IDs, stationery variant=null, fullreload facts and quantities; server quote owns totals.",
+        "ids": [
+          "MG-CART-01",
+          "MG-CART-RELOAD-01"
+        ],
+        "lineSubtotalOracle": 1230,
+        "grandTotal": "SERVER_COMPUTED"
+      },
+      {
+        "n": 4,
+        "action": "Purchase-first request: allocate one separate actual Razorpay Test cart with same intended EN1+paper2 composition if Root admits available stock and quote; normal hosted checkout/provider-created demo-bank Success. Record verified actual HTTPS callbacks, provider/local IDs, paid/captured state, exactly-one order, balanced ledger, stock/cart and both buyer+merchant histories.",
+        "ids": [
+          "MG-C-RAZORPAY"
+        ],
+        "scope": "Proposed input, not permission to create extra cart/order before exact allocation. Do not read provider credentials."
+      },
+      {
+        "n": 5,
+        "action": "A normally acknowledged new canonical cart for original COD EN1+paper2; exactly one COD order and original-intent reload/recovery. Capture initial expanded buyer and merchant views and immutable line/options/facts/price projections for both genuine orders BEFORE catalogue edits.",
+        "ids": [
+          "MG-COD-01",
+          "MG-HIST-BASELINE-01"
+        ]
+      },
+      {
+        "n": 6,
+        "action": "Normal merchant same-UUID EN prescribed Marathi spiral/revised author/printing/224p170x240/690; notebook dotted120gsm120p60sheets150x215/380. Omit parent/field/existing-variant stock; preserve actual consumed stock and all3 book UUIDs. Save acknowledgement and fullreload.",
+        "ids": [
+          "MG-LATE-EDIT-01"
+        ]
+      },
+      {
+        "n": 7,
+        "action": "Reload exact owned COD and Razorpay buyer+merchant historical views; original Edition English hardback/Mira Sen/English/hardback/Illustrated second printing/192p156x234/590 and lined100gsm96p48sheets148x210/320 remain exact with accepted quantities/options/prices and immutable hashes. No Marathi/dotted current facts leak.",
+        "ids": [
+          "MG-HIST-AFTER-EDIT-01",
+          "MG-C-HISTORY"
+        ]
+      }
+    ],
+    "separateRemainingScope": "All227 editor rows, complete catalogue/discovery, new signup/customer/denials, recovery/provider adversarial/reversal, security/quality and final review remain required; this finite purchase/history slice is not all286 acceptance.",
+    "stock": "Initial4/4/0/6 are recipe only, never refill. If actual consumed stock cannot support two admitted orders, stop/reconcile scope; do not reseed/recreate.",
+    "controllerHandoff": "Return redacted actual case/operation -> input/UUID/revision -> UI/provider/readback -> expected and actual effects with evidence paths/hashes. Unexecuted cases remain NOT_RUN; partial subchecks never whole-case PASS.",
+    "boundary": "No source/build/runtime/API mutation substitute, independent browser actor, global session/viewport interference, secret reads, deadline extension or unowned cleanup."
+  }
+}

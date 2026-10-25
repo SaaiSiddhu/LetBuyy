@@ -1,0 +1,1086 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T01:31:11.584151+00:00",
+  "classification": "EXISTING_THEME_QUEUE_INPUT_EXACT_FINITE_REQUEST_NOT_EXECUTED_RESULTS",
+  "theme": "trailmark",
+  "owner": "01a164ba-f650-7f00-beea-90431a510973",
+  "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "allocatorReviewer": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "proposedQueuePosition": 6,
+  "queueReservationIsNotIndividualLease": true,
+  "sharedQueueInput": "Existing COVERAGE.json currentExecution.controllerNextSlice consumed through CONTROLLER_CASE_INDEX_01.json; no shared queue/writer takeover.",
+  "authority": {
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025.json",
+      "sha256": "e7cc69390865d45e4d5623555c39a6c0d3c1e931a143866aee1822f15f033d4b"
+    },
+    "actualHumanMessageId": "01a16f3d-1550-7092-b91e-f4786c38abe8",
+    "verifiedInChat": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "instruction": "Resume all10and sharedowners afterfunctional sharedgate; actual per-theme RazorpayTestMode mandatory; preserve allapps/drafts/data.",
+    "automations": "REMAIN_PAUSED",
+    "outgoingMessages": "NONE"
+  },
+  "assignment": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/assignments/trailmark.md",
+    "sha256": "9fd1b46576f3717c185617916a9e1030600e33b1f3db7799488bb4bc6046b9c3"
+  },
+  "run": {
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runnerPid": 54685,
+    "identity": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNTIME_READY_REDACTED.json",
+      "sha256": "135ec6e3129b2eb1fe8e4e0364f785586ab527be780ce376bc0a113e27875bf3"
+    },
+    "gate": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+      "sha256": "4ade007d9b12f9694f73c540bc331c404f7474c01a0934885d38cb8895c66ffb"
+    },
+    "sourceAdmission": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/source-runtime-admission.json",
+      "sha256": "60a841b2282aa75b9244586203b784ba7f90c46c7ab11ea0e921c16318ea3071"
+    },
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "package": "letbuyy-ride explicit2.1.0",
+    "instanceId": null,
+    "releaseId": null,
+    "configTemplateAssetFingerprints": null,
+    "receiverExpiresAt": "2026-10-24T22:20:00Z",
+    "expiryIST": "2026-10-25T03:50:00+05:30",
+    "stopOnRunnerDeath": true,
+    "extensionAuthorized": false,
+    "currentReadiness": "PRESERVATION_MAINTENANCE; qualifiedpreservedrecovery required; no due-timerSIGCONT",
+    "recoveredReceiverLease": null,
+    "currentReceiverLease": null
+  },
+  "firstSlicePriority": "Actual intended sports Test purchase first, on existing COMMON variant, leaving INCH stock untouched for original COD4to3 requirement. No field/schema/negative-test gap blocks an independent valid purchase.",
+  "preconditions": [
+    "Controller obtains exact current tab/data/time lease and binds actual published Trailmark210 package/instance/release/config/template/assets before claiming theme proof. Preserve prior theme drafts/releases/orders/cart boundary.",
+    "Reuse current Editor sports racket; obtain fresh acknowledged UUIDs/version/options/facts/stock through normal merchant path. Never copy old936UUIDs or read providersecret/privatecredential file in this chat.",
+    "Common and inch are distinct actual durable variantUUIDs. Common Test purchase must not decrement inch stock. If no distinct eligible commonvariant is present, retain incomplete prerequisite and ask allocator for canonical owned setup; do not rename/substitute another niche product.",
+    "Expected untouched baseline publicfacts from sealed original plan must be reconciled with observed current product; report mismatch explicitly before forcing data/stock changes.",
+    "Normal existing-buyer SSO may support urgent Test purchase but must be labelled existingfixture; TM-IDENTITY-01new signup/verification staysNOT_RUN until actual normal workflow executes."
+  ],
+  "inputPlan": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/installed-lifecycle/installed-trailmark-fixture.plan.json",
+    "sha256": "3586f21ece714301059cdfef02fc53720a60c581a038c8ba12e489abae3d779a"
+  },
+  "historicalAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/installed-lifecycle/non-order-independent-audit-2026-10-24.json",
+    "sha256": "73ea56fd3bad3c02461ff17c606ab2aae46a232aaec5894a6be6088ab233f293"
+  },
+  "currentBindings": {
+    "sportsProduct": "22446d70-4e10-41f0-97f0-55662eeea763",
+    "commonVariant": "69729510-82e4-44fa-8892-19bbd9d59700",
+    "inchVariant": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+    "witnessProduct": null,
+    "noLengthProduct": null,
+    "collections": null,
+    "merchantActorAlias": null,
+    "buyerActorAlias": null,
+    "foreignBuyerTenantAlias": null,
+    "orderIds": {
+      "RazorpayTest": "c2991cb7-d637-4f11-86d4-fe02252dfc7f"
+    },
+    "checkoutCapabilities": "PRIVATE_CONTROLLER_ONLY_NEVER_REPORT"
+  },
+  "A_providerBeforeExpiry": {
+    "caseIds": [
+      "L00",
+      "M01",
+      "P01",
+      "TM-PSP-01"
+    ],
+    "partialCaseRule": "Capture only executed applicable clauses; one slice does not automatically pass wholeL00/M01/P01.",
+    "steps": [
+      {
+        "operation": "Install/select existing Trailmark explicit2.1.0; normal editor realpreview, labelled save/fullreload/publish/publicreadback",
+        "expected": "Actual Trailmark composition/version/instance/release acknowledged; seal current descriptors/revision for later all-control matrix. Bind source-equivalent unaffected original clauses honestly to210."
+      },
+      {
+        "operation": "Bind current sports common and inch UUIDs/version, select common through actual picker on published intended PDP",
+        "expected": "Productcommon and inherited selected common67.5cm85g67.5x26x2cm, INR1800, actualstock; activityBadminton/typeRacket/compatibilityunconfirmed. No garment-size or compatibility guarantee."
+      },
+      {
+        "operation": "Native add COMMON quantity1, acknowledge cart/fullreload/drawer; proceed via returned hosted capability to actual TestMode bankSuccess and parentOrderConfirmed",
+        "expected": "One commonvariant logical line, server-authoritative INR1800 subtotal plus observed quote/tax/discount. Real providerorder/payment modeTest and intendedTrailmarksports evidence, no injectedcallback/UI/localadapter."
+      },
+      {
+        "operation": "Capture current provider/localorder/canonicalcaptureledger and actual authorized/captured webhook processing; buyer and merchant views",
+        "expected": "One paidconfirmed order, exactlyone balancedcapture; realHMACprocessed200 linkage and actualcartretirement. GlobalmerchantcountNtoNplus1 uses observedbaseline, not sharedsmokeconstant1. Physicalcommon stock observedS toSminus1 only, inch untouched4."
+      }
+    ],
+    "expectedOriginalStockPreserved": "Using COMMON for urgentTest preserves originalC01/C02/O01inch4to3. No stockrefill; no implicit accountsignup credit.",
+    "scopeStatus": "REQUESTED_NOT_RUN"
+  },
+  "B_originalCartCOD": {
+    "caseIds": [
+      "C01",
+      "C02",
+      "O01",
+      "O02",
+      "TM-CART-01",
+      "TM-CART-02",
+      "TM-COD-01"
+    ],
+    "steps": [
+      "Bind isolated witness Lstock0; native Adddisabled and actual inchquantity5 rejection with stock4/status/code/requestID/noorderorstockeffect. Do not make source-only stock claim.",
+      "Native INCHquantity1 add/reload at1800 with Length26.5in,80g,dimensions26.5x10in,heightabsent; server snapshot/price/options acknowledged.",
+      "One actual localCOD through returnedcapability/provider cod/mode sandbox and real eligible shipping quote. Inch stock4to3 netonly; no paid/captured label for COD.",
+      "Retain original acknowledged confirm key/body privately and retry EXACT intent with current validrequestauth; sameorder and onephysicalstockeffect. Capture actual requeststatus/correlation and durable readback."
+    ],
+    "capabilityNote": "If exactconfirm replay or redactedHTTP cannot be observed by supported controller/canonical hook under lease, leave O02/transport clauseBLOCKED; browserreload alone is insufficient.",
+    "scopeStatus": "REQUESTED_NOT_RUN",
+    "dependencies": [
+      "D/setup actualwitnessLstock0; no source-only stockrejection substitute."
+    ]
+  },
+  "C_preEditHistory": {
+    "caseIds": [
+      "H01",
+      "H02",
+      "H03",
+      "TM-IMMUTABLE-01",
+      "TM-STALE-01"
+    ],
+    "steps": [
+      "Before any catalogue edit: capture both actual COD-INCH and Test-COMMON canonical order snapshots/digests and buyer/merchant text; create and acknowledge separate pre-edit INCH cart while stock3.",
+      "Edit SAME product/variantUUIDs/latestversion normally: common70cm90g70x27x3cm, INCH27in82g27x11in,heightabsent; bothprices2100; OMIT untouchedstock.",
+      "Attempt stale cart checkout BEFORE any PATCH/reacceptance; actual guard/code/requestID and zero additionalorder/inventoryeffect. Then explicit currentfacts review.",
+      "OldCOD order remains Length26.5in80g26.5x10in,absentheight/1800; oldTest commonorder remains67.5cm85g67.5x26x2cm/1800. Exact accepted snapshots byteidentical despite currentfacts/price.",
+      "Positiveauthorizedbuyer/merchant readbacks then otherbuyer/tenant/signedout denials with no privatefacts leakage. Preserve old/current orders and consumed stock."
+    ],
+    "scopeStatus": "REQUESTED_NOT_RUN",
+    "normalEditPath": "Reopen latestproduct afterpurchases. Use existing Rename option value for26.5in to27in; neverRemove/rebuildboundcombos. Currentserializer omitsuntouchedstock andexplicitrenamepreservesrowUUID/facts/baseline; actualUI/body/effectevidence stillrequired."
+  },
+  "D_missingMerchantDiscovery": {
+    "caseIds": [
+      "M01",
+      "M02",
+      "P01",
+      "P02",
+      "TM-PRIVATE-01"
+    ],
+    "createBudgetRequested": {
+      "reuseSports": 1,
+      "supplementalSportsProducts": 2,
+      "scopedCollections": 5,
+      "normalCanonicalCommandsOnly": true
+    },
+    "setupLimits": "Meaningful privateSupplier positivecontrol must use specifically sanctioned canonicalfixture setup and durablehash evidence; no private values in reports. Missing ordinary UI privatefield/independenttitle control remains a partial clause, not inferred redaction or invented title. No primaryorder inserts.",
+    "recipes": [
+      {
+        "id": "Q-OVERRIDE-mm",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 673.1,
+          "length_unit": "mm"
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sports.inch"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark lifecycle racket",
+            "26.5 in"
+          ],
+          "normalizedLengthMm": 673.1
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-OVERRIDE-cm",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 67.31,
+          "length_unit": "cm"
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sports.inch"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark lifecycle racket",
+            "26.5 in"
+          ],
+          "normalizedLengthMm": 673.1
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-OVERRIDE-in",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 26.5,
+          "length_unit": "in"
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sports.inch"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark lifecycle racket",
+            "26.5 in"
+          ],
+          "normalizedLengthMm": 673.1
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-COMMON-mm",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 675,
+          "length_unit": "mm"
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sports.common"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark lifecycle racket",
+            "67.5 cm"
+          ],
+          "normalizedLengthMm": 675
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-COMMON-cm",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 67.5,
+          "length_unit": "cm"
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sports.common"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark lifecycle racket",
+            "67.5 cm"
+          ],
+          "normalizedLengthMm": 675
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-COMMON-in",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 26.5748031496063,
+          "length_unit": "in"
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sports.common"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark lifecycle racket",
+            "67.5 cm"
+          ],
+          "normalizedLengthMm": 675
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-UNIT-NOT-DROPPED",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 26.5,
+          "length_unit": "cm"
+        },
+        "expected": {
+          "count": 0,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "No matching equipment",
+            "26.5 cm"
+          ],
+          "recovery": "Keep valid selected pair; no length chooser. Paired clear preserves scope/search/sort/limit."
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-CROSS-SIZE-LENGTH",
+        "scopeCollectionKey": "trailmarkWitness",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "size": "M",
+          "length_value": 675,
+          "length_unit": "mm"
+        },
+        "expected": {
+          "count": 0,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "No matching equipment",
+            "675 mm"
+          ],
+          "forbidden": "Never borrow length from S and Size from M."
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-CROSS-PRICE-LENGTH",
+        "scopeCollectionKey": "trailmarkWitness",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "size": "M",
+          "length_value": 700,
+          "length_unit": "mm",
+          "max_price": 500
+        },
+        "expected": {
+          "count": 0,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "No matching equipment"
+          ],
+          "forbidden": "Never borrow price500 from S for measured M."
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-MEDIUM-POSITIVE",
+        "scopeCollectionKey": "trailmarkWitness",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "size": "M",
+          "length_value": 700,
+          "length_unit": "mm",
+          "min_price": 1000,
+          "max_price": 1000
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sportsWitness.medium"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark same-variant witness racket"
+          ],
+          "persistedProductPriceMajor": 9999,
+          "matchingPriceMajor": 1000
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-SMALL-POSITIVE",
+        "scopeCollectionKey": "trailmarkWitness",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "size": "S",
+          "length_value": 67.5,
+          "length_unit": "cm",
+          "max_price": 500
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [
+            "sportsWitness.small"
+          ],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark same-variant witness racket"
+          ],
+          "persistedProductPriceMajor": 9999,
+          "matchingPriceMajor": 500
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-SOLDOUT-ONLY",
+        "scopeCollectionKey": "trailmarkWitness",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "size": "L",
+          "length_value": 10,
+          "length_unit": "in"
+        },
+        "expected": {
+          "count": 0,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "No matching equipment"
+          ],
+          "forbidden": "Quantity0 cannot witness a capability or cart purchase."
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-NO-LENGTH",
+        "scopeCollectionKey": "trailmarkNoLength",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark"
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Trailmark unmeasured storage fixture"
+          ],
+          "forbidden": "Do not infer exact length from dimensions.length or grip circumference."
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-NO-LENGTH-SELECTED",
+        "scopeCollectionKey": "trailmarkNoLength",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 50,
+          "length_unit": "cm"
+        },
+        "expected": {
+          "count": 0,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "No matching equipment",
+            "50 cm"
+          ]
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-EMPTY-COLLECTION",
+        "scopeCollectionKey": "trailmarkEmpty",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark"
+        },
+        "expected": {
+          "count": 0,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "No matching equipment"
+          ]
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-PAST-END",
+        "scopeCollectionKey": "trailmarkBaseline",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "page": 9,
+          "limit": 1
+        },
+        "expected": {
+          "count": 1,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": true,
+              "allowed_units": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "Page 9",
+            "No matching equipment"
+          ],
+          "dataCount": 0,
+          "note": "Total cohort positive, current page empty. No page clamp or catalog fallback; real measurement chooser remains available."
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "Q-QUERY-PRESERVATION",
+        "scopeCollectionKey": "trailmarkWitness",
+        "routes": [
+          "collection",
+          "search"
+        ],
+        "queryFields": {
+          "search": "Trailmark",
+          "length_value": 700,
+          "length_unit": "mm",
+          "size": "M",
+          "connector": [
+            "usb-c",
+            "hdmi"
+          ],
+          "category": "Recreation",
+          "country_of_origin": "India",
+          "sort": "price-desc",
+          "limit": 1,
+          "page": 2
+        },
+        "expected": {
+          "count": 0,
+          "matchingVariantAliases": [],
+          "measurement_capabilities": {
+            "equipment_length": {
+              "available": false,
+              "allowed_units": []
+            },
+            "max_width_cm": {
+              "available": false
+            },
+            "max_depth_cm": {
+              "available": false
+            }
+          },
+          "visible": [
+            "No matching equipment",
+            "700 mm"
+          ],
+          "note": "Racket has no electronics connector facts, so this deliberate cross-namespace query is zero; do not fabricate a positive witness.",
+          "navigation": {
+            "sortTo": "price-asc",
+            "preserveAllUnedited": true,
+            "pageAfterApply": 1,
+            "clearLengthRemoves": [
+              "length_value",
+              "length_unit"
+            ],
+            "clearLengthPreserves": [
+              "search",
+              "size",
+              "connector[]",
+              "category",
+              "country_of_origin",
+              "sort",
+              "limit",
+              "fixed collection scope"
+            ],
+            "clearConnectorRemovesOnly": "one selected connector value"
+          }
+        },
+        "runtimeStatus": "NOT_RUN"
+      }
+    ],
+    "requiredTransports": [
+      "collection/public",
+      "search/public",
+      "collection/privatepreview",
+      "search/privatepreview"
+    ],
+    "observations": {
+      "recipes": 17,
+      "publicHttpUiPairs": 34,
+      "privateHttpPairs": 34,
+      "notLifecycleCaseCount": true
+    },
+    "recovery": "Preserve unrelated/repeated queryfields, pairedlengthvalue/unitclear resets page, samevariant stock/price/measurements, truezero nochooser, pastend count coherent, native scalarFormData no duplicates. No public fallback for missing/expired private token.",
+    "scopeStatus": "REQUESTED_NOT_RUN",
+    "mustPrecede": "C_preEditHistory catalogueedit; otherwise originalquery numericexpectations areinvalid.",
+    "nicheSemantics": "WitnessS/M/L are deliberate same-variant MODEL CODES for querynegatives, notgarmentfit orphysicalequipmentmeasurements. Keep originalcanonicalqueryoption mapping/UUIDs; publishedsportsfacts mustnever switchto clothingfit merelybecauseoptionnameSize exists."
+  },
+  "remainingFullMatrix": [
+    "All retained436expanded cases plus15 current210root/field/child contexts (451total) stayrequired; actualinstalleddescriptor mustmatch qualifiedexpectedbundle cb800016da40faebc43da151a1429eee7a232b4226f66c0ae13434e4d8993ca7.",
+    "All actualadd/edit/reorder/hide/save/fullreload/preview/publish/remove/readd/undo/recovery modules/blocks; no blanketsharedcanary credit.",
+    "Normal newbuyer/signup/verification/customerentry, profile/address/identitydenials remain required.",
+    "Supported responsive/accessibility/text/media/privacy/security/recovery/performance, nativeforms/reviews/engagement andmoneyrecovery remain required.",
+    "Separatecurrent210successor/update preservation from unaffectedoriginalcase clauses; no historical200failure erased orcredittransferred.",
+    "TM-G02fullapprovedtechnicalmedia remainsanownscopegap; futureversion/projection/childguardallocationmustnotblock independentcurrent210Test/COD originalcases."
+  ],
+  "sharedReuseLimits": {
+    "configuredCart13": {
+      "executionRun": "63c55b066db3",
+      "applicability": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/EVIDENCE_APPLICABILITY.json",
+        "sha256": "bb2698b3487ffd563c163440e8797a71972752db663897477141954132bf99f2"
+      },
+      "notProofOf": "Trailmark specific sportsvariant/cart/provider/history or newbuyer signup"
+    },
+    "currentProviderSmoke": {
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/REAL_PROVIDER_UI_PAYMENT_PASS.json",
+        "sha256": "8c69fbf61c438481fd6f56a088bf9e87866f17d597591c5c763426339b3880a3"
+      },
+      "notProofOf": "Trailmark Testpurchase or theme certification"
+    },
+    "nativeAndSecurity": "Consume exact relevant acceptedsource/native receipts with explicitapplicability; do not re-run unchanged cohorts or replaceactualUI."
+  },
+  "evidenceRequired": [
+    "CaseIDandclause, source/build/package/release/run/site/actorbinding",
+    "Observed actual product/variantUUIDs/version andstock/prices before/after",
+    "Redacted realHTTPstatus/code/requestID where applicable, screenshot/DOMstate, durable currentorder/snapshot/ledger readback",
+    "ActualTestprovider order/payment/event linkage andsignatureValidprocessedstatus; no secret/cookie/token/capability URLs",
+    "Every initial failure, skip/dependentBLOCKEDrow and effectconservation; independentreview separatelypending"
+  ],
+  "evidenceOwnerFolder": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24",
+  "controllerDelivery": "Use existing queue inputCOVERAGE.currentExecution.controllerNextSlice and HANDOFF.nextControllerSlice; no outgoingchatmessage from this owner.",
+  "status": "SOURCE_EVIDENCE_RECONCILED_MAINTENANCE_NO_RUNTIME_EXECUTION",
+  "sourceEdits": [],
+  "ownRuntimeActions": [],
+  "certification": "ALL_NOT_ISSUED",
+  "revision": 11,
+  "currentExpectedDescriptor": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_EXPECTED_210_INVENTORY.json",
+    "sha256": "c5b78f864547fa5320f4052f5abd8af169734a580ebcdeb8efa277f971429985"
+  },
+  "executionOrder": [
+    {
+      "order": 1,
+      "slice": "A_providerBeforeExpiry",
+      "reason": "Urgent actualTestCOMMONvariant purchase; INCHstock4retained; no catalogueedit."
+    },
+    {
+      "order": 2,
+      "slice": "D_missingMerchantDiscovery/setup",
+      "reason": "Create2supplements/5collections only under ownedslot; soldoutL is prerequisite forC01. Missingprivate/title UIclauses remain separatelyopen without blocking validCOD."
+    },
+    {
+      "order": 3,
+      "slice": "D_missingMerchantDiscovery/queries-and-facts",
+      "reason": "Runoriginal17recipes public/private collection/search BEFORE afterRecordedOrder edit changesbaseline67.5cm/26.5in to70cm/27in. Captureallvariant/no-length facts and M02recovery within sameoriginalvalues."
+    },
+    {
+      "order": 4,
+      "slice": "B_originalCartCOD",
+      "reason": "C01/C02/O01/O02 onINCH, preserved4to3. Exact originalintent retry and actualserverstock refusal."
+    },
+    {
+      "order": 5,
+      "slice": "C_preEditHistory/pre-edit-capture",
+      "reason": "BothactualTestCOMMON/CODINCH order snapshots/digests+views; separatelyacknowledged pre-editINCHcart BEFORE firstcatalogueedit."
+    },
+    {
+      "order": 6,
+      "slice": "C_preEditHistory/edit-stale-history",
+      "reason": "SameUUID edit OMITstock; stalecheckout beforeanyPATCH/reacceptance; immutablebothhistories andbuyer/tenantdenial."
+    }
+  ],
+  "deadlinePolicy": "Only urgentTest slice isdeadline-prioritized; allrequiredCOD/discovery/editor/identity/history/qualitycases remainopen ifnotexecuted. Never extend receiver orreplaceunexecutedclauses withsharedsmoke.",
+  "currentSourceDispositions": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_SOURCE_DISPOSITIONS.json",
+    "sha256": "338fe95d4a7772e59ce47812c8a23dbb08500b517f450148424cf271b4a2d51c"
+  },
+  "intendedController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "readbackOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "currentControllerAuthority": {
+    "leaseSnapshot": {
+      "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+      "runId": "49ada80bc494",
+      "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+      "purpose": "Temporary root continuation after Editor automatic approval rejection; same queue/environment, no approval bypass",
+      "userAppsTouched": false
+    },
+    "stateReference": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json",
+      "sha256": "0fa4ca5e2a2dc5858aea1f9f5ac569127feb3bdc3724e6407e849fa983208e1e"
+    },
+    "scope": "Singlecurrentcontroller fromauthoritativelease; no parallelbrowser. Temporaryroot handback changesonlyactor, not originalrequirements ornew recipientpermissions."
+  },
+  "catalogueEditPreflight": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_CATALOGUE_EDIT_PREFLIGHT.json",
+    "sha256": "3a35874e05e394ade68f95f04ad4286a9be43c01f65d335bd4f2d01653aeca38"
+  },
+  "packageBindingHashSemantics": {
+    "immutablePackage": "Bind actual installed letbuyy-ride2.1.0/version5 package UUID and immutable descriptor, validated using the same key-sorted compact UTF8 JSON algorithm as qualified bundle cb800016da40faebc43da151a1429eee7a232b4226f66c0ae13434e4d8993ca7. Label SQL JSON-text hashes separately; a different serialization hash is not alone a content mismatch.",
+    "editableInstance": "Bind and retain real current instance/draft/release config/template/asset fingerprints independently. Legitimate normal customization makes instance config differ from factory defaults; do not reset, reject or overwrite saved customization to force equality.",
+    "receiptLimit": "Expected qualified descriptor is not installed readback. Actual package, release, template and asset evidence is still required before theme proof."
+  },
+  "latestQueueObservation": {
+    "observedAt": "2026-10-24T20:40:23.424365+00:00",
+    "classification": "CONTROLLER_FILE_QUEUE_OBSERVATION_NOT_AN_INDIVIDUAL_EXECUTION_LEASE",
+    "source": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/LIVE_BROWSER_QUEUE.json",
+      "sha256": "c41f1c13688221a7674abaf69a7f7780514228ccff0bbca3767ca6f6d343d4a4"
+    },
+    "sourceRecordedAt": "2026-10-24T20:37:08.023679+00:00",
+    "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "runId": "49ada80bc494",
+    "nextTheme": "Habitat",
+    "remainingProviderQueue": [
+      "Habitat",
+      "Circuit",
+      "Trailmark",
+      "Marginalia",
+      "Kindred",
+      "MadeYours",
+      "Playfield"
+    ],
+    "TrailmarkPositionInRemainingQueue": 3,
+    "TrailmarkOrderPresent": false
+  },
+  "sharedCaptureMetadataDependency": {
+    "id": "R07-HOSTED-CAPTURE-FLAG-01",
+    "observedAt": "2026-10-24T20:40:23.424365+00:00",
+    "source": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/HOSTED_CAPTURE_FLAG_FINDING.json",
+      "sha256": "7f68158e4711f759f8b2697bc0c6b6ac3a40a2394194dd5541214d9bb86b03e9"
+    },
+    "sourceUpdatedAt": "2026-10-24T20:35:17.264851+00:00",
+    "status": "OPEN_FOR_CANONICAL_OWNER_REVIEW",
+    "scope": "Shared observation on other themes; no Trailmark transaction observed or failure inferred. Canonical owner/reviewer disposition required before full certification. Do not rebuy, replay, edit source or alter existing captures to change metadata.",
+    "observedOrderCount": 3,
+    "canonicalOwnerAllocation": "Themes snapshot131 reports a private correction proposal assigned. This chat does not own or duplicate that correction."
+  },
+  "controllerIndexReconciliation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_CONTROLLER_INDEX_DELTA.json",
+    "sha256": "b7d80173ddcc5a86988726ede79c8b26aaba3480b7dfec14d2e90e6269b4dfe5"
+  },
+  "currentExecutionObservations": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_EXECUTION_OBSERVATIONS.json",
+    "sha256": "2addd1d325bae82734d8e0b445b637b004c465ba6154a8aaaa838384a11a0092"
+  },
+  "observedSequenceDeviation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_SEQUENCE_DEVIATION.json",
+    "sha256": "404a37443be297a4d31efebe362595671a5ca409de96558a4def514f433a860c"
+  },
+  "bindingEvidence": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-before-stock.json",
+    "sha256": "c00b505b131a9c9df838300c9972dcda6ab706ef4cb064f37ce6f0b0367e1143"
+  },
+  "currentControllerCaseIndexDelta": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_CONTROLLER_INDEX_DELTA.json",
+    "sha256": "b7d80173ddcc5a86988726ede79c8b26aaba3480b7dfec14d2e90e6269b4dfe5"
+  },
+  "financialAndSavedFactsAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_PAYMENT_AUDIT.json",
+    "sha256": "2a53053cb3a34d035aa0daa230748f321d975251a9627714f170ca2056b1a3bb"
+  },
+  "remainingExecutionRequest": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_REMAINING_EXECUTION_REQUEST.json",
+    "sha256": "50963f045b57b4a15fb8a04ecc290fe1c5f02af5c0aa1bce56609181bae0994f"
+  },
+  "latestHumanResume": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RESUME_CHECKPOINT_20261025_02.json",
+    "sha256": "baa6ac19fe29eef8db6b6219c9ebfe62fe99b3770faa75115932a3fd4bfc70a1"
+  },
+  "nextBoundedNonMutatingUIRecipe": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/NEXT_UI_COMMON_PREVIEW_20261025_02.json",
+    "sha256": "7a32aebc24b92a1d23516a2244d21156064a0a0b3f425a920fae4208ade5d2c9"
+  },
+  "priorReceiverExpiryHistorical": "2026-10-24T22:20:00Z",
+  "currentCleanEditorBindings": {
+    "asOf": "2026-10-25T00:57:14.581053+00:00",
+    "phase": "clean-final retainedTrailmark; notcurrentliveactive or Test10006-time release",
+    "receipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/TRAILMARK_EDITOR_BINDINGS_CLEAN_FINAL.json",
+      "sha256": "e41a634e3e5f910a5925cf63b9d1775a5c746ddf10b32e8f50ada1ee274849f8"
+    },
+    "instanceId": "3b2795c8-a59f-47c5-b4ee-c8e22f3ab54e",
+    "packageId": "c189dd2a-fee9-4dda-896c-1abec5b8a57e",
+    "packageVersionId": "b6b203cf-24c3-404e-ba6a-7165a9c81d0e",
+    "draftId": "32eb6c5c-5bbc-43e4-a9ef-68d203f4f5f1",
+    "draftVersion": 20,
+    "workingManifestSha256": "2290710fa6331a4079700f3ac363841e02f6a99321ef68186fb9f2e3fb9805d8",
+    "releaseId": "63a2603b-4869-4e7f-abb4-ee6fa2e24578",
+    "sourceDraftVersion": 18,
+    "releaseSnapshotSha256": "2290710fa6331a4079700f3ac363841e02f6a99321ef68186fb9f2e3fb9805d8",
+    "instanceStatusAtReceipt": "inactive",
+    "siteCurrentThemeAtReceipt": {
+      "slug": "letbuyy-bloom",
+      "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa"
+    },
+    "separateConfigTemplateAssetHashes": "NOT_SUPPLIED_IN_BOUNDED_BINDING_RECEIPT"
+  },
+  "editorCycleReceipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/TRAILMARK_LOCAL_EDITOR_CYCLE_RESUME02.json",
+    "sha256": "a5b9d1b7c7056b5db205ef0e80b1e2744763e13def1e47d9b2ca8a3cf3532c8b"
+  },
+  "maintenanceReceipt": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+    "sha256": "996da731d7150632928bb0c7d5f9214906f62c4f2e063a6e9e9900067710cdaf"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "section-rich-content",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "rich-content",
+    "group": "template",
+    "firstId": "section-c9a003d3-9c46-47f0-8323-e4c427b544b8",
+    "finalId": "section-a54b798d-06a6-4cc3-9a4e-5d54fc079278",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "rich-content",
+          "settings": {
+            "title": "Source fixture title",
+            "body": "Source fixture body"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "rich-content",
+          "settings": {
+            "title": "Source fixture title",
+            "body": "Source fixture body"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "rich-content",
+          "settings": {
+            "title": "Source fixture title",
+            "body": "Source fixture body"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "rich-content",
+          "settings": {
+            "title": "Source fixture title",
+            "body": "Source fixture body"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "recordedAtUtc": "2026-10-24T12:56:24.777636+00:00",
+  "classification": "EDITOR_FROZEN200_CANDIDATE_PLAN_VERIFIED_NOT_A_RUNTIME_OR_BROWSER_LEASE",
+  "plan": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/frozen200-candidate-plan06/CANDIDATE_PLAN.json",
+    "sha256": "b34d334b15b747b2c608e83d6326d5dbfb7edb2ea9f5d20154c0b6f7e86655d2"
+  },
+  "classificationAtOwner": "ONE_CURRENT393_FROZEN200_ORIGINAL_MATRIX_CANDIDATE_PLAN_NOT_EXECUTION",
+  "candidateCreated": false,
+  "tlsEvidenceMatchesPlan": true,
+  "publicOSCertificateTrust": "PASS_PER_OWNER_DIAGNOSTIC_NO_KEY_READ_OR_TRUST_CHANGE",
+  "freshBrowserCheckoutTrust": "NOT_RUN",
+  "dewdropInputsMatch": [
+    {
+      "input": "dewdrop",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/ORIGINAL30_FRESH_ADMISSION_REQUEST_20261024.json",
+      "matchesPlan": true
+    },
+    {
+      "input": "dewdropFaultReadiness",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/FRESH_FAILURE_OBSERVATION_READINESS_20261024.json",
+      "matchesPlan": true
+    },
+    {
+      "input": "dewdropSecurityProduct",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/S01_STOCK_QUALIFIED_SETUP_PROPOSAL_20261024.json",
+      "matchesPlan": true
+    }
+  ],
+  "dewdropPriority": {
+    "lane": "Dewdrop original30",
+    "input": {
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/ORIGINAL30_FRESH_ADMISSION_REQUEST_20261024.json",
+      "sha256": "a1f2396064518ccfd7973a547a7b1ffe885f5b82159777ef75a1054a29f8c1b7",
+      "bytes": 10705
+    },
+    "sequence": "Common/B00/currentpositive\u2192M05normalcounts\u2192ordinaryoriginalcases\u2192dedicatedstockS01andD02/O05faultbrancheswhen separatelyadmitted; actualnew30receipt/reuse-review perrow",
+    "doNotHoldNormalLaneFor": "Missingfault/requestobserver holds its specificD02/O05/S01branches only, notindependentB00/M05/ordinarycases"
+  },
+  "normalLaneNotHeldForSeparateFaultControls": true,
+  "actualSourceIsolatedCandidate": null,
+  "actualRuntime": null,
+  "actualBrowserLease": null,
+  "newBrowserPasses": 0,
+  "originalHistoricalTotals": {
+    "PASS": 26,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "all30Complete": false
+}

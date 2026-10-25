@@ -1,0 +1,485 @@
+TAP version 13
+# Subtest: all five real editors compose without creating metadata when only the view category changes
+ok 1 - all five real editors compose without creating metadata when only the view category changes
+  ---
+  duration_ms: 2176.153709
+  type: 'test'
+  ...
+# Subtest: actual Food child edits flow into only its raw namespace and retain incomplete values until corrected
+ok 2 - actual Food child edits flow into only its raw namespace and retain incomplete values until corrected
+  ---
+  duration_ms: 120.553875
+  type: 'test'
+  ...
+# Subtest: actual Toy child edits preserve Food and exact explicit clear markers
+ok 3 - actual Toy child edits preserve Food and exact explicit clear markers
+  ---
+  duration_ms: 122.125958
+  type: 'test'
+  ...
+# Subtest: a real child null removes one namespace and the final removal still emits explicit empty metadata
+ok 4 - a real child null removes one namespace and the final removal still emits explicit empty metadata
+  ---
+  duration_ms: 78.457042
+  type: 'test'
+  ...
+# Subtest: wrapper selected clear preserves siblings and all-clear is an explicit independent action
+ok 5 - wrapper selected clear preserves siblings and all-clear is an explicit independent action
+  ---
+  duration_ms: 45.586541
+  type: 'test'
+  ...
+# Subtest: unsupported draft fields remain visible validation failures while supported child edits are retained
+ok 6 - unsupported draft fields remain visible validation failures while supported child edits are retained
+  ---
+  duration_ms: 91.632625
+  type: 'test'
+  ...
+# Subtest: unreadable top-level metadata is kept until an explicit clear and disabled recovery emits nothing
+ok 7 - unreadable top-level metadata is kept until an explicit clear and disabled recovery emits nothing
+  ---
+  duration_ms: 39.2725
+  type: 'test'
+  ...
+# Subtest: disabled composition and clear controls cannot emit metadata changes
+ok 8 - disabled composition and clear controls cannot emit metadata changes
+  ---
+  duration_ms: 45.614417
+  type: 'test'
+  ...
+# Subtest: controlled row replacement and common-context changes never reintroduce a prior row draft
+ok 9 - controlled row replacement and common-context changes never reintroduce a prior row draft
+  ---
+  duration_ms: 95.8695
+  type: 'test'
+  ...
+# Subtest: hostile text stays inert and repeated wrappers retain unique labelled controls without nested forms
+ok 10 - hostile text stays inert and repeated wrappers retain unique labelled controls without nested forms
+  ---
+  duration_ms: 134.69625
+  type: 'test'
+  ...
+# Subtest: dirty departure keeps actual product input on Stay and clears only the explicit discarded draft
+ok 11 - dirty departure keeps actual product input on Stay and clears only the explicit discarded draft
+  ---
+  duration_ms: 695.92875
+  type: 'test'
+  ...
+# Subtest: Save and leave waits for the actual acknowledged version and preserves failed validation
+ok 12 - Save and leave waits for the actual acknowledged version and preserves failed validation
+  ---
+  duration_ms: 370.287416
+  type: 'test'
+  ...
+# Subtest: departure requested during a running save waits for acknowledgement and then continues
+ok 13 - departure requested during a running save waits for acknowledgement and then continues
+  ---
+  duration_ms: 218.807916
+  type: 'test'
+  ...
+# Subtest: uncertain product save cannot discard or leave; its original command is recovered
+ok 14 - uncertain product save cannot discard or leave; its original command is recovered
+  ---
+  duration_ms: 198.5755
+  type: 'test'
+  ...
+# Subtest: an ordinary unsaved edit survives remount as a reviewable draft without auto-overwriting the record
+ok 15 - an ordinary unsaved edit survives remount as a reviewable draft without auto-overwriting the record
+  ---
+  duration_ms: 350.224291
+  type: 'test'
+  ...
+# Subtest: actual editor preserves a conflicted draft until explicit latest reload, then sends its exact version
+ok 16 - actual editor preserves a conflicted draft until explicit latest reload, then sends its exact version
+  ---
+  duration_ms: 250.488791
+  type: 'test'
+  ...
+# Subtest: lost response retries the captured body/key and preserves a newer draft after exact recovery
+ok 17 - lost response retries the captured body/key and preserves a newer draft after exact recovery
+  ---
+  duration_ms: 106.850375
+  type: 'test'
+  ...
+# Subtest: missing server revision cannot become a fabricated editable version
+ok 18 - missing server revision cannot become a fabricated editable version
+  ---
+  duration_ms: 24.189708
+  type: 'test'
+  ...
+# Subtest: new variant server IDs are adopted after recovering a pending save without discarding a newer scalar draft
+ok 19 - new variant server IDs are adopted after recovering a pending save without discarding a newer scalar draft
+  ---
+  duration_ms: 147.524459
+  type: 'test'
+  ...
+# Subtest: a late save from another product/store cannot replace the current editor or version
+ok 20 - a late save from another product/store cannot replace the current editor or version
+  ---
+  duration_ms: 134.445458
+  type: 'test'
+  ...
+# Subtest: pending command survives editor remount with exact key/body and retains the newer draft
+ok 21 - pending command survives editor remount with exact key/body and retains the newer draft
+  ---
+  duration_ms: 255.400041
+  type: 'test'
+  ...
+# Subtest: an unreadable pending command blocks a fresh save until explicit latest review and discard
+ok 22 - an unreadable pending command blocks a fresh save until explicit latest review and discard
+  ---
+  duration_ms: 137.068584
+  type: 'test'
+  ...
+# Subtest: archived edit hydration and detail save preserve the explicit canonical status
+ok 23 - archived edit hydration and detail save preserve the explicit canonical status
+  ---
+  duration_ms: 48.97475
+  type: 'test'
+  ...
+# PRODUCT_EDITOR_UNMOUNTED_REPLY_WITNESS {"scope":"real maintained editor with synthetic HTTP only","patches":3,"oldKey":"71c09cd4-dc84-4c80-885f-878b1800ffc2","newKey":"2f5e2389-cd13-41c7-bfc9-8586fd169d81","newRecoveryPresentBefore":true,"newRecoveryPresentAfter":true,"originalCommandReplayedExactly":true,"actualBackendCalls":0,"databaseLossProven":false}
+# Subtest: an unmounted editor late reply cannot erase a newer instance recovery intent
+ok 24 - an unmounted editor late reply cannot erase a newer instance recovery intent
+  ---
+  duration_ms: 94.576042
+  type: 'test'
+  ...
+# Subtest: invalid product save associates the title error and focuses its correction without dispatch
+ok 25 - invalid product save associates the title error and focuses its correction without dispatch
+  ---
+  duration_ms: 40.738959
+  type: 'test'
+  ...
+# Subtest: real shared editor saves and clears food facts without losing another namespace or private metadata
+ok 26 - real shared editor saves and clears food facts without losing another namespace or private metadata
+  ---
+  duration_ms: 81.160958
+  type: 'test'
+  ...
+# Subtest: unfinished niche draft survives remount and cannot dispatch a fresh product save
+ok 27 - unfinished niche draft survives remount and cannot dispatch a fresh product save
+  ---
+  duration_ms: 75.060042
+  type: 'test'
+  ...
+# Subtest: new invalid facts cannot block recovery of an earlier immutable save command
+ok 28 - new invalid facts cannot block recovery of an earlier immutable save command
+  ---
+  duration_ms: 74.131667
+  type: 'test'
+  ...
+# Subtest: actual image reorder rebases gift views and a later explicit selection uses the current image order
+ok 29 - actual image reorder rebases gift views and a later explicit selection uses the current image order
+  ---
+  duration_ms: 97.706583
+  type: 'test'
+  ...
+# Subtest: actual removal clears a gift view and re-uploading its URL does not resurrect the old role
+ok 30 - actual removal clears a gift view and re-uploading its URL does not resurrect the old role
+  ---
+  duration_ms: 187.174792
+  type: 'test'
+  ...
+# Subtest: duplicate uploaded image URLs clear ambiguous roles and removing a duplicate does not guess one back
+ok 31 - duplicate uploaded image URLs clear ambiguous roles and removing a duplicate does not guess one back
+  ---
+  duration_ms: 167.012666
+  type: 'test'
+  ...
+# Subtest: malformed gift contents remain editable across image changes and cannot silently disappear from a save
+ok 32 - malformed gift contents remain editable across image changes and cannot silently disappear from a save
+  ---
+  duration_ms: 86.558084
+  type: 'test'
+  ...
+# Subtest: gift image associations survive remount and lost reply while the older immutable command replays exactly
+ok 33 - gift image associations survive remount and lost reply while the older immutable command replays exactly
+  ---
+  duration_ms: 112.08125
+  type: 'test'
+  ...
+# Subtest: legacy retained image roles require deliberate current-image review and preserve raw facts
+ok 34 - legacy retained image roles require deliberate current-image review and preserve raw facts
+  ---
+  duration_ms: 98.641125
+  type: 'test'
+  ...
+# Subtest: retained media drops bearer URLs with correct safe-image role identity before restore
+ok 35 - retained media drops bearer URLs with correct safe-image role identity before restore
+  ---
+  duration_ms: 78.827666
+  type: 'test'
+  ...
+# Subtest: gift image association stays in its actor/store/product draft scope
+ok 36 - gift image association stays in its actor/store/product draft scope
+  ---
+  duration_ms: 78.913125
+  type: 'test'
+  ...
+# Subtest: actual replacement photograph remains unassigned until the merchant chooses its current role
+ok 37 - actual replacement photograph remains unassigned until the merchant chooses its current role
+  ---
+  duration_ms: 82.060916
+  type: 'test'
+  ...
+# Subtest: a newer bearer-image draft cannot leak into retained recovery or alter the earlier pending command
+ok 38 - a newer bearer-image draft cannot leak into retained recovery or alter the earlier pending command
+  ---
+  duration_ms: 117.151417
+  type: 'test'
+  ...
+# Subtest: real variant edits keep sibling namespaces and repeated title/SKU rows bound to their own UUID
+ok 39 - real variant edits keep sibling namespaces and repeated title/SKU rows bound to their own UUID
+  ---
+  duration_ms: 169.624584
+  type: 'test'
+  ...
+# Subtest: commercial-only variant edits and reverted facts omit metadata; the final explicit clear sends an empty object
+ok 40 - commercial-only variant edits and reverted facts omit metadata; the final explicit clear sends an empty object
+  ---
+  duration_ms: 198.113917
+  type: 'test'
+  ...
+# Subtest: clearing a single variant namespace preserves its sibling and explicit nested clear markers
+ok 41 - clearing a single variant namespace preserves its sibling and explicit nested clear markers
+  ---
+  duration_ms: 102.430167
+  type: 'test'
+  ...
+# Subtest: invalid raw variant facts survive remount and block a new command until corrected
+ok 42 - invalid raw variant facts survive remount and block a new command until corrected
+  ---
+  duration_ms: 141.067542
+  type: 'test'
+  ...
+# Subtest: legacy retained existing rows require explicit latest review for facts and never invent a known-empty baseline
+ok 43 - legacy retained existing rows require explicit latest review for facts and never invent a known-empty baseline
+  ---
+  duration_ms: 155.827667
+  type: 'test'
+  ...
+# Subtest: variant conflict retains the raw draft until explicit reload and then uses the authoritative baseline/version
+ok 44 - variant conflict retains the raw draft until explicit reload and then uses the authoritative baseline/version
+  ---
+  duration_ms: 101.198292
+  type: 'test'
+  ...
+# Subtest: lost variant reply replays the immutable command despite newer invalid facts and rebases the accepted UUID baseline
+ok 45 - lost variant reply replays the immutable command despite newer invalid facts and rebases the accepted UUID baseline
+  ---
+  duration_ms: 232.839916
+  type: 'test'
+  ...
+# Subtest: unproven option deletion preserves both the original options and bound facts until explicit row removal
+ok 46 - unproven option deletion preserves both the original options and bound facts until explicit row removal
+  ---
+  duration_ms: 221.01675
+  type: 'test'
+  ...
+# Subtest: actual new-product rows send only supplied partial variant metadata in the single creation request
+ok 47 - actual new-product rows send only supplied partial variant metadata in the single creation request
+  ---
+  duration_ms: 78.969042
+  type: 'test'
+  ...
+# Subtest: new-row facts changed after a lost reply keep their draft and require review before adopting returned UUIDs
+ok 48 - new-row facts changed after a lost reply keep their draft and require review before adopting returned UUIDs
+  ---
+  duration_ms: 174.774125
+  type: 'test'
+  ...
+# Subtest: option rename opens an explicit keyboard dialog before changing the retained variant
+ok 49 - option rename opens an explicit keyboard dialog before changing the retained variant
+  ---
+  duration_ms: 42.678708
+  type: 'test'
+  ...
+# Subtest: option rename sends the same book UUIDs with edited facts, sibling metadata and post-order stock intact
+ok 50 - option rename sends the same book UUIDs with edited facts, sibling metadata and post-order stock intact
+  ---
+  duration_ms: 189.689625
+  type: 'test'
+  ...
+# Subtest: option rename validation, keyboard Save, Escape and Cancel preserve the original draft until committed
+ok 51 - option rename validation, keyboard Save, Escape and Cancel preserve the original draft until committed
+  ---
+  duration_ms: 116.123125
+  type: 'test'
+  ...
+# Subtest: option rename survives draft recovery and preserves immutable retry bytes while a newer rename stays bound to its UUID
+ok 52 - option rename survives draft recovery and preserves immutable retry bytes while a newer rename stays bound to its UUID
+  ---
+  duration_ms: 361.022792
+  type: 'test'
+  ...
+# Subtest: facts save preserves private siblings and other namespaces while deliberate clear removes the namespace
+ok 53 - facts save preserves private siblings and other namespaces while deliberate clear removes the namespace
+  ---
+  duration_ms: 5.185625
+  type: 'test'
+  ...
+# Subtest: invalid draft remains editable but cannot become a validated mutation or inject unsupported namespaces
+ok 54 - invalid draft remains editable but cannot become a validated mutation or inject unsupported namespaces
+  ---
+  duration_ms: 3.875625
+  type: 'test'
+  ...
+# Subtest: retained drafts and exact pending commands preserve new raw facts and upgrade old snapshots without clearing server facts
+ok 55 - retained drafts and exact pending commands preserve new raw facts and upgrade old snapshots without clearing server facts
+  ---
+  duration_ms: 1.573708
+  type: 'test'
+  ...
+# Subtest: gift image identity rebases a changed order while preserving malformed content and sibling facts
+ok 56 - gift image identity rebases a changed order while preserving malformed content and sibling facts
+  ---
+  duration_ms: 4.433708
+  type: 'test'
+  ...
+# Subtest: removed and ambiguous gift views clear without guessing or manufacturing empty facts
+ok 57 - removed and ambiguous gift views clear without guessing or manufacturing empty facts
+  ---
+  duration_ms: 1.20775
+  type: 'test'
+  ...
+# Subtest: retention removes bearer image URLs without shifting closed-view identity or losing invalid input
+ok 58 - retention removes bearer image URLs without shifting closed-view identity or losing invalid input
+  ---
+  duration_ms: 0.610917
+  type: 'test'
+  ...
+# Subtest: legacy or corrupt image associations require review and never silently adopt filtered indices
+ok 59 - legacy or corrupt image associations require review and never silently adopt filtered indices
+  ---
+  duration_ms: 0.362542
+  type: 'test'
+  ...
+# Subtest: legacy pending command identity remains byte-exact while only its presentation snapshot upgrades
+ok 60 - legacy pending command identity remains byte-exact while only its presentation snapshot upgrades
+  ---
+  duration_ms: 0.228958
+  type: 'test'
+  ...
+# Subtest: explicit rename preserves sparse row identities, raw facts, other axes and commercial fields
+ok 61 - explicit rename preserves sparse row identities, raw facts, other axes and commercial fields
+  ---
+  duration_ms: 3.745334
+  type: 'test'
+  ...
+# Subtest: renaming a second axis updates every affected row without borrowing UUIDs or facts
+ok 62 - renaming a second axis updates every affected row without borrowing UUIDs or facts
+  ---
+  duration_ms: 0.535333
+  type: 'test'
+  ...
+# Subtest: unchanged normalized value is a true no-op and new rows remain unbound
+ok 63 - unchanged normalized value is a true no-op and new rows remain unbound
+  ---
+  duration_ms: 0.237375
+  type: 'test'
+  ...
+# Subtest: blank, oversized, duplicate and stale selections refuse atomically
+ok 64 - blank, oversized, duplicate and stale selections refuse atomically
+  ---
+  duration_ms: 0.779458
+  type: 'test'
+  ...
+# Subtest: ambiguous axes, missing source rows, duplicate IDs and colliding tuples never merge rows
+ok 65 - ambiguous axes, missing source rows, duplicate IDs and colliding tuples never merge rows
+  ---
+  duration_ms: 0.696875
+  type: 'test'
+  ...
+# Subtest: canonical combined-label limit refuses an unsaveable rename without changing either row
+ok 66 - canonical combined-label limit refuses an unsaveable rename without changing either row
+  ---
+  duration_ms: 0.377625
+  type: 'test'
+  ...
+# Subtest: raw variant drafts keep partial invalid fields and contain no product defaults
+ok 67 - raw variant drafts keep partial invalid fields and contain no product defaults
+  ---
+  duration_ms: 8.404959
+  type: 'test'
+  ...
+# Subtest: clearing one namespace preserves the rest and final removal remains explicit empty metadata
+ok 68 - clearing one namespace preserves the rest and final removal remains explicit empty metadata
+  ---
+  duration_ms: 0.440917
+  type: 'test'
+  ...
+# Subtest: explicit inherit/clear markers remain exact through updates and canonical variant validation
+ok 69 - explicit inherit/clear markers remain exact through updates and canonical variant validation
+  ---
+  duration_ms: 1.518708
+  type: 'test'
+  ...
+# Subtest: unsupported raw fields and identities remain invalid rather than being silently discarded
+ok 70 - unsupported raw fields and identities remain invalid rather than being silently discarded
+  ---
+  duration_ms: 0.732583
+  type: 'test'
+  ...
+# Subtest: unreadable top-level drafts are never replaced by an empty object during read/update/validation
+ok 71 - unreadable top-level drafts are never replaced by an empty object during read/update/validation
+  ---
+  duration_ms: 0.341
+  type: 'test'
+  ...
+# Subtest: own data reading does not invoke accessor fields or grant prototype keys namespace authority
+ok 72 - own data reading does not invoke accessor fields or grant prototype keys namespace authority
+  ---
+  duration_ms: 0.338208
+  type: 'test'
+  ...
+# Subtest: the category list derives from the public variant registry and cannot introduce other product namespaces
+ok 73 - the category list derives from the public variant registry and cannot introduce other product namespaces
+  ---
+  duration_ms: 0.277292
+  type: 'test'
+  ...
+# Subtest: row intent omits unchanged and reverted facts, validates edits, and emits the final empty clear
+ok 74 - row intent omits unchanged and reverted facts, validates edits, and emits the final empty clear
+  ---
+  duration_ms: 2.686
+  type: 'test'
+  ...
+# Subtest: old persisted rows keep an unknown baseline and cannot manufacture an empty override
+ok 75 - old persisted rows keep an unknown baseline and cannot manufacture an empty override
+  ---
+  duration_ms: 0.570792
+  type: 'test'
+  ...
+# Subtest: authoritative API rows hydrate known empty or raw malformed metadata without sibling loss
+ok 76 - authoritative API rows hydrate known empty or raw malformed metadata without sibling loss
+  ---
+  duration_ms: 0.65625
+  type: 'test'
+  ...
+# Subtest: late acknowledgement rebases only matching UUID baselines and retains newer raw drafts
+ok 77 - late acknowledgement rebases only matching UUID baselines and retains newer raw drafts
+  ---
+  duration_ms: 0.590208
+  type: 'test'
+  ...
+# Subtest: combination changes retain the original bound matrix; only a proven value addition keeps row objects
+ok 78 - combination changes retain the original bound matrix; only a proven value addition keeps row objects
+  ---
+  duration_ms: 0.516791
+  type: 'test'
+  ...
+# Subtest: snapshot upgrades keep raw drafts and immutable pending body, key and signatures byte exact
+ok 79 - snapshot upgrades keep raw drafts and immutable pending body, key and signatures byte exact
+  ---
+  duration_ms: 0.768958
+  type: 'test'
+  ...
+1..79
+# tests 79
+# suites 0
+# pass 79
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9498.665791

@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-22",
+  "method": "Built-in image_gen; four original bitmap product/activity assets. Native HTML/CSS text and governed Lucide icons for UI; no imagegen UI screenshots.",
+  "assets": [
+    {
+      "id": "pattern-studio",
+      "prompt": "Use case: product-mockup. Asset type: original toy catalog photograph for Playfield visual design storybook. Create one square overhead studio photograph of a fictional wooden mosaic art kit on a warm ivory background. A shallow natural birch rectangular tray sits beside EXACTLY twelve loose thick wooden square tiles arranged as a clean 3 by 4 grid. Tile colors: muted forest green, mustard, dusty coral, pale blue, warm cream; each tile has simple contrasting half-circle or quarter-circle geometric motifs, no letters. Two small rectangular printed idea cards show only abstract geometric patterns and are set beside the tray. Whole tray, all twelve individual tiles and both cards fully visible with generous clear margin; physically plausible tactile wood, softly rounded edges, neat composition, warm diffuse daylight and subtle shadows, premium realistic product photography. The loose tiles, tray and two idea cards are the only kit contents. No packaging, no people, no tools, no text, no logos, no watermark, no UI. Product is a fictional 12-tile kit; do not imply safety certification. Keep objects separated, countable, and uncropped.",
+      "path": "assets/pattern-studio.png",
+      "sourcePath": "/Users/saai_mithra/.codex/generated_images/01a164ba-4751-75e1-8148-605cd263848e/exec-1d563095-2690-4a2e-bb05-33821adc08e8.png",
+      "role": "Whole-object catalog photograph",
+      "limitations": "Synthetic product; photo is not evidence of dimensions, materials, age suitability or certification."
+    },
+    {
+      "id": "activity-hero",
+      "prompt": "Use case: photorealistic-natural. Asset type: original wide editorial toy activity photograph for Playfield responsive design mockups. The referenced image is a PRODUCT AND PALETTE REFERENCE ONLY: preserve the fictional kit's twelve geometric wooden tiles in forest green, mustard, dusty coral, pale blue and warm cream, natural birch rectangular tray, and two idea cards. Create a new landscape 3:2 photo from a comfortable oblique overhead angle on a pale oak activity table. All twelve tiles loosely form a pleasing colorful garden-like geometric mosaic in the tray. The two idea cards sit beside it. A single adult brown-skinned hand reaches gently toward a tile, visibly an adult hand, realistic anatomy, as a scale cue. Whole kit fully visible with generous table margin, natural grain and tactile painted wood, warm indirect daylight, quiet and inviting, editorial catalog quality. No children, no extra toys, no packaging, no letters, no text, no logo, no watermark, no website/UI. Do not add safety claims. Image should support a buyer understanding the physical activity, not a decorative abstract render.",
+      "path": "assets/activity-hero.png",
+      "sourcePath": "/Users/saai_mithra/.codex/generated_images/01a164ba-4751-75e1-8148-605cd263848e/exec-b550102c-fa5d-421e-a68b-60c653463609.png",
+      "role": "Activity context with an adult hand, product reference from asset 1",
+      "limitations": "Synthetic product; photo is not evidence of dimensions, materials, age suitability or certification."
+    },
+    {
+      "id": "paper-play",
+      "prompt": "Use case: product-mockup. Asset type: original square catalog photograph for Playfield physical art supplies. Create one square overhead clean studio photo on warm ivory background: a neat small stack and fan of thirty-six A5 colored paper sheets in muted forest green, mustard, dusty coral, pale blue, warm cream and soft lavender, beside three folded paper examples (a simple paper boat, a simple accordion fan and a folded paper house). The examples are made from the same paper and are activity inspiration rather than additional purchased pieces. High quality tactile paper texture, premium original product photo, soft daylight, full objects uncropped, generous margin. No people, no scissors, no paints, no packaging, no lettering, no branding, no logos, no watermark, no UI. Warm friendly calm art direction.",
+      "path": "assets/paper-play.png",
+      "sourcePath": "/Users/saai_mithra/.codex/generated_images/01a164ba-4751-75e1-8148-605cd263848e/exec-926ae487-d774-479a-8052-26cf40521f2a.png",
+      "role": "Whole-object catalog photograph",
+      "limitations": "Sheet count is fixture data, not proven by the photograph. Folded paper examples are activity inspiration, not extra pieces."
+    },
+    {
+      "id": "arch-paths",
+      "prompt": "Use case: product-mockup. Asset type: original square toy catalog photograph for Playfield visual mockups. Clean square overhead studio photo, warm ivory background. Exactly six chunky wooden rainbow arch blocks of decreasing size, muted dusty coral, mustard, sage green, cream, pale blue and forest green. Arrange the six separated arches across two tidy rows so every entire object is visible and countable, with no extra pieces. Natural tactile wood grain, subtly rounded corners, physically plausible thick blocks, soft warm diffuse light and gentle shadows. Whole objects uncropped, ample margin. No people, no packaging, no other props, no text, no logos, no watermark, no UI. Premium original catalog photography, quiet friendly color palette. Fictional product; no certification symbols or safety claims.",
+      "path": "assets/arch-paths.png",
+      "sourcePath": "/Users/saai_mithra/.codex/generated_images/01a164ba-4751-75e1-8148-605cd263848e/exec-4c1cbe01-ab0c-4b1d-9a9e-a3fcac9ea093.png",
+      "role": "Whole-object catalog photograph",
+      "limitations": "Synthetic product; photo is not evidence of dimensions, materials, age suitability or certification."
+    }
+  ],
+  "icons": {
+    "source": "lucide-react 0.562.0 from installed apps/commerce/web dependency; static React SVG exports",
+    "artifact": "source/icons.json"
+  },
+  "identityLogo": "Copied unchanged from Threadline reference; original canonical identity app mark",
+  "font": {
+    "family": "Inter",
+    "source": "Google Fonts CSS and fonts.gstatic.com, local files copied for reproducible offline capture",
+    "license": "SIL Open Font License 1.1; license file included"
+  },
+  "identityCorrection": {
+    "date": "2026-10-23",
+    "scope": "Scenes10/11 only; no new imagery",
+    "sources": [
+      "apps/platform/identity/src/app/buyer/authorize/authorize-client.tsx",
+      "apps/platform/identity/src/app/api/buyer/register/route.ts",
+      "apps/platform/identity/src/app/globals.css",
+      "packages/typescript/ui/src/tokens.ts:adminSurfaceIdentity.light"
+    ],
+    "method": "Native HTML/CSS correction; scoped identity.css; existing canonical logo preserved",
+    "palette": {
+      "primary": "#2C2642",
+      "secondary": "#523F97",
+      "page": "#F6F7F9",
+      "text": "#111827",
+      "subdued": "#6B7280",
+      "border": "#E5E7EB"
+    },
+    "flow": "email/password + configured bot check -> session -> explicit Continue to Playfield or different account -> validated OAuth redirect",
+    "noEmailLinkOrMandatoryVerificationClaim": true,
+    "noUnsupportedRequiredCheckbox": true,
+    "font": {
+      "family": "Geist",
+      "source": "packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+      "authority": "apps/platform/identity/src/app/layout.tsx",
+      "artifact": "assets/geist-sans-latin.woff2",
+      "license": "assets/GEIST-OFL-LICENSE.txt"
+    }
+  }
+}

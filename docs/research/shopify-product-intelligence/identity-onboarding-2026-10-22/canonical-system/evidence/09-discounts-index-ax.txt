@@ -1,0 +1,83 @@
+Browser tab: 1, Title: "[store] · Discounts · Shopify", URL: "https://admin.shopify.com/store/[store]/discounts".
+0 AXWebArea [store] · Discounts · Shopify, URL: admin.shopify.com/store/[store]/discounts
+	1 container app
+		2 container AppFrame
+			443 text Discounts
+			4 container AppFrameChrome
+				5 link Description: Skip to content, Value: admin.shopify.com/store/[store]/discounts#AppFrameMain
+				138 container AppFrameBevel
+					139 container Description: Navigation, ID: AppFrameNav
+						140 container
+							141 image Shopify
+							142 button (expanded) Description: Collapse navigation, Secondary Actions: Collapse
+							143 button Search
+								144 text Search
+							145 container scroll-container
+								146 content list
+									147 link Description: Home, Value: admin.shopify.com/store/[store]
+									148 container
+										149 link (collapsed) Description: Orders, Value: admin.shopify.com/store/[store]/orders, Secondary Actions: Expand
+									150 container
+										151 link (collapsed) Description: Products, Value: admin.shopify.com/store/[store]/products, Secondary Actions: Expand
+									158 container
+										159 link (collapsed) Description: Customers, Value: admin.shopify.com/store/[store]/customers, Secondary Actions: Expand
+									160 container
+										161 link (collapsed) Description: Growth, Value: admin.shopify.com/store/[store]/growth, Secondary Actions: Expand
+									162 link Description: Discounts, Value: admin.shopify.com/store/[store]/discounts
+									163 container
+										164 link (collapsed) Description: Content, Value: admin.shopify.com/store/[store]/content/metaobjects, Secondary Actions: Expand
+									165 container
+										166 link (collapsed) Description: Markets, Value: admin.shopify.com/store/[store]/markets, Secondary Actions: Expand
+									167 container
+										168 link (collapsed) Description: Analytics, Value: admin.shopify.com/store/[store]/analytics, Secondary Actions: Expand
+								169 content list
+									170 container
+										171 button Sales channels
+											172 text Sales channels
+										173 content list
+											174 sortable Online Store
+												175 content list
+													176 link Description: Online Store, Value: admin.shopify.com/store/[store]/themes?[query omitted]
+											177 sortable Agentic
+												178 content list
+													179 link Description: Agentic, Value: admin.shopify.com/store/[store]/apps/agentic?[query omitted]
+									180 container
+										181 button Apps
+											182 text Apps
+										183 button Add
+											184 text Add
+							434 container
+								435 content list
+									436 link Description: Settings, Value: admin.shopify.com/store/[store]/settings
+									437 container
+										438 button (collapsed) Description: [account], Secondary Actions: Expand
+											439 container [store]
+											440 text [store]
+										441 button (collapsed) Description: Alerts Feed - 0 unread alerts, Secondary Actions: Expand
+								442 link Description: Trial ends in 2 days Subscribe for ₹20, Value: admin.shopify.com/store/[store]/subscribe/checkout
+					192 container AppFrameMain
+						444 container
+							445 container
+								446 container
+									447 heading Discounts, Value: 1
+										448 text Discounts
+								449 button (disabled) Export
+									450 text Export
+								451 button Create discount
+							452 container
+								453 text Manage discounts and promotions Add discount codes and automatic discounts that apply at checkout. You can also use discounts with 
+								454 link Description: compare at prices, Value: help.shopify.com/en/manual/discounts/sales
+								455 text .
+								456 button Create discount
+							457 button Learn more about discounts
+								458 text Learn more about discounts
+				426 container
+					427 container Sidekick
+						428 container
+							429 container
+								430 text field (settable) Description: Work with Sidekick, ID: :r9ek:
+								431 button Add files and more
+								432 button Voice
+								433 button Open Sidekick
+
+The focused UI element is 162 link Description: Discounts, URL: admin.shopify.com/store/[store]/discounts

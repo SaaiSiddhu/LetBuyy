@@ -1,0 +1,62 @@
+Browser tab: 63, Title: "Search results for \"Habitat dimensions-only stand\" | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/search?page=1&limit=20&sort=display_order&search=Habitat+dimensions-only+stand&category=Habitat+dimensional+controls&country_of_origin=India".
+1 AXWebArea Search results for "Habitat dimensions-only stand" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?page=1&limit=20&sort=display_order&search=Habitat+dimensions-only+stand&category=Habitat+dimensional+controls&country_of_origin=India
+	2 container
+		3 text Habitat 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/search?page=1&limit=20&sort=display_order&search=Habitat+dimensions-only+stand&category=Habitat+dimensional+controls&country_of_origin=India
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				14 button Apply filter
+				15 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&search=Habitat+dimensions-only+stand&category=Habitat+dimensional+controls&sort=display_order
+		16 container
+			17 text Search products
+			18 search text field (settable) Description: Search products, Value: Habitat dimensions-only stand, ID: lb-search-input-search-box-default
+			19 button Search
+		20 text Results for "Habitat dimensions-only stand"
+		21 heading Search products, Value: 1
+			22 text Search products
+		23 container
+			24 text Search furniture
+			25 search text field (settable) Search furniture, Value: Habitat dimensions-only stand
+			26 text Maximum assembled width (cm)
+			27 stepper (settable) Maximum assembled width (cm)
+			28 text Maximum assembled depth (cm)
+			29 stepper (settable) Maximum assembled depth (cm)
+			30 text Sort
+			31 pop up button (collapsed, settable) Sort, Value: Featured, Secondary Actions: Expand
+				32 menu
+					33 (selected) Featured
+					34 Price: low to high
+					35 Price: high to low
+					36 Newest
+					37 Name
+			38 button Apply
+			39 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=20&search=Habitat+dimensions-only+stand&sort=display_order
+		40 container Applied filters
+			41 link Description: Remove Category: Habitat dimensional controls, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=20&search=Habitat+dimensions-only+stand&country_of_origin=India&sort=display_order
+			42 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=20&search=Habitat+dimensions-only+stand&category=Habitat+dimensional+controls&sort=display_order
+		43 text 1 pieces
+		44 container
+			45 link Description: Product photograph not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac
+			46 heading Habitat dimensions-only stand, Value: 3
+				47 link Description: Habitat dimensions-only stand, Value: syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac
+			48 text INR 1,200.00 60 W × 45 D × 70 H cm
+			49 link Description: View dimensions & options, Value: syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac
+		50 container Product pages
+			51 text Page 1
+		52 heading Threadline, Value: 3
+			53 text Threadline
+		54 text Habitat 936 B footer saved
+		55 heading CONTACT, Value: 4
+			56 text CONTACT
+		57 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		58 text © Threadline. All rights reserved.
+		59 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search results for "Habitat dimensions-only stand" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?page=1&limit=20&sort=display_order&search=Habitat+dimensions-only+stand&category=Habitat+dimensional+controls&country_of_origin=India

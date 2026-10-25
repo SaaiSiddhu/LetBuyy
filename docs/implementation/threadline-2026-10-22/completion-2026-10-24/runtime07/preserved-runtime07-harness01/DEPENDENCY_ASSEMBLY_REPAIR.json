@@ -1,0 +1,1014 @@
+{
+  "classification": "PRIVATE_DEPENDENCY_ASSEMBLY_ONLY_NO_APPLICATION_SOURCE_CHANGE",
+  "originalMaterializationRetained": true,
+  "corrections": [
+    {
+      "path": "node_modules/.pnpm",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm",
+      "kind": "READONLY_INSTALLED_VENDOR_DIRECTORY"
+    },
+    {
+      "path": "node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "8edac02443cfcde25e57f4fc6513583a965f6f119b4e85f76fcdf81869d0d5e4"
+        },
+        {
+          "path": "miniflare",
+          "sha256": "fc23810a07dba4de8a4c6233fab0f865042be499e4fba6e095500ca3e7c89c1e"
+        },
+        {
+          "path": "turbo",
+          "sha256": "52d5f01c4693383b99898f18f116efac3870ecfc0a10d67b86847300599ca070"
+        },
+        {
+          "path": "tsx",
+          "sha256": "012453c528b6ee7e03710b427f3d82f94af7682d4a9f68f1e7afd0274cdedea1"
+        },
+        {
+          "path": "tsc",
+          "sha256": "369d41d75cf8a01ae1bf5917467ac11ffbbdfb37449e1d4aeba1605f303ceb50"
+        },
+        {
+          "path": "playwright",
+          "sha256": "0f8c05e9d67b64de406dfeba3e6f705df6279c8a4ca65c6605286ede137480cf"
+        },
+        {
+          "path": "stylelint",
+          "sha256": "b21f2ae6c4d5ac35fec4adeb7774cc949727c81c32393d0d4076a806d1300a3a"
+        },
+        {
+          "path": "eslint",
+          "sha256": "5ab43ec9ae7e597356e43ed10310e9db3a1ad435b69b3a62b532b94d10c2403d"
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "letbuyy-theme",
+          "sha256": "783a17d5d8354fa82d60eaf54cdadec582a843f9b80eda2b512bd907439090ef"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/frozen/app-store/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/frozen/developer-portal/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/frozen/operations-portal/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/frozen/theme-store/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "letbuyy-theme",
+          "sha256": "783a17d5d8354fa82d60eaf54cdadec582a843f9b80eda2b512bd907439090ef"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/internal/console/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/marketing/web/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/merchant/web/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "letbuyy-theme",
+          "sha256": "783a17d5d8354fa82d60eaf54cdadec582a843f9b80eda2b512bd907439090ef"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        }
+      ]
+    },
+    {
+      "path": "apps/platform/identity/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "bcrypt",
+          "sha256": "174324665896785f3040ac6c6e3c7374a6812b45dd905a23c9bbc58e4e6f821f"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "eslint",
+          "sha256": "118a71476d9e16f14034cd12ff2a0a4faca9f051226dd1fd34cc873f293e192c"
+        },
+        {
+          "path": "email",
+          "sha256": "d45459fb771a554475f2bcf08dca3155ad421627e346b780b7435e731362cbba"
+        }
+      ]
+    },
+    {
+      "path": "packages/audit-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/auth-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/billing-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/checkout-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/cms-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/commerce-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/event-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/identity-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/infrastructure/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-adapters/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-business/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-cli/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-decision/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-engineering/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-execution/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-governance/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-live/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-mcp/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-operations/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-orchestration/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-performance/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-pr-check/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-quality/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-rootcause/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-security/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-tracking/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/lcis-twin/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/notification-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/organization-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/payments/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/permission-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/session-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/shared-types/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsx",
+          "sha256": "374c21c0207a45a6563f974bdb7cd23b77c5d1afc81af520564cfa37f22d75c1"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/tenant-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        },
+        {
+          "path": "letbuyy-theme",
+          "sha256": "28530da694b528c5c762ebd284c63d963cbfe332d97049c7bd85f3af8944989b"
+        }
+      ]
+    },
+    {
+      "path": "packages/theme-engine/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        },
+        {
+          "path": "liquid",
+          "sha256": "ba5dd586ffe38a235d82985606a3bfe92991ef0fb7ca568e00a79602eb3eec01"
+        },
+        {
+          "path": "liquidjs",
+          "sha256": "ba5dd586ffe38a235d82985606a3bfe92991ef0fb7ca568e00a79602eb3eec01"
+        }
+      ]
+    },
+    {
+      "path": "packages/token-core/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "packages/typescript/api-client/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        }
+      ]
+    },
+    {
+      "path": "packages/typescript/api-types/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "letbuyy-theme",
+          "sha256": "6f043c639316349106888fa83bdc2eff2d5056988f720e8d30e729f866c8c4fc"
+        }
+      ]
+    },
+    {
+      "path": "packages/typescript/ui/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "next",
+          "sha256": "8d6d881094accb61d052bb7b27178d30b88ad9856dbc44127f9cc301f40712d8"
+        },
+        {
+          "path": "storybook",
+          "sha256": "1a8b67eeb228e2b490361ab43820ec08a668aac96ba9bb48c42b0ef2d3acd94e"
+        },
+        {
+          "path": "tsserver",
+          "sha256": "378465d9fe76d5efb59fff82bc9ca3c7ddb8f6ea09402c6ea36b86fa37f68c39"
+        },
+        {
+          "path": "vitest",
+          "sha256": "1c532f794b6123245aaa2411015f557bf5d40b71f695a395e901897fd21ad48e"
+        },
+        {
+          "path": "tsc",
+          "sha256": "2ca0d5259a2dfe853589726c6bd412a989f548e376a2b03e2926d3d7199babb5"
+        },
+        {
+          "path": "playwright",
+          "sha256": "8adec1feed1142b3f3b762ac80bc5bdeb58fc9e7e7235bde7522a231b7517eba"
+        },
+        {
+          "path": "vite",
+          "sha256": "21feffb0d0cfc0daeea82855f4cdf39056da85409a20ad4e5535b34c22993e77"
+        }
+      ]
+    },
+    {
+      "path": "services/api-gateway/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "cf-wrangler",
+          "sha256": "857908396a0df0012ab143a4a170e4d8fd3fb6e14a9dd1b328eb7910baa753a1"
+        },
+        {
+          "path": "wrangler",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        },
+        {
+          "path": "bcrypt",
+          "sha256": "688aed2325f56a8ebbae82175245c66458b8a557351a82032e461ab4f2534e79"
+        },
+        {
+          "path": "tsx",
+          "sha256": "374c21c0207a45a6563f974bdb7cd23b77c5d1afc81af520564cfa37f22d75c1"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        },
+        {
+          "path": "playwright",
+          "sha256": "1303f06677f169aac969a2ad5353571bc0ab52e06ee8824e3e637a8614d4284f"
+        },
+        {
+          "path": "letbuyy-theme",
+          "sha256": "8c73d04363c23ff4568cd9e202d7201f92c314e02659ff2bec9e23ac4c894f8a"
+        },
+        {
+          "path": "wrangler2",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        }
+      ]
+    },
+    {
+      "path": "services/lcis-api/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        }
+      ]
+    },
+    {
+      "path": "services/mobile-bff/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "cf-wrangler",
+          "sha256": "857908396a0df0012ab143a4a170e4d8fd3fb6e14a9dd1b328eb7910baa753a1"
+        },
+        {
+          "path": "wrangler",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        },
+        {
+          "path": "tsx",
+          "sha256": "374c21c0207a45a6563f974bdb7cd23b77c5d1afc81af520564cfa37f22d75c1"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        },
+        {
+          "path": "wrangler2",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        }
+      ]
+    },
+    {
+      "path": "services/queue-workers/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "cf-wrangler",
+          "sha256": "857908396a0df0012ab143a4a170e4d8fd3fb6e14a9dd1b328eb7910baa753a1"
+        },
+        {
+          "path": "wrangler",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        },
+        {
+          "path": "tsx",
+          "sha256": "374c21c0207a45a6563f974bdb7cd23b77c5d1afc81af520564cfa37f22d75c1"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        },
+        {
+          "path": "wrangler2",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        }
+      ]
+    },
+    {
+      "path": "services/webhook-service/node_modules/.bin",
+      "kind": "DERIVED_INSTALLED_TOOL_WRAPPERS_NOT_BUSINESS_SOURCE",
+      "files": [
+        {
+          "path": "tsserver",
+          "sha256": "2d57d99e78735a9486e23178a46a4fd00743d5689d547a4e7ab0b4814c35c6a4"
+        },
+        {
+          "path": "cf-wrangler",
+          "sha256": "857908396a0df0012ab143a4a170e4d8fd3fb6e14a9dd1b328eb7910baa753a1"
+        },
+        {
+          "path": "wrangler",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        },
+        {
+          "path": "tsx",
+          "sha256": "374c21c0207a45a6563f974bdb7cd23b77c5d1afc81af520564cfa37f22d75c1"
+        },
+        {
+          "path": "tsc",
+          "sha256": "9929dcf7f479a4f98020ac60379b31ec7aa597d04a83ad6c8c27a866baca4902"
+        },
+        {
+          "path": "wrangler2",
+          "sha256": "2bfd74ee1d559ea2209da5a97d6cc77ca1358030992477a4413428c3d97033b0"
+        }
+      ]
+    }
+  ],
+  "actualToolAppBuildNativeExecution": 0
+}

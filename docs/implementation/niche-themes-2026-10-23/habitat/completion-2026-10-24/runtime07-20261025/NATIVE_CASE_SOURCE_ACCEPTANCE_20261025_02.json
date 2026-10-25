@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-25T04:15:50.599761+00:00",
+  "status": "ACCEPT_SEALED_FIVE211_NATIVE_CASE02_SOURCE_AND_FINITE_PLAN_NOT_RESOURCE_OR_THEME_ACCEPTANCE",
+  "reviewPath": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/FIVE_THEME211_NATIVE_CASE_SOURCE_REVIEW_02.json",
+  "reviewSha256": "b3f9ca5d10b40e44441b48ca0c3b59d5d5618dc7ebee7db20815cfcc71667f19",
+  "handoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-five-theme211-native-source-20261025-02/HANDOFF.json",
+    "sha256": "1b57d61f1f2b1d6779b8789e54b10f48361f9cd94e1df59d1635023e9205a4f6"
+  },
+  "seal": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-five-theme211-native-source-20261025-02/SEALED_ARTIFACTS.json",
+    "sha256": "37d71a31c0003d9dda22a3f240a2b1ad14a215f21eec7931d037ab4890a213d4"
+  },
+  "acceptedScope": "Source case/finite plan only; every native phase/refusal/readback NOT_RUN; no original26/provider/apparel-provenance credit",
+  "physicalCounts": {
+    "artifacts": 40,
+    "source": 1086,
+    "vendor": 7943,
+    "tools": 7,
+    "links": 178,
+    "sql": 8,
+    "issues": 0
+  },
+  "futureActivation": "No grant and no automatic preflight. Approval04 three cohorts spent; fresh explicit human Native budget plus separate Root admission/actual sameCLIversion+harmlessbootstrap beforeDocker, external600s whole-parent/maxAttempts1 required.",
+  "original210Recovery": "Independent of unactivated211; no211 or producer writes staged into Root minimal original210 candidate",
+  "sealedRootsOrPayloadsMutated": false,
+  "NativeResourceBrowserProviderActions": 0,
+  "FULL_THEME_CERTIFIED": false
+}

@@ -1,0 +1,155 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "actual-public-http-operational-attribution",
+  "value": {
+    "family": {
+      "base": "worker_request_logs",
+      "parent": "worker_request_logs_partitioned",
+      "leaves": [
+        "worker_request_logs_partitioned_2026_06",
+        "worker_request_logs_partitioned_2026_07",
+        "worker_request_logs_partitioned_default"
+      ]
+    },
+    "requests": [
+      {
+        "requestId": "03877f59-e9bc-4608-8540-ea1523b498b7",
+        "traceId": "5b14dfaa-282b-4401-a8fe-53e18d3b57bf",
+        "route": "/v1/storefront/:subdomain/products",
+        "status": 200,
+        "errorCode": null
+      },
+      {
+        "requestId": "ecfa2b48-ccbe-4e1f-8239-b784a9f726a6",
+        "traceId": "07a26d38-d108-47eb-ac64-7f15ed2aa5ed",
+        "route": "/v1/storefront/store/:storeId/products",
+        "status": 200,
+        "errorCode": null
+      },
+      {
+        "requestId": "ff42f3ea-0376-4748-950c-c187290ab174",
+        "traceId": "50343dcc-7cea-4988-9b91-47876f777de1",
+        "route": "/v1/storefront/:subdomain/products",
+        "status": 200,
+        "errorCode": null
+      },
+      {
+        "requestId": "97970b5b-73a8-4bcc-9b3a-633d04f4707b",
+        "traceId": "d851e696-1c71-43de-b7d4-a5345d641ece",
+        "route": "/v1/storefront/:subdomain/products",
+        "status": 500,
+        "errorCode": null
+      }
+    ],
+    "rows": [
+      {
+        "id": "38d1c8b1-eb61-4f63-939f-7b3194ac1e64",
+        "path": "/v1/storefront/:subdomain/products",
+        "route": "/v1/storefront/:subdomain/products",
+        "method": "GET",
+        "site_id": null,
+        "user_id": null,
+        "metadata": {
+          "colo": null,
+          "country": null,
+          "request_log_sample_rate": 1,
+          "request_log_sample_reason": "sampled-storefront"
+        },
+        "trace_id": "50343dcc-7cea-4988-9b91-47876f777de1",
+        "created_at": "2026-10-24T15:53:13.032699+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "error_code": null,
+        "ip_address": "2001:db8:feed::3",
+        "latency_ms": 8,
+        "request_id": "ff42f3ea-0376-4748-950c-c187290ab174",
+        "updated_at": "2026-10-24T15:53:13.032699+00:00",
+        "updated_by": null,
+        "user_agent": null,
+        "auth_source": null,
+        "status_code": 200
+      },
+      {
+        "id": "7ce62be6-74c3-4250-abc8-28d9ab3647bc",
+        "path": "/v1/storefront/:subdomain/products",
+        "route": "/v1/storefront/:subdomain/products",
+        "method": "GET",
+        "site_id": null,
+        "user_id": null,
+        "metadata": {
+          "colo": null,
+          "country": null,
+          "request_log_sample_rate": 1,
+          "request_log_sample_reason": "sampled-storefront"
+        },
+        "trace_id": "5b14dfaa-282b-4401-a8fe-53e18d3b57bf",
+        "created_at": "2026-10-24T15:53:12.987191+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "error_code": null,
+        "ip_address": "2001:db8:feed::1",
+        "latency_ms": 50,
+        "request_id": "03877f59-e9bc-4608-8540-ea1523b498b7",
+        "updated_at": "2026-10-24T15:53:12.987191+00:00",
+        "updated_by": null,
+        "user_agent": null,
+        "auth_source": null,
+        "status_code": 200
+      },
+      {
+        "id": "90dd619d-054f-4004-ad29-0778430c66ec",
+        "path": "/v1/storefront/:subdomain/products",
+        "route": "/v1/storefront/:subdomain/products",
+        "method": "GET",
+        "site_id": null,
+        "user_id": null,
+        "metadata": {
+          "colo": null,
+          "country": null,
+          "request_log_sample_rate": 1,
+          "request_log_sample_reason": "error"
+        },
+        "trace_id": "d851e696-1c71-43de-b7d4-a5345d641ece",
+        "created_at": "2026-10-24T15:53:15.338405+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "error_code": null,
+        "ip_address": "2001:db8:feed::4",
+        "latency_ms": 6,
+        "request_id": "97970b5b-73a8-4bcc-9b3a-633d04f4707b",
+        "updated_at": "2026-10-24T15:53:15.338405+00:00",
+        "updated_by": null,
+        "user_agent": null,
+        "auth_source": null,
+        "status_code": 500
+      },
+      {
+        "id": "f2e76536-ccae-4739-9c41-2537ed485c2f",
+        "path": "/v1/storefront/store/:storeId/products",
+        "route": "/v1/storefront/store/:storeId/products",
+        "method": "GET",
+        "site_id": null,
+        "user_id": null,
+        "metadata": {
+          "colo": null,
+          "country": null,
+          "request_log_sample_rate": 1,
+          "request_log_sample_reason": "sampled-storefront"
+        },
+        "trace_id": "07a26d38-d108-47eb-ac64-7f15ed2aa5ed",
+        "created_at": "2026-10-24T15:53:13.021549+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "error_code": null,
+        "ip_address": "2001:db8:feed::2",
+        "latency_ms": 28,
+        "request_id": "ecfa2b48-ccbe-4e1f-8239-b784a9f726a6",
+        "updated_at": "2026-10-24T15:53:13.021549+00:00",
+        "updated_by": null,
+        "user_agent": null,
+        "auth_source": null,
+        "status_code": 200
+      }
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-10-24T05:45:59.653520+00:00",
+  "runId": "936e5f577646",
+  "status": "PASS_DECLARED_NORMAL_UI_FOUR_ROW_SETUP_AND_INVALID_ZERO_WIDTH_SCOPE",
+  "productId": "7070e083-276f-461d-8b17-c441561fae40",
+  "version": {
+    "before": 8,
+    "after": 20,
+    "contract": "Opaque acknowledged version; not assumed+1"
+  },
+  "variantBindings": {
+    "A": "8ca6dfcb-bf81-4e61-9109-01565c483872",
+    "B": "071fb0a8-8218-4325-8bf3-35de4a679608",
+    "C": "45027d62-4770-4819-bd4b-783e36187692",
+    "D": "b60fe434-11b7-4ffd-b58f-a2b4816a3ef3"
+  },
+  "commonAndVariantFactsExactlyFrozenRecipe": true,
+  "stockInAliasOrder": [
+    4,
+    3,
+    0,
+    2
+  ],
+  "originalAandCIDsPreserved": true,
+  "invalidZeroWidth": {
+    "actualProductAndOrdersUnchanged": true,
+    "all22ProtectedTableCountsAndHashesExact": true
+  },
+  "validSetupConservation": {
+    "twoOldOrdersWholeWhitelistedAndHashesExact": true,
+    "cartsAndCheckoutSessionsExact": true,
+    "onlyProtectedHashDeltas": [
+      "inventory_adjustments",
+      "inventory_levels",
+      "outbox_events"
+    ],
+    "other19ProtectedTablesExact": true
+  },
+  "canonicalIntent": {
+    "AStockOmitted": true,
+    "existingCStockExplicitZeroAuthorized": true,
+    "newBAndDStockExplicit": true,
+    "baseStockOmitted": true,
+    "genericDiagnosticBooleans": {
+      "existingVariantsStockOmitted": false,
+      "sameOriginalVariantIds": false
+    },
+    "interpretation": "Generic booleans are false because authorizedCstock0 and two new idless rows are partof setup. Both original durable IDs are retained; do not equate entire four-command set with original two-ID set."
+  },
+  "limits": [
+    "Two normalCreate probes and explicitcollectionmemberships stillneeded forwholeHI02.",
+    "Setup/invalidcorrection evidence doesnot replace allallocatedselection/discovery or laterrestoration checks.",
+    "No wholeglobalinventory invariance claim duringdeclared setup; inventory changes areintentional.",
+    "HI14-HI17 unallocatedNOT_RUN; no cart/order write occurred."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-lifecycle-before-invalid-expanded-setup.json",
+      "sha256": "66dcb8e918668e739c1286010e78a4cef74b5736d24ad5b6a9b947ea3387420d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-lifecycle-after-invalid-expanded-setup.json",
+      "sha256": "45e958d23721f3c37ddaf4965c890f30461a80029bad361a174b266fe3a6b3af"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-lifecycle-expanded-four-saved.json",
+      "sha256": "b4c0164099ae39c48c2896eeb693574aedf8003682def081ad3cdcfc09e2f0e3"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI02-canonical-setup-receipt.json",
+      "sha256": "4a04477ade8486c9b332042a644291c3ded22e2ea7b4f4f864c76a20672f96fd"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI02-four-row-setup-completed.json",
+      "sha256": "a48acfb18c4ebbc3fe620f865f5389aaf116cbaaa26e867fa0d86651918d8c27"
+    }
+  ]
+}

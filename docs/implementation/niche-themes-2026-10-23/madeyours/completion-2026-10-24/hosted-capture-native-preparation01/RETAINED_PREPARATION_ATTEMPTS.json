@@ -1,0 +1,32 @@
+{
+  "nativeRuns": 0,
+  "attempts": [
+    {
+      "stage": "First materialization",
+      "result": "Stopped on installation metadata symlink .pnpm-workspace-state.json outside vendor store. No runtime/native action.",
+      "correction": "Copy exact nonsecret installation metadata as a regular pinned file; relative workspace links still contained."
+    },
+    {
+      "stage": "Resumed materialization",
+      "result": "Stopped classifying .pnpm/lock.yaml as outer install-state metadata.",
+      "correction": "Vendor file vs outer install metadata categories corrected; no source change."
+    },
+    {
+      "stage": "Env declarations",
+      "result": "Allocator clarified6 tracked template/example exclusions after initial incomplete source copy. No values printed or credentials read.",
+      "correction": "Exact six owned transient copied declarations removed; declared names/hashes retained without value inspection, both final copies exclude them."
+    },
+    {
+      "stage": "Semantic closure",
+      "result": "2 missing readonly registered-test helper imports per copy; notification proposal itself baseline/proposal0.",
+      "evidence": "../order-confirmation-delivery-private02/SEMANTIC_RESULTS_ATTEMPT01.json",
+      "correction": "Two real unchanged Main helper sources copied into both, no stubs/deletions/test weakening; final witness1443inputs/0diagnostics."
+    },
+    {
+      "stage": "Static runtime resolution",
+      "result": "Auditor omitted node:test from its builtin enumeration.",
+      "evidence": "STATIC_RESOLUTION_ATTEMPT01.json",
+      "correction": "Use actual Node module.isBuiltin; final476firstparty/2448edges/0unresolved."
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+Browser tab: 8, Title: "LetBuyy Admin", URL: "http://localhost:9001/ux-audit-1022/dashboard".
+0 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/dashboard
+	1 container
+		2 link Description: LetBuyy dashboard, Value: localhost:9001/ux-audit-1022/dashboard
+		3 button Search
+		4 button Setup assistant
+		5 button Notifications
+		6 button (collapsed) Description: Switch store, current store UX Research Fixture, Secondary Actions: Expand
+			7 text UR
+			8 text UX Research Fixture
+	9 container admin-nav-drawer
+		10 container
+			11 container Primary navigation
+				12 content list
+					13 link Description: Home, Value: localhost:9001/ux-audit-1022/dashboard
+					14 link Description: Orders, Value: localhost:9001/ux-audit-1022/orders
+					15 container
+						16 link Description: Products, Value: localhost:9001/ux-audit-1022/products
+						17 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					18 container
+						19 link Description: Inventory, Value: localhost:9001/ux-audit-1022/products/inventory
+						20 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					21 container
+						22 link Description: Purchasing, Value: localhost:9001/ux-audit-1022/products/purchase-orders
+						23 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					24 container
+						25 link Description: Customers, Value: localhost:9001/ux-audit-1022/customers
+						26 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					27 container
+						28 link Description: Money, Value: localhost:9001/ux-audit-1022/settings/billing
+						29 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					30 container
+						31 link Description: Marketing, Value: localhost:9001/ux-audit-1022/coupons
+						32 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					33 container
+						34 link Description: Content, Value: localhost:9001/ux-audit-1022/pages
+						35 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					36 link Description: Analytics, Value: localhost:9001/ux-audit-1022/analytics
+			37 text Sales channels
+			38 container Sales channels
+				39 content list
+					40 container
+						41 link Description: Online Store, Value: localhost:9001/ux-audit-1022/online-store
+						42 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			43 text Apps
+			44 container Apps
+				45 content list
+					46 link Description: Add, Value: localhost:9001/ux-audit-1022/apps
+		47 container Settings navigation
+			48 content list
+				49 link Description: Settings, Value: localhost:9001/ux-audit-1022/settings
+	50 container admin-page-scroll
+		51 text Your site is in 
+		52 text draft
+		53 text  mode. It is not visible to visitors yet.
+		54 container
+			55 heading UX Research Fixture, Value: 1
+				56 text UX Research Fixture
+			57 link Description: Store settings, Value: localhost:9001/ux-audit-1022/settings
+			58 link Description: Add product, Value: localhost:9001/ux-audit-1022/products/new
+			59 text Revenue ₹0 No change in last 30 days Orders 0 No change in last 30 days Products 1 In your catalog Average order — After your first order
+			60 container
+				61 heading Setup guide, Value: 2
+					62 text Setup guide
+				63 text Next: Launch store. Publish the storefront when products, theme, payments, and domain are ready. 4/5 complete
+				64 container
+					65 text LAUNCH CHECKLIST
+					66 heading Opening checklist for ux-audit-1022, Value: 2
+						67 text Opening checklist for ux-audit-1022
+					68 text 1 step remaining before publication readiness.
+					69 container
+						70 text 80 %
+					71 text Setup progress 4  of  5  checked steps complete
+				72 heading Add product, Value: 3
+					73 text Add product
+				74 text DONE Create the first sellable item so shoppers can browse and buy.
+				75 button Review
+				76 heading Customize theme, Value: 3
+					77 text Customize theme
+				78 text DONE Choose a theme and tune storefront branding before publication.
+				79 button Review
+				80 heading Set up payments, Value: 3
+					81 text Set up payments
+				82 text DONE Configure payment acceptance before taking live orders.
+				83 button Review
+				84 heading Connect domain, Value: 3
+					85 text Connect domain
+				86 text DONE Use the default LetBuyy domain or connect a custom storefront domain. ux-audit-1022.localhost
+				87 button Copy domain
+				88 button Review
+				89 text 5
+				90 heading Launch store, Value: 3
+					91 text Launch store
+				92 text UP NEXT Publish the storefront when products, theme, payments, and domain are ready.
+				93 button Publish
+			94 container
+				95 heading Recent activity, Value: 2
+					96 text Recent activity
+				97 text The newest orders and catalog updates, pulled from the current merchant data surfaces. 1 shown
+				98 link Description: UX Audit Sample Product Catalog item updated in products. Draft 22 minutes ago, Value: localhost:9001/ux-audit-1022/products/[record]
+		99 container
+			100 button (expanded) 14 days left in your trial, Secondary Actions: Collapse
+				101 text 14
+				102 text  day
+				103 text s
+				104 text  left in your trial
+			105 button Dismiss trial banner
+			106 container admin-trial-toast-body
+				107 text Choose a plan before your current trial ends to keep your store running.
+				108 link Description: Select a plan, Value: localhost:9001/ux-audit-1022/access_account/checkout/select-plan
+		109 container
+			111 text Setup assistant
+			110 button Description: Close setup assistant, Help: Close
+			112 text Setup to-dos 4 / 6
+			113 progress indicator Description: Setup progress, Value: 4
+			114 text Customize your site theme Set up your storefront domain Publish your site
+			115 link Description: Go, Value: localhost:9001/ux-audit-1022/settings/general
+			116 text Add your first product Set up your payment provider Configure shipping rates
+			117 link Description: Go, Value: localhost:9001/ux-audit-1022/settings/shipping
+
+The focused UI element is 4 button Setup assistant

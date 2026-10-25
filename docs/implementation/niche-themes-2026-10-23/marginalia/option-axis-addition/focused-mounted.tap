@@ -1,0 +1,28 @@
+TAP version 13
+# Subtest: normal first Finish value preserves bound Width IDs, sibling facts and commercial fields through save and reload
+ok 1 - normal first Finish value preserves bound Width IDs, sibling facts and commercial fields through save and reload
+  ---
+  duration_ms: 1100.691917
+  type: 'test'
+  ...
+# Subtest: new-axis UI preserves sparse reordered rows and refuses duplicate names and invalid first values without changing rows
+ok 2 - new-axis UI preserves sparse reordered rows and refuses duplicate names and invalid first values without changing rows
+  ---
+  duration_ms: 524.429541
+  type: 'test'
+  ...
+# Subtest: new axis draft and later value survive recovery while an earlier save retries with exact immutable bytes
+ok 3 - new axis draft and later value survive recovery while an earlier save retries with exact immutable bytes
+  ---
+  duration_ms: 477.367667
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4777.041875

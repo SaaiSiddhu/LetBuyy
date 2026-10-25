@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-25T03:48:36.568608+00:00",
+  "status": "ACCEPT_ACTUAL_INFRASTRUCTURE_FAILURE_AND_OWNED_CLEANUP_NO_APPAREL_QUALIFICATION",
+  "runId": "15caf68f859f",
+  "runnerPid": 50458,
+  "tests": 0,
+  "apparelTestsNotRun": 4,
+  "suiteCode": 70,
+  "cause": "spawnELOOP beforeTAP; frozen04/node_modules/.bin isselfsymlink toidenticalabsolute .bin path",
+  "observedLink": {
+    "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/node_modules/.bin",
+    "target": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/node_modules/.bin"
+  },
+  "actualMigrationOrderedSourceNamePrefixShaMatched": 322,
+  "maxMigration": 393,
+  "migrationCeiling": null,
+  "fourUPs": "NOT_RUN; nativeleafneverstarted, so its prerequisiteblock wasnotexecuted",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "existingReaped": [],
+  "evidence": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/future-native-one-cohort/result.json",
+      "sha256": "3ae876e5b67bef67b0e66837f0bc31e15f5c687ea312ba58e7dcc6d5b66b10bc"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/future-native-one-cohort/run-receipt.json",
+      "sha256": "a40c31d0d1acdea38a3405b1c05922e3c14dece59e3b7602f979d9a03b4164c5"
+    }
+  ],
+  "budget": "Thirdcohort provisioned/executedandconsumed; all3humanapprovedNativecohorts spent. No retry/restore/fourthcohort.",
+  "sourceAssessment": "Earlier metadata/type/import closure didnotvalidate actual childlauncher path; no domain/RPC/native4test pass orfailure inference. Preserveold04/witness/SQL/businessbytes unchanged.",
+  "originalRuntimeActionsByThemes": 0,
+  "furtherWork": "Freshdependency-only05 source/launcherprecheck+harmlesslocalCLIproof andseparatelyprepared futureonecohortplan; additionalNativepermissionneededafterreview.",
+  "fullThemeCertificates": 0
+}

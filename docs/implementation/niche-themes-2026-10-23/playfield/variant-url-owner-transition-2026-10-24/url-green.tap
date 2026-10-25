@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: pure buyer path/UUID scope excludes previews, demos, private keys and foreign products
+ok 1 - pure buyer path/UUID scope excludes previews, demos, private keys and foreign products
+  ---
+  duration_ms: 2.296292
+  type: 'test'
+  ...
+# Subtest: one variant parameter preserves unrelated repeated values and fragment; no invented identifier
+ok 2 - one variant parameter preserves unrelated repeated values and fragment; no invented identifier
+  ---
+  duration_ms: 1.87775
+  type: 'test'
+  ...
+# Subtest: pure restoration rejects unknown/malformed/duplicate IDs, missing options and ambiguous tuples/IDs
+ok 3 - pure restoration rejects unknown/malformed/duplicate IDs, missing options and ambiguous tuples/IDs
+  ---
+  duration_ms: 4.1205
+  type: 'test'
+  ...
+# Subtest: initial actual Liquid/native UUID restores all Unicode option groups, selected facts and availability
+ok 4 - initial actual Liquid/native UUID restores all Unicode option groups, selected facts and availability
+  ---
+  duration_ms: 428.776833
+  type: 'test'
+  ...
+# Subtest: invalid initial URL never chooses a first row, including repeated identical variant parameters
+ok 5 - invalid initial URL never chooses a first row, including repeated identical variant parameters
+  ---
+  duration_ms: 365.223417
+  type: 'test'
+  ...
+# Subtest: native choices replace one param and preserve exact Next state object, repeated values, hash and history length
+ok 6 - native choices replace one param and preserve exact Next state object, repeated values, hash and history length
+  ---
+  duration_ms: 87.731
+  type: 'test'
+  ...
+# Subtest: fresh native rehydrate restores the chosen edition from its actual URL
+ok 7 - fresh native rehydrate restores the chosen edition from its actual URL
+  ---
+  duration_ms: 91.725875
+  type: 'test'
+  ...
+# Subtest: real jsdom back/forward traversals restore each UUID and clear selection on the entry with no variant
+ok 8 - real jsdom back/forward traversals restore each UUID and clear selection on the entry with no variant
+  ---
+  duration_ms: 112.63775
+  type: 'test'
+  ...
+# Subtest: current product is scoped away from related products, duplicate owners and a later foreign path
+ok 9 - current product is scoped away from related products, duplicate owners and a later foreign path
+  ---
+  duration_ms: 413.409334
+  type: 'test'
+  ...
+# Subtest: initial duplicate pickers becoming one restore facts and availability through real back/forward history
+ok 10 - initial duplicate pickers becoming one restore facts and availability through real back/forward history
+  ---
+  duration_ms: 165.396167
+  type: 'test'
+  ...
+# Subtest: private editor and catalog-demo URLs are never restored or rewritten
+ok 11 - private editor and catalog-demo URLs are never restored or rewritten
+  ---
+  duration_ms: 265.429709
+  type: 'test'
+  ...
+# Subtest: ambiguous actual picker tuples stay unselected/disabled even with an owned URL UUID
+ok 12 - ambiguous actual picker tuples stay unselected/disabled even with an owned URL UUID
+  ---
+  duration_ms: 76.974083
+  type: 'test'
+  ...
+# Subtest: disconnect removes popstate behavior and reconnect restores once from the current owned URL
+ok 13 - disconnect removes popstate behavior and reconnect restores once from the current owned URL
+  ---
+  duration_ms: 83.037916
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4022.677833

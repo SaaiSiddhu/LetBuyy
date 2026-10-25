@@ -1,0 +1,157 @@
+--- a/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts
++++ b/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts
+@@ -4,6 +4,7 @@
+ import { randomUUID, createHash } from 'node:crypto';
+ import { createServer, request as forwardHttp, type Server } from 'node:http';
+ import { createServer as createHttpsServer } from 'node:https';
++import { finished as streamFinished } from 'node:stream/promises';
+ import { writeFileSync, createWriteStream, readFileSync, existsSync, openSync, closeSync, writeSync, ftruncateSync } from 'node:fs';
+ import { exportJWK, importJWK, type JWK } from 'jose';
+ import { createRequire } from 'node:module';
+@@ -27,9 +28,32 @@
+   const stages:Record<string,{path:string;sha256:string}>={};
+   for(const spec of specs){signal?.throwIfAborted();assert(spec.kind.endsWith('-production'),'Preserved serving requires staged production clients');
+     const child=startOwnedClientRuntime(owned,spec.kind as 'identity-next-production',{port:spec.port,env:{...spec.env,LETBUYY_OWNED_NEXT_STAGE_ONLY:'1',LETBUYY_OWNED_NEXT_SOURCE_MANIFEST:input.saved.capsule.sourceBundle.manifestPath,LETBUYY_OWNED_NEXT_SOURCE_SHA256:input.saved.capsule.sourceBundle.manifestSha256,LETBUYY_OWNED_NEXT_CAPSULE_SHA256:input.saved.capsuleSha256}});
+-    const logPath=`/private/tmp/threadline-${owned.runId}-${spec.kind}-stage.log`,fd=openSync(logPath,'wx',0o600),log=createWriteStream(logPath,{fd,autoClose:true});child.stdout.pipe(log,{end:false});child.stderr.pipe(log,{end:false});
+-    try { const code=await new Promise<number|null>((done,reject)=>{child.once('error',reject);child.once('close',done);});assert.equal(code,0,'Owned staged build failed; original listeners must remain untouched'); }
+-    finally { log.end();await stopOwnedClientRuntime(child); }
++    let fd:number|undefined,log:ReturnType<typeof createWriteStream>|undefined,primary:unknown,failed=false;
++    const cleanupFailures:unknown[]=[];
++    try {
++      const exited=new Promise<number|null>((done,reject)=>{child.once('error',reject);child.once('close',done);});
++      void exited.catch(()=>undefined);
++      const logPath=`/private/tmp/threadline-${owned.runId}-${spec.kind}-stage.log`;
++      fd=openSync(logPath,'wx',0o600);log=createWriteStream(logPath,{fd,autoClose:true});fd=undefined;
++      const logFailed=new Promise<never>((_,reject)=>{log!.once('error',reject);});
++      void logFailed.catch(()=>undefined);
++      child.stdout.pipe(log,{end:false});child.stderr.pipe(log,{end:false});
++      const code=await Promise.race([exited,logFailed]);assert.equal(code,0,'Owned staged build failed; original listeners must remain untouched');
++    } catch(error) {primary=error;failed=true;}
++    finally {
++      try {await stopOwnedClientRuntime(child);}catch(error){cleanupFailures.push(error);}
++      if(log){
++        let closed:Promise<void>|undefined;
++        try {closed=streamFinished(log,{cleanup:true});void closed.catch(()=>undefined);log.end();await closed;}
++        catch(error){
++          cleanupFailures.push(error);
++          try {if(!log.destroyed)log.destroy();await closed;}
++          catch(closeError){if(closeError!==error)cleanupFailures.push(closeError);}
++        }
++      }else if(fd!==undefined){try{closeSync(fd);}catch(error){cleanupFailures.push(error);}}
++    }
++    if(failed){if(cleanupFailures.length)throw new AggregateError([primary,...cleanupFailures],'Owned staged build and cleanup failed',{cause:primary});throw primary;}
++    if(cleanupFailures.length)throw new AggregateError(cleanupFailures,'Owned staged build cleanup failed',{cause:cleanupFailures[0]});
+     const path=`/private/tmp/letbuyy-preserved-runtime07-${owned.runId}/builds/${spec.kind}/manifest.json`,bytes=input.tools.readPreservedPrivateFile(path,{maxBytes:32*1024*1024});stages[spec.kind]={path,sha256:createHash('sha256').update(bytes).digest('hex')};
+   }
+   input.tools.writePreservedProgress(owned.runId,'staged',{applicationFixtureId:input.saved.capsule.application.fixtureId,capsuleSha256:input.saved.capsuleSha256,bindingSha256:binding.sha256,stages,oldListenersTouched:false});
+--- /dev/null
++++ b/tests/governance/owned-preserved-stage-client.test.mjs
+@@ -0,0 +1,108 @@
++import assert from 'node:assert/strict';
++import {test} from 'node:test';
++import {readFileSync} from 'node:fs';
++import {createHash} from 'node:crypto';
++import {EventEmitter} from 'node:events';
++import {PassThrough, Writable} from 'node:stream';
++import {finished} from 'node:stream/promises';
++import {createRequire} from 'node:module';
++import {fileURLToPath} from 'node:url';
++import vm from 'node:vm';
++
++const fixture='services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts';
++const testRoot=fileURLToPath(new URL('../../',import.meta.url)).replace(/\/$/,'');
++// Minimal private overlays may name a read-only dependency context. Normal
++// repository runs resolve their own source and installed compiler directly.
++const contextRoot=process.env.LETBUYY_STAGE_TEST_CONTEXT_ROOT||testRoot;
++const require=createRequire(import.meta.url);
++const ts=require(require.resolve('typescript',{paths:[contextRoot]}));
++const sourceRoot=process.env.LETBUYY_STAGE_TEST_BASELINE==='1'?contextRoot:testRoot;
++const source=readFileSync(sourceRoot+'/'+fixture,'utf8');
++const a=source.indexOf('async function stagePreservedClients('),b=source.indexOf('\nfunction fixtureRunId(',a);
++assert(a>0&&b>a);
++const fragment=source.slice(a,b);
++const compiled=ts.transpileModule(fragment+'\nglobalThis.actualStage=stagePreservedClients;',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS},reportDiagnostics:true});
++assert.equal(compiled.diagnostics.length,0);
++test('stage qualification executes the pinned actual function with recording-only seams',()=>{
++ assert(fragment.includes('async function stagePreservedClients('));
++ assert(!compiled.outputText.includes('require('));
++ if(process.env.LETBUYY_STAGE_TEST_BASELINE==='1')assert.equal(createHash('sha256').update(source).digest('hex'),'099fbb429a40bef9d241ce7d66ef27d7abcd5071591cecb60db9d7135a485f74');
++});
++
++function world(mode='normal'){
++ const calls=[],children=[],streams=[],openFds=new Set(),closes=[];
++ const primary=new Error('SYNTHETIC_PRIMARY_'+mode),secondary=new Error('SYNTHETIC_CLEANUP_'+mode);
++ let nextFd=100;
++ const specs=['identity','merchant','commerce'].map((name,n)=>({kind:name+'-next-production',port:64593+n,env:{SYNTHETIC:'only'}}));
++ const tools={
++  readPreservedPrivateFile(path){calls.push(['read',path]);if(mode==='manifest-read'&&path.includes('/builds/'))throw primary;return Buffer.from(path.includes('/builds/')?'synthetic-stage-manifest':JSON.stringify({syntheticPermit:true}));},
++  writePreservedProgress(run,phase,value){calls.push(['progress',phase,value]);},
++  preservedCutoverPermitPath(){return'/synthetic/cutover.json';},
++  parsePreservedJson(bytes){return JSON.parse(bytes);},
++  validatePreservedCutoverPermit(){calls.push(['permit']);if(mode==='bad-permit')throw primary;},
++ };
++ const input={tools,saved:{capsuleSha256:'a'.repeat(64),capsule:{application:{fixtureId:'49ada80bc494'},sourceBundle:{manifestPath:'/synthetic/source.json',manifestSha256:'b'.repeat(64)},expiresAt:'2026-10-25T10:22:55.858Z'}}};
++ const context=vm.createContext({assert,Buffer,Date,setTimeout,createHash,streamFinished:finished,
++  startOwnedClientRuntime(owned,kind,args){
++   if(mode==='start-throws')throw primary;
++   const child=new EventEmitter();child.kind=kind;child.stopped=0;child.done=false;
++   child.stdout=new PassThrough();child.stderr=new PassThrough();
++   for(const side of ['stdout','stderr']){
++    const original=child[side].pipe.bind(child[side]);
++    child[side].pipe=(target,options)=>{calls.push(['pipe',side,kind]);if(mode===side+'-pipe')throw primary;return original(target,options);};
++   }
++   children.push(child);calls.push(['start',kind,args]);
++   queueMicrotask(()=>{if(child.done||mode==='async-log')return;child.done=true;child.stdout.end();child.stderr.end();if(mode==='child-error')child.emit('error',primary);else child.emit('close',mode==='nonzero'?9:0);});
++   return child;
++  },
++  openSync(){calls.push(['open']);if(mode==='open'||mode==='stop-primary')throw primary;const fd=nextFd++;openFds.add(fd);return fd;},
++  closeSync(fd){calls.push(['close-fd',fd]);closes.push(fd);assert(openFds.has(fd));if(mode==='fd-close')throw secondary;openFds.delete(fd);},
++  createWriteStream(path,{fd,autoClose}){
++   calls.push(['create-stream',fd]);assert.equal(autoClose,true);if(mode==='create-stream'||mode==='fd-close')throw primary;
++   const stream=new Writable({write(chunk,encoding,callback){callback();},autoDestroy:true,emitClose:true});
++   stream.ownedFd=fd;stream.endCalls=0;stream.on('close',()=>{calls.push(['stream-close',fd]);assert(openFds.has(fd));openFds.delete(fd);});
++   const end=stream.end.bind(stream);stream.end=(...args)=>{stream.endCalls++;if(mode==='end-cleanup')throw secondary;return end(...args);};
++   streams.push(stream);
++   if(mode==='async-log')queueMicrotask(()=>stream.destroy(primary));
++   return stream;
++  },
++  async stopOwnedClientRuntime(child){
++   assert(children.includes(child));child.stopped++;calls.push(['stop',child.kind]);
++   if(mode==='stop-primary'||mode==='stop-cleanup')throw secondary;
++   if(!child.done){child.done=true;child.stdout.end();child.stderr.end();child.emit('close',-15);}
++  },
++  existsSync(){calls.push(['permit-exists']);return true;},
++  preservedServingInput(){calls.push(['revalidate']);return{};},
++ });
++ vm.runInContext(compiled.outputText,context,{filename:sourceRoot+'/'+fixture+':actual-stage'});
++ async function run(){let failure;try{await context.actualStage({runId:'abcdef123456'},specs,input,{path:'/synthetic/binding.json',sha256:'c'.repeat(64)});}catch(error){failure=error;}await new Promise(resolve=>setImmediate(resolve));return failure;}
++ return{mode,calls,children,streams,openFds,closes,primary,secondary,specs,run};
++}
++function primaryRetained(error,expected){assert(error===expected||error?.cause===expected&&error?.errors?.[0]===expected);}
++function stopped(w,count){assert.equal(w.children.length,count);for(const child of w.children)assert.equal(child.stopped,1);}
++function noPublication(w){assert.equal(w.calls.filter(c=>c[0]==='progress').length,0);assert(!w.calls.some(c=>c[0]==='permit'));}
++
++test('stage normal path stops three sequential clients, closes streams and validates manifests before serving permit',async()=>{
++ const w=world();assert.equal(await w.run(),undefined);stopped(w,3);assert.equal(w.openFds.size,0);
++ const lifecycle=w.calls.filter(c=>['start','stop'].includes(c[0])).map(c=>c.slice(0,2));
++ assert.deepEqual(lifecycle,w.specs.flatMap(s=>[['start',s.kind],['stop',s.kind]]));
++ assert.equal(w.calls.filter(c=>c[0]==='read'&&c[1].includes('/builds/')).length,3);
++ assert.deepEqual(w.calls.filter(c=>c[0]==='progress').map(c=>c[1]),['staged','serving']);
++ assert(w.calls.findIndex(c=>c[0]==='permit')>w.calls.findIndex(c=>c[0]==='progress'&&c[1]==='staged'));
++ assert(w.calls.findIndex(c=>c[0]==='revalidate')>w.calls.findIndex(c=>c[0]==='permit'));
++ for(const call of w.calls.filter(c=>c[0]==='start'))assert.equal(call[2].env.LETBUYY_OWNED_NEXT_STAGE_ONLY,'1');
++});
++test('stage failed log open still stops the exact returned child',async()=>{const w=world('open');primaryRetained(await w.run(),w.primary);stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage failed stream construction closes only the untransferred FD and stops child',async()=>{const w=world('create-stream');primaryRetained(await w.run(),w.primary);stopped(w,1);assert.deepEqual(w.closes,[100]);assert.equal(w.openFds.size,0);noPublication(w);});
++for(const side of ['stdout','stderr'])test('stage '+side+' pipe failure closes owned stream and stops child',async()=>{const w=world(side+'-pipe');primaryRetained(await w.run(),w.primary);stopped(w,1);assert.equal(w.openFds.size,0);assert.equal(w.closes.length,0);noPublication(w);});
++test('stage underlying child error remains primary and triggers cleanup',async()=>{const w=world('child-error');primaryRetained(await w.run(),w.primary);stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage nonzero child completion cannot publish staged readiness',async()=>{const w=world('nonzero');assert(await w.run());stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage async stream failure while child is pending is observable and stops child',async()=>{const w=world('async-log');primaryRetained(await w.run(),w.primary);stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage end cleanup failure remains observable without skipping child stop',async()=>{const w=world('end-cleanup');const error=await w.run();assert(error);assert(error===w.secondary||error.errors?.includes(w.secondary));stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage primary IO failure remains cause when FD cleanup also fails',async()=>{const w=world('fd-close');const error=await w.run();primaryRetained(error,w.primary);assert(error.errors?.includes(w.secondary));stopped(w,1);assert.deepEqual(w.closes,[100]);noPublication(w);});
++test('stage primary IO failure remains cause when stopping the exact child also fails',async()=>{const w=world('stop-primary');const error=await w.run();primaryRetained(error,w.primary);assert(error.errors?.includes(w.secondary));stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage stop-only cleanup failure stays observable while owned stream still closes',async()=>{const w=world('stop-cleanup');assert(await w.run());stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage failed manifest read has already stopped the exact build child',async()=>{const w=world('manifest-read');primaryRetained(await w.run(),w.primary);stopped(w,1);assert.equal(w.openFds.size,0);noPublication(w);});
++test('stage invalid final permit cannot claim listener readiness after successful build cleanup',async()=>{const w=world('bad-permit');primaryRetained(await w.run(),w.primary);stopped(w,3);assert.equal(w.openFds.size,0);assert.deepEqual(w.calls.filter(c=>c[0]==='progress').map(c=>c[1]),['staged']);assert(!w.calls.some(c=>c[0]==='revalidate'));});
++test('stage ordinary dev kind remains refused before starting a client',async()=>{const w=world();w.specs[0].kind='identity-next';assert(await w.run());assert.equal(w.children.length,0);noPublication(w);});
++test('stage start failure never attempts stopping an unrelated handle',async()=>{const w=world('start-throws');primaryRetained(await w.run(),w.primary);assert.equal(w.children.length,0);assert(!w.calls.some(c=>c[0]==='stop'));noPublication(w);});

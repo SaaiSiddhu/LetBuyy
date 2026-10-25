@@ -1,0 +1,10 @@
+{
+  "classification": "COMPILER_ONLY",
+  "actual": [],
+  "baseline": [],
+  "introduced": [],
+  "businessSourceLeaks": [
+    "/private/tmp/letbuyy-shared-completion-20261024-06/packages/payments/src/index.ts"
+  ],
+  "sourceFileCount": 958
+}

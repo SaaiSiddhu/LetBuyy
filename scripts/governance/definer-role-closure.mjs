@@ -85,6 +85,16 @@ export function functionDefinitions(sql) {
     const found = [];
     for (const statement of sqlStatements(sql)) {
         const text = tokenText(statement);
+        if (statement[0]?.value === 'do' && statement.length === 3 && statement[1]?.kind === 'body') {
+            const executable = sqlTokens(statement[1].value);
+            for (let i=0; i<executable.length; i++) {
+                if (executable[i].kind !== 'word' || executable[i].value !== 'execute') continue;
+                const literal=executable[i+1];
+                if (['string','body'].includes(literal?.kind) && executable[i+2]?.value === ';') {
+                    found.push(...functionDefinitions(literal.value).map(definition=>({...definition,start:statement[0].start})));
+                }
+            }
+        }
         if (!/^create (?:or replace )?function public \./.test(text)) continue;
         const open = statement.findIndex(t => t.value === '('); let depth = 1, end = open + 1;
         for (; end < statement.length && depth; end++) {
@@ -182,6 +192,60 @@ function nonFunctionDynamicStatement(expression, tokens) {
             && /^(?:SELECT|INSERT|UPDATE|DELETE|TRUNCATE|REFERENCES|TRIGGER)$/.test(cells[1][0].value);
     });
 }
+// Negative evidence only: a fixed INVOKER event-trigger constructor with one
+// literal-escaped body cannot change any other function's executable ACL.
+function fixedInvokerConstructor(expression) {
+    if (expression[0]?.value !== 'format' || expression[1]?.value !== '(' || expression.at(-1)?.value !== ')' || expression[2]?.kind !== 'string') return null;
+    const template = expression[2].value;
+    const match = template.match(/^CREATE OR REPLACE FUNCTION (public\.[a-z_][a-z0-9_]*\(\)) RETURNS event_trigger LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public AS %L$/i);
+    if (!match || expression[3]?.value !== ',') return null;
+    // The outer format has exactly one argument. Nested pure metadata encoding
+    // and concatenation stay inside %L; trailing SQL/another argument is unknown.
+    let depth = 0;
+    const argument=expression.slice(4,-1);
+    const pureCalls=new Set(['replace','encode','convert_to']);
+    const safe = argument.every((t,i) => {
+        if (t.value === '(') depth++;
+        if (t.value === ')') depth--;
+        if (t.kind === 'word' && ['select','perform','execute','call','into'].includes(t.value)) return false;
+        if (t.kind === 'word' && argument[i+1]?.value === '(' && (!pureCalls.has(t.value) || argument[i-1]?.value === '.' && argument[i-2]?.value !== 'pg_catalog')) return false;
+        if (t.value === '::' && argument[i+1]?.value !== 'text') return false;
+        return depth >= 0 && t.value !== ';' && !(t.value === ',' && depth === 0);
+    });
+    return safe && depth === 0 ? [functionIdentity(match[1])] : null;
+}
+// Catalog-derived ACL targets are escaped by regprocedure/quote_ident. Prove
+// their complete binding queries and all assignments, never infer closure from
+// this dynamic block. Unknown bindings still invalidate every prior closure.
+function nonReopeningCatalogAcl(expression, tokens) {
+    const text = tokenText(tokens);
+    const structural = tokenText(tokens.map(t => ['string','body'].includes(t.kind) ? {...t,kind:'symbol',value:'#'} : t));
+    if (/\bcall\b|\binto obj\b|\bobj (?:\:=|=)|\bobj \. [a-z_]+ (?:\:=|=)/.test(structural)) return false;
+    if ((structural.match(/\bobj record\b/g) || []).length !== 1 || /\bforeach obj\b/.test(structural)) return false;
+    const heads = [...text.matchAll(/for obj in ([\s\S]*?) loop/g)].map(m => m[1]);
+    if (heads.length !== 2) return false;
+    const functionHead = /^select p \. oid , p \. proowner , 'FUNCTION ' \|\| p \. oid :: regprocedure :: text as target , p \. oid :: regprocedure :: text as signature , coalesce \( p \. proacl , acldefault \( 'f' , p \. proowner \) \) acl , p \. proname <> '[a-z_][a-z0-9_]*' as backend from pg_proc p join pg_namespace n on n \. oid = p \. pronamespace where n \. nspname = 'public' and p \. proname in \( (?:'[a-z_][a-z0-9_]*')(?: , '[a-z_][a-z0-9_]*')* \)$/;
+    if (!functionHead.test(heads[0])) return false;
+    const tableHead = "select c . oid , c . relowner owner , 'TABLE public.carts' target , 'public.carts' signature , coalesce ( c . relacl , acldefault ( 'r' , c . relowner ) ) acl from pg_class c where c . oid = 'public.carts' :: regclass union all select c . oid , c . relowner , 'TABLE public.carts' , 'public.carts.' || a . attname , a . attacl from pg_attribute a join pg_class c on c . oid = a . attrelid where a . attrelid = 'public.carts' :: regclass and a . attnum > 0 and not a . attisdropped and a . attacl is not null";
+    if (heads[1] !== tableHead) return false;
+    const role = "case when role_name = 'PUBLIC' then 'PUBLIC' else quote_ident ( role_name ) end";
+    const formats = new Set([
+        "format ( 'GRANT EXECUTE ON %s TO service_role' , obj . target )",
+        "format ( 'REVOKE ALL ON %s FROM %s' , obj . target , " + role + " )",
+    ]);
+    if (formats.has(tokenText(expression))) return true;
+    // Table privileges are finite native ACL values, optionally qualified by a
+    // quote_ident column; the later service grant has a finite literal array.
+    const assignments = [...text.matchAll(/privilege_name := ([\s\S]*?) ;/g)].map(m => m[1]);
+    if (assignments.length !== 2 || assignments[0] !== 'grant_entry . privilege_type' || assignments[1] !== "privilege_name || ' (' || quote_ident ( substr ( obj . signature , length ( 'public.carts.' ) + 1 ) ) || ')'") return false;
+    if (/\binto privilege_name\b|\bprivilege_name =|\bfor privilege_name in\b/.test(structural) || (structural.match(/\bforeach privilege_name\b/g) || []).length !== 1) return false;
+    if (!text.includes("for grant_entry in select * from aclexplode ( obj . acl ) where grantee in ( 0 , 'anon' :: regrole , 'authenticated' :: regrole , 'app_tenant' :: regrole ) and privilege_type in ( 'INSERT' , 'UPDATE' , 'DELETE' , 'TRUNCATE' ) loop")) return false;
+    if (!text.includes("foreach privilege_name in array array [ 'INSERT' , 'UPDATE' , 'DELETE' ] loop")) return false;
+    return new Set([
+        "format ( 'REVOKE %s ON %s FROM %s' , privilege_name , obj . target , " + role + " )",
+        "format ( 'GRANT %s ON TABLE public.carts TO service_role' , privilege_name )",
+    ]).has(tokenText(expression));
+}
 function uncertainPrivileges(body) {
     const tokens = sqlTokens(body), events = [], bindings = new Map(), parents = new Map();
     const structural = tokenText(tokens.map(t => ['string','body'].includes(t.kind) ? {...t,value:'#',kind:'symbol'} : t));
@@ -216,7 +280,16 @@ function uncertainPrivileges(body) {
         if (tokens[i].value !== 'execute' || ['grant','revoke'].includes(tokens[i-1]?.value)) continue;
         const end = tokens.findIndex((t,j) => j > i && t.value === ';');
         const expression = tokens.slice(i+1,end);
-        if (nonFunctionDynamicStatement(expression, tokens)) continue;
+        if (nonFunctionDynamicStatement(expression, tokens) || nonReopeningCatalogAcl(expression, tokens)) continue;
+        const constructor = fixedInvokerConstructor(expression);
+        if (constructor) { events.push({action:'unknown',signatures:constructor}); continue; }
+        if (expression.length === 1 && ['body','string'].includes(expression[0].kind)) {
+            const statements = sqlStatements(expression[0].value);
+            const definitions = functionDefinitions(expression[0].value);
+            if (statements.length === 1 && definitions.length === 1 && definitions[0].identity) {
+                events.push({action:'unknown',signatures:[definitions[0].identity]}); continue;
+            }
+        }
         const first = expression[0]?.value === 'format' ? expression[2] : expression[0];
         if (first?.kind !== 'string') { events.push({action:'unknown'}); continue; }
         // This tripwire concerns function ACLs. Literal table/policy commands

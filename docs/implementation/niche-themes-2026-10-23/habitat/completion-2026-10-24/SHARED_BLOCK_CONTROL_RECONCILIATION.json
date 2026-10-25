@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:05:54.840343+00:00",
+  "classification": "SOURCE_CONTROL_RECONCILIATION_NOT_RUNTIME_FAILURE_OR_ACCEPTANCE",
+  "id": "HAB-G09",
+  "goalTurnClassification": "PROGRESS",
+  "previousGoalTurnClassification": "PROGRESS_PACKET_COMPLETED_AND_STRUCTURALLY_VERIFIED",
+  "existingSharedReview": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-editor-block-wiring-source-review.json",
+    "sha256": "2a2d653eb0990f43e8a2f2367fcef98a7ac8a4ce9e9ad03f6248a6d06fc87215",
+    "classification": "INDEPENDENT_SOURCE_OBSERVED_EDITOR_WIRING_GAP_NOT_BROWSER_FAILURE"
+  },
+  "sourcePins": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "sha256": "fa4e30236d9f00af2276bcc0ed7c75a6e010923035bc678770ac74288e8ea0c5"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "sha256": "2ea8f4a5b10df83db4d12cf4821ca78700027f1edefcb6c852e0d22050eec7d9"
+    }
+  ],
+  "observations": [
+    {
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "lines": [
+        1398,
+        1418
+      ],
+      "fact": "Normal flat block add/remove handlers exist; PropertyPanel wires them at1681-1698. Do not claim all block operations absent."
+    },
+    {
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "lines": [
+        1830,
+        1960
+      ],
+      "fact": "Mounted PropertyPanel accepts setting/add/remove actions; selected-block form exposes settings and Remove. No flat-block reorder or visibility callback/control is present in this component."
+    },
+    {
+      "source": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "lines": [
+        218,
+        233
+      ],
+      "fact": "Section tree renders actual first-level blocks at depth1, with selection and optional nested callbacks."
+    },
+    {
+      "source": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "lines": [
+        183,
+        227
+      ],
+      "fact": "Row reorder/remove actions are depth>1 only; nested move callback does not supply a depth1 reorder action. No block visibility control in this row."
+    },
+    {
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "lines": [
+        1588,
+        1600
+      ],
+      "fact": "Mounted tree supplies section actions; nested callbacks are omitted. Habitat declares no child relationships; do not invent nesting to work around a flat operation."
+    }
+  ],
+  "affectedCaseIds": [
+    "HAB-C-BLOCK-banner-carousel--slide",
+    "HAB-C-BLOCK-brand-marquee--brand",
+    "HAB-C-BLOCK-experience-timeline--experience",
+    "HAB-C-BLOCK-faq-accordion--faq-item",
+    "HAB-C-BLOCK-footer--link",
+    "HAB-C-BLOCK-header--link",
+    "HAB-C-BLOCK-portfolio-grid--project",
+    "HAB-C-BLOCK-services-grid--service",
+    "HAB-C-BLOCK-skills-section--skill",
+    "HAB-C-BLOCK-testimonials--testimonial",
+    "HAB-C-BLOCK-spotlight--badge",
+    "HAB-C-REUSABLE-badge"
+  ],
+  "uniqueInlineFirstPartyDeclarations": 11,
+  "reusableTypeAliasCases": 1,
+  "requiredOperationsStillNotRun": [
+    "reorder",
+    "hide",
+    "show",
+    "save/full reload/public readback after each mutation",
+    "undo/redo/recovery and duplicate-label identity"
+  ],
+  "existingOwner": "Existing shared Editor owner via Themes allocator; no duplicate implementation",
+  "disposition": "Exact canonical flat block move/visibility control or source-backed reviewed platform restriction required. This request does not grant a shared write lease. No extension activation or private parallel editor.",
+  "primaryExample": "HAB-C-BLOCK-faq-accordion--faq-item; two same-label FAQ blocks with actual acknowledged IDs, reorder/hide/show one without mutating the other.",
+  "historicalResultDisposition": "Original936 results retained; they did not prove every newly inventory-derived block operation. No old PASS promoted or overwritten.",
+  "runtimeReproduced": false,
+  "browserAcceptance": "NOT_RUN",
+  "sharedSourceEdited": false,
+  "sourceReadError": {
+    "command": "rg included a guessed SectionPropertiesPanel.tsx path",
+    "exitCode": 2,
+    "meaning": "Discovery path absent; actual PropertyPanel is inline in editor/page.tsx. No application test failed."
+  },
+  "resumptionObservation": {
+    "sourceThreadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "turnId": "01a16d21-f964-7943-b1f7-82291720cce1",
+    "humanMessageId": "01a16d22-523d-7be0-a40d-774d113d358f",
+    "verifiedHumanReply": "Yes — resume both shared owners",
+    "authorizationScope": "Requesting chat may resume/message Themes and Theme Editor. Not a Habitat source/runtime/browser grant.",
+    "liveTurnObserved": true,
+    "lastCursor": "5e738217-bb46-457d-aba4-ea9038feb23e:7",
+    "helperDispatchReceipt": "NOT_YET_OBSERVED",
+    "crossChatMessagesSentByHabitat": 0
+  },
+  "laterDisposition": {
+    "recordedAt": "2026-10-24T09:50:58.260255+00:00",
+    "status": "HISTORICAL_SOURCE_GAP_WIRING_REPAIR_DELIVERED; CHILD03_AND_CURRENT_UI_ACCEPTANCE_PENDING",
+    "review": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-editor-block-source-independent-review.json",
+    "canonicalCorrection": "NESTING_RECONCILIATION.json",
+    "runtimeAccepted": false
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-23T16:12:34.949Z",
+  "runId": "9cd50e893016",
+  "phase": "pantry-two-packs",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Whitelisted current owned cart lines/options/approved facts; no token/customer/handoff/catalog_source exposed",
+  "result": {
+    "orders": 0,
+    "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+    "activeCarts": [
+      {
+        "id": "20467e3d-c3b3-409f-be6a-ee4874049a91",
+        "items": [
+          {
+            "id": "7369995f-a9f9-44bb-8dee-bb0ab7b8e265:dec5643b-ae0c-4db2-a654-07d314ac01f2",
+            "title": "Pantry lifecycle red lentils",
+            "currency": "INR",
+            "quantity": 2,
+            "lineTotal": 360,
+            "productId": "7369995f-a9f9-44bb-8dee-bb0ab7b8e265",
+            "unitPrice": 180,
+            "variantId": "dec5643b-ae0c-4db2-a654-07d314ac01f2",
+            "properties": {
+              "Pack": "250 g"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "food": {
+                  "storage": "Keep cool and dry.",
+                  "allergens": {
+                    "status": "not_supplied"
+                  },
+                  "ingredients": "Split red lentils (100%).",
+                  "netQuantity": {
+                    "unit": "g",
+                    "value": 250
+                  },
+                  "preparation": "Rinse before cooking.",
+                  "nutritionText": null
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Pack",
+                  "value": "250 g"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "active"
+      }
+    ]
+  }
+}

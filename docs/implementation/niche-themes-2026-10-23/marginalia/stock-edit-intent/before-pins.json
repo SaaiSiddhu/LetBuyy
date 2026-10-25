@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-10-23T20:24:50.897052+00:00",
+  "scope": "Bounded existing merchant serializer/presentation inventory intent; no runtime or API writes",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "bebce783d3bd28990ac691a180f5ef85d60de14d76021a3c4be04daa43920af3",
+      "bytes": 26690
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "6963ac68ee0e4eb76704372dd65d46742efdcc9485157ee9ad2a509b365857c4",
+      "bytes": 87358
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "39f39b7f5737da6456e8c7830fb95b80a0f66a27571e5a265ee4569d3ec9df7e",
+      "bytes": 87233
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-axis.test.ts",
+      "sha256": "8932cff89ab28da0ad70b4c465a38e071577523ab8c06026ee1eca2252b658c5",
+      "bytes": 9572
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-rename.test.ts",
+      "sha256": "5b5879811f895d35f6b371159b7dbf282451b6fa2becfd31dccf2dfaa0b5df9e",
+      "bytes": 5393
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.ts",
+      "sha256": "a4833276eb2647dca6ad6ab5e9b30e0f68f235ac7188516c98aea5f8c8b4288d",
+      "bytes": 6561
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+      "sha256": "fa4501f2fb40731df8b7a91dfa2c8353e2bb14dbb22bd98b87f67bdeefab3127",
+      "bytes": 14685
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.ts",
+      "sha256": "bb737af30a311b34128fb7d0d1d2b522e73898e889830d360c4d372c6b2af5e3",
+      "bytes": 6081
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+      "sha256": "a318ecc7594660d6c86ed1cfe4dbcbeab505705d929078c0a35648c27a2bf838",
+      "bytes": 12437
+    },
+    {
+      "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+      "sha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+      "bytes": 2810
+    }
+  ]
+}

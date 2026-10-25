@@ -1,0 +1,21 @@
+Browser tab: 173052885, Title: "The Everyday Linen Shirt | Threadline", URL: "http://syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1?[redacted query]
+1 AXWebArea The Everyday Linen Shirt | Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1?[redacted query]
+	2 container Shopping cart
+		3 button Close cart
+		4 heading Cart, Value: 2
+			5 text Cart
+		6 text The Everyday Linen Shirt
+		7 text Size: M · Color: Oat
+		8 text Saved options
+Color: Oat
+Size: M
+		9 text x1
+		10 button Remove The Everyday Linen Shirt, Size: M · Color: Oat
+		11 text Subtotal
+		12 text ₹2,490
+		13 text Total
+		14 text ₹2,490
+		15 link Description: View cart, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+		16 link Description: Checkout, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/checkout
+
+The focused UI element is 3 button Close cart

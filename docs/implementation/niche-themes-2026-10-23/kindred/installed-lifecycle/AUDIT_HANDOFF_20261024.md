@@ -1,0 +1,11 @@
+# Kindred audit and cleanup checkpoint — 24 October
+
+Editor reached Kindred on corrected run936e5f577646. The full19-case audit is **3PASS / 1FAIL / 15NOT_RUN**. G03/G05/G07 pass; G08 fails. G01/G02/G04/G06/G19 have partial evidence and remain NOT_RUN for full-case acceptance. G09–G18 were excluded from the finite nonorder allocation. The full case-by-case explanation is in `../completion-2026-10-24/AUDIT_19_CASES.md`; this checkpoint supersedes only the older readiness status, without overwriting prior records.
+
+G08's actual Tablet820 preview failed with reference1136306685. The exact saved commerce-log entry reports404 “Preview session not found or expired”; precise missing/expired/binding cause remains unproved. G02's two offline digest matches add lineage evidence without completing the missing catalogue/collector join. All97original controller evidence hashes still match. No Kindred cart, buyer identity, COD/Razorpay purchase or immutable purchased history has passing evidence.
+
+The private canonical-renderer child proposal is sealed separately:58source checks,11child-output contexts and23unchanged default template outputs. Current Main catalogue drift is disclosed; no passing credit is transferred to current Main, installed browser cases or provider payment. Editor is the existing independent reviewer. An additive correction retains110child lifecycle UI rows as NOT_RUN; no declared child capability is waived because its allowlist is absent.
+
+Cleanup: Kindred has no persistent running job and acquired no browser/runtime/database/build/provider resource or lease. The one-shot source probe exited0. No Kindred lease can be returned because none was acquired. Private proposal/heading evidence is retained. Shared browser/runtime/database state was untouched; shared teardown remains unproved and G19 is not accepted. Historical restored gift facts/media/stock, Bpublication, beauty control orders and held Pantry cart remain preserved in the saved evidence.
+
+The heartbeat is already PAUSED and was not changed. Current installed execution requires a fresh explicit allocator/controller/runtime admission; expired936 is unusable. Source, accepted artifacts and prior evidence remain frozen. KQA-01 stays **OPEN P2**, including both original768px long-brand screenshots. Full certification remains unissued.

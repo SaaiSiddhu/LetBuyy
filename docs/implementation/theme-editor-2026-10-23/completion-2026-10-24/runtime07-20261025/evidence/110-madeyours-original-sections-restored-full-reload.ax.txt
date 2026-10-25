@@ -1,0 +1,165 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text MadeYours Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: MadeYours home, Secondary Actions: Expand
+				13 menu
+					14 (selected) MadeYours home
+					15 LetBuyy Core product
+					16 LetBuyy Core collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 LetBuyy Core search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading MadeYours home, Value: 2
+				41 text MadeYours home
+			42 text v20
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 checkbox Description: Toggle Announcement Bar visibility, Value: 1
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selectable) Personalization workspace introduction
+							53 button Personalization workspace introduction
+						54 row (selectable) Choose, specify, review, 3 blocks
+							55 button Choose, specify, review, 3 blocks
+							56 container
+								57 row (selectable) Step Toggle Step block visibility Move Step block up Move Step block down Remove Step block Add child block: Badge
+									58 button Step
+									59 container
+										60 checkbox Description: Toggle Step block visibility, Value: 1
+										61 button (disabled) Move Step block up
+										62 button Move Step block down
+										63 button Remove Step block
+									64 button Add child block: Badge
+								65 row (selectable) Step Toggle Step block visibility Move Step block up Move Step block down Remove Step block Add child block: Badge
+									66 button Step
+									67 container
+										68 checkbox Description: Toggle Step block visibility, Value: 1
+										69 button Move Step block up
+										70 button Move Step block down
+										71 button Remove Step block
+									72 button Add child block: Badge
+								73 row (selectable) Step Toggle Step block visibility Move Step block up Move Step block down Remove Step block Add child block: Badge
+									74 button Step
+									75 container
+										76 checkbox Description: Toggle Step block visibility, Value: 1
+										77 button Move Step block up
+										78 button (disabled) Move Step block down
+										79 button Remove Step block
+									80 button Add child block: Badge
+						81 row (selectable) Personalizable base catalog
+							82 button Personalizable base catalog
+						83 row (selectable) Base collections
+							84 button Base collections
+						85 row (selectable) The details before you buy
+							86 button The details before you buy
+					87 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						88 menu
+							89 (selected) Marquee
+							90 404 Not Found
+							91 Spotlight
+							92 Search
+							93 Video Hero
+							94 Call to Action
+							95 Personalization workspace introduction
+							96 Blog Listing
+							97 Cart
+							98 Contact Form
+							99 Page Content
+							100 Personalizable base catalog
+							101 Rich Content
+							102 Testimonials
+							103 Trust Badges
+							104 The details before you buy
+							105 Brand Marquee
+							106 Base collections
+							107 FAQ Accordion
+							108 Password Gate
+							109 Services Grid
+							110 App Block Slot
+							111 Customer Login
+							112 Policy Content
+							113 Portfolio Grid
+							114 Product Detail
+							115 Skills Section
+							116 Article Content
+							117 Banner Carousel
+							118 Order History
+							119 Announcement Bar
+							120 Customer Account
+							121 Collection Banner
+							122 Base discovery
+							123 Customer Register
+							124 Account Settings
+							125 Wishlist
+							126 Selected bases
+							127 Newsletter Signup
+							128 Addresses
+							129 Choose, specify, review
+							130 Order Detail
+							131 Base collection products
+					132 button Add
+				133 container
+					134 text FOOTER
+					135 button Footer
+		136 container Live theme preview
+			137 text Live preview
+			138 text syn-threadline-ui-ae3f0477 . localhost  -  1440 px
+			139 container Preview device
+				140 checkbox Desktop, Value: 1
+				141 checkbox Tablet, Value: 0
+				142 checkbox Mobile, Value: 0
+			143 container
+				144 text syn-threadline-ui-ae3f0477 . localhost
+				145 checkbox Description: Inspect preview, Value: 1
+				146 container syn-threadline-ui-ae3f0477 storefront preview
+					147 AXWebArea about:blank
+		148 container Theme properties
+			149 text Selected section
+			150 heading Announcement Bar, Value: 2
+				151 text Announcement Bar
+			152 container Smart defaults
+				153 button (collapsed) Smart defaults, Secondary Actions: Expand
+					154 text Smart defaults
+			155 container
+				156 text Message
+				157 text field (settable) Message, Value: Choose. Specify. Review.
+				158 text Link URL
+				159 text field (settable) Link URL
+				160 text Link label
+				161 text field (settable) Link label
+				162 text BLOCKS
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor

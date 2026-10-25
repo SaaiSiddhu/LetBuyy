@@ -1,0 +1,519 @@
+{
+  "body": {
+    "background": "rgb(31, 31, 33)",
+    "color": "rgba(255, 255, 255, 0.75)",
+    "font": "Figtree, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "EXPLORE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Figtree, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 282,
+      "x": 1068,
+      "y": 5.8046875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 88.390625,
+      "line": "88.4px",
+      "size": "72.8px",
+      "tag": "H2",
+      "text": "MEET THE TEAM",
+      "weight": "500",
+      "width": 780,
+      "x": 330,
+      "y": 759.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "KELIA MONIZ",
+      "weight": "500",
+      "width": 389.953125,
+      "x": 65,
+      "y": 1392.0390625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "JULIAN WILSON",
+      "weight": "500",
+      "width": 389.953125,
+      "x": 524.953125,
+      "y": 1392.0390625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "SALLY FITZGIBBONS",
+      "weight": "500",
+      "width": 389.953125,
+      "x": 984.90625,
+      "y": 1392.0390625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "ELI HANNEMAN",
+      "weight": "500",
+      "width": 620,
+      "x": 65,
+      "y": 2273.4296875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "MASON HO",
+      "weight": "500",
+      "width": 620,
+      "x": 755,
+      "y": 2273.4296875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "FILIPE TOLEDO",
+      "weight": "500",
+      "width": 275,
+      "x": 65,
+      "y": 2781.0234375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "KYUSS KING",
+      "weight": "500",
+      "width": 275,
+      "x": 410,
+      "y": 2781.0234375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "BARON MAMIYA",
+      "weight": "500",
+      "width": 275,
+      "x": 755,
+      "y": 2781.0234375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 34.203125,
+      "line": "34.2px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "CAROLINE MARKS",
+      "weight": "500",
+      "width": 275,
+      "x": 1100,
+      "y": 2781.0234375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 68,
+      "line": "68px",
+      "size": "56px",
+      "tag": "H2",
+      "text": "RIDE WITH US",
+      "weight": "500",
+      "width": 1260,
+      "x": 90,
+      "y": 3086.2109375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 30.6015625,
+      "line": "30.6px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "ABOUT RIDE",
+      "weight": "500",
+      "width": 420,
+      "x": 50,
+      "y": 3350.0078125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team#MainContent"
+    },
+    {
+      "text": "NEW FINS HAVE LANDED 🏄 SHOP NOW",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/frontpage"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/performance-boards"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/blogs/stories"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-ride-demo.myshopify.com/cart"
+    },
+    {
+      "text": "STORIES",
+      "url": "https://theme-ride-demo.myshopify.com/blogs/stories"
+    },
+    {
+      "text": "RIDE TEAM",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+    },
+    {
+      "text": "CONTACT",
+      "url": "https://theme-ride-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-ride-demo",
+      "url": "https://theme-ride-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803752104__1646766862fc333534",
+      "rect": {
+        "height": 560,
+        "width": 1440,
+        "x": 0,
+        "y": 147.1015625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803752104__164668935922fe85e2",
+      "rect": {
+        "height": 165.984375,
+        "width": 1440,
+        "x": 0,
+        "y": 759.1015625
+      },
+      "tag": "SECTION",
+      "text": "MEET THE TEAM\n\nOur team is made up of the world's best competition, lifestyle, and big-wave surfers. We're stoked to have this amazing bunch of ambassadors traveling around the glo"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803752104__1646429773abc54df0",
+      "rect": {
+        "height": 599.34375,
+        "width": 1440,
+        "x": 0,
+        "y": 977.0859375
+      },
+      "tag": "SECTION",
+      "text": "KELIA MONIZ\n\nKelia Moniz is one of the most versatile surfers in the world. She's learned all the basics from carving fluid off the lip or cross-stepping to the nose.\n\nJULIAN WILSO"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803752104__164684694941eade65",
+      "rect": {
+        "height": 800.59375,
+        "width": 1440,
+        "x": 0,
+        "y": 1628.4296875
+      },
+      "tag": "SECTION",
+      "text": "ELI HANNEMAN\n\nHawaiian prodigy Eli Hanneman knows exactly what he wants and where’s he’s going. His technique overall is flawless, and there aren’t many who’re better in the air.\n\n"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803752104__1646847183b4371d7a",
+      "rect": {
+        "height": 513.1875,
+        "width": 1440,
+        "x": 0,
+        "y": 2481.0234375
+      },
+      "tag": "SECTION",
+      "text": "FILIPE TOLEDO\n\nFilipe's an incredible tube rider, an uncompromising competitor, and never one to duck a question in a post-heat interview.\n\nKYUSS KING\n\nHeavy slabs and deep ocean s"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803752104__16466322200b4524f0",
+      "rect": {
+        "height": 263.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 3046.2109375
+      },
+      "tag": "SECTION",
+      "text": "RIDE WITH US\n\nBe the first to know about new collections and exclusive offers.\n\nEmail"
+    }
+  ],
+  "title": "MEET THE TEAM – theme-ride-demo",
+  "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 599.34375,
+      "tag": "UL",
+      "width": 1340
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 800.59375,
+      "tag": "UL",
+      "width": 1340
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 513.1875,
+      "tag": "UL",
+      "width": 1340
+    }
+  ],
+  "images": [
+    {
+      "alt": "Three surfers walk along the beach, holding their surf boards.",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 560,
+        "width": 1440
+      }
+    },
+    {
+      "alt": "Kelia surfing on a long white surf board.",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 389.953125,
+        "width": 389.953125
+      }
+    },
+    {
+      "alt": "An overhead view of Julian surfing a wave. ",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 389.953125,
+        "width": 389.953125
+      }
+    },
+    {
+      "alt": "Sally, smiling as she surfs a wave on a pink surf board. ",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 389.953125,
+        "width": 389.953125
+      }
+    },
+    {
+      "alt": "Eli catching air while surfing on a black and white surf board.",
+      "complete": true,
+      "naturalWidth": 710,
+      "rect": {
+        "height": 620,
+        "width": 620
+      }
+    },
+    {
+      "alt": "Mason performing tricks on a white surf board.",
+      "complete": true,
+      "naturalWidth": 710,
+      "rect": {
+        "height": 620,
+        "width": 620
+      }
+    },
+    {
+      "alt": "Filipe surfing a big wave.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 275,
+        "width": 275
+      }
+    },
+    {
+      "alt": "Kyuss riding a wave on a surf board with a leaf pattern.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 275,
+        "width": 275
+      }
+    },
+    {
+      "alt": "Baron riding a big wave on a white surf board.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 275,
+        "width": 275
+      }
+    },
+    {
+      "alt": "Carloline catching a big wave on a white surf board.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 275,
+        "width": 275
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nNEW FINS HAVE LANDED 🏄 SHOP NOW \n\nSHOP\nEXPLORE\nCart\nMEET THE TEAM\n\nOur team is made up of the world's best competition, lifestyle, and big-wave surfers. We're stoked to have this amazing bunch of ambassadors traveling around the globe supporting us.\n\nKELIA MONIZ\n\nKelia Moniz is one of the most versatile surfers in the world. She's learned all the basics from carving fluid off the lip or cross-stepping to the nose.\n\nJULIAN WILSON\n\nThe hopes and dreams of Australia’s surfing future rides proudly on the shoulders of this surfer, and his best is yet to come.\n\nSALLY FITZGIBBONS\n\nAt 18, Sally clinched the Qualifying Series championship faster than any other woman in history after tearing through the first five events.\n\nELI HANNEMAN\n\nHawaiian prodigy Eli Hanneman knows exactly what he wants and where’s he’s going. His technique overall is flawless, and there aren’t many who’re better in the air.\n\nMASON HO\n\nOver the past few years Mason’s traveled the world riding and documenting the world’s best waves. His unique content is among the most watched in the industry.\n\nFILIPE TOLEDO\n\nFilipe's an incredible tube rider, an uncompromising competitor, and never one to duck a question in a post-heat interview.\n\nKYUSS KING\n\nHeavy slabs and deep ocean swells have groomed this young lad into one of the most revered tube riding maestros on the planet.\n\nBARON MAMIYA\n\nBaron is a rare surfer that can balance the competition thing and also drop mind-blowing edits that showcase his powerful surfing.\n\nCAROLINE MARKS\n\nCaroline's incredible talent has made her the youngest surfer ever to qualify for the women’s Championship Tour at just 18 years old.\n\nRIDE WITH US\n\nBe the first to know about new collections and exclusive offers.\n\nEmail\nABOUT RIDE\nSTORIES\nRIDE TEAM\nCONTACT\n\nWe find freedom in the waves, and our journey to find those waves is half the fun.\n\nFacebook\nInstagram\nYouTube\nPayment methods\n© 2026, theme-ride-demo Powered by Shopify"
+}

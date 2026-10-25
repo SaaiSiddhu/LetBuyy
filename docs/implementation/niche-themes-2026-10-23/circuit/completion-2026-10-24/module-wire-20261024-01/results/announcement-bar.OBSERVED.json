@@ -1,0 +1,74 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "announcement-bar",
+  "group": "template",
+  "originalId": "section-4e29e3ae-8a37-4fa0-9d0f-389f7086d4ae",
+  "finalId": "section-e3f043c4-cce8-4626-977e-0bf77d7314c7",
+  "sectionFieldsExercised": [
+    "text",
+    "linkLabel",
+    "linkHref"
+  ],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text",
+          "linkLabel": "Circuit source linkLabel",
+          "linkHref": "https://example.invalid/circuit/linkHref.webp"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text",
+          "linkLabel": "Circuit source linkLabel",
+          "linkHref": "https://example.invalid/circuit/linkHref.webp"
+        },
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text",
+          "linkLabel": "Circuit source linkLabel",
+          "linkHref": "https://example.invalid/circuit/linkHref.webp"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text",
+          "linkLabel": "Circuit source linkLabel",
+          "linkHref": "https://example.invalid/circuit/linkHref.webp"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

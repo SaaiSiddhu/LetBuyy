@@ -1,0 +1,102 @@
+{
+  "id": "section-category-grid",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "category-grid",
+    "group": "template",
+    "firstId": "section-016cd420-ee81-42f5-849f-ac85d87ee7b1",
+    "finalId": "section-2159d98c-0a7a-490c-bf2c-5efce22664b6",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "label1": "Source fixture label1",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "label2": "Source fixture label2",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "label3": "Source fixture label3",
+            "collection3": "22222222-2222-4222-8222-222222222222",
+            "label4": "Source fixture label4",
+            "collection4": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "label1": "Source fixture label1",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "label2": "Source fixture label2",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "label3": "Source fixture label3",
+            "collection3": "22222222-2222-4222-8222-222222222222",
+            "label4": "Source fixture label4",
+            "collection4": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "label1": "Source fixture label1",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "label2": "Source fixture label2",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "label3": "Source fixture label3",
+            "collection3": "22222222-2222-4222-8222-222222222222",
+            "label4": "Source fixture label4",
+            "collection4": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "label1": "Source fixture label1",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "label2": "Source fixture label2",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "label3": "Source fixture label3",
+            "collection3": "22222222-2222-4222-8222-222222222222",
+            "label4": "Source fixture label4",
+            "collection4": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

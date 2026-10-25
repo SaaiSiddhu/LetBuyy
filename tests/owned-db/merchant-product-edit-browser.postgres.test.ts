@@ -27,7 +27,7 @@ let identityOrigin='',merchantOrigin='',loseReplyFor='';
 let ownerA:BrowserContext,ownerB:BrowserContext,staff:BrowserContext;
 const calls:{path:string;method:string;status:number;lost:boolean;key:string|null;productBody?:string}[]=[];
 const checkpoints:string[]=[];
-const readProfiles:{route:string;sample:number;usefulMilliseconds:number;gatewayReads:number;gatewayBytes:number}[]=[];
+const readProfiles:{route:string;sample:number;usefulMilliseconds:number;gatewayReads:number;gatewayBytes:number;boundary?:string}[]=[];
 let profileReads:{bytes:number}[]|null=null;
 const originalFetch=globalThis.fetch;
 let refusedGatewayExternalRequests=0;
@@ -151,6 +151,56 @@ test('production navigation preserves the shell and settles useful nonzero catal
         assert.equal(await page.evaluate(()=>(window as unknown as Record<string,unknown>).merchantNavigationSentinel),marker,'page-header navigation must retain the document and shared shell');
         checkpoints.push('production_nonzero_catalog_empty_orders_three_samples_retained_client_navigation');
     }finally{profileReads=null;await page.close();}
+});
+
+test('production AI and operations pages settle complete large-history values',{timeout:150000},async()=>{
+    const source=crypto.randomUUID(),destination=crypto.randomUUID();
+    const supplierA=crypto.randomUUID(),supplierB=crypto.randomUUID(),receiptProduct=product().id;
+    owned.psql(`INSERT INTO ai_credits(store_id,plan_credits,bonus_credits,total_purchased) VALUES('${site.siteId}',3000,10,20);
+      INSERT INTO ai_usage(store_id,feature,credits_used,status,tokens_input,tokens_output)
+      SELECT '${site.siteId}','custom',2,'completed',10,7 FROM generate_series(1,1103);
+      INSERT INTO inventory_locations(id,store_id,name) VALUES
+      ('${source}','${site.siteId}','Synthetic browser source'),('${destination}','${site.siteId}','Synthetic browser destination');
+      INSERT INTO inventory_locations(store_id,name) SELECT '${site.siteId}','Synthetic browser empty location '||n FROM generate_series(1,50)n;
+      INSERT INTO suppliers(id,site_id,name) VALUES('${supplierA}','${site.siteId}','Synthetic browser supplier A'),('${supplierB}','${site.siteId}','Synthetic browser supplier B');
+      INSERT INTO purchase_orders(site_id,po_number,supplier_id,status,idempotency_key,created_at,expected_at)
+      SELECT '${site.siteId}','SYN-BROWSER-PO-'||n,CASE WHEN n<=1100 THEN '${supplierA}'::uuid ELSE '${supplierB}'::uuid END,'received','syn-browser-po-'||gen_random_uuid(),'2026-10-06','2026-10-10' FROM generate_series(1,1103)n;
+      INSERT INTO purchase_order_receipts(site_id,purchase_order_id,product_id,quantity_received,idempotency_key,created_at)
+      SELECT '${site.siteId}',id,'${receiptProduct}',1,'syn-browser-po-receipt-'||gen_random_uuid(),'2026-10-08' FROM purchase_orders WHERE site_id='${site.siteId}';
+      INSERT INTO inventory_transfers(site_id,transfer_number,source_location_id,destination_location_id,status,idempotency_key)
+      SELECT '${site.siteId}','SYN-BROWSER-TR-'||n,'${source}','${destination}',CASE WHEN n<=1100 THEN 'shipped' ELSE 'received' END,
+      'syn-browser-tr-'||gen_random_uuid() FROM generate_series(1,1103)n;
+      INSERT INTO inventory_transfer_receipts(site_id,transfer_id,product_id,source_location_id,destination_location_id,quantity_received,idempotency_key,created_at)
+      SELECT '${site.siteId}',id,'${receiptProduct}','${source}','${destination}',1,'syn-browser-tr-receipt-'||gen_random_uuid(),'2026-10-14' FROM inventory_transfers WHERE site_id='${site.siteId}' LIMIT 1;`);
+    const page=await ownerA.newPage();
+    try {
+        for(const route of ['ai','products/operations-dashboard','products/receipts']) {
+            const reads:{bytes:number}[]=[];profileReads=reads;const started=performance.now();
+            await page.goto(`${merchantOrigin}/${site.subdomain}/${route}`);
+            if(route==='ai') {
+                await expect(page.getByText('824',{exact:true})).toBeVisible();
+                await expect(page.getByText('3,030 total credits',{exact:true})).toBeVisible();
+                await expect(page.getByText('Latest 20 AI usage events',{exact:true})).toBeVisible();
+                await expect(page.locator('#admin-page-scroll')).not.toContainText('NaN');
+            } else if(route==='products/operations-dashboard') {
+                await expect(page.getByText('Total transfers',{exact:true}).locator('..').getByText('1103',{exact:true})).toBeVisible();
+                await expect(page.getByText('In-transit transfers',{exact:true}).locator('..').getByText('1100',{exact:true})).toBeVisible();
+                await expect(page.getByRole('row').filter({hasText:'In transit'}).getByRole('cell').last()).toHaveText('1100');
+                await expect(page.getByRole('row').filter({hasText:'Synthetic browser supplier A'}).getByRole('cell').nth(1)).toHaveText('1100');
+                await page.getByRole('button',{name:'Next locations',exact:true}).click();
+                await expect(page.getByText('53 locations · Page 2',{exact:true})).toBeVisible();
+            } else {
+                await expect(page.getByRole('table').getByRole('row')).toHaveCount(21);
+                await expect(page.getByText('Transfer Receipt',{exact:true}).first()).toBeVisible();
+                await page.getByRole('button',{name:'Next',exact:true}).click();
+                await expect(page.locator('#admin-page-scroll')).toContainText('Page 2 of 56');
+                await expect(page.getByRole('table').getByRole('row')).toHaveCount(21);
+            }
+            readProfiles.push({route,sample:1,boundary:route==='ai'?'canonical balance and complete credit sources visible':route==='products/receipts'?'second mixed-receipt page contains twenty visible rows':'complete supplier/transfer metrics and next locations page visible',usefulMilliseconds:Math.round((performance.now()-started)*10)/10,gatewayReads:reads.length,gatewayBytes:reads.reduce((total,read)=>total+read.bytes,0)});
+            profileReads=null;
+        }
+        checkpoints.push('production_complete_ai_credit_supplier_transfer_metrics_location_paging_and_mixed_receipts_beyond_rest_cap');
+    } finally {profileReads=null;await page.close()}
 });
 
 test('production export UI prepares the complete file through the canonical job and downloads without leaving the page',{timeout:150000},async()=>{

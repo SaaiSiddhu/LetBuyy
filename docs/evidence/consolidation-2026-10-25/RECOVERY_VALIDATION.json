@@ -1,0 +1,114 @@
+{
+  "record_scope": "HISTORICAL_INTAKE_OR_INTERMEDIATE_CHECKPOINT",
+  "superseded_for_final_status_by": [
+    "FINAL_VALIDATION.json",
+    "FINAL_GIT_STATE.json"
+  ],
+  "typecheck": {
+    "tasks_passed": 81,
+    "exit_code": 0
+  },
+  "gateway_unit": {
+    "pass": 1788,
+    "fail": 0,
+    "skip": 0
+  },
+  "contracts": {
+    "pass": 361,
+    "fail": 0,
+    "skip": 0
+  },
+  "recovered_transport_and_export": {
+    "pass": 12,
+    "fail": 0,
+    "skip": 0
+  },
+  "flutter_merchant": {
+    "pass": 379,
+    "fail": 0
+  },
+  "flutter_analyze": {
+    "issues": 0
+  },
+  "dart_api_client": {
+    "pass": 97,
+    "skip": 6,
+    "fail": 0
+  },
+  "recovered_owned_database_runs": [
+    {
+      "runId": "c69580744d32",
+      "suites": 4,
+      "failedSuites": 2,
+      "tests": 25,
+      "assertionsPassed": 18,
+      "assertionsFailed": 7,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 33.5,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "runId": "b3a4b66bca8b",
+      "suites": 2,
+      "failedSuites": 0,
+      "tests": 16,
+      "assertionsPassed": 16,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 50.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  ],
+  "latest_recovered_database_suites": {
+    "revenue_history": {
+      "pass": 7,
+      "fail": 0
+    },
+    "push_preferences": {
+      "pass": 2,
+      "fail": 0
+    },
+    "mobile_actions": {
+      "pass": 13,
+      "fail": 0
+    },
+    "mobile_screen_reads": {
+      "pass": 3,
+      "fail": 0
+    }
+  },
+  "governance": {
+    "pass": 108,
+    "fail": 6,
+    "blocked": 0,
+    "not_applicable": 1
+  },
+  "environment_secret_validator": {
+    "tracked_files": 33697,
+    "reviewed_exceptions": 107,
+    "exit_code": 0
+  },
+  "migration_safety": {
+    "exit_code": 0
+  },
+  "build_scope": "Earlier build passed before stash recovery; final recovered candidate build not rerun.",
+  "not_a_merge_verdict": true
+}

@@ -1,0 +1,65 @@
+{
+  "buttons": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "name": "More actions"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "Store address"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "Submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "name": "More actions"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "Keyboard shortcuts"
+    }
+  ],
+  "fields": [
+    {
+      "disabled": false,
+      "label": "Automatically archive the order",
+      "tag": "INPUT",
+      "type": "checkbox"
+    }
+  ],
+  "headings": [],
+  "links": [
+    {
+      "text": "[test identity]"
+    },
+    {
+      "text": "Metafields"
+    },
+    {
+      "text": "Brand"
+    },
+    {
+      "text": "Change log"
+    },
+    {
+      "text": "Shopify Help Center"
+    },
+    {
+      "text": "Hire a Shopify Partner"
+    },
+    {
+      "text": "Store activity log"
+    }
+  ],
+  "viewport": [
+    1144,
+    778
+  ]
+}

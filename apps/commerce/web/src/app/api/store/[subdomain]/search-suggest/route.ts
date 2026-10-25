@@ -18,8 +18,10 @@
 // every other route in this directory uses. No local DB read.
 import { NextRequest, NextResponse } from 'next/server';
 import { ProductService } from '@/lib/product-service';
+import { createStructuredLogger } from '@letbuyy/ui/logging';
 
 const MAX_RESULTS = 6;
+const logger = createStructuredLogger('commerce-web');
 
 export async function GET(req: NextRequest, context: { params: Promise<{ subdomain: string }> }) {
     const { subdomain } = await context.params;
@@ -44,8 +46,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subdoma
             url: `/store/${subdomain}/product/${product.id}`,
         }));
         return NextResponse.json({ results });
-    } catch (err) {
-        console.error('[search-suggest] Worker proxy error:', err);
-        return NextResponse.json({ results: [] });
+    } catch {
+        logger.error('Storefront search suggestions unavailable', { operation: 'search-suggest' });
+        return NextResponse.json({ error: { code: 'INTERNAL_ERROR', message: 'Search suggestions are unavailable.' } }, { status: 503 });
     }
 }

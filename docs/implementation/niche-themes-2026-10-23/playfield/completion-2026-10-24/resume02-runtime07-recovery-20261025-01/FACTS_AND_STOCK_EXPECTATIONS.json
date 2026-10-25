@@ -1,0 +1,156 @@
+{
+  "recordedAt": "2026-10-25T00:03:42.407857+00:00",
+  "classification": "APPROVED_FIXTURE_EXPECTATIONS_NOT_OBSERVED_CURRENT_STOCK_OR_FACTS",
+  "source": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/installed-fixture-preparation/toys-fixture-proposal.json",
+    "sha256": "8515ce354b0cd56d07ac13134e6bece343a2cb5f9b522e4004518ee2c115767d",
+    "bytes": 4235
+  },
+  "commonFacts": {
+    "ageBands": [
+      "6-8"
+    ],
+    "ageStatement": "6–8 years",
+    "interests": [
+      "art"
+    ],
+    "contents": [
+      {
+        "label": "tiles",
+        "quantity": 12
+      },
+      {
+        "label": "idea cards",
+        "quantity": 2
+      },
+      {
+        "label": "tray",
+        "quantity": 1
+      }
+    ],
+    "contentsComplete": true,
+    "dimensions": {
+      "label": "Tray",
+      "length": 24,
+      "width": 19,
+      "height": 1.5,
+      "unit": "cm"
+    },
+    "additionalDimensions": [
+      {
+        "label": "Each tile",
+        "length": 5,
+        "width": 5,
+        "height": 0.6,
+        "unit": "cm"
+      }
+    ],
+    "materials": "Wood",
+    "warnings": [
+      {
+        "text": "Read the sample kit information.",
+        "sourceLabel": "Fictional integration fixture"
+      }
+    ]
+  },
+  "optionAxis": [
+    {
+      "name": "Edition",
+      "values": [
+        "Inherited",
+        "Unknown facts",
+        "Paper"
+      ]
+    }
+  ],
+  "priceReferenceINR": 480,
+  "productStockRecipe": 8,
+  "editionStockRecipes": {
+    "Inherited": 4,
+    "Unknown facts": 2,
+    "Paper": 3
+  },
+  "stockAuthority": "Actual acknowledged per-variant availability; product8/variant-sum9 is intentional in the retained plan, not a normalization command. No actual remaining stock is claimed.",
+  "editionOverrideInputs": [
+    {
+      "title": "Inherited sample edition",
+      "stock": 4,
+      "options": {
+        "Edition": "Inherited"
+      },
+      "metadata": {
+        "toys": {
+          "finish": "Sample blue finish"
+        }
+      }
+    },
+    {
+      "title": "Explicit unknown sample edition",
+      "stock": 2,
+      "options": {
+        "Edition": "Unknown facts"
+      },
+      "metadata": {
+        "toys": {
+          "ageBands": [],
+          "contents": [],
+          "dimensions": null,
+          "additionalDimensions": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "title": "Different paper sample edition",
+      "stock": 3,
+      "options": {
+        "Edition": "Paper"
+      },
+      "metadata": {
+        "toys": {
+          "ageBands": [
+            "9-12"
+          ],
+          "contents": [
+            {
+              "label": "paper sheets",
+              "quantity": 36
+            }
+          ],
+          "contentsComplete": true,
+          "dimensions": {
+            "label": "A5 sheet",
+            "length": 21,
+            "width": 14.8,
+            "unit": "cm"
+          },
+          "additionalDimensions": [],
+          "materials": "Paper",
+          "warnings": []
+        }
+      }
+    }
+  ],
+  "resolvedExpectations": {
+    "Inherited": "Age6-8 and supplied prose; art;12tiles+2idea cards+1tray=15complete; tray24x19x1.5cm/tile5x5x0.6cm; Wood; Sample blue finish; attributed fictional warning.",
+    "Unknown facts": "No age band/prose; art inherited; empty incomplete contents; no primary/additional measurements/warnings; Wood inherited until explicit materials clear.",
+    "Paper": "Age9-12 with no inherited common age prose; art;36paper sheets complete; A5 sheet21x14.8cm without height/tile measurements; Paper; no inherited warnings."
+  },
+  "stockReservationAdviceNotMutation": {
+    "preferredTestPurchase": "Inherited quantity1, blue before finish edit",
+    "preferredLocalCOD": "Paper quantity1 after any named OOS restoration",
+    "laterNewGreenOrder": "Inherited quantity1 after stale-cart denial and explicit reread/reaccept",
+    "requiredAvailabilityBeforeTheseCommitments": "Read at least2 available Inherited units and1Paper unit if following this purchase plan. If insufficient, request an explicit canonical fixture prerequisite; never refill consumed stock through a fact edit or silently reseed.",
+    "twoEditionCartCase": "Inherited1+Paper1 must coexist and reload; adding to a cart is not proof of an order/stock effect."
+  },
+  "changeFragments": {
+    "explicitMaterialUnknown": {
+      "materials": ""
+    },
+    "changedInheritedFinish": {
+      "finish": "Sample green finish"
+    }
+  },
+  "paperOOSCase": "Read and retain actual available stock immediately before deliberate Paper0. Separate setup effects from denied cart/order effects. Restore only through named inventory flow to the correct remaining amount; never restore an assumed3 after consumption.",
+  "safetyPrivacy": "Merchant age/interest guidance serves adult shoppers. No child data/profile, inferred certification, or fabricated warning/safety claim."
+}

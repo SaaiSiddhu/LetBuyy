@@ -1,0 +1,20 @@
+[
+  {
+    "foreground": "#303030",
+    "background": "#FFFFFF",
+    "ratio": 13.198,
+    "scope": "Opaque pair calculation only; not a complete component accessibility audit"
+  },
+  {
+    "foreground": "#303030",
+    "background": "#F1F1F1",
+    "ratio": 11.685,
+    "scope": "Opaque pair calculation only; not a complete component accessibility audit"
+  },
+  {
+    "foreground": "#FFFFFF",
+    "background": "#005BD3",
+    "ratio": 6.11,
+    "scope": "Opaque pair calculation only; not a complete component accessibility audit"
+  }
+]

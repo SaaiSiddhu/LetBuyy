@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "sealedAt": "2026-10-25T00:27:19.973156+00:00",
+  "status": "SEALED_SOURCE_PAIR_AND_EXPLICIT_WITNESS_AMENDMENT_FOR_THEMES_REVIEW_ONLY",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "firstSealEndsPreparationGrant": true,
+  "originalCaptureProof01Unchanged": {
+    "handoff": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-proof-private01/HANDOFF.json",
+      "sha256": "abe5d51eb0ae2a60de5a1d25ba0a3fadcf3ded4af5870bf7db73ccbc49e4a6fe"
+    },
+    "testSha256": "49f705c56b157e42d7c89a03e1eb92654d612bd26f8036e09db5372aec873ced",
+    "wrapperSha256": "d5660a3d777799c6e74c06f659265196930f01639b0cb1e25a4ce566b84d1fcc"
+  },
+  "proposedWitnessTestSha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76",
+  "witnessApproval": "PENDING; explicit test-only amendment is staged identically in both new copies, original49f705 test andd566 wrapper remain exact. No native activation inferred.",
+  "pair": {
+    "roots": [
+      "/private/tmp/letbuyy-hosted-capture-native-red-20261025-01",
+      "/private/tmp/letbuyy-hosted-capture-native-green-20261025-01"
+    ],
+    "copiedFilesEach": 6545,
+    "originalReceiptFiles": 6547,
+    "explicitEnvExclusions": 6,
+    "recursiveReadonlySourceSupplements": 2,
+    "onlyDifferentFile": "services/api-gateway/src/routes/checkout.ts",
+    "linkCountEach": 2175,
+    "linkTextIdentity": true
+  },
+  "closure": {
+    "staticFirstPartyFiles": 476,
+    "staticEdges": 2448,
+    "staticUnresolved": 0,
+    "semanticInputsEach": 1443,
+    "semanticDiagnosticsEach": 0,
+    "semanticEvidence": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/order-confirmation-delivery-private02/SEMANTIC_RESULTS.json",
+      "sha256": "80b830c456b815b045f1992a40caa9339ed1c28721a7d9da03315acaa647c541"
+    },
+    "completeInstalledVendorFiles": 41519,
+    "vendorLinks": 2466,
+    "vendorBytes": 971916854,
+    "migrations": 322,
+    "maxMigration": 393,
+    "qualifiedUnnumberedUps": 4,
+    "actualWorkerExportCliPreflight": "NOT_RUN_UNTIL_SEPARATE_ACTIVATION"
+  },
+  "pureWitnessOracle": {
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "scope": "Exact new witness/assertion block with synthetic in-memory readback. Valid false flag reaches intended assertion only after preconditions pass; invalid financial proof cannot be classified causal RED. No DB causal reproduction claimed."
+  },
+  "refs": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/ALLOCATION_AT_SEAL.json",
+      "sha256": "394f2eaa8b3db9da17cc6bc7c6ffb74086b7e17aec8890d9fb53acf1e460176a"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/red-materialization.json",
+      "sha256": "52df919c780a7f25e4501b666b871a16d9add81141c5e0b82c2f4db489be6398"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/green-materialization.json",
+      "sha256": "761a9bbdf36f02e2a49013961f930c6621643446e0611d28813406105b3ee2c3"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/PAIR_DIFF.json",
+      "sha256": "9878e9ef90f291a9f7b989f379c094e5f0a87e3dd0e511eec3195e1511e7ca8d"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/WITNESS_AMENDMENT02.json",
+      "sha256": "25c6dda3c86aced95e9b9b051a3aa53febc10fdedea34ab8be70acf30ca8fa33"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/buyer-ownership-witness02.proposed.ts",
+      "sha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/causal-witness02.proposed.patch",
+      "sha256": "d55bbf9f32bb618ab0a191f07c46859860bff34ae7edf8c33d791dda7087faf2"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/ENV_DECLARATION_EXCLUSIONS.json",
+      "sha256": "0e38b17bdd83f847c22eb3a7c19e804a95a1cff7601a239c54c0e4e16c34b298"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/SOURCE_CLOSURE_SUPPLEMENT.json",
+      "sha256": "ae7cd003feb083027f943134d6d0939ecc76090de78e746c89672323019af52c"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/STATIC_RESOLUTION_CLOSURE.json",
+      "sha256": "84e744931e43c5aac12485ff9d01309537a9b43169aaa63fe41e4e691d786924"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/VENDOR_STORE_CLOSURE.json",
+      "sha256": "97ac14df6ed6e7590504899e2192c1a707d7b714aee60d7e2d31a0585a332c34"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/RUNTIME_IDENTITIES.json",
+      "sha256": "fa398aafcf479456eda81995b84faf75f44e509b3294a185dad546fd1388b734"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/RUNTIME_PACKAGE_RUNNER_LOCK_METADATA.json",
+      "sha256": "cb788a121f8de2c10bba8afb8adab7cc47b97c19a4419046f18fadda0d9434fc"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/SQL_BOOTSTRAP_CLOSURE.json",
+      "sha256": "574aea835d604edd8a6c4e3b863cf21e58b59cf5994842757954eff12588d3fc"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/PREFLIGHT_ACTIVATION_CONTRACT_DRAFT.json",
+      "sha256": "6858659db6862dae0320025c44779aa931d6ff157ace055fd36f2b99b4b79d3c"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/PREPARED_COMMANDS_NOT_EXECUTED.json",
+      "sha256": "80050b540392749945b2f93837bf4e2d63604dbe3f8e30c4f0068f1c8d0ce556"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/standalone-preflight.cjs",
+      "sha256": "5a0a89e5c8a2aed2fd27ae08e4cad9031aa16cdfebb828e55cab77250fb758c7"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/RETAINED_PREPARATION_ATTEMPTS.json",
+      "sha256": "b3491b0431830afee2aa589318434d681facfcf1951011ac588c4ff72bc9475e"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/witness-oracle.test.cjs",
+      "sha256": "c87516a2dc9155fdc069884d4cc4c21638ee4231926d5eba7e9d18446b59399e"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/witness-oracle.tap",
+      "sha256": "1108bc9d7a79e841879c83315a67370e612289a276c1c0bc8fedb17071bd2e68"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/materialize-pair.py",
+      "sha256": "284775818d3156931e160f53976a4aebca5ff8d0f55105b68ab200a8cd96e402"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/static-resolution-closure.cjs",
+      "sha256": "b57a8e4029cee50fd1d65d031be2b449ecfd54e63d0331d2d57462d2c20c3b0c"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/pin-vendor-store.py",
+      "sha256": "96fa7491c49f959bba9803a275fce6dbe74daa40010c412b3fcaaa60a6909ab3"
+    }
+  ],
+  "native": {
+    "status": "NOT_RUN",
+    "reservedMaxCohorts": 2,
+    "timeoutEachSeconds": 600,
+    "soleOwner": "01a164ba-e017-7b90-9053-efc5357459a6",
+    "standaloneTerminal0Results": "NOT_RUN; separate activation required",
+    "nativeStarts": 0,
+    "noNewDbOrCurrentRuntimeAccess": true
+  },
+  "notificationProposalSeparate": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/order-confirmation-delivery-private02/HANDOFF.json",
+    "sha256": "91fd2841329ca9492a728fcf56c4018deb37b580c850037abb78e146729f5ef9"
+  },
+  "preservation": {
+    "MainSourceChanged": false,
+    "sealedRuntime07SourceChanged": false,
+    "oldFinancialSessionsOrdersLedgerChanged": false,
+    "existingSource01SealChanged": false,
+    "browserProviderCredentialBuildActions": 0,
+    "environmentFilesInFinalCopies": 0
+  },
+  "next": "Themes reviews exact staged witness and full paired closures, writes a real standalone-preflight-only activation if accepted. Execute preflight separately to terminal0 for each copy, then obtain exact native activation for the two reserved RED/GREEN cohorts. This packet/commands/draft are not authority to execute preflight/native."
+}

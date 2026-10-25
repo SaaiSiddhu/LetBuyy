@@ -1,0 +1,172 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "experience-timeline",
+  "group": "template",
+  "originalId": "section-253a3ad4-4b79-40dc-a195-e14b5a236700",
+  "finalId": "section-048a29c0-9a2b-4fe0-b476-784928823b5a",
+  "sectionFieldsExercised": [
+    "title"
+  ],
+  "effectiveBlockFieldsExercised": [
+    "experience.title",
+    "experience.company",
+    "experience.period"
+  ],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-4ab0fe49-69a7-4c7e-b29e-d93c83db4cdb",
+          "block-5cab6b83-1b9d-4f81-b256-dcd1d27add57"
+        ],
+        "blocks": {
+          "block-4ab0fe49-69a7-4c7e-b29e-d93c83db4cdb": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-5cab6b83-1b9d-4f81-b256-dcd1d27add57": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": true,
+        "block_order": [
+          "block-5cab6b83-1b9d-4f81-b256-dcd1d27add57",
+          "block-4ab0fe49-69a7-4c7e-b29e-d93c83db4cdb"
+        ],
+        "blocks": {
+          "block-5cab6b83-1b9d-4f81-b256-dcd1d27add57": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-4ab0fe49-69a7-4c7e-b29e-d93c83db4cdb": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-5cab6b83-1b9d-4f81-b256-dcd1d27add57",
+          "block-4ab0fe49-69a7-4c7e-b29e-d93c83db4cdb"
+        ],
+        "blocks": {
+          "block-5cab6b83-1b9d-4f81-b256-dcd1d27add57": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-4ab0fe49-69a7-4c7e-b29e-d93c83db4cdb": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-39bb782a-8cfa-4efd-9ca3-ff1a139129f5",
+          "block-fc27cf58-e713-46b5-8464-4887e77dec12"
+        ],
+        "blocks": {
+          "block-39bb782a-8cfa-4efd-9ca3-ff1a139129f5": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-fc27cf58-e713-46b5-8464-4887e77dec12": {
+            "type": "experience",
+            "settings": {
+              "title": "Circuit source title",
+              "company": "Circuit source company",
+              "period": "Circuit source period"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

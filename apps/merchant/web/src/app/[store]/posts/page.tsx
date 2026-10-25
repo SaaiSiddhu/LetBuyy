@@ -369,7 +369,8 @@ export default function PostsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Blog posts"
                     description="Create, edit, and publish articles for your site."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Blog posts' }]}
@@ -385,7 +386,8 @@ export default function PostsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Blog posts"
                 description="Create, edit, and publish articles for your site."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Blog posts' }]}

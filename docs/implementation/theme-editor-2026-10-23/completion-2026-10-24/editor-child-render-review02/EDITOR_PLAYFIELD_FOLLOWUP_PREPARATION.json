@@ -1,0 +1,127 @@
+{
+  "recordedAt": "2026-10-24T12:09:42.669076+00:00",
+  "classification": "EXACT_SOURCE_FOLLOWUP_PREPARATION_NOT_APPLIED",
+  "authority": "docs/implementation/niche-theme-programme/completion-editor-kindred-independent-render-review-20261024-02.json",
+  "finding": "EDITOR-INLINE-CHILD-UI-04",
+  "currentInputs": {
+    "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f",
+    "apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts": "3047fbaf6af9baab89a3bccb290c8ee52fd090f39637b5f383ca9fee237f284d",
+    "apps/merchant/web/tests/theme-editor-block-actions.test.mjs": "907026b659ff0ffb9adf31781ee63863baf559eb0426cd4d87ac4031cf11c75d"
+  },
+  "reproducedContexts": [
+    {
+      "sectionType": "banner-carousel",
+      "parentType": "slide"
+    },
+    {
+      "sectionType": "brand-marquee",
+      "parentType": "brand"
+    },
+    {
+      "sectionType": "experience-timeline",
+      "parentType": "experience"
+    },
+    {
+      "sectionType": "faq-accordion",
+      "parentType": "faq-item"
+    },
+    {
+      "sectionType": "footer",
+      "parentType": "link"
+    },
+    {
+      "sectionType": "header",
+      "parentType": "link"
+    },
+    {
+      "sectionType": "portfolio-grid",
+      "parentType": "project"
+    },
+    {
+      "sectionType": "services-grid",
+      "parentType": "service"
+    },
+    {
+      "sectionType": "skills-section",
+      "parentType": "skill"
+    },
+    {
+      "sectionType": "testimonials",
+      "parentType": "testimonial"
+    }
+  ],
+  "currentBehavior": "All ten proposed inline-parent outputs render but current childTypes has no entries for their types; SectionTreePanel/BlockChildRow already consume childTypes and page uses the same canAdd guard. Existing depth-aware selection/defaults/normalization/compiler need no inferred redesign.",
+  "proposedMinimalEditorLease": [
+    "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+    "apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts",
+    "apps/merchant/web/tests/theme-editor-block-actions.test.mjs"
+  ],
+  "algorithm": [
+    "Keep existing reusableSchemas/root schemas, reusable child allowlist semantics and installed reusable first-party child candidates unchanged.",
+    "Consume child-output support derived from the actual installed versioned package and accepted renderer. One canonical qualification belongs beside the existing opt-in successor outlet builder, not a second app-local version registry or persisted capability store.",
+    "For each section-inline root type listed by that exact qualified section outlet, set its childTypes to installed reusable first-party candidates only. Never offer an inline type as a child. Keep schema fields/defaults at root separate from reusable descriptors at nested depth.",
+    "Unqualified/frozen/foreign/missing-outlet inputs retain existing inline denial. Preserve saved unknown values and existing children read-only; do not delete or normalize them away.",
+    "All canAdd identity, sibling, root50, child100, depth3, unknown/app and empty/explicit reusable allowlist guards remain unchanged. Existing UI rows will show allowed child actions from the corrected catalog."
+  ],
+  "canonicalQualificationAdmissionNeeded": {
+    "successorVersion": null,
+    "exactSectionSourceHashes": null,
+    "acceptedRendererBuild": null,
+    "required": "Allocator must bind the real successor version and exact outlet source qualification before an apply-ready patch or Main edit. Candidate retains2.0.0 solely as private test input. Do not guess version2.0.1 or activate by source substring alone.",
+    "noSchemaRedesign": "Pure installed-definition view; no new block schema/DTO/draft system. Any canonical export/outlet builder path remains allocator-owned."
+  },
+  "requiredActualActionTests": [
+    "Qualified actual successor inline parent: normal captured page addChildBlock \u2192 edit nested reusable label \u2192 canonical compile/document/reload \u2192 visible candidate output",
+    "All ten inline contexts retain root descriptors and only reusable children",
+    "Frozen2.0.0/current unqualified source stays denied; foreign/forged-version/missing/moved outlet not qualified",
+    "Root/reusable type collision stays depth-aware (Marginalia/MadeYours controls retained)",
+    "Child app/unknown/inline candidates refused without dirty/history/selection mutation",
+    "Boundary/deletion-confirmation/reorder/visibility/undo source regressions retained; run focused tests only after changes",
+    "Fresh browser Save/reload/preview/publish and rollback recovery remains distinct required proof"
+  ],
+  "playfield": {
+    "openCases": [
+      "PF-B-standalone-badge",
+      "PF-F-package_block.badge.setting.label"
+    ],
+    "actualPackage": {
+      "slug": "letbuyy-bloom",
+      "version": "2.0.0",
+      "reusableTypes": [
+        "badge"
+      ]
+    },
+    "currentHosts": [
+      {
+        "section": "trust-badges",
+        "name": "Choosing information",
+        "declaredBlocks": [],
+        "sourceSHA256": "aa55c97df1f5ecaed58836defaff812e1d61936166d777d63550477818850f1e"
+      },
+      {
+        "section": "spotlight",
+        "name": "Activity bento",
+        "declaredBlocks": [],
+        "sourceSHA256": "29857ea445c7ea1a620fa3c40c34b39840bbb9789ad1fddb7dd77c5d6acecb21"
+      }
+    ],
+    "recommendation": "Existing trust-badges / Choosing information is the closest semantic host. In an explicitly revised successor only, add the existing reusable badge declaration with no new fields, synchronize embedded schema, and consume block.content|raw through the canonical renderer after the existing information grid and before </section>. Add the guarded reusable child outlet in badge.source. No new section or runtime is needed.",
+    "alternative": "Existing spotlight / Activity bento can host the same declared reusable badge below the complete bento grid, outside every link, with an explicit root HTML loop. This touches the activity hero semantics more than Choosing information.",
+    "constraints": [
+      "Preparation only; do not edit schema/package/frozen bytes under this lease",
+      "Keep current section IDs/types/settings/template compositions and all zero-block rendered HTML byte-identical; no default badges",
+      "Preserve already sealed2.0.1 proposal bytes; allocator chooses a separately sealed revision/version and exact catalogue/migration binding",
+      "Test normal root add/settings/edit/save/reload, children/grandchildren/order/hide/remove, app/unknown refusal, hostile escaping and root/zero-child default parity before installed credit",
+      "No parser-only invented host and no blanket N/A; exact owner/allocator disposition still required"
+    ]
+  },
+  "operations": {
+    "Main": 0,
+    "frozenPackage": 0,
+    "browser": 0,
+    "DB": 0,
+    "native": 0,
+    "provider": 0
+  },
+  "allTenCertified": false
+}

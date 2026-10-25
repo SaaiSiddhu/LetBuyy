@@ -1,0 +1,445 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(16, 57, 72, 0.75)",
+    "font": "Cormorant, serif",
+    "fontSize": "16.5px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Cormorant, serif",
+      "height": 20.7890625,
+      "line": "20.8px",
+      "size": "14.3px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 297.6015625,
+      "x": 38.5,
+      "y": 4.8046875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 45.8984375,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "Your cart is empty",
+      "weight": "500",
+      "width": 357,
+      "x": 16.5,
+      "y": 254.703125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 30.59375,
+      "line": "30.6px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "You may also like",
+      "weight": "500",
+      "width": 173.328125,
+      "x": 16.5,
+      "y": 412.1015625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "7 A.M. Staring Contests",
+      "weight": "500",
+      "width": 168.5,
+      "x": 16.5,
+      "y": 700.6171875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Atiyyaat",
+      "weight": "500",
+      "width": 168.5,
+      "x": 205,
+      "y": 700.6171875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Autumn Blooms 1",
+      "weight": "500",
+      "width": 168.5,
+      "x": 16.5,
+      "y": 1018.1875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Shop",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1150.8359375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Info",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1484.28125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1822.5390625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Subscribe to our emails",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1970.015625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-studio-demo.myshopify.com/cart#MainContent"
+    },
+    {
+      "text": "Discover our newest collection from Leia Bryans",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/eryn-lougheed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/sid-hicks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/misbah-ahmed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/rachel-crummey"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/melanie-keay"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-studio-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Continue shopping",
+      "url": "https://theme-studio-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "7 A.M. Staring Contests",
+      "url": "https://theme-studio-demo.myshopify.com/products/7-a-m-staring-contests"
+    },
+    {
+      "text": "Atiyyaat",
+      "url": "https://theme-studio-demo.myshopify.com/products/atiyyaat-name-of-urdu-origin-meaning-gifts"
+    },
+    {
+      "text": "Autumn Blooms 1",
+      "url": "https://theme-studio-demo.myshopify.com/products/autumn-blooms-1"
+    },
+    {
+      "text": "Prints",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "Originals",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "Art Objects",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "Gift Cards",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-studio-demo.myshopify.com/search"
+    },
+    {
+      "text": "Our Story",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-studio-demo",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821119144__cart-items",
+      "rect": {
+        "height": 212.8984375,
+        "width": 390,
+        "x": 0,
+        "y": 172.203125
+      },
+      "tag": "DIV",
+      "text": "Your cart is empty\nContinue shopping"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821119144__cart-footer",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 385.1015625
+      },
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821119144__featured-collection",
+      "rect": {
+        "height": 732.734375,
+        "width": 390,
+        "x": 0,
+        "y": 385.1015625
+      },
+      "tag": "SECTION",
+      "text": "You may also like\n7 A.M. Staring Contests\nRegular price\n$500.00 CAD\nAtiyyaat\nRegular price\n$525.00 CAD\nAutumn Blooms 1\nRegular price\n$450.00 CAD"
+    }
+  ],
+  "title": "Your Shopping Cart – theme-studio-demo",
+  "url": "https://theme-studio-demo.myshopify.com/cart",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "grid grid--2-col product-grid contains-card contains-card--standard grid--3-col-desktop grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 615.140625,
+      "tag": "UL",
+      "width": 357
+    }
+  ],
+  "images": [
+    {
+      "alt": "7 A.M. Staring Contests",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "Atiyyaat",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "Autumn Blooms 1",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nDiscover our newest collection from Leia Bryans \n\nCart\nYour cart is empty\nContinue shopping\nYou may also like\n7 A.M. Staring Contests\nRegular price\n$500.00 CAD\nAtiyyaat\nRegular price\n$525.00 CAD\nAutumn Blooms 1\nRegular price\n$450.00 CAD\nShop\nPrints\nOriginals\nArt Objects\nGift Cards\nSearch\nInfo\nOur Story\nJournal\nContact\nOur mission\n\nWe curate affordably priced pieces from the most exciting up-and-coming artists.\n\nSubscribe to our emails\nEmail\nPayment methods\n© 2026, theme-studio-demo Powered by Shopify"
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:19:21.788298+00:00",
+  "scope": "Human-resumed ten-theme completion/shared owners only",
+  "goal": "ACTIVE_UNFINISHED",
+  "sourceAllocation": "completion-shared-allocation-20261024-01.json",
+  "checkoutNative06": {
+    "runId": "34adae829d85",
+    "result": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native06-run01/runner.json",
+    "sha256": "e99d85b0879cc61d49cd5aab04ea9804b69606030a51134d70b6ab64b427aa05",
+    "tests": 22,
+    "retainedBuyerProviderCases": {
+      "PASS": 15,
+      "FAIL": 0
+    },
+    "newRecoveryCases": {
+      "PASS": 0,
+      "FAIL": 7,
+      "stage": "Canonical fixture-label setup refused44-character labels; limit24; checkout business behavior not exercised",
+      "ownerCorrection": "MadeYours new immutable07 fixture labels only; all11production overlays/harness assertions retained"
+    },
+    "cleanupEmpty": true,
+    "reaped": [],
+    "checkoutQualified": false,
+    "nextLaneOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "nextBatch": "Affected7 only after sealed07/reviewer admission; unchanged15 not duplicated",
+    "currentlyRunning": false
+  },
+  "catalog394Inventory": "completion-catalog394-inventory-root-review-20261024.json",
+  "circuitSuccessor": "completion-circuit-successor-root-review-20261024.json",
+  "sharedBrowser": "NO_CURRENT_ADMISSION",
+  "old936": "SAFE_CUTOFF_PASSED_NO_USE",
+  "allExistingFollowupAutomations": "INSPECTED_ALL_PAUSED_NO_RESUMPTION",
+  "allTenCertified": false,
+  "MainProductionSourceChangedByThisCoordinatorTurn": false,
+  "governance": {
+    "readOnlyPlanExitCode": 0,
+    "log": "/private/tmp/letbuyy-themes-resume-governance-plan-20261024.log",
+    "executedGate": false,
+    "reason": "Full entrypoint executes generated-artifact cleanup across shared apps/packages/services; do not run that cleanup against protected active local apps. Executable gates remain required for admitted source in a safe owned verification environment."
+  },
+  "preservation": "No app restart, browser/data/provider operation, migration emission, native duplicate, reset/clean/archive or resource deletion performed."
+}

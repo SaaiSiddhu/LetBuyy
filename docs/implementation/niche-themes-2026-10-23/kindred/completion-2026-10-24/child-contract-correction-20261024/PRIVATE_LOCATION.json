@@ -1,0 +1,11 @@
+{
+  "classification": "PRIVATE_EXISTING_RENDERER_INLINE_CHILD_DROP_PROPOSAL_NOT_APPLIED",
+  "path": "/private/tmp/kindred-child-output-20261024-miky7gjz",
+  "baseRendererSHA256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+  "proposalRendererSHA256": "d26bb0b2d43607b3b2b27bdb920c2ffa5aee432f9a65dd0d8141d98669dcf897",
+  "patchSHA256": "0bf5af722c58823fc86f27dfbb7b3c31ae883279fc3729c161ae2fec032241bf",
+  "sourceFilesCopied": 90,
+  "mainApplied": false,
+  "versionAssigned": false,
+  "packageEmitted": false
+}

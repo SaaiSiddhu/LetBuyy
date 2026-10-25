@@ -1,0 +1,11 @@
+# Bounded source repair
+
+Production changes stay in the three granted existing files: theme-safe-update.ts, theme-update-route.ts and theme-execution.adapter.ts. Adjacent existing engine/gateway unit tests cover the repair. No schema, migration, RPC ABI/body/grant, runner, support, immutable capture or app source change is proposed.
+
+Package ordering uses the catalog's existing positive version_number ordinal, independently of the closed schema-epoch comparator. Display labels are not assumed to be SemVer. Reused ordinals with conflicting labels, another package and either schema/edition downgrade fail closed. Existing fromVersion/toVersion schema fields remain; an added package identity in the diff binds edition changes.
+
+The current376 publisher preserves active private drafts. The older baseline's finalization code is historical and is not the current behavior. The current publisher still reads the selected package version from the installed instance. Post-commit REST enrichment in the update adapter cannot atomically repoint that instance, publish, and persist the retry receipt.
+
+The repair therefore uses the existing pooled SQL transport in the granted adapter, with the same backend service_role already used by its REST/RPC path, and calls the existing public.publish_theme_release inside one transaction. The site is ownership-checked and locked first; actual target/package/catalog availability and the current release are rechecked under locks. The transaction repoints only the verified instance, calls the canonical publisher, enriches that release and stores its request fingerprint/response before committing. Every tenant-owned statement has an explicit verified store predicate. It does not use a new publisher or updater, modify privileges, or claim RLS coverage. Missing SQL transport fails closed; no multi-request fallback.
+
+Preview confirmation is bound to the diff, current release ID and selected target UUID. Exact retry is checked after current authorization/availability and before recomputing a now-changed baseline, then checked again under the site lock. A changed logical request with the same key conflicts. An intervening release conflicts before writes. Native PostgreSQL/concurrency/fault acceptance remains unrun until Root independently reviews and grants the lane.

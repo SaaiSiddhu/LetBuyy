@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-24T00:34:17.323012+00:00",
+  "scope": "Local saved evidence consistency only; no live fixture access or inferred behavioural credit",
+  "audit": [
+    {
+      "path": "corrected-habitat-browser-diagnostics-final-finite26.json",
+      "sha256": "85f13ac0483c6202845ee479e6186c47c696535dceb7cc80a98bfa275725f722",
+      "caseCount": 26,
+      "totals": {
+        "PASS": 23,
+        "PARTIAL": 2,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "NOT_RUN": 1
+      },
+      "referencedEvidenceFiles": 102,
+      "jsonValid": true
+    },
+    {
+      "path": "corrected-pantry-browser-diagnostics-after-lifecycle.json",
+      "sha256": "efc15d111b0542f84f545034d3aadaa0ec3a1686c42668b8363f0820c93d2fa2",
+      "caseCount": 13,
+      "totals": {
+        "PASS": 11,
+        "PARTIAL": 2,
+        "FAIL": 0,
+        "NOT_RUN": 0
+      },
+      "referencedEvidenceFiles": 72,
+      "jsonValid": true
+    },
+    {
+      "path": "corrected-circuit-browser-diagnostics-finite-before-timeout.json",
+      "sha256": "2c1b9417a6e97efc255687ad731450be3935bd002bc644688bc9a7afbb62319e",
+      "caseCount": 25,
+      "totals": {
+        "PASS": 2,
+        "PARTIAL": 4,
+        "NOT_RUN": 19
+      },
+      "referencedEvidenceFiles": 12,
+      "jsonValid": true
+    },
+    {
+      "path": "corrected-habitat-HI16-live-checkpoint.json",
+      "sha256": "d0e491f311310e24e03ef986fc762b62f57db65392a1219680d3ca2238b22b8a",
+      "caseCount": 0,
+      "totals": null,
+      "referencedEvidenceFiles": 8,
+      "jsonValid": true
+    },
+    {
+      "path": "corrected-habitat-HI16-canonical-edit-receipt.json",
+      "sha256": "46727764948b7169cfd06c910d434fa17bcd69bae18ad9f604eb2472bd043e31",
+      "caseCount": 0,
+      "totals": null,
+      "referencedEvidenceFiles": 0,
+      "jsonValid": true
+    },
+    {
+      "path": "corrected-pantry-P11-canonical-edit-receipt.json",
+      "sha256": "0f518ccbb7ee901c52d2db138f6fe73cd1b33c3516467be7065642d485eb1f02",
+      "caseCount": 0,
+      "totals": null,
+      "referencedEvidenceFiles": 0,
+      "jsonValid": true
+    },
+    {
+      "path": "corrected-pantry-P09-exact-confirm-retry.json",
+      "sha256": "8b17198fe15cc58ea8ffc907490c5431e3343a194ce05969204cdb002a0d9112",
+      "caseCount": 0,
+      "totals": null,
+      "referencedEvidenceFiles": 0,
+      "jsonValid": true
+    }
+  ],
+  "missingReferences": [],
+  "runtime": "f607 retired; no old credentials/IDs/session reuse"
+}

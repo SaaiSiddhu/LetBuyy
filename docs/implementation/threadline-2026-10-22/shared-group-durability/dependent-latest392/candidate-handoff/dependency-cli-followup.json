@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-23T17:33:11.286407+00:00",
+  "classification": "READONLY_CLI_PACKAGE_RESOLUTION_DIAGNOSTIC",
+  "originalObservationPreserved": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/candidate-handoff/dependency-observation.json",
+    "sha256": "a6858ef3e036e9bef56dbd8d281f69a67e2639b40af6d2f026b2fa1e7b1414e0",
+    "bytes": 30803
+  },
+  "consumer": "apps/platform/identity",
+  "package": "react-email",
+  "version": "5.2.8",
+  "runtimeEntryResolution": "No main/exports: require.resolve of package root is not applicable",
+  "installedPackage": {
+    "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-email@5.2.8/node_modules/react-email/package.json",
+    "sha256": "a467ff195599ea1cfc24297f1e1b12bbdcf476fdd5a9d4851c78b3afb5f66d4b",
+    "bytes": 1427
+  },
+  "declaredCli": {
+    "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-email@5.2.8/node_modules/react-email/dist/index.js",
+    "sha256": "e2b7bc5ac49331256a831b7186a6478a9d170dbf570a0d00b6e8c57277a377cb",
+    "bytes": 272259
+  },
+  "sourceImportSearch": "No react-email source imports outside package.json; rg returned no match",
+  "workspaceDependenciesResolved": 40,
+  "otherDirectDependencyEntrypointsResolved": 68,
+  "missingWorkspaceDependencyCount": 0,
+  "installPerformed": false,
+  "candidateProof": false
+}

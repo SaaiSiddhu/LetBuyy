@@ -1,0 +1,686 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-23T18:02:00.958386+00:00",
+  "classification": "ACTUAL_PUBLIC_PRODUCT_LIST_BINDING_ONLY_NOT_UI_CASE_ACCEPTANCE",
+  "runId": "f6074d90e894",
+  "sourceCheckpoint": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "publishedReleaseId": "c68c4117-a6f1-430a-b321-ac76c5e7b145",
+  "snapshotSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+  "request": {
+    "origin": "http://127.0.0.1:62083",
+    "path": "/v1/storefront/syn-threadline-ui-33be9d94/products?limit=24&sort=display_order",
+    "status": 200,
+    "requestId": "914fa3cf-b81b-44cc-8d43-9e8bbee9cccf",
+    "responseSha256": "8adbc0a9fe0224aa7c7efeb83d879650131db5a5fa498b882e01b8aa3f85db8c"
+  },
+  "singleRequestOnly": true,
+  "listCount": 17,
+  "meta": {
+    "page": 1,
+    "per_page": 24,
+    "total": 17,
+    "total_pages": 1,
+    "has_next": false,
+    "has_prev": false
+  },
+  "discovery": {
+    "query": {
+      "page": 1,
+      "limit": 24,
+      "sort": "display_order"
+    },
+    "facets": [
+      {
+        "key": "activity",
+        "value": "badminton",
+        "label": "Badminton",
+        "count": 1
+      },
+      {
+        "key": "age_band",
+        "value": "6-8",
+        "label": "6-8",
+        "count": 1
+      },
+      {
+        "key": "age_band",
+        "value": "9-12",
+        "label": "9-12",
+        "count": 1
+      },
+      {
+        "key": "books_format",
+        "value": "hardback",
+        "label": "hardback",
+        "count": 1
+      },
+      {
+        "key": "books_format",
+        "value": "paperback",
+        "label": "paperback",
+        "count": 1
+      },
+      {
+        "key": "books_kind",
+        "value": "book",
+        "label": "book",
+        "count": 1
+      },
+      {
+        "key": "books_kind",
+        "value": "stationery",
+        "label": "stationery",
+        "count": 1
+      },
+      {
+        "key": "books_language",
+        "value": "english",
+        "label": "English",
+        "count": 1
+      },
+      {
+        "key": "books_language",
+        "value": "hindi",
+        "label": "Hindi",
+        "count": 1
+      },
+      {
+        "key": "books_ruling",
+        "value": "lined",
+        "label": "lined",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Accessories",
+        "label": "Accessories",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Activities",
+        "label": "Activities",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Books",
+        "label": "Books",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Care",
+        "label": "Care",
+        "count": 4
+      },
+      {
+        "key": "category",
+        "value": "Furniture",
+        "label": "Furniture",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Gifts",
+        "label": "Gifts",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Personalized",
+        "label": "Personalized",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Recreation",
+        "label": "Recreation",
+        "count": 1
+      },
+      {
+        "key": "category",
+        "value": "Staples",
+        "label": "Staples",
+        "count": 2
+      },
+      {
+        "key": "category",
+        "value": "Stationery",
+        "label": "Stationery",
+        "count": 1
+      },
+      {
+        "key": "color",
+        "value": "ink",
+        "label": "Ink",
+        "count": 1
+      },
+      {
+        "key": "color",
+        "value": "oat",
+        "label": "Oat",
+        "count": 1
+      },
+      {
+        "key": "color",
+        "value": "rust",
+        "label": "Rust",
+        "count": 1
+      },
+      {
+        "key": "connector",
+        "value": "usb-a",
+        "label": "usb-a",
+        "count": 1
+      },
+      {
+        "key": "connector",
+        "value": "usb-c",
+        "label": "usb-c",
+        "count": 1
+      },
+      {
+        "key": "country_of_origin",
+        "value": "india",
+        "label": "India",
+        "count": 14
+      },
+      {
+        "key": "electronics_kind",
+        "value": "hub",
+        "label": "hub",
+        "count": 1
+      },
+      {
+        "key": "equipment_type",
+        "value": "racket",
+        "label": "racket",
+        "count": 1
+      },
+      {
+        "key": "finish",
+        "value": "natural",
+        "label": "Natural",
+        "count": 1
+      },
+      {
+        "key": "format",
+        "value": "face cream",
+        "label": "Face cream",
+        "count": 1
+      },
+      {
+        "key": "format",
+        "value": "gel cleanser",
+        "label": "Gel cleanser",
+        "count": 1
+      },
+      {
+        "key": "format",
+        "value": "lip tint",
+        "label": "Lip tint",
+        "count": 1
+      },
+      {
+        "key": "interest",
+        "value": "art",
+        "label": "art",
+        "count": 1
+      },
+      {
+        "key": "material",
+        "value": "wood",
+        "label": "Wood",
+        "count": 1
+      },
+      {
+        "key": "pack_size",
+        "value": "g:1000",
+        "label": "1000 g",
+        "count": 1
+      },
+      {
+        "key": "pack_size",
+        "value": "g:250",
+        "label": "250 g",
+        "count": 1
+      },
+      {
+        "key": "pass_through_output_w",
+        "value": "60",
+        "label": "60",
+        "count": 1
+      },
+      {
+        "key": "personalization_method",
+        "value": "engrave",
+        "label": "engrave",
+        "count": 1
+      },
+      {
+        "key": "power_input_w",
+        "value": "65",
+        "label": "65",
+        "count": 1
+      },
+      {
+        "key": "power_output_w",
+        "value": "45",
+        "label": "45",
+        "count": 1
+      },
+      {
+        "key": "routine_stage",
+        "value": "care",
+        "label": "care",
+        "count": 1
+      },
+      {
+        "key": "routine_stage",
+        "value": "cleanse",
+        "label": "cleanse",
+        "count": 1
+      },
+      {
+        "key": "routine_stage",
+        "value": "colour",
+        "label": "colour",
+        "count": 1
+      },
+      {
+        "key": "shade",
+        "value": "pink clay",
+        "label": "Pink Clay",
+        "count": 1
+      },
+      {
+        "key": "shade",
+        "value": "rosewater",
+        "label": "Rosewater",
+        "count": 1
+      },
+      {
+        "key": "size",
+        "value": "l",
+        "label": "L",
+        "count": 3
+      },
+      {
+        "key": "size",
+        "value": "m",
+        "label": "M",
+        "count": 3
+      },
+      {
+        "key": "size",
+        "value": "s",
+        "label": "S",
+        "count": 3
+      }
+    ],
+    "matches": [
+      {
+        "product_id": "084711bb-a989-4708-bb0a-11f6c9d4d3d5",
+        "price": 460,
+        "variant_ids": []
+      },
+      {
+        "product_id": "1682c90c-8888-483a-a1b5-3251a3e91737",
+        "price": 480,
+        "variant_ids": [
+          "11f196d9-1552-4558-93f9-230418ba0e6a",
+          "75cc84c3-5715-419a-93af-b17b20506f38",
+          "7ac3c912-f73a-4cdc-adb5-c37e483c0f63"
+        ]
+      },
+      {
+        "product_id": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+        "price": 520,
+        "variant_ids": [
+          "addb01d7-5ba6-4387-81b5-0144b9e55859",
+          "f5adb52e-2e20-442a-b607-cc1b5c52ce88"
+        ]
+      },
+      {
+        "product_id": "3c7ffd00-5cf8-419a-80cd-00bb56918465",
+        "price": 2490,
+        "variant_ids": [
+          "029344ec-c77d-400c-8ad1-33af59e62cb2",
+          "d2dab567-8900-4f89-a0be-d3af309ea8ae",
+          "ebd6ce7c-cbd3-4555-a25d-182bfa5f8da2"
+        ]
+      },
+      {
+        "product_id": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+        "price": 8900,
+        "variant_ids": [
+          "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+          "30e7bb70-6ef0-4175-83f0-16368a3e9fda"
+        ]
+      },
+      {
+        "product_id": "592643bb-6a6c-4d51-8619-ffb743f49495",
+        "price": 420,
+        "variant_ids": [
+          "b4f53685-d96d-4a20-8b3f-b9819760ac03",
+          "bd76a766-5e79-4a69-b66c-214d79fb41b9"
+        ]
+      },
+      {
+        "product_id": "6d9d5b54-f930-4382-b21c-958c7818ea0d",
+        "price": 320,
+        "variant_ids": []
+      },
+      {
+        "product_id": "895d7ee5-b618-4130-806d-f359f4adc492",
+        "price": 690,
+        "variant_ids": [
+          "0fa8cc5d-fba4-4aa6-a325-4dbb2ca24378",
+          "463373a0-8bf7-46c7-aaa1-88b1db6f9790"
+        ]
+      },
+      {
+        "product_id": "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b",
+        "price": 1200,
+        "variant_ids": []
+      },
+      {
+        "product_id": "a48293b5-21e0-4b74-b6ea-995e415691e3",
+        "price": 3290,
+        "variant_ids": [
+          "08f3b3f4-cd88-447a-80db-c59d2b4ce4a8",
+          "e20a0a8e-d968-4a88-bcc2-2f5483b32936",
+          "e72ecf3b-a89c-4822-bfac-49ede611e33a"
+        ]
+      },
+      {
+        "product_id": "a494bd38-ef37-4f65-9157-fa0c4c869b92",
+        "price": 3990,
+        "variant_ids": [
+          "3db3bee2-8589-48ed-aad8-2f5bdfb20211",
+          "5df0e059-66de-47ac-8149-b5014f3fa721",
+          "6cce9ac5-48f8-4bc6-8a1c-93eada93fa57"
+        ]
+      },
+      {
+        "product_id": "aa02e0ad-1151-4999-90b0-5fd61aa96260",
+        "price": 640,
+        "variant_ids": []
+      },
+      {
+        "product_id": "d8c0676a-8f9b-4865-87b1-1b30584d1dfd",
+        "price": 1800,
+        "variant_ids": [
+          "bc8e378b-4ee3-438a-b5ae-f66bb8fb96d7",
+          "d795dbef-44ac-4608-9b01-5f3edbf60fb9"
+        ]
+      },
+      {
+        "product_id": "d9bd8cae-b211-48c5-8440-5f446dc57c0e",
+        "price": 180,
+        "variant_ids": [
+          "b54e1a3f-dba9-4243-a2a4-6a31d168e79c",
+          "f275956c-688c-4435-bb96-ae23fc75f72d"
+        ]
+      },
+      {
+        "product_id": "ddf882c4-d6e9-4c3e-8082-edfbcb4a2bc9",
+        "price": 880,
+        "variant_ids": []
+      },
+      {
+        "product_id": "df01e4a6-6067-485e-b6f9-84e751d59915",
+        "price": 1100,
+        "variant_ids": []
+      },
+      {
+        "product_id": "fb090833-cbd5-44aa-803d-af9e8c00c56a",
+        "price": 220,
+        "variant_ids": []
+      }
+    ],
+    "measurement_capabilities": {
+      "equipment_length": {
+        "available": true,
+        "allowed_units": [
+          "mm",
+          "cm",
+          "m",
+          "in"
+        ]
+      },
+      "max_width_cm": {
+        "available": true
+      },
+      "max_depth_cm": {
+        "available": true
+      }
+    }
+  },
+  "careProducts": [
+    {
+      "alias": "palmWash",
+      "id": "084711bb-a989-4708-bb0a-11f6c9d4d3d5",
+      "name": "Fixture Palm Wash",
+      "price": 460,
+      "stock": 8,
+      "category": "Care",
+      "country_of_origin": "India",
+      "beauty": null,
+      "product_options": [],
+      "variants": []
+    },
+    {
+      "alias": "tint",
+      "id": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+      "name": "Fixture Soft Colour",
+      "price": 520,
+      "stock": 8,
+      "category": "Care",
+      "country_of_origin": "India",
+      "beauty": {
+        "schemaVersion": 1,
+        "routineStage": "colour",
+        "format": "Lip tint",
+        "netQuantity": {
+          "value": 6,
+          "unit": "ml"
+        },
+        "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+        "directions": "Fixture directions v1: use as supplied.",
+        "warnings": "Fixture warning v1: external use only.",
+        "shadeOptionName": "Shade name",
+        "shades": [
+          {
+            "value": "Rosewater",
+            "code": "RW01",
+            "color": "#a36a65",
+            "ingredients": "Rosewater v1: fixture oil, CI 77491."
+          },
+          {
+            "value": "Pink Clay",
+            "code": "PC02",
+            "color": "#a36a65",
+            "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+          },
+          {
+            "value": "Terracotta",
+            "code": "TC03",
+            "color": "#89534a",
+            "ingredients": null
+          }
+        ]
+      },
+      "product_options": [
+        {
+          "name": "Shade name",
+          "position": 0,
+          "values": [
+            "Rosewater",
+            "Pink Clay",
+            "Terracotta"
+          ]
+        },
+        {
+          "name": "पैक आकार",
+          "position": 1,
+          "values": [
+            "एक इकाई"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "id": "addb01d7-5ba6-4387-81b5-0144b9e55859",
+          "product_id": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+          "title": "Fixture shade SKU",
+          "price": 520,
+          "compare_price": null,
+          "stock": 4,
+          "inventory_qty": 4,
+          "weight": null,
+          "weight_unit": "kg",
+          "option1": "Rosewater",
+          "option2": "एक इकाई",
+          "option3": null,
+          "image_url": null,
+          "position": 0,
+          "prior_lowest_price_30d": null,
+          "prior_price_coverage_complete": false,
+          "price_observed_at": "2026-10-23T17:58:26.769546+00:00"
+        },
+        {
+          "id": "f5adb52e-2e20-442a-b607-cc1b5c52ce88",
+          "product_id": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+          "title": "Fixture shade SKU",
+          "price": 560,
+          "compare_price": null,
+          "stock": 4,
+          "inventory_qty": 4,
+          "weight": null,
+          "weight_unit": "kg",
+          "option1": "Pink Clay",
+          "option2": "एक इकाई",
+          "option3": null,
+          "image_url": null,
+          "position": 1,
+          "prior_lowest_price_30d": null,
+          "prior_price_coverage_complete": false,
+          "price_observed_at": "2026-10-23T17:58:26.769546+00:00"
+        },
+        {
+          "id": "fb05e696-710e-4de8-87d0-6ed62461d281",
+          "product_id": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+          "title": "Fixture shade SKU",
+          "price": 590,
+          "compare_price": null,
+          "stock": 0,
+          "inventory_qty": 0,
+          "weight": null,
+          "weight_unit": "kg",
+          "option1": "Terracotta",
+          "option2": "एक इकाई",
+          "option3": null,
+          "image_url": null,
+          "position": 2,
+          "prior_lowest_price_30d": null,
+          "prior_price_coverage_complete": false,
+          "price_observed_at": "2026-10-23T17:58:26.769546+00:00"
+        }
+      ]
+    },
+    {
+      "alias": "cloudRinse",
+      "id": "aa02e0ad-1151-4999-90b0-5fd61aa96260",
+      "name": "Fixture Cloud Rinse",
+      "price": 640,
+      "stock": 12,
+      "category": "Care",
+      "country_of_origin": "India",
+      "beauty": {
+        "schemaVersion": 1,
+        "routineStage": "cleanse",
+        "format": "Gel cleanser",
+        "netQuantity": {
+          "value": 150,
+          "unit": "ml"
+        },
+        "ingredients": "Cloud v1: Aqua, Glycerin.",
+        "directions": "Fixture directions v1: use as supplied.",
+        "warnings": "Fixture warning v1: external use only.",
+        "shadeOptionName": "Shade",
+        "shades": []
+      },
+      "product_options": [],
+      "variants": []
+    },
+    {
+      "alias": "dailyVeil",
+      "id": "ddf882c4-d6e9-4c3e-8082-edfbcb4a2bc9",
+      "name": "Fixture Daily Veil",
+      "price": 880,
+      "stock": 12,
+      "category": "Care",
+      "country_of_origin": "India",
+      "beauty": {
+        "schemaVersion": 1,
+        "routineStage": "care",
+        "format": "Face cream",
+        "netQuantity": {
+          "value": 50,
+          "unit": "g"
+        },
+        "ingredients": "Veil v1: Aqua, Squalane.",
+        "directions": "Fixture directions v1: use as supplied.",
+        "warnings": "Fixture warning v1: external use only.",
+        "shadeOptionName": "Shade",
+        "shades": []
+      },
+      "product_options": [],
+      "variants": []
+    }
+  ],
+  "privateSentinelsPresentInActualResponse": false,
+  "privateStateRead": false,
+  "browserActorsStarted": 0,
+  "casePassesCredited": 0,
+  "canonicalValidation": {
+    "discoveryValid": true,
+    "products": [
+      {
+        "alias": "palmWash",
+        "productId": "084711bb-a989-4708-bb0a-11f6c9d4d3d5",
+        "beautyPresent": false,
+        "beautyValid": null,
+        "variantRows": 0,
+        "optionRows": 0
+      },
+      {
+        "alias": "tint",
+        "productId": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+        "beautyPresent": true,
+        "beautyValid": true,
+        "variantRows": 3,
+        "optionRows": 2
+      },
+      {
+        "alias": "cloudRinse",
+        "productId": "aa02e0ad-1151-4999-90b0-5fd61aa96260",
+        "beautyPresent": true,
+        "beautyValid": true,
+        "variantRows": 0,
+        "optionRows": 0
+      },
+      {
+        "alias": "dailyVeil",
+        "productId": "ddf882c4-d6e9-4c3e-8082-edfbcb4a2bc9",
+        "beautyPresent": true,
+        "beautyValid": true,
+        "variantRows": 0,
+        "optionRows": 0
+      }
+    ],
+    "classification": "ACTUAL_RESPONSE_VALIDATION_NOT_SYNTHETIC_UI_TEST"
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "id": "section-testimonials",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "testimonials",
+    "group": "template",
+    "firstId": "section-debf9c4f-311c-44e8-bb89-256b67ca091d",
+    "finalId": "section-c294aa46-0387-4600-9d6c-8d83b42db947",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "testimonials",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-6ba1a90e-fb62-4e9b-84c6-72175cc45f39": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-0fd7cb17-a7b0-4b6a-864d-6cb82f458649": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-6ba1a90e-fb62-4e9b-84c6-72175cc45f39",
+            "block-0fd7cb17-a7b0-4b6a-864d-6cb82f458649"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "testimonials",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-0fd7cb17-a7b0-4b6a-864d-6cb82f458649": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-6ba1a90e-fb62-4e9b-84c6-72175cc45f39": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-0fd7cb17-a7b0-4b6a-864d-6cb82f458649",
+            "block-6ba1a90e-fb62-4e9b-84c6-72175cc45f39"
+          ],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "testimonials",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-0fd7cb17-a7b0-4b6a-864d-6cb82f458649": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-6ba1a90e-fb62-4e9b-84c6-72175cc45f39": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-0fd7cb17-a7b0-4b6a-864d-6cb82f458649",
+            "block-6ba1a90e-fb62-4e9b-84c6-72175cc45f39"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "testimonials",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-0c910665-6d7e-4d25-93d8-948777fee8e3": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-2169025c-8168-4d73-a202-cce5b2ac0424": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Source fixture quote",
+                "author": "Source fixture author"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-0c910665-6d7e-4d25-93d8-948777fee8e3",
+            "block-2169025c-8168-4d73-a202-cce5b2ac0424"
+          ],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

@@ -1,0 +1,49 @@
+[
+  {
+    "source": "comparisons/index.html",
+    "file": "comparisons/research-side-by-side.png",
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "scrollWidth": 1440,
+    "brokenImages": []
+  },
+  {
+    "source": "comparisons/neutral.html",
+    "file": "comparisons/neutral-structure.png",
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "scrollWidth": 1440,
+    "brokenImages": []
+  },
+  {
+    "source": "source/identity-continue.html",
+    "file": "comparisons/identity-continue-mobile.png",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "scrollWidth": 390,
+    "brokenImages": []
+  },
+  {
+    "menu": {
+      "opened": true,
+      "closed": true,
+      "focusReturned": true
+    },
+    "focus": {
+      "tag": "INPUT",
+      "id": "engraving-text",
+      "outline": "rgb(0, 95, 204) solid 3px",
+      "describedBy": "engraving-text-error",
+      "invalid": "true"
+    },
+    "mobileCheckoutOrder": {
+      "summaryTop": 179.640625,
+      "paymentTop": 1356.84375,
+      "payActionTop": 1899.09375
+    },
+    "productionBehaviorCertified": false
+  }
+]

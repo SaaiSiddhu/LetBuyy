@@ -1,0 +1,8 @@
+{
+  "recordedAt": "2026-10-24T02:52:33.594973+00:00",
+  "observation": "Password-step AX output included the visible synthetic example.invalid email as a plain text node; password and all credentials/token capabilities stayed redacted/private. The final saved install-return/library artifacts do not contain the login credential fields.",
+  "correction": "Stable evidence policy now additionally masks all plain synthetic example.invalid email text nodes for future output/captures; no browser/session/storage or credential transfer action.",
+  "realPersonalDataExposed": false,
+  "passwordOrTokenExposed": false,
+  "noCredentialValuesRepeatedInAddendum": true
+}

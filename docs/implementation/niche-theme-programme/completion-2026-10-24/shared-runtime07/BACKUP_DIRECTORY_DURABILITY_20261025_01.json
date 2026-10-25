@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-25T01:46:25.580767+00:00",
+  "status": "EXISTING_BACKUP_FILE_AND_PARENT_DIRECTORY_FSYNC_COMPLETED_CONTENT_UNCHANGED",
+  "files": [
+    {
+      "path": "/private/tmp/letbuyy-runtime07-backups/20261025T011624Z-runtime07-final-premaintenance.dump",
+      "sha256": "cd0be171bbbda8ef6236cfd0d71cfcffb81cf69e916051dd0b80248c0a2a43a3",
+      "fileFsync": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025T011624Z-runtime07-final-premaintenance.dump",
+      "sha256": "cd0be171bbbda8ef6236cfd0d71cfcffb81cf69e916051dd0b80248c0a2a43a3",
+      "fileFsync": true
+    },
+    {
+      "path": "/private/tmp/letbuyy-runtime07-backups/20261025T012206Z-runtime07-final-stopped.dump",
+      "sha256": "94ebf9c112b05068cf6a5f6edb236d27667785fa01b0ea51813f18e456d3ff9d",
+      "fileFsync": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025T012206Z-runtime07-final-stopped.dump",
+      "sha256": "94ebf9c112b05068cf6a5f6edb236d27667785fa01b0ea51813f18e456d3ff9d",
+      "fileFsync": true
+    }
+  ],
+  "directories": [
+    "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07",
+    "/Volumes/Projects/LetBuyy/.letbuyy-private",
+    "/Volumes/Projects/LetBuyy",
+    "/private/tmp/letbuyy-runtime07-backups"
+  ],
+  "databaseOrProcessChanges": 0,
+  "backupDeletion": false,
+  "rawDataPrinted": false,
+  "priorScriptCorrection": "Initial backup receipt uses a different archive object schema; first attempt refused Path(dict) before any fsync. This supplement verifies only the two known final receipts and all four final archive copies. Initial backup remains retained.",
+  "scope": "Supplemental durability operations on existing privately retained archives and directory entries. No restore or absolute hardware-failure guarantee."
+}

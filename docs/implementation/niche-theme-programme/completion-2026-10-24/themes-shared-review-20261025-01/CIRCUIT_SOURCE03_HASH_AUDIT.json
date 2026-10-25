@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-25T01:09:58.998994+00:00",
+  "classification": "INDEPENDENT_READ_ONLY_PHYSICAL_SOURCE_AUDIT",
+  "sealSha256": "766ca53de58b67d6bbb6ac7473c0ccdc9985405b870afa587952ee1db96572eb",
+  "closureSha256": "e7499470fb865af5ec2f925e38033557cd8bf1a326b14b48d7aff4939cc247b2",
+  "counts": {
+    "sealArtifacts": 33,
+    "sourceFiles": 6555,
+    "installedVendorFiles": 6037,
+    "runtimeBootstrapFiles": 2,
+    "dependencyLayoutFiles": 168,
+    "dependencyLayoutLinks": 1200,
+    "sourceFilesOutsideRoot": 0,
+    "edgeFirstPartyEscapes": 0,
+    "actualSqlSets": {
+      "database/supabase/migrations": 322,
+      "database/supabase/rollback": 242,
+      "database/supabase/bootstrap": 0,
+      "database/supabase/deploy": 4
+    }
+  },
+  "issues": [],
+  "baseComparison": {
+    "common": 6547,
+    "extra": 8,
+    "changed": 0,
+    "changes": [
+      "ADDED:docs/implementation/niche-theme-programme/completion-2026-10-24/circuit-performance01/PERFORMANCE_PROTOCOL.json",
+      "ADDED:docs/implementation/niche-theme-programme/completion-2026-10-24/circuit-performance01/PREPARATION_HANDOFF.json",
+      "ADDED:docs/implementation/niche-theme-programme/completion-2026-10-24/circuit-performance01/PREPARATION_SOURCE_MANIFEST.json",
+      "ADDED:docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/UNNUMBERED_circuit_facets.down.proposal.sql",
+      "ADDED:services/api-gateway/src/__tests__/owned-db/circuit-auto-explain-preflight.manual.ts",
+      "ADDED:services/api-gateway/src/__tests__/owned-db/circuit-indexed-performance-qualification.manual.ts",
+      "ADDED:services/api-gateway/src/__tests__/owned-db/plan-parser.test.ts",
+      "ADDED:services/api-gateway/src/__tests__/owned-db/plan-parser.ts"
+    ]
+  },
+  "probeSuspiciousDoubleEscapes": [],
+  "nativeOrApplicationModulesExecuted": false,
+  "auditCorrection": "Deploy set comprises two SQL files and two JSON profiles; recursive all-file membership, not SQL-only glob, matches all four exact inputs."
+}

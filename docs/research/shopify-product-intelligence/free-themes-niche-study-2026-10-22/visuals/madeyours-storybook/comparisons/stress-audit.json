@@ -1,0 +1,2022 @@
+[
+  {
+    "scene": "01-home-top",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1467,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/hero.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "hero",
+        "columns": "286px"
+      }
+    ],
+    "headings": [
+      "Good things.Your words."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "02-home-bottom",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 3531,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/notebook.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Two bases. Many meanings.",
+      "A name, made intentional."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "03-collection",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2504,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/notebook.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Choose your base."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "04-product-main",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2115,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/hero.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Desk name block"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "05-product-specify",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 3141,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Make space for your words.",
+      "Your engraving text"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "06-product-review",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 3352,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/notebook.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Check it. Make it yours.",
+      "Your accepted configuration",
+      "Made to your wording."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "08-checkout-address",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2534,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-grid",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Where should it go?",
+      "Delivery address",
+      "Shipping",
+      "Your configuration"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "09-checkout-review",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2411,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-grid review",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "One last look.",
+      "Deliver to",
+      "Payment",
+      "Your configuration"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "13-orders",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1713,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Your MadeYours orders.",
+      "Need the exact wording?"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "14-order-detail",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 3156,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "The words you ordered.",
+      "Accepted item configurations",
+      "Delivery details",
+      "Order total",
+      "Need help with this order?"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "15-addresses",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2465,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "288px"
+      },
+      {
+        "class": "addresses-grid",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Your saved places.",
+      "Home",
+      "Edit Home"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "01-home-top",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2787,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/hero.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "hero",
+        "columns": "348px"
+      }
+    ],
+    "headings": [
+      "Good things.Your words."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "02-home-bottom",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 7091,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/notebook.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Two bases. Many meanings.",
+      "A name, made intentional."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "03-collection",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4581,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/notebook.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Choose your base."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "04-product-main",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3929,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/hero.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Desk name block"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "05-product-specify",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 6199,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Make space for your words.",
+      "Your engraving text"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "06-product-review",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 6624,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/notebook.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Check it. Make it yours.",
+      "Your accepted configuration",
+      "Made to your wording."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "08-checkout-address",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4705,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Where should it go?",
+      "Delivery address",
+      "Shipping",
+      "Your configuration"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "09-checkout-review",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 5269,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-grid review",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "One last look.",
+      "Deliver to",
+      "Payment",
+      "Your configuration"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "13-orders",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3337,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Your MadeYours orders.",
+      "Need the exact wording?"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "14-order-detail",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 6456,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "The words you ordered.",
+      "Accepted item configurations",
+      "Delivery details",
+      "Order total",
+      "Need help with this order?"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "15-addresses",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4718,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "350px"
+      },
+      {
+        "class": "addresses-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Your saved places.",
+      "Home",
+      "Edit Home"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "03-collection",
+    "mode": "hindi-expansion",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2399,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/notebook.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "अपनी पसंद का आधार चुनें और अपना नाम जोड़ें"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "05-product-specify",
+    "mode": "hindi-expansion",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2926,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "अपनी पसंद का आधार चुनें और अपना नाम जोड़ें",
+      "Your engraving text"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "15-addresses",
+    "mode": "hindi-expansion",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2444,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "350px"
+      },
+      {
+        "class": "addresses-grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "अपनी पसंद का आधार चुनें और अपना नाम जोड़ें",
+      "Home",
+      "Edit Home"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "07-cart",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 3160,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "expected": "Inter",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Your words, kept separate.",
+      "Your configuration"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "10-sign-in",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1054,
+    "fonts": {
+      "family": "GeistIdentity, Inter, system-ui, sans-serif",
+      "inter": false,
+      "expected": "GeistIdentity",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "GeistIdentity",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Sign in"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "11-sign-up",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1415,
+    "fonts": {
+      "family": "GeistIdentity, Inter, system-ui, sans-serif",
+      "inter": false,
+      "expected": "GeistIdentity",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "GeistIdentity",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account",
+      "Continue to MadeYours"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "07-cart",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 6745,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "expected": "Inter",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Your words, kept separate.",
+      "Your configuration"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "10-sign-in",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1813,
+    "fonts": {
+      "family": "GeistIdentity, Inter, system-ui, sans-serif",
+      "inter": false,
+      "expected": "GeistIdentity",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "GeistIdentity",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Sign in"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "11-sign-up",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2692,
+    "fonts": {
+      "family": "GeistIdentity, Inter, system-ui, sans-serif",
+      "inter": false,
+      "expected": "GeistIdentity",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "GeistIdentity",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account",
+      "Continue to MadeYours"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "12-profile",
+    "mode": "320px",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2155,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "expected": "Inter",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "288px"
+      }
+    ],
+    "headings": [
+      "Hello, Asha.",
+      "Your profile",
+      "Your latest order",
+      "Saved address",
+      "Your LetBuyy identity"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  },
+  {
+    "scene": "12-profile",
+    "mode": "text-200",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4374,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "expected": "Inter",
+      "expectedLoaded": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Hello, Asha.",
+      "Your profile",
+      "Your latest order",
+      "Saved address",
+      "Your LetBuyy identity"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "passed": true
+  }
+]

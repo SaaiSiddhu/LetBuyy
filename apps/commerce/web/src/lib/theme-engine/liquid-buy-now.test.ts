@@ -21,7 +21,7 @@ Object.assign(globalThis, { window: browserWindow, document: dom.window.document
 let registered: Promise<void> | undefined;
 const ready = () => registered ??= import('./liquid-hydration-islands').then(module => module.registerLiquidHydrationIslands());
 const tick = () => new Promise(resolve => setTimeout(resolve, 0));
-const serverCart = { cart_token: 'synthetic-cart-token', lines: [{ product_id: 'product-1', title: 'Synthetic product',
+const serverCart = { status: 'active', updated_at: '2026-10-25T00:00:00.000Z', cart_token: 'synthetic-cart-token', lines: [{ product_id: 'product-1', title: 'Synthetic product',
     quantity: 1, unit_price: 199, currency: 'INR' }], subtotal: 199, discount_total: 0, shipping_total: 0, tax_total: 0,
     total: 199, coupon_codes: [], currency: 'INR' };
 function purchase() {
@@ -85,6 +85,7 @@ test('variant purchases require a choice and retain durable variant identity thr
     const variants = [{ id: 'small', price: 199, stock: 3, options: { Size: 'Small' } }, { id: 'large', price: 249, stock: 4, options: { Size: 'Large' } }, { id: 'sold', price: 299, stock: 0, options: { Size: 'Sold' } }];
     globalThis.fetch = (async (input, init) => {
         if (String(input).endsWith('/checkout-status')) return new Response(JSON.stringify({ success: true, data: { cart_status: 'active', checkout_state: null } }));
+        if (!init?.body) return new Response(JSON.stringify({ success: true, data: JSON.parse(dom.window.localStorage.getItem('lb_cart_server')!) }));
         const body = JSON.parse(String(init?.body)); requests.push(body);
         return new Response(JSON.stringify({ success: true, data: { ...serverCart, lines: body.lines.map((line: {variant_id: string; quantity: number}) => ({ ...serverCart.lines[0], ...line, unit_price: variants.find(variant => variant.id === line.variant_id)?.price })) } }), { status: 200 });
     }) as typeof fetch;

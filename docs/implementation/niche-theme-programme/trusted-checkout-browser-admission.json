@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-23T18:20:13.393434+00:00",
+  "status": "ROOT_NORMAL_BROWSER_HTTPS_VERIFIED_EXACT_LEAF_SCOPE",
+  "runId": "f6074d90e894",
+  "origin": "https://checkout.localhost:62082",
+  "servedLeafReceipt": {
+    "path": "docs/implementation/niche-theme-programme/trusted-checkout-served-leaf-diagnosis.json",
+    "sha256": "425cd142e90c2e8063b1f39cff75cd3dc6c9c7d92972cd56a83aef8eb4187f6c"
+  },
+  "exactLeafScopeReceipt": {
+    "path": "docs/implementation/niche-theme-programme/trusted-checkout-exact-leaf-result.json",
+    "sha256": "23c21b45b0efafe82e55f7ff9ed2f26cdbe468bd7c73b72ed563499fae89f475"
+  },
+  "actualBrowserReceipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-exact-leaf-browser-attempt.json",
+    "sha256": "dc4a2705b09d2c57845d2e81ed82fa4965084d3dee0016d2a1fda4b407265794"
+  },
+  "proof": "Normal store cart ProceedCheckout\u2192new hosted handoff\u2192actual Delivery Address/Deliveryoptions/ContinuePayment/order summary1120 visible; no interstitial/error bypass",
+  "browser": "SameexistingIAB6/newowntab18;oldfailed17preserved",
+  "cart": "Fresh2Pink1120preserved",
+  "orderSubmitted": false,
+  "buyerBinding": "Anonymoussmoke;normalBuyerA/H01purchase remainsseparate",
+  "effectiveTrustScope": "ExactED31singleDNScheckout.localhostnonCAserverAuthleaf;SSLuserloginonly;actualwronghostanddescendantcertsdenied",
+  "broaderCaOrSystemTrust": false,
+  "certificateErrorBypass": false,
+  "primaryOrderApiSubstitute": false,
+  "humanTrustStepRemaining": false,
+  "localCodAndAll10ThemeAcceptance": false
+}

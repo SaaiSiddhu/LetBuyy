@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-24T03:43:45.375Z",
+  "runId": "936e5f577646",
+  "classification": "COMMITTED_LABELLED_LEGACY_READ_CONTROL",
+  "exitCode": 0,
+  "stdout": "t\nt\nt\n{\"id\": \"36b89194-f491-49ab-b42c-401029a4a58c\", \"total\": 560.00, \"status\": \"pending_cod\", \"currency\": \"INR\", \"orderNumber\": \"ORD-20261024-10001\", \"paymentStatus\": \"pending\", \"classification\": \"SYNTHETIC_LEGACY_READ_SETUP\"}",
+  "stderrPresent": false,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "primaryOrderId": "84a52d92-6cb4-46bb-b941-8d7f37e8cb74",
+  "legacyOrderId": "36b89194-f491-49ab-b42c-401029a4a58c",
+  "legacyItemId": "899f85b0-84d8-445b-86c2-5be11541f035",
+  "syntheticOnly": true,
+  "normalCheckoutCredit": false
+}

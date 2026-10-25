@@ -1,0 +1,81 @@
+{
+  "expectedPhases": 8,
+  "expectedTap": 9,
+  "skipsAllowed": 0,
+  "cases": [
+    {
+      "phase": 1,
+      "cases": [
+        "Exact current393 publisher denied/profile controls and 391/392 discovery+draft profiles",
+        "Synthetic2.0.0 selected install,save,publish and unpublished private draft",
+        "Real draft retry/CAS/private preview and public read separation"
+      ],
+      "requires": "Real mounted Gateway+owned DB only; baseline393 all322 migrations."
+    },
+    {
+      "phase": 2,
+      "cases": [
+        "394UP changes exactly one catalog row",
+        "Append exactly one immutable version/schema/renderer triple; preserve preexisting captures and every merchant row",
+        "UP replay no-op; preserve all current function/ACL/dependency profiles"
+      ]
+    },
+    {
+      "phase": 3,
+      "cases": [
+        "Concurrent selected2.0.1 Add creates one instance",
+        "Exact selected version/package, stable replay/private history, no implicit publish",
+        "Wrong-version and foreign-store requests denied without effects"
+      ]
+    },
+    {
+      "phase": 4,
+      "cases": [
+        "Validated own scope + actual app_tenant own-row positive first, foreign/missing-predicate/unset GUC controls",
+        "Direct tenant publisher denial; forged scope/GUC and temp-table-shadow refusal",
+        "Real update preview, exact diff confirmation, foreign/wrong-package/unknown/revoked/deleted/downgrade targets denied",
+        "Outbox/capability-audit/enrichment fault rollback; swallowed failure poisons commit; restore role/GUC/backend reuse",
+        "Three concurrent same-intent confirmations yield exactly one publication and exact transactional capability audit",
+        "Preserve old release immutable fields and unpublished private draft; replay same release; stale/new or changed intent409"
+      ],
+      "notCredited": "In-memory Hono call only bootstraps canonical validated context; mounted Gateway owns commerce acceptance. Limited RLS controls do not substitute for RT1\u20139."
+    },
+    {
+      "phase": 5,
+      "cases": [
+        "Missing-prior/version/schema/renderer/ambiguous/disabled/revoked catalog guards",
+        "Changed catalog/corrupt394checkpoint refuses DOWN",
+        "Separate real constraint/protector denials from394 guard credit",
+        "Late install outbox fault503 sanitized and zero domain effects"
+      ]
+    },
+    {
+      "phase": 6,
+      "cases": [
+        "Actual persisted2.0.1 triple equals exact approved package,23templates including header/footer",
+        "Canonical toy facts rendered by existing LiquidRenderer",
+        "Stored order-fact SSTI remains literal;script/event markup escaped",
+        "Native fixture render budget only; no browser/production performance claim"
+      ]
+    },
+    {
+      "phase": 7,
+      "cases": [
+        "Strict DOWN and replay restore2.0.0 catalog exactly",
+        "Retain immutable2.0.1 captures and existing2.0.1 instance/release/draft histories",
+        "Fresh real schema API must advertise2.0.0 despite retained2.0.1 captures; fresh selected Add installs2.0.0",
+        "Reject stale2.0.1 Add after DOWN, no implicit installed-merchant rewrites"
+      ]
+    },
+    {
+      "phase": 8,
+      "cases": [
+        "Final394UP and replay conserve both histories and exact current publisher/discovery/draft profiles",
+        "Old/new instance pins remain selected, private draft retained",
+        "Recheck fresh admission,all source/pair/artifact pins and default393 source set before completing"
+      ],
+      "finish": "Candidate catalog2.0.1 under owned clone only; canonical393 publisher remains denied to tenant."
+    }
+  ],
+  "classification": "Native SQL/real mounted API/persisted Liquid only. Browser, post-cart and full programme acceptance remain separate."
+}

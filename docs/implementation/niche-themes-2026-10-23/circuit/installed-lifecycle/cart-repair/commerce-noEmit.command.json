@@ -1,0 +1,13 @@
+{
+  "command": [
+    "node",
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "--incremental",
+    "false",
+    "--project",
+    "apps/commerce/web/tsconfig.json"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 8.135
+}

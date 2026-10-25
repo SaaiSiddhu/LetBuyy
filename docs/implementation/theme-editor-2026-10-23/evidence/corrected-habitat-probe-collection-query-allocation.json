@@ -1,0 +1,11 @@
+{
+  "runId": "f6074d90e894",
+  "maxGets": 2,
+  "mutation": false,
+  "redirects": false,
+  "retry": false,
+  "cases": [
+    "HQ08-collection",
+    "HQ09-collection"
+  ]
+}

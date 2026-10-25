@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T12:19:49.890933+00:00",
+  "classification": "DIRECT_HUMAN_RENEWAL_VERIFIED_NOT_A_RESOURCE_LEASE",
+  "verifiedUsing": "read_thread actual userMessage content in this turn",
+  "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+  "turnId": "01a16dc7-bd94-7163-b608-6b910b1d1b6b",
+  "userMessageId": "01a16dc7-bda8-7a91-bd8b-de0612070e32",
+  "humanText": "Coordinate with Main and Editor to get the fresh fixture running, retest M05, finish D02/O05/S01, and record actual browser results and evidence. Keep going until all 30 Dewdrop cases are complete.",
+  "earlierProgrammeResume": {
+    "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "userMessageId": "01a16da6-891f-7691-b85f-cc5d9ae276e2",
+    "text": "Resume all ten themes and both shared owners",
+    "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261024.json"
+  },
+  "scope": "Named Main and Editor coordination, fresh isolated fixture, original30 browser testing and evidence; expired936 is not reauthorized. Exact source/runtime/data/browser resource leases remain required. This does not authorize unowned app/data adoption or circumvent approval review.",
+  "resourceLease": null
+}

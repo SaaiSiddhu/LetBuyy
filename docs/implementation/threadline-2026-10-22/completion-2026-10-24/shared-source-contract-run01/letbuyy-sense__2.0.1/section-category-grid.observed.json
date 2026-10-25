@@ -1,0 +1,82 @@
+{
+  "id": "section-category-grid",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "category-grid",
+    "group": "template",
+    "firstId": "section-0dff8221-daff-403f-ad39-de400835cd38",
+    "finalId": "section-6bef534f-3fe3-42ca-8689-00e4a11b64b3",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "collection3": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "collection3": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "collection3": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collection1": "22222222-2222-4222-8222-222222222222",
+            "collection2": "22222222-2222-4222-8222-222222222222",
+            "collection3": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

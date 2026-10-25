@@ -1,0 +1,24 @@
+- heading [level=1]: Sales channels
+- link "Shopify App Store":
+- heading "Sales channels" [level=1]
+- tablist:
+- tab "Installed apps" [selected]:
+- status:
+- button "Sort the results":
+- status
+- status
+- status
+- status
+- status
+- paragraph:
+- button "Learn more about sales channels":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

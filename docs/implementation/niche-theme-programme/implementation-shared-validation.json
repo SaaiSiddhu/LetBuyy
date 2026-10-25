@@ -1,0 +1,101 @@
+{
+  "change": "Versioned v2 niche designs preserve their own settings during portable save; v1 compatibility retained",
+  "source": "packages/theme-engine/src/theme-bundle-core.ts",
+  "test": "packages/theme-engine/test/first-party-design-version.test.ts",
+  "negativeControl": "Before repair, known forge v2 incorrectly classified as legacy Core and test failed true!=false.",
+  "validation": [
+    {
+      "command": "node --import tsx --test packages/theme-engine/test/first-party-design-version.test.ts",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "command": "node --import tsx --test packages/theme-engine/test/first-party-design-version.test.ts packages/theme-engine/test/theme-bundle-core.test.ts packages/theme-engine/test/threadline.test.ts",
+      "passed": 12,
+      "failed": 0,
+      "note": "Earlier version of new test contained2cases; final newtest3cases separatelypassed. Counts overlap; do not sum."
+    }
+  ],
+  "limits": "No catalog dispatch or v2 installation is certified by this repair.",
+  "milestone2": {
+    "date": "2026-10-23",
+    "ownedModules": {
+      "command": "node --import tsx --test --test-concurrency=2 packages/theme-engine/test/{playfield,circuit,pantry,habitat,kindred,madeyours,dewdrop,trailmark,marginalia}.test.ts packages/commerce-core/test/{playfield,circuit,pantry,habitat,kindred,madeyours,dewdrop,trailmark,marginalia}-facts.test.ts",
+      "passed": 143,
+      "failed": 0,
+      "skipped": 0,
+      "log": "m2-owned-module-cohort.tap"
+    },
+    "sharedFocusedCohort": {
+      "passedTestInstances": 60,
+      "failed": 0,
+      "skipped": 0,
+      "note": "Includes3 namespace tests executed twice due shared fixture import; do not treat as60unique cases. Later minor display/has_options changes require final focused rerun."
+    },
+    "packageTypechecks": {
+      "commerceCore": "passed",
+      "themeEngine": "passed"
+    },
+    "actualIntegration": [
+      "validated raw product namespaces\u2192actual app mapper\u2192Liquid collection depth4",
+      "canonical variant raw facts\u2192actual app mapper\u2192Liquid PDP scalar measurements",
+      "personalization JSON exact DOM.parse equality and escaped merchant labels",
+      "explicit nine-theme2.0.0 factory dispatch retains stable UUID/slugs and v1default",
+      "existing Core saved-settings and Threadline compatibility cohort"
+    ],
+    "limits": [
+      "No owned DB/create-edit persistence acceptance yet",
+      "No catalog DB promotion or install/publish acceptance for new9",
+      "No checkout/account/order end-to-end acceptance for new9",
+      "No hosted deployment"
+    ],
+    "postDisplayFocusedRerun": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --import tsx --test packages/commerce-core/test/product-fact-presentation.test.ts apps/commerce/web/src/lib/theme-engine/product-liquid-drop.test.ts services/api-gateway/src/__tests__/niche-public-facts.test.ts",
+      "note": "Before additional explicit variant privacy test; counts overlap earliercohort."
+    },
+    "privacyRepair": {
+      "finding": "Independent Marginalia mapped fixture found arbitrary raw variant.metadata copied into anonymous Liquid drop by ...variant.",
+      "repair": "Explicit own-data buyer-display variant field allowlist; validated namespace projection added separately. Raw metadata, SKU, costs and arbitrary private keys omitted.",
+      "negativeControl": "Marginalia retained private_cost assertion failed before repair.",
+      "validation": {
+        "command": "NODE_PATH=./packages/theme-engine/node_modules node --import tsx --test docs/implementation/niche-themes-2026-10-23/marginalia/mapped-fixtures.test.ts apps/commerce/web/src/lib/theme-engine/product-liquid-drop.test.ts",
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "environmentCorrection": "Initial combined attempt omitted docs harness NODE_PATH and failed jsdom resolution; corrected invocation above passed. No productiondependency added."
+    },
+    "commerceAppTypecheck": "node node_modules/typescript/bin/tsc --noEmit -p apps/commerce/web/tsconfig.json --tsBuildInfoFile /private/tmp/letbuyy-coordinator-commerce-niche.tsbuildinfo exit0",
+    "threadlinePinnedArtifactCheck": {
+      "command": "node --import tsx scripts/liquid-parity/build-threadline-catalog.mjs --check",
+      "exit": 0,
+      "version": "2.0.0",
+      "sha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e"
+    }
+  },
+  "variantOptionCarrier": {
+    "source": [
+      "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx"
+    ],
+    "behavior": "bounded JSON string preserves merchant option labels with spaces/Unicode/prototype-like names as inert own data; malformed/oversized carrier failsclosed, no globalLiquid depth/key relaxation",
+    "focusedCartMapperCohort": {
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0
+    },
+    "actualCartIdentityRerun": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "boundary": "actualmapper+Liquid+nativepicker\u2192syntheticcartAPIreceipt; durableUUID/optionnames preserved, no realDBcartclaim"
+    },
+    "threadlineBundleCheck": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e unchanged",
+    "fontRegistry": "Inter800 added; experience-fonts6casespass; livefontdeliverypending",
+    "typecheck": "pending final rerun after DOMconstructor test type repair"
+  }
+}

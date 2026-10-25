@@ -16,12 +16,21 @@ import type {
     ThemePurchaseVerifyResult,
 } from '@letbuyy/api-client';
 import type { AuthSessionUser } from '@letbuyy/shared-types';
+import { ThemeEditableSchemaResponseSchema } from '@letbuyy/shared-types';
+import { ThemeInstallReceiptSchema, confirmThemeInstallReceipt, confirmThemeInstallLibraryReadback, type ThemeInstallExpectation } from '@letbuyy/theme-engine';
 import type { ThemeSearchFilters, ThemeSearchResult } from '@letbuyy/theme-engine';
 
 export class MarketplaceUnavailableError extends Error {
     constructor(message = 'The theme catalog is temporarily unavailable. Please try again.') {
         super(message);
         this.name = 'MarketplaceUnavailableError';
+    }
+}
+
+export class MarketplaceInstallUnconfirmedError extends Error {
+    constructor() {
+        super('The selected instance and package version were not confirmed. Check this store’s theme library and retry the same Add request.');
+        this.name = 'MarketplaceInstallUnconfirmedError';
     }
 }
 
@@ -98,7 +107,7 @@ export const ThemeService = {
     },
 
     async getSessionUser(): Promise<AuthSessionUser | null> {
-        const api = await getThemeApi();
+        const api = await getThemeApi(true);
         if (!api) return null;
 
         const session = await api.auth.session().catch(() => null);
@@ -144,24 +153,44 @@ export const ThemeService = {
         return api.themes.installations().catch(() => []);
     },
 
-    async getUserStores(): Promise<Record<string, unknown>[]> {
+    async getUserStores(requireAvailable = false): Promise<Record<string, unknown>[]> {
         const api = await getThemeApi(true);
-        if (!api) return [];
+        if (!api) {
+            if (requireAvailable) throw new MarketplaceUnavailableError('Your store list could not be confirmed. Retry before adding a theme.');
+            return [];
+        }
 
         const stores = await api.stores.list({ limit: 50 }).catch(() => null);
+        if (!stores && requireAvailable) throw new MarketplaceUnavailableError('Your store list is temporarily unavailable. Retry before adding a theme.');
         return stores?.data as Record<string, unknown>[] || [];
     },
 
-    async installTheme(slug: string, storeId: string, configOverrides: Record<string, unknown> = {}): Promise<Record<string, unknown>> {
-        const api = await getThemeApi(true);
-        if (!api) {
-            throw new Error('Authentication required');
-        }
+    async getThemeInstallSelection(slug: string) {
+        const api = await getThemeApi();
+        if (!api) throw new MarketplaceUnavailableError();
+        const [theme, schema] = await Promise.all([api.themes.get(slug), api.themes.schema(slug)]);
+        const runtime = ThemeEditableSchemaResponseSchema.shape.theme.safeParse(schema.theme);
+        const version = ThemeInstallReceiptSchema.shape.installed_version.safeParse(theme.version);
+        if (!runtime.success || !version.success || runtime.data.id !== theme.id || runtime.data.slug !== slug
+            || !runtime.data.theme_package_id || !runtime.data.theme_package_version_id) throw new MarketplaceUnavailableError('The selected theme package could not be confirmed. Reload its details.');
+        return { slug, version: version.data, packageId: runtime.data.theme_package_id, packageVersionId: runtime.data.theme_package_version_id };
+    },
 
-        return api.themes.install(slug, {
+    async installTheme(slug: string, storeId: string, expected: ThemeInstallExpectation = {}) {
+        const api = await getThemeApi(true);
+        if (!api) throw new Error('Authentication required');
+        const selected = { ...await ThemeService.getThemeInstallSelection(slug), ...expected, slug };
+        const wire = await api.themes.install(slug, {
             store_id: storeId,
-            config_overrides: configOverrides,
-        }).then((result) => result as unknown as Record<string, unknown>);
+            expected_version: selected.version,
+            expected_package_id: selected.packageId,
+            expected_package_version_id: selected.packageVersionId,
+        });
+        try {
+            const confirmed = confirmThemeInstallReceipt(wire, selected);
+            confirmThemeInstallLibraryReadback(await api.themes.listSiteLibrary(storeId), confirmed.receipt);
+            return confirmed.receipt;
+        } catch { throw new MarketplaceInstallUnconfirmedError(); }
     },
 
     async getThemeReleases(slug: string, storeId: string): Promise<Record<string, unknown>[]> {

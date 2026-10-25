@@ -1,0 +1,89 @@
+{
+  "recordedAt": "2026-10-23T19:56:17.179291+00:00",
+  "classification": "READ_ONLY_AUDIT_OF_ACTUAL_EDITOR_UI_AND_SAVED_CANONICAL_RECEIPTS",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "caseId": "P00",
+  "status": "PASS",
+  "independentlyCheckedSavedArtifacts": {
+    "guardedActualActivePantry2InstalledInstanceBound": true,
+    "nonNullSubstantialConfigAndBundleManifestHashesRecorded": true,
+    "A_BRestoreAndReapplyExactHashesAndNativeReloadAudited": true,
+    "currentBuyerNativeHomeHasPublishedBPantryLayout": true,
+    "anonymousPdp200NoAuthenticationAndSavedHtmlHashMatches": true,
+    "anonymousPdpActualIngredientsAndFoodPanelPresent": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-first-three-actual-installed-bindings.json",
+      "sha256": "8cda61e1a5dfc2a92f2941cbf25d2f0f6bb2e45589eb39562d540be43968405d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-editor-cycle.json",
+      "sha256": "24b43a6bd37ed9a75f205dd2424afcbdb930a5165cc91c2a7b95ca066f127dd0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P00-anonymous-PDP.json",
+      "sha256": "c7df1b0f3943f1e2b25595c46e9f1be477d6a42da4b28734067ee8b1c3a786db"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P00-anonymous-PDP.html",
+      "sha256": "1bba1cccab92d7c6309de51dfbf1384a96e0f7a754f339e495b4e5a332969587"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P00-current-public-home.ax.txt",
+      "sha256": "9a281bd894d3f5aa5a55ab9cd92644c6be1dc5c6b37ddfafa8a57a9a5e304b3e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P03-unselected.ax.txt",
+      "sha256": "a41d1e67c26d6f208f3ad60f568e75db67465f4fc00c044404e59c558b6427f7"
+    }
+  ],
+  "limits": [
+    "Postgres JSONB serialization hash fields are retained from the guarded owner readback, not recomputed against a live DB or treated as source-JS hashes.",
+    "Actual catalogChecksum is SQL NULL; no fabricated checksum.",
+    "SSR does not contain client-added unselected guidance; guidance is evidenced only by native hydrated P03.",
+    "Saved requests/AX/HTML audited; no Pantry runtime/browser/network reexecution; screenshot not visually audited."
+  ],
+  "sourceChangesByPantry": [],
+  "installedBinding": {
+    "slug": "letbuyy-refresh",
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "version": "2.0.0",
+    "packageId": "981c9e11-1243-430a-8b10-92007f3a7a6b",
+    "instanceId": "8e17f03c-6e75-467b-96da-360dd6f92d67",
+    "instanceStatus": "active",
+    "catalogChecksum": null,
+    "packageVersionId": "f8ce6870-b3ee-438c-accd-08806676f33f",
+    "liquidBundleSha256": "0e792cc5944a0bbaefc5e29771c1c4af6c44b62d907053e26293d0fe845f902c",
+    "installedConfigKeys": [
+      "themeId",
+      "sections",
+      "templates",
+      "experienceId",
+      "liquidBundle",
+      "themeSettings",
+      "rendererEngine",
+      "liquidRenderingCanary"
+    ],
+    "catalogManifestSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7",
+    "installedConfigSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12"
+  },
+  "currentRelease": {
+    "packageVersion": "2.0.0",
+    "releaseId": "30499509-be2d-41d2-9a8a-1240ea9b9ddd",
+    "sourceDraftVersion": 8,
+    "releaseSha256": "322b04957cdf672934509c0a933786501d41f65413a05ae0665427cf62fc8695",
+    "orders": 0,
+    "installed": 3,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "priorPublicationComponentAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-pantry-publication-chain-audit.json",
+    "sha256": "ea7f08e6b73d6794936baa9df5c69a79f4d18404d9af0dcd7ba8701926ff501b"
+  }
+}

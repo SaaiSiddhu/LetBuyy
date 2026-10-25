@@ -1,0 +1,534 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:21.429Z",
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1223,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 3,
+    "grids": [
+      {
+        "class": "hero",
+        "display": "grid",
+        "columns": "558px 682px"
+      },
+      {
+        "class": "shelf-grid",
+        "display": "grid",
+        "columns": "611px 611px"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 1440,
+      "height": 1223
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:21.560Z",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1570,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 3,
+    "grids": [
+      {
+        "class": "hero",
+        "display": "grid",
+        "columns": "350px"
+      },
+      {
+        "class": "shelf-grid",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 390,
+      "height": 1570
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:21.687Z",
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1017,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 1,
+    "grids": [
+      {
+        "class": "pdp-grid",
+        "display": "grid",
+        "columns": "392px 371.359px 412.641px"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 1440,
+      "height": 1017
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:21.798Z",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1954,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 1,
+    "grids": [
+      {
+        "class": "pdp-grid",
+        "display": "flex",
+        "columns": "1fr 1fr"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 390,
+      "height": 1954
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:21.913Z",
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1212,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "500"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 2,
+    "grids": [
+      {
+        "class": "split review",
+        "display": "grid",
+        "columns": "741.688px 450.297px"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 1440,
+      "height": 1212
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:22.015Z",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1984,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "500"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 2,
+    "grids": [
+      {
+        "class": "split review",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 390,
+      "height": 1984
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:22.107Z",
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1138,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "500"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 1,
+    "grids": [],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 1440,
+      "height": 1138
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:22.191Z",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1234,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "500"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 1,
+    "grids": [],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 390,
+      "height": 1234
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:22.286Z",
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1819,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "500"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 0,
+    "grids": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "220px 978px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "453px 453px"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 1440,
+      "height": 1819
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capturedAt": "2026-10-22T18:32:22.368Z",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2950,
+    "fonts": {
+      "status": "loaded",
+      "inter": true,
+      "family": "Inter, Arial, \"Devanagari Sangam MN\", sans-serif",
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "500"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "imageCount": 0,
+    "grids": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "350px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "304px"
+      }
+    ],
+    "fixedElements": 0,
+    "screenshot": {
+      "width": 390,
+      "height": 2950
+    },
+    "capture": "isolated Playwright headless Chromium, local file, fresh context"
+  }
+]

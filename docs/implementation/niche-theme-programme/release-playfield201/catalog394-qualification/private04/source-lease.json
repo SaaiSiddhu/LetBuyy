@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-24T11:36:14.914833+00:00",
+  "id": "catalog394-test-fixture-source04",
+  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authority": "completion-resume-resource-allocation-20261024-02.json",
+  "sourcePath": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+  "beforeSHA256": "95dee5d4dd9dd2b9ad38dc2d42b4bb5a175e502c9731f3ddc499d21e601c1d07",
+  "afterSHA256": "918e5a79333d1c8d47b727a80c65b8ddff4b733c1da9f93f326ec9179478dd95",
+  "scope": "Exact reviewed fixture-only canonicalauthenticator/service_role setup and distinct frozenbuilder/currentruntime checks. No productionpublisher/role/journal/DDLguard or migrationchange. All8phases/strictoracles retained.",
+  "native": "NOT_GRANTED; separate independent currentruntime review/freshnative admission required",
+  "ends": "Exactsourceapply and firstsealed currentinventoryhandoff",
+  "status": "SEALED_RELEASED_CURRENT_SOURCE_REVIEW_READY_NO_NATIVE_GRANT",
+  "handoff": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/CURRENT_SOURCE_REVIEW_READY.json"
+}

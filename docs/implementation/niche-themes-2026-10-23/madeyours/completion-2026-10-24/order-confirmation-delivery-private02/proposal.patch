@@ -1,0 +1,284 @@
+diff --git a/services/api-gateway/src/lib/order-confirmation-email.ts b/services/api-gateway/src/lib/order-confirmation-email.ts
+--- a/services/api-gateway/src/lib/order-confirmation-email.ts
++++ b/services/api-gateway/src/lib/order-confirmation-email.ts
+@@ -95,14 +95,18 @@
+     db: SupabaseClient,
+     input: { orderId: string; storeId: string; requestId: string; idempotencyKey: string },
+ ): Promise<void> {
+-    const { data: orderData } = await db
++    const { data: orderData, error: orderError } = await db
+         .from('orders')
+         .select('id, store_id, order_number, customer_name, customer_email, total, currency')
+         .eq('id', input.orderId)
+         .eq('store_id', input.storeId)
+         .maybeSingle();
+ 
++    if (orderError) throw new Error('Order confirmation lookup failed');
+     const order = orderData as OrderRow | null;
++    if (order && (order.id !== input.orderId || order.store_id !== input.storeId)) {
++        throw new Error('Order confirmation binding mismatch');
++    }
+     if (!order?.customer_email) return;
+ 
+     const { data: itemData, error: itemError } = await db
+@@ -144,14 +148,16 @@
+         return;
+     }
+ 
+-    await sendResendEmail({
++    const result = await sendResendEmail({
+         apiKey: env.RESEND_API_KEY,
+         from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+         to: email.to,
+         subject: email.subject,
+         text: email.text,
+         html: email.html,
++        idempotencyKey: queueBody.idempotencyKey,
+     });
++    if (!result.success) throw new Error('Order confirmation email send failed');
+ }
+ 
+ // LB-10 — order cancelled / refunded customer emails. Mirrors enqueueOrderConfirmationEmail: render then
+diff --git a/services/api-gateway/src/__tests__/order-confirmation-email.test.ts b/services/api-gateway/src/__tests__/order-confirmation-email.test.ts
+--- a/services/api-gateway/src/__tests__/order-confirmation-email.test.ts
++++ b/services/api-gateway/src/__tests__/order-confirmation-email.test.ts
+@@ -1,13 +1,15 @@
+ import assert from 'node:assert/strict';
+ import { readFileSync } from 'node:fs';
+-import { test } from 'node:test';
++import { test, before, after, type TestContext } from 'node:test';
++import { getResendClient } from '@letbuyy/infrastructure/resend-adapter';
+ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+-import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
++import { enqueueOrderConfirmationEmail, enqueueOrderLifecycleEmail } from '../lib/order-confirmation-email';
+ import { enqueueContactOwnerNotificationEmail } from '../lib/transactional-email';
+ import type { Env } from '../index';
+ 
+ type QueryResponse = {
+     data?: unknown;
++    error?: { message: string };
+ };
+ 
+ function createQuery(response: QueryResponse) {
+@@ -138,3 +140,89 @@
+     assert.match(worker, /invite_id: payload\.inviteId/);
+     assert.match(worker, /contact_submission_id: payload\.contactSubmissionId/);
+ });
++
++// Pure transport contracts only. SDK calls are replaced before invocation;
++// an accidental network call fails the suite, never reaches an inbox.
++let forbiddenFetchCalls = 0;
++const originalFetch = globalThis.fetch;
++before(() => { globalThis.fetch = (async () => { forbiddenFetchCalls++; throw new Error('pure confirmation tests forbid network'); }) as typeof fetch; });
++after(() => { globalThis.fetch = originalFetch; assert.equal(forbiddenFetchCalls, 0); });
++function provider(t: TestContext, mode: 'success' | 'failure-once' | 'lost-ack-once' = 'success') {
++    const key = 're_synthetic_confirmation_' + crypto.randomUUID();
++    const client = getResendClient(key), original = client.emails.send;
++    const attempts: Array<{ message: unknown; options: unknown }> = [];
++    const accepted = new Map<string, string>();
++    client.emails.send = (async (message: unknown, options: unknown) => {
++        attempts.push({ message, options });
++        const stable = (options as { idempotencyKey?: string } | undefined)?.idempotencyKey;
++        assert.equal(typeof stable, 'string');
++        if (mode === 'failure-once' && attempts.length === 1) return { data: null, error: { message: 'synthetic rejected send' } };
++        const fingerprint = JSON.stringify(message);
++        if (accepted.has(stable!)) assert.equal(accepted.get(stable!), fingerprint, 'one delivery key cannot change its message');
++        else accepted.set(stable!, fingerprint);
++        if (mode === 'lost-ack-once' && attempts.length === 1) throw new Error('synthetic acknowledgement lost after acceptance');
++        return { data: { id: 'synthetic-accepted-message' }, error: null };
++    }) as typeof client.emails.send;
++    t.after(() => { client.emails.send = original; });
++    return { key, attempts, accepted };
++}
++const confirmation = { orderId: 'order-1', storeId: 'store-1', requestId: 'request-original', idempotencyKey: 'browser-payment-attempt' };
++function directEnv(key: string) { return { ENVIRONMENT: 'test', RESEND_API_KEY: key, RESEND_FROM_EMAIL: 'Synthetic <sender@example.invalid>' } as Parameters<typeof enqueueOrderConfirmationEmail>[0]; }
++test('direct confirmation uses the same site/order logical key across different payment attempts', async t => {
++    const transport = provider(t);
++    await enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), confirmation);
++    await enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), { ...confirmation, idempotencyKey: 'webhook-attempt', requestId: 'request-retry' });
++    assert.equal(transport.attempts.length, 2);
++    assert.equal(transport.accepted.size, 1, 'fake transport acceptance only, not actual provider delivery');
++    assert.deepEqual(transport.attempts[0], transport.attempts[1]);
++    assert.deepEqual(transport.attempts[0].options, { idempotencyKey: 'email.order_confirmation:store-1:order-1' });
++});
++test('unsuccessful direct adapter result throws so a legitimate retry can send', async t => {
++    const transport = provider(t, 'failure-once');
++    await assert.rejects(enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), confirmation), /email send failed/);
++    assert.equal(transport.accepted.size, 0);
++    await enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), confirmation);
++    assert.equal(transport.attempts.length, 2); assert.equal(transport.accepted.size, 1);
++});
++test('lost direct acknowledgement retries the same key and unchanged message', async t => {
++    const transport = provider(t, 'lost-ack-once');
++    await assert.rejects(enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), confirmation), /acknowledgement lost/);
++    assert.equal(transport.accepted.size, 1);
++    await enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), confirmation);
++    assert.equal(transport.attempts.length, 2); assert.equal(transport.accepted.size, 1);
++    assert.deepEqual(transport.attempts[0], transport.attempts[1]);
++});
++test('concurrent direct confirmations keep one logical identity and immutable body', async t => {
++    const transport = provider(t);
++    await Promise.all([enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), confirmation), enqueueOrderConfirmationEmail(directEnv(transport.key), createDb(), { ...confirmation, idempotencyKey: 'other-arrival' })]);
++    assert.equal(transport.attempts.length, 2); assert.equal(transport.accepted.size, 1);
++});
++test('failed queue acknowledgement retries the original signed logical order job', async () => {
++    const jobs: Array<Record<string, unknown>> = [];
++    const env = { ENVIRONMENT: 'test', QUEUE_TENANT_ENVELOPE_SECRET: 'synthetic-confirmation-envelope', NOTIFICATION_QUEUE: { send: async (job: Record<string, unknown>) => { jobs.push(job); if (jobs.length === 1) throw new Error('synthetic queue ack lost'); } } } as unknown as Parameters<typeof enqueueOrderConfirmationEmail>[0];
++    await assert.rejects(enqueueOrderConfirmationEmail(env, createDb(), confirmation), /queue ack lost/);
++    await enqueueOrderConfirmationEmail(env, createDb(), { ...confirmation, requestId: 'request-after-paid-event' });
++    assert.equal(jobs.length, 2);
++    assert.equal(jobs[0].idempotencyKey, jobs[1].idempotencyKey);
++    assert.deepEqual(jobs[0].payload, jobs[1].payload);
++    assert.equal((jobs[1].tenantEnvelope as { siteId: string }).siteId, confirmation.storeId);
++});
++for (const field of ['order', 'tenant'] as const) test(`mismatched ${field} projection cannot reach confirmation transport`, async t => {
++    const transport = provider(t);
++    const mismatched = { from: () => createQuery({ data: { id: field === 'order' ? 'foreign-order' : confirmation.orderId, store_id: field === 'tenant' ? 'foreign-tenant' : confirmation.storeId, customer_email: 'synthetic@example.invalid' } }) } as unknown as SupabaseClient;
++    await assert.rejects(enqueueOrderConfirmationEmail(directEnv(transport.key), mismatched, confirmation), /binding mismatch/);
++    assert.equal(transport.attempts.length, 0);
++});
++test('order lookup dependency error is retriable and never a successful empty receipt', async t => {
++    const transport = provider(t);
++    const failed = { from: () => createQuery({ data: null, error: { message: 'synthetic lookup fault' } } as QueryResponse) } as unknown as SupabaseClient;
++    await assert.rejects(enqueueOrderConfirmationEmail(directEnv(transport.key), failed, confirmation), /lookup failed/);
++    assert.equal(transport.attempts.length, 0);
++});
++test('other lifecycle email job keeps its existing queue identity and payload', async () => {
++    const jobs: Array<Record<string, unknown>> = [];
++    const env = { ENVIRONMENT: 'test', NOTIFICATION_QUEUE: { send: async (job: Record<string, unknown>) => { jobs.push(job); } } } as unknown as Parameters<typeof enqueueOrderLifecycleEmail>[0];
++    await enqueueOrderLifecycleEmail(env, createDb(), { orderId: 'order-1', storeId: 'store-1', requestId: 'other-job', kind: 'cancelled' });
++    assert.equal(jobs[0].jobType, 'email.order_cancelled');
++    assert.equal(jobs[0].idempotencyKey, 'email.order_cancelled:store-1:order-1');
++});
+diff --git a/services/queue-workers/src/index.ts b/services/queue-workers/src/index.ts
+--- a/services/queue-workers/src/index.ts
++++ b/services/queue-workers/src/index.ts
+@@ -491,6 +491,15 @@
+       throw new QueueProcessingError(`${delivery.input.jobType} payload is invalid`, { deterministic: true });
+     }
+ 
++    const isOrderConfirmation = delivery.input.jobType === 'email.order_confirmation';
++    const confirmationKey = isOrderConfirmation && payload.orderId && payload.storeId
++      ? `email.order_confirmation:${payload.storeId}:${payload.orderId}` : null;
++    if (isOrderConfirmation && (!confirmationKey || payload.storeId !== delivery.input.siteId
++      || delivery.input.idempotencyKey !== confirmationKey
++      || delivery.input.messageId !== `order-confirmation:${payload.storeId}:${payload.orderId}`)) {
++      throw new QueueProcessingError('Order confirmation delivery binding is invalid', { deterministic: true });
++    }
++
+     if (!resendConfigured(env)) {
+       writeQueueLog('error', {
+         job_type: delivery.input.jobType,
+@@ -501,6 +510,7 @@
+         store_id: payload.storeId || delivery.input.siteId,
+         request_id: delivery.input.requestId,
+       });
++      if (isOrderConfirmation) throw new QueueProcessingError('Order confirmation email provider is unavailable', { deterministic: false });
+       continue;
+     }
+ 
+@@ -511,6 +521,7 @@
+       subject: payload.subject,
+       text: payload.text,
+       html: payload.html,
++      ...(confirmationKey ? { idempotencyKey: confirmationKey } : {}),
+     });
+ 
+     if (!result.success) {
+diff --git a/services/queue-workers/test/order-confirmation-delivery.test.mjs b/services/queue-workers/test/order-confirmation-delivery.test.mjs
+new file mode 100644
+--- /dev/null
++++ b/services/queue-workers/test/order-confirmation-delivery.test.mjs
+@@ -0,0 +1,92 @@
++// Pure transport/function contracts. This evaluates the exact private worker
++// source in a denied-runtime VM, never invokes its fetch/queue/scheduled entry,
++// and replaces the existing SDK send before calling the readonly adapter.
++import assert from 'node:assert/strict';
++import test, {before,after} from 'node:test';
++import fs from 'node:fs';
++import vm from 'node:vm';
++import {createRequire} from 'node:module';
++import {createHmac,webcrypto} from 'node:crypto';
++const require=createRequire(import.meta.url),ts=require('typescript');
++const adapter=require('@letbuyy/infrastructure/resend-adapter');
++const producer=require('../../api-gateway/src/lib/order-confirmation-email.ts');
++const source=fs.readFileSync(new URL('../src/index.ts',import.meta.url),'utf8');
++const originalFetch=globalThis.fetch;let forbiddenFetch=0;
++before(()=>{globalThis.fetch=async()=>{forbiddenFetch++;throw Error('pure delivery tests forbid network');};});
++after(()=>{globalThis.fetch=originalFetch;assert.equal(forbiddenFetch,0);});
++function worker(){
++ const module={exports:{}},logs=[];
++ const denied=()=>{throw Error('pure transport tests forbid runtime/database/queue services');};
++ const script=ts.transpileModule(source+'\nexport const __pureTransport={dispatchEmailDeliveries,normalizePayload,isDeterministicQueueError};',{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
++ const context=vm.createContext({module,exports:module.exports,require:name=>name==='@letbuyy/infrastructure/resend-adapter'?adapter:new Proxy({},{get:()=>denied}),crypto:webcrypto,TextEncoder,TextDecoder,Date,Error,JSON,console:{info:v=>logs.push(v),warn:v=>logs.push(v),error:v=>logs.push(v)}});
++ vm.runInContext(script,context,{timeout:1000});return{...module.exports.__pureTransport,logs};
++}
++function provider(t,mode='success'){
++ const key='re_synthetic_consumer_'+webcrypto.randomUUID(),client=adapter.getResendClient(key),original=client.emails.send,attempts=[],accepted=new Map();
++ client.emails.send=async(message,options)=>{
++  attempts.push({message,options});const identity=options?.idempotencyKey;
++  if(mode==='failure-once'&&attempts.length===1)return{data:null,error:{message:'synthetic provider refusal'}};
++  if(identity){const content=JSON.stringify(message);if(accepted.has(identity))assert.equal(accepted.get(identity),content);else accepted.set(identity,content);}
++  if(mode==='lost-ack-once'&&attempts.length===1)throw Error('synthetic lost provider acknowledgement');
++  return{data:{id:'synthetic-provider-message'},error:null};
++ };t.after(()=>{client.emails.send=original;});return{key,attempts,accepted};
++}
++const site='site-synthetic',order='order-synthetic',secret='synthetic-delivery-tenant-envelope';
++const env=key=>({ENVIRONMENT:'development',QUEUE_TENANT_ENVELOPE_SECRET:secret,RESEND_API_KEY:key,RESEND_FROM_EMAIL:'Synthetic <sender@example.invalid>'});
++function job(overrides={}){
++ const body={messageId:`order-confirmation:${site}:${order}`,queueName:'email',jobType:'email.order_confirmation',siteId:site,idempotencyKey:`email.order_confirmation:${site}:${order}`,requestId:'request-original',payload:{to:'buyer@example.invalid',subject:'Synthetic order confirmed',text:'Synthetic confirmed order',html:'<p>Synthetic confirmed order</p>',order_id:order,store_id:site},...overrides};
++ const issuedAt=new Date().toISOString();body.tenantEnvelope={siteId:body.siteId,issuedAt,signature:createHmac('sha256',secret).update(`${body.siteId}.${body.messageId}.${body.idempotencyKey}.${issuedAt}`).digest('hex')};return body;
++}
++async function normalized(w,e,body=job()){
++ const message={id:'synthetic-queue-message',body};const batch={queue:'email',messages:[message]};const input=await w.normalizePayload(e,message,batch);return{message,input,status:'completed',lagMilliseconds:0};
++}
++test('consumer forwards the canonical site/order delivery key to the actual readonly adapter',async t=>{
++ const w=worker(),p=provider(t),e=env(p.key);await w.dispatchEmailDeliveries(e,[await normalized(w,e)]);
++ assert.equal(p.attempts.length,1);assert.deepEqual(p.attempts[0].options,{idempotencyKey:`email.order_confirmation:${site}:${order}`});
++});
++test('duplicate and concurrent confirmation deliveries preserve one logical key and unchanged multipart message',async t=>{
++ const w=worker(),p=provider(t),e=env(p.key),d=await normalized(w,e);
++ await Promise.all([w.dispatchEmailDeliveries(e,[d]),w.dispatchEmailDeliveries(e,[d])]);
++ assert.equal(p.attempts.length,2);assert.equal(p.accepted.size,1,'fake acceptance only, no actual provider/inbox claim');assert.deepEqual(p.attempts[0],p.attempts[1]);
++});
++for(const mode of ['failure-once','lost-ack-once'])test(`consumer ${mode} remains retryable with the same delivery identity`,async t=>{
++ const w=worker(),p=provider(t,mode),e=env(p.key),d=await normalized(w,e);
++ let failure;try{await w.dispatchEmailDeliveries(e,[d]);}catch(error){failure=error;}assert.ok(failure);assert.equal(w.isDeterministicQueueError(failure),false);
++ await w.dispatchEmailDeliveries(e,[d]);assert.equal(p.attempts.length,2);assert.equal(p.accepted.size,1);assert.deepEqual(p.attempts[0].options,p.attempts[1].options);
++});
++for(const mismatch of ['site','order-key','message-key','missing-order'])test(`confirmation refuses ${mismatch} binding before a transport attempt`,async t=>{
++ const w=worker(),p=provider(t),e=env(p.key),body=job();
++ if(mismatch==='site')body.payload.store_id='foreign-site';
++ if(mismatch==='order-key')body.idempotencyKey='foreign-delivery-key';
++ if(mismatch==='message-key')body.messageId='foreign-message';
++ if(mismatch==='missing-order')delete body.payload.order_id;
++ // Re-sign declared envelope for the crafted producer; dispatch must still bind
++ // the payload's actual site/order to the normalizer's verified authority.
++ const signed=job(body),d=await normalized(w,e,signed);
++ let failure;try{await w.dispatchEmailDeliveries(e,[d]);}catch(error){failure=error;}assert.ok(failure);assert.equal(w.isDeterministicQueueError(failure),true);assert.equal(p.attempts.length,0);
++});
++for(const attack of ['missing','forged','swapped-site'])test(`existing tenant envelope rejects ${attack} proof before dispatch`,async t=>{
++ const w=worker(),p=provider(t),e=env(p.key),body=job();
++ if(attack==='missing')delete body.tenantEnvelope;
++ if(attack==='forged')body.tenantEnvelope.signature='0'.repeat(64);
++ if(attack==='swapped-site')body.siteId='foreign-site';
++ await assert.rejects(normalized(w,e,body),/Tenant/);assert.equal(p.attempts.length,0);
++});
++test('missing order-confirmation provider configuration is retryable, not silently acknowledged by dispatch',async()=>{
++ const w=worker(),e=env('SKIP_NEEDS_HUMAN_SYNTHETIC');const d=await normalized(w,e);let failure;try{await w.dispatchEmailDeliveries(e,[d]);}catch(error){failure=error;}assert.ok(failure);assert.equal(w.isDeterministicQueueError(failure),false);
++});
++for(const other of ['email.order_cancelled','email.order_refunded','email.gift_card_issued','email.employee_invite','email.contact_owner_notification'])test(`unchanged other transactional transport: ${other}`,async t=>{
++ const w=worker(),p=provider(t),e=env(p.key),d=await normalized(w,e,job({jobType:other}));await w.dispatchEmailDeliveries(e,[d]);assert.equal(p.attempts.length,1);assert.equal(p.attempts[0].options,undefined);
++});
++function db(){return{from(table){const filters={};return{select(){return this;},eq(k,v){filters[k]=v;return this;},async maybeSingle(){return{data:{id:order,store_id:site,order_number:'SYN-1',customer_name:'Synthetic',customer_email:'buyer@example.invalid',total:100,currency:'INR'}};},async order(){return{data:[{title:'Saved item',quantity:1,unit_price:100,total:100}]};}};}};}
++test('actual producer direct and signed queued paths use identical provider key and message for the same order',async t=>{
++ const w=worker(),p=provider(t),e=env(p.key),enqueued=[];
++ const input={orderId:order,storeId:site,requestId:'direct-arrival',idempotencyKey:'payment-attempt-a'};
++ await producer.enqueueOrderConfirmationEmail({...e,NOTIFICATION_QUEUE:{send:async body=>{enqueued.push(body);}}},db(),input);
++ const d=await normalized(w,e,enqueued[0]);
++ await Promise.all([producer.enqueueOrderConfirmationEmail(e,db(),{...input,idempotencyKey:'payment-attempt-b'}),w.dispatchEmailDeliveries(e,[d])]);
++ assert.equal(p.attempts.length,2);assert.deepEqual(p.attempts[0],p.attempts[1]);assert.equal(p.accepted.size,1);
++});
++test('only existing confirmation-dispatch function differs from current baseline worker source',()=>{
++ const baseline=fs.readFileSync('/Volumes/Projects/LetBuyy/services/queue-workers/src/index.ts','utf8');const strip=s=>{const start=s.indexOf('async function dispatchEmailDeliveries('),end=s.indexOf('\nasync function triggerCustomDomainReconciler',start);return s.slice(0,start)+'CONFIRMATION_DISPATCH'+s.slice(end);};assert.equal(strip(source),strip(baseline));
++});

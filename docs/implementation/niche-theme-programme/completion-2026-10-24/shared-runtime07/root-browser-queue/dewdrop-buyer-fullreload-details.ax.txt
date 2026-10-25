@@ -1,0 +1,42 @@
+- generic: Dewdrop Runtime07 A — considered care
+- link:
+  - /url: ""
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - button "Search":
+    - generic: Search
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 0 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "0"
+    - text: )
+- 'heading "Order #ORD-20261024-10003" [level=1]'
+- paragraph: "Status: confirmed"
+- list:
+  - generic: Fixture Soft Colour
+  - generic: "1"
+  - generic: INR 560.00
+  - generic "Saved product details" [active]
+  - paragraph: "Saved options Shade name: Pink Clay पैक आकार: एक इकाई Care details Routine stage: colour Product format: Lip tint Per-item net quantity: 6 ml Selected shade: Pink Clay Shade code: PC02 Supplied colour reference: #a36a65 Product ingredient statement: Common tint v1: fixture oil and wax; see named shade ingredients. Selected-shade ingredients: Pink Clay v1: fixture oil, CI 77492. Directions: Fixture directions v1: use as supplied. Warnings: Fixture warning v1: external use only."
+- paragraph: "Total: INR 580.00"
+- list:
+  - listitem: Pending
+  - listitem: Confirmed
+  - listitem: Processing
+  - listitem: Shipped
+  - listitem: Delivered
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

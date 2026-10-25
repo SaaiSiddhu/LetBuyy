@@ -1,0 +1,10 @@
+{
+  "status": "ROOT_ACCEPTED_CORRECTED_PROPOSAL",
+  "manifestSha256": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f",
+  "manifestFileSha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515",
+  "generatorSha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3",
+  "promotionUpSha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+  "promotionDownSha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+  "rootReceiptPath": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+  "rootReceiptSha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+}

@@ -1,0 +1,96 @@
+{
+  "recordedAt": "2026-10-24T19:50:01.620384+00:00",
+  "status": "ALL12_RESUMPTION_MESSAGES_DELIVERED",
+  "runId": "49ada80bc494",
+  "sharedOwners": [
+    "Themes",
+    "Theme Editor \u2014 End-to-End"
+  ],
+  "queue": [
+    {
+      "theme": "Threadline",
+      "key": "threadline",
+      "threadId": "01a16d03-613e-71b0-a591-07d4d24347d4",
+      "position": 1
+    },
+    {
+      "theme": "Pantry",
+      "key": "pantry",
+      "threadId": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "position": 2,
+      "ownerSubmission": {
+        "recordedAt": "2026-10-24T20:07:00.565566+00:00",
+        "status": "READY_FOR_SINGLE_CONTROLLER_BINDING_AND_FINITE_EXECUTION",
+        "coverage": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/COVERAGE.json",
+        "jsonPointer": "/currentRuntime07",
+        "coverageSha256AtSubmission": "58103a6d7ce7592bcb9d1143a30593f28c0b451eecf4b67b529e293b403a523f",
+        "caseIds": [
+          "RP-PURCHASE",
+          "P09",
+          "P10",
+          "P11",
+          "P12",
+          "ED-FIELD:section:product-detail.showDescription",
+          "HISTORY-IMMUTABLE"
+        ],
+        "priority": "ActualTestPurchaseq1 before publicHTTPS expiry; preserveP09CODq2 andP12 remaining-stock positive control",
+        "sourceRisk": "Empty-description guard still literal in sealed source; actual current normal-clear retest required, no falsefix from showDescriptionfalse",
+        "noOwnBrowserStackProviderCalls": true
+      }
+    },
+    {
+      "theme": "Dewdrop",
+      "key": "dewdrop",
+      "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "position": 3
+    },
+    {
+      "theme": "Habitat",
+      "key": "habitat",
+      "threadId": "01a164ba-c402-7212-990d-ed4792274b37",
+      "position": 4
+    },
+    {
+      "theme": "Circuit",
+      "key": "circuit",
+      "threadId": "01a164ba-a97f-7d80-9430-57924218664b",
+      "position": 5
+    },
+    {
+      "theme": "Trailmark",
+      "key": "trailmark",
+      "threadId": "01a164ba-f650-7f00-beea-90431a510973",
+      "position": 6
+    },
+    {
+      "theme": "Marginalia",
+      "key": "marginalia",
+      "threadId": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "position": 7
+    },
+    {
+      "theme": "Kindred",
+      "key": "kindred",
+      "threadId": "01a164ba-d306-7953-9745-b375f5cf21c9",
+      "position": 8
+    },
+    {
+      "theme": "MadeYours",
+      "key": "madeyours",
+      "threadId": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "position": 9
+    },
+    {
+      "theme": "Playfield",
+      "key": "playfield",
+      "threadId": "01a164ba-4751-75e1-8148-605cd263848e",
+      "position": 10
+    }
+  ],
+  "browserController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "allTenCertified": false,
+  "ownerMessagesDispatched": true,
+  "readiness": "shared-runtime07/SHARED_READINESS_GATE.json",
+  "dispatchedAt": "2026-10-24T19:52:28.711200+00:00",
+  "receipt": "RUNTIME07_RESUMPTION_DISPATCHES.json"
+}

@@ -1,0 +1,66 @@
+{
+  "sitePolicy": {
+    "id": "dab3ec50-c5e9-4af2-b6bc-a365ad092b67",
+    "status": "published",
+    "published": true,
+    "subdomain": "syn-niche389-a-284efd5d",
+    "access_mode": "public",
+    "custom_domain": null,
+    "custom_domain_status": "none"
+  },
+  "failedMetadata": [
+    {
+      "resource": "sites",
+      "query": "select=id%2Csubdomain%2Ccustom_domain%2Ccustom_domain_status%2Caccess_mode%2Cpublished%2Cstatus%2Caccess_password_hash&deleted_at=is.null&subdomain=eq.syn-niche389-a-284efd5d&status=eq.published&published=not.is.false",
+      "status": "FETCH_THREW",
+      "name": "TypeError",
+      "message": "fetch failed",
+      "causeCode": "ECONNRESET",
+      "causeMessage": "read ECONNRESET"
+    }
+  ],
+  "metadataResponses": [
+    {
+      "status": 200,
+      "shape": {
+        "kind": "array",
+        "length": 1,
+        "publicRows": [
+          {
+            "id": "dab3ec50-c5e9-4af2-b6bc-a365ad092b67",
+            "status": "published",
+            "published": true,
+            "access_mode": "public"
+          }
+        ]
+      }
+    }
+  ],
+  "calls": [
+    {
+      "resource": "sites",
+      "method": "GET",
+      "query": "select=id%2Csubdomain%2Ccustom_domain%2Ccustom_domain_status%2Caccess_mode%2Cpublished%2Cstatus%2Caccess_password_hash&deleted_at=is.null&subdomain=eq.syn-niche389-a-284efd5d&status=eq.published&published=not.is.false"
+    },
+    {
+      "resource": "runtime_telemetry_metrics",
+      "method": "POST",
+      "query": ""
+    },
+    {
+      "resource": "runtime_telemetry_metrics",
+      "method": "POST",
+      "query": ""
+    },
+    {
+      "resource": "worker_request_logs",
+      "method": "POST",
+      "query": ""
+    },
+    {
+      "resource": "sites",
+      "method": "GET",
+      "query": "select=id%2Csubdomain%2Ccustom_domain%2Ccustom_domain_status%2Caccess_mode%2Cpublished%2Cstatus%2Caccess_password_hash&deleted_at=is.null&subdomain=eq.syn-niche389-a-284efd5d&status=eq.published&published=not.is.false"
+    }
+  ]
+}

@@ -85,7 +85,7 @@ test('customers require owned store scope before exposing profiles, orders, or a
     assert.match(tenantSource, /export interface OwnedStoreScope/);
     assert.match(tenantSource, /export async function resolveOwnedStoreScope/);
     assert.match(tenantSource, /verifySiteOwnership\(db,\s*siteId,\s*customUser\.id,\s*authUser\.storeId\)/);
-    assert.match(routeSource, /import \{ resolveOwnedStoreScope \} from '\.\.\/lib\/tenant-context'/);
+    assert.match(routeSource, /import \{ resolveOwnedStoreScope, resolveMerchantResourceStoreIds \} from '\.\.\/lib\/tenant-context'/);
     assert.match(routeSource, /async function hasOwnedStoreScope\(c: CustomerRouteContext,\s*storeId: string\)/);
     assert.match(routeSource, /await resolveOwnedStoreScope\(c,\s*storeId\)/);
     assert.doesNotMatch(routeSource, /async function verifyStoreOwnership/);

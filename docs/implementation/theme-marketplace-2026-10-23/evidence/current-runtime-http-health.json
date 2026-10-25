@@ -1,0 +1,82 @@
+{
+  "checkedAt": "2026-10-23T13:45:38.795Z",
+  "runId": "d4eb85047858",
+  "results": [
+    {
+      "name": "apiCatalog",
+      "url": "http://127.0.0.1:59599/v1/themes?limit=50",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'none'",
+      "xFrameOptions": "DENY",
+      "bytes": 9868,
+      "threadline": true,
+      "apiCount": 10,
+      "applicationError": false
+    },
+    {
+      "name": "marketplace",
+      "url": "http://localhost:9005/themes",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'self'",
+      "xFrameOptions": "SAMEORIGIN",
+      "bytes": 580107,
+      "threadline": true,
+      "applicationError": false
+    },
+    {
+      "name": "detail",
+      "url": "http://localhost:9005/themes/letbuyy-sense",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'self'",
+      "xFrameOptions": "SAMEORIGIN",
+      "bytes": 569405,
+      "threadline": true,
+      "applicationError": false
+    },
+    {
+      "name": "demo",
+      "url": "http://localhost:59596/theme-preview/letbuyy-sense?version=2.0.0&embedded=1&demo_path=%2F",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'self' http://admin.threadline-d4eb85047858.localhost:59595 http://localhost:9005",
+      "xFrameOptions": null,
+      "bytes": 407829,
+      "threadline": true,
+      "applicationError": false
+    },
+    {
+      "name": "install",
+      "url": "http://localhost:9005/install?theme=letbuyy-sense&version=2.0.0",
+      "status": 307,
+      "redirect": "http://accounts.threadline-d4eb85047858.localhost:59594/lookup?return_to=http%3A%2F%2Flocalhost%3A9005%2Finstall%3Ftheme%3Dletbuyy-sense%26version%3D2.0.0",
+      "frameAncestors": "frame-ancestors 'self'",
+      "xFrameOptions": "SAMEORIGIN",
+      "bytes": 154,
+      "threadline": false,
+      "applicationError": false
+    }
+  ],
+  "startupHealth": [
+    {
+      "name": "accounts",
+      "url": "http://accounts.threadline-d4eb85047858.localhost:59594/login",
+      "status": 200,
+      "redirect": null
+    },
+    {
+      "name": "admin",
+      "url": "http://admin.threadline-d4eb85047858.localhost:59595",
+      "status": 307,
+      "redirect": "http://accounts.threadline-d4eb85047858.localhost:59594/lookup"
+    },
+    {
+      "name": "commerce",
+      "url": "http://localhost:59596/api/buyer-auth/session",
+      "status": 200,
+      "redirect": null
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-24T20:20:01.364655+00:00",
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/COVERAGE.json",
+      "sha256": "b23b8dd00f666816678ec1ad409ceefe7fd826dc26a6db840ca19e23b7bfb91b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/SHARED_REQUESTS.json",
+      "sha256": "df1ac5f2bd27dbe4a72fbd2ad2ede0afad96177a6c5c838228fb287fc51fc085"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/FINDINGS.md",
+      "sha256": "2da43ac81bd6e4a68d90ecc04b4275a97c1b015e3dcb4a2c001658778bcc3185"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/PUBLIC_CATALOGUE_READ01.json",
+      "sha256": "05f90805cee325578361a2ed9d026370fef97ddda626324e9a064ae8476860d4"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/PUBLIC_CATALOGUE_READ02.json",
+      "sha256": "c1fca79fe9e9c91b3eaa7491bd402c932af151a71f8a45503629282a57ec3b04"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/METADATA_ACTUAL_FAILURE_AND_CORRECTION_INPUT.json",
+      "sha256": "3584bbd87a331fbf27e154e14ea4c71cd6eadf8b5b230499fe03e4acc2edfbde"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/EDITOR_SLICE_SUBMISSION.current.json",
+      "sha256": "379f2ce81193cde2ce72e967b74ad8dbdf1ac12c9e3f496223926d8a92128ad2"
+    }
+  ]
+}

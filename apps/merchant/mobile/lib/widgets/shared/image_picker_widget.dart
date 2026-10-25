@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../services/storage_service.dart';
 import 'cached_merchant_image.dart';
 import 'image_source_sheet.dart';
+import 'merchant_media_picker.dart';
 
 class ImagePickerWidget extends StatefulWidget {
   final String? initialUrl;
@@ -34,21 +35,22 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
       final source = await showImageSourceSheet(context);
       if (source == null) return;
 
-      final XFile? image = await _picker.pickImage(source: source);
-      if (image == null) return;
-
+      if (!mounted) return;
       setState(() {
         _isUploading = true;
         _error = null;
       });
 
+      final image = await pickMerchantMedia(context, source: source,
+          pick: () => _picker.pickImage(source: source));
+      if (!mounted || image == null) return;
       final storageService = context.read<StorageService>();
       final downloadUrl = await storageService.uploadImage(
         File(image.path),
         path: widget.storagePath,
       );
 
-      widget.onChanged(downloadUrl);
+      if (mounted) widget.onChanged(downloadUrl);
     } catch (error) {
       if (!mounted) return;
       setState(() => _error = 'Image upload failed.');

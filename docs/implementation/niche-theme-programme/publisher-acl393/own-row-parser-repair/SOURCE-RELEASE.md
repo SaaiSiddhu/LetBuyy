@@ -1,0 +1,15 @@
+# ACL393 own-row parser correction
+
+2026-10-24. Tiny source-only correction under Root's renewed source lease. **No native retry or393 emission is authorized or performed.** Native run `d487018486d2`, its failure, five full provenance files, old source bytes and old closure/admission snapshots remain preserved.
+
+Phase1 still runs the same transaction, app_tenant role, exact primary-site GUC and own-row count predicate. Its SELECT now emits the explicit JSON marker `ACL393_OWN_ROW_COUNT` with a numeric count. The actual `parseOwnRowCount` function locates that JSON result among psql command tags, requires exactly one marker, requires a safe-integer JSON number, and asserts count===1. It rejects zero, strings, fractions, missing/malformed and duplicate markers. `BEGIN`, `SET`, the set_config value and `ROLLBACK` carry no count authority. There is no fallback or tag-filtering shortcut that makes an empty positive control pass.
+
+[12 pure source/admission checks](source-contracts.tap) pass with no fail/skip/cancel/todo. Four new tests compile the actual parser declaration only, never importing the owned native module: tagged positive1; zero/untyped/noninteger denial; missing/malformed/duplicate denial; and the closed run01 admission's rejection against the new native bytes. The previous source-only file-absence assertion was retargeted to exact-source rejection because Root's actual closed admission now exists; it was neither deleted nor refreshed by this repair. All original eight contract/admission obligations remain exercised.
+
+The [exact native semantic compile](native-semantic.log) and [native ESLint](native-eslint.json) pass with no diagnostics/errors/warnings. No full Gateway,107-test updater,19-test accepted suite, native module or SQL was executed.
+
+Only the new native parser/phase1 result shape, adjacent pure checks and collector's explicit closed-admission snapshot input changed. Phases2–7 are byte-for-byte unchanged; phase1 role/GUC/query authority and all seven phase/security/refusal/data/rollback obligations remain. Both candidate SQL hashes and the c939 manifest are exact. Existing production app/tenant-helper/engine/old SQL, old aa26 catalog native, old1079 inputs,61 factory pins and RT1/RT2/RT7 remain untouched.
+
+The separate current closure binds1072 inputs/1998 literal edges/zero nonliteral imports. Its only added data input is the frozen run01 admission snapshot used to prove that closed permission cannot qualify these new source bytes. The old1071-file3697 closure remains in run01 before/after snapshots. A pending invalid template names the new native and closure hashes; the actual admission file still contains the closed24d1/3697 grant and is unchanged. The native prefix refuses it before obtaining an owned database handle.
+
+Root must review this exact diff and hashes and issue a new admission/allocation before another native run. Candidates remain outside the active migration scan; source is321 UP files/max392. No393 candidate has yet been exercised by this suite. No394 generation, current936e/persistentMarketplace or retained Threadline actions occurred.

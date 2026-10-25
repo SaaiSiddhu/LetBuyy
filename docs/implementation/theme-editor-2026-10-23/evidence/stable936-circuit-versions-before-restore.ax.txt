@@ -1,0 +1,195 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-forge/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-forge/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Circuit Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Circuit home, Secondary Actions: Expand
+				13 menu
+					14 (selected) Circuit home
+					15 Circuit product
+					16 Circuit collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 Circuit search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Version history, Value: 2
+				41 text Version history
+			42 text v9
+			376 container
+				377 text Draft Version 9 24/10/2026, 11:46:06
+			378 container
+				379 text PUBLISHED VERSIONS Version  15 24/10/2026, 11:46:06 Current Version  14 24/10/2026, 11:45:35
+			380 link Description: Updates and recovery, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/update?[query-redacted]
+		111 container Live theme preview
+			112 text Live preview
+			113 text syn-threadline-ui-6815276b . localhost  -  1440 px
+			114 container Preview device
+				115 checkbox Desktop, Value: 1
+				116 checkbox Tablet, Value: 0
+				117 checkbox Mobile, Value: 0
+			118 container
+				119 text syn-threadline-ui-6815276b . localhost
+				120 checkbox Description: Inspect preview, Value: 1
+				256 container syn-threadline-ui-6815276b storefront preview
+					257 AXWebArea LetBuyy Store, URL: localhost:58091/preview?[query-redacted]
+						258 container
+							259 checkbox Description: Select announcement-bar section, Value: 1
+							260 checkbox Description: Select header section, Value: 0
+								261 container Description: Primary, ID: lb-nav-panel-header-default
+								262 link Description: Threadline, Value: localhost:58091/store/syn-threadline-ui-6815276b
+								263 container
+									264 text Search products, models and connectors
+									265 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+									266 button Search
+								267 link Description: Log in, Value: localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+								268 link Description: Cart ( 0 ), Value: localhost:58091/store/syn-threadline-ui-6815276b/cart
+							269 checkbox Description: Select category-grid section, Value: 0
+								270 text ELECTRONICS, MADE LEGIBLE
+								271 heading What do you need to connect?, Value: 1
+									272 text What do you need to connect?
+								273 text Start with the task. Finish with the right model.
+								274 link Description: Care Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/d2005c42-10c1-4bf4-af35-5fcf33be5af9
+								275 link Description: Cleanse Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/2deb16a5-cac9-4df9-b8a6-635d25fbaae2
+								276 link Description: Colour Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/310a7230-7390-4b87-ba67-08c38f35b838
+								277 link Description: Easy Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/32db8972-ce49-4b69-8c08-6f65d4de20b5
+								278 link Description: Habitat dimensional controls Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/6e25118a-9f39-4ad9-8374-d0b5bf3e4e25
+								279 link Description: Lifecycle accessories Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+								280 link Description: Lifecycle activities Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/652b787f-848f-47a2-a00f-12a3d93adfa3
+								281 link Description: Lifecycle books Explore collection →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058
+							282 checkbox Description: Select hero-banner section, Value: 0
+								283 text FEATURED MODEL
+								284 heading Circuit 936 B exact model, Value: 2
+									285 text Circuit 936 B exact model
+								286 text Read the model, connector roles and required features before choosing.
+								287 link Description: Explore accessories, Value: localhost:58091/store/syn-threadline-ui-6815276b/products
+							288 checkbox Description: Select product-grid section, Value: 0
+								289 heading Small details. Better decisions., Value: 2
+									290 text Small details. Better decisions.
+								291 container
+									292 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									293 heading The Everyday Cotton Dress, Value: 3
+										294 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									295 text Technical facts not supplied INR 3,990.00
+									296 link Description: Choose options →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									297 text Available
+								298 container
+									299 link Description: Product image not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									300 heading MadeYours lifecycle notebook, Value: 3
+										301 link Description: MadeYours lifecycle notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									302 text Technical facts not supplied INR 690.00
+									303 link Description: Choose options →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									304 text Available
+								305 container
+									306 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									307 heading Fixture Cloud Rinse, Value: 3
+										308 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									309 text Technical facts not supplied INR 640.00
+									310 link Description: View product →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									311 text Available
+								312 container
+									313 link Description: Product image not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+									314 heading Habitat width-only shelf, Value: 3
+										315 link Description: Habitat width-only shelf, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+									316 text Technical facts not supplied INR 1,400.00
+									317 link Description: View product →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+									318 text Available
+								319 container
+									320 link Description: Marginalia lifecycle lined notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+									321 heading Marginalia lifecycle lined notebook, Value: 3
+										322 link Description: Marginalia lifecycle lined notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+									323 text Technical facts not supplied INR 320.00
+									324 link Description: View product →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+									325 text Available
+								326 container
+									327 link Description: The Everyday Linen Shirt, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+									328 heading The Everyday Linen Shirt, Value: 3
+										329 link Description: The Everyday Linen Shirt, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+									330 text Technical facts not supplied INR 2,490.00
+									331 link Description: Choose options →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+									332 text Available
+								333 container
+									334 link Description: Kindred lifecycle gift box, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+									335 heading Kindred lifecycle gift box, Value: 3
+										336 link Description: Kindred lifecycle gift box, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+									337 text Technical facts not supplied INR 1,100.00
+									338 link Description: View product →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+									339 text Available
+								340 container
+									341 link Description: Tailored Straight Trouser, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4c2d7870-da01-4f42-926a-012434b7d3e9
+									342 heading Tailored Straight Trouser, Value: 3
+										343 link Description: Tailored Straight Trouser, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4c2d7870-da01-4f42-926a-012434b7d3e9
+									344 text Technical facts not supplied INR 3,290.00
+									345 link Description: Choose options →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4c2d7870-da01-4f42-926a-012434b7d3e9
+									346 text Available
+							347 checkbox Description: Select about-section section, Value: 0
+								348 heading Same connector. Different capabilities., Value: 2
+									349 text Same connector. Different capabilities.
+								350 text Connector shape alone does not establish device compatibility.
+								351 container
+									352 text 01
+									353 heading Find the exact model, Value: 3
+										354 text Find the exact model
+									355 text Use the complete device model identifier.
+								356 container
+									357 text 02
+									358 heading Check the required feature, Value: 3
+										359 text Check the required feature
+									360 text Display, data and power are separate capabilities.
+								361 container
+									362 text 03
+									363 heading Read the reference, Value: 3
+										364 text Read the reference
+									365 text No model reference means compatibility is unconfirmed.
+							366 checkbox Description: Select trust-badges section, Value: 0
+							367 checkbox Description: Select footer section, Value: 0
+								368 heading Threadline, Value: 3
+									369 text Threadline
+								370 text Circuit 936 B footer saved
+								371 heading CONTACT, Value: 4
+									372 text CONTACT
+								373 link Description: Contact us, Value: localhost:58091/store/syn-threadline-ui-6815276b/contact
+								374 text © Threadline. All rights reserved.
+								375 link Description: Powered by LetBuyy, Value: letbuyy.com/
+		241 container Theme properties
+			242 text Selected section
+			243 heading Announcement Bar, Value: 2
+				244 text Announcement Bar
+			245 container Smart defaults
+				246 button (collapsed) Smart defaults, Secondary Actions: Expand
+					247 text Smart defaults
+			248 container
+				249 text Message
+				250 text field (settable) Message, Value: Circuit 936 B — saved recovery draft.
+				251 text Link URL
+				252 text field (settable) Link URL
+				253 text Link label
+				254 text field (settable) Link label
+				255 text BLOCKS
+
+The focused UI element is 8 button Versions

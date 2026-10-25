@@ -1,0 +1,145 @@
+{
+  "checkedAt": "2026-10-23T13:06:52.154489+00:00",
+  "verdict": "NATIVE_SQL_AND_MOUNTED_HTTP_QUALIFIED_BROWSER_PENDING",
+  "runId": "b07d0d6ed853",
+  "native": {
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "wallSeconds": 52.4,
+    "throughMigration": 388,
+    "jobs": 1,
+    "noReap": true,
+    "receipt": "native-runs/06-green/result.json",
+    "tap": "native-runs/06-green/suite.tap"
+  },
+  "drafts": [
+    {
+      "path": "390_measurement_discovery.up.draft.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    {
+      "path": "390_measurement_discovery.down.draft.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    }
+  ],
+  "bodyMd5": {
+    "baselineAndDown": "9af9d5e2e51052a874ffad94fc8088d6",
+    "up": "95cda4d15f36172c5457ad5045600cde"
+  },
+  "pure": {
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "tap": "contract-checks.log"
+  },
+  "typecheck": {
+    "command": "pnpm --filter @letbuyy/api-gateway exec tsc --noEmit",
+    "exitCode": 0,
+    "log": "prepared-suite-typecheck.log"
+  },
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-measurement-discovery.postgres.test.ts",
+    "greenNativeSha256": "f07547909963046540a0d7dc71502e8b3e005ed19597ab0b5e495c436de9dd37",
+    "finalTypedSha256": "041a97bd8dd920b2a0dbdbde14b5940235a4a9540a5ad4c2f0990c49f21612af",
+    "typeOnlyFollowup": "native-runs/06-green/type-only-followup.json",
+    "runtimeEmittedCodeIdentical": true
+  },
+  "measuredPerformance": {
+    "executionMs": 33.529,
+    "capabilityBytes": 144,
+    "scope": "finite fixture function-call smoke; no internal plan/production benchmark claim"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "databaseLaneReleased": true,
+  "qualifiedChecks": [
+    "real SQL equivalents, query-unit bounds and full strict metadata use available witnesses",
+    "equipment options/price/length stay on one available canonical variant",
+    "assembled width/depth are independent, threshold precision is unchanged and no other geometry fills an axis",
+    "independent controls do not manufacture a joint variant fit or cross-variant material/finish match",
+    "capabilities cover scoped fully matched cohort before pagination and active empty result is false",
+    "every preexisting raw result field and business row remains exact across390",
+    "actual mounted worker forwards equipment and each furniture axis through canonical reader with one RPC per query",
+    "mounted worker rejects a malformed partial capability response after a real positive control",
+    "bounded actual SQL perf smoke reports work and constant-size capability, not production performance",
+    "both legs reject ACL/grantor/inherited-role drift and UP/DOWN/UP restores exact baseline/profile/data"
+  ],
+  "oldOutputParity": {
+    "queries": 17,
+    "allNineNicheFixtures": true,
+    "comparison": "Every original raw response field excluding only new measurement_capabilities; exact business product/variant/option/inventory snapshots"
+  },
+  "nativeConservation": [
+    "complete pg_proc row except prosrc across each leg",
+    "exact raw ACL/grantor/owner/signature/default AST/security/search_path/options",
+    "comment and direct/shared dependencies",
+    "exact baseline function definition and catalog after DOWN",
+    "business rows unchanged throughout",
+    "UP-DOWN-UP exact expanded catalog recovered",
+    "initial ACL/non-owner grantor/inherited service-role mutants rejected before both legs",
+    "repeated UP and DOWN refused without changes"
+  ],
+  "mountedHttpCoverage": [
+    "equipment length exact pair",
+    "maximum assembled width",
+    "maximum assembled depth",
+    "joint width/depth plus material/finish same-variant witnesses",
+    "complete discovery object equality with actual SQL result",
+    "one browse RPC per request",
+    "private normalized measurement keys absent from public response",
+    "partial present capabilities rejected with sanitized500 after positive200"
+  ],
+  "corrections": [
+    {
+      "archive": "native-runs/01-red-acl-mutant-cleanup",
+      "fix": "Test native GRANT mutant must be undone by native REVOKE, restoring pg_shdepend as well as raw proacl."
+    },
+    {
+      "archive": "native-runs/02-red-non-body-drift",
+      "fix": "Strict draft conservation correctly refused non-body change; no guard relaxed."
+    },
+    {
+      "archive": "native-runs/03-infrastructure-rest-readiness",
+      "fix": "No tests ran: REST readiness401 after long host elapsed gap; fresh retry."
+    },
+    {
+      "archive": "native-runs/04-red-default-ast-diagnostic",
+      "fix": "Actual explicit BEGIN/ROLLBACK diagnostic proved sole proargdefaults source locations103/138 shifted to104/139. Removed only leading newline from dynamic DDL in both drafts; exact AST preserved."
+    },
+    {
+      "archive": "native-runs/05-red-invalid-positive-variant-fixture",
+      "fix": "Canonical sports variant permits measurement-only fields. Validate positive length-only variant fixtures with existing canonical variant schema."
+    },
+    {
+      "archive": "native-runs/06-green/typecheck-tuple-annotation-red.log",
+      "fix": "Explicit tuple return type required for URLSearchParams. Type-only followup has identical emitted runtime code."
+    }
+  ],
+  "nativeInputs": {
+    "database/supabase/migrations/386_storefront_discovery.sql": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+    "database/supabase/migrations/388_cart_order_fact_snapshots.sql": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "packages/commerce-core/src/trailmark-facts.ts": "9d8bb5ae2f033858ed77a48bd8425dbbd169c724021ae42835abf7993a4a903d",
+    "packages/commerce-core/src/habitat-facts.ts": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+    "packages/theme-engine/src/trailmark-discovery.ts": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873"
+  },
+  "notClaimed": [
+    "active390 migration admission/promotion",
+    "hosted provider/managed-catalog-fence execution",
+    "production-scale performance or nested query plan proof",
+    "every one of49 specification permutations independently executed",
+    "live installed Trailmark/Habitat browser or responsive acceptance",
+    "any user preview/login/tab operation"
+  ]
+}

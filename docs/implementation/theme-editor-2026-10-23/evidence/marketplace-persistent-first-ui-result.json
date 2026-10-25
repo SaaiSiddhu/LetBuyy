@@ -1,0 +1,25 @@
+{
+  "localId": "ed52fedf85eb",
+  "sourceEpoch": "8c89302c8b1991d8bde035d9debe099f8460d24255a794c51a4157daec4f2082",
+  "previewRendered": true,
+  "normalNewDomainSignIn": true,
+  "actualReturn": {
+    "origin": "http://themes.letbuyy-local.localhost:9015",
+    "path": "/install",
+    "theme": "letbuyy-sense",
+    "version": "2.0.0"
+  },
+  "installPostsAttempted": 1,
+  "installAttemptRecordedBeforeClick": "2026-10-24T01:26:16.065Z",
+  "editor": {
+    "origin": "http://admin.letbuyy-local.localhost:9022",
+    "path": "/syn-threadline-ui-202c08c0/online-store/themes/letbuyy-sense/editor",
+    "instanceId": "a2caf52b-67c4-4d8c-b46e-c6b36e8553b3",
+    "packageVersionId": "0a029421-6795-4690-b68e-365811eb6da2"
+  },
+  "editorExact": true,
+  "firstCaseCompletedAt": "2026-10-24T01:26:58.765Z",
+  "noSaveOrPublish": true,
+  "noOtherAddCartOrder": true,
+  "libraryReturnedNormally": true
+}

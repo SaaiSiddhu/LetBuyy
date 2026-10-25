@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T12:13:29.963977+00:00",
+  "classification": "SHARED_NATIVE_FIXTURE_PREREQUISITE_FAILURE_NOT_DEWDROP_BROWSER_RESULTS",
+  "owner": "Themes",
+  "nativeRunId": "45eec3e980e6",
+  "sourceReceipt": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/result.json",
+    "sha256": "4edc59fb2667e3792750e18bbb8b6fd0559511f8ab49894cef2053f821628051"
+  },
+  "observedRunnerAggregate": {
+    "tests": 5,
+    "suites": 1,
+    "failedSuites": 1,
+    "assertionsPassed": 3,
+    "assertionsFailed": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "wallSeconds": 31.8
+  },
+  "countsMeaning": "Runner aggregate may include parent/child assertions; it is not original Dewdrop cases, native stage count or unique browser passes.",
+  "failures": [
+    {
+      "suite": "playfield201-catalog394-qualification.manual.ts",
+      "exitCode": 1,
+      "firstFailure": "not ok 1 - Playfield394: full append-only catalog promotion, exact selected installation/update,",
+      "timedOut": false
+    }
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "freshBrowserAdmission": null,
+  "dewdropBrowserCasesExecutedThisTurn": 0,
+  "originalHistoricalTotals": {
+    "PASS": 26,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "requestedNext": "Owner repair and fresh bounded native qualification, then exact candidate/runtime/browser lease and real fault/observation capabilities",
+  "actualDetailedNativeFailureDisposition": "Await Themes-owned detailed diagnosis; not inferred from aggregate",
+  "all30Complete": false
+}

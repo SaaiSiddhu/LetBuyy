@@ -1,0 +1,109 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "category-grid",
+  "group": "template",
+  "originalId": "section-9c0996ff-259e-4595-bdc7-ce04e6efa370",
+  "finalId": "section-a2864ef3-b2ea-487b-9d8d-19ef2cae3e02",
+  "sectionFieldsExercised": [
+    "title",
+    "subtitle",
+    "label1",
+    "collection1",
+    "label2",
+    "collection2",
+    "label3",
+    "collection3",
+    "label4",
+    "collection4"
+  ],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "label1": "Circuit source label1",
+          "collection1": "22222222-2222-4222-8222-222222222222",
+          "label2": "Circuit source label2",
+          "collection2": "22222222-2222-4222-8222-222222222222",
+          "label3": "Circuit source label3",
+          "collection3": "22222222-2222-4222-8222-222222222222",
+          "label4": "Circuit source label4",
+          "collection4": "22222222-2222-4222-8222-222222222222"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "label1": "Circuit source label1",
+          "collection1": "22222222-2222-4222-8222-222222222222",
+          "label2": "Circuit source label2",
+          "collection2": "22222222-2222-4222-8222-222222222222",
+          "label3": "Circuit source label3",
+          "collection3": "22222222-2222-4222-8222-222222222222",
+          "label4": "Circuit source label4",
+          "collection4": "22222222-2222-4222-8222-222222222222"
+        },
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "label1": "Circuit source label1",
+          "collection1": "22222222-2222-4222-8222-222222222222",
+          "label2": "Circuit source label2",
+          "collection2": "22222222-2222-4222-8222-222222222222",
+          "label3": "Circuit source label3",
+          "collection3": "22222222-2222-4222-8222-222222222222",
+          "label4": "Circuit source label4",
+          "collection4": "22222222-2222-4222-8222-222222222222"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "label1": "Circuit source label1",
+          "collection1": "22222222-2222-4222-8222-222222222222",
+          "label2": "Circuit source label2",
+          "collection2": "22222222-2222-4222-8222-222222222222",
+          "label3": "Circuit source label3",
+          "collection3": "22222222-2222-4222-8222-222222222222",
+          "label4": "Circuit source label4",
+          "collection4": "22222222-2222-4222-8222-222222222222"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

@@ -1,0 +1,54 @@
+- heading [level=1]: General
+- heading "General" [level=1]
+- status
+- status
+- status
+- status
+- status
+- status
+- status
+- heading "Business details" [level=2]:
+- button "More actions":
+- heading "Store contact details" [level=2]:
+- link "[test identity]":
+- button "Store address"
+- button: Submit
+- heading "Store defaults" [level=2]:
+- link "Markets":
+- button "More actions":
+- heading "Regional settings" [level=3]:
+- combobox "Backup Region":
+- combobox "Unit system":
+- combobox "Default weight unit":
+- combobox "Time zone" [disabled]
+- link "account settings":
+- heading "Order ID format" [level=2]:
+- textbox "Prefix"
+- textbox "Suffix"
+- heading "Order processing" [level=2]:
+- link "Learn more":
+- radio "Automatically fulfill the order‘s line items"
+- radio "Automatically fulfill only the gift cards of the order"
+- radio "Don’t fulfill any of the order’s line items automatically" [checked]
+- checkbox "Automatically archive the order" [checked]
+- heading "Store assets" [level=2]:
+- link "Metafields":
+- link "Brand":
+- heading "Resources" [level=2]:
+- link "Change log":
+- link "Shopify Help Center":
+- link "Hire a Shopify Partner":
+- button "Keyboard shortcuts"
+- link "Store activity log":
+- heading "Transfer store" [level=2]:
+- link "Learn more":
+- button "Manage":
+- status
+- status
+- status
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

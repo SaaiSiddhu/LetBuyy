@@ -1,0 +1,60 @@
+{
+  "buttons": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "More views"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "All"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "Paid"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "Unpaid"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "name": "Search and filter results"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "name": "Sort the results"
+    }
+  ],
+  "fields": [],
+  "headings": [],
+  "links": [
+    {
+      "text": "Add payment method"
+    }
+  ],
+  "viewport": [
+    1144,
+    778
+  ]
+}

@@ -1,0 +1,473 @@
+{
+  "date": "2026-10-21",
+  "status": "IN_PROGRESS",
+  "baseSource": "045a77003a019588a3878b80b9de43e1ce2dc84a",
+  "ownedRuns": {
+    "baseline": {
+      "runId": "036a6cac339c",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 5,
+      "assertionsPassed": 5,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 31.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "ai-before": {
+      "runId": "78a5eaca8908",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 2,
+      "assertionsPassed": 1,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 19.3,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "ai-after": {
+      "runId": "3525ad0d0375",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 8,
+      "assertionsPassed": 8,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 27.8,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "transfers-before": {
+      "runId": "e78bb5636845",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 4,
+      "assertionsPassed": 3,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 25.4,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "read-final": {
+      "runId": "ee849e3016cc",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 9,
+      "assertionsPassed": 9,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 30.3,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "read-final-retention": {
+      "runId": "cd9ff8a703d5",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 9,
+      "assertionsPassed": 9,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 34.6,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "transfer-tenant-final": {
+      "runId": "cb14b65e34a5",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 5,
+      "assertionsPassed": 4,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 21.2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "transfer-tenant-corrected": {
+      "runId": "6408e3224ef8",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 5,
+      "assertionsPassed": 5,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 26.2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "production-browser": {
+      "runId": "89cdc5375ecd",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 10,
+      "assertionsPassed": 9,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 74.2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "production-browser-corrected": {
+      "runId": "b8a6f16b4f20",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 10,
+      "assertionsPassed": 9,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 73.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "production-browser-final": {
+      "runId": "107517674c89",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 10,
+      "assertionsPassed": 10,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 79.5,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "operations-before": {
+      "runId": "c0de24e91847",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 2,
+      "assertionsPassed": 0,
+      "assertionsFailed": 2,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 23.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "operations-after": {
+      "runId": "dd73c2ed44c8",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 2,
+      "assertionsPassed": 2,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 22.6,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "operations-final": {
+      "runId": "15191447c243",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 4,
+      "assertionsPassed": 4,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 21.4,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "operations-tenant-final": {
+      "runId": "a8a460028c9d",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 3,
+      "tests": 13,
+      "assertionsPassed": 13,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 33,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  },
+  "measurements": {
+    "ai": {
+      "populationCompleted": 1103,
+      "before": {
+        "usageRows": 1000,
+        "usageBytes": 42998,
+        "totalUsed": 2000
+      },
+      "after": {
+        "usageRows": 1,
+        "usageBytes": 4,
+        "totalUsed": 2206
+      }
+    },
+    "transfers": {
+      "populationLive": 1103,
+      "before": {
+        "rows": 1000,
+        "bytes": 24001,
+        "total": 1000,
+        "inTransit": 0
+      },
+      "after": {
+        "rows": 1,
+        "bytes": 94,
+        "total": 1103,
+        "inTransit": 1100
+      }
+    }
+  },
+  "limits": [
+    "Same synthetic logical fixture recipes and local PostgreSQL/PostgREST modes; separate disposable runs.",
+    "Transfer sizes measure the affected gateway-to-REST response bodies only.",
+    "No hosted p95, browser improvement or total SQL-work reduction is inferred."
+  ],
+  "diagnosticHistory": {
+    "transfer-tenant-final": "Synthetic fixture incorrectly used draft. PostgreSQL rejected it before the metric assertion; the real status is reserved. Fixture corrected; later owned result passes.",
+    "ai-ui-before": "Two actual component regressions fail: 794 instead of 824; omitted purchased/bonus credits; NaN usage tokens; unknown timestamp fabricated; missing authority shown as zero.",
+    "ai-ui-after": "Both targeted component regressions pass.",
+    "production-browser": "9 pass / 1 test-selector failure: main resolved to both shell and nested Page main.",
+    "production-browser-corrected": "9 pass / 1 assertion failure: table renders 1100; the test had incorrectly expected 1,100. Both failures retained; the later exact candidate passes 10/10.",
+    "operations-before": "Correct conformance assertions fail against the predecessor: supplier A count1000 instead of1100, delivery metrics null; receipts empty despite1119 persisted records.",
+    "active-checkout-typecheck": "The next gateway typecheck encountered TS18046 in packages/theme-engine/src/theme-renderer.ts (unowned concurrent edits). No unowned source was reverted or staged. Prior isolated81-task candidate remains passing; next batch is verified separately."
+  },
+  "checks": {
+    "gatewayUnit": {
+      "passed": 1628,
+      "failed": 0,
+      "skipped": 0
+    },
+    "merchantTests": {
+      "lanes": [
+        {
+          "passed": 203,
+          "failed": 0
+        },
+        {
+          "passed": 810,
+          "failed": 0
+        }
+      ],
+      "overlap": "Do not sum with other lanes as a unique test total"
+    },
+    "focusedGovernance": {
+      "passed": 101,
+      "failed": 0
+    },
+    "gatewayTypecheck": "pass",
+    "merchantTypecheck": "pass",
+    "affectedEslint": {
+      "errors": 0,
+      "warnings": 1,
+      "note": "Existing synchronous state-in-effect warning on operations dashboard; status label correction adds no effect."
+    },
+    "productionBrowser": {
+      "candidate": "c80dd194e12318d0f5cfe6f81816e219065b055b",
+      "passed": 10,
+      "failed": 0,
+      "normalSignIns": 3,
+      "providerTransactions": 0,
+      "hosted": false
+    },
+    "fullGovernance": {
+      "candidate": "c80dd194e12318d0f5cfe6f81816e219065b055b",
+      "passed": 114,
+      "failed": 0,
+      "blocked": 0,
+      "skipped": 0,
+      "notApplicable": 1,
+      "method": "Actual cleanup-capable gate in an environment-free disposable clone. Active checkout dependencies preserved."
+    },
+    "workspaceTypecheck": {
+      "candidate": "c80dd194e12318d0f5cfe6f81816e219065b055b",
+      "passedTasks": 81,
+      "cachedTasks": 0
+    }
+  },
+  "sourceManifest": {
+    "services/api-gateway/src/routes/ai.ts": "60f0e7c4472e5a11e2499e4f2d3b0d8f81267e93069a4abaaf4116b711d87999",
+    "services/api-gateway/src/routes/commerce-analytics.ts": "8fc5b08a0aabf964bbd898bc1c979be97a2f600591a4499749ef433ee17ea6ac",
+    "apps/merchant/web/src/app/[store]/ai/page.tsx": "311e5d19a009ea0cac95a6c0dbeaf775bac06c0ba8e6a9731cd2a2f252f09c06",
+    "apps/merchant/web/src/app/[store]/products/operations-dashboard/page.tsx": "c2b99505da2297023fb0c48f57ea49060caab42c9a1102171a51eb9fe3fef1e2",
+    "database/supabase/migrations/379_merchant_ai_usage_total.sql": "f91f86279c8099e2e13b7240811e4c4851b9994716f13ebe8aee0a3acf2e2f85",
+    "database/supabase/migrations/380_merchant_transfer_metrics.sql": "68c459182e10aad886d333d778f5d379ef3bf5e0cb97b06d5fa31fc5b0ae2363",
+    "database/supabase/rollback/379_merchant_ai_usage_total.rollback.sql": "42b1c5f805405a2dfb2648cb2fb604c8687061296053f53c5783821df182e66c",
+    "database/supabase/rollback/380_merchant_transfer_metrics.rollback.sql": "53346adaa0839596b9de899e2eca17e3cc6d7fb19990968427a4980831295c09",
+    "services/api-gateway/src/__tests__/owned-db/merchant-ai-credit-read.postgres.test.ts": "c6995d3fc7268a897218ca46af4e10205b458afc802ec035054ee5ebed723d65",
+    "services/api-gateway/src/__tests__/owned-db/merchant-product-summary.postgres.test.ts": "e4e049fc9fdef2f010cdb050690278049fb99ec61ee6dd75d7b4b1c4d70c3d90",
+    "apps/merchant/web/tests/read-lifecycle.test.tsx": "4a56b17adad360c68ae1b63f64b03c07cd49d84b0d2680ed5fb2dd787e913728",
+    "tests/owned-db/merchant-product-edit-browser.postgres.test.ts": "a49a2561da90690409c180123cd6bf915533c28ea3f73dcfa7b50fb02bd70e40",
+    "database/supabase/migrations/381_bounded_merchant_operations_reads.sql": "327c6e3d9ee9e8b79ec133aeca87ebd58456a7ff24bd76b887a7e4f6e6fa9da3",
+    "database/supabase/rollback/381_bounded_merchant_operations_reads.rollback.sql": "641b5ac1fcb032397ee4408b9a79cce1e940d019c6911e2d5d884ec9a14998cb",
+    "services/api-gateway/src/routes/inventory.ts": "955373b67d8ddd5aa79f2878898082fe557cec7f31534c0f68cf79cbe3a8d6e2",
+    "services/api-gateway/src/__tests__/owned-db/merchant-operations-detail.postgres.test.ts": "23c376fab1655e29454435cb0f657217e17cceb6e6ecd6c039e63ec8f02ee864",
+    "packages/typescript/api-client/src/index.ts": "7e1e70d10c8d755f4b89715d5819f617f1043ebef5edc0c1de726461825699a5",
+    "apps/merchant/web/src/app/api/stores/[store]/commerce-analytics/supplier-metrics/route.ts": "6d76772250d1ffc5ba2b75d41d1edeb103faa9680dbacf3dfb9e2e7d0cd0111e",
+    "apps/merchant/web/src/app/api/stores/[store]/commerce-analytics/warehouse-metrics/route.ts": "0004cc7a8b797eadf46036e7b6a8ec283219d5d580f54862073e9b6608fa5720"
+  },
+  "batch1Candidate": "c80dd194e12318d0f5cfe6f81816e219065b055b",
+  "operationsBatch": {
+    "status": "IMPLEMENTED_OWNED_VERIFIED_PRODUCTION_PENDING",
+    "migration": 381,
+    "supplierContract": "Nondeleted POs, first recorded receipt event created_at, eligible on-time ratio, mean of per-PO rounded whole lead days (then rounded). Single authoritative aggregate plus bounded supplier pages.",
+    "warehouseContract": "All current locations, count level records and sum available+reserved+incoming; stable total-units/id ordering and independent pages.",
+    "receiptsContract": "One union of PO/transfer receipts, live authorized store IDs, created_at event time, one bounded page ordered created_at desc/type/id, complete count. Live pages, not a frozen cross-page snapshot.",
+    "checks": {
+      "ownedPassed": 13,
+      "ownedFailed": 0,
+      "merchantLanes": [
+        204,
+        810
+      ],
+      "panelComponent": "pass"
+    },
+    "remaining": "Exact candidate typecheck/build, production paging/receipt journey and final governance."
+  }
+}

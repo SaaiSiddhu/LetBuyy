@@ -652,7 +652,7 @@ export function CardHierarchy() {
 export function AdminDashboardPreview() {
     return (
         <TokenFrame>
-            <Page>
+            <Page as="main">
                 <PageHeader
                     eyebrow="Merchant control plane"
                     title="Dashboard"
@@ -698,7 +698,7 @@ export function EmptyStateSystem() {
 export function SettingsPreview() {
     return (
         <TokenFrame>
-            <Page>
+            <Page as="main">
                 <PageHeader
                     eyebrow="Settings"
                     title="Store settings"
@@ -735,7 +735,7 @@ export function SettingsPreview() {
 export function TablePreview() {
     return (
         <TokenFrame>
-            <Page>
+            <Page as="main">
                 <PageHeader
                     eyebrow="Orders"
                     title="Order table"
@@ -793,7 +793,7 @@ export function CompactMerchantShell() {
                         ))}
                     </div>
                 </aside>
-                <Page className="max-w-none">
+                <Page as="main" className="max-w-none">
                     <PageHeader title="Products" primaryAction={{ label: 'Add product', icon: <MaterialIcon name="add" /> }} secondaryActions={[{ label: 'Collections' }]} />
                     <PageContent>
                         <FilterBar
@@ -910,7 +910,7 @@ function DensityAdminSurface({ density, label, description }: { density: Letbuyy
                         ))}
                     </div>
                 </aside>
-                <Page className="max-w-none">
+                <Page as="main" className="max-w-none">
                     <PageHeader
                         title={label}
                         description={description}

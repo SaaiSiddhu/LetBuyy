@@ -1,0 +1,2231 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1015,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "hero-grid",
+        "display": "grid",
+        "columns": "544.281px 725.719px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Make room\nfor a game.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1015
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1331,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "hero-grid",
+        "display": "grid",
+        "columns": "770px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Make room\nfor a game.",
+    "screenshot": {
+      "width": 834,
+      "height": 1331
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1408,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "hero-grid",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Make room\nfor a game.",
+    "screenshot": {
+      "width": 390,
+      "height": 1408
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1706,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/accessories.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "gear-grid",
+        "display": "grid",
+        "columns": "423.328px 423.328px 423.344px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "A simple start. Proper details.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1706
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1977,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/accessories.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "gear-grid",
+        "display": "grid",
+        "columns": "244px 244px 244px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "A simple start. Proper details.",
+    "screenshot": {
+      "width": 834,
+      "height": 1977
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2702,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/accessories.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "gear-grid",
+        "display": "flex",
+        "columns": "repeat(3, minmax(0px, 1fr))"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "A simple start. Proper details.",
+    "screenshot": {
+      "width": 390,
+      "height": 2702
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "03-collection",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1598,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "gear-grid",
+        "display": "grid",
+        "columns": "339px 339px 339px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Badminton, your way.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1598
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "03-collection",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2075,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "gear-grid",
+        "display": "grid",
+        "columns": "274px 274px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Badminton, your way.",
+    "screenshot": {
+      "width": 834,
+      "height": 2075
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "03-collection",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2224,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "gear-grid",
+        "display": "flex",
+        "columns": "repeat(2, minmax(0px, 1fr))"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Badminton, your way.",
+    "screenshot": {
+      "width": 390,
+      "height": 2224
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1260,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "src": "../assets/accessories.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap pdp",
+        "display": "grid",
+        "columns": "697.766px 558.234px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Rally 68\nbadminton racket",
+    "screenshot": {
+      "width": 1440,
+      "height": 1260
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1922,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "src": "../assets/accessories.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap pdp",
+        "display": "grid",
+        "columns": "770px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Rally 68\nbadminton racket",
+    "screenshot": {
+      "width": 834,
+      "height": 1922
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1647,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "src": "../assets/accessories.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap pdp",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Rally 68\nbadminton racket",
+    "screenshot": {
+      "width": 390,
+      "height": 1647
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "05-product-specs",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1419,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Measure first.\nChoose second.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1419
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "05-product-specs",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2074,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Measure first.\nChoose second.",
+    "screenshot": {
+      "width": 834,
+      "height": 2074
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "05-product-specs",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2101,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Measure first.\nChoose second.",
+    "screenshot": {
+      "width": 390,
+      "height": 2101
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1619,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Keep your\ncourt kit simple.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1619
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2441,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Keep your\ncourt kit simple.",
+    "screenshot": {
+      "width": 834,
+      "height": 2441
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2597,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/activity.png",
+        "complete": true,
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/sleeve.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Keep your\ncourt kit simple.",
+    "screenshot": {
+      "width": 390,
+      "height": 2597
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "07-cart",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1257,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Ready for court time.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1257
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "07-cart",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1845,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Ready for court time.",
+    "screenshot": {
+      "width": 834,
+      "height": 1845
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "07-cart",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2149,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Ready for court time.",
+    "screenshot": {
+      "width": 390,
+      "height": 2149
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1449,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-shell checkout-grid",
+        "display": "grid",
+        "columns": "626.281px 469.719px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "304.141px 304.141px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "304.141px 304.141px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Where should your gear go?",
+    "screenshot": {
+      "width": 1440,
+      "height": 1449
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2204,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-shell checkout-grid",
+        "display": "grid",
+        "columns": "770px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "376px 376px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "376px 376px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Where should your gear go?",
+    "screenshot": {
+      "width": 834,
+      "height": 2204
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2442,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-shell checkout-grid",
+        "display": "grid",
+        "columns": "350px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "350px"
+      },
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Where should your gear go?",
+    "screenshot": {
+      "width": 390,
+      "height": 2442
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1178,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-shell checkout-grid review-checkout",
+        "display": "grid",
+        "columns": "626.281px 469.719px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "One last look.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1178
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1902,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-shell checkout-grid review-checkout",
+        "display": "grid",
+        "columns": "770px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "One last look.",
+    "screenshot": {
+      "width": 834,
+      "height": 1902
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1920,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-shell checkout-grid review-checkout",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "One last look.",
+    "screenshot": {
+      "width": 390,
+      "height": 1920
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1238,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Sign in to LetBuyy",
+    "screenshot": {
+      "width": 1440,
+      "height": 1238
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1489,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Sign in to LetBuyy",
+    "screenshot": {
+      "width": 834,
+      "height": 1489
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1447,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Sign in to LetBuyy",
+    "screenshot": {
+      "width": 390,
+      "height": 1447
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1340,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Create your LetBuyy account",
+    "screenshot": {
+      "width": 1440,
+      "height": 1340
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1569,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Create your LetBuyy account",
+    "screenshot": {
+      "width": 834,
+      "height": 1569
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1580,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/letbuyy-logo.svg",
+        "complete": true,
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Create your LetBuyy account",
+    "screenshot": {
+      "width": 390,
+      "height": 1580
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "12-profile",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1517,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [],
+    "gridColumns": [
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "482px 482px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Good to see you, Demo.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1517
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "12-profile",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1779,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [],
+    "gridColumns": [
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "353px 353px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Good to see you, Demo.",
+    "screenshot": {
+      "width": 834,
+      "height": 1779
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "12-profile",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2321,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [],
+    "gridColumns": [
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "304px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Good to see you, Demo.",
+    "screenshot": {
+      "width": 390,
+      "height": 2321
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "13-orders",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1169,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your orders.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1169
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "13-orders",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1433,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your orders.",
+    "screenshot": {
+      "width": 834,
+      "height": 1433
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "13-orders",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1624,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your orders.",
+    "screenshot": {
+      "width": 390,
+      "height": 1624
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1795,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your order details.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1795
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2085,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your order details.",
+    "screenshot": {
+      "width": 834,
+      "height": 2085
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2551,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [
+      {
+        "src": "../assets/racket.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "src": "../assets/shuttles.png",
+        "complete": true,
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "gridColumns": [],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your order details.",
+    "screenshot": {
+      "width": 390,
+      "height": 2551
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1854,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [],
+    "gridColumns": [
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "482px 482px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your saved addresses.",
+    "screenshot": {
+      "width": 1440,
+      "height": 1854
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "tablet",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2118,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [],
+    "gridColumns": [
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "349px 349px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your saved addresses.",
+    "screenshot": {
+      "width": 834,
+      "height": 2118
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "reducedMotion": true,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2842,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "inter": true,
+      "semibold": true,
+      "heavy": true,
+      "status": "loaded"
+    },
+    "brokenImages": [],
+    "imageReadiness": [],
+    "gridColumns": [
+      {
+        "class": "form-grid",
+        "display": "grid",
+        "columns": "304px"
+      }
+    ],
+    "outOfBoundsControls": [],
+    "fixedOrSticky": [],
+    "heading": "Your saved addresses.",
+    "screenshot": {
+      "width": 390,
+      "height": 2842
+    },
+    "captureMethod": "Playwright isolated Chromium; temporary profile; chromiumSandbox:true; no user browser state"
+  }
+]

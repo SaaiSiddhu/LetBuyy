@@ -1,0 +1,11 @@
+{
+  "classification": "ACTUAL_QUALIFIED382_DESCRIPTOR_READ_ONLY_NOT_FACTORY_GENERATED",
+  "slug": "letbuyy-sense",
+  "version": "2.0.0",
+  "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+  "fileSha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+  "payloadSha256": "e3b97f84ac1d2472eebd853946e548002fde1f2daf6bb5277004a6b8884aac8a",
+  "rawBundleJsonSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+  "parsedBundleSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+  "provenBy": "Actual native descriptor reader is extracted into the ten passing pure fixture contracts. These are source/validator/compiler checks, not native SQL."
+}

@@ -297,6 +297,8 @@ const appDir = fileURLToPath(new URL('..', import.meta.url));
 const identityDir = fileURLToPath(new URL('../../../platform/identity', import.meta.url));
 const runtimeDistDir = `.next-session-runtime-${process.pid}-${randomUUID()}`;
 const ownedHostArgs = process.env.LETBUYY_OWNED_CLIENT_RUNTIME === '1' ? ['--hostname', 'localhost'] : [];
+const closedChildren = new WeakSet();
+const markClosed = child => child.once('close', () => closedChildren.add(child));
 let identityApp = null;
 let identityOutput = '';
 let createdIdentityNodeModules = false;
@@ -346,10 +348,13 @@ if (buyerSessionToken) {
     stdio: ['ignore', 'pipe', 'pipe'],
     detached: process.env.LETBUYY_OWNED_CLIENT_RUNTIME !== '1',
   });
+  markClosed(identityApp);
   identityApp.stdout.on('data', chunk => { identityOutput = (identityOutput + chunk.toString()).slice(-12000); });
   identityApp.stderr.on('data', chunk => { identityOutput = (identityOutput + chunk.toString()).slice(-12000); });
 }
-const app = spawn('pnpm', ['exec', 'next', 'dev', '--webpack', ...ownedHostArgs, '-p', String(appPort)], {
+// Launch the CLI directly: terminating a pnpm exec wrapper leaves Next holding
+// stdout open after the assertions finish, so the owned runner never gets exit.
+const app = spawn(process.execPath, [fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url)), 'dev', '--webpack', ...ownedHostArgs, '-p', String(appPort)], {
   cwd: appDir,
   env: {
     ...process.env,
@@ -363,6 +368,7 @@ const app = spawn('pnpm', ['exec', 'next', 'dev', '--webpack', ...ownedHostArgs,
   stdio: ['ignore', 'pipe', 'pipe'],
   detached: process.env.LETBUYY_OWNED_CLIENT_RUNTIME !== '1',
 });
+markClosed(app);
 let appOutput = '';
 app.stdout.on('data', chunk => { appOutput = (appOutput + chunk.toString()).slice(-12000); });
 app.stderr.on('data', chunk => { appOutput = (appOutput + chunk.toString()).slice(-12000); });
@@ -372,7 +378,7 @@ async function waitReady() {
   while (Date.now() < deadline) {
     if (app.exitCode !== null) throw new Error(`Next exited (${app.exitCode}):\n${appOutput}`);
     try {
-      const response = await fetch(`${appOrigin}/api/customer/session`, { headers: headers(appHostA) });
+      const response = await fetch(`${appOrigin}/api/customer/session`, { headers: headers(appHostA), signal: AbortSignal.timeout(3000) });
       if (response.status === 200) return;
     } catch {}
     await delay(500);
@@ -385,7 +391,7 @@ async function waitIdentityReady() {
   while (Date.now() < deadline) {
     if (identityApp.exitCode !== null) throw new Error(`Identity Next exited (${identityApp.exitCode}):\n${identityOutput}`);
     try {
-      const response = await fetch(`${identityOrigin}/api/buyer/oauth/token`);
+      const response = await fetch(`${identityOrigin}/api/buyer/oauth/token`, { signal: AbortSignal.timeout(3000) });
       if (response.status === 405) return;
     } catch {}
     await delay(500);
@@ -396,8 +402,11 @@ function headers(host) {
   return { host, 'x-forwarded-host': host, origin: `http://${host}`, 'sec-fetch-site': 'same-origin' };
 }
 try {
+  process.stdout.write('RUNTIME_STEP:identity-readiness\n');
   await waitIdentityReady();
+  process.stdout.write('RUNTIME_STEP:commerce-readiness\n');
   await waitReady();
+  process.stdout.write('RUNTIME_STEP:application-contracts\n');
 
   let gatewayPriceProduct = null;
   if (externalGatewayUrl && PRICE_HISTORY_PRODUCT_ID) {
@@ -1653,6 +1662,7 @@ try {
   }
 
   await verifyProgrammaticStoreLink();
+  process.stdout.write('RUNTIME_STEP:assertions-complete\n');
 
   const checks = ['unauthenticated read', 'cross-origin login denial', 'wrong-store login denial', 'real Next BFF login and HttpOnly cookie', 'Next session read', 'profile BFF forwards session', 'cross-store session denial', 'bad-password no-cookie denial'];
   if (buyerSessionToken) checks.push(externalGatewayUrl
@@ -1716,24 +1726,32 @@ try {
   }, null, 2));
   process.exitCode = 1;
 } finally {
-  try { process.kill(-app.pid, 'SIGTERM'); } catch { app.kill('SIGTERM'); }
+  const ownedRuntime = process.env.LETBUYY_OWNED_CLIENT_RUNTIME === '1';
+  const signalChild = (child, signal) => {
+    if (ownedRuntime) { if (child.exitCode === null && child.signalCode === null) child.kill(signal); }
+    else { try { process.kill(-child.pid, signal); } catch { child.kill(signal); } }
+  };
+  signalChild(app, 'SIGTERM');
   if (identityApp) {
-    try { process.kill(-identityApp.pid, 'SIGTERM'); } catch { identityApp.kill('SIGTERM'); }
+    signalChild(identityApp, 'SIGTERM');
   }
   const testChildren = [app, ...(identityApp ? [identityApp] : [])];
   const waitForExit = (child, timeoutMs) => new Promise(resolve => {
-    if (child.exitCode !== null || child.signalCode !== null) return resolve(true);
+    if (closedChildren.has(child)) return resolve(true);
     const timer = setTimeout(() => {
-      child.off('exit', onExit);
+      child.off('close', onExit);
       resolve(false);
     }, timeoutMs);
     const onExit = () => {
       clearTimeout(timer);
       resolve(true);
     };
-    child.once('exit', onExit);
+    child.once('close', onExit);
   });
   const groupIsAlive = pid => {
+    // These children inherit the verified supervisor's group in owned mode;
+    // their PIDs are not process-group ownership proofs.
+    if (ownedRuntime) return false;
     try { process.kill(-pid, 0); return true; }
     catch (error) { return error.code === 'EPERM'; }
   };
@@ -1748,7 +1766,7 @@ try {
   const stopped = await Promise.all(testChildren.map(async child => {
     let exited = await waitForExit(child, 5000);
     if (!exited || groupIsAlive(child.pid)) {
-      try { process.kill(-child.pid, 'SIGKILL'); } catch { child.kill('SIGKILL'); }
+      signalChild(child, 'SIGKILL');
       exited = exited || await waitForExit(child, 5000);
     }
     const groupStopped = await waitForGroupStop(child, 5000);

@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-24T05:14:27.082Z",
+  "status": "ROOT_READ_ONLY_ACTUAL_CHECKOUT_STATE_DIAGNOSTIC",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "selectedFields": "No contact/address/tokens/credentials, only checkout state and failure classification.",
+  "state": {
+    "cart": {
+      "id": "6284ebe8-98d4-41db-9272-292417bd41e5",
+      "status": "active",
+      "store_id": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "line_count": 1
+    },
+    "sessions": [
+      {
+        "id": "19e90dfd-a777-49d2-b49f-37662eb0cc8e",
+        "status": "payment_intent",
+        "cart_id": "6284ebe8-98d4-41db-9272-292417bd41e5",
+        "site_id": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+        "failed_at": null,
+        "confirmed_at": null,
+        "checkout_state": "payment_intent",
+        "failure_reason": null,
+        "payment_method": "cod",
+        "has_payment_intent": true
+      }
+    ],
+    "site_order_count": 2
+  },
+  "sourceObservation": "Canonical planner treats failed as terminal. Browser COD flow always begins contact. BFF message alone does not locate which upstream step failed. No mutation or repair performed."
+}

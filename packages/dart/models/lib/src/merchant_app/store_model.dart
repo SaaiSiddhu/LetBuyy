@@ -30,6 +30,10 @@ class StoreModel {
   // Template Configuration (Section-based builder)
   final StoreTemplateModel? templateConfig;
 
+  /// Canonical portable theme document; never coerce its section map into the
+  /// legacy list-based editor model. Preserve it through local cache roundtrips.
+  final Map<String, dynamic>? portableTemplateConfig;
+
   // Status
   final StoreStatus status;
   final StorePlan plan;
@@ -107,6 +111,7 @@ class StoreModel {
     this.themeCustomization = const {},
     this.selectedProductIds = const [],
     this.templateConfig,
+    this.portableTemplateConfig,
     this.status = StoreStatus.draft,
     this.plan = StorePlan.free,
     this.subscriptionPlan,
@@ -165,6 +170,9 @@ class StoreModel {
   /// Create from JSON (API response).
   factory StoreModel.fromJson(Map<String, dynamic> data) {
     final id = data['id']?.toString() ?? '';
+    final rawTemplate = data['templateConfig'] ?? data['template_config'];
+    final isPortableTemplate =
+        rawTemplate is Map && rawTemplate['sections'] is Map;
     return StoreModel(
       id: id,
       sellerId: data['sellerId'] ?? data['seller_id'] ?? data['owner_id'] ?? '',
@@ -271,13 +279,13 @@ class StoreModel {
           _parseTimestamp(data['updatedAt'] ?? data['updated_at']) ??
           DateTime.now(),
       publishedAt: _parseTimestamp(data['publishedAt'] ?? data['published_at']),
-      templateConfig:
-          (data['templateConfig'] ?? data['template_config']) != null
+      templateConfig: rawTemplate != null && !isPortableTemplate
           ? StoreTemplateModel.fromMap(
-              Map<String, dynamic>.from(
-                (data['templateConfig'] ?? data['template_config']) as Map,
-              ),
+              Map<String, dynamic>.from(rawTemplate as Map),
             )
+          : null,
+      portableTemplateConfig: isPortableTemplate
+          ? Map<String, dynamic>.from(rawTemplate)
           : null,
     );
   }
@@ -338,7 +346,7 @@ class StoreModel {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'published_at': publishedAt?.toIso8601String(),
-      'template_config': templateConfig?.toMap(),
+      'template_config': portableTemplateConfig ?? templateConfig?.toMap(),
     };
   }
 
@@ -456,6 +464,7 @@ class StoreModel {
       updatedAt: updatedAt ?? this.updatedAt,
       publishedAt: publishedAt ?? this.publishedAt,
       templateConfig: templateConfig ?? this.templateConfig,
+      portableTemplateConfig: portableTemplateConfig,
     );
   }
 

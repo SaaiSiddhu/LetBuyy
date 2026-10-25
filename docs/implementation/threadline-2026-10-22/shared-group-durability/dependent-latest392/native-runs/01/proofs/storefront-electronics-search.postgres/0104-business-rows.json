@@ -1,0 +1,26 @@
+{
+  "runId": "bc5db405796b",
+  "sequence": 104,
+  "operation": "business-rows",
+  "inputs": {
+    "suiteSha256": "58d87deaf18c7582a8d13918aea1cf63289436fa1abdd4d4c6961bf7ca900da7",
+    "upSha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+    "downSha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+    "admissionSha256": "36cebb87a628423c0f9d3228d4fa43cb73df5032af0d06655d0373d03e490b81",
+    "validatorCasesSha256": "34af5bba863bc02a82e65413fd96e9843df5690df01d44917a0f9d742e9727cf",
+    "predecessor391UpSha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+    "predecessor391DownSha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54"
+  },
+  "value": {
+    "carts": 0,
+    "orders": 0,
+    "themes": "75d0390f6857a1aaf0f3eb243690da62a680c0c9fe05f22b8d8102da0b00e5e3",
+    "options": "de97ccee420fb74c4cb07094595d3839cd728398a7ed49483a25cf1e85446ccb",
+    "products": "8ca0e56d8929f1f4d59fae164c49c5c8c363c3098f48aaaef2e7166673cf274e",
+    "variants": "6e03355a0cfb0dc4cc9c1e099c83457971b0fdf3fa9e3497a205f604532378c6",
+    "versions": "b7f8b09581779ad07ee8d5b0b325ace17e10c601084f8bfca89058a9a5fd5c6f",
+    "inventory": "8b1fcc65c8a81307fb53ccb3adc5ad3a4ea7bc5792a1c9c9cf2eabbeb3ebca53",
+    "collections": "86cb2ed889ede5736b0a8c64fbd7065b41a85a3b18369776e4c8e9053a2c25b2",
+    "memberships": "c90559cea2c0434d425eea082981b1572e375300f55b9b297db1f7daeeb39d43"
+  }
+}

@@ -1,0 +1,693 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "Dandruff shampoo for men",
+      "complete": true,
+      "naturalWidth": 495
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Shampoo for men in shower",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Dandruff shampoo for men",
+      "complete": true,
+      "naturalWidth": 74
+    },
+    {
+      "alt": "Shampoo",
+      "complete": true,
+      "naturalWidth": 74
+    },
+    {
+      "alt": "Shampoo",
+      "complete": true,
+      "naturalWidth": 74
+    },
+    {
+      "alt": "Shampoo",
+      "complete": true,
+      "naturalWidth": 74
+    },
+    {
+      "alt": "Shampoo for men in shower",
+      "complete": true,
+      "naturalWidth": 74
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 550
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 550
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 550
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 550
+    },
+    {
+      "alt": "A bottle of shampoo lies against a dark blue background. ",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "A bottle of conditioner lies against a dark blue background. ",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "A pot of hair styler lies against a dark blue background. ",
+      "complete": false,
+      "naturalWidth": 0
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "Hair\nBody\nFace\nKits\nAbout\nCart",
+      "rect": {
+        "height": 154.5390625,
+        "width": 1260,
+        "x": 90,
+        "y": 40.390625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(239, 240, 245, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(239, 240, 245, 0.75)",
+        "fontFamily": "Questrial, sans-serif",
+        "fontSize": "16.8px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "29.6px",
+        "padding": "20px 52.5px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "disabled": true,
+      "label": "Slide left",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 142.5,
+        "y": 827.3828125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(14, 27, 77, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(14, 27, 77, 0.75)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "1px 6px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Load image 1 in gallery view",
+      "rect": {
+        "height": 96.90625,
+        "width": 96.90625,
+        "x": 191.75,
+        "y": 800.9296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px solid rgb(14, 27, 77)",
+        "borderRadius": "20px",
+        "boxShadow": "rgb(14, 27, 77) 0px 0px 0px 1.05px",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Load image 2 in gallery view",
+      "rect": {
+        "height": 96.90625,
+        "width": 96.90625,
+        "x": 299.15625,
+        "y": 800.9296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px solid rgba(14, 27, 77, 0.1)",
+        "borderRadius": "20px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Load image 3 in gallery view",
+      "rect": {
+        "height": 96.90625,
+        "width": 96.90625,
+        "x": 406.5625,
+        "y": 800.9296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px solid rgba(14, 27, 77, 0.1)",
+        "borderRadius": "20px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Load image 4 in gallery view",
+      "rect": {
+        "height": 96.90625,
+        "width": 96.90625,
+        "x": 513.96875,
+        "y": 800.9296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px solid rgba(14, 27, 77, 0.1)",
+        "borderRadius": "20px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Load image 5 in gallery view",
+      "rect": {
+        "height": 96.90625,
+        "width": 96.90625,
+        "x": 621.375,
+        "y": 800.9296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px solid rgba(14, 27, 77, 0.1)",
+        "borderRadius": "20px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Slide right",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 618.25,
+        "y": 827.3828125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(14, 27, 77, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(14, 27, 77, 0.75)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "1px 6px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Shampoo",
+      "rect": {
+        "height": 56.59375,
+        "width": 582.75,
+        "x": 714.75,
+        "y": 254.9296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "44px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "56.6px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "Decrease quantity for Shampoo",
+      "rect": {
+        "height": 49.25,
+        "width": 45,
+        "x": 715.75,
+        "y": 402.6015625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "18.9px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "quantity",
+      "rect": {
+        "height": 49.25,
+        "width": 50,
+        "x": 760.75,
+        "y": 402.6015625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "14.7px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px 5.25px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Increase quantity for Shampoo",
+      "rect": {
+        "height": 49.25,
+        "width": 45,
+        "x": 810.75,
+        "y": 402.6015625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "18.9px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 49.25,
+        "width": 462,
+        "x": 714.75,
+        "y": 478.1015625
+      },
+      "styles": {
+        "backgroundColor": "rgb(239, 240, 245)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "41px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Questrial, sans-serif",
+        "fontSize": "15.75px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18.75px",
+        "padding": "0px 31.5px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Buy it now",
+      "rect": {
+        "height": 49.25,
+        "width": 462,
+        "x": 714.75,
+        "y": 537.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgb(71, 112, 219)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "41px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Questrial, sans-serif",
+        "fontSize": "15.75px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18.75px",
+        "padding": "15.75px 31.5px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Share",
+      "rect": {
+        "height": 25.1953125,
+        "width": 69.375,
+        "x": 714.75,
+        "y": 821.1640625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Arial",
+        "fontSize": "14.7px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "1px 6px 1px 0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Let's get into the nitty gritty details.",
+      "rect": {
+        "height": 33.953125,
+        "width": 739.1953125,
+        "x": 350.3984375,
+        "y": 1036.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "26.4px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "33.96px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "\"It doesn’t have to smell like a charred whiskey barrel to appeal to men. It smells good, ",
+      "rect": {
+        "height": 226.375,
+        "width": 819,
+        "x": 310.5,
+        "y": 1678.2578125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "44px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "56.6px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Build a powerhouse hair routine.",
+      "rect": {
+        "height": 56.59375,
+        "width": 819,
+        "x": 310.5,
+        "y": 2404.25
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "44px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "56.6px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "A treat for your hair and scalp.",
+      "rect": {
+        "height": 113.1875,
+        "width": 430.5,
+        "x": 216,
+        "y": 2703.078125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "44px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "56.6px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Skincare for your hair.",
+      "rect": {
+        "height": 56.59375,
+        "width": 466.2265625,
+        "x": 582.2890625,
+        "y": 3271.9375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "44px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "56.6px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "A dab will do.",
+      "rect": {
+        "height": 56.59375,
+        "width": 283.5859375,
+        "x": 216,
+        "y": 3795.1640625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(14, 27, 77)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(14, 27, 77)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "44px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "56.6px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Get 10% off your first order.",
+      "rect": {
+        "height": 56.59375,
+        "width": 1251,
+        "x": 94.5,
+        "y": 4332.7265625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Archivo, sans-serif",
+        "fontSize": "44px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "56.6px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "contact[email]",
+      "rect": {
+        "height": 47.25,
+        "width": 376,
+        "x": 532,
+        "y": 4461.9140625
+      },
+      "styles": {
+        "backgroundColor": "rgb(14, 27, 77)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "26px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Arial",
+        "fontSize": "16.8px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24.8px",
+        "padding": "15.75px 52.5px 15.75px 15.75px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Subscribe",
+      "rect": {
+        "height": 49.25,
+        "width": 46.1953125,
+        "x": 861.8046875,
+        "y": 4460.9140625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(255, 255, 255, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(255, 255, 255, 0.75)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "url": "https://theme-refresh-demo.myshopify.com/products/shampoo-2"
+}

@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-23T09:03:36.238363+00:00",
+  "scope": "Kindred own discovery/forms/factory only; no shared schema/writer/SQL/index/registry/normalizer changes",
+  "classification": "IN_PROCESS_RENDER_FORMDATA_CANONICAL_QUERY_AND_SOURCE_WIRE_NOT_BROWSER_SQL_OR_PERSISTED_ACCEPTANCE",
+  "changes": [
+    "Canonical discovery_query_fields preserve unedited fields and repeated arrays, excluding page and only visible edited controls",
+    "Canonical active_filters clear_url handles every independent filter selection including each connector and each budget bound",
+    "Canonical clear_filters_url preserves search/sort/limit and fixed collection scope",
+    "Kindred search route now includes its search form and the gift filter/results sections",
+    "Only supplied occasion/recipient choices are selectable; absent selected choices stay hidden/removable without invented options"
+  ],
+  "tests": {
+    "formData": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "log": "discovery-forms.log",
+      "beforeFix": "discovery-forms-before.log (nine original requirements failed)"
+    },
+    "kindredTheme": {
+      "passed": 8,
+      "failed": 0,
+      "log": "theme-tests-discovery.log"
+    },
+    "typecheck": {
+      "themeEngine": "passed",
+      "forms": "passed",
+      "logs": [
+        "theme-typecheck-discovery.log",
+        "discovery-forms-typecheck.log"
+      ]
+    },
+    "editorSourceWire": {
+      "passed": 21,
+      "failed": 0,
+      "negativeControlRetained": true,
+      "log": "editor-source-roundtrip-discovery.log"
+    },
+    "networkCalls": 0,
+    "frozenM1": {
+      "checked": 91,
+      "changed": 0
+    }
+  },
+  "sanitizerBoundary": {
+    "unchanged": true,
+    "policy": "DOMPurify SAFE_FOR_XML rejects closing script-tag strings in attribute values; this was not bypassed. Quoted/Unicode/ampersand/ordinary angle-bracket queries preserve exactly, and hostile supplied labels remain inert.",
+    "initialHarnessAssumption": "Exact closing-script-tag query preservation was outside the existing sanitizer contract; retained witness discovery-form-sanitizer-control.log. Final explicit negative control asserts refusal."
+  },
+  "sources": [
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "bytes": 18062,
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "bytes": 6014,
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/theme-engine/test/kindred.test.ts",
+      "bytes": 11350,
+      "sha256": "480cb8c88df9c690bb8f1e1eb31b3e7cb4e08e34d2c50466ad31c64b57236b84"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/kindred-discovery-form.test.ts",
+      "bytes": 16073,
+      "sha256": "c21c00c96ad3c98f1e2280b204ec1dc28a495b3e5570dc2c93be5b8036ed444e"
+    }
+  ],
+  "canonicalSources": [
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863"
+    },
+    {
+      "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+      "sha256": "87705315461c3095df91f28a2b05064451aefb1907a1591c59ff6da236ab8b96"
+    }
+  ],
+  "resourcesStarted": [],
+  "pending": [
+    "Central all-theme54 contract rerun by its owner",
+    "Installed/hydrated browser and database journeys",
+    "Re-generated catalog389 by its assigned owner"
+  ],
+  "otherOwnedWork": {
+    "subtitleFactoryGate": "still valid;21wireflows requalified at current factory hash",
+    "variantV2IndependentSnapshot": "18/18 prior checkpoint retained; no fixture change in this slice",
+    "388ReviewFollowup": "awaiting MadeYours repin"
+  }
+}

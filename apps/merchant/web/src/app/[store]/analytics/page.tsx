@@ -99,7 +99,8 @@ export default function AnalyticsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="analytics"
+                recipe="index"
                 title="Analytics"
                 description={`Track ${store}'s sales, orders, and catalog performance from one workspace.`}
                 breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Analytics' }]}

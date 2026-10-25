@@ -1,0 +1,2908 @@
+{
+  "scope": "Actual static Liquid assembly, real app data binding/mapper; approved local Inter bytes. No hydration/API/DB/transactions/publish/lifecycle/performance or complete accessibility certification.",
+  "browser": "148.0.7778.96",
+  "port": 43273,
+  "audit": [
+    {
+      "scene": "home",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "What will they make today?",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection-all",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "product",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "missing",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a Story",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-cleared",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio · unknown sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-different",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Paper Play · larger sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "empty",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "long-copy",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a little room for the next wonderfully unexpected afternoon of curious ideas.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "hindi",
+      "device": "desktop",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "हर छोटी जिज्ञासा के लिए कुछ नया बनाएं और फिर से शुरुआत करें।",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "home",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "What will they make today?",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection-all",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "missing",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a Story",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-cleared",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio · unknown sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-different",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Paper Play · larger sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "empty",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "long-copy",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a little room for the next wonderfully unexpected afternoon of curious ideas.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "hindi",
+      "device": "tablet",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "हर छोटी जिज्ञासा के लिए कुछ नया बनाएं और फिर से शुरुआत करें।",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "home",
+      "device": "tablet",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "What will they make today?",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection",
+      "device": "tablet",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 834,
+        "documentWidth": 834,
+        "bodyWidth": 834,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "home",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "What will they make today?",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection-all",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "missing",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a Story",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-cleared",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio · unknown sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-different",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Paper Play · larger sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "empty",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "long-copy",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a little room for the next wonderfully unexpected afternoon of curious ideas.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "hindi",
+      "device": "mobile",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "हर छोटी जिज्ञासा के लिए कुछ नया बनाएं और फिर से शुरुआत करें।",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "home",
+      "device": "mobile",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "What will they make today?",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection",
+      "device": "mobile",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "home",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "What will they make today?",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection-all",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "missing",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a Story",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-cleared",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio · unknown sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "edition-different",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Paper Play · larger sample edition",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "empty",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "long-copy",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Make a little room for the next wonderfully unexpected afternoon of curious ideas.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "hindi",
+      "device": "narrow",
+      "textScale": 1,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "हर छोटी जिज्ञासा के लिए कुछ नया बनाएं और फिर से शुरुआत करें।",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "home",
+      "device": "narrow",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "What will they make today?",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "collection",
+      "device": "narrow",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Find their next activity.",
+        "primaryColor": "#1D5C54"
+      }
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "textScale": 2,
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "bounds": [],
+        "textBounds": [],
+        "contrastFailures": [],
+        "smallTargets": [],
+        "closedNavigation": [
+          {
+            "trigger": "Menu",
+            "target": "lb-nav-panel-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          },
+          {
+            "trigger": "Search",
+            "target": "lb-search-overlay-header-default",
+            "exists": true,
+            "visible": false,
+            "tabbableDescendants": 0
+          }
+        ],
+        "brokenImages": [],
+        "loadedFonts": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          },
+          {
+            "family": "Inter",
+            "weight": "800"
+          }
+        ],
+        "fontStatus": "loaded",
+        "primaryFont": "Inter, Arial, sans-serif",
+        "title": "Pattern Studio",
+        "primaryColor": "#1D5C54"
+      }
+    }
+  ],
+  "keyboard": [
+    {
+      "tag": "BUTTON",
+      "class": "lb-header__toggle",
+      "html": "<button type=\"button\" class=\"lb-header__toggle\" data-lb-nav-toggle=\"\" aria-expanded=\"false\" aria-controls=\"lb-nav-panel-header-default\" aria-label=\"Menu\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-",
+      "label": "Menu",
+      "left": 18,
+      "right": 62,
+      "width": 44,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "lb-header__brand",
+      "html": "<a class=\"lb-header__brand\" href=\"/store/playfield-review\">\n      Playfield\n    </a>",
+      "label": "Playfield",
+      "left": 90.75,
+      "right": 189.328125,
+      "width": 98.578125,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "BUTTON",
+      "class": "lb-header__search-toggle",
+      "html": "<button type=\"button\" class=\"lb-header__search-toggle\" data-lb-search-toggle=\"\" aria-expanded=\"false\" aria-controls=\"lb-search-overlay-header-default\" aria-label=\"Search\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"curr",
+      "label": "Search",
+      "left": 218.078125,
+      "right": 262.078125,
+      "width": 44,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "lb-header__account",
+      "html": "<a class=\"lb-header__account\" href=\"/store/playfield-review/customers/login\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" f",
+      "label": "Log in",
+      "left": 266.078125,
+      "right": 310.078125,
+      "width": 44,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "lb-header__cart",
+      "html": "<a class=\"lb-header__cart\" href=\"/store/playfield-review/cart\" data-lb-cart-trigger=\"\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidde",
+      "label": "Cart (0)",
+      "left": 314.078125,
+      "right": 372,
+      "width": 57.921875,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "SELECT",
+      "class": "",
+      "html": "<select name=\"age_band\"><option value=\"\">Any age</option><option value=\"3-5\">3–5 years</option><option value=\"6-8\" selected=\"\">6–8 years</option><option value=\"9-12\">9–12 years</option></select>",
+      "label": "Any age3–5 years6–8 years9–12 years",
+      "left": 18,
+      "right": 187,
+      "width": 169,
+      "height": 48,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "SELECT",
+      "class": "",
+      "html": "<select name=\"interest\"><option value=\"\">Any interest</option><option value=\"art\" selected=\"\">Art &amp; making</option><option value=\"building\">Building</option><option value=\"puzzles\">Puzzles</option></select>",
+      "label": "Any interestArt & makingBuildingPuzzles",
+      "left": 203,
+      "right": 372,
+      "width": 169,
+      "height": 48,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "SELECT",
+      "class": "",
+      "html": "<select name=\"sort\"><option value=\"display_order\">Featured</option><option value=\"price-asc\">Price: low to high</option><option value=\"price-desc\">Price: high to low</option><option value=\"newest\">Newest</option><option ",
+      "label": "FeaturedPrice: low to highPrice: high to lowNewestName",
+      "left": 18,
+      "right": 187,
+      "width": 169,
+      "height": 48,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "BUTTON",
+      "class": "pf-button",
+      "html": "<button class=\"pf-button\" type=\"submit\">Apply filters</button>",
+      "label": "Apply filters",
+      "left": 203,
+      "right": 372,
+      "width": 169,
+      "height": 50.390625,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "BUTTON",
+      "class": "pf-link",
+      "html": "<button class=\"pf-link\" type=\"submit\">Clear age: 6-8 years ×</button>",
+      "label": "Clear age: 6-8 years ×",
+      "left": 18,
+      "right": 188.171875,
+      "width": 170.171875,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "BUTTON",
+      "class": "pf-link",
+      "html": "<button class=\"pf-link\" type=\"submit\">Clear interest: art ×</button>",
+      "label": "Clear interest: art ×",
+      "left": 208.171875,
+      "right": 353.921875,
+      "width": 145.75,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "pf-link",
+      "html": "<a class=\"pf-link\" href=\"/store/playfield-review/products\">Clear all filters</a>",
+      "label": "Clear all filters",
+      "left": 18,
+      "right": 126.578125,
+      "width": 108.578125,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "",
+      "html": "<a href=\"/store/playfield-review/product/7b669c70-8000-4000-8000-000000000001\"><div class=\"pf-card-media\"><img src=\"/theme-assets/playfield/v2/pattern-studio.webp\" alt=\"Pattern Studio\" loading=\"eager\" decoding=\"async\"><s",
+      "label": "6–8 yearsPattern Studio",
+      "left": 18,
+      "right": 187,
+      "width": 169,
+      "height": 237.09375,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "pf-link",
+      "html": "<a class=\"pf-link\" href=\"/store/playfield-review/product/7b669c70-8000-4000-8000-000000000001\">Choose an edition →</a>",
+      "label": "Choose an edition →",
+      "left": 18,
+      "right": 143.1875,
+      "width": 125.1875,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "",
+      "html": "<a href=\"/store/playfield-review/product/7b669c70-8000-4000-8000-000000000002\"><div class=\"pf-card-media\"><img src=\"/theme-assets/playfield/v2/paper-play.webp\" alt=\"Paper Play\" loading=\"eager\" decoding=\"async\"><span clas",
+      "label": "6–8 yearsPaper Play",
+      "left": 203,
+      "right": 372,
+      "width": 169,
+      "height": 237.09375,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "pf-link",
+      "html": "<a class=\"pf-link\" href=\"/store/playfield-review/product/7b669c70-8000-4000-8000-000000000002\">View product →</a>",
+      "label": "View product →",
+      "left": 203,
+      "right": 299.078125,
+      "width": 96.078125,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "",
+      "html": "<a href=\"/store/playfield-review/contact\">Contact us</a>",
+      "label": "Contact us",
+      "left": 24,
+      "right": 95.703125,
+      "width": 71.703125,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "lb-footer__watermark",
+      "html": "<a class=\"lb-footer__watermark\" href=\"https://letbuyy.com\" rel=\"noopener noreferrer\">Powered by LetBuyy</a>",
+      "label": "Powered by LetBuyy",
+      "left": 246.265625,
+      "right": 366,
+      "width": 119.734375,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "BODY",
+      "class": "",
+      "html": "<body><div class=\"pf-theme\"><section class=\"lb-announcement-bar\" data-section-id=\"announcement-default\">\n  <div class=\"lb-announcement-bar__inner\">\n    <span>Make room for a little curiosity.</span>\n    \n  </div>\n</secti",
+      "label": "Make room for a little curiosity.\n    \n  \n\n\n\n  \n    \n      M",
+      "left": 0,
+      "right": 390,
+      "width": 390,
+      "height": 1512.40625,
+      "outline": "none",
+      "outlineWidth": "3px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "BUTTON",
+      "class": "lb-header__toggle",
+      "html": "<button type=\"button\" class=\"lb-header__toggle\" data-lb-nav-toggle=\"\" aria-expanded=\"false\" aria-controls=\"lb-nav-panel-header-default\" aria-label=\"Menu\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-",
+      "label": "Menu",
+      "left": 18,
+      "right": 62,
+      "width": 44,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "A",
+      "class": "lb-header__brand",
+      "html": "<a class=\"lb-header__brand\" href=\"/store/playfield-review\">\n      Playfield\n    </a>",
+      "label": "Playfield",
+      "left": 90.75,
+      "right": 189.328125,
+      "width": 98.578125,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    },
+    {
+      "tag": "BUTTON",
+      "class": "lb-header__search-toggle",
+      "html": "<button type=\"button\" class=\"lb-header__search-toggle\" data-lb-search-toggle=\"\" aria-expanded=\"false\" aria-controls=\"lb-search-overlay-header-default\" aria-label=\"Search\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"curr",
+      "label": "Search",
+      "left": 218.078125,
+      "right": 262.078125,
+      "width": 44,
+      "height": 44,
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "hiddenAncestor": false
+    }
+  ],
+  "keyboardFailures": [],
+  "captures": [
+    {
+      "file": "home-desktop.png",
+      "sha256": "e18bcc05946f9cc4be63d673a30599ccd9937ec3be3745e8c1b18034024d8642"
+    },
+    {
+      "file": "collection-desktop.png",
+      "sha256": "6b5f37255cd0b42f3690759dac971a5c54042454c4cdc61e38d691adbfe2152d"
+    },
+    {
+      "file": "collection-all-desktop.png",
+      "sha256": "d2757d411d5275a5ebe643b7a3eb8fcb7f06098945a6ae5f2d2e3d10a42f7a79"
+    },
+    {
+      "file": "product-desktop.png",
+      "sha256": "e0670335d5e58e50d9ebf6429b47e8d8bc0c86da38bc82c92034b1386a1f7df5"
+    },
+    {
+      "file": "missing-desktop.png",
+      "sha256": "5401aeabad42a48b9d59d96d34ca70f0b1aa90d33230791824d678d7fffe0f78"
+    },
+    {
+      "file": "edition-cleared-desktop.png",
+      "sha256": "88b1ae01ca9ec786aa91204f493bbaf21042453bed0016cb7f3b13a57cac3228"
+    },
+    {
+      "file": "edition-different-desktop.png",
+      "sha256": "115960f1d45b3dda4c8d4fb7154359160525fdc6b28610fe1305c846098b8fb4"
+    },
+    {
+      "file": "empty-desktop.png",
+      "sha256": "1de0cb542ba99cb2b34c1bf68af989f28fdc8ea2e43acaaf64bdda7834725c2c"
+    },
+    {
+      "file": "long-copy-desktop.png",
+      "sha256": "fb502b60c570a43cdf6bbf70a28a6c3a817494e8c3380985de71d3ab14cde839"
+    },
+    {
+      "file": "hindi-desktop.png",
+      "sha256": "83e564bd00c61aaa4cb2d0b3e2f8ccccf0073c23b27103ac50b0a1915460b1ca"
+    },
+    {
+      "file": "home-tablet.png",
+      "sha256": "7d94ab63fae85ed8931883f144db8d39e66bb78af60f52276bc4b3dabc57a61d"
+    },
+    {
+      "file": "collection-tablet.png",
+      "sha256": "446d594aaa841d4e2af87423c24c0847153b61d80f80193891c2eb98ea36509d"
+    },
+    {
+      "file": "collection-all-tablet.png",
+      "sha256": "601f761d4378b70d9a0f947a2257d27275ef72d8c1d210d8688ded8f0c62c78b"
+    },
+    {
+      "file": "product-tablet.png",
+      "sha256": "d7ec6b31b02c9805d9f5dd098f044acf5c12c148eaa2201e1026e0e485779003"
+    },
+    {
+      "file": "missing-tablet.png",
+      "sha256": "7b1ae33268e2689902635d97e08a45780b5940a376fc88657ea62f1d1a04a440"
+    },
+    {
+      "file": "edition-cleared-tablet.png",
+      "sha256": "0934a5ac7887a69f01f59ba87b9007294e7608e6492391aab71f6d215589ca8a"
+    },
+    {
+      "file": "edition-different-tablet.png",
+      "sha256": "c7fa091e0f54ed003591269c5db63c3f3f39eec31cb885d86963daad84186bac"
+    },
+    {
+      "file": "empty-tablet.png",
+      "sha256": "18af74a0a0e2a96f3dd51c9a5cb5b922d2259d53ae7760a591809f0a8b50093a"
+    },
+    {
+      "file": "long-copy-tablet.png",
+      "sha256": "b17980229eafd617341cb1dcfeac03edf73d59ee0fd278bcd34e49a479707c64"
+    },
+    {
+      "file": "hindi-tablet.png",
+      "sha256": "4a97ebc5ec80c8659a0ab05cd5877f0646e762c72b15a3c290df9324f13cfe58"
+    },
+    {
+      "file": "home-mobile.png",
+      "sha256": "b35036c38296ff9fed70e311ea1b76a00914c5333004586d472ebbcf934942bc"
+    },
+    {
+      "file": "collection-mobile.png",
+      "sha256": "fdf842f8bc295c0ad7d232191d36f2a03d2365fedc3188cd8efe6b07275a188b"
+    },
+    {
+      "file": "collection-all-mobile.png",
+      "sha256": "17f1df7075c6263d73dec72125d98caec3da163b893caa03513d3085f2b20106"
+    },
+    {
+      "file": "product-mobile.png",
+      "sha256": "66ff50579f84da75ae9e32f641cb5a601d6cb4ac339a25775c88858dc1418b2e"
+    },
+    {
+      "file": "missing-mobile.png",
+      "sha256": "fc438ea71366cd6e1104055fc9a37e6d99421cc62c8992b941c2f39c12f70224"
+    },
+    {
+      "file": "edition-cleared-mobile.png",
+      "sha256": "e6aad40302d3a000e69436fe86c773b38db59cbc66f85487fa2d7dbac2770776"
+    },
+    {
+      "file": "edition-different-mobile.png",
+      "sha256": "38e25e8752f658f40fee6e13c35137c03393617b0b86f77b9f5c0703d463f91d"
+    },
+    {
+      "file": "empty-mobile.png",
+      "sha256": "b46a4ffd333b2b4ac1191529941ecb7f88aea6d89d179e13e9ca3ea396faa53e"
+    },
+    {
+      "file": "long-copy-mobile.png",
+      "sha256": "992224cfd4faea4146097188de4d0f7c391a1465fdb69b4ea8c588b5853a2845"
+    },
+    {
+      "file": "hindi-mobile.png",
+      "sha256": "0e0c66960b7da297ba1a132569ec65207c90f9beb8495c805c812efa031c2a48"
+    },
+    {
+      "file": "home-mobile-text2x.png",
+      "sha256": "26bb6e418edea7c3e1a83e3ea2303298f84b7fa18e0af081988248f68d8b9ec8"
+    },
+    {
+      "file": "collection-mobile-text2x.png",
+      "sha256": "a0913f952c31433c04fe337edd5bcb122189c8041b6bea0a7998ced741ba181e"
+    },
+    {
+      "file": "product-mobile-text2x.png",
+      "sha256": "fa3bdac9d904fc948b36e4703f67d433f470a984e2dd60f1e2cfeac78313c776"
+    },
+    {
+      "file": "home-narrow.png",
+      "sha256": "a936ab866952c4342c605621b16b172582ec41137535c453cd70012e05b94745"
+    },
+    {
+      "file": "collection-narrow.png",
+      "sha256": "56054a724ff910a945c71027d5bd1645bb1eaa602a1e0a4a946b99d0155e3a43"
+    },
+    {
+      "file": "collection-all-narrow.png",
+      "sha256": "e7241e94f6561106466d6ada5f5ea89217fa7b7b8b8c8ba67b944c1a1ff80289"
+    },
+    {
+      "file": "product-narrow.png",
+      "sha256": "23633941929ece0bdefe5e02539f8cffb7095c3189a390ae18e242b30d8fd7e8"
+    },
+    {
+      "file": "missing-narrow.png",
+      "sha256": "113a6e776c75203d368bc0639b27e3ca417c4ed64378f3a05d37d78470594391"
+    },
+    {
+      "file": "edition-cleared-narrow.png",
+      "sha256": "ee57bfbf0e384fa66106a1c116fe7fbea85edb3bfed8d1135b17beff9bcb3c90"
+    },
+    {
+      "file": "edition-different-narrow.png",
+      "sha256": "13fa9c56a762df810db9350b81bbefcc58d7d175ef6099cbcb29e8d06398067c"
+    },
+    {
+      "file": "empty-narrow.png",
+      "sha256": "5163fe30fbf36703fa4642e6ee8143f26a0e440ae477e41a93f5d5f09eb0985e"
+    },
+    {
+      "file": "long-copy-narrow.png",
+      "sha256": "5e9ff68c5903fe3596b0e843e3f76f2ea32487bf4e67fc9d7d5f94e92ea7a1f6"
+    },
+    {
+      "file": "hindi-narrow.png",
+      "sha256": "cb7c9e0d56cfafa5f0aed3e7f4071808972dc9091e6ddefc568d4c3db2e759d8"
+    }
+  ],
+  "failures": [],
+  "passed": true
+}

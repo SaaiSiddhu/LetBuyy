@@ -1,0 +1,178 @@
+Browser tab: 26, Title: "Habitat lifecycle desk | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6".
+1 AXWebArea Habitat lifecycle desk | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6
+	2 container
+		3 text Habitat shared header f6074d90e894
+		4 link syn-threadline-ui-33be9d94.localhost:62076/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		10 container Breadcrumb
+			11 link Description: Home /, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+			12 link Description: Shop /, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/products
+			13 text Habitat lifecycle desk
+		14 heading Habitat lifecycle desk, Value: 1
+			15 text Habitat lifecycle desk
+		16 text INR 8,900.00
+		17 container Common product dimensions
+			18 container
+				19 text Common product dimensions  · check the selected finish below.
+			20 container
+				21 text 120 W × 60 D × 75 H cm
+				22 text Assembled dimensions
+			23 link Description: Dimensions, material & access ↓, Value: syn-threadline-ui-33be9d94.localhost:62076/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6#habitat-dimensions-habitat-product-selection
+		24 container
+			25 text Width
+			26 checkbox 48 in, Value: 0
+			27 checkbox Common size, Value: 0
+			28 text Choose your options
+		29 container Common product facts · select all finish options
+			30 text Common product facts · select all finish options
+			31 definition list
+				32 container Assembled
+					33 text Assembled
+				34 text 120 W × 60 D × 75 H cm
+				35 container Package
+					36 text Package
+				37 text 130 W × 65 D × 20 H cm
+				38 container Weight
+					39 text Weight
+				40 text Weight not supplied.
+				41 container Seat height
+					42 text Seat height
+				43 text Seat height not supplied.
+				44 container Materials
+					45 text Materials
+				46 text Wood
+				47 container Assembly
+					48 text Assembly
+				49 text Assembly information not supplied.
+				50 container Care
+					51 text Care
+				52 text Wipe dry.
+			53 text Only supplied measurements are listed. An absent width, depth, height or diameter is not supplied. Assembled and package measurements describe different things.
+			54 link Description: Common reference, named finishes & access guidance ↓, Value: syn-threadline-ui-33be9d94.localhost:62076/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6#habitat-dimensions-habitat-product-selection
+		55 container
+			56 text Quantity
+			57 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-habitat-product-selection
+			58 button (disabled) Add to cart
+		59 container Add Habitat lifecycle desk to wishlist
+			60 checkbox Description: Connect store account to use wishlist, Value: 0
+		61 button (collapsed) Description, Secondary Actions: Expand
+			62 text Description
+		63 container Description: Furniture measurements and materials, ID: habitat-dimensions-habitat-product-selection
+			64 text MAKE SPACE FOR IT
+			65 heading Know every dimension., Value: 2
+				66 text Know every dimension.
+			67 text Measure the room it will live in, then the access path it will take to get there.
+			68 text Product facts below are common reference information. A selected finish may override them; use its current facts above.
+			69 container Common product footprint schematic
+				70 text Width: 120 cm
+				71 text Footprint
+				72 text Depth: 60 cm
+			73 text Common product footprint only. Schematic, not to scale. Check the current finish measurements; no access or fit is guaranteed.
+			74 table Product facts (common) · selected finish facts are shown above
+				75 text Product facts (common) · selected finish facts are shown above
+				76 row
+					77 cell
+						78 text Assembled dimensions
+					79 cell
+						80 text 120 W × 60 D × 75 H cm
+				81 row
+					82 cell
+						83 text Package W × D × H
+					84 cell
+						85 text 130 W × 65 D × 20 H cm
+			86 text Package size is not assembled size. Compare supplied package dimensions with doors, stairs, turns and lifts.
+			87 heading Product material & assembly (common), Value: 3
+				88 text Product material & assembly (common)
+			89 text Wood
+			90 text Assembly information not supplied.
+			91 container
+				92 button (expanded) Product care (common), Secondary Actions: Collapse
+					93 text Product care (common)
+				94 text Wipe dry.
+			95 container
+				96 button (expanded) Delivery & access, Secondary Actions: Collapse
+					97 text Delivery & access
+				98 text Delivery options and charges are confirmed by checkout for your address. A delivery date is not available unless a service result supplies one.
+			99 heading Facts by named finish, Value: 3
+				100 text Facts by named finish
+			101 text Compare supplied facts for each actual option. Each list includes resolved product facts unless that finish overrides them. Choose every option above to see the current finish.
+			102 heading 48 in, Value: 4
+				103 text 48 in
+			104 definition list
+				105 container Assembled
+					106 text Assembled
+				107 text 48 W in
+				108 container Package
+					109 text Package
+				110 text 50 W × 25 D in
+				111 container Weight
+					112 text Weight
+				113 text Weight not supplied.
+				114 container Seat height
+					115 text Seat height
+				116 text Seat height not supplied.
+				117 container Materials
+					118 text Materials
+				119 text Wood
+				120 container Assembly
+					121 text Assembly
+				122 text Assembly information not supplied.
+				123 container Care
+					124 text Care
+				125 text Wipe dry.
+			126 heading Common size, Value: 4
+				127 text Common size
+			128 definition list
+				129 container Assembled
+					130 text Assembled
+				131 text 120 W × 60 D × 75 H cm
+				132 container Package
+					133 text Package
+				134 text 130 W × 65 D × 20 H cm
+				135 container Weight
+					136 text Weight
+				137 text Weight not supplied.
+				138 container Seat height
+					139 text Seat height
+				140 text Seat height not supplied.
+				141 container Materials
+					142 text Materials
+				143 text Wood
+				144 container Assembly
+					145 text Assembly
+				146 text Assembly information not supplied.
+				147 container Care
+					148 text Care
+				149 text Wipe dry.
+		150 container
+			151 heading Write a review, Value: 3
+				152 text Write a review
+			153 Your rating
+				154 radio button (settable, integer) Value: 0, ID: lb-review-star-1
+				155 checkbox Description: 1 star, Value: 0
+				156 radio button (settable, integer) Value: 0, ID: lb-review-star-2
+				157 checkbox Description: 2 stars, Value: 0
+				158 radio button (settable, integer) Value: 0, ID: lb-review-star-3
+				159 checkbox Description: 3 stars, Value: 0
+				160 radio button (settable, integer) Value: 0, ID: lb-review-star-4
+				161 checkbox Description: 4 stars, Value: 0
+				162 radio button (settable, integer) Value: 0, ID: lb-review-star-5
+				163 checkbox Description: 5 stars, Value: 0
+			164 text field (settable)
+			165 text field (settable)
+			166 text entry area (settable)
+			167 button Submit review
+		168 heading Threadline, Value: 3
+			169 text Threadline
+		170 text Habitat shared footer f6074d90e894
+		171 heading CONTACT, Value: 4
+			172 text CONTACT
+		173 link Description: Contact us, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/contact
+		174 text © Threadline. All rights reserved.
+		175 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Habitat lifecycle desk | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6

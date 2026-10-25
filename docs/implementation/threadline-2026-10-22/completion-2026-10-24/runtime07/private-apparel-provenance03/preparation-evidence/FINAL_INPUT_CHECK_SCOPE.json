@@ -1,0 +1,6 @@
+{
+  "recordedAt": "2026-10-25T00:22:08.992767+00:00",
+  "previousPreparationPass": "13 metadata/source refusal cases;0native/app execution",
+  "finalChange": "After-hook now revalidates same actual future admission and full source/tool closure after Worker settle and pooled-client stop. This requires a new final inventory and necessary source/type recheck; unchanged16/45/1 suites are not rerun.",
+  "existingFailuresPreserved": true
+}

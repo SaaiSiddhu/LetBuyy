@@ -1,0 +1,23 @@
+{
+  "status": "ROOT_GRANTED_ONE_CUSTOMIZATION_NATIVE_QUALIFICATION",
+  "recordedAt": "2026-10-24T16:27:55.201629+00:00",
+  "authorizedBy": "Latest direct human shared-blocker-first mandate",
+  "sourceClosureSha256": "62e5bcf48dd479e87652ab7ff0fc3aa067fde98f1cad6f34b99e2987b6f12ca1",
+  "admissionSha256": "ed3f63512f03c2553cae414a1e807c3268ef80fb661bf0067bed78d9f5d9e0cd",
+  "scope": "Fresh disposable current393 plus qualified394 and explicit210 proposal; no existing DB, browser or canonical migration emission",
+  "jobs": 1,
+  "noReap": true,
+  "preparedTransactions": 2,
+  "migrationCeiling": null,
+  "timeoutSeconds": 1200,
+  "expectedTAP": 1,
+  "phases": [
+    "UP/captures",
+    "all-table conservation",
+    "strict UP replay",
+    "paired DOWN/prior restoration/capture retention",
+    "strict DOWN replay",
+    "final UP/replay"
+  ],
+  "preservedFailure": "native01 exposed legacy themes table uses is_active, not deleted_at. Proposal guard now uses the existing canonical eligibility field; payload bundle bytes unchanged."
+}

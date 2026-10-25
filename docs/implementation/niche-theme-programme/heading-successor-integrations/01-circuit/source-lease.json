@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-24T09:29:00.728713+00:00",
+  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "SEALED_RELEASED_SOURCE_INTEGRATION_PASS",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "beforeSHA256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "beforeSHA256": null
+    },
+    {
+      "path": "packages/theme-engine/test/circuit-successor.test.ts",
+      "beforeSHA256": null
+    }
+  ],
+  "scope": "Integrate exact reviewed opt-in Circuit2.0.1 factory/catalogue dispatch plus permanent meaningful source regressions; no catalogue SQL/runtime or immutable2.0.0 changes",
+  "independentPrivateReview": "completion-circuit-successor-root-review-20261024.json",
+  "nativeLane": "None; reviewer checkout07 remains exclusive",
+  "preservation": "Default old20 output digests captured; previous catalogue source preserved; all old native failed receipts remain",
+  "releaseReceipt": "docs/implementation/niche-theme-programme/heading-successor-integrations/01-circuit/source-result.json"
+}

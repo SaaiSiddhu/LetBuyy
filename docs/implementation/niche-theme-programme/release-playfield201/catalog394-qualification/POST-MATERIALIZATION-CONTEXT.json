@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-24T07:08:58.186867+00:00",
+  "status": "POST_MATERIALIZATION_CONTEXT_NOTE_NOT_AN_AMENDMENT_TO_SEALED_PRIVATE_PROPOSAL_OR_RECEIPTS",
+  "materialization": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/materialization-receipt.json",
+    "sha256": "10b7f57a930699f82636a1bfeecad08e719643ff39cc9ee33f1bf816b7bb9c92",
+    "bytes": 45718
+  },
+  "rootSourceReview": {
+    "path": "docs/implementation/niche-theme-programme/playfield201-catalog394-root-source-review.json",
+    "sha256": "7850f0c0ea9b51fda195eb440244aafc23fcabf5b1fd0e7ee0ad47ed102351ae",
+    "bytes": 4892
+  },
+  "actualMainInputsRechecked": 1089,
+  "sourceMigrationCount": 322,
+  "sourceMigrationMaximum": 393,
+  "canonical394Emitted": false,
+  "native394ExecutionAllocatedOrPerformedHere": false,
+  "count02CurrentContext": {
+    "rootQualification": {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/native-runs/02/root-qualification.json",
+      "sha256": "b99237b975a1fc7cf82ba81b6e508af7751f086d80dcef784e5563afcbfe7d1a",
+      "bytes": 1748
+    },
+    "runId": "5d023114b98b",
+    "qualified": true,
+    "mandatoryStagesPassed": 8,
+    "officialCleanupEmpty": true,
+    "completedFreezeReleased": true,
+    "M05BrowserRetestPending": true,
+    "current936StillPreCountFix": true
+  },
+  "historicalReceiptInterpretation": "The sealed private manifest/review packet accurately records joint999176baae6b count-parent failure at its original time. Later Count02 qualification supersedes that pending current context only; no sealed manifest/receipt or source input hash is edited.",
+  "checkout": "Separate private/unapplied production work; no checkout patch was copied or absorbed.",
+  "next": "Root allocates separate fresh owned defaultLATEST393 catalog394 qualifier after this placement check. Actual native/proposal admissions are still absent at this note; no execution before a matching grant.",
+  "protectedState": "Threadline preview, merchant login, browser tabs, current936 and persistent Marketplace untouched."
+}

@@ -1,0 +1,741 @@
+{
+  "recordedAt": "2026-10-24T07:19:06.225982+00:00",
+  "classification": "ACTUAL_NATIVE_RULING_QUERY_CLEAR_BOTH_ROUTES_PASS",
+  "runId": "936e5f577646",
+  "cases": {
+    "MG-RULING-01": "PASS",
+    "MG-QUERY-01": "PASS",
+    "MG-CLEAR-01": "PASS"
+  },
+  "basis": "New saved actual owner native Apply/supplied-link/sort/pagination DOM/accessibility receipts, independent exact URL/product/field comparisons. Earlier32 public rows/route browser checks remain in44; not rerun or counted as installed cases.",
+  "nativeActions": [
+    {
+      "id": "Q-ruling-native-applied",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "category": [
+          "Stationery"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "page": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "books_kind": [
+          "stationery"
+        ],
+        "books_ruling": [
+          "lined"
+        ],
+        "sort": [
+          "price-asc"
+        ]
+      },
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-next-native",
+      "actualQuery": {
+        "page": [
+          "2"
+        ],
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-sort-name-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "page": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "sort": [
+          "name"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-sort-desc-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "page": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "sort": [
+          "price-desc"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-author-English-hardback-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "page": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "books_author": [
+          "Mira Sen"
+        ],
+        "books_language": [
+          "English"
+        ],
+        "books_format": [
+          "hardback"
+        ],
+        "books_kind": [
+          "book"
+        ],
+        "sort": [
+          "price-asc"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-clear-ruling-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "category": [
+          "Stationery"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "books_kind": [
+          "stationery"
+        ]
+      },
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-clear-author-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "books_kind": [
+          "book"
+        ],
+        "books_language": [
+          "Hindi"
+        ],
+        "books_format": [
+          "paperback"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-clear-usbc-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "category": [
+          "Stationery"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "connector": [
+          "hdmi"
+        ],
+        "books_kind": [
+          "stationery"
+        ],
+        "books_ruling": [
+          "lined"
+        ]
+      },
+      "productIds": [],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-collection-clear-hdmi-recovered",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "category": [
+          "Stationery"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "books_kind": [
+          "stationery"
+        ],
+        "books_ruling": [
+          "lined"
+        ]
+      },
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-next-native",
+      "actualQuery": {
+        "page": [
+          "2"
+        ],
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-sort-name-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "page": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "sort": [
+          "name"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-sort-desc-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "page": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "sort": [
+          "price-desc"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-author-English-hardback-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "page": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "books_author": [
+          "Mira Sen"
+        ],
+        "books_language": [
+          "English"
+        ],
+        "books_format": [
+          "hardback"
+        ],
+        "books_kind": [
+          "book"
+        ],
+        "sort": [
+          "price-asc"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-clear-ruling-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "category": [
+          "Stationery"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "books_kind": [
+          "stationery"
+        ]
+      },
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-clear-author-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "books_kind": [
+          "book"
+        ],
+        "books_language": [
+          "Hindi"
+        ],
+        "books_format": [
+          "paperback"
+        ]
+      },
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-clear-usbc-native",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "category": [
+          "Stationery"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "connector": [
+          "hdmi"
+        ],
+        "books_kind": [
+          "stationery"
+        ],
+        "books_ruling": [
+          "lined"
+        ]
+      },
+      "productIds": [],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-search-clear-hdmi-recovered",
+      "actualQuery": {
+        "limit": [
+          "1"
+        ],
+        "search": [
+          "Marginalia lifecycle"
+        ],
+        "category": [
+          "Stationery"
+        ],
+        "country_of_origin": [
+          "India"
+        ],
+        "sort": [
+          "price-asc"
+        ],
+        "collection_id": [
+          "d5609b77-743c-45b5-b435-814f2ca95058"
+        ],
+        "books_kind": [
+          "stationery"
+        ],
+        "books_ruling": [
+          "lined"
+        ]
+      },
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "singleScalarFields": true,
+      "verdict": "PASS"
+    }
+  ],
+  "clearLinks": [
+    {
+      "source": "Q-stationery-lined-collection",
+      "target": "Q-collection-clear-ruling-native",
+      "label": "Remove Ruling: lined",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=stationery",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    },
+    {
+      "source": "Q-impossible-author-collection",
+      "target": "Q-collection-clear-author-native",
+      "label": "Remove Author: Mira Sen",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=book&books_language=Hindi&books_format=paperback",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    },
+    {
+      "source": "Q-connectors-zero-collection",
+      "target": "Q-collection-clear-usbc-native",
+      "label": "Remove Connector: usb-c",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&books_kind=stationery&books_ruling=lined",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    },
+    {
+      "source": "Q-HDMI-only-zero-collection",
+      "target": "Q-collection-clear-hdmi-recovered",
+      "label": "Remove Connector: hdmi",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=stationery&books_ruling=lined",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    },
+    {
+      "source": "Q-stationery-lined-search",
+      "target": "Q-search-clear-ruling-native",
+      "label": "Remove Ruling: lined",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=stationery",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    },
+    {
+      "source": "Q-impossible-author-search",
+      "target": "Q-search-clear-author-native",
+      "label": "Remove Author: Mira Sen",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/search?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=book&books_language=Hindi&books_format=paperback",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    },
+    {
+      "source": "Q-connectors-zero-search",
+      "target": "Q-search-clear-usbc-native",
+      "label": "Remove Connector: usb-c",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&books_kind=stationery&books_ruling=lined",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    },
+    {
+      "source": "Q-HDMI-only-zero-search",
+      "target": "Q-search-clear-hdmi-recovered",
+      "label": "Remove Connector: hdmi",
+      "exactRenderedCanonicalHrefFollowed": true,
+      "clearUrl": "/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=stationery&books_ruling=lined",
+      "allOtherValuesRetained": true,
+      "pageResetsToDefaultOne": true
+    }
+  ],
+  "ruling": "Supplied lined count1 only, actual native lined selection+Apply yieldsP320; no invented dotted/grid. Both routes retain stationery after ruling clear.",
+  "sortAndPages": "Both routes native Next givesbook420/page2/noNext; Title→sort=name and price-desc resetspage1, preserveslimit/country/search/collection exactlyonce. Public32 already proves all3 sort page1/page2 sequences andbase320/420.",
+  "scope": "Author/language/format native Apply also corroborates existingMG-AUTHOR; samevariant witness proof remains44.",
+  "controllerLabelCorrection": "Unsupported Name selection was refused before mutation; actual native label Title maps canonical sort=name. Original error retained, no product defect.",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-UI-discovery-actual.json",
+      "sha256": "608dde465d776f70fd23c696a09a63e7b3a9eca9a6aa6c42b3888faf94a6d3fc",
+      "bytes": 241281
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-ruling-native-applied.ax.txt",
+      "sha256": "05d1e2949463a8265bafcce0d39cb848a90b2cdf2d2fdcbd8370bef74f2a3aae",
+      "bytes": 6274
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-next-native.ax.txt",
+      "sha256": "7c6f6c8b29b5fbf8d200706e43cdb414dd248566f146beaeb46ba29151509cc5",
+      "bytes": 4953
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-sort-name-native.ax.txt",
+      "sha256": "b28307fc77c96fe9c48e2eaea626e076630ecf0e6fe9f50d8ab9f8b50e479f02",
+      "bytes": 5267
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-sort-desc-native.ax.txt",
+      "sha256": "05178a3232a5e1e6de3e35ce0db59b9ca861bd14b48656bf39519f87acb2b8f3",
+      "bytes": 5316
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-author-English-hardback-native.ax.txt",
+      "sha256": "5db3d57d9a1a85502c2c9a7e8e78b4971efc629bba3abb9bce7fe4fca08dc398",
+      "bytes": 6391
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-clear-ruling-native.ax.txt",
+      "sha256": "eb62df3c86b71631d975b8cb65af22b6c1dbbe56ac47e9161760bf594fba15e3",
+      "bytes": 5514
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-clear-author-native.ax.txt",
+      "sha256": "d37f25aa75fb3195ad84db21be7366522b78b6db12b315dc3b8c1d0d4ac36594",
+      "bytes": 5689
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-clear-usbc-native.ax.txt",
+      "sha256": "ba036f0b4e300574420db9ca651c1a519d17c733861411765e76936b75976434",
+      "bytes": 4855
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-collection-clear-hdmi-recovered.ax.txt",
+      "sha256": "a6cdea6b050d741085728347181b81a1ad304cce3bc2559e83198c44440be28a",
+      "bytes": 5959
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-next-native.ax.txt",
+      "sha256": "d6c0c50247a27c50a297766d466779a4654cb12020cbb299a50d78d1b2d0ed7b",
+      "bytes": 4994
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-sort-name-native.ax.txt",
+      "sha256": "654bdc0dc57c7aff0ed95faaac94dda28856588a437021fd17ce5a7df9e6db4c",
+      "bytes": 5303
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-sort-desc-native.ax.txt",
+      "sha256": "2d38981cba7a43f0d039136432cf482991412f3088958b2d7df281c279ea4b54",
+      "bytes": 5358
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-author-English-hardback-native.ax.txt",
+      "sha256": "2cc556bc722934667bf3e506b72642e77664c8012d8792d17c22fb297529f42c",
+      "bytes": 6389
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-clear-ruling-native.ax.txt",
+      "sha256": "b8d203ca91f0edebe55946f47e3525c7e02b7780c97349bcfe40982dcb43e657",
+      "bytes": 5555
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-clear-author-native.ax.txt",
+      "sha256": "b20774c1b5bf3048b61d02f43138fc70a0458b7de44bc4a2d73d2f8951c6de6a",
+      "bytes": 5706
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-clear-usbc-native.ax.txt",
+      "sha256": "497411a2e0ae4bf2b71a692ae4287b090ffc80b6f46d7290337554ea8b1a1ca0",
+      "bytes": 4846
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-search-clear-hdmi-recovered.ax.txt",
+      "sha256": "a0626bb408b7bca4669f02cada2325b9a74244696395a541ae8623c7009112c7",
+      "bytes": 5977
+    }
+  ],
+  "limits": [
+    "Hidden DOM field values stay masked; preserved values are proved by actual normal navigation URL, never reconstructed FormData or hidden state reads.",
+    "Cross-niche connectors are a zero-result OR input with independent clears; no positive connector witness in this two-product book/paper scope.",
+    "No cart/COD/history/later-edit acceptance or broad Main393 count qualification."
+  ]
+}

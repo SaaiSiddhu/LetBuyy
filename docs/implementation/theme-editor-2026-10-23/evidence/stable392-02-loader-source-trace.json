@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-24T02:51:06.504037+00:00",
+  "classification": "READ_ONLY_EXISTING_RUNNER_OPTION_TRACE_NO_EXECUTION",
+  "manualEntry": "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+  "catalogRule": "scripts/governance/test-suite-catalog.mjs:78\u201379 matches only owned-db/[^/]+.test.ts",
+  "manualAutoClassification": "postgres",
+  "supportedExplicitOption": "--kind gateway-db alongside explicit --suite",
+  "canonicalLoader": "run-executable-suites.mjs:403 invokes existing tsx --test for gateway-db",
+  "sourceChanges": 0,
+  "runnerStartsByEditor": 0,
+  "runtimeOrDataCalls": 0,
+  "limitation": "Source trace only; Root owns actual retry, lifetime record and runtime admission."
+}

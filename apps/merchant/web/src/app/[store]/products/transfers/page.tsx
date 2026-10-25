@@ -685,7 +685,8 @@ export default function TransfersPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Transfers"
                 description="Move stock between inventory locations — reserve, ship, and receive."
                 breadcrumbs={[{ label: 'Purchasing' }, { label: 'Transfers' }]}

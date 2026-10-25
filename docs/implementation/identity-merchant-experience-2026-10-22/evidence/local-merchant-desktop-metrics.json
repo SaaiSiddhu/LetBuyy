@@ -1,0 +1,1149 @@
+{
+  "elements": [
+    {
+      "className": "admin-header ",
+      "id": "",
+      "label": "Search⌘KURUX Research Fixture",
+      "rect": {
+        "height": 64,
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "styles": {
+        "bg": "rgb(10, 9, 18)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "16px",
+        "lineHeight": "20px",
+        "padding": "0px 20px",
+        "radius": "0px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "className": "admin-header-search",
+      "id": "",
+      "label": "Search⌘K",
+      "rect": {
+        "height": 40,
+        "width": 660,
+        "x": 398,
+        "y": 12
+      },
+      "styles": {
+        "bg": "rgba(255, 255, 255, 0.07)",
+        "border": "1px solid color(srgb 0.545098 0.360784 0.964706 / 0.2)",
+        "color": "rgba(255, 255, 255, 0.55)",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "10px",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 14px",
+        "radius": "10px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "admin-header-btn",
+      "id": "",
+      "label": "Setup assistant",
+      "rect": {
+        "height": 36,
+        "width": 18,
+        "x": 1153.90625,
+        "y": 14
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgba(255, 255, 255, 0.55)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "admin-header-btn",
+      "id": "",
+      "label": "Notifications",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 1177.90625,
+        "y": 14
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgba(255, 255, 255, 0.55)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "store-switcher-pill ",
+      "id": "",
+      "label": "Switch store, current store UX Research Fixtu",
+      "rect": {
+        "height": 36,
+        "width": 200.09375,
+        "x": 1219.90625,
+        "y": 14
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "7px",
+        "lineHeight": "20px",
+        "padding": "2px 10px 2px 4px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "min-h-0 shrink-0 flex-col border-r border-[var(--lb-component-sidebar-border)] bg-[var(--lb-component-sidebar-bg)] text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] w-[220px] admin-panel-sidebar hidden lg:flex lg:static lg:z-auto lg:h-full lg:min-h-0",
+      "id": "admin-nav-drawer",
+      "label": "HomeOrdersProductsAdd productCollectionsSmart",
+      "rect": {
+        "height": 936,
+        "width": 220,
+        "x": 0,
+        "y": 64
+      },
+      "styles": {
+        "bg": "rgb(44, 38, 66)",
+        "border": "",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "16px 0px 0px"
+      },
+      "tag": "ASIDE"
+    },
+    {
+      "className": "min-w-0",
+      "id": "",
+      "label": "Primary navigation",
+      "rect": {
+        "height": 578,
+        "width": 203,
+        "x": 8,
+        "y": 72
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(255, 255, 255)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "NAV"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Products section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 156
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Inventory section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 358
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Purchasing section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 400
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Customers section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 442
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Money section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 484
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Marketing section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 526
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Content section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 568
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "min-w-0",
+      "id": "",
+      "label": "Sales channels",
+      "rect": {
+        "height": 40,
+        "width": 203,
+        "x": 8,
+        "y": 698
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(255, 255, 255)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "NAV"
+    },
+    {
+      "className": "absolute inset-y-0 right-0 inline-flex w-11 items-center justify-end rounded-[var(--lb-component-sidebar-item-radius)] pr-[var(--lb-space-3)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] motion-reduce:transition-none hover:text-[color:var(--lb-component-sidebar-text,var(--lb-color-text))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]",
+      "id": "",
+      "label": "Toggle Online Store section",
+      "rect": {
+        "height": 40,
+        "width": 44,
+        "x": 167,
+        "y": 698
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(201, 191, 237)",
+        "color": "rgb(201, 191, 237)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 0px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "min-w-0",
+      "id": "",
+      "label": "Apps",
+      "rect": {
+        "height": 40,
+        "width": 203,
+        "x": 8,
+        "y": 786
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(255, 255, 255)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "NAV"
+    },
+    {
+      "className": "min-w-0",
+      "id": "",
+      "label": "Settings navigation",
+      "rect": {
+        "height": 40,
+        "width": 203,
+        "x": 8,
+        "y": 952
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(255, 255, 255)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "NAV"
+    },
+    {
+      "className": "min-w-0 flex-1 overflow-auto min-h-0 admin-page-scroll",
+      "id": "admin-page-scroll",
+      "label": "Your site is in draft mode. It is not visible",
+      "rect": {
+        "height": 936,
+        "width": 1220,
+        "x": 220,
+        "y": 64
+      },
+      "styles": {
+        "bg": "rgb(246, 247, 249)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "0px 20px 0px 0px"
+      },
+      "tag": "MAIN"
+    },
+    {
+      "className": "mx-auto flex w-full max-w-[var(--lb-size-page-max)] flex-col gap-[var(--lb-density-page-gap)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[color:var(--lb-color-text)] sm:px-[var(--lb-density-card-padding)] sm:py-[var(--lb-density-page-gap)]",
+      "id": "",
+      "label": "ProductsCollectionsAdd productCatalog1 produc",
+      "rect": {
+        "height": 401,
+        "width": 1220,
+        "x": 220,
+        "y": 103.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "12px",
+        "lineHeight": "20px",
+        "padding": "12px 16px",
+        "radius": "0px"
+      },
+      "tag": "MAIN"
+    },
+    {
+      "className": "flex flex-col gap-[var(--lb-space-2)]",
+      "id": "",
+      "label": "ProductsCollectionsAdd product",
+      "rect": {
+        "height": 64,
+        "width": 1188,
+        "x": 236,
+        "y": 115.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "className": "m-0 min-w-0 truncate text-[length:var(--lb-component-page-header-title-size)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-component-page-header-title-line-height)] text-[color:var(--lb-color-text)]",
+      "id": "",
+      "label": "Products",
+      "rect": {
+        "height": 32,
+        "width": 103.921875,
+        "x": 268,
+        "y": 131.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "gap": "normal",
+        "lineHeight": "32px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "className": "m-0 text-[length:var(--lb-font-size-section-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-section-title)] text-[color:var(--lb-color-text)]",
+      "id": "",
+      "label": "Catalog",
+      "rect": {
+        "height": 24,
+        "width": 168.7734375,
+        "x": 253,
+        "y": 208.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "18px",
+        "fontWeight": "600",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "className": "flex h-[var(--lb-density-input-height)] w-full rounded-[var(--lb-radius-lg)] border bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-input-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] file:border-0 file:bg-transparent file:text-[length:var(--lb-font-size-body)] file:font-[var(--lb-font-weight-medium)] placeholder:text-[color:var(--lb-component-input-placeholder)] focus-visible:outline-none focus-visible:border-[var(--lb-component-input-focus-border)] focus-visible:ring-2 focus-visible:ring-[var(--lb-component-input-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50 border-[var(--lb-component-input-border)] pl-[var(--lb-space-7)]",
+      "id": "_r_r_",
+      "label": "",
+      "rect": {
+        "height": 36,
+        "width": 1041.078125,
+        "x": 253,
+        "y": 284.84375
+      },
+      "styles": {
+        "bg": "rgb(255, 255, 255)",
+        "border": "1px solid rgb(229, 231, 235)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 12px 0px 32px",
+        "radius": "12px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] text-[color:var(--lb-component-button-secondary-text)] hover:bg-[var(--lb-component-button-secondary-hover)] h-[var(--lb-density-button-height)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Refresh",
+      "rect": {
+        "height": 36,
+        "width": 100.921875,
+        "x": 1306.078125,
+        "y": 284.84375
+      },
+      "styles": {
+        "bg": "color(srgb 0.958627 0.957451 0.962941)",
+        "border": "1px solid color(srgb 0.817961 0.812784 0.836941)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px 12px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] text-[color:var(--lb-component-button-primary-text)] hover:bg-[var(--lb-component-button-primary-hover)] active:bg-[var(--lb-component-button-primary-active)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "All",
+      "rect": {
+        "height": 32,
+        "width": 32.65625,
+        "x": 266,
+        "y": 345.84375
+      },
+      "styles": {
+        "bg": "rgb(44, 38, 66)",
+        "border": "1px solid rgb(44, 38, 66)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] text-[color:var(--lb-component-button-secondary-text)] hover:bg-[var(--lb-component-button-secondary-hover)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Active",
+      "rect": {
+        "height": 32,
+        "width": 53.546875,
+        "x": 306.65625,
+        "y": 345.84375
+      },
+      "styles": {
+        "bg": "color(srgb 0.958627 0.957451 0.962941)",
+        "border": "1px solid color(srgb 0.817961 0.812784 0.836941)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] text-[color:var(--lb-component-button-secondary-text)] hover:bg-[var(--lb-component-button-secondary-hover)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Draft",
+      "rect": {
+        "height": 32,
+        "width": 46.59375,
+        "x": 368.203125,
+        "y": 345.84375
+      },
+      "styles": {
+        "bg": "color(srgb 0.958627 0.957451 0.962941)",
+        "border": "1px solid color(srgb 0.817961 0.812784 0.836941)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] text-[color:var(--lb-component-button-secondary-text)] hover:bg-[var(--lb-component-button-secondary-hover)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Archived",
+      "rect": {
+        "height": 32,
+        "width": 67.3359375,
+        "x": 422.796875,
+        "y": 345.84375
+      },
+      "styles": {
+        "bg": "color(srgb 0.958627 0.957451 0.962941)",
+        "border": "1px solid color(srgb 0.817961 0.812784 0.836941)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "w-full border-collapse text-[length:var(--lb-font-size-table)] leading-[var(--lb-line-height-table)]",
+      "id": "",
+      "label": "Select all rowsProductStatusInventoryTypeVend",
+      "rect": {
+        "height": 88,
+        "width": 1152,
+        "x": 254,
+        "y": 386.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "TABLE"
+    },
+    {
+      "className": "h-[var(--lb-density-table-header-height)] w-[var(--lb-density-button-height-large)] px-[var(--lb-space-3)] py-0 text-left",
+      "id": "",
+      "label": "Select all rows",
+      "rect": {
+        "height": 44,
+        "width": 52,
+        "x": 254,
+        "y": 386.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(107, 114, 128)",
+        "color": "rgb(107, 114, 128)",
+        "fontSize": "13px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TH"
+    },
+    {
+      "className": "mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 rounded-[var(--lb-radius-sm)] border-[var(--lb-color-border)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed",
+      "id": "_r_12_",
+      "label": "",
+      "rect": {
+        "height": 16,
+        "width": 16,
+        "x": 266,
+        "y": 402.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(107, 114, 128)",
+        "color": "rgb(107, 114, 128)",
+        "fontSize": "13px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "className": "h-[var(--lb-density-table-header-height)] whitespace-nowrap px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)]",
+      "id": "",
+      "label": "Product",
+      "rect": {
+        "height": 44,
+        "width": 717.265625,
+        "x": 306,
+        "y": 386.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(107, 114, 128)",
+        "color": "rgb(107, 114, 128)",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TH"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-transparent bg-transparent text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Product",
+      "rect": {
+        "height": 32,
+        "width": 84.2734375,
+        "x": 318,
+        "y": 392.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "18px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "h-[var(--lb-density-table-header-height)] whitespace-nowrap px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)] w-px",
+      "id": "",
+      "label": "Status",
+      "rect": {
+        "height": 44,
+        "width": 83.5390625,
+        "x": 1023.265625,
+        "y": 386.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(107, 114, 128)",
+        "color": "rgb(107, 114, 128)",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TH"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-transparent bg-transparent text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Status",
+      "rect": {
+        "height": 32,
+        "width": 55.0546875,
+        "x": 1035.265625,
+        "y": 392.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "18px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "h-[var(--lb-density-table-header-height)] whitespace-nowrap px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)] w-px",
+      "id": "",
+      "label": "Inventory",
+      "rect": {
+        "height": 44,
+        "width": 94.7421875,
+        "x": 1106.8046875,
+        "y": 386.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(107, 114, 128)",
+        "color": "rgb(107, 114, 128)",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TH"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-transparent bg-transparent text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Inventory",
+      "rect": {
+        "height": 32,
+        "width": 70.7421875,
+        "x": 1118.8046875,
+        "y": 392.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "18px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "h-[var(--lb-density-table-header-height)] whitespace-nowrap px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)] w-px",
+      "id": "",
+      "label": "Type",
+      "rect": {
+        "height": 44,
+        "width": 119.1796875,
+        "x": 1201.546875,
+        "y": 386.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(107, 114, 128)",
+        "color": "rgb(107, 114, 128)",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TH"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-transparent bg-transparent text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Type",
+      "rect": {
+        "height": 32,
+        "width": 44.734375,
+        "x": 1213.546875,
+        "y": 392.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "18px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "h-[var(--lb-density-table-header-height)] whitespace-nowrap px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)] w-px",
+      "id": "",
+      "label": "Vendor",
+      "rect": {
+        "height": 44,
+        "width": 85.2734375,
+        "x": 1320.7265625,
+        "y": 386.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(107, 114, 128)",
+        "color": "rgb(107, 114, 128)",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TH"
+    },
+    {
+      "className": "inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-transparent bg-transparent text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] h-[var(--lb-density-icon-button-height)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]",
+      "id": "",
+      "label": "Vendor",
+      "rect": {
+        "height": 32,
+        "width": 58.3046875,
+        "x": 1332.7265625,
+        "y": 392.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "1px solid rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "8px",
+        "lineHeight": "18px",
+        "padding": "0px 8px",
+        "radius": "8px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0",
+      "id": "",
+      "label": "Select row 1",
+      "rect": {
+        "height": 44,
+        "width": 52,
+        "x": 254,
+        "y": 430.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TD"
+    },
+    {
+      "className": "mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 rounded-[var(--lb-radius-sm)] border-[var(--lb-color-border)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed",
+      "id": "_r_13_",
+      "label": "",
+      "rect": {
+        "height": 16,
+        "width": 16,
+        "x": 266,
+        "y": 446.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px",
+        "radius": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "className": "h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)] max-w-0 overflow-hidden cursor-pointer",
+      "id": "",
+      "label": "UX Audit Sample ProductNot categorized",
+      "rect": {
+        "height": 44,
+        "width": 717.265625,
+        "x": 306,
+        "y": 430.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TD"
+    },
+    {
+      "className": "h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)] w-px whitespace-nowrap cursor-pointer",
+      "id": "",
+      "label": "DraftActiveDraftArchived",
+      "rect": {
+        "height": 44,
+        "width": 83.5390625,
+        "x": 1023.265625,
+        "y": 430.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TD"
+    },
+    {
+      "className": "h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)] w-px whitespace-nowrap cursor-pointer",
+      "id": "",
+      "label": "0 in stock",
+      "rect": {
+        "height": 44,
+        "width": 94.7421875,
+        "x": 1106.8046875,
+        "y": 430.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TD"
+    },
+    {
+      "className": "h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)] w-px whitespace-nowrap cursor-pointer",
+      "id": "",
+      "label": "Not categorized",
+      "rect": {
+        "height": 44,
+        "width": 119.1796875,
+        "x": 1201.546875,
+        "y": 430.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TD"
+    },
+    {
+      "className": "h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)] w-px whitespace-nowrap cursor-pointer",
+      "id": "",
+      "label": "No vendor",
+      "rect": {
+        "height": 44,
+        "width": 85.2734375,
+        "x": 1320.7265625,
+        "y": 430.84375
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px solid rgb(17, 24, 39)",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 12px",
+        "radius": "0px"
+      },
+      "tag": "TD"
+    }
+  ],
+  "tokens": {
+    "--lb-color-bg": "#F6F7F9",
+    "--lb-color-border": "#E5E7EB",
+    "--lb-color-primary": "#2C2642",
+    "--lb-color-primary-cta": "#2C2642",
+    "--lb-color-surface": "#FFFFFF",
+    "--lb-color-text": "#111827",
+    "--lb-color-text-subdued": "#6B7280",
+    "--lb-component-button-primary-bg": "#2C2642",
+    "--lb-component-sidebar-bg": "#2C2642",
+    "--lb-component-sidebar-text": "#FFFFFF",
+    "--lb-font-size-body": "14px"
+  },
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  }
+}

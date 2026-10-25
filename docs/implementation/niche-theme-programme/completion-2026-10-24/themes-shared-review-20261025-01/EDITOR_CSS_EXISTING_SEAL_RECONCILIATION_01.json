@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-25T01:25:20.459277+00:00",
+  "status": "REUSE_ROOT_INDEPENDENT_ACCEPTANCE_EXISTING_SEVEN_ARTIFACT_SEAL_NO_RENEWAL_OR_DUPLICATE_TESTS",
+  "RootReview": {
+    "path": "ROOT_EDITOR_BLOCK_CSS_SOURCE_REVIEW_01.json",
+    "sha256": "9a39ca426913a564dde2585d97533c7a1456fcff569721fe60b9581b7f318914"
+  },
+  "proposal": {
+    "path": "/private/tmp/letbuyy-editor-block-targets-prep-20261025-01/SEALED_PROPOSAL.json",
+    "sha256": "13a78a59153933223d1ba4fed46b1f3e13aa07b9dfc8d645e3009e03bd110fa3"
+  },
+  "sourcePath": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/editor.css",
+  "beforeSha256": "a18b469a13e822b7d55b9746ea588aa2eb9536461b754dbe6eddacf7d9b76856",
+  "afterSha256": "b937e271bb87fed6b783d9fc9e151233591df0829c4bff8d2823641cc66a6ef2",
+  "correction": "Earlier Themes retrieval searched docs and did not locate private-root SEALED_PROPOSAL.json; unknown-seal/expiry note superseded by Root actual independent seven-artifact acceptance. No fresh CSS proposal/source writer/renewal is needed.",
+  "independentWorkByThemes": "Read and rehashed only Root review receipt; reuse Root seven-artifact hash/patch/style assessment without duplicate copy or tests.",
+  "currentSourceLease": "Ended at existing seal; no mutable CSS lease",
+  "integration": "Exact b937e271 overlay only in later admitted coherent candidate; no Main/current runtime write",
+  "stillOpen": [
+    "Actual24px geometry",
+    "Keyboard/focus/pointer/narrow labels",
+    "Lifecycle regression",
+    "ED-R07-PREVIEW-DEVICE-02 responsive preview defect"
+  ],
+  "actualNativeBrowserOrSourceActionsByThemes": 0
+}

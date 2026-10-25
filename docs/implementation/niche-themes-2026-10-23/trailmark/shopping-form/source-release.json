@@ -1,0 +1,102 @@
+{
+  "createdAt": "2026-10-23T09:00:09.007166+00:00",
+  "classification": "SOURCE_RENDER_FORMDATA_CONTRACT_ONLY_NOT_BROWSER_DB_OR_INSTALLED_ACCEPTANCE",
+  "lease": "RELEASED_TO_THEMES_COORDINATOR",
+  "source": [
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "beforeSha256": "50b0bc0ae6482b95862ef547cbe0bc30c76786f1721383b8c832d5a3575d0e41",
+      "sha256": "1c32fd22424a209556694e1f34748ab49b9f95875dcd34389a9e512c4638e14d",
+      "changed": true
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "beforeSha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+      "changed": false
+    },
+    {
+      "path": "packages/theme-engine/test/trailmark.test.ts",
+      "beforeSha256": "6e4c8d4dbe813ea00637c2059e3595f80ca93162337353c9ff56c316001a0477",
+      "sha256": "6e4c8d4dbe813ea00637c2059e3595f80ca93162337353c9ff56c316001a0477",
+      "changed": false
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts",
+      "sha256": "ce730c621dcd576211c27c4ed2d454ef33db26b395164dcc2800ab568e45ca1f",
+      "new": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/typecheck.json",
+      "sha256": "56cefec7b47692db6fdf840be1999b9fb05a6fb574f4775129f69b61ea8afb50",
+      "new": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/source-probe.mjs",
+      "sha256": "8106ae3893886662113e90c4d8e8b349edbdfb6e3d344b9b0bc2cdbd20271c5b",
+      "new": true
+    }
+  ],
+  "bundleSha256": "1fb9cb5b22e7cb9fef0265166b252ee305d6c910f044b8eb1dddc5b6c2af7d76",
+  "changedBehavior": [
+    "Main Apply/sort retains all unedited canonical query rows and repeated values, excludes page and only the controls it actually renders.",
+    "A currently selected valid activity/equipment value absent from available options stays explicitly labelled Current filter; it is not advertised as a supplied facet or count.",
+    "Clear chips and length clear use exact active_filters clear_url; Clear all filters uses canonical clear_filters_url rather than bare request.path.",
+    "Length controls require actual sports capability and supplied unit options. An independent native required pair form prevents blank length/unit submission from affecting Apply/sort; every other field/array survives.",
+    "Missing unit capability hides length controls while preserving existing length pair and canonical pair-clear links."
+  ],
+  "checks": {
+    "actualLiquidFormDataCanonicalParser": {
+      "pass": 9,
+      "fail": 0,
+      "skip": 0,
+      "command": "node --import tsx --test docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts",
+      "positiveControl": "Actual baseline Liquid source reproduces missing arrays/limit/country/category and bare-path clear loss."
+    },
+    "trailmarkThemeRegression": {
+      "pass": 11,
+      "fail": 0,
+      "skip": 0
+    },
+    "themeNoEmit": {
+      "exitCode": 0,
+      "command": "node_modules/.bin/tsc --noEmit -p packages/theme-engine/tsconfig.json --tsBuildInfoFile /private/tmp/trailmark-shopping-theme.tsbuildinfo"
+    },
+    "formsFactoryTestsNoEmit": {
+      "exitCode": 0,
+      "command": "node_modules/.bin/tsc --noEmit -p docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/typecheck.json"
+    },
+    "actualEditorRegistryWireRoundtrip": {
+      "templates": 21,
+      "failed": 0,
+      "baselineIssues": [],
+      "baselineWireIssues": []
+    }
+  },
+  "missingCanonicalCapability": {
+    "path": "database/supabase/migrations/386_storefront_discovery.sql",
+    "factsLine": 239,
+    "facetLines": [
+      335,
+      340
+    ],
+    "observed": "Sports length is represented only as scalar private _equipment_length_mm. Facet expansion uses array values and excludes private underscore keys. Therefore it emits no length_unit facet, and released frontend sports_facets.length_units remains empty.",
+    "required": "Canonical backend must supply validated length_unit facet options/counts from applicable merchant facts; frontend maps supplied length_unit rows. No hardcoded units/facts were added here.",
+    "owner": "Themes coordinator assigns canonical backend follow-up; shared backend/frontend source remains unedited by this scope."
+  },
+  "earlierCheckpoints": "Released discovery14/14, adjacent26/26, commerce noEmit and frozen visual captures remain earlier evidence; those cohorts/captures were not rerun or rewritten for this form task.",
+  "remaining": [
+    "Canonical unit facet follow-up and its live SQL/tenant qualification.",
+    "Integrated browser and installed/published-store lifecycle acceptance."
+  ],
+  "notPerformed": [
+    "DB",
+    "build",
+    "browser",
+    "provider",
+    "publish",
+    "push",
+    "merge",
+    "deploy"
+  ]
+}

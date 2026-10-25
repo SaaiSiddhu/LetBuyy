@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-25T00:46:08.669604+00:00",
+  "status": "ROOT_VERIFIER_PATH_RESOLUTION_ERROR_NOT_SOURCE_CHANGE",
+  "handoffSha256": "ead3475f7a8e62556bf7bbc241b08bc58b801b2943f755bfb9054551ca0335a6",
+  "counts": {
+    "recursiveSources": 1120,
+    "vendorToolInputs": 5411,
+    "sealedArtifacts": 29,
+    "unchangedBaseSource": 6536,
+    "overlays": 8
+  },
+  "mismatches": [
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/apps/commerce/web/src/lib/order-fact-readback.test.ts"
+    },
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/packages/commerce-core/src/product-fact-snapshot.ts"
+    },
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/packages/commerce-core/src/product-facts-summary.ts"
+    },
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/packages/commerce-core/test/apparel-order-history.test.ts"
+    },
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/packages/theme-engine/src/niche-order-presentation.ts"
+    },
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/packages/theme-engine/test/threadline-order-facts-v211.test.ts"
+    },
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts"
+    },
+    {
+      "class": "sealedArtifacts",
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/overlay/services/api-gateway/src/lib/cart-product-facts.ts"
+    }
+  ],
+  "assertionsReviewed": [
+    "assert.deepEqual(item.snapshot.niche, line.niche_snapshot",
+    "assert.equal(item.variant, line.variant_id)",
+    "assert.equal(item.quantity, line.quantity)",
+    "assert.equal(Number(item.price), line.unit_price)",
+    "assertSqlConserved(beforeDown, afterDown, true)"
+  ],
+  "scope": "Fullsavednicheexactacceptedcart; exactproduct/variant/quantity/unitprice; SQL-onlyfullpublicrow/security/profileconservation; native4tests and600s/jobs1/no-reap/prepared2 envelope; no nativeexecution orMainintegration claimed",
+  "nativeActivation": "AfterexistingcaptureRED/GREENpaironly, delegatedsharedallocatorwritesexactgrantifinputsunchanged",
+  "retainedFailures": "Fiveunchangedbaseline type diagnostics; no introduced orownedleaf diagnostics; old10001apparelfactsremain{}immutable",
+  "newSourceOrNativeTestsRun": false,
+  "rootVerifierError": "Artifact manifest paths are relative to durable evidence root; first check incorrectly used private runtime root."
+}

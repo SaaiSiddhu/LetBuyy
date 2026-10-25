@@ -1,0 +1,121 @@
+{
+  "recordedAt": "2026-10-23T19:29:46.975Z",
+  "runId": "f6074d90e894",
+  "phase": "unknown-entered",
+  "guardVerified": true,
+  "readOnly": true,
+  "actual": {
+    "orders": 0,
+    "products": [
+      {
+        "id": "d9bd8cae-b211-48c5-8440-5f446dc57c0e",
+        "food": {
+          "storage": "Keep cool and dry.",
+          "allergens": {
+            "status": "not_supplied"
+          },
+          "ingredients": "Split red lentils (100%).",
+          "netQuantity": null,
+          "preparation": "Rinse before cooking."
+        },
+        "name": "Pantry lifecycle red lentils",
+        "price": 180,
+        "stock": 6,
+        "version": 19,
+        "inventory": [
+          {
+            "id": "24f42bcc-c8c0-43c1-8a53-05ec8c82b7f8",
+            "onHand": null,
+            "reserved": 0,
+            "available": 6,
+            "variantId": null
+          },
+          {
+            "id": "465c13c1-b42f-40d7-9f1e-ab56d8490ac3",
+            "onHand": null,
+            "reserved": 0,
+            "available": 0,
+            "variantId": "ec9f2eae-bc7f-4de2-a32c-357ab75520c0"
+          },
+          {
+            "id": "834f5fcb-b5fc-4ca1-855e-1559081b6d19",
+            "onHand": null,
+            "reserved": 0,
+            "available": 2,
+            "variantId": "b54e1a3f-dba9-4243-a2a4-6a31d168e79c"
+          },
+          {
+            "id": "a929b93b-d313-4020-aa31-8bda1d55fdd1",
+            "onHand": null,
+            "reserved": 0,
+            "available": 4,
+            "variantId": "f275956c-688c-4435-bb96-ae23fc75f72d"
+          }
+        ],
+        "variantRows": [
+          {
+            "id": "b54e1a3f-dba9-4243-a2a4-6a31d168e79c",
+            "food": {
+              "netQuantity": {
+                "unit": "g",
+                "value": 750
+              }
+            },
+            "price": 210,
+            "title": "750 g label only"
+          },
+          {
+            "id": "ec9f2eae-bc7f-4de2-a32c-357ab75520c0",
+            "food": {
+              "netQuantity": {
+                "unit": "g",
+                "value": 500
+              }
+            },
+            "price": 340,
+            "title": "500 g"
+          },
+          {
+            "id": "f275956c-688c-4435-bb96-ae23fc75f72d",
+            "food": {
+              "netQuantity": {
+                "unit": "g",
+                "value": 250
+              }
+            },
+            "price": 180,
+            "title": "250 g"
+          }
+        ]
+      },
+      {
+        "id": "fb090833-cbd5-44aa-803d-af9e8c00c56a",
+        "food": {
+          "allergens": {
+            "status": "not_supplied"
+          },
+          "ingredients": "Rice (100%).",
+          "netQuantity": {
+            "unit": "g",
+            "value": 1000
+          }
+        },
+        "name": "Pantry lifecycle rice",
+        "price": 220,
+        "stock": 4,
+        "version": 3,
+        "inventory": [
+          {
+            "id": "8bb373db-df81-4b70-864b-079e9628f963",
+            "onHand": null,
+            "reserved": 0,
+            "available": 4,
+            "variantId": null
+          }
+        ],
+        "variantRows": []
+      }
+    ],
+    "activeCartHash": "9db9ece4a8ebc698fa43e863666e8de61a48dcca492838bf4d2e561a078243d1"
+  }
+}

@@ -1,0 +1,43 @@
+- generic: Trailmark Runtime07 A — ready for movement
+- link:
+  - /url: ""
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - button "Search":
+    - generic: Search
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 1 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "1"
+    - text: )
+- heading "Your cart" [level=1]
+- alert: We could not confirm this update. Reload the saved cart before checkout.
+- button "Reload saved cart"
+- list:
+  - text: Trailmark lifecycle racket
+  - generic: "Length: 26.5 in"
+  - generic: "Saved options Length: 26.5 in Equipment details Activity: Badminton Equipment type: racket Length: 26.5 in Weight: 80 g Dimensions: Length 26.5 in · Width 10 in Materials: Not recorded with this order. Contents: Not recorded with this order. Use conditions: Not recorded with this order. Compatibility status: Unconfirmed. Compatibility reference: Not recorded with this order."
+  - 'button "Decrease quantity of Trailmark lifecycle racket, Length: 26.5 in"': "-"
+  - generic: "1"
+  - 'button "Increase quantity of Trailmark lifecycle racket, Length: 26.5 in"': +
+  - 'button "Remove Trailmark lifecycle racket, Length: 26.5 in"': Remove
+- generic: Subtotal
+- generic: ₹1,800
+- generic: Total
+- generic: ₹1,800
+- generic: Review your cart before checkout
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

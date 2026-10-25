@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-24T11:24:57.593895+00:00",
+  "requestingThreadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "authority": "DIRECT_HUMAN_REPLY_IN_REQUESTING_CHAT",
+  "question": "The Themes chat relayed a project-wide pause. Should I now resume all ten theme chats and both shared owners (Themes and Theme Editor \u2014 End-to-End), preserving their existing work and test queue?",
+  "answer": "Resume all ten themes and both shared owners",
+  "supersedesPauseForNamedChats": true,
+  "scope": "Existing ten theme chats plus Themes and Theme Editor only; preserve existing work, ownership and single browser queue. No new chats or duplicate work.",
+  "testKeys": "User supplied and authorized; redacted network preflight HTTP200. No secret values in this receipt.",
+  "credentialReceipt": "razorpay-test-credential-preflight-network-20261024.json",
+  "priorPauseCheckpoint": "PAUSE_CHECKPOINT_2026-10-24.json",
+  "allTenCertified": false,
+  "productionDeployment": "NOT_REQUESTED",
+  "pausedAutomationSchedules": "UNCHANGED"
+}

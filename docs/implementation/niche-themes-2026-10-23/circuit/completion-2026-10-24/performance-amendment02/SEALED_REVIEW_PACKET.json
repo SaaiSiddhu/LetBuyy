@@ -1,0 +1,129 @@
+{
+  "recordedAt": "2026-10-24T23:59:37.674306+00:00",
+  "status": "SEALED_PRIVATE_AMENDMENT_REVIEW_PACKET_SOURCE_ONLY",
+  "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+  "privateRoot": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02",
+  "files": [
+    {
+      "path": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02/PERFORMANCE_PROTOCOL.json",
+      "name": "PERFORMANCE_PROTOCOL.json",
+      "sha256": "3c6a37dba471ac118e437a7e31952977b9277e821c61e82451df4b8cdd05f32a",
+      "bytes": 11029
+    },
+    {
+      "path": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02/SOURCE_MANIFEST.json",
+      "name": "SOURCE_MANIFEST.json",
+      "sha256": "6443620936e3035cf0068f76e61cf11d7afb5c1349dec02570811804a4027ad2",
+      "bytes": 1300488
+    },
+    {
+      "path": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02/HANDOFF.json",
+      "name": "HANDOFF.json",
+      "sha256": "a0415c13fa56042cf3fdba5e9af621aca81fedb8973254f31cf132cadea358f3",
+      "bytes": 9370
+    },
+    {
+      "path": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02/circuit-indexed-performance-qualification.manual.ts",
+      "name": "circuit-indexed-performance-qualification.manual.ts",
+      "sha256": "9418a4406913a645ecb4997e49fb285121bc1f0c59373a73b490675dcb73c817",
+      "bytes": 33978
+    },
+    {
+      "path": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02/plan-parser.ts",
+      "name": "plan-parser.ts",
+      "sha256": "624ffc2856d6013f078662fb4fdf5d6dbfb5323a5d50ca226b20af39a2071292",
+      "bytes": 10141
+    },
+    {
+      "path": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02/plan-parser.test.ts",
+      "name": "plan-parser.test.ts",
+      "sha256": "9e2cfab61b6eab308147e6a80855a93b66cab09a1ff0f436d099c665f4adf7ae",
+      "bytes": 10239
+    }
+  ],
+  "sealCoversAllSixAllowedFiles": true,
+  "sourceAllocationEnded": "First sealed amended handoff; no further edits under this renewal.",
+  "sourceManifestCandidateEntries": 6547,
+  "explicitInputsExact": 14,
+  "candidateReceiptExact": true,
+  "oldV1AllFourExact": true,
+  "qualification": {
+    "tests": 36,
+    "pass": 36,
+    "fail": 0,
+    "skip": 0,
+    "strictParserAndTestsExitCode": 0,
+    "strictSuiteParserDiagnostics": 0,
+    "otherDependencyDiagnostics": 0,
+    "syntaxDiagnostics": 0,
+    "compilerSourceFilesInspected": 948,
+    "artifacts": [
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-amendment02/resume01-pure-parser.tap",
+        "sha256": "ca62e9a6424886733a300e5f473012cf5da6438fe6f22a7e7a90d33be53dd6cc",
+        "bytes": 5909
+      },
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-amendment02/resume01-pure-types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-amendment02/resume01-scoped-types.json",
+        "sha256": "c492e7dbf56654809fb4461ed25dd3e80ddca79fab8ea744efab04611558014b",
+        "bytes": 1604
+      },
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-amendment02/check-private-types.cjs",
+        "sha256": "7c21f43ca6f5539ff8d8340e5b647971030b7e4bb12a60b6255eaf1bf624ad5e",
+        "bytes": 4914
+      }
+    ],
+    "original34AndAllFailedAttemptsPreserved": true,
+    "rerunReason": "Actual R01/R03/R05 source refinements and two new adversarial cases; no unchanged native or browser rerun."
+  },
+  "requirements": [
+    {
+      "id": "PERF-R01",
+      "source": "Actual protocol SHA/effective settings and all admitted source-file hashes checked before requireOwnedDatabase/SQL; actual preflight receipt must also be in that closure.",
+      "pureEvidence": "Protocol changed-byte, wrong-effective and malformed fixtures; strict scoped typing."
+    },
+    {
+      "id": "PERF-R02",
+      "source": "Index node must belong to public.products via owned catalogue and actual relation/bitmap ancestry, with store_id equality to exact site UUID; generic params remain unproven.",
+      "pureEvidence": "Direct/bitmap positives; other table/index/column/site/filter/outer/generic/OR negatives."
+    },
+    {
+      "id": "PERF-R03",
+      "source": "SQL-only witness stays exact. HTTP baseline retains rows separately for every base/parent/leaf; exact observed request/trace IDs, cardinality, fields and mirrors; all prior rows and all other tables unchanged; fresh complete witness across DOWN/UP.",
+      "pureEvidence": "Legitimate attributed additions accepted; mutation/deletion/duplicate/unattributed rows refused, including pre-existing parent/leaf correction disguised by final equality."
+    },
+    {
+      "id": "PERF-R04",
+      "source": "Canonical reader validates each SQL payload; independent fixture IDs/order/counts/site, Graphite UUID1900, negative tuples, true empty later pages, before/after and equivalent query IDs. Worker requires actual browse RPC and bounded hydration calls, records cache disposition.",
+      "pureEvidence": "Wrong product/variant/price rejected; exact tuple and true empty accepted; strict actual helper signatures."
+    },
+    {
+      "id": "PERF-R05",
+      "source": "Zero-duration plan capture only in future fresh synthetic session, bounded read/record/time volume; strict one-header JSON, PID/time/canonical query. Missing/truncated/stolen/invalid-time records fail. Actual bundled module/log preflight remains unexecuted.",
+      "pureEvidence": "Complete records, quoted braces, multiple records, PID/time/bounds and missing/truncated/next-record theft cases."
+    },
+    {
+      "id": "PERF-R06",
+      "source": "Checked subtest wrapper rethrows swallowed failure; dependent phases remain NOT_RUN and terminal success requires every mandatory phase PASS.",
+      "pureEvidence": "Swallowed failure prevents later action/success; incomplete terminal rejected."
+    }
+  ],
+  "preflightAndNativePrerequisites": [
+    "Independent Themes review accepts this exact six-file seal and effective protocol.",
+    "Root recovers the existing environment/data; Circuit has no runtime recovery/browser lease.",
+    "Separately admitted actual owned bundled auto_explain/module and PID/time log parser preflight; exact receipt/parser hashes, no module install/global setting or pure-fixture substitution.",
+    "Materialize only admitted new native leaves/data into a separately contained source copy; pin complete dependency/import closure, all proposals, protocol and preflight receipt. Preserve Main and sealed source candidate.",
+    "Fresh exact native resource admission: status ROOT_AND_THEMES_ACCEPTED_EXACT_NATIVE_PERFORMANCE_COHORT, one canonical owned runner job,600s envelope, accepted1.25/+25ms local regression guard, explicit module/log read permission. No existing-runtime sampling, provider/browser action or SQL/index repair."
+  ],
+  "resourceAdmissionGranted": false,
+  "nativeExecuted": false,
+  "indexOrPerformanceResultClaimed": false,
+  "CircuitORD10005": "Preserved; this source preparation neither alters nor substitutes its actual browser/provider proof.",
+  "allThemeCertificatesGranted": 0
+}

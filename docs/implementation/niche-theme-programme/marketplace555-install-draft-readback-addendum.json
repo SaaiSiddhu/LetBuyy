@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-23T19:17:31.087Z",
+  "status": "ROOT_GUARDED_READ_ONLY_MARKETPLACE555_CORRECT_DRAFT_CONFIG_COLUMN",
+  "runId": "555b91e19691",
+  "guardVerified": true,
+  "siteId": "cf45b15f-5910-430d-b140-56af04983e5a",
+  "actual": {
+    "site": {
+      "id": "cf45b15f-5910-430d-b140-56af04983e5a",
+      "theme": "letbuyy-core",
+      "status": "draft",
+      "published": false,
+      "releaseId": null
+    },
+    "carts": 0,
+    "drafts": [
+      {
+        "id": "0ee59ffa-04f4-473f-9100-00a0e5d4e597",
+        "theme": "letbuyy-sense",
+        "themeId": "letbuyy-sense",
+        "version": 1,
+        "configMd5": "899a958a04d16dcee424fc95e2985f14",
+        "configKeys": [
+          "experienceId",
+          "liquidBundle",
+          "liquidRenderingCanary",
+          "rendererEngine",
+          "sections",
+          "templates",
+          "themeId",
+          "themeSettings"
+        ],
+        "packageSlug": "letbuyy-sense",
+        "packageVersion": "2.0.0",
+        "rendererEngine": "liquid"
+      }
+    ],
+    "orders": 0,
+    "library": [
+      {
+        "id": "7ae6ec5b-bef2-42e2-9d1f-2c0b1a16a436",
+        "slug": "letbuyy-sense",
+        "themeId": "7b669c70-0000-4000-8000-000000000002",
+        "catalogVersion": "2.0.0"
+      }
+    ],
+    "versions": [
+      {
+        "id": "0a029421-6795-4690-b68e-365811eb6da2",
+        "version": "2.0.0",
+        "packageId": "9cae334e-aad2-4c7c-b8ac-04f2ac0ba695",
+        "packageIdAlternate": null
+      }
+    ],
+    "instances": [
+      {
+        "id": "a2caf52b-67c4-4d8c-b46e-c6b36e8553b3",
+        "slug": "letbuyy-sense",
+        "status": "installed",
+        "packageId": "9cae334e-aad2-4c7c-b8ac-04f2ac0ba695",
+        "packageVersionId": "0a029421-6795-4690-b68e-365811eb6da2",
+        "rowSha256UnavailableMd5": "e050323158466f5491f4462633ad34d2"
+      }
+    ],
+    "installOutbox": [
+      {
+        "id": "b500a62b-dd96-4ba1-bb07-af8f963d7301",
+        "eventType": "theme.installed",
+        "themeSlug": "letbuyy-sense",
+        "instanceId": "a2caf52b-67c4-4d8c-b46e-c6b36e8553b3",
+        "packageVersionId": null
+      }
+    ],
+    "syntheticOwnerSiteBound": true
+  },
+  "mutationPerformed": false,
+  "addRetried": false,
+  "normalBrowserEvidence": "Separate Editor receipts; this readback does not confirm the Marketplace UI response."
+}

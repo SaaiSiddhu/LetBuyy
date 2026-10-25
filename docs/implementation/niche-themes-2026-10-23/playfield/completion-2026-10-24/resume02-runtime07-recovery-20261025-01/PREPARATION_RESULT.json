@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-25T00:03:42.407857+00:00",
+  "status": "RETAINED_PRODUCT_ID_AND_UI_ONLY_CASE_RECIPE_PREPARED",
+  "retainedProductId": "c73ce017-bf8c-420d-9d92-9a3980df6d37",
+  "editionIdsProductVersionActualStock": "UNAVAILABLE_IN_APPROVED_RETAINED_RECEIPTS; NO_GUESSES",
+  "caseGroupsPreserved": 394,
+  "requiredOperationsPreserved": 4503,
+  "original14": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14
+  },
+  "businessDataSourceRuntimeBrowserProviderMutations": 0,
+  "networkActions": 0,
+  "outgoingMessages": 0,
+  "certification": {
+    "LOCAL_E2E_VERIFIED": false,
+    "RAZORPAY_TEST_VERIFIED": false,
+    "REVIEW_ACCEPTED": false,
+    "FULL_THEME_CERTIFIED": false,
+    "PRODUCTION_DEPLOYED": "NOT_REQUESTED"
+  },
+  "updatedOwnRecords": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/COVERAGE.json",
+      "sha256": "ac2afb60303d89af4e45ae005dcd9c830473b32481df05673bdf97866aec54ab",
+      "bytes": 2033195
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/SHARED_REQUESTS.json",
+      "sha256": "fc6dbd4255eb69d3cc08b6ffff267162dd44ea286d5e4b124964fb06e9d7e7a4",
+      "bytes": 36678
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/RUNBOOK.md",
+      "sha256": "c9d66d914e5b71a6fb70128c649d39a80a0f196b9bed666fa5fa32060282835e",
+      "bytes": 15915
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-published-home.ax.txt",
+      "sha256": "1397830859e55cd44e8953a4c9381a7e9cea282c230203c8d84397417825324f",
+      "bytes": 9795
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/installed-fixture-preparation/toys-fixture-proposal.json",
+      "sha256": "8515ce354b0cd56d07ac13134e6bece343a2cb5f9b522e4004518ee2c115767d",
+      "bytes": 4235
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+      "sha256": "3d1bb457e0a3637169a914dcb43b6f7cde7117c464a341cf2035106a8c5aa821",
+      "bytes": 715
+    }
+  ]
+}

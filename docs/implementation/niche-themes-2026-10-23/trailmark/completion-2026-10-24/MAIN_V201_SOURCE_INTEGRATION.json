@@ -1,0 +1,2530 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:40:34.539Z",
+  "classification": "ACTUAL_MAIN_SOURCE_INTEGRATION_INSPECTION_NOT_PACKAGE_PROMOTION_OR_RUNTIME_ADMISSION",
+  "sourceInputs": [
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-styles.ts",
+      "sha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "sha256": "3f090332d1b1a7ada396d6e2bf7b970ea57b967b7ff512673f7908e97332279f"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "840af16589d97e99ebecdbc045e920567d4e71a3b30d9d00d22f440aa5cb34a8"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-discovery.ts",
+      "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-styles.ts",
+      "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-discovery.ts",
+      "sha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "sha256": "a36fd4fe59da895b4f48e08e3b2882bc8a5e0fc99c0d57487a476e17219f38bf"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94"
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-styles.ts",
+      "sha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme-v201.ts",
+      "sha256": "b381b79035f94dff3e3dfc0e2b87d81cb1a90624ef98e876feb1d7f1cac1a5f8"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    }
+  ],
+  "allInputsStableDuringInspection": true,
+  "package": {
+    "slug": "letbuyy-ride",
+    "name": "Trailmark",
+    "description": "Activity-first recreational equipment, measured specifications and honest compatibility.",
+    "author_name": "LetBuyy",
+    "site_types": [
+      "store"
+    ],
+    "status": "active",
+    "pricing_type": "free",
+    "price": 0,
+    "currency": "INR",
+    "version": "2.0.1",
+    "version_number": 3,
+    "release_status": "published",
+    "compatibility_range": ">=2026-06-liquid-sections"
+  },
+  "catalogIdentity": {
+    "id": "7b669c70-0000-4000-8000-000000000006",
+    "slug": "letbuyy-ride",
+    "name": "Trailmark",
+    "presetId": "ride",
+    "description": "High-energy design for sports equipment, fitness gear, and outdoor brands. Performance orange and carbon black — built for movement.",
+    "category": "sports",
+    "thumbnail": "/theme-previews/ride.svg",
+    "settings": {
+      "primaryColor": "#FF4D00",
+      "secondaryColor": "#1C1C1C",
+      "accentColor": "#FFD100",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#111111",
+      "surfaceColor": "#F5F5F5",
+      "fontFamily": "Inter",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Inter",
+      "borderRadius": 6
+    },
+    "preview": {
+      "label": "Ride",
+      "summary": "High-energy design for sports equipment, fitness gear, and outdoor brands. Performance orange and carbon black — built for movement.",
+      "swatches": [
+        "#FF4D00",
+        "#FFD100",
+        "#F5F5F5"
+      ],
+      "headingFont": "Inter",
+      "sectionCount": 7
+    }
+  },
+  "default200SourceBundleSHA256": "127a261320b208ec845277abe51c176921767934988f98a2ce73188bfa95c224",
+  "expectedPrior200SourceBundleSHA256": "127a261320b208ec845277abe51c176921767934988f98a2ce73188bfa95c224",
+  "default200Unchanged": true,
+  "successorSourceBundleSHA256": "b71c9aa7c5e79f0f0a212dbdaaa413c4abe29baa2b030620dfb619ddceca668b",
+  "successorModuleSHA256": "b381b79035f94dff3e3dfc0e2b87d81cb1a90624ef98e876feb1d7f1cac1a5f8",
+  "proposedModuleSHA256": "b381b79035f94dff3e3dfc0e2b87d81cb1a90624ef98e876feb1d7f1cac1a5f8",
+  "templates": {
+    "header": {
+      "name": "LetBuyy Core header",
+      "layout": "theme",
+      "sections": {
+        "announcement-default": {
+          "type": "announcement-bar",
+          "settings": {
+            "text": "A little more play. A little less guesswork.",
+            "linkLabel": "",
+            "linkHref": ""
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "header-default": {
+          "type": "header",
+          "settings": {
+            "showSearch": true,
+            "showCart": true,
+            "behavior": "static",
+            "layout": "inline"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "announcement-default",
+        "header-default"
+      ]
+    },
+    "footer": {
+      "name": "LetBuyy Core footer",
+      "layout": "theme",
+      "sections": {
+        "footer-default": {
+          "type": "footer",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "footer-default"
+      ]
+    },
+    "index": {
+      "name": "Trailmark activity home",
+      "layout": "theme",
+      "sections": {
+        "ride-hero-index": {
+          "type": "hero-banner",
+          "settings": {
+            "eyebrow": "RECREATION / EVERYDAY MOVEMENT",
+            "heading": "Make room for a game.",
+            "subheading": "Start with the activity. Find the gear. Check the measurements.",
+            "ctaText": "Find your equipment",
+            "ctaLink": "/products",
+            "imageFocus": "center"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "ride-activities-index": {
+          "type": "category-grid",
+          "settings": {
+            "title": "Find your kind of play"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "ride-equipment-index": {
+          "type": "product-grid",
+          "settings": {
+            "title": "A simple start. Proper details.",
+            "columns": 3,
+            "productLimit": 6
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "ride-guide-index": {
+          "type": "about-section",
+          "settings": {
+            "title": "Different kit. Different measurements."
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "ride-services-index": {
+          "type": "trust-badges",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "ride-hero-index",
+        "ride-activities-index",
+        "ride-equipment-index",
+        "ride-guide-index",
+        "ride-services-index"
+      ]
+    },
+    "product": {
+      "name": "LetBuyy Core product",
+      "layout": "theme",
+      "sections": {
+        "product-detail-default": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": true,
+            "showDescription": true,
+            "showEquipmentFacts": true,
+            "showBuyNow": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "product-related": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Keep your court kit simple.",
+            "requireSelection": true,
+            "productLimit": 3
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "product-detail-default",
+        "product-related"
+      ]
+    },
+    "collection": {
+      "name": "Trailmark equipment collection",
+      "layout": "theme",
+      "sections": {
+        "ride-collection": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Equipment"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "ride-collection"
+      ]
+    },
+    "search": {
+      "name": "Trailmark equipment search",
+      "layout": "theme",
+      "sections": {
+        "ride-search": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Search products"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "ride-search"
+      ]
+    },
+    "cart": {
+      "name": "LetBuyy Core cart",
+      "layout": "theme",
+      "sections": {
+        "cart-summary-default": {
+          "type": "cart-summary",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "cart-summary-default"
+      ]
+    },
+    "list-collections": {
+      "name": "All collections",
+      "layout": "theme",
+      "sections": {
+        "list-collections-grid": {
+          "type": "category-grid",
+          "settings": {
+            "title": "All collections"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "list-collections-grid"
+      ]
+    },
+    "contact": {
+      "name": "Contact",
+      "layout": "theme",
+      "sections": {
+        "contact-form-default": {
+          "type": "contact-form",
+          "settings": {
+            "title": "Contact us",
+            "showPhone": true
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "contact-form-default"
+      ]
+    },
+    "customers/login": {
+      "name": "Login",
+      "layout": "theme",
+      "sections": {
+        "customer-login-default": {
+          "type": "customer-login",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-login-default"
+      ]
+    },
+    "customers/register": {
+      "name": "Register",
+      "layout": "theme",
+      "sections": {
+        "customer-register-default": {
+          "type": "customer-register",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-register-default"
+      ]
+    },
+    "customers/account": {
+      "name": "Account",
+      "layout": "theme",
+      "sections": {
+        "customer-account-default": {
+          "type": "customer-account",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-account-default"
+      ]
+    },
+    "customers/orders": {
+      "name": "Order history",
+      "layout": "theme",
+      "sections": {
+        "customer-orders-default": {
+          "type": "customer-orders",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-orders-default"
+      ]
+    },
+    "customers/order": {
+      "name": "Order detail",
+      "layout": "theme",
+      "sections": {
+        "customer-order-detail-default": {
+          "type": "customer-order-detail",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-order-detail-default"
+      ]
+    },
+    "customers/settings": {
+      "name": "Account settings",
+      "layout": "theme",
+      "sections": {
+        "customer-settings-default": {
+          "type": "customer-settings",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-settings-default"
+      ]
+    },
+    "customers/wishlist": {
+      "name": "Wishlist",
+      "layout": "theme",
+      "sections": {
+        "customer-wishlist-default": {
+          "type": "customer-wishlist",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-wishlist-default"
+      ]
+    },
+    "customers/addresses": {
+      "name": "Addresses",
+      "layout": "theme",
+      "sections": {
+        "customer-addresses-default": {
+          "type": "customer-addresses",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-addresses-default"
+      ]
+    },
+    "policy": {
+      "name": "Policy page",
+      "layout": "theme",
+      "sections": {
+        "policy-content-default": {
+          "type": "policy-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "policy-content-default"
+      ]
+    },
+    "blog": {
+      "name": "Blog",
+      "layout": "theme",
+      "sections": {
+        "blog-listing-default": {
+          "type": "blog-listing",
+          "settings": {
+            "heading": "Our Blog"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "blog-listing-default"
+      ]
+    },
+    "article": {
+      "name": "Article",
+      "layout": "theme",
+      "sections": {
+        "article-content-default": {
+          "type": "article-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "article-content-default"
+      ]
+    },
+    "page": {
+      "name": "Page",
+      "layout": "theme",
+      "sections": {
+        "page-content-default": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "page-content-default"
+      ]
+    },
+    "not_found": {
+      "name": "404 Not Found",
+      "layout": "theme",
+      "sections": {
+        "404-page-default": {
+          "type": "404-page",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "404-page-default"
+      ]
+    },
+    "password": {
+      "name": "Password",
+      "layout": "theme",
+      "sections": {
+        "password-gate-default": {
+          "type": "password-gate",
+          "settings": {
+            "heading": "Coming Soon"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "password-gate-default"
+      ]
+    }
+  },
+  "sectionSchemas": {
+    "customer-orders": {
+      "name": "Order History",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Your orders",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Order History",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "customer-order-detail": {
+      "name": "Order Detail",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Order",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Order Detail",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "customer-account": {
+      "name": "Customer Account",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Your account",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Customer Account",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "customer-login": {
+      "name": "Customer Login",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Sign in",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Customer Login",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "customer-register": {
+      "name": "Customer Register",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Create account",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Customer Register",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "customer-settings": {
+      "name": "Account Settings",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Account settings",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Account Settings",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "customer-wishlist": {
+      "name": "Wishlist",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Your wishlist",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Wishlist",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "customer-addresses": {
+      "name": "Addresses",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Your addresses",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Addresses",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "policy-content": {
+      "name": "Policy Content",
+      "tag": "section",
+      "settings": [],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Policy Content",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "cart-summary": {
+      "name": "Cart",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Your cart",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Cart",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "search-box": {
+      "name": "Search",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Placeholder",
+          "default": "Search products",
+          "id": "placeholder"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Search",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "collection-banner": {
+      "name": "Collection Banner",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "toggle",
+          "label": "Show description",
+          "default": true,
+          "id": "showDescription"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Collection Banner",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "collection-product-list": {
+      "name": "Activity equipment discovery",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Fallback heading",
+          "default": "Equipment",
+          "id": "title"
+        },
+        {
+          "type": "text",
+          "label": "Heading override",
+          "default": "",
+          "id": "headingOverride"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Activity equipment discovery",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "blog-listing": {
+      "name": "Blog Listing",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Our Blog",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Blog Listing",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "article-content": {
+      "name": "Article Content",
+      "tag": "section",
+      "settings": [],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Article Content",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "page-content": {
+      "name": "Page Content",
+      "tag": "section",
+      "settings": [],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Page Content",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "404-page": {
+      "name": "404 Not Found",
+      "tag": "section",
+      "settings": [],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "404 Not Found",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "password-gate": {
+      "name": "Password Gate",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Coming Soon",
+          "id": "heading"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Password Gate",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "announcement-bar": {
+      "name": "Announcement Bar",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Message",
+          "default": "Discover our latest products.",
+          "id": "text"
+        },
+        {
+          "type": "text",
+          "label": "Link label",
+          "default": "Shop now",
+          "id": "linkLabel"
+        },
+        {
+          "type": "url",
+          "label": "Link URL",
+          "default": "/products",
+          "id": "linkHref"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Announcement Bar",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "about-section": {
+      "name": "Equipment selection guide",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Different kit. Different measurements.",
+          "id": "title"
+        },
+        {
+          "type": "text",
+          "label": "Merchant guide text",
+          "default": "",
+          "id": "content"
+        },
+        {
+          "type": "image",
+          "label": "Guide image",
+          "id": "image"
+        },
+        {
+          "type": "text",
+          "label": "Image description",
+          "default": "",
+          "id": "imageAlt"
+        },
+        {
+          "type": "text",
+          "label": "Guide link label",
+          "default": "",
+          "id": "linkLabel"
+        },
+        {
+          "type": "url",
+          "label": "Guide destination",
+          "default": "",
+          "id": "linkUrl"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Equipment selection guide",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "app-block-slot": {
+      "name": "App Block Slot",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "id": "title"
+        },
+        {
+          "type": "text",
+          "label": "Slot",
+          "default": "storefront.home.after-hero",
+          "id": "slot"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "@app",
+          "name": "App block",
+          "settings": []
+        }
+      ],
+      "presets": [
+        {
+          "name": "App Block Slot",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "banner-carousel": {
+      "name": "Banner Carousel",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "id": "title"
+        },
+        {
+          "type": "toggle",
+          "label": "Autoplay",
+          "default": true,
+          "id": "autoplay"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "slide",
+          "name": "Slide",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "id": "heading"
+            },
+            {
+              "type": "image",
+              "label": "Image",
+              "id": "image"
+            },
+            {
+              "type": "url",
+              "label": "Link",
+              "id": "link"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Banner Carousel",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "brand-marquee": {
+      "name": "Brand Marquee",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "Featured brands",
+          "id": "title"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "brand",
+          "name": "Brand",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Name",
+              "id": "name"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Brand Marquee",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "category-grid": {
+      "name": "Activity pathways",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Find your kind of play",
+          "id": "title"
+        },
+        {
+          "type": "collection",
+          "label": "Activity collection 1",
+          "id": "collection1"
+        },
+        {
+          "type": "collection",
+          "label": "Activity collection 2",
+          "id": "collection2"
+        },
+        {
+          "type": "collection",
+          "label": "Activity collection 3",
+          "id": "collection3"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Activity pathways",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "collection-filter": {
+      "name": "Equipment discovery controls",
+      "tag": "section",
+      "settings": [],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Equipment discovery controls",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "contact-form": {
+      "name": "Contact Form",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "Contact us",
+          "id": "title"
+        },
+        {
+          "type": "text",
+          "label": "Subtitle",
+          "id": "subtitle"
+        },
+        {
+          "type": "toggle",
+          "label": "Show phone field",
+          "default": true,
+          "id": "showPhone"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Contact Form",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "cta-section": {
+      "name": "Call to Action",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Ready to get started?",
+          "id": "heading"
+        },
+        {
+          "type": "text",
+          "label": "Subheading",
+          "id": "subheading"
+        },
+        {
+          "type": "text",
+          "label": "Button text",
+          "default": "Shop now",
+          "id": "ctaText"
+        },
+        {
+          "type": "url",
+          "label": "Button link",
+          "default": "/products",
+          "id": "ctaLink"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Call to Action",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "featured-products": {
+      "name": "Independent court accessories",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Keep your court kit simple.",
+          "id": "title"
+        },
+        {
+          "type": "text",
+          "label": "Description",
+          "default": "",
+          "id": "subtitle"
+        },
+        {
+          "type": "image",
+          "label": "Context image",
+          "id": "image"
+        },
+        {
+          "type": "text",
+          "label": "Image description",
+          "default": "",
+          "id": "imageAlt"
+        },
+        {
+          "type": "toggle",
+          "label": "Show only selected products",
+          "default": true,
+          "id": "requireSelection"
+        },
+        {
+          "type": "product",
+          "label": "Independent product 1",
+          "id": "product1"
+        },
+        {
+          "type": "product",
+          "label": "Independent product 2",
+          "id": "product2"
+        },
+        {
+          "type": "product",
+          "label": "Independent product 3",
+          "id": "product3"
+        },
+        {
+          "type": "range",
+          "label": "Products to show",
+          "default": 3,
+          "min": 1,
+          "max": 8,
+          "step": 1,
+          "id": "productLimit"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Independent court accessories",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "experience-timeline": {
+      "name": "Experience Timeline",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "Experience",
+          "id": "title"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "experience",
+          "name": "Experience",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Company",
+              "id": "company"
+            },
+            {
+              "type": "text",
+              "label": "Period",
+              "id": "period"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Experience Timeline",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "faq-accordion": {
+      "name": "FAQ Accordion",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "Frequently asked questions",
+          "id": "title"
+        },
+        {
+          "type": "toggle",
+          "label": "Allow multiple open",
+          "default": false,
+          "id": "allowMultipleOpen"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "faq-item",
+          "name": "FAQ item",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Question",
+              "id": "question"
+            },
+            {
+              "type": "richtext",
+              "label": "Answer",
+              "id": "answer"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "FAQ Accordion",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "footer": {
+      "name": "Footer",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Store name",
+          "id": "storeName"
+        },
+        {
+          "type": "text",
+          "label": "Tagline",
+          "id": "tagline"
+        },
+        {
+          "type": "text",
+          "label": "Contact email",
+          "id": "contactEmail"
+        },
+        {
+          "type": "text",
+          "label": "Contact phone",
+          "id": "contactPhone"
+        },
+        {
+          "type": "url",
+          "label": "Instagram URL",
+          "id": "instagramUrl"
+        },
+        {
+          "type": "url",
+          "label": "Facebook URL",
+          "id": "facebookUrl"
+        },
+        {
+          "type": "url",
+          "label": "Twitter/X URL",
+          "id": "twitterUrl"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "link",
+          "name": "Link",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Label",
+              "id": "label"
+            },
+            {
+              "type": "url",
+              "label": "URL",
+              "id": "href"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Footer",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "header": {
+      "name": "Header",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Store name",
+          "id": "storeName"
+        },
+        {
+          "type": "toggle",
+          "label": "Show search",
+          "default": true,
+          "id": "showSearch"
+        },
+        {
+          "type": "toggle",
+          "label": "Show cart",
+          "default": true,
+          "id": "showCart"
+        },
+        {
+          "type": "select",
+          "label": "Header behavior",
+          "default": "sticky",
+          "options": [
+            "static",
+            "sticky"
+          ],
+          "id": "behavior"
+        },
+        {
+          "type": "select",
+          "label": "Menu",
+          "default": "main_menu",
+          "options": [
+            "main_menu",
+            "footer_menu",
+            "policy_menu"
+          ],
+          "id": "menu"
+        },
+        {
+          "type": "select",
+          "label": "Layout",
+          "default": "inline",
+          "options": [
+            "inline",
+            "centered"
+          ],
+          "id": "layout"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "link",
+          "name": "Link",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Label",
+              "id": "label"
+            },
+            {
+              "type": "url",
+              "label": "URL",
+              "id": "href"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Header",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "hero-banner": {
+      "name": "Activity masthead",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Eyebrow",
+          "default": "RECREATION / EVERYDAY MOVEMENT",
+          "id": "eyebrow"
+        },
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Make room for a game.",
+          "id": "heading"
+        },
+        {
+          "type": "text",
+          "label": "Description",
+          "default": "Start with the activity. Find the gear. Check the measurements.",
+          "id": "subheading"
+        },
+        {
+          "type": "text",
+          "label": "Button label",
+          "default": "Find your equipment",
+          "id": "ctaText"
+        },
+        {
+          "type": "url",
+          "label": "Button destination",
+          "default": "/products",
+          "id": "ctaLink"
+        },
+        {
+          "type": "image",
+          "label": "Activity context image",
+          "id": "image"
+        },
+        {
+          "type": "text",
+          "label": "Image description",
+          "default": "",
+          "id": "imageAlt"
+        },
+        {
+          "type": "select",
+          "label": "Image focus",
+          "default": "center",
+          "options": [
+            "center",
+            "top",
+            "bottom"
+          ],
+          "id": "imageFocus"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Activity masthead",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "marquee": {
+      "name": "Marquee",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Text",
+          "default": "Featured announcement",
+          "id": "text"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Marquee",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "portfolio-grid": {
+      "name": "Portfolio Grid",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "Portfolio",
+          "id": "title"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "project",
+          "name": "Project",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "id": "title"
+            },
+            {
+              "type": "textarea",
+              "label": "Summary",
+              "id": "summary"
+            },
+            {
+              "type": "url",
+              "label": "Link",
+              "id": "link"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Portfolio Grid",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "product-detail": {
+      "name": "Product Detail",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "toggle",
+          "label": "Show gallery",
+          "default": true,
+          "id": "showGallery"
+        },
+        {
+          "type": "toggle",
+          "label": "Show description",
+          "default": true,
+          "id": "showDescription"
+        },
+        {
+          "type": "toggle",
+          "label": "Show reviews",
+          "default": true,
+          "id": "showReviews"
+        },
+        {
+          "type": "toggle",
+          "label": "Show product measurements and conditions",
+          "default": true,
+          "id": "showEquipmentFacts"
+        },
+        {
+          "type": "toggle",
+          "label": "Show buy now",
+          "default": false,
+          "id": "showBuyNow"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Product Detail",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "product-grid": {
+      "name": "Factual equipment cards",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Equipment, explained",
+          "id": "title"
+        },
+        {
+          "type": "text",
+          "label": "Description",
+          "default": "",
+          "id": "subtitle"
+        },
+        {
+          "type": "collection",
+          "label": "Equipment collection",
+          "id": "collectionId"
+        },
+        {
+          "type": "range",
+          "label": "Products to show",
+          "default": 6,
+          "min": 1,
+          "max": 24,
+          "step": 1,
+          "id": "productLimit"
+        },
+        {
+          "type": "range",
+          "label": "Desktop columns",
+          "default": 3,
+          "min": 2,
+          "max": 4,
+          "step": 1,
+          "id": "columns"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Factual equipment cards",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "rich-content": {
+      "name": "Rich Content",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "id": "title"
+        },
+        {
+          "type": "richtext",
+          "label": "Body",
+          "id": "body"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Rich Content",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "services-grid": {
+      "name": "Services Grid",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "Services",
+          "id": "title"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "service",
+          "name": "Service",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "id": "title"
+            },
+            {
+              "type": "textarea",
+              "label": "Description",
+              "id": "description"
+            },
+            {
+              "type": "url",
+              "label": "Link",
+              "id": "link"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Services Grid",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "skills-section": {
+      "name": "Skills Section",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "Skills",
+          "id": "title"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "skill",
+          "name": "Skill",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Skill",
+              "id": "name"
+            },
+            {
+              "type": "range",
+              "label": "Level",
+              "min": 0,
+              "max": 100,
+              "step": 5,
+              "id": "level"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Skills Section",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Title",
+          "default": "What customers say",
+          "id": "title"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "testimonial",
+          "name": "Testimonial",
+          "settings": [
+            {
+              "type": "textarea",
+              "label": "Quote",
+              "id": "quote"
+            },
+            {
+              "type": "text",
+              "label": "Author",
+              "id": "author"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Testimonials",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "trust-badges": {
+      "name": "Merchant service information",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Measurements information",
+          "default": "",
+          "id": "measurementsText"
+        },
+        {
+          "type": "text",
+          "label": "Included contents information",
+          "default": "",
+          "id": "contentsText"
+        },
+        {
+          "type": "text",
+          "label": "Support information",
+          "default": "",
+          "id": "supportText"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Merchant service information",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "newsletter-signup": {
+      "name": "Newsletter Signup",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Get first access",
+          "id": "title"
+        },
+        {
+          "type": "text",
+          "label": "Subheading",
+          "id": "subtitle"
+        },
+        {
+          "type": "text",
+          "label": "Button label",
+          "default": "Sign up",
+          "id": "buttonLabel"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Newsletter Signup",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "spotlight": {
+      "name": "Spotlight",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "Made for daily buyers",
+          "id": "heading"
+        },
+        {
+          "type": "text",
+          "label": "Subheading",
+          "id": "subheading"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "badge",
+          "name": "Badge",
+          "settings": []
+        },
+        {
+          "type": "@app",
+          "name": "App block",
+          "settings": []
+        }
+      ],
+      "presets": [
+        {
+          "name": "Spotlight",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    },
+    "video-hero": {
+      "name": "Video Hero",
+      "tag": "section",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Heading",
+          "default": "See the fit in motion",
+          "id": "heading"
+        },
+        {
+          "type": "textarea",
+          "label": "Subheading",
+          "default": "A quick look at how each drop moves, from the box to your feet.",
+          "id": "subheading"
+        },
+        {
+          "type": "url",
+          "label": "Video embed URL",
+          "info": "A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.",
+          "id": "videoUrl"
+        }
+      ],
+      "blocks": [],
+      "presets": [
+        {
+          "name": "Video Hero",
+          "settings": {},
+          "blocks": []
+        }
+      ],
+      "enabled_on": {
+        "templates": [
+          "*"
+        ]
+      },
+      "disabled_on": {
+        "templates": []
+      }
+    }
+  },
+  "counts": {
+    "templates": 23,
+    "sectionTypes": 45,
+    "sectionInstances": 29,
+    "sectionSettings": 101
+  },
+  "sourceIntegration": "OBSERVED_IN_MAIN",
+  "formalRootSuccessorAdmission": "AWAITING_RECEIPT_RECONCILIATION",
+  "promotedReleaseId": null,
+  "installedRuntimeRunId": null,
+  "directRuntimeActions": [],
+  "sourceEdits": []
+}

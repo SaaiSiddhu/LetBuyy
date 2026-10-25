@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-10-23T10:22:06.460485+00:00",
+  "classification": "SOURCE_ONLY_FIXTURE_PREPARATION_NOT_EXECUTED_SETUP",
+  "source": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "a80289b5e91c282139b66d73b17801311d5996b35b39692af11af51adc64c245"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "bf03f1efae9b2be53e0808a8b92b22b9ae435f1c7ccd24ac08d07f1799c051dd"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts",
+      "sha256": "d0be4e07406e2b29e9304acb6cb217c623a670f66edcba3d0c84643affa88d10"
+    }
+  ],
+  "plan": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-data.plan.json",
+    "sha256": "eefebbda07c13ebbdf5dd1a7f40d53ecdbe98c8af23ce464ffcdc5191deb4864"
+  },
+  "preparedProducts": 14,
+  "existingApparelProducts": 3,
+  "commonNamespaces": 9,
+  "variantNamespaces": [
+    "toys",
+    "food",
+    "furniture",
+    "sports",
+    "books"
+  ],
+  "preparedCollections": 13,
+  "preparedShipping": "Existing local Karnataka560001 COD20INR rate seam; actual run not yet seeded",
+  "validation": {
+    "focusedFixtureCases": 10,
+    "failed": 0,
+    "skipped": 0,
+    "gatewayNoEmitExit": 0,
+    "existingThreadlineFunctions": "Both prepareThreadlineQaStore and prepareThreadlineQaBuyer AST declaration bytes unchanged"
+  },
+  "resourcesStarted": [],
+  "ordersCreated": 0,
+  "themesInstalled": 0,
+  "themesPublished": 0,
+  "browserSessionsInjected": 0,
+  "knownLimits": [
+    "Canonical gateway/DB setup not yet executed; later fixture startup runs hook before any heavy app build",
+    "Browser merchant edits and real buyer purchases remain separate required acceptance"
+  ],
+  "checkpoint": "14-products-with-separate-owner-stationery",
+  "stationeryOwner": {
+    "path": "docs/implementation/niche-themes-2026-10-23/marginalia/stationery-create-product.plan.json",
+    "sha256": "bcbcb2cdf414dd4a21a967b73d6144c40f1a3fed0903934867a99845d6dd3649",
+    "exactEntry": "Separate stationery kind;320INR/stock6,100gsm/148\u00d7210mm/96pages/48sheets/lined/Thread sewn; no book-only fields or variants"
+  }
+}

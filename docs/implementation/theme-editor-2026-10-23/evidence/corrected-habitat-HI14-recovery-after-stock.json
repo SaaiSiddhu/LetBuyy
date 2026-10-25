@@ -1,0 +1,436 @@
+{
+  "recordedAt": "2026-10-23T21:05:44.643Z",
+  "runId": "f6074d90e894",
+  "phase": "after-stock",
+  "guardVerified": true,
+  "readOnly": true,
+  "actual": {
+    "orders": [
+      {
+        "id": "0be0a19d-5e79-41f5-a65e-488ccbb554f7",
+        "tax": 0,
+        "items": [
+          {
+            "name": "Pantry lifecycle red lentils",
+            "niche": {
+              "facts": {
+                "food": {
+                  "storage": "Keep cool and dry.",
+                  "allergens": {
+                    "status": "not_supplied"
+                  },
+                  "ingredients": "Split red lentils (100%).",
+                  "netQuantity": {
+                    "unit": "g",
+                    "value": 250
+                  },
+                  "preparation": "Rinse before cooking.",
+                  "nutritionText": null
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Pack",
+                  "value": "250 g"
+                }
+              ]
+            },
+            "title": "Pantry lifecycle red lentils",
+            "total": 360,
+            "quantity": 2,
+            "productId": "d9bd8cae-b211-48c5-8440-5f446dc57c0e",
+            "unitPrice": 180,
+            "variantId": "f275956c-688c-4435-bb96-ae23fc75f72d",
+            "snapshotSha256": "f0dd5ee6d484b36660222bd8716e3c3a5ae3ed7863d8d406e76e477ed2d9c97a"
+          }
+        ],
+        "total": 380,
+        "number": "ORD-20261023-10001",
+        "status": "pending_cod",
+        "discount": 0,
+        "shipping": 20,
+        "subtotal": 360,
+        "rowSha256": "610c088d1e107fcbfb04b2b52934a1767fdcc6d46d4b89966ab79ceeb704d4d2",
+        "paymentMethod": "cod",
+        "paymentStatus": "pending"
+      },
+      {
+        "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+        "tax": 0,
+        "items": [
+          {
+            "name": "Habitat lifecycle desk",
+            "niche": {
+              "facts": {
+                "furniture": {
+                  "care": "Natural finish: wipe dry.",
+                  "finish": "Natural",
+                  "weight": {
+                    "unit": "kg",
+                    "value": 11.5
+                  },
+                  "package": {
+                    "unit": "in",
+                    "depth": 25,
+                    "width": 50
+                  },
+                  "assembly": {
+                    "tools": "4 mm hex key",
+                    "status": "required",
+                    "instructions": "Use the supplied sample instructions."
+                  },
+                  "assembled": {
+                    "unit": "in",
+                    "depth": 30,
+                    "width": 48,
+                    "height": 29.5
+                  },
+                  "materials": [
+                    "Wood"
+                  ]
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Finish",
+                  "value": "Natural"
+                },
+                {
+                  "name": "Width",
+                  "value": "48 in"
+                }
+              ]
+            },
+            "title": "Habitat lifecycle desk",
+            "total": 17800,
+            "quantity": 2,
+            "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+            "unitPrice": 8900,
+            "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "snapshotSha256": "436431a4e61c70fd6cd1dd5a650f9bfe5d2f1f3f5bbbcaa1caecbb1d50665cb9"
+          }
+        ],
+        "total": 17820,
+        "number": "ORD-20261023-10000",
+        "status": "pending_cod",
+        "discount": 0,
+        "shipping": 20,
+        "subtotal": 17800,
+        "rowSha256": "3795596fc3159cccff7c3311a2d873f7030d906f8c01ff72ad32195a6753518f",
+        "paymentMethod": "cod",
+        "paymentStatus": "pending"
+      }
+    ],
+    "product": {
+      "id": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+      "name": "Habitat lifecycle desk revised",
+      "price": 9900,
+      "stock": 8,
+      "options": [
+        {
+          "id": "2d4d1d18-97e8-4e6b-9eeb-951819649664",
+          "name": "Width",
+          "values": [
+            "48 in",
+            "Common size",
+            "130 cm",
+            "48 in width only"
+          ],
+          "position": 0,
+          "created_at": "2026-10-23T19:56:24.568982+00:00",
+          "product_id": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6"
+        },
+        {
+          "id": "f155c249-d0b5-4a98-a7c6-ecd63a2fc98b",
+          "name": "Finish",
+          "values": [
+            "Natural",
+            "Black"
+          ],
+          "position": 1,
+          "created_at": "2026-10-23T19:56:24.568982+00:00",
+          "product_id": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6"
+        }
+      ],
+      "version": 34,
+      "metadata": {
+        "furniture": {
+          "care": "Revised common care.",
+          "finish": "Revised natural",
+          "weight": {
+            "unit": "kg",
+            "value": 12
+          },
+          "package": {
+            "unit": "cm",
+            "depth": 65,
+            "width": 130,
+            "height": 20
+          },
+          "assembly": {
+            "tools": "Hex key",
+            "status": "required",
+            "instructions": "Use the sample desk instructions."
+          },
+          "assembled": {
+            "unit": "cm",
+            "depth": 50,
+            "width": 100,
+            "height": 70
+          },
+          "materials": [
+            "Birch"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+          "price": 9900,
+          "stock": 2,
+          "title": "48 in / Natural",
+          "option1": "48 in",
+          "option2": "Natural",
+          "option3": null,
+          "metadata": {
+            "furniture": {
+              "care": "Revised care statement.",
+              "finish": "Revised natural",
+              "weight": {
+                "unit": "kg",
+                "value": 10
+              },
+              "package": {
+                "unit": "cm",
+                "depth": 55,
+                "width": 110,
+                "height": 15
+              },
+              "assembly": {
+                "status": "assembled"
+              },
+              "assembled": {
+                "unit": "cm",
+                "depth": 50,
+                "width": 100,
+                "height": 70
+              },
+              "materials": [
+                "Birch"
+              ]
+            }
+          }
+        },
+        {
+          "id": "30e7bb70-6ef0-4175-83f0-16368a3e9fda",
+          "price": 8700,
+          "stock": 0,
+          "title": "Common size / Natural",
+          "option1": "Common size",
+          "option2": "Natural",
+          "option3": null,
+          "metadata": {
+            "furniture": {}
+          }
+        },
+        {
+          "id": "50982c60-e567-42b4-85e4-2b893b234a4a",
+          "price": 9300,
+          "stock": 3,
+          "title": "130 cm / Black",
+          "option1": "130 cm",
+          "option2": "Black",
+          "option3": null,
+          "metadata": {
+            "furniture": {
+              "care": "Black finish: use a dry cloth.",
+              "finish": "Black",
+              "weight": {
+                "unit": "kg",
+                "value": 13
+              },
+              "package": {
+                "unit": "cm",
+                "depth": 65,
+                "width": 135,
+                "height": 20
+              },
+              "assembled": {
+                "unit": "cm",
+                "depth": 60,
+                "width": 130,
+                "height": 75
+              },
+              "materials": [
+                "Metal"
+              ]
+            }
+          }
+        },
+        {
+          "id": "b1c16f63-5d1c-4ab0-995c-552b45f11fab",
+          "price": 9000,
+          "stock": 2,
+          "title": "48 in width only / Natural",
+          "option1": "48 in width only",
+          "option2": "Natural",
+          "option3": null,
+          "metadata": {
+            "furniture": {
+              "assembled": {
+                "unit": "in",
+                "width": 48
+              }
+            }
+          }
+        }
+      ],
+      "inventory": [
+        {
+          "id": "0bdae422-cd69-48b4-95b0-28198f55f0d4",
+          "reserved": 0,
+          "available": 2,
+          "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791"
+        },
+        {
+          "id": "84872c3b-09ff-40bb-82ec-cf0c433171de",
+          "reserved": 0,
+          "available": 2,
+          "variantId": "b1c16f63-5d1c-4ab0-995c-552b45f11fab"
+        },
+        {
+          "id": "b7b419e9-3000-466c-bbbd-4525da06d698",
+          "reserved": 0,
+          "available": 8,
+          "variantId": null
+        },
+        {
+          "id": "cd911cb7-92c2-46f9-b1d7-861fe056f5f0",
+          "reserved": 0,
+          "available": 0,
+          "variantId": "30e7bb70-6ef0-4175-83f0-16368a3e9fda"
+        },
+        {
+          "id": "dee63920-dc03-443e-b380-8d08256ed6bb",
+          "reserved": 0,
+          "available": 3,
+          "variantId": "50982c60-e567-42b4-85e4-2b893b234a4a"
+        }
+      ]
+    }
+  },
+  "protectedTableHashes": [
+    {
+      "count": 0,
+      "table": "ad_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 5,
+      "table": "carts",
+      "sha256": "21f77c5f506e6ec0780f7f91f987cea6a762be8ca33bdd5280c3b293fc539b31"
+    },
+    {
+      "count": 6,
+      "table": "checkout_sessions",
+      "sha256": "fc11e4e26c24f77cd57e8a91a35219c27df53e471ea89b6c97f24e7e0fd51dd1"
+    },
+    {
+      "count": 0,
+      "table": "gift_card_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 50,
+      "table": "inventory_adjustments",
+      "sha256": "709a659c46e0b9248ff3e2471af3c8b2c60865a6c12bff43535d8b08c69c7a1e"
+    },
+    {
+      "count": 2,
+      "table": "inventory_events",
+      "sha256": "73ebc456193cf18e0052285e006702e40c96b29e97df96e7af0339f341f99224"
+    },
+    {
+      "count": 53,
+      "table": "inventory_levels",
+      "sha256": "72a1f5ae528d4935c8c9934f5b7ced555f5818fa905042191b42e85bbd944643"
+    },
+    {
+      "count": 2,
+      "table": "inventory_reservations",
+      "sha256": "481738e15bdf25cca64075773540299fe7e182c1a7b9d8c5de2f44dbf5551725"
+    },
+    {
+      "count": 0,
+      "table": "ledger_accounts",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "loyalty_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_batches",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_traversal",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_site_reconciliations",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 2,
+      "table": "order_items",
+      "sha256": "ed68575757d68361580ff1d167658812e0a298b8200e59a6be044754880d1986"
+    },
+    {
+      "count": 2,
+      "table": "orders",
+      "sha256": "fa46ec492d5713d97b50044d207c8bd8c30d27eab38aa552549d12921f159a0c"
+    },
+    {
+      "count": 229,
+      "table": "outbox_events",
+      "sha256": "cb390b7ac888285693b690688cb8ac02cde0f7799b8895b613ec0375fde4b238"
+    },
+    {
+      "count": 0,
+      "table": "partner_payout_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "payout_statement_source_ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "store_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "wallet_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

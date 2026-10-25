@@ -1,0 +1,60 @@
+Browser tab: 26, Title: "Habitat dimensional controls | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+dimensions-only+stand&max_width_cm=&max_depth_cm=&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209".
+1 AXWebArea Habitat dimensional controls | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+dimensions-only+stand&max_width_cm=&max_depth_cm=&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209
+	2 container
+		3 text Habitat shared header f6074d90e894
+		4 link syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+dimensions-only+stand&max_width_cm=&max_depth_cm=&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, ID: lb-product-origin-filter
+				14 button Apply filter
+		15 container Breadcrumb
+			16 link Description: Home, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+			17 text Habitat dimensional controls
+		18 text A SPACE TO SLOW DOWN
+		19 heading Habitat dimensional controls, Value: 1
+			20 text Habitat dimensional controls
+		21 text Synthetic owned Habitat missing-axis controls.
+		22 container Furniture collections
+		23 container
+			24 text Search furniture
+			25 search text field (settable) Search furniture, Value: Habitat dimensions-only stand
+			26 text Maximum assembled width (cm)
+			27 stepper (settable) Maximum assembled width (cm)
+			28 text Maximum assembled depth (cm)
+			29 stepper (settable) Maximum assembled depth (cm)
+			30 text Sort
+			31 pop up button (collapsed, settable) Sort, Value: Featured, Secondary Actions: Expand
+				32 menu
+					33 (selected) Featured
+					34 Price: low to high
+					35 Price: high to low
+					36 Newest
+					37 Name
+			38 button Apply
+			39 link Description: Clear filters, Value: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?limit=20&search=Habitat+dimensions-only+stand&sort=display_order&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209
+		40 text 1 pieces
+		41 text Assembled measurements describe room fit. Check separate package measurements for access.
+		42 container
+			43 link Description: Product photograph not supplied, Value: syn-threadline-ui-33be9d94.localhost:62076/product/646e8bcb-3267-4f70-b31b-e44fb5f542a6
+			44 heading Habitat dimensions-only stand, Value: 3
+				45 link Description: Habitat dimensions-only stand, Value: syn-threadline-ui-33be9d94.localhost:62076/product/646e8bcb-3267-4f70-b31b-e44fb5f542a6
+			46 text INR 1,200.00 60 W × 45 D × 70 H cm
+			47 link Description: View dimensions & options, Value: syn-threadline-ui-33be9d94.localhost:62076/product/646e8bcb-3267-4f70-b31b-e44fb5f542a6
+		48 container Product pages
+			49 text Page 1
+		50 heading Threadline, Value: 3
+			51 text Threadline
+		52 text Habitat shared footer f6074d90e894
+		53 heading CONTACT, Value: 4
+			54 text CONTACT
+		55 link Description: Contact us, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/contact
+		56 text © Threadline. All rights reserved.
+		57 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Habitat dimensional controls | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+dimensions-only+stand&max_width_cm=&max_depth_cm=&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209

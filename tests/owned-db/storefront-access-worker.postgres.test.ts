@@ -9,13 +9,14 @@ import {holdOwnedStorefrontSqlSnapshot} from '../../services/api-gateway/src/__t
 import {NativeGateway} from '../helpers/native-owned-gateway';
 import {requireOwnedDatabase,startOwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {gatewayEnv,newIdentityKeys,signedIdentityHeaders,INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import {newSyntheticTenant,seedSyntheticTenant,seedSyntheticProductInventory} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 import {hashStoreAccessPassword} from '../../services/api-gateway/src/lib/store-access-password';
 const owned=requireOwnedDatabase(),key='synthetic-native-access-signing-key';
 const q=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 let gateway:NativeGateway;
-before(async()=>{gateway=await NativeGateway.create(gatewayEnv(owned,await newIdentityKeys(),{NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,STORE_ACCESS_SIGNING_KEY:key,PREVIEW_SIGNING_KEY:key}),async()=>{throw new Error('No provider call belongs to this access fixture');});});
-after(async()=>{await gateway?.settle();});
+let cartSql:Awaited<ReturnType<typeof startOwnedPooledSqlProxy>>;
+before(async()=>{cartSql=await startOwnedPooledSqlProxy(owned);gateway=await NativeGateway.create(gatewayEnv(owned,await newIdentityKeys(),{...cartSql.env(),NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,STORE_ACCESS_SIGNING_KEY:key,PREVIEW_SIGNING_KEY:key}),async()=>{throw new Error('No provider call belongs to this access fixture');});});
+after(async()=>{await gateway?.settle();await cartSql?.stop();});
 async function read(path:string,headers:HeadersInit={}){const response=await gateway.dispatch(path,{headers});const text=await response.text();return{status:response.status,cache:response.headers.get('x-storefront-cache'),text};}
 
 test('native owner password creation persists Argon2id and the native verifier accepts it',async()=>{
@@ -41,6 +42,7 @@ test('actual warmed native catalogue CacheAPI never skips current password, prev
  await expect.poll(async()=>{const result=await read(path);assert.equal(result.status,200);return result.cache;},{timeout:10_000,intervals:[50,100,250]}).toBe('HIT');
  const hash=await hashStoreAccessPassword('Synthetic-cache-password-42!');owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
  let refused=await read(path);assert.equal(refused.status,401);assert.equal(refused.text.includes(marker),false);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),exp=Math.floor(Date.now()/1000)+600;
  const gate=await createStorefrontGateToken({sid:t.siteId,host,revision,exp},key);const allowed=await read(path,{'X-LetBuyy-Storefront-Gate':gate});assert.equal(allowed.status,200);assert.equal(allowed.cache,'HIT');assert.equal(allowed.text.includes(marker),true);
  owned.psql(`UPDATE sites SET access_password_hash='synthetic-rotated-hash' WHERE id=${q(t.siteId)};`);assert.equal((await read(path,{'X-LetBuyy-Storefront-Gate':gate})).status,401);
@@ -71,6 +73,7 @@ test('four actual native requests race for the last quota slot; correct credenti
 test('native storefront cart admission uses current policy and refuses stale password proof without changing carts',async()=>{
  const t=newSyntheticTenant('native-cart-access');seedSyntheticTenant(owned.psql,t);const productId=crypto.randomUUID();
  owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},'Synthetic native gated cart','synthetic-native-gated-cart',100,5,true,'active');`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const path='/v1/storefront/'+t.subdomain;
  const send=async(suffix:string,method='GET',proof?:string)=>{const response=await gateway.dispatch(path+suffix,{method,headers:{'Content-Type':'application/json',...(proof?{'X-LetBuyy-Storefront-Gate':proof}:{})},...(method==='POST'?{body:JSON.stringify({lines:[{product_id:productId,quantity:1}]})}:{})});const status=response.status,cache=response.headers.get('Cache-Control');const payload=await response.json() as {data?:{cart_token?:string}};return{status,cache,payload};};
  const initial=await send('/cart','POST');assert.equal(initial.status,201);const cartToken=initial.payload.data!.cart_token!;
@@ -83,6 +86,7 @@ test('native storefront cart admission uses current policy and refuses stale pas
  const preview=await createStorefrontPreviewToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,jti,scope:'share-link',exp:previewExp},key);
  const previewCart=await gateway.dispatch(path+'/cart',{method:'POST',headers:{'Content-Type':'application/json','X-LetBuyy-Storefront-Preview':preview},body:JSON.stringify({lines:[]})});assert.equal(previewCart.status,401);await previewCart.arrayBuffer();
  const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),token=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
  const allowed=await send('/cart/'+cartToken,'GET',token);assert.equal(allowed.status,200);assert.equal(allowed.cache,'no-store');
  owned.psql(`UPDATE sites SET access_password_hash=${q(await hashStoreAccessPassword(crypto.randomUUID()))} WHERE id=${q(t.siteId)};`);assert.equal((await send('/cart/'+cartToken,'GET',token)).status,401);
@@ -91,6 +95,7 @@ test('native storefront cart admission uses current policy and refuses stale pas
 test('native password handoff works without a tenant cookie and retires after current password rotation',async()=>{
  const t=newSyntheticTenant('native-hosted-pass');seedSyntheticTenant(owned.psql,t);const productId=crypto.randomUUID(),hash=await hashStoreAccessPassword(crypto.randomUUID());
  owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},'Synthetic native hosted cart','synthetic-native-hosted-cart',100,5,true,'active');UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),gate=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
  const response=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json','X-LetBuyy-Storefront-Gate':gate},body:JSON.stringify({lines:[{product_id:productId,quantity:1}]})});assert.equal(response.status,201);const cart=await response.json() as {data:{id:string;cart_token:string}};
  const issued=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart/'+cart.data.cart_token+'/checkout-url',{headers:{'X-LetBuyy-Storefront-Gate':gate}});assert.equal(issued.status,200);const payload=await issued.json() as {data:{checkout_url:string}};
@@ -110,6 +115,7 @@ test('native receipt capability survives closed navigation without exposing cont
 test('native checkout session requires its cart capability and reports a real state-read outage as unavailable',async()=>{
  const t=newSyntheticTenant('native-state-read');seedSyntheticTenant(owned.psql,t);const id=crypto.randomUUID();
  owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(id)},${q(t.siteId)},${q(t.siteId)},'Synthetic state item','synthetic-state-item',100,5,true,'active');`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const created=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:id,quantity:1}]})});assert.equal(created.status,201);const cart=await created.json() as {data:{id:string;cart_token:string}};
  const issued=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart/'+cart.data.cart_token+'/checkout-url',{});assert.equal(issued.status,200);const link=await issued.json() as {data:{checkout_url:string}};
  const contact=await gateway.dispatch('/v1/checkout/'+cart.data.id+'/contact?'+new URL(link.data.checkout_url).searchParams,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idempotency_key:crypto.randomUUID(),email:'synthetic-native-state@example.invalid',name:'Synthetic native state'})});assert.equal(contact.status,200);const session=await contact.json() as {data:{checkout:{id:string}}};

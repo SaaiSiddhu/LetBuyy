@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-25T01:28:14.285Z",
+  "status": "SOURCE_ONLY_REPRODUCTIONS_AND_IN_MEMORY_REPAIR_EXPERIMENT_PASS",
+  "sourceHashes": {
+    "apps/merchant/web/src/components/theme-editor/CenterPanel.tsx": "9f1f7e384214bdee7d3d8ce9956e3b849043e281d4c242c36aa6d27c1547f453",
+    "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx": "c5fd47e41702e760889a505bd19927fd7345a4e3e2a3a8323decc53bae59a8d0",
+    "apps/commerce/web/src/app/preview/preview-content.tsx": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa",
+    "apps/commerce/web/src/app/preview/storefront-preview-bridge.tsx": "73fa885a31f8db23fb127de181bb5519caf960f6f2b0e5316d0de712a9126e67",
+    "services/api-gateway/src/routes/storefront/public-routes.ts": "21a7e4e2ffc46c1d50305a8b08360ddbac86edd06058b921a6ff06729a37163c",
+    "packages/theme-engine/src/editor-bridge-protocol.ts": "7cff1ccbb9725ece155a9d1c08c9fee7706c3f8dc9ea27a860f9a23bd3c8ca66"
+  },
+  "runId": "49ada80bc494",
+  "assertions": {
+    "deviceChangesProduceThreeDistinctIframeKeys": true,
+    "deviceChangesDoNotUseExistingViewportProtocol": true,
+    "actualNavigationEffectResetsReadinessAndTimesOutWithoutFreshReady": true,
+    "actualGatewayServesCurrentDraftRevisionUnderEarlierMintedSession": true,
+    "actualCommerceContextAndParentRejectTheRevisionDrift": true,
+    "proposedViewportOnlyChangesPreserveOneFrameUrl": true,
+    "tokenAndTemplateChangesStillNavigate": true,
+    "existingChildHandlerAppliesAllThreeViewportMessagesWithInspectorOff": true,
+    "wrongOriginWrongSourceStaleContextInvalidViewportStillRejected": true,
+    "unloadedFrameReceivesNoMessage": true
+  },
+  "limits": "Pure controlled source-function executions only. No browser, runtime, database, network, source change, or recovery acceptance. Actual recorded about:blank navigation stall is not causally explained by the revision-drift reproduction; these are separate evidenced mechanisms. No claim that an in-memory experiment closes ED-R07-PREVIEW-DEVICE-02."
+}

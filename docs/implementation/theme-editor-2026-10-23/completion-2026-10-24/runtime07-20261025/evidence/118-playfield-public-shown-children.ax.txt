@@ -1,0 +1,76 @@
+Browser tab: 173052885, Title: "Threadline", URL: "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477".
+1 AXWebArea Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+	2 container
+		3 text Make room for a little curiosity.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/customers/login
+		8 link Description: Cart ( 0 ), Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+		9 text SMALL HANDS. BIG IDEAS.
+		10 heading What will they make today?[redacted query] Value: 1
+			11 text What will they make today?
+		12 text Follow a curiosity. Find their next activity.
+		13 container
+			14 text Choose an age
+			15 pop up button (collapsed, settable) Choose an age, Value: Any age, Secondary Actions: Expand
+				16 menu
+					17 (selected) Any age
+					18 6-8
+					19 9-12
+			20 text Follow an interest
+			21 pop up button (collapsed, settable) Follow an interest, Value: Any interest, Secondary Actions: Expand
+				22 menu
+					23 (selected) Any interest
+					24 art
+			25 button Find an activity →
+			26 text Shopping for a young person? Age ranges come from the merchant.
+		27 link Description: Add your activity photograph MAKE · ARRANGE · START AGAIN A little pattern. A big possibility., Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products
+		28 link Description: Art & making Explore activities →, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products
+		29 link Description: Build a little world Explore activities →, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products
+		30 heading Start with their age., Value: 2
+			31 text Start with their age.
+		32 link Description: 6-8 →, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products?[redacted query]
+		33 link Description: 9-12 →, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products?[redacted query]
+		34 text These are merchant recommendations. Read each product’s information before choosing.
+		35 heading For curious afternoons., Value: 2
+			36 text For curious afternoons.
+		37 link Description: Explore all activities →, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products
+		38 container
+			39 link Description: Product image not supplied Age information not supplied Trailmark lifecycle racket, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+			40 text INR 1,800.00 Contents not supplied
+			41 link Description: View product →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+		42 container
+			43 link Description: Fixture Cloud Rinse Age information not supplied Fixture Cloud Rinse, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+			44 text INR 640.00 Contents not supplied
+			45 link Description: View product →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+		46 container
+			47 link Description: Fixture Daily Veil Age information not supplied Fixture Daily Veil, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+			48 text INR 880.00 Contents not supplied
+			49 link Description: View product →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+		50 container
+			51 link Description: The Everyday Cotton Dress Age information not supplied The Everyday Cotton Dress, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+			52 text INR 3,990.00 Contents not supplied
+			53 link Description: View product →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+		54 container
+			55 link Description: Fixture Soft Colour Age information not supplied Fixture Soft Colour, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+			56 text INR 520.00 Contents not supplied
+			57 link Description: View product →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+		58 container
+			59 link Description: Product image not supplied Age information not supplied Pantry lifecycle rice, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+			60 text INR 220.00 Contents not supplied
+			61 link Description: View product →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+		62 heading Count the possibilities., Value: 3
+			63 text Count the possibilities.
+		64 text Playfield temporary declared-field roundtrip
+		65 container
+			66 text Playfield temporary root A Playfield temporary child B Playfield temporary child A
+		67 heading Threadline, Value: 3
+			68 text Threadline
+		69 heading CONTACT, Value: 4
+			70 text CONTACT
+		71 link Description: Contact us, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/contact
+		72 text © Threadline. All rights reserved.
+		73 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477

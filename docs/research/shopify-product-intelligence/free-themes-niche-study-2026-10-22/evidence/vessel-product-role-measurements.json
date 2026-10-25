@@ -1,0 +1,433 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Beige ) [ KINTO ] [ Coffee Cups ]",
+      "complete": true,
+      "naturalWidth": 120
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Beige ) [ KINTO ] [ Coffee Cups ]",
+      "complete": true,
+      "naturalWidth": 616
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Black ) [ KINTO ] [ Coffee Cups ]",
+      "complete": true,
+      "naturalWidth": 616
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Beige ) [ KINTO ] [ Coffee Cups ]",
+      "complete": true,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Black ) [ KINTO ] [ Coffee Cups ]",
+      "complete": true,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Beige ) [ KINTO ] [ Coffee Cups ]",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Black ) [ KINTO ] [ Coffee Cups ]",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Beige ) [ KINTO ] [ Coffee Cups ]",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Photo of ALFRESCO Tumbler 360ml ( Black ) [ KINTO ] [ Coffee Cups ]",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Photo of SCS-S03 mug 110ml / 4oz ( ) [ KINTO USA ] [ ]",
+      "complete": true,
+      "naturalWidth": 996
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "NEW IN\nCOFFEE & TEA\nDRINKWARE\nKITCHENWARE\nACCENTS\nTotal items in cart: 0",
+      "rect": {
+        "height": 66.390625,
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 52,
+        "width": 142.1171875,
+        "x": 866.6875,
+        "y": 1031.1953125
+      },
+      "styles": {
+        "backgroundColor": "rgb(0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "rgb(0, 0, 0) 0px 0px 0px 0px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Previous slide",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 40,
+        "y": 372.390625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px 12.8px 0px 0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Next slide",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 652,
+        "y": 372.390625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px 12.8px 0px 0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Slide 1 of 2",
+      "rect": {
+        "height": 48,
+        "width": 48,
+        "x": 316,
+        "y": 733.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Slide 2 of 2",
+      "rect": {
+        "height": 48,
+        "width": 48,
+        "x": 372,
+        "y": 733.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Alfresco Tumbler",
+      "rect": {
+        "height": 52.796875,
+        "width": 400,
+        "x": 872,
+        "y": 124.390625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Trirong, serif",
+        "fontSize": "48px",
+        "fontWeight": "200",
+        "gap": "normal",
+        "lineHeight": "52.8px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "Beige",
+      "rect": {
+        "height": 20,
+        "width": 50,
+        "x": 872,
+        "y": 448.7421875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Black",
+      "rect": {
+        "height": 20,
+        "width": 50,
+        "x": 933.1953125,
+        "y": 448.7421875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": true,
+      "label": "Decrease quantity",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 873,
+        "y": 500.7421875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Quantity",
+      "rect": {
+        "height": 21.59375,
+        "width": 36,
+        "x": 917,
+        "y": 511.9453125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "1px 2px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Increase quantity",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 953,
+        "y": 500.7421875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 52,
+        "width": 262.8046875,
+        "x": 1009.1953125,
+        "y": 496.7421875
+      },
+      "styles": {
+        "backgroundColor": "rgb(0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "rgb(0, 0, 0) 0px 0px 0px 0px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Buy it now",
+      "rect": {
+        "height": 52,
+        "width": 400,
+        "x": 872,
+        "y": 559.9375
+      },
+      "styles": {
+        "backgroundColor": "rgb(0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "rgb(0, 0, 0) 0px 0px 0px 0px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Display\", sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Embracing small joys",
+      "rect": {
+        "height": 36.796875,
+        "width": 301.953125,
+        "x": 209.0234375,
+        "y": 1074.3515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Trirong, serif",
+        "fontSize": "32px",
+        "fontWeight": "200",
+        "gap": "normal",
+        "lineHeight": "36.8px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    }
+  ],
+  "url": "https://theme-vessel-demo.myshopify.com/products/20702?variant=44459957583929"
+}

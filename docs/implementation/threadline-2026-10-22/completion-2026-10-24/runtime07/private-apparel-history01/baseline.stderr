@@ -1,0 +1,39 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Canonical fulfillment snapshot must retain already-valid supplied apparel facts
++ actual - expected
+
++ undefined
+- {
+-   care: 'Gentle cold wash',
+-   fabric: '100% linen',
+-   fit: 'Relaxed',
+-   measurements: [
+-     {
+-       chest: 102,
+-       length: 69,
+-       shoulder: 40,
+-       size: 'M'
+-     }
+-   ],
+-   unit: 'cm'
+- }
+
+    at file:///Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/baseline-probe.mjs:15:8 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: {
+    fit: 'Relaxed',
+    fabric: '100% linen',
+    care: 'Gentle cold wash',
+    unit: 'cm',
+    measurements: [ { size: 'M', chest: 102, shoulder: 40, length: 69 } ]
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.3

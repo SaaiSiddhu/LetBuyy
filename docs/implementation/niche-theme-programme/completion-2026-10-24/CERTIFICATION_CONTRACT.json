@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "classification": "ENGINEERING_ACCEPTANCE_NOT_REGULATORY_OR_PROVIDER_ENDORSEMENT",
+  "requiredThemeCount": 10,
+  "requiredGates": [
+    "capability_inventory_complete",
+    "all_declared_editor_sections_blocks_fields",
+    "normal_buyer_signup_signin_and_store_customer_entry",
+    "product_and_discovery",
+    "canonical_cart_and_hosted_COD",
+    "actual_Razorpay_Test_Mode_purchase_and_provider_evidence",
+    "immutable_buyer_merchant_order_history_after_catalog_edit",
+    "negative_security_concurrency_and_recovery",
+    "responsive_accessibility_and_performance",
+    "exact_source_installed_runtime_lineage",
+    "independent_review_accepted",
+    "preservation_and_owned_cleanup"
+  ],
+  "blockingRequiredStatuses": [
+    "NOT_RUN",
+    "IN_PROGRESS",
+    "FAIL",
+    "PARTIAL",
+    "BLOCKED",
+    "SKIPPED"
+  ],
+  "perTheme": {
+    "LOCAL_E2E_VERIFIED": "NOT_RUN",
+    "RAZORPAY_TEST_VERIFIED": "NOT_RUN",
+    "REVIEW_ACCEPTED": "PENDING",
+    "FULL_THEME_CERTIFIED": false,
+    "PRODUCTION_DEPLOYED": "NOT_REQUESTED"
+  },
+  "productionRequiredForThisScope": false,
+  "notes": [
+    "All original case IDs retained; new coverage is additive.",
+    "N/A cannot remove a user-required capability.",
+    "Local mock or COD cannot satisfy provider verification.",
+    "Historical evidence reuse requires exact applicability/lineage."
+  ]
+}
+

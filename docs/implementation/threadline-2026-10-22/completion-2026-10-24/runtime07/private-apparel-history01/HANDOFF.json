@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-24T20:42:32.435523+00:00",
+  "classification": "SEALED_PRIVATE_APPAREL_HISTORY_CORRECTION_READY_FOR_ALLOCATOR_REVIEW_NOT_APPLY",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "targetSourceRun": "49ada80bc494",
+  "actualUIReceipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/THREADLINE_PURCHASE_10001.json",
+    "sha256": "9f23f63797229c0f637d2b2c3641b5ee00a65085933ae5eef863a7db908d6be4",
+    "bytes": 2754
+  },
+  "baseInputs": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/BASE_INPUTS.json",
+    "sha256": "80ee8de3757bc98a3728364bac1f3a75b82e462eb624a4c246912a464eca4480",
+    "bytes": 2591
+  },
+  "unappliedSourceDiff": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/source-correction.UNAPPLIED.diff",
+    "sha256": "0111da0b7ab4abd9c0c2e7e56d523fe6b1525f42661eb3c929c8e57557b604ca",
+    "bytes": 7305
+  },
+  "results": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/RESULTS.json",
+    "sha256": "e72d164ebe6b00806d7d7f00a4130f4c1691d9f028021900ce9a97ef450d0c2d",
+    "bytes": 4501
+  },
+  "privateBoundary": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/PRIVATE_BOUNDARY.json",
+    "sha256": "8f067e6436311df15343f746133f18ec3e0a09a04960ccf8073f75db4923cf38",
+    "bytes": 1016
+  },
+  "actualNewPrivateTests": 8,
+  "focusedPass": 8,
+  "focusedFail": 0,
+  "MainCandidateWrites": 0,
+  "DBProviderCalls": 0,
+  "neededAllocation": "Themesassignsthecanonicalgateway/SQLprovenanceandexplicitversion/childqualification/captureowner; fresh exactMainpathsleasebeforeapplication. No historicalmigration orcaptureedit. Then source/native/actualUIhistorygates ononecoherentadmittedcandidate.",
+  "preserveOldOrder": "ORD-20261024-10001 remainswithoriginalhash67ee39a5073f2faa0235340bd01e86ecd9e23a777467f1996b4bda272d077ac3; do notfabricateoldapparelfacts.",
+  "proofLimits": "8sourcecasesand37overlappingregressionexecutions+focusedtypecheck areNOTactualthemeeditor/history/paymentcertification."
+}

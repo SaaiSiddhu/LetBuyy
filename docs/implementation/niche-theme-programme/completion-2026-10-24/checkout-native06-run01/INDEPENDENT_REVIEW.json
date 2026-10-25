@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-24T09:17:32.103798+00:00",
+  "classification": "NATIVE_EXECUTED_FAILURE_REQUIRES_FIXTURE_CORRECTION",
+  "runId": "34adae829d85",
+  "tests": 22,
+  "passed": 15,
+  "failed": 7,
+  "skipped": 0,
+  "result": "Existing15PASS; all7 new cases fail in seedBuyerAccount before exercising checkout",
+  "cause": "reentry- plus full UUID is44chars; canonical buyer label permits1..24lowercaselettersdigitsandhyphens",
+  "sourceLocation": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts:168",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "next": "MadeYours minimal private07 fixture-label correction; root native7only; reuse unchanged15 exactimplementation proof",
+  "checkoutRecoveryQualified": false,
+  "actualProviderTest": false,
+  "allTenCertified": false
+}

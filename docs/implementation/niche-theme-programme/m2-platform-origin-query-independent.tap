@@ -1,0 +1,226 @@
+TAP version 13
+# Subtest: origin Apply and Clear conserve the observed Pantry query including repeated connectors
+ok 1 - origin Apply and Clear conserve the observed Pantry query including repeated connectors
+  ---
+  duration_ms: 697.02575
+  type: 'test'
+  ...
+# Subtest: origin filter keeps the current collection path and active browse query
+ok 2 - origin filter keeps the current collection path and active browse query
+  ---
+  duration_ms: 0.61
+  type: 'test'
+  ...
+# Subtest: origin control conserves apparel filters on Apply, blank Apply and Clear
+ok 3 - origin control conserves apparel filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 11.390834
+  type: 'test'
+  ...
+# Subtest: origin control conserves toys filters on Apply, blank Apply and Clear
+ok 4 - origin control conserves toys filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 7.558625
+  type: 'test'
+  ...
+# Subtest: origin control conserves electronics filters on Apply, blank Apply and Clear
+ok 5 - origin control conserves electronics filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 7.290292
+  type: 'test'
+  ...
+# Subtest: origin control conserves food filters on Apply, blank Apply and Clear
+ok 6 - origin control conserves food filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 6.654667
+  type: 'test'
+  ...
+# Subtest: origin control conserves furniture filters on Apply, blank Apply and Clear
+ok 7 - origin control conserves furniture filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 6.464333
+  type: 'test'
+  ...
+# Subtest: origin control conserves gifts filters on Apply, blank Apply and Clear
+ok 8 - origin control conserves gifts filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 7.069166
+  type: 'test'
+  ...
+# Subtest: origin control conserves personalization filters on Apply, blank Apply and Clear
+ok 9 - origin control conserves personalization filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 10.981292
+  type: 'test'
+  ...
+# Subtest: origin control conserves beauty filters on Apply, blank Apply and Clear
+ok 10 - origin control conserves beauty filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 6.695667
+  type: 'test'
+  ...
+# Subtest: origin control conserves sports filters on Apply, blank Apply and Clear
+ok 11 - origin control conserves sports filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 6.05675
+  type: 'test'
+  ...
+# Subtest: origin control conserves books filters on Apply, blank Apply and Clear
+ok 12 - origin control conserves books filters on Apply, blank Apply and Clear
+  ---
+  duration_ms: 6.047833
+  type: 'test'
+  ...
+# Subtest: origin control accepts the existing q alias, omits transport fields and binds collection scope
+ok 13 - origin control accepts the existing q alias, omits transport fields and binds collection scope
+  ---
+  duration_ms: 4.718208
+  type: 'test'
+  ...
+# Subtest: origin control after canonical clear-all does not restore stale niche filters
+ok 14 - origin control after canonical clear-all does not restore stale niche filters
+  ---
+  duration_ms: 4.907292
+  type: 'test'
+  ...
+# Subtest: origin filter omits itself in editor preview and on unrelated routes
+ok 15 - origin filter omits itself in editor preview and on unrelated routes
+  ---
+  duration_ms: 0.246667
+  type: 'test'
+  ...
+# Subtest: platform controls escape query attributes and preserve local navigation
+ok 16 - platform controls escape query attributes and preserve local navigation
+  ---
+  duration_ms: 7.961875
+  type: 'test'
+  ...
+# Subtest: canonical route parser retains all query keys and repeated connectors; invalid scalar repeats/unknowns fail explicitly
+ok 17 - canonical route parser retains all query keys and repeated connectors; invalid scalar repeats/unknowns fail explicitly
+  ---
+  duration_ms: 3.270042
+  type: 'test'
+  ...
+# Subtest: actual ProductService→SDK forwards arrays/all niche values and preserves response metadata and persisted price
+ok 18 - actual ProductService→SDK forwards arrays/all niche values and preserves response metadata and persisted price
+  ---
+  duration_ms: 45.02825
+  type: 'test'
+  ...
+# Subtest: signed discovery uses only token-scoped no-store endpoint; failure never retries public or retains capability
+ok 19 - signed discovery uses only token-scoped no-store endpoint; failure never retries public or retains capability
+  ---
+  duration_ms: 19.482875
+  type: 'test'
+  ...
+# Subtest: binder preserves exact empty/past-end pages and page metadata, never selected-product/catalog fallback
+ok 20 - binder preserves exact empty/past-end pages and page metadata, never selected-product/catalog fallback
+  ---
+  duration_ms: 67.745708
+  type: 'test'
+  ...
+# Subtest: missing capability stays hidden, selected unsupported niche filters and malformed responses fail closed
+ok 21 - missing capability stays hidden, selected unsupported niche filters and malformed responses fail closed
+  ---
+  duration_ms: 59.196541
+  type: 'test'
+  ...
+# Subtest: same response builds real facets/counts, array-preserving pagination and paired length/individual filter clearing
+ok 22 - same response builds real facets/counts, array-preserving pagination and paired length/individual filter clearing
+  ---
+  duration_ms: 6.554792
+  type: 'test'
+  ...
+# Subtest: actual binder→compositor consumes one page for collection/search and exposes matching witnesses without replacing price
+ok 23 - actual binder→compositor consumes one page for collection/search and exposes matching witnesses without replacing price
+  ---
+  duration_ms: 202.211916
+  type: 'test'
+  ...
+# Subtest: actual nine Liquid collection sections and depth4 preserve supplied toy row values/labels/count/selection
+ok 24 - actual nine Liquid collection sections and depth4 preserve supplied toy row values/labels/count/selection
+  ---
+  duration_ms: 678.683291
+  type: 'test'
+  ...
+# Subtest: trusted demo stays no-network with exact/intentional-empty membership; typed unsupported arrays cannot broaden it
+ok 25 - trusted demo stays no-network with exact/intentional-empty membership; typed unsupported arrays cannot broaden it
+  ---
+  duration_ms: 32.547375
+  type: 'test'
+  ...
+# Subtest: Editor scalar selected collection survives dedicated typed query and conflicts fail closed
+ok 26 - Editor scalar selected collection survives dedicated typed query and conflicts fail closed
+  ---
+  duration_ms: 0.341625
+  type: 'test'
+  ...
+# Subtest: actual named collection loader uses exact response scope; private summary then SAME signed product page, with no public retry
+ok 27 - actual named collection loader uses exact response scope; private summary then SAME signed product page, with no public retry
+  ---
+  duration_ms: 41.023584
+  type: 'test'
+  ...
+# Subtest: actual products/shop/search/named route adapters retain multivalues through binder→SDK and preserve exact response page
+ok 28 - actual products/shop/search/named route adapters retain multivalues through binder→SDK and preserve exact response page
+  ---
+  duration_ms: 144.835083
+  type: 'test'
+  ...
+# Subtest: actual signed route bodies and metadata retain private store authority; absent private store never falls back public
+ok 29 - actual signed route bodies and metadata retain private store authority; absent private store never falls back public
+  ---
+  duration_ms: 231.082166
+  type: 'test'
+  ...
+# Subtest: toy individual capabilities require supplied options, never selected query defaults or zero-count synthetic rows
+ok 30 - toy individual capabilities require supplied options, never selected query defaults or zero-count synthetic rows
+  ---
+  duration_ms: 11.30075
+  type: 'test'
+  ...
+# Subtest: canonical all-three measurement metadata survives public/private SDK transport and projects unchanged without unit facets
+ok 31 - canonical all-three measurement metadata survives public/private SDK transport and projects unchanged without unit facets
+  ---
+  duration_ms: 6.437666
+  type: 'test'
+  ...
+# Subtest: malformed present measurement metadata fails through ProductService with sanitized errors and no private public-retry
+ok 32 - malformed present measurement metadata fails through ProductService with sanitized errors and no private public-retry
+  ---
+  duration_ms: 60.303958
+  type: 'test'
+  ...
+# Subtest: zero cohort rejects any available measurement leaf; positive-cohort empty/past-end pages retain capabilities
+ok 33 - zero cohort rejects any available measurement leaf; positive-cohort empty/past-end pages retain capabilities
+  ---
+  duration_ms: 21.2545
+  type: 'test'
+  ...
+# Subtest: transport→binder→compositor→Liquid depth4 enables independent required length pair and preserves arrays/query values
+ok 34 - transport→binder→compositor→Liquid depth4 enables independent required length pair and preserves arrays/query values
+  ---
+  duration_ms: 197.121667
+  type: 'test'
+  ...
+# Subtest: false/absent responses supersede prior availability; zero-result selected pairs remain recovery only on collection/search
+ok 35 - false/absent responses supersede prior availability; zero-result selected pairs remain recovery only on collection/search
+  ---
+  duration_ms: 491.493542
+  type: 'test'
+  ...
+# Subtest: legacy unit facets and active length selection never create canonical measurement availability
+ok 36 - legacy unit facets and active length selection never create canonical measurement availability
+  ---
+  duration_ms: 67.174375
+  type: 'test'
+  ...
+1..36
+# tests 36
+# suites 0
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3819.4695

@@ -1,0 +1,54 @@
+Browser tab: 53, Title: "Search results for \"Fixture\" | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name&connector=hdmi".
+1 AXWebArea Search results for "Fixture" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name&connector=hdmi
+	2 container
+		3 text Dewdrop 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name&connector=hdmi
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 1 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				14 button Apply filter
+				15 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=1&search=Fixture&category=Care&sort=name&connector=hdmi
+		16 text THE ROUTINE SHELF
+		17 heading Search products, Value: 1
+			18 text Search products
+		19 text Browse by use. Each product is sold independently.
+		20 container
+			21 text Search care products
+			22 search text field (settable) Search care products, Value: Fixture
+			23 text Sort
+			24 pop up button (collapsed, settable) Sort, Value: Name, Secondary Actions: Expand
+				25 menu
+					26 Featured
+					27 Price: low to high
+					28 Price: high to low
+					29 Newest
+					30 (selected) Name
+			31 button Apply filters
+		32 container Applied filters
+			33 link Description: Remove Category: Care, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&country_of_origin=India&sort=name&connector=hdmi
+			34 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&sort=name&connector=hdmi
+			35 link Description: Remove Connector: hdmi, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name
+		36 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&sort=name
+		37 text 0 products
+		38 heading Search results, Value: 2
+			39 text Search results
+		40 heading No products found., Value: 2
+			41 text No products found.
+		42 text Try a broader search or clear the filters. Missing care information is never guessed.
+		43 link Description: Explore all products, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+		44 heading Threadline, Value: 3
+			45 text Threadline
+		46 text Dewdrop 936 B footer saved
+		47 heading CONTACT, Value: 4
+			48 text CONTACT
+		49 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		50 text © Threadline. All rights reserved.
+		51 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search results for "Fixture" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name&connector=hdmi

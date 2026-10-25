@@ -1,0 +1,91 @@
+{
+  "runId": "936e5f577646",
+  "actual": [
+    {
+      "label": "dimensions-only",
+      "buttonDisabled": false,
+      "fields": [
+        {
+          "field": "assembled",
+          "text": "60 W × 45 D × 70 H cm"
+        },
+        {
+          "field": "package",
+          "text": "Package dimensions not supplied."
+        },
+        {
+          "field": "weight",
+          "text": "Weight not supplied."
+        },
+        {
+          "field": "seat_height",
+          "text": "Seat height not supplied."
+        },
+        {
+          "field": "materials",
+          "text": "Material information not supplied."
+        },
+        {
+          "field": "assembly",
+          "text": "Assembly information not supplied."
+        },
+        {
+          "field": "care",
+          "text": "Care information not supplied."
+        }
+      ],
+      "productId": "d0269c4f-8175-4499-b13c-fb59f4d18eac",
+      "selectedOptions": [],
+      "state": "common",
+      "text": "Common product facts\n\nAssembled\n60 W × 45 D × 70 H cm\nPackage\nPackage dimensions not supplied.\nWeight\nWeight not supplied.\nSeat height\nSeat height not supplied.\nMaterials\nMaterial information not supplied.\nAssembly\nAssembly information not supplied.\nCare\nCare information not supplied.\n\nOnly supplied measurements are listed. An absent width, depth, height or diameter is not supplied. Assembled and package measurements describe different things.\n\nCommon reference, named finishes & access guidance ↓",
+      "variantId": null,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "label": "width-only",
+      "buttonDisabled": false,
+      "fields": [
+        {
+          "field": "assembled",
+          "text": "80 W cm"
+        },
+        {
+          "field": "package",
+          "text": "Package dimensions not supplied."
+        },
+        {
+          "field": "weight",
+          "text": "Weight not supplied."
+        },
+        {
+          "field": "seat_height",
+          "text": "Seat height not supplied."
+        },
+        {
+          "field": "materials",
+          "text": "Material information not supplied."
+        },
+        {
+          "field": "assembly",
+          "text": "Assembly information not supplied."
+        },
+        {
+          "field": "care",
+          "text": "Care information not supplied."
+        }
+      ],
+      "productId": "29c731cc-8b16-4e08-8f50-11e219310844",
+      "selectedOptions": [],
+      "state": "common",
+      "text": "Common product facts\n\nAssembled\n80 W cm\nPackage\nPackage dimensions not supplied.\nWeight\nWeight not supplied.\nSeat height\nSeat height not supplied.\nMaterials\nMaterial information not supplied.\nAssembly\nAssembly information not supplied.\nCare\nCare information not supplied.\n\nOnly supplied measurements are listed. An absent width, depth, height or diameter is not supplied. Assembled and package measurements describe different things.\n\nCommon reference, named finishes & access guidance ↓",
+      "variantId": null,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    }
+  ]
+}

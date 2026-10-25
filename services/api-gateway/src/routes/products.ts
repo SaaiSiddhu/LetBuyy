@@ -1,5 +1,6 @@
-import { resolveOwnedStoreScope } from '../lib/tenant-context';
-import { readCollectionMembership, replaceCollectionMembership } from '../execution/collection-membership.adapter';
+import {CollectionListQuerySchema,type CollectionListQuery} from '@letbuyy/commerce-core';
+import { resolveOwnedStoreScope, resolveMerchantResourceStoreIds } from '../lib/tenant-context';
+import { readCollectionMembership, replaceCollectionMembership, readOwnedCollectionList } from '../execution/collection-membership.adapter';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -604,45 +605,10 @@ router.get('/barcode/lookup', validate('query', ProductBarcodeLookupQuery), asyn
 });
 
 // GET /products/collections — List collections for a store
-router.get('/collections', validate('query', StoreScopedQuerySchema), async (c) => {
-    const auth = c.get('auth');
-    const query = c.get('validatedQuery') as StoreScopedQueryInput;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    const ownsStore = await verifyStoreOwnership(db, query.store_id, customUser.id, auth.user.storeId);
-    if (!ownsStore) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const buildCollectionsQuery = (includeDeletedAtFilter: boolean) => {
-        let dbQuery = db
-            .from('collections')
-            .select('*')
-            .eq('store_id', query.store_id);
-
-        if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
-        return dbQuery.order('created_at', { ascending: false });
-    };
-
-    let { data, error } = await buildCollectionsQuery(true);
-
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error } = await buildCollectionsQuery(false));
-    }
-
-    if (error) {
-        if (isMissingTableError(error, 'collections')) {
-            return c.json(success([]));
-        }
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success(data || []));
+router.get('/collections', validate('query', CollectionListQuerySchema), async (c) => {
+    const query = c.get('validatedQuery') as CollectionListQuery;
+    const scope = await resolveOwnedStoreScope(c, query.store_id);
+    return c.json(await readOwnedCollectionList(c.env, scope, {page: query.page, limit: query.limit}));
 });
 
 // POST /products/collections — Create a collection
@@ -704,6 +670,7 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
     const collectionId = c.req.param('id');
     const body = c.get('validatedBody') as UpdateCollectionInput;
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) {
@@ -714,7 +681,7 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
         let request = db
             .from('collections')
             .select('id, store_id')
-            .eq('id', collectionId);
+            .eq('id', collectionId).in('store_id', storeIds);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.maybeSingle();
@@ -748,7 +715,7 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
         return db
             .from('collections')
             .update(payload)
-            .eq('id', collectionId)
+            .eq('id', collectionId).in('store_id', storeIds)
             .select()
             .single();
     };
@@ -788,6 +755,7 @@ router.delete('/collections/:id', async (c) => {
     const auth = c.get('auth');
     const collectionId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) {
@@ -798,7 +766,7 @@ router.delete('/collections/:id', async (c) => {
         let request = db
             .from('collections')
             .select('id, store_id')
-            .eq('id', collectionId);
+            .eq('id', collectionId).in('store_id', storeIds);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.maybeSingle();
@@ -827,7 +795,7 @@ router.delete('/collections/:id', async (c) => {
         return db
             .from('collections')
             .update(payload)
-            .eq('id', collectionId);
+            .eq('id', collectionId).in('store_id', storeIds);
     };
 
     let { error } = await softDeleteCollection(true);
@@ -838,7 +806,7 @@ router.delete('/collections/:id', async (c) => {
         ({ error } = await db
             .from('collections')
             .delete()
-            .eq('id', collectionId));
+            .eq('id', collectionId).in('store_id', storeIds));
     }
 
     if (error) {

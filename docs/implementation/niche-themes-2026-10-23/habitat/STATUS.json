@@ -1,0 +1,365 @@
+{
+  "theme": "Habitat",
+  "phase": "M7_canonical_measurement_consumer_verified",
+  "currentAction": "Fresh936 allocated non-order slice audited:21PASS/0FAIL/1PARTIAL/4NOT_RUN. Habitat source frozen; full acceptance remains open.",
+  "ownedFiles": [
+    "packages/theme-engine/src/habitat-theme.ts",
+    "packages/theme-engine/src/habitat-styles.ts",
+    "packages/theme-engine/src/habitat-discovery.ts",
+    "packages/theme-engine/test/habitat.test.ts",
+    "packages/commerce-core/src/habitat-facts.ts",
+    "packages/commerce-core/test/habitat-facts.test.ts",
+    "apps/commerce/web/src/lib/demo/habitat-demo.ts",
+    "apps/commerce/web/public/theme-assets/habitat/v2/"
+  ],
+  "blockers": [
+    "HI11 legacy absent-capability runtime branch not assigned/exercised",
+    "HI14 exact frozen HTTP409/INSUFFICIENT_INVENTORY criterion unobserved",
+    "HI17 conditional missing/malformed historical snapshot record not assigned",
+    "Final two-Pink semantic baseline restoration interrupted by fixture timeout/database cleanup"
+  ],
+  "sharedDependencies": [
+    "Real cart/quote/order snapshot persistence and authorization qualification",
+    "Composed live merchant/storefront journey acceptance",
+    "Canonical390 SQL candidate/security/rollback qualification and activation; consumer response contracts alone do not prove SQL"
+  ],
+  "tests": {
+    "run": true,
+    "ownedTests": 17,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "appMapperLiquidFixtures": 7,
+    "appMapperFixtureAssertions": "passed",
+    "noEmitTypechecks": [
+      "commerce-core",
+      "theme-engine (--rootDir .)",
+      "focused habitat-demo.ts"
+    ],
+    "browserCapture": {
+      "screenshots": 22,
+      "viewports": [
+        1440,
+        834,
+        390,
+        320
+      ],
+      "documentBodyOrVisibleOverflowFailures": 0,
+      "brokenImages": 0,
+      "pageErrors": 0,
+      "textEnlargement": "200% computed sizes passed",
+      "HindiExpansion": "passed",
+      "focusDisclosureReducedMotion": "passed",
+      "sampledTextContrastMinimum": 5.15,
+      "actualGlyphFamilies": [
+        "Libre Baskerville",
+        "Source Sans Pro"
+      ],
+      "resources": "own browser/context/server closed; slot1 explicitly released",
+      "sourceStage": "Earlier M2 capture; collection/search forms now changed by M6; separate final PDP/FAQ supplemental receipts remain preserved"
+    },
+    "fullBuild": "not run; no lease",
+    "DBAndLifecycle": "not run; shared owner",
+    "factsEditorTests": 6,
+    "factsEditorPassed": 6,
+    "totalOwnedPassed": 62,
+    "factsEditorNoEmitTypecheck": "passed",
+    "variantFactsEditorTests": 8,
+    "variantFactsEditorPassed": 8,
+    "demoMembershipTests": 2,
+    "demoMembershipPassed": 2,
+    "variantFactsEditorNoEmitTypecheck": "passed",
+    "retainedBlockPreviewPublicDOM": "passed exact FAQ and standalone badge IDs/public absence",
+    "refreshedFixtureHashEquality": "home/collection/missing unchanged; four PDP hashes changed",
+    "sectionAcceptanceTests": 3,
+    "sectionAcceptancePassed": 3,
+    "guideGlobalRegistration": "not registered globally; requires package-provided schema, negative control passes",
+    "guideFullDraftValidation": "all templates plus full Liquid bundle accepted with package schemas, default256000-character limit unchanged",
+    "guideDataBinding": "actual resolver/planner and edited-title Liquid output pass;0guide product-service calls with live positive control",
+    "targetedStructuralValidators": [
+      "theme-governance-validator passed",
+      "no-new-react-sections-validator passed"
+    ],
+    "selectedFinishBinderRenderTests": 2,
+    "selectedFinishControllerTests": 3,
+    "selectedFinishControllerPassed": 3,
+    "selectedFinishFocusedTypecheck": "passed after central connector repair",
+    "supplementalBrowser": {
+      "captures": 25,
+      "states": [
+        "product",
+        "round-product",
+        "invalid-product",
+        "variant-overrides",
+        "faq"
+      ],
+      "widths": [
+        1440,
+        834,
+        390,
+        320
+      ],
+      "textEnlargement": "all5states200% passed",
+      "overflowFailures": 0,
+      "brokenImages": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "sourceHashes": "browser-supplemental-audit.json sourcesBefore/sourcesAfter",
+      "resources": "closed and explicitly released; FAQ-only correction queued",
+      "scope": "static current/common facts panel; real picker switching separately verified in DOM tests"
+    },
+    "FAQCorrection": {
+      "captures": 5,
+      "sourceStable": true,
+      "overflowFailures": 0,
+      "measuredGutters": {
+        "1440": 60,
+        "834": 32,
+        "390": 20,
+        "320": 20
+      },
+      "text200Percent": "passed",
+      "resources": "closed and released"
+    },
+    "historicalOrderRoundtrip": {
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "typecheck": "passed",
+      "HTTPCurrentCatalogLookups": 0,
+      "firstRedEvidence": "order-facts-roundtrip-pre-fix.tap",
+      "actualPipeline": "prepareProductFactSnapshot→product_snapshot.niche→normalizeOrderItemRecord→mapOrderDetailDrop→Habitat2.0.0customers/order Liquid",
+      "gate": "in-process only; no DB/HTTP/purchase/browser acceptance claim"
+    },
+    "discoveryFormRoundtrip": {
+      "newTests": 8,
+      "themeRegressionTests": 13,
+      "passedThisRun": 21,
+      "failed": 0,
+      "skipped": 0,
+      "networkCalls": 0,
+      "typechecks": [
+        "theme-engine passed",
+        "focused evidence passed"
+      ],
+      "scope": "Actual backend reader, app validator/projection, explicit v2 catalog Liquid, FormData and canonical parser; no DB/browser/HTTP claim",
+      "numericCapability": "Actual386 material/finish-only metadata keeps active numeric thresholds hidden and independently clearable; positive exact-key facets are required for numeric controls",
+      "evidence": "discovery-form-roundtrip.tap"
+    },
+    "selectedFacetLabelRegression": {
+      "newTests": 2,
+      "originalDiscoveryCasesPreserved": 8,
+      "themeRegressionTests": 13,
+      "passedThisRun": 23,
+      "failed": 0,
+      "skipped": 0,
+      "focusedEvidenceTypecheck": "passed",
+      "receipt": "discovery-label-source-manifest.json",
+      "sourceFrozen": true
+    },
+    "measurementCapabilityConsumer": {
+      "discoveryCases": 16,
+      "themeCases": 13,
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "typechecks": [
+        "theme-engine passed",
+        "focused evidence passed"
+      ],
+      "sourceFrozen": true,
+      "receipt": "measurement-consumer-source-manifest.json",
+      "classification": "Actual reader/projector/Liquid/FormData in-process; no SQL/DB/browser acceptance claim"
+    }
+  },
+  "integrationComplete": false,
+  "nextStep": "Coordinator to allocate queued cart/purchase/postorder cases only on the qualified checkout runtime. HI11 remains partial solely for unavailable legacy capability-absence branch; HI17 needs an assigned genuine historical record. Habitat source stays frozen; no owner runtime action.",
+  "updatedAt": "2026-10-24T06:25:02.341573+00:00",
+  "mockupGate": "accepted by coordinator;110 approved frozen hashes unchanged",
+  "ownedFactsEditorFiles": [
+    "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.tsx",
+    "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.test.tsx"
+  ],
+  "ownedVariantFactsEditorFiles": [
+    "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.tsx",
+    "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.test.tsx"
+  ],
+  "dimensionalCapabilityReview": {
+    "status": "requirements only; source frozen",
+    "document": "DIMENSIONAL_CAPABILITY_REQUIREMENTS.md",
+    "pendingCases": 17,
+    "proposedMetadataImplemented": false,
+    "DBBuildBrowserOrRuntimeTestsRun": false,
+    "readOnlyInputsUnchanged": "true during dated review; later authorized discovery label correction separately pinned",
+    "receipt": "dimensional-capability-review-sources.json"
+  },
+  "installedLifecyclePreparation": {
+    "classification": "PREPARED_DATA_ONLY_NOT_EXECUTED_ACCEPTANCE",
+    "matrix": "installed-lifecycle-matrix.md",
+    "payloads": "installed-fixture-matrix.plan.json",
+    "schemaValidation": "installed-fixture-schema-validation.json",
+    "originalEditorRecipePreserved": true,
+    "proposedCreateRecipes": 3,
+    "canonicalQueryPayloads": 9,
+    "runtimeLifecycleCases": 17,
+    "allRuntimeCases": "NOT_RUN",
+    "runtimeExecuted": false,
+    "sourceFrozen": true,
+    "noAlternateHarness": true,
+    "schemaValidationResult": "passed",
+    "focusedValidatorTypecheck": "passed",
+    "receipt": "installed-matrix-preparation-receipt.json"
+  },
+  "installedExecution": {
+    "state": "FINAL_26_RECONCILED_FIXTURE_CLOSED_WITH_EXPLICIT_GAPS",
+    "requested": true,
+    "executorReport": "/Volumes/Projects/LetBuyy/docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-browser-diagnostics-final-finite26.json",
+    "totals": {
+      "PASS": 23,
+      "FAIL": 0,
+      "PARTIAL": 2,
+      "NOT_RUN": 1
+    },
+    "sourceFrozen": true,
+    "runtimeAllocated": true,
+    "report": "installed-execution-report.md",
+    "runId": "f6074d90e894",
+    "tracking": "installed-execution-tracking.json",
+    "habitatExecutionEvidenceReceived": true,
+    "sourceAcceptanceIsNotInstalledAcceptance": true,
+    "lifecycleTotals": {
+      "PASS": 14,
+      "FAIL": 0,
+      "PARTIAL": 2,
+      "NOT_RUN": 1
+    },
+    "queryTotals": {
+      "PASS": 9,
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "NOT_RUN": 0
+    },
+    "allCaseIdsAccountedFor": true,
+    "allCasesExecuted": false,
+    "installedAccepted": false,
+    "priorFreeBaseline": "installed-first-pass-before-enterprise.json",
+    "entitlementProposal": "enterprise-fixture-approval-proposal.json",
+    "entitlementChangeExecuted": true,
+    "entitlementReceipt": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-postcommit-readback.json",
+    "installedBinding": {
+      "desk": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+      "originalVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "30e7bb70-6ef0-4175-83f0-16368a3e9fda"
+      ],
+      "stand": "646e8bcb-3267-4f70-b31b-e44fb5f542a6",
+      "shelf": "57d0c360-01a6-49dc-88f7-f3796e313b2e",
+      "probeCollection": "bd1a8fea-6b45-4bdc-8517-170f184a5209",
+      "currentRelease": {
+        "packageVersion": "2.0.0",
+        "releaseId": "3a3356f7-5a77-4dd4-84a5-bdbcdf4a3810",
+        "sourceDraftVersion": 10,
+        "releaseSha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b",
+        "orders": 0,
+        "installed": 3,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "A": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+      "B": "50982c60-e567-42b4-85e4-2b893b234a4a",
+      "C": "30e7bb70-6ef0-4175-83f0-16368a3e9fda",
+      "D": "b1c16f63-5d1c-4ab0-995c-552b45f11fab",
+      "deskCollection": "6eaffbfd-c208-40ea-8988-67bf4e75da5c"
+    },
+    "priorDiagnosticRuns": [
+      {
+        "runId": "9cd50e893016",
+        "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+        "totals": {
+          "PASS": 0,
+          "FAIL": 1,
+          "PARTIAL": 7,
+          "NOT_RUN": 18
+        },
+        "tracking": "installed-execution-tracking-run9cd-diagnostics.json",
+        "report": "installed-execution-report-run9cd-diagnostics.md",
+        "executorCheckpoint": "installed-executor-checkpoint-after-habitat-cycle.json",
+        "allCasesExecuted": false,
+        "accepted": false
+      }
+    ],
+    "runtimeEvidenceReceived": true,
+    "checkpointAudit": "corrected-execution-checkpoint-audit.json",
+    "executorTotals": {
+      "PASS": 23,
+      "PARTIAL": 2,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT_RUN": 1
+    },
+    "axisRepairActualRetest": "PASS_SCOPED_NORMAL_UI_SAME_UUIDS_FACTS_INVENTORY_CART; notwholeHI02",
+    "axisRepairAudit": "controlled-axis-runtime-audit.json",
+    "latestMilestones": {
+      "normalFourVariantCohort": "four-variant-cohort-runtime-audit.json",
+      "18Responses14Forms": "four-cohort-discovery-runtime-audit.json",
+      "12PDPstates4RealClears": "selection-and-clear-runtime-audit.json",
+      "realCODexactRetryAndPreeditCart": "cod-and-preedit-runtime-audit.json",
+      "laterEditStockSourceConstraint": "later-edit-stock-omission-source-finding.json",
+      "freshPreeditCart4Equals5": true,
+      "sourceFrozen": true
+    },
+    "caseTotalsAsOfExecutorCheckpoint": "2026-10-24T00:30:20.975998+00:00",
+    "caseLedgerStatus": "Final all26 IDs and evidence independently reconciled; closed fixture/history only",
+    "ordersVerified": 1,
+    "activeRuntimeAllocated": false,
+    "runtimeBindingStatus": "HISTORICAL_ONLY_OWNED_DATABASE_REMOVED",
+    "runtimeClosure": {
+      "path": "docs/implementation/niche-theme-programme/editor-f607-timeout-cleanup-receipt.json",
+      "sha256": "20aa5fc405780b6f33c212ad903e871151ffb880777fb4f7f8f0ed62ce5ec056",
+      "reason": "Configured runner timeout; code124, not an application test failure count",
+      "databaseRemoved": true,
+      "allBrowserNetworkDataLeases": "CLOSED",
+      "allBindingsHistoricalOnly": true,
+      "cleanupFailures": 0,
+      "cleanupRemaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      },
+      "reaped": [],
+      "twoPinkBaseline": "NOT_RESTORED_BEFORE_INTERRUPTION",
+      "oldExecutorNextSuperseded": "Do not restore/restart/adopt this fixture or resurrect/copy its data/credentials; any future fixture requires genuinely fresh normal-auth bindings."
+    },
+    "finalAudit": "installed-execution-evidence-audit-final.json"
+  },
+  "fresh936Nonorder": {
+    "runId": "936e5f577646",
+    "state": "ALLOCATED_NONORDER_SLICE_COMPLETE_FULL_THEME_NOT_ACCEPTED",
+    "asOf": "2026-10-24T06:25:02.341573+00:00",
+    "scope": "HI01-HI13 andHQ01-HQ09 only",
+    "totals": {
+      "PASS": 21,
+      "FAIL": 0,
+      "PARTIAL": 1,
+      "NOT_RUN": 4
+    },
+    "report": "installed-nonorder-run936-report.md",
+    "tracker": "installed-nonorder-run936-tracking.json",
+    "sourceFrozen": true,
+    "historicalF607Unchanged": true,
+    "finalExecutorLedgerPending": false,
+    "wholeThemeAccepted": false,
+    "finiteSliceComplete": true,
+    "remaining": [
+      "HI11 legacy capability-absence branch unavailable live",
+      "HI14 cart/overstock,HI15 freshCOD/retry,HI16 postorderedit unallocated and queued for qualifiedcheckout runtime",
+      "HI17 conditional genuinehistoricalrecord unassigned/unallocated"
+    ],
+    "executorLedgerSha256": "9b33358572c1f0cdc57762a3de61a033ee9688b97e5b9712b29a202bdb229493",
+    "addendaAudit": "run936-final-addenda-audit.json",
+    "addendaAuditSha256": "71bd698f2fc2185aa629d473416e28d2c06ad51a016f3c89067546374c12c8e5"
+  }
+}

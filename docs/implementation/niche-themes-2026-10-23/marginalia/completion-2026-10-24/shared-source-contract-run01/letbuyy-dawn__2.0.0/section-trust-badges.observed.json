@@ -1,0 +1,162 @@
+{
+  "id": "section-trust-badges",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "trust-badges",
+    "group": "template",
+    "firstId": "section-e9aa761d-c574-4b2f-a3e7-6e386484ef39",
+    "finalId": "section-36806ceb-0370-4139-911d-1a068b53b1c4",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-d8e8c2ad-471a-4b7a-8b9c-ef3b377c60cb": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-a5425303-bd41-49f5-8530-9f0bf73ff1a5": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-d8e8c2ad-471a-4b7a-8b9c-ef3b377c60cb",
+            "block-a5425303-bd41-49f5-8530-9f0bf73ff1a5"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-a5425303-bd41-49f5-8530-9f0bf73ff1a5": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-d8e8c2ad-471a-4b7a-8b9c-ef3b377c60cb": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-a5425303-bd41-49f5-8530-9f0bf73ff1a5",
+            "block-d8e8c2ad-471a-4b7a-8b9c-ef3b377c60cb"
+          ],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-a5425303-bd41-49f5-8530-9f0bf73ff1a5": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-d8e8c2ad-471a-4b7a-8b9c-ef3b377c60cb": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-a5425303-bd41-49f5-8530-9f0bf73ff1a5",
+            "block-d8e8c2ad-471a-4b7a-8b9c-ef3b377c60cb"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-624127b3-c2c7-4d5b-a647-e711c4bdfebd": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-41787047-e77c-439e-901b-3a72bf5bc0bb": {
+              "type": "badge",
+              "settings": {
+                "label": "Source fixture label",
+                "description": "Source fixture description"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-624127b3-c2c7-4d5b-a647-e711c4bdfebd",
+            "block-41787047-e77c-439e-901b-3a72bf5bc0bb"
+          ],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

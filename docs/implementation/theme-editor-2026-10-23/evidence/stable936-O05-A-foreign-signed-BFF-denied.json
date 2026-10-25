@@ -1,0 +1,11 @@
+{
+  "runId": "936e5f577646",
+  "stage": "Actual same Buyer A normal signed foreign-site private BFF navigation after foreign-account positive",
+  "actual": {
+    "error": "Order not found."
+  },
+  "primaryOrderIdAbsent": true,
+  "savedFactsAbsent": true,
+  "httpStatus": "NOT_OBSERVED_IN_BROWSER_NAVIGATION",
+  "bodySha256": "310066c79e922ffb080751eac81842d7c937777e1851d23e3b9cfb6078657f3c"
+}

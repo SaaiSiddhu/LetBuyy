@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-10-24T00:33:11.757020+00:00",
+  "status": "F607_OWNED_MANUAL_FIXTURE_ENDED_RUNNER_TIMEOUT_CLEANUP_EMPTY",
+  "runId": "f6074d90e894",
+  "originalRunner": {
+    "path": "/private/tmp/theme-editor-latest392-manualtls01-runner.json",
+    "sha256": "0405de634451ba8f4a144a09f056cce5a89f6536209b66d01445eed968c4c08c",
+    "suiteSeconds": 24452.7,
+    "wallSeconds": 24457.6,
+    "code": 124,
+    "timedOut": true,
+    "hasTapSummary": false,
+    "tests": 0,
+    "notApplicationTestFailureCount": true
+  },
+  "ownedCleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "knownPidsAbsent": [
+    3211,
+    3913,
+    30132,
+    30240,
+    30406,
+    58307,
+    58471
+  ],
+  "supplementalParents": {
+    "15581": 0,
+    "19399": 0,
+    "scope": "Only own child cleanup through existing helper; no adoption/restart/reaping"
+  },
+  "allBrowserNetworkDataLeases": "CLOSED",
+  "lastKnownSyntheticOrders": [
+    "ORD-20261023-10000",
+    "ORD-20261023-10001"
+  ],
+  "lastKnownCurrentProducts": {
+    "Habitat": 34,
+    "Pantry": 37
+  },
+  "evidencePreserved": true,
+  "liveDatabaseAndOldBindings": "NO_LONGER_AVAILABLE_OWNED_DATABASE_REMOVED",
+  "pinkBaseline": "NOT_RESTORED_BEFORE_INTERRUPTION",
+  "earlierExpiryEstimate": "WITHDRAWN; state-file mtime is not the runner deadline",
+  "next": "Review latest source; admit required isolated native qualification; create genuinely fresh owned fixture with new actual normal-auth bindings. Never revive/copy old credentials or silently transfer case acceptance."
+}

@@ -1,0 +1,8 @@
+{
+  "recordedAt": "2026-10-24T12:56:53.350666+00:00",
+  "classification": "POSTPROCESSING_METADATA_MAPPING_FAILURE_NOT_HARNESS_TEST",
+  "observed": "Initialmapperremovedglobal/prefixbutpreservedappearance/colors/seo/typographygroups,whileactualcanonicalsourceharnessnamespacesall12globalfieldsas theme/<field>. Mappingassertfailedbeforewritinghandoff.",
+  "correction": "Mapexactglobalfieldnamesfrominventorytocanonicaltheme/<field>; allotherfieldIDsunchanged. All135nowexactlymatch.",
+  "sourceHarnessRerun": false,
+  "sourceResultStill": "46PASS/0FAIL;179pins;callerunchanged"
+}

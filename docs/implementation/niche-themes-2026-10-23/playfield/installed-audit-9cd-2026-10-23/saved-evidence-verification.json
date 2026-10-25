@@ -1,0 +1,349 @@
+{
+  "recordedAt": "2026-10-23T17:28:37.631454+00:00",
+  "classification": "INDEPENDENT_SAVED_EVIDENCE_AUDIT_NOT_NEW_BROWSER_EXECUTION",
+  "runId": "9cd50e893016",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+  "sourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "allAssertionsPassed": true,
+  "checkGroups": [
+    "Exact saved run/candidate/manifest binding; no new runtime connection",
+    "A/restoreA and B/reapplyB content hashes agree across four real release IDs",
+    "Anonymous public heading readbacks and retained saved draft B support recovery component",
+    "Two distinct canonical variant lines, quantity/prices/options/facts and UI reload agree",
+    "Above-stock attempt leaves accepted whitelisted cart/order result byte-semantically equal",
+    "Original two-Pink cart restored by exact whitelisted result equality",
+    "Post-overstock order readback zero; no paired inventory-before hash so no full effects claim",
+    "Actual selected UUID cycle, stale outer claims, reload reset and origin-save denial retained",
+    "Positive/query reload/sort/interest-clear observed; age-clear only loading snapshot, not settled result",
+    "Nine frozen fact/factory/picker sources match prior probe and actual candidate; released origin repair absent from candidate",
+    "All fourteen rows reconciled; partial/blocked work is not promoted to full-case PASS"
+  ],
+  "controllerDispositionCounts": {
+    "PARTIAL": 4,
+    "NOT_RUN": 6,
+    "FAIL": 2,
+    "PASS": 1,
+    "BLOCKED": 1
+  },
+  "fullCaseStatusCounts": {
+    "NOT_RUN": 11,
+    "FAIL": 2,
+    "PASS": 1
+  },
+  "releaseProofs": {
+    "A": {
+      "packageVersion": "2.0.0",
+      "releaseId": "74a1a318-a6a9-4799-9e4e-8a842a389935",
+      "sourceDraftVersion": 2,
+      "releaseSha256": "3619a54d82b1511231dff3f31cc187f3e6c0b1d6ea262423ee13b191bc7d15d8",
+      "orders": 0,
+      "installed": 5,
+      "editorObservations": {
+        "captureFailures": 0,
+        "records": []
+      }
+    },
+    "B": {
+      "packageVersion": "2.0.0",
+      "releaseId": "1c0ddb2a-3b86-4fb6-8d54-d8c164a2a353",
+      "sourceDraftVersion": 5,
+      "releaseSha256": "be1609745ae75caa643586a4568d13bb61af42bef31acb885d9b64e96713c664",
+      "orders": 0,
+      "installed": 5,
+      "editorObservations": {
+        "captureFailures": 0,
+        "records": []
+      }
+    },
+    "restoreA": {
+      "packageVersion": "2.0.0",
+      "releaseId": "fd023cff-941c-4cff-b17f-5a87e32189aa",
+      "sourceDraftVersion": null,
+      "releaseSha256": "3619a54d82b1511231dff3f31cc187f3e6c0b1d6ea262423ee13b191bc7d15d8",
+      "orders": 0,
+      "installed": 5,
+      "editorObservations": {
+        "captureFailures": 0,
+        "records": []
+      }
+    },
+    "reapplyB": {
+      "packageVersion": "2.0.0",
+      "releaseId": "f79dc4e5-1253-4fce-9f9d-a42561165a11",
+      "sourceDraftVersion": 7,
+      "releaseSha256": "be1609745ae75caa643586a4568d13bb61af42bef31acb885d9b64e96713c664",
+      "orders": 0,
+      "installed": 5,
+      "editorObservations": {
+        "captureFailures": 0,
+        "records": []
+      }
+    }
+  },
+  "sourcePins": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+      "candidateSha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "candidateSha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+      "candidateSha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084",
+      "candidateSha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "packages/commerce-core/src/playfield-facts.ts",
+      "sha256": "96c17f8c65c1aa1e12233b00368ba29f4e76eb07dcf0374f822747f4f472e9a4",
+      "candidateSha256": "96c17f8c65c1aa1e12233b00368ba29f4e76eb07dcf0374f822747f4f472e9a4",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513",
+      "candidateSha256": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "sha256": "dde42a5fa7ee6a578b636e9be533c8e2bb92cd708c60daf58cf0e88eebfa15cf",
+      "candidateSha256": "dde42a5fa7ee6a578b636e9be533c8e2bb92cd708c60daf58cf0e88eebfa15cf",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "d91217543a463ba70ff8ec294f18cd27bb688a8f62e23f06edc9349997e13aca",
+      "candidateSha256": "d91217543a463ba70ff8ec294f18cd27bb688a8f62e23f06edc9349997e13aca",
+      "matchesPriorProbe": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+      "candidateSha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+      "matchesPriorProbe": true
+    }
+  ],
+  "originGuard": {
+    "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+    "workspaceSha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+    "candidateSha256": "c288af9f88b5919f09c28391625801ee0c1331544085e01a60ad9252e4934631"
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/cart-playfield-before.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/cart-playfield-before.json",
+      "sha256": "7b7ce30ebb1a2c5660839671f4a7075a80ffded7b16fc7dd7c224e8931942c73"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/cart-playfield-overstock.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/cart-playfield-overstock.json",
+      "sha256": "7aa52f67a5ac88329e2fbe589e572db5d7a0c7c1b404e9c548333ee1ff3acfea"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/cart-playfield-restored.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/cart-playfield-restored.json",
+      "sha256": "38eb8c51f75d7f59eb8271f373b7005e5434d65eae1f8f38a65dd44fc2b7be92"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/cart-playfield-two-editions.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/cart-playfield-two-editions.json",
+      "sha256": "fd4f063a7c7805ebde020c8dc1a7a6c4e6028372a7cf18bdd6d0a2a37c4642bc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/final02-candidate-copy-receipt.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/final02-candidate-copy-receipt.json",
+      "sha256": "b7c70f883557430c4ab3ac50b4df2505a243a5a9a0e55488c5b8fec32b4d6ad9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I03-age-interest-positive.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I03-age-interest-positive.ax.txt",
+      "sha256": "cb7329294571f448c93533a4ccda653a88865441691e3249774d61f5c1eea94f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I03-clear-age.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I03-clear-age.ax.txt",
+      "sha256": "4cade932209bc2c6c1c4253ad7de5fc19f3ec047bec4f0b245a8053a3761c87e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I03-clear-interest.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I03-clear-interest.ax.txt",
+      "sha256": "a7f2661aa50c62e5c2e06b181cf4de31c5452da9aa0d4e373632321dab53d617"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I03-query-reload.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I03-query-reload.ax.txt",
+      "sha256": "cb7329294571f448c93533a4ccda653a88865441691e3249774d61f5c1eea94f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I03-sort-state.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I03-sort-state.ax.txt",
+      "sha256": "fdf51e0e4a138990023dfe67f23828a3399ff43afaa3724c889de170cfb73f16"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-inherited.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I05-inherited.ax.txt",
+      "sha256": "098d9966c8c1010f39598f15089f7e05a9d301a6c2d7aff32389fd19d8fa34d6"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-paper.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I05-paper.ax.txt",
+      "sha256": "cdee70e8ca8f0c1dfe2cd197c9771dd515c7d6c548877fe23bbad2d3c6dac1bc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-reload.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I05-reload.ax.txt",
+      "sha256": "e0b84fb3f46cd8185b946052adb3ae8e100ac1ea9e1d92f90204a2836af5b582"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-selected-bindings.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I05-selected-bindings.json",
+      "sha256": "c30fd0f06cbeb93540c9587c8452845b0c9c8e3ac5c84f28ceb8f8042945f197"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-unknown.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I05-unknown.ax.txt",
+      "sha256": "9602569dba70c3fd8a947e558aec1b32e2e69eb520c71f69079b04a11a2b733c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-unselected-PDP.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I05-unselected-PDP.ax.txt",
+      "sha256": "e0b84fb3f46cd8185b946052adb3ae8e100ac1ea9e1d92f90204a2836af5b582"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I06-clear-materials-save.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I06-clear-materials-save.ax.txt",
+      "sha256": "e2042dbc1a52db985b96bd43445d43f5ca80e1aa8292e6119b677b90d653d40a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I07-first-edition-stable.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I07-first-edition-stable.ax.txt",
+      "sha256": "0ed473c1b393bdec0a75e23a14f52c16c314320c0dad66c484ad4477263f16e2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I07-first-edition.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I07-first-edition.ax.txt",
+      "sha256": "f157b8bfe89e6f5e14300d66f4dee2feeec32c4365aabcdebbad0e157294015b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I07-two-editions-drawer.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I07-two-editions-drawer.ax.txt",
+      "sha256": "b6b4a9f0b102cd1783cf9b63d8713c799a1b8d541257621eaac9ad03bc59994b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I07-two-editions-reload.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I07-two-editions-reload.ax.txt",
+      "sha256": "5f9cae7fe23592e6cd06d00ef4b558f4c3bbcb94840b4a600ee5bdc257d514f6"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I08-above-stock-rejection.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-PF-I08-above-stock-rejection.ax.txt",
+      "sha256": "583c0aa510aa36e8d9d3bc4fbcc35abef2fcb6df50a8f171b4212aef3fb4a9fe"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-after-overstock-proof.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-after-overstock-proof.json",
+      "sha256": "0674aa557218759a3e7b4bb40d5479a2012ac437e8179455c7f4d2b8e9aef2df"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-browser-diagnostics.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-browser-diagnostics.json",
+      "sha256": "eb61e575e0f2ab1bf2dddd345a217f5e1d44a50d1dc079408da9db5347e88ea7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-cart-original-restored.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-cart-original-restored.ax.txt",
+      "sha256": "f98f3c706937720bc1e19d26a2e011fe950baeb0f4eb214e37615f31449b975f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-cart-transition-and-restoration.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-cart-transition-and-restoration.json",
+      "sha256": "a95dfcbb7f978012489909ce467ac12543fa3a3420fa329929be5517396e1a71"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-heading-A-reload.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-heading-A-reload.ax.txt",
+      "sha256": "01d85bfdbce34a01122bcbd8c3e9278d9b317c3a9850a7f091c4587e651ed1a2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-heading-B-reload-stable.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-heading-B-reload-stable.ax.txt",
+      "sha256": "4801ffe58e82d013842245988478cd967d2d930b1becfb51f1a47884ee0f482e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-heading-B-reload.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-heading-B-reload.ax.txt",
+      "sha256": "3ef3f980d2937f4f2facd091a5537f329a621b494d1787fa6c76f05177270b83"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-merchant-initial.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-merchant-initial.ax.txt",
+      "sha256": "8b76e8146ede6d2fde102201fc053eb523aaf1388e0678ae17502800419de7a1"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-public-A-readback.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-public-A-readback.json",
+      "sha256": "f9ec05c6fd380626a9a20c407d94c5f5e19e1dbcdce8dc59034289d0be9e8f74"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-public-B-readback.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-public-B-readback.json",
+      "sha256": "35fb601d14a9a9779e5cd1bcaa27b173e9fb7b15a0c7f6592e1fe7e4fe82cf69"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-public-reapplied-B-readback.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-public-reapplied-B-readback.json",
+      "sha256": "35fb601d14a9a9779e5cd1bcaa27b173e9fb7b15a0c7f6592e1fe7e4fe82cf69"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-public-restored-A-readback.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-public-restored-A-readback.json",
+      "sha256": "18207f753dcbc80fd1e100f0374521f20571574ae901d5afad385996fdf5e54a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-publication-A-proof.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-publication-A-proof.json",
+      "sha256": "a7ff88c7bf89e9fe5798502268c00fb8b977377ccbf6baed2bbaa2effc007b3b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-publication-B-proof.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-publication-B-proof.json",
+      "sha256": "025b0b58076fe5aecdb89670f9c703462559d5dd220fd52d552804bc584ac73b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-publication-reapplied-B-proof.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-publication-reapplied-B-proof.json",
+      "sha256": "2d3b472775c2865999786a88d01b820b2c8d48cc195e7c7da68d9da72f17618e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-publication-restored-A-proof.json",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-publication-restored-A-proof.json",
+      "sha256": "4a3740d553abe10ac8b6897b67056457ce277dc58e722b0729788a3174e07ca8"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-retained-B-after-restore-A.ax.txt",
+      "copy": "docs/implementation/niche-themes-2026-10-23/playfield/installed-audit-9cd-2026-10-23/inputs/editor/playfield-retained-B-after-restore-A.ax.txt",
+      "sha256": "5c862593232146a5f154001761251e436f95d54f494f8c422c1d12157fe437f6"
+    }
+  ],
+  "limitations": [
+    "No own browser/API/SQL/runtime/DB/build/seeding activity",
+    "No full paired stock/payment/ledger/outbox invariance proof",
+    "No Playfield screenshot evidence in this ledger; saved AX is not screenshot/visual QA",
+    "No actual COD order; cart snapshots do not prove immutable order history",
+    "PF-I03 age-clear snapshot only loading; settled outcome unproven"
+  ],
+  "automation": "KEEP_ACTIVE; all14 have not completed"
+}

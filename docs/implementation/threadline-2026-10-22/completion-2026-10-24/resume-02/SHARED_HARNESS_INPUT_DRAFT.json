@@ -1,0 +1,131 @@
+{
+  "recordedAt": "2026-10-24T11:34:11.272086+00:00",
+  "classification": "NONEXECUTABLE_PREPARATION_TEMPLATE_NOT_ADMITTED_CLI_INPUT",
+  "sourceAdmission": "Root explicit201 catalog integration must first be independently accepted and pinned. No harness execution grant in preparation02.",
+  "sharedRunner": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/run.mjs",
+    "sha256": "d1d3c46992dc937f48093e00fe1be756a6bbd396e325bb2a5a9b790915c82434",
+    "bytes": 4140
+  },
+  "doNotCopySerializer": true,
+  "candidateInputDraft": {
+    "expectedIdentity": {
+      "slug": "letbuyy-sense",
+      "version": "2.0.1",
+      "bundleSha256": "bc53034a4b715778036e80bebd24ead37babe9c0a86b1e6831d8c7933ea45ab2"
+    },
+    "bundleFactory": {
+      "module": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "export": "createFirstPartyCatalogBundle",
+      "args": [
+        "letbuyy-sense",
+        {
+          "threadlineVersion": "2.0.1"
+        }
+      ]
+    },
+    "adapters": {
+      "domainModule": "packages/theme-engine/src/index.ts",
+      "editorPage": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "registryAdapter": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "tokenPackage": "apps/merchant/web/package.json"
+    },
+    "templateKey": "index",
+    "fixtures": {
+      "resourceFixture": {
+        "value": "22222222-2222-4222-8222-222222222222",
+        "provenance": "Synthetic source-only UUID; no resource existence, ownership, installed binding or transaction claim"
+      },
+      "fieldValues": {
+        "theme/headingFontFamily": "Playfair Display",
+        "theme/bodyFontFamily": "Inter"
+      }
+    }
+  },
+  "referencePinsAtPreparation": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/run.mjs",
+      "sha256": "d1d3c46992dc937f48093e00fe1be756a6bbd396e325bb2a5a9b790915c82434",
+      "bytes": 4140
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/canonical-adapters.mjs",
+      "sha256": "eb6f0188d1340b5f5d1ef57dad5e509413e003d0105054a4575d0b2f09e2dd6c",
+      "bytes": 4562
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/theme-data-contract.mjs",
+      "sha256": "1c70e5d11a6c039bed9cf90d58c876ec90a0131f199796c8a8691d876215a831",
+      "bytes": 13496
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5",
+      "bytes": 47874
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "sha256": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7",
+      "bytes": 4749
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "bytes": 15830
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+      "bytes": 4160
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "bytes": 213170
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "bytes": 37055
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "39bf43e867e33fb397c643ec474ffadd30ea9fd9004c6441b0cb6286cc7fdf1b",
+      "bytes": 105946
+    },
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a742187900a03f2c1c74745c06bf46d797653d4e1309d98762332286972d5a43",
+      "bytes": 34535
+    },
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3",
+      "bytes": 2931
+    },
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "sha256": "0016d74e707c0173e4e1ff5422e558ebeff3de12b12ba74241774201d46c0918",
+      "bytes": 83384
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    }
+  ],
+  "cataloguePin": "REQUIRES_FRESH_ROOT_POST_INTEGRATION_SHA; no old840pin or private copy may substitute",
+  "admissionMustAdd": [
+    "Actual Root catalogue integration/review receipt and current factory options",
+    "Exact complete admitted source/runtime closure incl canonical adapter extraction/compiled helpers/lock and token dependencies",
+    "Fresh owned output folder, actual executor, permitted pure source operations and expiry",
+    "Rebind current editor/registry declarations once centrally if changed; refuse mismatch without fallback/retry"
+  ],
+  "notClosedByHarness": [
+    "Normal controls/actions/permissions on every template",
+    "Nested action/output proof",
+    "Real owned/foreign/deleted resources",
+    "Browser save/ack/reload/preview/publish/public readback",
+    "Identity/cart/COD/Razorpay/history/security/quality"
+  ]
+}

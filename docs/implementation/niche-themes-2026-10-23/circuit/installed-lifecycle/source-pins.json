@@ -1,0 +1,30 @@
+{
+  "classification": "FINAL_IN_PROCESS_SOURCE_PINS_NOT_INSTALLED_RELEASE",
+  "capturedAt": "2026-10-23T13:49:41Z",
+  "sources": {
+    "packages/commerce-core/src/circuit-facts.ts": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6",
+    "packages/commerce-core/src/niche-product-facts.ts": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e",
+    "packages/commerce-core/src/product-fact-snapshot.ts": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582",
+    "packages/checkout-core/src/index.ts": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da",
+    "services/api-gateway/src/lib/public-product-view.ts": "4eb89bfc23184523f341bdd4afe48fb6a2501b6ab01c496e39c0b26debb6b3b0",
+    "services/api-gateway/src/lib/cart-product-facts.ts": "19140df6be21304d0e5c764ad5175d55971253d45cf9255d32415c2f15d29c98",
+    "services/api-gateway/src/routes/storefront/cart-routes.ts": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588",
+    "apps/commerce/web/src/lib/product-service.ts": "2e30286b89c982dfd25aa52cc1bd92a40a958437fa178d24d0ff11c207d20a6b",
+    "apps/commerce/web/src/lib/product-variants.ts": "44c5f49d1e9429b2426bab7c7b1f1819ec3dce6347282f0505ce25757fd0d374",
+    "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513",
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+    "apps/commerce/web/src/lib/order-fact-readback.ts": "90c4e486175c53945f7df7310b1ddb770b0edd6d815a3cf812a90ca3aded4f5d",
+    "apps/commerce/web/src/lib/customer-drop.ts": "33fa2c153a57a996e570537259a2d5457b3fa3e9a978df7251b0a87f7c973c26",
+    "apps/merchant/web/src/components/orders/niche-order-facts.tsx": "a907b6c1464e54eafd2f4f2f9fb1341e7a885256fd55b7118dfd4d9ca26cc41b",
+    "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.ts": "6d624d185a901a635fe0a269c87862f162a9404bcfab6007166bd7267358cc08",
+    "packages/theme-engine/src/circuit-theme.ts": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+    "packages/theme-engine/src/circuit-discovery.ts": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+  },
+  "ownNativeTest": {
+    "apps/commerce/web/src/lib/theme-engine/liquid-add-to-cart-acceptance.test.ts": "ccb107c79d088859c366e705ee2ca1bedddcf6a43bf1beeaf66e670df12ad2dd"
+  },
+  "stableDuringPreflight": true,
+  "liveStatus": "NOT_RUN"
+}

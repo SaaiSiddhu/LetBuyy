@@ -3,13 +3,16 @@
 import assert from 'node:assert/strict';
 import test, {before, after} from 'node:test';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest,restJson} from './gateway-harness';
-import {requireOwnedDatabase} from './owned-db-support';
+import {requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy} from './owned-db-support';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {newSyntheticTenant,seedSyntheticTenant,seedSyntheticOrder} from './synthetic-tenant';
 const owned=requireOwnedDatabase();
 let tenantSequence=0;
+let sqlProxy:OwnedPooledSqlProxy;
 let outerFetch:typeof fetch;
 const external:string[]=[];
-before(()=>{
+before(async()=>{
+ sqlProxy=await startOwnedPooledSqlProxy(owned);
  outerFetch=globalThis.fetch;
  globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
@@ -19,13 +22,13 @@ before(()=>{
   return outerFetch(input,init);
  }) as typeof fetch;
 });
-after(()=>{globalThis.fetch=outerFetch;assert.deepEqual(external,[]);});
+after(async()=>{globalThis.fetch=outerFetch;await closePooledSqlClients();await sqlProxy?.stop();assert.deepEqual(external,[]);});
 async function fixture(history=false){
  const owner=crypto.randomUUID(),email='syn-entitlement-'+owner+'@example.invalid',site=newSyntheticTenant('ent-authority-'+(++tenantSequence));
  owned.psql("INSERT INTO users_custom(id,email,email_verified) VALUES('"+owner+"','"+email+"',true);");
  seedSyntheticTenant(owned.psql,site);
  owned.psql("UPDATE sites SET custom_user_id='"+owner+"' WHERE id='"+site.siteId+"';");
- const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));
+ const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),sqlProxy.env()));
  const past=history?seedSyntheticOrder(owned.psql,site):null;
  const headers=()=>signedIdentityHeaders(owner,email);
  const create=(key=crypto.randomUUID())=>headers().then(h=>gateway.request('/v1/products',{method:'POST',

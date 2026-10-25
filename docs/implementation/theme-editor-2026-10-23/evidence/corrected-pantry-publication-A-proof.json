@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-23T19:26:16.109284+00:00",
+  "runId": "f6074d90e894",
+  "phase": "A",
+  "proofStatus": 200,
+  "proof": {
+    "packageVersion": "2.0.0",
+    "releaseId": "6a7ca947-af84-4159-8591-d37f72784c07",
+    "sourceDraftVersion": 3,
+    "releaseSha256": "82d2dcb0da8bb5656ac034845080d906090024aaf24226fc03a635b04d45ef1f",
+    "orders": 0,
+    "installed": 3,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "publicReadback": {
+    "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+    "httpStatus": 200,
+    "expectedHeading": "Pantry saved heading A f6074d90e894",
+    "expectedFound": true,
+    "otherHeadingFound": false
+  }
+}

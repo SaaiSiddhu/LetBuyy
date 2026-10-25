@@ -1,0 +1,13 @@
+# Private correction for three Kindred heading controls
+
+The private three-file patch is ready for allocator/reviewer inspection. Main, accepted2.0.0 artifacts, previous evidence and KQA-01 remain unchanged. No successor number, migration or release artifact was assigned/emitted. These findings remain open pending versioned source integration and actual installed acceptance.
+
+Canonical catalogue-factory/heading-fragment qualification: **23 checks pass, zero fail**. The unmodified private catalogue builder exactly reproduces the admitted bundle. The proposed builder changes only collection-filter, collection-product-list and customer-order-detail source strings; schemas, template/default values, layout, blocks and every other bundle value are exact. Default/blank/reset headings preserve the tested prior output, deliberate edits affect the normal heading, hostile text stays escaped, and the canonical order number is retained. This is source qualification, not a browser/editor/order/provider pass.
+
+The first direct Kindred(Core) probe produced22 passing source checks but did not reproduce the full admitted bundle because it omitted the canonical catalogue overlay/order-presentation step. That result is retained separately. The corrected probe uses the actual createFirstPartyCatalogBundle path and supplies the missing exact artifact baseline. The overlapping22/23 counts are never summed.
+
+Proposed reset semantics preserve the approved design: the filter's starter title keeps its automatic collection title; only a distinct nonblank value overrides it. Results receive an optional heading only for a deliberate distinct value; starter/blank/reset keeps the previous absence. Order Heading changes its label prefix, with Order fallback and the server-derived number appended. The existing owner should review these semantics before promotion.
+
+The patch touches Kindred factory/discovery and the shared canonical Core order-heading source. The current six-file Editor repair does not authorize these paths. The allocator must assign the source closure, decide compatible successor/catalogue impact and obtain affected shared Core regressions. Never apply this under an old lease or regenerate captured2.0.0. Actual normal UI persistence/publication, buyer/order guards and exact successor lineage remain required.
+
+The private folder retains baseline/proposal source copies, the patch, reproducer scripts and two finite results. Both one-shot Node probes completed exit0 and retained no process. No server/browser/database/build was started, no lease was acquired/returned, no dependency install occurred and no environment/credential files were copied. Shared runtime resources and expired936 were untouched.

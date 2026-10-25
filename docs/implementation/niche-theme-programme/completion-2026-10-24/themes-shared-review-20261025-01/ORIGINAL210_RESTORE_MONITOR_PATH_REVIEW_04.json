@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-25T05:37:05.862326+00:00",
+  "status": "ACCEPT_MONITOR02_COPY_LOCAL_PATH_BINDING_ONLY_WITH_FOUR_FOCUSED_CONTROLS",
+  "before": {
+    "path": "/private/tmp/letbuyy-original210-restore-monitor01.py",
+    "sha256": "aa57db99ee887c913069cfe514b7988cce91a870ff6e0ab60acb8e1a42a2b571"
+  },
+  "after": {
+    "path": "/private/tmp/letbuyy-original210-restore-monitor02.py",
+    "sha256": "951f414dbf5151574dfb4107d0ca758aac2bb5a4014acdb1e1ae2c53eb919e80"
+  },
+  "byteComparison": "ExactonlynewsourceRoot01\u219202 anddedicatedoutputcandidate01/rehearsal01\u2192candidate02/rehearsal02; everyotherbyteincluding2HOLDoptins/approvalhash/maxattempt1/555ssoftstop/600sharddeadline/ownedchildexceptioncleanup matchesacceptedaa57.",
+  "focusedPureControls": [
+    {
+      "name": "new source/output exact binding positive",
+      "return": 0,
+      "fakeStarts": 1
+    },
+    {
+      "name": "old source root denied",
+      "errorClass": "AssertionError",
+      "fakeStarts": 0
+    },
+    {
+      "name": "old output directory denied",
+      "errorClass": "AssertionError",
+      "fakeStarts": 0
+    },
+    {
+      "name": "stale monitor digest denied",
+      "errorClass": "AssertionError",
+      "fakeStarts": 0
+    }
+  ],
+  "proof": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/recovery-monitor-path-review04/result.json",
+    "sha256": "783dba9af9c29d928a188af2a5da54a6c0ddfc4f16788fed4fd3a2a83381a4d0"
+  },
+  "reusedEightBehaviorControls": "ORIGINAL210_RESTORE_MONITOR_SOURCE_REVIEW_03.json44c2233...; exactunchangedbehavior notrerun/recounted.",
+  "actualProcessesResourcesPrivateInputs": 0,
+  "permission": "Source/pathreviewonly; newexactcommand+capsule/sourcebindingreviewandnewdirecthumanapprovalstillrequiredbeforeanyactualretry.",
+  "fullThemeCertificates": 0
+}

@@ -1,0 +1,77 @@
+[
+  {
+    "file": "assets/GEIST-OFL-LICENSE.txt",
+    "bytes": 4368,
+    "sha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137"
+  },
+  {
+    "file": "assets/Inter-OFL.txt",
+    "bytes": 4380,
+    "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+  },
+  {
+    "file": "assets/activity-hero.png",
+    "bytes": 2611215,
+    "sha256": "a2d9880edbafee7b077014a0ef219e140c1dd41bd6638c2e61a35a83100707a3"
+  },
+  {
+    "file": "assets/arch-paths.png",
+    "bytes": 1926653,
+    "sha256": "5c4b1b57b9800cd810f76a0d8e58808822672dcb46920184cd1ec30821129971"
+  },
+  {
+    "file": "assets/font-downloads.json",
+    "bytes": 623,
+    "sha256": "fcc33f95fb5dc81ab2c554f9e0659dac3fdef31bbf5c0c5e53d98549b52e4e34"
+  },
+  {
+    "file": "assets/font-source.css",
+    "bytes": 1145,
+    "sha256": "e1984b56bab2598be2ef50a7f313bff28a766959cb5358f5663c37d8f21520b1"
+  },
+  {
+    "file": "assets/geist-sans-latin.woff2",
+    "bytes": 28356,
+    "sha256": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8"
+  },
+  {
+    "file": "assets/inter-0.ttf",
+    "bytes": 324820,
+    "sha256": "1b08e7fc267a5c7e1d614100f604b83e7e8a0be241f0f288faa2b3ac93a683ba"
+  },
+  {
+    "file": "assets/inter-1.ttf",
+    "bytes": 325304,
+    "sha256": "8c883f63b2c4157d997319f2c8bc6995ed4357ef371940d31ca159004a4aae63"
+  },
+  {
+    "file": "assets/inter-2.ttf",
+    "bytes": 326048,
+    "sha256": "e7a1aaf7eda9f2fad4131725fa556265ec75ca7b2d756260173a040363e8d4f7"
+  },
+  {
+    "file": "assets/inter-3.ttf",
+    "bytes": 326468,
+    "sha256": "b37284b5701b6b168dfc770aa1a4ac492106422fd3ba76bc7641e37434e8019c"
+  },
+  {
+    "file": "assets/inter-4.ttf",
+    "bytes": 327324,
+    "sha256": "eec66af7f2337bd34fe6e801cf92ededcb57a20c0d7bc40a61d4eefcbe3dd40c"
+  },
+  {
+    "file": "assets/letbuyy-logo.svg",
+    "bytes": 11674,
+    "sha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b"
+  },
+  {
+    "file": "assets/paper-play.png",
+    "bytes": 2270180,
+    "sha256": "cc904f7dcc1e47f873601d4458a6b2a82b95c8732f77337fea1da874b80e2df6"
+  },
+  {
+    "file": "assets/pattern-studio.png",
+    "bytes": 2061276,
+    "sha256": "aa1df2a6ed2625bd21fa8c4701033f9da8ce2af7bedc5d23a1c2652ca4cb3e20"
+  }
+]

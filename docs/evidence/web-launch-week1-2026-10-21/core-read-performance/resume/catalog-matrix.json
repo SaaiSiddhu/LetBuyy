@@ -1,0 +1,227 @@
+{
+  "allTenCatalogIdentities": true,
+  "catalogCoverage": [
+    {
+      "slug": "forge",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "forge",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "sense",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "sense",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "aura",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "aura",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "craft",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "craft",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "refresh",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "refresh",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "ride",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "ride",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "dawn",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "dawn",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "bloom",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "bloom",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "nova",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "nova",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    },
+    {
+      "slug": "summit",
+      "width": 1280,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": false
+    },
+    {
+      "slug": "summit",
+      "width": 390,
+      "routes": [
+        "home",
+        "product",
+        "collection"
+      ],
+      "quantity": true,
+      "mobileMenu": true
+    }
+  ],
+  "reactProductSSR": true,
+  "routePropsValid": true
+}

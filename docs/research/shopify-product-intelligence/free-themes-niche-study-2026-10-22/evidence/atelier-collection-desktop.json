@@ -1,0 +1,1215 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "\"Red Hat Text\", sans-serif",
+    "fontSize": "12px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "AVAILABILITY",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "COLOR",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Beige",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Brown",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Gray",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Green",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Multicolor",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Red",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "White",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Yellow",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "PRICE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "650.00",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "SORT",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Default",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom out",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Learn",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Connect",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Sign up for our newsletter",
+      "weight": "200",
+      "width": 240.859375,
+      "x": 992,
+      "y": 2027.5703125
+    }
+  ],
+  "links": [
+    {
+      "text": "SKIP TO CONTENT",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new#MainContent"
+    },
+    {
+      "text": "NEW IN",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/sera-mia-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/monolit-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/neo-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-bordeaux"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-black"
+    },
+    {
+      "text": "BAGS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/mini-bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/shoulder-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/tote-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/crossbody-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/clutches-pouches"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/sera-mia-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/neo-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/pandora"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/atlas"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-her"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-him"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-earth"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-cappuccino"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-bordeaux"
+    },
+    {
+      "text": "SHOES",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/shoes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/flats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/heels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-south-america"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-black-gray"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-denim"
+    },
+    {
+      "text": "ACCESSORIES",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/wallets-small-leather-goods"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/belts"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/naomi-mini-wallet-duck-green"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/naomi-mini-wallet-scuba"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/naomi-mini-wallet-bordeaux"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/"
+    },
+    {
+      "text": "SKIP TO RESULTS LIST",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new#ResultsList"
+    },
+    {
+      "text": "Monolit",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186"
+    },
+    {
+      "text": "Monolit",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-bordeaux?variant=50126918779178"
+    },
+    {
+      "text": "Monolit",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-black?variant=50126921924906"
+    },
+    {
+      "text": "Monolit",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-off-white?variant=50126922285354"
+    },
+    {
+      "text": "Monolit",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-latte?variant=50126922842410"
+    },
+    {
+      "text": "Monolit",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-earth?variant=50126848557354"
+    },
+    {
+      "text": "Monolit",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-bordeaux?variant=50126975500586"
+    },
+    {
+      "text": "Neo",
+      "url": "https://theme-atelier-demo.myshopify.com/products/neo-vintage-yellow?variant=50126828536106"
+    },
+    {
+      "text": "Neo",
+      "url": "https://theme-atelier-demo.myshopify.com/products/neo-khaki?variant=50126828831018"
+    },
+    {
+      "text": "Neo",
+      "url": "https://theme-atelier-demo.myshopify.com/products/neo-espresso?variant=50126829027626"
+    },
+    {
+      "text": "Neo",
+      "url": "https://theme-atelier-demo.myshopify.com/products/neo-earth?variant=50126829158698"
+    },
+    {
+      "text": "Neo",
+      "url": "https://theme-atelier-demo.myshopify.com/products/neo-black-gray?variant=50126802288938"
+    },
+    {
+      "text": "Sera Mia - Vintage Yellow",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-vintage-yellow?variant=50126819164458"
+    },
+    {
+      "text": "Sera Mia - Vanilla",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-vanilla?variant=50126820868394"
+    },
+    {
+      "text": "Sera Mia - Tan",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-tan?variant=50126820344106"
+    },
+    {
+      "text": "Sera Mia - Suede Espresso",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-suede-espresso?variant=50126814839082"
+    },
+    {
+      "text": "Sera Mia - Smoky Plum",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-smoky-plum?variant=50126820180266"
+    },
+    {
+      "text": "Sera Mia - Espresso",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-espresso?variant=50126819918122"
+    },
+    {
+      "text": "Sera Mia - Earth",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-earth?variant=50126821622058"
+    },
+    {
+      "text": "Sera Mia - Black",
+      "url": "https://theme-atelier-demo.myshopify.com/products/sera-mia-black?variant=50126822342954"
+    },
+    {
+      "text": "NEW THIS SEASON",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new"
+    },
+    {
+      "text": "ACCESSORIES",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "ALL BAGS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "GIFTS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-her"
+    },
+    {
+      "text": "SHIPPING",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "RETURNS",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "BLOG",
+      "url": "https://theme-atelier-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "ABOUT US",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "CONTACT US",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Atelier",
+      "url": "https://theme-atelier-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035813674__section",
+      "rect": {
+        "height": 211.1953125,
+        "width": 1440,
+        "x": 0,
+        "y": 74.390625
+      },
+      "tag": "DIV",
+      "text": "New in"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035813674__main",
+      "rect": {
+        "height": 1665.984375,
+        "width": 1440,
+        "x": 0,
+        "y": 285.5859375
+      },
+      "tag": "DIV",
+      "text": "SKIP TO RESULTS LIST\nAVAILABILITY\nCOLOR\nPRICE\n20 ITEMS\nSORT\nColumn grid\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475"
+    }
+  ],
+  "title": "New in – Atelier",
+  "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Column grid",
+    "\n    \n      Column grid\n    \n\n    \n      \n        \n        \n\n\n\n      \n\n      \n        \n        \n\n\n\n\n\n\n      \n\n    \n  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Beige\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Black\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Brown\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Gray\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Green\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Multicolor\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Red\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      White\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Yellow\n                      \n                    \n                  "
+  ],
+  "grids": [
+    {
+      "className": "section product-grid-container color-scheme-1",
+      "columns": "40px 1360px 40px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 1665.984375,
+      "tag": "RESULTS-LIST",
+      "width": 1440
+    },
+    {
+      "className": "collection-wrapper grid gap-style",
+      "columns": "0px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 0px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 1599.984375,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "facets__inputs-list list-unstyled",
+      "columns": "none",
+      "display": "flex",
+      "gap": "11.2px",
+      "height": 43.1953125,
+      "tag": "UL",
+      "width": 94.40625
+    },
+    {
+      "className": "facets__inputs-list list-unstyled facets__inputs-list--swatches facets__inputs-list--swatches-grid",
+      "columns": "92.7656px 92.7656px",
+      "display": "grid",
+      "gap": "11.2px",
+      "height": 184.78125,
+      "tag": "UL",
+      "width": 196.7265625
+    },
+    {
+      "className": "\n    grid main-collection-grid\n\n collection-wrapper--full-width-on-mobile\n    spacing-style\n  ",
+      "columns": "0px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 0px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 1531.984375,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "product-grid product-grid--template--26420035813674__main product-grid--grid ",
+      "columns": "259.195px 259.203px 259.195px 259.203px 259.203px",
+      "display": "grid",
+      "gap": "16px",
+      "height": 1531.984375,
+      "tag": "UL",
+      "width": 1360
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 363.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    }
+  ],
+  "images": [
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    }
+  ],
+  "bodyText": "SKIP TO CONTENT\nNEW IN\nBAGS\nSHOES\nACCESSORIES\nTotal items in cart: 0\n\nNew in\n\nSKIP TO RESULTS LIST\nAVAILABILITY\nCOLOR\nPRICE\n20 ITEMS\nSORT\nColumn grid\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nMonolit\nADD\nMONOLIT\n$475.00\nNeo\nADD\nNEO\n$480.00\nNeo\nADD\nNEO\n$480.00\nNeo\nADD\nNEO\n$480.00\nNeo\nADD\nNEO\n$480.00\nNeo\nADD\nNEO\n$480.00\nSera Mia - Vintage Yellow\nADD\nSERA MIA - VINTAGE YELLOW\n$645.00\nSera Mia - Vanilla\nADD\nSERA MIA - VANILLA\n$645.00\nSera Mia - Tan\nADD\nSERA MIA - TAN\n$645.00\nSera Mia - Suede Espresso\nADD\nSERA MIA - SUEDE ESPRESSO\n$650.00\nSera Mia - Smoky Plum\nADD\nSERA MIA - SMOKY PLUM\n$645.00\nSera Mia - Espresso\nADD\nSERA MIA - ESPRESSO\n$645.00\nSera Mia - Earth\nADD\nSERA MIA - EARTH\n$645.00\nSera Mia - Black\nADD\nSERA MIA - BLACK\n$645.00\nShop\nNEW THIS SEASON\nACCESSORIES\nALL BAGS\nGIFTS\nLearn\nSHIPPING\nRETURNS\nBLOG\nABOUT US\nConnect\nFACEBOOK\nINSTAGRAM\nTIKTOK\nCONTACT US\nSign up for our newsletter\nEmail\n© 2026 Atelier, Powered by Shopify"
+}

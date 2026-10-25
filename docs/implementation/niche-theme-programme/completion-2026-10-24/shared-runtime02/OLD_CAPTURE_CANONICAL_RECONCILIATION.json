@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-24T19:36:32.244Z",
+  "runId": "2fa5bebb00bb",
+  "classification": "OPERATOR_RECONCILIATION_FROM_AUTHENTICATED_PSP_READ_THROUGH_EXISTING_CANONICAL_WRITER; not browser or webhook qualification",
+  "paymentId": "pay_TrmYqPNwAgrq5D",
+  "providerOrderId": "order_TrmYARrKWcIDqv",
+  "orderId": "a41b67bc-6f49-4888-b065-f38f28de425b",
+  "amountMinor": 122000,
+  "currency": "INR",
+  "providerStatus": "captured",
+  "httpStatus": 200,
+  "captureOutcome": null,
+  "fulfillable": null,
+  "before": {
+    "status": "pending",
+    "paymentStatus": "pending",
+    "reference": "order_TrmYARrKWcIDqv",
+    "total": 1220
+  },
+  "after": {
+    "orderStatus": "confirmed",
+    "paymentStatus": "paid",
+    "captureCount": 1,
+    "balanceMinor": 0
+  },
+  "secretsPersisted": false
+}

@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T10:00:54.007487+00:00",
+  "classification": "PHASE0_EVIDENCE_CONSISTENCY_ONLY_NOT_PRODUCT_TESTS_OR_ACCEPTANCE",
+  "command": "python3 /Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/validate-packet.py",
+  "exitCode": 0,
+  "checkCounts": {
+    "PASS": 29
+  },
+  "checks": [
+    {
+      "name": "packet_json_parses",
+      "result": "PASS",
+      "detail": {
+        "files": [
+          "SOURCE_AND_EVIDENCE_INPUTS.json",
+          "PHASE0_VALIDATION.boundary01.json",
+          "DEPENDENCIES.json",
+          "CAPABILITY_INVENTORY.json",
+          "SCHEMA_FIELD_EFFECTS.json",
+          "SHARED_BLOCK_CONTROL_RECONCILIATION.json",
+          "MODULE_WIRE_REUSE_REQUEST.json",
+          "PHASE0_RUN_RECORD.json",
+          "COVERAGE.json",
+          "CERTIFICATION.json",
+          "NEXT_EXECUTABLE_SLICE.json",
+          "HABITAT_COMPLETION_HANDOFF.json",
+          "NESTING_RECONCILIATION.json",
+          "NEXT_UI_ACCEPTANCE_HANDOFF.json"
+        ],
+        "errors": []
+      }
+    },
+    {
+      "name": "original_26_ids_and_statuses_preserved",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "original_17_lifecycle_and_9_query_cases",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "original_counts_21_pass_1_partial_4_not_run",
+      "result": "PASS",
+      "detail": {
+        "PASS": 21,
+        "PARTIAL": 1,
+        "NOT_RUN": 4
+      }
+    },
+    {
+      "name": "retained_proof_not_promoted",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "337_unique_added_requirements",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "new_requirements_have_no_fabricated_execution",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "all_23_templates_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "all_46_sections_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "all_13_inline_blocks_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "reusable_badge_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "all_157_field_descriptors_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "all_10_presets_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "locale_leaf_paths_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "all_40_common_variant_facts_mapped",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "source_files_and_json_pointers_resolve",
+      "result": "PASS",
+      "detail": []
+    },
+    {
+      "name": "virtual_bundle_paths_labelled",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "app_activation_excluded_safety_unexecuted",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "pinned_chrome_remains_open",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "canonical_child_absence_not_mistaken_for_denial",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "next_slice_resolves_all_14_fields_and_20_cases",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "exact_157_field_effect_requirements_no_execution_claim",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "HI14_17_handoff_preserves_case_ids_unbound_and_unexecuted",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "later_metadata_update_omits_all_stock_fields",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "private_source_tests_and_failed_startups_preserved_exact",
+      "result": "PASS",
+      "detail": []
+    },
+    {
+      "name": "slice_is_request_not_lease",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "certification_not_issued",
+      "result": "PASS",
+      "detail": null
+    },
+    {
+      "name": "all_11_frozen_habitat_source_hashes_match",
+      "result": "PASS",
+      "detail": [
+        {
+          "path": "packages/theme-engine/src/habitat-theme.ts",
+          "matches": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-styles.ts",
+          "matches": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-discovery.ts",
+          "matches": true
+        },
+        {
+          "path": "packages/theme-engine/test/habitat.test.ts",
+          "matches": true
+        },
+        {
+          "path": "packages/commerce-core/src/habitat-facts.ts",
+          "matches": true
+        },
+        {
+          "path": "packages/commerce-core/test/habitat-facts.test.ts",
+          "matches": true
+        },
+        {
+          "path": "apps/commerce/web/src/lib/demo/habitat-demo.ts",
+          "matches": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.tsx",
+          "matches": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.test.tsx",
+          "matches": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.tsx",
+          "matches": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.test.tsx",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "name": "local_markdown_links_resolve",
+      "result": "PASS",
+      "detail": []
+    }
+  ],
+  "retainedOriginalResults": {
+    "PASS": 21,
+    "PARTIAL": 1,
+    "NOT_RUN": 4
+  },
+  "newRequirementStatusCounts": {
+    "NOT_RUN": 337
+  },
+  "operationCellsNotUniqueJourneys": 2995,
+  "programmeStateAtHandoff": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json",
+    "sha256": "2d35ace0812e723d6687861c8586857b8b78282e1643ac0ee760d6a6045bb2a8",
+    "programmePhase": "COMPLETION_READY_HANDOFF_INTEGRATION_AND_EDITOR_CONTRACT_FOLLOWUP",
+    "helperActivation": {
+      "themes": "ACTIVE_RESUMPTION_OBSERVED",
+      "editor": "ACTIVE_RESUMPTION_OBSERVED",
+      "marketplace": "NOT_RESUMED_PRESERVE_RUNNING_LOCAL_APP"
+    },
+    "activeBrowserLease": null,
+    "activeSharedWriter": {
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "allocation": "docs/implementation/niche-theme-programme/completion-shared-allocation-20261024-01.json",
+      "directDeliveryReceipt": "shared-editor-allocation-direct-delivery.json",
+      "scope": "Editor block actions source/tests only"
+    }
+  },
+  "packetHashes": {
+    "CAPABILITY_INVENTORY.json": "c2a7179b22b736a58684fd66bfc501d3d0f6d9c06059ace7881dd0ea46c6d456",
+    "CERTIFICATION.json": "66c14d0ba6080bd41dc4f299eb14c0996d5ee286c839a470672c90fdc87ff1cf",
+    "CERTIFICATION.md": "7a73883698b03941db9957a6e922de54e17ee77eee2a1bf1643eea82b9c242b4",
+    "COVERAGE.json": "3c2dcf618fa3e845e9b9cfc8a75c7437d0255edef08c759279b38e1f3714b3a9",
+    "DEPENDENCIES.json": "b72c029005a3928c9f47943096599328607ad9e2536bc2ed751a7b581e579872",
+    "FINDINGS.md": "b8818df9ee93fd674823aba86414928111d71d762b302d272bf17ad5e8089a4a",
+    "HABITAT_COMPLETION_HANDOFF.json": "1033c0be78d1a99f7eecee5243a97c302dafaf8c77ac8df6f3d05776e5d8c4a4",
+    "MODULE_WIRE_REUSE_REQUEST.json": "e636d53386ae22eb5bf860c41e8ea384f074abc86f016031d10e9654d83c84ad",
+    "NESTING_RECONCILIATION.json": "c0a2c589fcb3f911a7dca36c75501d992dfd541772ece30bd6c8ce6928d74907",
+    "NEXT_EXECUTABLE_SLICE.json": "b0025d2312d04d9a5cc130c340e53dcf7d95a75ba7d8d5ce086e5878be20436c",
+    "NEXT_UI_ACCEPTANCE_HANDOFF.json": "0ad502b9159bc4495c75d2f482c81c28bdded6dbe53cbcc0672fce4bd0da5b05",
+    "PHASE0_RUN_RECORD.json": "666b9abd61619844e64f2ef5a27c9cbe56cebcbdbc23ad6005676c197c981e67",
+    "PHASE0_VALIDATION.boundary01.json": "6608df3a29109d16139079f2e386c6598cd65f7f8302c3f2921f46fec4035b3c",
+    "RUNBOOK.md": "8c298b7ee04acf90aa9d309fd9698f877f9f0df48b443606eadc089075b4327d",
+    "SCHEMA_FIELD_EFFECTS.json": "35b8a42ea445290d3122953083f302b04818fb0621526d956969f1cb9c9b2227",
+    "SHARED_BLOCK_CONTROL_RECONCILIATION.json": "749da4dbee1743dfd50390d6710e1ba7559c9d1323256e554eef1e0f16b44f8f",
+    "SHARED_SOURCE_REQUESTS.md": "fec33bc9965dec68dc7ae575ffe90dc622726281183eeb0ad05f409c25a01c75",
+    "SOURCE_AND_EVIDENCE_INPUTS.json": "37d155b6d9e514c32e186cfb5b84f107de2e55dc3f705f477a93c04899ccbef9",
+    "extract-capabilities.ts": "07bdfdc428907aec55b578e14eff7ffbb277f78efb4bd14a5d3fc87ef708f920",
+    "validate-packet.py": "3761e1c515a1d63b92353808d62a71c116b1301183466a7c9fe890cf7ea2552d"
+  },
+  "behavioralTestsRun": 0,
+  "runtimeActions": 0,
+  "databaseActions": 0,
+  "providerCalls": 0,
+  "crossChatMessagesSent": 0,
+  "fullCertificationClaimed": false
+}

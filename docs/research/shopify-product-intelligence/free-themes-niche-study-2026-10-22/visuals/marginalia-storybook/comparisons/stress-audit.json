@@ -1,0 +1,1839 @@
+[
+  {
+    "scene": "01-home-top",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1698,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "opening-grid",
+        "columns": "175px 1fr"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Find your next good page.",
+      "Follow a thread.",
+      "Field Notes for a Slower City"
+    ]
+  },
+  {
+    "scene": "02-home-bottom",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 3120,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Stay with a thought.",
+      "On noticing the ordinary.",
+      "Room for your own words.",
+      "A small shop. Many ways in."
+    ]
+  },
+  {
+    "scene": "03-collection",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2401,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "catalog-layout",
+        "columns": "288px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Essays & ideas",
+      "Browse books"
+    ]
+  },
+  {
+    "scene": "04-product-main",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1985,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "pdp-grid",
+        "columns": "288px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Field Notes for a Slower City"
+    ]
+  },
+  {
+    "scene": "05-product-facts",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2285,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "A city, read at walking pace.",
+      "The long way home",
+      "This exact edition"
+    ]
+  },
+  {
+    "scene": "06-product-continuation",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 3140,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "For the margins.",
+      "Good paper. A place to begin.",
+      "Continue reading.",
+      "Before you order"
+    ]
+  },
+  {
+    "scene": "07-cart",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2414,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your bag 3 items",
+      "Field Notes for a Slower City",
+      "The Everyday Notebook",
+      "A moment to check."
+    ]
+  },
+  {
+    "scene": "08-checkout-address",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2630,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout",
+        "columns": "288px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "288px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Where should we send your pages?",
+      "Delivery address",
+      "Shipping",
+      "Order summary 3 items"
+    ]
+  },
+  {
+    "scene": "09-checkout-review",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2206,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout review",
+        "columns": "288px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": {
+      "summaryBeforePayment": true,
+      "summaryBottom": 1390.515625,
+      "commitTop": 1872.875,
+      "total": "TotalINR ₹1,180"
+    },
+    "headings": [
+      "Check the details. Then make it yours.",
+      "Deliver to",
+      "Shipping",
+      "Order summary 3 items"
+    ]
+  },
+  {
+    "scene": "10-sign-in",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1112,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Sign in",
+      "One buyer account. Your places to shop."
+    ]
+  },
+  {
+    "scene": "11-sign-up",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 1494,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Create your LetBuyy account",
+      "Continue to Marginalia",
+      "One buyer account. Your places to shop."
+    ]
+  },
+  {
+    "scene": "12-profile",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2397,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "288px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "242px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Hello, Sample Reader.",
+      "Personal details",
+      "Your latest order",
+      "Default address"
+    ]
+  },
+  {
+    "scene": "13-orders",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2017,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "288px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your orders.",
+      "Field Notes for a Slower City"
+    ]
+  },
+  {
+    "scene": "14-order-detail",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2690,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "288px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Order MG-1042",
+      "Preparing your pages",
+      "Delivery address",
+      "Payment summary"
+    ]
+  },
+  {
+    "scene": "15-addresses",
+    "test": "320px reflow",
+    "width": 320,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 320,
+    "scrollWidth": 320,
+    "scrollHeight": 2637,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "288px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "246px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Saved addresses.",
+      "Home",
+      "Edit address"
+    ]
+  },
+  {
+    "scene": "03-collection",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4268,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "catalog-layout",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Essays & ideas",
+      "Browse books"
+    ]
+  },
+  {
+    "scene": "04-product-main",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3560,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "pdp-grid",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Field Notes for a Slower City"
+    ]
+  },
+  {
+    "scene": "05-product-facts",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 5338,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "A city, read at walking pace.",
+      "The long way home",
+      "This exact edition"
+    ]
+  },
+  {
+    "scene": "07-cart",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4514,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your bag 3 items",
+      "Field Notes for a Slower City",
+      "The Everyday Notebook",
+      "A moment to check."
+    ]
+  },
+  {
+    "scene": "08-checkout-address",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4935,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout",
+        "columns": "350px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Where should we send your pages?",
+      "Delivery address",
+      "Shipping",
+      "Order summary 3 items"
+    ]
+  },
+  {
+    "scene": "09-checkout-review",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4343,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout review",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": {
+      "summaryBeforePayment": true,
+      "summaryBottom": 2830.71875,
+      "commitTop": 3759.46875,
+      "total": "TotalINR ₹1,180"
+    },
+    "headings": [
+      "Check the details. Then make it yours.",
+      "Deliver to",
+      "Shipping",
+      "Order summary 3 items"
+    ]
+  },
+  {
+    "scene": "11-sign-up",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3082,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Create your LetBuyy account",
+      "Continue to Marginalia",
+      "One buyer account. Your places to shop."
+    ]
+  },
+  {
+    "scene": "15-addresses",
+    "test": "200% text size at 390px",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4693,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "350px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "308px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Saved addresses.",
+      "Home",
+      "Edit address"
+    ]
+  },
+  {
+    "scene": "01-home-top",
+    "test": "Hindi long title + reduced motion",
+    "motion": {
+      "reduced": true,
+      "scrollBehavior": "auto"
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1753,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "opening-grid",
+        "columns": "175px 1fr"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "धीमे शहर की यात्राएँ: रोज़मर्रा के जीवन, छोटी खोजों और बदलते पड़ोस की कहानियाँ",
+      "Follow a thread.",
+      "Field Notes for a Slower City"
+    ]
+  },
+  {
+    "scene": "03-collection",
+    "test": "Hindi long title + reduced motion",
+    "motion": {
+      "reduced": true,
+      "scrollBehavior": "auto"
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2441,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "catalog-layout",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "धीमे शहर की यात्राएँ: रोज़मर्रा के जीवन, छोटी खोजों और बदलते पड़ोस की कहानियाँ",
+      "Browse books"
+    ]
+  },
+  {
+    "scene": "04-product-main",
+    "test": "Hindi long title + reduced motion",
+    "motion": {
+      "reduced": true,
+      "scrollBehavior": "auto"
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1979,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "pdp-grid",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "धीमे शहर की यात्राएँ: रोज़मर्रा के जीवन, छोटी खोजों और बदलते पड़ोस की कहानियाँ"
+    ]
+  },
+  {
+    "scene": "05-product-facts",
+    "test": "Hindi long title + reduced motion",
+    "motion": {
+      "reduced": true,
+      "scrollBehavior": "auto"
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2165,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "धीमे शहर की यात्राएँ: रोज़मर्रा के जीवन, छोटी खोजों और बदलते पड़ोस की कहानियाँ",
+      "The long way home",
+      "This exact edition"
+    ]
+  },
+  {
+    "scene": "15-addresses",
+    "test": "Hindi long title + reduced motion",
+    "motion": {
+      "reduced": true,
+      "scrollBehavior": "auto"
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2722,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "350px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "308px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "धीमे शहर की यात्राएँ: रोज़मर्रा के जीवन, छोटी खोजों और बदलते पड़ोस की कहानियाँ",
+      "Home",
+      "Edit address"
+    ]
+  },
+  {
+    "scene": "03-collection",
+    "test": "180-character title at 200% text size",
+    "language": "en",
+    "title": "Field Notes for a Slower City: Walking Through Familiar Streets, Listening to Everyday Places, and Finding New Ways to Notice the Small Stories That Shape Our Shared Neighbourhoods",
+    "titleCharacters": 180,
+    "file": "comparisons/03-collection-180char-en-text200.png",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "scrollWidth": 390,
+    "scrollHeight": 8588,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded"
+    },
+    "reducedMotion": true,
+    "titleGeometry": [
+      {
+        "height": 1690,
+        "scrollHeight": 1690,
+        "overflow": "visible",
+        "text": "Field Notes for a Slower City: Walking Through Familiar Streets, Listening to Everyday Places, and Finding New Ways to Notice the Small Stories That Shape Our Shared Neighbourhoods"
+      },
+      {
+        "height": 1102,
+        "scrollHeight": 1102,
+        "overflow": "visible",
+        "text": "Field Notes for a Slower City: Walking Through Familiar Streets, Listening to Everyday Places, and Finding New Ways to Notice the Small Stories That Shape Our Shared Neighbourhoods"
+      },
+      {
+        "height": 1102,
+        "scrollHeight": 1102,
+        "overflow": "visible",
+        "text": "Field Notes for a Slower City: Walking Through Familiar Streets, Listening to Everyday Places, and Finding New Ways to Notice the Small Stories That Shape Our Shared Neighbourhoods"
+      },
+      {
+        "height": 1102,
+        "scrollHeight": 1102,
+        "overflow": "visible",
+        "text": "Field Notes for a Slower City: Walking Through Familiar Streets, Listening to Everyday Places, and Finding New Ways to Notice the Small Stories That Shape Our Shared Neighbourhoods"
+      }
+    ]
+  },
+  {
+    "scene": "04-product-main",
+    "test": "180-character title at 200% text size",
+    "language": "hi",
+    "title": "धीमे शहर की यात्राएँ: रोज़मर्रा के जीवन, छोटी खोजों, बदलते पड़ोस, परिचित गलियों और अनदेखी कहानियों को नई नज़र से पढ़ने तथा अपने आसपास की दुनिया को ध्यान से देखने की एक विस्तृत पुस्",
+    "titleCharacters": 180,
+    "file": "comparisons/04-product-main-180char-hi-text200.png",
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "scrollWidth": 390,
+    "scrollHeight": 4446,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded"
+    },
+    "reducedMotion": true,
+    "titleGeometry": [
+      {
+        "height": 1128,
+        "scrollHeight": 1128,
+        "overflow": "visible",
+        "text": "धीमे शहर की यात्राएँ: रोज़मर्रा के जीवन, छोटी खोजों, बदलते पड़ोस, परिचित गलियों और अनदेखी कहानियों को नई नज़र से पढ़ने तथा अपने आसपास की दुनिया को ध्यान से देखने की एक विस्तृत पुस्"
+      }
+    ]
+  }
+]

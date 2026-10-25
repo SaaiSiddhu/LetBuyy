@@ -1,0 +1,228 @@
+- link "Skip to content":
+  - /url: "#MainContent"
+- banner:
+  - heading "Vessel" [level=1]
+  - generic "Menu" [active]:
+  - button "Close":
+  - navigation "Primary":
+    - list:
+      - link "NEW IN":
+        - /url: /collections/all
+        - generic: NEW IN
+      - link "COFFEE & TEA":
+        - /url: /collections/coffee-tea
+        - generic: COFFEE & TEA
+      - link "DRINKWARE":
+        - /url: /collections/mugs-cups
+        - generic: DRINKWARE
+      - link "KITCHENWARE":
+        - /url: /collections/kitchenware
+        - generic: KITCHENWARE
+      - link "ACCENTS":
+        - /url: /collections/accents
+        - generic: ACCENTS
+  - list:
+    - link "Alfresco Tumbler":
+      - /url: /products/20702
+      - generic: Alfresco Tumbler
+    - img "Photo of ALFRESCO Tumbler 360ml ( Beige ) [ KINTO ] [ Coffee Cups ]"
+    - paragraph: Alfresco Tumbler
+    - generic: $9.00
+    - link "Alfresco Wine Glass":
+      - /url: /products/20736
+      - generic: Alfresco Wine Glass
+    - img "Photo of ALFRESCO Wine Glass 250ml ( Clear ) [ KINTO ] [ Wine Glasses ]"
+    - paragraph: Alfresco Wine Glass
+    - generic: $12.00
+    - link "Baum Neu Canister":
+      - /url: /products/baum-neu-canister
+      - generic: Baum Neu Canister
+    - img "Photo of BAUM NEU canister 450ml / 15oz ( clear ) [ KINTO USA ] [ ]"
+    - paragraph: Baum Neu Canister
+    - generic: $25.00
+    - link "Baum Neu Canister 450ml":
+      - /url: /products/us-28560
+      - generic: Baum Neu Canister 450ml
+    - img "Photo of BAUM NEU canister 450ml / 15oz ( clear ) [ KINTO USA ] [ ]"
+    - paragraph: Baum Neu Canister 450ml
+    - generic: $25.00
+  - button "Search":
+  - link:
+    - /url: /
+  - button "Account":
+  - button "Cart":
+    - status:
+      - generic: "Total items in cart: 0"
+- main:
+  - link:
+    - /url: /collections
+  - heading "Enrich the everyday" [level=1]:
+    - emphasis: Enrich
+    - text: the
+    - emphasis
+    - text: everyday
+  - heading "Our bestsellers" [level=3]
+  - paragraph: Let your day be filled with what inspires you.
+  - button "Next slide":
+  - link "White Day Off Tumbler":
+    - /url: /products/white-day-off-tumbler?variant=44476572237881
+    - generic: White Day Off Tumbler
+  - link "White Day Off Tumbler":
+    - /url: /products/white-day-off-tumbler?variant=44476572237881
+    - img "White Day Off Tumbler"
+  - status
+  - link:
+    - /url: /products/beige-day-off-tumbler-copy?variant=44476530819129
+    - generic: Yellow Day Off Tumbler
+  - link:
+    - /url: /products/beige-day-off-tumbler-copy?variant=44476530819129
+  - status
+  - link:
+    - /url: /products/pink-day-off-tumbler?variant=44476555755577
+    - generic: Pink Day Off Tumbler
+  - link:
+    - /url: /products/pink-day-off-tumbler?variant=44476555755577
+  - status
+  - link:
+    - /url: /products/pink-day-off-tumbler-copy?variant=44476560801849
+    - generic: Khaki Day Off Tumbler
+  - link:
+    - /url: /products/pink-day-off-tumbler-copy?variant=44476560801849
+  - status
+  - link:
+    - /url: /products/dark-grey-day-off-tumbler?variant=44476565258297
+    - generic: Dark Grey Day Off Tumbler
+  - link:
+    - /url: /products/dark-grey-day-off-tumbler?variant=44476565258297
+  - status
+  - link:
+    - /url: /products/day-off-tumbler?variant=44476524494905
+    - generic: Beige Day Off Tumbler
+  - link:
+    - /url: /products/day-off-tumbler?variant=44476524494905
+  - status
+  - link:
+    - /url: /products/orange-day-off-tumbler?variant=44477137387577
+    - generic: Orange Day Off Tumbler
+  - link:
+    - /url: /products/orange-day-off-tumbler?variant=44477137387577
+  - status
+  - link "Kakomi IH Donabe 2.5L":
+    - /url: /products/us-25192?variant=44459717656633
+    - generic: Kakomi IH Donabe 2.5L
+  - link "Kakomi IH Donabe 2.5L":
+    - /url: /products/us-25192?variant=44459717656633
+    - paragraph: Kakomi IH Donabe 2.5L
+  - generic: $162.50
+  - link "Kakomi IH Donabe 2.5L":
+    - /url: /products/us-25192?variant=44459717656633
+    - img "Photo of KAKOMI IH donabe 2.5L / 84oz ( white ) [ KINTO USA ] [ ]"
+  - status
+  - list:
+    - radio "White"
+    - radio "Black"
+  - link "SCS Stacking Mug":
+    - /url: /products/27657?variant=44459951128633
+    - generic: SCS Stacking Mug
+  - link "SCS Stacking Mug":
+    - /url: /products/27657?variant=44459951128633
+    - paragraph: SCS Stacking Mug
+  - generic: $19.00
+  - link "SCS Stacking Mug":
+    - /url: /products/27657?variant=44459951128633
+    - img "Photo of SCS Stacking Mug 320ml ( Grey ) [ KINTO ] [ Coffee Cups ]"
+  - status
+  - list:
+    - radio "White"
+    - radio "Orange"
+    - radio "Grey"
+    - radio "Navy"
+  - heading "Functional everyday essentials" [level=5]
+  - link "Alfresco Wine Glass":
+    - /url: /products/20736?variant=44459943034937
+    - generic: Alfresco Wine Glass
+  - link "Alfresco Wine Glass":
+    - /url: /products/20736?variant=44459943034937
+    - img "Photo of ALFRESCO Wine Glass 250ml ( Clear ) [ KINTO ] [ Wine Glasses ]"
+  - status
+  - heading "Alfresco Wine Glass" [level=4]
+  - generic: $12.00
+  - link "SCS Mug Large":
+    - /url: /products/us-27639?variant=44459899125817
+    - generic: SCS Mug Large
+  - link "SCS Mug Large":
+    - /url: /products/us-27639?variant=44459899125817
+    - img "Photo of SCS mug 400ml / 14oz ( white ) [ KINTO USA ] [ ]"
+  - status
+  - heading "SCS Mug Large" [level=4]
+  - generic: $10.00
+  - link "Sepia Cup & Saucer":
+    - /url: /products/us-21742?variant=44459927240761
+    - generic: Sepia Cup & Saucer
+  - link "Sepia Cup & Saucer":
+    - /url: /products/us-21742?variant=44459927240761
+    - img "Photo of SEPIA cup & saucer 270ml / 9oz ( amber ) [ KINTO USA ] [ ]"
+  - status
+  - heading "Sepia Cup & Saucer" [level=4]
+  - generic: $28.80
+  - link "Unitea Cup":
+    - /url: /products/us-8292?variant=44459905122361
+    - generic: Unitea Cup
+  - link "Unitea Cup":
+    - /url: /products/us-8292?variant=44459905122361
+    - img "Photo of UNITEA cup 550ml / 17oz ( clear ) [ KINTO USA ] [ ]"
+  - status
+  - heading "Unitea Cup" [level=4]
+  - generic: $10.00
+  - button "Next slide":
+  - link "Drinkware":
+    - /url: /collections/mugs-cups
+    - generic: Drinkware
+  - img "Drinkware"
+  - paragraph: Drinkware
+  - link:
+    - /url: /collections/kitchenware
+    - generic: Kitchenware
+  - paragraph: Kitchenware
+  - link:
+    - /url: /collections/coffee-tea
+    - generic: Coffee & Tea
+  - paragraph: Coffee & Tea
+- contentinfo:
+  - 'navigation "Footer: Shop"':
+    - list:
+      - link "SHOP ALL":
+        - /url: /collections/all
+      - link "BESTSELLERS":
+        - /url: /collections/bestsellers
+      - link "LAST CHANCE":
+        - /url: /collections/last-chance
+  - 'navigation "Footer: about"':
+    - list:
+      - link "ABOUT OUR BRAND":
+        - /url: /pages/about-our-brand
+      - link "JOURNAL":
+        - /url: /blogs/news
+      - link "CONTACT US":
+        - /url: /pages/contact
+  - paragraph: Get your seat at the table
+  - generic: Email
+  - textbox "Email":
+    - /placeholder: Email address
+  - button "SUBSCRIBE"
+  - text: © 2026
+  - link "Vessel":
+    - /url: /
+  - text: ","
+  - link "Powered by Shopify":
+    - /url: https://www.shopify.com
+  - link "Facebook":
+    - /url: http://facebook.com/shopify
+  - link "Instagram":
+    - /url: http://instagram.com/shopify
+  - link "Youtube":
+    - /url: https://www.youtube.com/shopify
+  - link "Tiktok":
+    - /url: https://tiktok.com/@shopify
+  - link "Twitter":
+    - /url: https://x.com/shopify

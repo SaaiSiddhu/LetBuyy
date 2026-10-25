@@ -1,0 +1,20 @@
+{
+  "status": "ROOT_QUALIFIED392_DEPENDENT_CONSUMER_SOURCE_ADMITTED",
+  "migration": 392,
+  "qualifiedRunId": "ROOT_TO_FILL_FROM_ACTUAL_GREEN392_RUN",
+  "upPath": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.up.draft.sql",
+  "downPath": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.down.draft.sql",
+  "upSha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+  "downSha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+  "rootNativeReceiptPath": "ROOT_TO_PIN_AFTER_NATIVE392_GREEN",
+  "rootNativeReceiptSha256": "ROOT_TO_PIN_AFTER_NATIVE392_GREEN",
+  "rootNativeReceiptStatus": "ROOT_NATIVE392_QUALIFIED_THROUGH391_SOURCE_CONSERVATION_VERIFIED",
+  "historicalSuitePins": {
+    "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+    "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739"
+  },
+  "revisedSuitePins": {
+    "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts": "36378d078724fbf9ac3977b2a63c4dd111689808cd7b1e72fdc7cabac1cfdb3c",
+    "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts": "3e054c10e72363d9dc2a24ab64d8d773a509b7db5bd107aa551bf68b904089ea"
+  }
+}

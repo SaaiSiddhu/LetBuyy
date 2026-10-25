@@ -1,0 +1,81 @@
+{
+  "recordedAt": "2026-10-24T08:43:29.553363+00:00",
+  "classification": "FinitePhase0documents_not_runtime_acceptance",
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/BASELINE_AUDIT.json",
+      "sha256": "c7ae58f0c2977cb16313a52bc25b3a4bbe7b189ad7a07c869603933dcafa5abb",
+      "bytes": 42273
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/BASELINE_AUDIT.md",
+      "sha256": "ef6350984ebd7a40b18872bb2295a568e9e1c9c6cf799885124937890294e8da",
+      "bytes": 2044
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CAPABILITY_INVENTORY.json",
+      "sha256": "57eebc2670cd84b1e7d9458111f65d51a0afbae283c9bea7c978d7395d596774",
+      "bytes": 573477
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CERTIFICATION.json",
+      "sha256": "37f3816136cf7f5e4368c930a5fe849c78af351d2abf8d072124f672bb258cb8",
+      "bytes": 415
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CERTIFICATION.md",
+      "sha256": "115f3e33bbbf7e62a3d21f16d507f3b466d1c3ba2467341a09c49dcc1b6367a5",
+      "bytes": 675
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+      "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc",
+      "bytes": 567387
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/DEPENDENCIES.json",
+      "sha256": "d77367cc4537add19e253f072fe97a306412ae290f8a06d556df9e632e61be00",
+      "bytes": 6168
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/FINDINGS.md",
+      "sha256": "5ae1acb4eaa65bbd755edd85b7a73b0bdbf5d23ff9ef426c122efb18b63dbf7b",
+      "bytes": 3541
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/OPERATION_CONTRACTS.json",
+      "sha256": "1a2707996da02ae3b31a62fe0f428f2b425f986ea7118956f8ab9647752d4fb8",
+      "bytes": 3515
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/PHASE0_RECEIPT.json",
+      "sha256": "231eafb4d1a26d4d14e0dd3ffe9ab0c873d5de25095434897b94f86a33b043dd",
+      "bytes": 1398
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/PRIVATE_PROPOSAL_REFERENCE.json",
+      "sha256": "847810f6351e9aac69dd395d7ee4d0d9b7baf8fa54ea15ec6dad5b9a38f15810",
+      "bytes": 296
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/REPRODUCTION.md",
+      "sha256": "b5125708b2cc2fd6b50f82348e868bf755d1b01e37ce76b810fd3426f37413da",
+      "bytes": 3468
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/RUNBOOK.md",
+      "sha256": "2a696bd3c9eced510a4092a62efab2716b481ec105a014e6f2dab47fcd88319c",
+      "bytes": 11947
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/SOURCE_INDEX.json",
+      "sha256": "d98f26de6ec168630481968d332ab83ce65f93329007d20a424b02a0a5ce85bf",
+      "bytes": 4322
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/build-capability-inventory.py",
+      "sha256": "68b72a9a5e77146fa796b01ddfa6e5db7ac61c61f4f4a8654ca64fe2fc199a67",
+      "bytes": 23613
+    }
+  ]
+}

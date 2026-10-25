@@ -1,0 +1,760 @@
+--- before/apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx
++++ after/apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx
+@@ -46,6 +46,7 @@
+     toThemeDocumentV2,
+     fromThemeDocumentV2,
+     MAX_BUNDLE_BLOCK_NESTING_DEPTH,
++    isLiquidAppBlockType,
+     ThemeEditorTemplateKeySchema,
+     EditorPreviewContextSchema,
+     createEditorPreviewIdentityIndex,
+@@ -67,6 +68,7 @@
+ import ConflictDialog from '@/components/theme-editor/ConflictDialog'
+ import { ThemeDraftClient, ThemeDraftConflictError, ThemeDraftValidationError } from '@/lib/theme-draft-client'
+ import SectionTreePanel, { TreeGroup } from '@/components/theme-editor/SectionTreePanel'
++import { addEditorBlock, canAddEditorBlock, editorBlockCatalog, editorBlockSiblings, moveEditorBlock, toggleEditorBlock } from '@/components/theme-editor/editor-block-actions'
+ import type { BlockEntry, SectionEntry, EditorState, EditorSelection } from '@/components/theme-editor/editor-view-state'
+ import type { ExtendedBlockSchema as BlockSchema, ExtendedSchemaField as SchemaField, ExtendedSectionSchema as SectionSchema, ExtendedThemeSettingsGroup as ThemeSettingsGroup, ExtendedThemeSettingsSchema as ThemeSettingsSchema } from '@letbuyy/theme-engine'
+ 
+@@ -799,8 +801,12 @@
+         ? selection.groupKey
+         : themeGroups[0]?.[0] || 'general'
+     const selectedSectionSchema = selectedSection ? sectionSchemas[selectedSection.type] : undefined
++    const installedBlockBundle = useMemo(() => {
++        try { return parseLiquidThemePackageBundle(baseConfig.liquidBundle) } catch { return null }
++    }, [baseConfig.liquidBundle])
++    const blockCatalogs = useMemo(() => Object.fromEntries(Object.entries(sectionSchemas).map(([type, schema]) => [type, editorBlockCatalog(schema, installedBlockBundle)])), [sectionSchemas, installedBlockBundle])
+     const selectedBlockSchema = selectedSection && selectedBlock
+-        ? selectedSectionSchema?.blocks_schema?.[selectedBlock.type]
++        ? blockCatalogs[selectedSection.type]?.schemas[selectedBlock.type]
+         : undefined
+     const addableSections = useMemo(() => {
+         const existingPinned = new Set(['header', 'footer'])
+@@ -828,6 +834,7 @@
+     const applyChange = useCallback((updater: (current: EditorState) => EditorState) => {
+         setEditorState((current) => {
+             const next = updater(current)
++            if (next === current) return current
+             setHistory((existing) => ({
+                 past: [...existing.past.slice(-49), current],
+                 future: [],
+@@ -1320,7 +1327,7 @@
+     const updateBlockSetting = useCallback((sectionId: string, blockId: string, key: string, value: unknown) => {
+         const section = getSectionById(editorState, sectionId)
+         const block = getBlockById(section, blockId)
+-        const field = section && block ? sectionSchemas[section.type]?.blocks_schema?.[block.type]?.fields?.[key] : undefined
++        const field = section && block ? blockCatalogs[section.type]?.schemas[block.type]?.fields?.[key] : undefined
+         applyChange((current) => updateSectionById(current, sectionId, (targetSection) => ({
+             ...targetSection,
+             blocks: updateBlockInTree(targetSection.blocks, blockId, (targetBlock) => ({
+@@ -1331,7 +1338,7 @@
+                 },
+             })),
+         })))
+-    }, [applyChange, editorState, sectionSchemas])
++    }, [applyChange, editorState, blockCatalogs])
+ 
+     const toggleSectionVisibility = useCallback((sectionId: string) => {
+         applyChange((current) => updateSectionById(current, sectionId, (section) => ({
+@@ -1395,17 +1402,35 @@
+         }, settingsSchema))
+     }, [applyChange, editorState, sectionPendingRemoval, settingsSchema])
+ 
+-    const addBlock = useCallback((sectionId: string, blockType: string) => {
++    const addBlock = useCallback((sectionId: string, blockType: string, parentBlockId = sectionId) => {
+         const section = getSectionById(editorState, sectionId)
+-        const blockSchema = section ? sectionSchemas[section.type]?.blocks_schema?.[blockType] : undefined
+-        const order = section?.blocks.length ? Math.max(...section.blocks.map((block) => block.order)) + 10 : 10
+-        const nextBlock = createBlockFromSchema(blockType, blockSchema, order)
+-        applyChange((current) => updateSectionById(current, sectionId, (targetSection) => ({
+-            ...targetSection,
+-            blocks: [...targetSection.blocks, nextBlock],
+-        })))
++        const catalog = section && blockCatalogs[section.type]
++        if (!section || !catalog || !canAddEditorBlock(section, catalog, parentBlockId, blockType)) return
++        const nextBlock = createBlockFromSchema(blockType, catalog.schemas[blockType], 0)
++        applyChange(current => updateSectionById(current, sectionId, target => addEditorBlock(target, catalog, parentBlockId, nextBlock)))
+         setSelection({ kind: 'block', sectionId, blockId: nextBlock.id })
+-    }, [applyChange, editorState, sectionSchemas])
++    }, [applyChange, editorState, blockCatalogs])
++
++    const addChildBlock = useCallback((sectionId: string, parentBlockId: string, blockType: string) => {
++        addBlock(sectionId, blockType, parentBlockId)
++    }, [addBlock])
++
++    const moveBlock = useCallback((sectionId: string, parentBlockId: string, blockId: string, direction: -1 | 1) => {
++        const section = getSectionById(editorState, sectionId)
++        if (!section || moveEditorBlock(section, parentBlockId, blockId, direction) === section) return
++        applyChange(current => updateSectionById(current, sectionId, target => moveEditorBlock(target, parentBlockId, blockId, direction)))
++    }, [applyChange, editorState])
++
++    const toggleBlockVisibility = useCallback((sectionId: string, blockId: string) => {
++        if (!getBlockById(getSectionById(editorState, sectionId), blockId)) return
++        applyChange(current => updateSectionById(current, sectionId, target => toggleEditorBlock(target, blockId)))
++    }, [applyChange, editorState])
++
++    const requestRemoveChildBlock = useCallback((sectionId: string, parentBlockId: string, blockId: string) => {
++        const section = getSectionById(editorState, sectionId)
++        const block = section && editorBlockSiblings(section, parentBlockId)?.find(entry => entry.id === blockId)
++        if (block) setBlockPendingRemoval({ sectionId, block })
++    }, [editorState])
+ 
+     const removeBlock = useCallback(() => {
+         if (!blockPendingRemoval) return
+@@ -1588,6 +1613,7 @@
+                         <SectionTreePanel
+                             state={editorState}
+                             sectionSchemas={sectionSchemas}
++                            blockCatalogs={blockCatalogs}
+                             selection={selection}
+                             addableSections={addableSections}
+                             addSectionType={activeAddSectionType}
+@@ -1597,6 +1623,10 @@
+                             onMoveSection={moveSection}
+                             onToggleSection={toggleSectionVisibility}
+                             onRemoveSection={setSectionPendingRemoval}
++                            onAddChildBlock={addChildBlock}
++                            onRemoveChildBlock={requestRemoveChildBlock}
++                            onMoveChildBlock={moveBlock}
++                            onToggleBlock={toggleBlockVisibility}
+                         />
+                     ) : null}
+ 
+@@ -1693,6 +1723,7 @@
+                     onThemeSettingChange={updateThemeSetting}
+                     onSelectSection={(sectionId) => setSelection({ kind: 'section', sectionId })}
+                     onAddBlock={addBlock}
++                    canAddBlock={(sectionId, type) => { const section = getSectionById(editorState, sectionId); const catalog = section && blockCatalogs[section.type]; return Boolean(section && catalog && canAddEditorBlock(section, catalog, section.id, type)) }}
+                     onRemoveBlock={(sectionId, block) => setBlockPendingRemoval({ sectionId, block })}
+                     onAiHook={applyAiHook}
+                 />
+@@ -1841,6 +1872,7 @@
+     onThemeSettingChange,
+     onSelectSection,
+     onAddBlock,
++    canAddBlock,
+     onRemoveBlock,
+     onAiHook,
+ }: {
+@@ -1858,6 +1890,7 @@
+     onThemeSettingChange: (key: string, value: unknown) => void
+     onSelectSection: (sectionId: string) => void
+     onAddBlock: (sectionId: string, blockType: string) => void
++    canAddBlock: (sectionId: string, blockType: string) => boolean
+     onRemoveBlock: (sectionId: string, block: BlockEntry) => void
+     onAiHook: (mode: 'copy' | 'blocks' | 'layout') => void
+ }) {
+@@ -1929,8 +1962,8 @@
+                         {selectedSectionSchema?.blocks_schema ? (
+                             <div className="theme-os-block-tools">
+                                 <p>Blocks</p>
+-                                {Object.entries(selectedSectionSchema.blocks_schema).map(([blockType, blockSchema]) => (
+-                                    <Button unstyled key={blockType} type="button" onClick={() => onAddBlock(selectedSection.id, blockType)}>
++                                {Object.entries(selectedSectionSchema.blocks_schema).filter(([blockType]) => !isLiquidAppBlockType(blockType)).map(([blockType, blockSchema]) => (
++                                    <Button unstyled key={blockType} type="button" disabled={!canAddBlock(selectedSection.id, blockType)} onClick={() => onAddBlock(selectedSection.id, blockType)}>
+                                         <Plus size={14} aria-hidden="true" />
+                                         Add {blockSchema.name}
+                                     </Button>
+--- before/apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx
++++ after/apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx
+@@ -33,6 +33,7 @@
+ } from 'lucide-react'
+ import type { ExtendedSectionSchema as SectionSchema } from '@letbuyy/theme-engine'
+ import { BlockChildRow } from './BlockChildRow'
++import type { EditorBlockCatalog } from './editor-block-actions'
+ 
+ import type { BlockEntry, SectionEntry, EditorState, EditorSelection } from './editor-view-state'
+ export type { BlockEntry } from './editor-view-state'
+@@ -76,6 +77,7 @@
+ type TreeSectionRowProps = {
+     section: SectionEntry
+     schema?: SectionSchema
++    blockCatalog?: EditorBlockCatalog
+     selected: boolean
+     /**
+      * Override for aria-selected. When a child block is selected, the parent section
+@@ -108,6 +110,7 @@
+      * Add a child block of childType to parentBlockId's instance children list.
+      * RISK-DUAL-N01: mutates the template instance tree, never block_definitions.
+      */
++    onToggleBlock?: (sectionId: string, blockId: string) => void
+     onAddChildBlock?: (sectionId: string, parentBlockId: string, childType: string) => void
+     /**
+      * Remove childId from parentBlockId's instance children list.
+@@ -129,6 +132,7 @@
+ function TreeSectionRow({
+     section,
+     schema,
++    blockCatalog,
+     selected,
+     ariaSelected,
+     blockSelection,
+@@ -148,6 +152,7 @@
+     onDragOver,
+     onDrop,
+     onDragEnd,
++    onToggleBlock,
+     onAddChildBlock,
+     onRemoveChildBlock,
+     onMoveChildBlock,
+@@ -226,7 +231,12 @@
+                             parentBlockId={section.id}
+                             selectedBlockId={blockSelection}
+                             blockLabel={schema?.blocks_schema?.[block.type]?.name || labelFromKey(block.type)}
++                            blockCatalog={blockCatalog}
++                            siblingIndex={section.blocks.findIndex(entry => entry.id === block.id)}
++                            siblingCount={section.blocks.length}
++                            allowedChildTypes={blockCatalog?.childTypes[block.type]}
+                             onSelectBlock={onSelectBlock}
++                            onToggleBlock={onToggleBlock}
+                             onAddChildBlock={onAddChildBlock}
+                             onRemoveChildBlock={onRemoveChildBlock}
+                             onMoveChildBlock={onMoveChildBlock}
+@@ -243,6 +253,7 @@
+ export type SectionTreePanelProps = {
+     state: EditorState
+     sectionSchemas: Record<string, SectionSchema>
++    blockCatalogs?: Record<string, EditorBlockCatalog>
+     selection: EditorSelection
+     addableSections: AvailableSection[]
+     addSectionType: string
+@@ -258,6 +269,7 @@
+      * within the given section. Autosaved via the existing P draft CAS mechanism.
+      * RISK-DUAL-N01: mutates template instance data, never block_definitions.
+      */
++    onToggleBlock?: (sectionId: string, blockId: string) => void
+     onAddChildBlock?: (sectionId: string, parentBlockId: string, childType: string) => void
+     /**
+      * Remove childId from the instance children list of parentBlockId within the given
+@@ -291,6 +303,7 @@
+ export default function SectionTreePanel({
+     state,
+     sectionSchemas,
++    blockCatalogs,
+     selection,
+     addableSections,
+     addSectionType,
+@@ -300,6 +313,7 @@
+     onMoveSection,
+     onToggleSection,
+     onRemoveSection,
++    onToggleBlock,
+     onAddChildBlock,
+     onRemoveChildBlock,
+     onMoveChildBlock,
+@@ -381,6 +395,7 @@
+                         key={section.id}
+                         section={section}
+                         schema={sectionSchemas[section.type]}
++                        blockCatalog={blockCatalogs?.[section.type]}
+                         pinned
+                         selected={selection.kind === 'section' && selection.sectionId === section.id}
+                         ariaSelected={selection.kind !== 'theme' && selection.sectionId === section.id}
+@@ -388,6 +403,7 @@
+                         onSelect={() => onSelect({ kind: 'section', sectionId: section.id })}
+                         onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: section.id, blockId })}
+                         onToggle={() => onToggleSection(section.id)}
++                        onToggleBlock={onToggleBlock}
+                         onAddChildBlock={onAddChildBlock}
+                         onRemoveChildBlock={onRemoveChildBlock}
+                         onMoveChildBlock={onMoveChildBlock}
+@@ -413,6 +429,7 @@
+                                 key={section.id}
+                                 section={section}
+                                 schema={sectionSchemas[section.type]}
++                                blockCatalog={blockCatalogs?.[section.type]}
+                                 selected={isSelected}
+                                 ariaSelected={isSelected || isActiveParent}
+                                 blockSelection={
+@@ -435,6 +452,7 @@
+                                 onDragOver={handleDragOver(index)}
+                                 onDrop={handleDrop(index)}
+                                 onDragEnd={handleDragEnd}
++                                onToggleBlock={onToggleBlock}
+                                 onAddChildBlock={onAddChildBlock}
+                                 onRemoveChildBlock={onRemoveChildBlock}
+                                 onMoveChildBlock={onMoveChildBlock}
+@@ -464,6 +482,7 @@
+                         key={section.id}
+                         section={section}
+                         schema={sectionSchemas[section.type]}
++                        blockCatalog={blockCatalogs?.[section.type]}
+                         pinned
+                         selected={selection.kind === 'section' && selection.sectionId === section.id}
+                         ariaSelected={selection.kind !== 'theme' && selection.sectionId === section.id}
+@@ -471,6 +490,7 @@
+                         onSelect={() => onSelect({ kind: 'section', sectionId: section.id })}
+                         onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: section.id, blockId })}
+                         onToggle={() => onToggleSection(section.id)}
++                        onToggleBlock={onToggleBlock}
+                         onAddChildBlock={onAddChildBlock}
+                         onRemoveChildBlock={onRemoveChildBlock}
+                         onMoveChildBlock={onMoveChildBlock}
+--- before/apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx
++++ after/apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx
+@@ -24,7 +24,8 @@
+  */
+ 
+ import { Button } from '@letbuyy/ui'
+-import { ChevronRight, Plus, Trash2 } from 'lucide-react'
++import { ChevronRight, Eye, Plus, Trash2 } from 'lucide-react'
++import type { EditorBlockCatalog } from './editor-block-actions'
+ import type { BlockEntry } from './SectionTreePanel'
+ 
+ // ── Depth constant ─────────────────────────────────────────────────────────────
+@@ -70,6 +71,10 @@
+      * Falls back to block.type when undefined.
+      */
+     blockLabel?: string
++    blockCatalog?: EditorBlockCatalog
++    siblingIndex?: number
++    siblingCount?: number
++    onToggleBlock?: (sectionId: string, blockId: string) => void
+     /**
+      * Child block types that may be nested inside this block, sourced from
+      * block_definitions[block.type].allowed_child_types. When undefined or empty
+@@ -123,6 +128,10 @@
+     parentBlockId,
+     selectedBlockId,
+     blockLabel,
++    blockCatalog,
++    siblingIndex = 0,
++    siblingCount = 1,
++    onToggleBlock,
+     allowedChildTypes,
+     onSelectBlock,
+     onAddChildBlock,
+@@ -180,17 +189,16 @@
+                 <span>{blockLabel ?? block.type}</span>
+             </Button>
+ 
+-            {/* Remove / reorder actions — only for nested blocks (depth > 1).
+-                Depth=1 blocks are section-level; their lifecycle is managed by
+-                the section's own remove callback (not onRemoveChildBlock). */}
+-            {depth > 1 ? (
++            {/* Flat and nested instances use the same canonical draft actions. */}
+                 <div className="theme-os-tree-block__actions">
++                    {onToggleBlock ? <Button unstyled type="button" aria-label={`Toggle ${blockLabel ?? block.type} block visibility`} aria-pressed={block.visible} onClick={() => onToggleBlock(sectionId, block.id)}><Eye size={12} aria-hidden="true" /></Button> : null}
+                     {onMoveChildBlock ? (
+                         <>
+                             <Button
+                                 unstyled
+                                 type="button"
+-                                aria-label="Move child block up"
++                                aria-label={depth > 1 ? "Move child block up" : `Move ${blockLabel ?? block.type} block up`}
++                                disabled={siblingIndex === 0}
+                                 onClick={() => onMoveChildBlock(sectionId, parentBlockId, block.id, -1)}
+                             >
+                                 <ChevronRight
+@@ -202,7 +210,8 @@
+                             <Button
+                                 unstyled
+                                 type="button"
+-                                aria-label="Move child block down"
++                                aria-label={depth > 1 ? "Move child block down" : `Move ${blockLabel ?? block.type} block down`}
++                                disabled={siblingIndex >= siblingCount - 1}
+                                 onClick={() => onMoveChildBlock(sectionId, parentBlockId, block.id, 1)}
+                             >
+                                 <ChevronRight
+@@ -217,34 +226,29 @@
+                         <Button
+                             unstyled
+                             type="button"
+-                            aria-label="Remove child block"
++                            aria-label={depth > 1 ? "Remove child block" : `Remove ${blockLabel ?? block.type} block`}
+                             onClick={() => onRemoveChildBlock(sectionId, parentBlockId, block.id)}
+                         >
+                             <Trash2 size={12} aria-hidden="true" />
+                         </Button>
+                     ) : null}
+                 </div>
+-            ) : null}
+-
+-            {/* Add-child affordance — shown only when:
+-                  (a) the block's type definition declares allowed child types, AND
+-                  (b) depth < MAX_EDITOR_BLOCK_DEPTH (render-time depth cap)
+-                Uses the first allowed type as a default; a future picker UI can expand
+-                this to a <Select> of all allowedChildTypes. */}
+-            {canAddChildren && onAddChildBlock ? (
++
++            {/* Only explicit installed child declarations offer insertion controls. */}
++            {canAddChildren && onAddChildBlock ? allowedChildTypes!.map(childType => (
+                 <Button
++                    key={childType}
+                     unstyled
+                     type="button"
+-                    aria-label="Add child block"
++                    aria-label={`Add child block: ${blockCatalog?.schemas[childType]?.name || childType}`}
+                     className="theme-os-tree-block__add-child"
+-                    onClick={() => {
+-                        // allowedChildTypes is non-empty (checked by canAddChildren)
+-                        onAddChildBlock(sectionId, block.id, allowedChildTypes![0]!)
+-                    }}
++                    disabled={(block.children?.length || 0) >= 100}
++                    onClick={() => onAddChildBlock(sectionId, block.id, childType)}
+                 >
+                     <Plus size={12} aria-hidden="true" />
++                    <span>{blockCatalog?.schemas[childType]?.name || childType}</span>
+                 </Button>
+-            ) : null}
++            )) : null}
+ 
+             {/* Nested children container — rendered only when:
+                   (a) the block has children in the instance tree, AND
+@@ -254,7 +258,7 @@
+                 connector lines and indentation as top-level section blocks. */}
+             {canNestDeeper && hasChildren ? (
+                 <div className="theme-os-tree-blocks" role="group">
+-                    {block.children!.map((child) => (
++                    {block.children!.map((child, childIndex) => (
+                         <BlockChildRow
+                             key={child.id}
+                             block={child}
+@@ -262,12 +266,12 @@
+                             sectionId={sectionId}
+                             parentBlockId={block.id}
+                             selectedBlockId={selectedBlockId}
+-                            // blockLabel and allowedChildTypes for children would be
+-                            // resolved from the caller's sectionSchemas; for now they
+-                            // fall back to block.type. A future enhancement can pass
+-                            // them from the parent's schema lookup.
+-                            blockLabel={undefined}
+-                            allowedChildTypes={undefined}
++                            blockLabel={blockCatalog?.schemas[child.type]?.name}
++                            blockCatalog={blockCatalog}
++                            siblingIndex={childIndex}
++                            siblingCount={block.children!.length}
++                            allowedChildTypes={blockCatalog?.childTypes[child.type]}
++                            onToggleBlock={onToggleBlock}
+                             onSelectBlock={onSelectBlock}
+                             onAddChildBlock={onAddChildBlock}
+                             onRemoveChildBlock={onRemoveChildBlock}
+--- before/apps/merchant/web/src/components/theme-editor/editor-block-actions.ts
++++ after/apps/merchant/web/src/components/theme-editor/editor-block-actions.ts
+@@ -0,0 +1,103 @@
++import { isLiquidAppBlockType, MAX_BUNDLE_BLOCK_NESTING_DEPTH, normalizeEditorSchemaField } from '@letbuyy/theme-engine'
++import type { ExtendedBlockSchema, ExtendedSectionSchema, LiquidThemePackageBundle } from '@letbuyy/theme-engine'
++import type { BlockEntry, SectionEntry } from './editor-view-state'
++
++/** A view of installed definitions, never another document or draft store. */
++export type EditorBlockCatalog = {
++    schemas: Record<string, ExtendedBlockSchema>
++    rootTypes: string[]
++    childTypes: Record<string, string[]>
++    rootLimits: Record<string, number>
++}
++
++export function editorBlockCatalog(schema: ExtendedSectionSchema, bundle?: LiquidThemePackageBundle | null): EditorBlockCatalog {
++    const schemas: Record<string, ExtendedBlockSchema> = {}
++    for (const [type, file] of Object.entries(bundle?.blocks || {})) {
++        if (isLiquidAppBlockType(type)) continue
++        schemas[type] = { name: file.schema.name, fields: Object.fromEntries(file.schema.settings.map(field => [field.id, normalizeEditorSchemaField(field, field.id)])) }
++    }
++    for (const [type, definition] of Object.entries(schema.blocks_schema || {})) {
++        if (!isLiquidAppBlockType(type)) schemas[type] = definition
++    }
++    const childTypes: Record<string, string[]> = {}
++    for (const [type, file] of Object.entries(bundle?.blocks || {})) {
++        // Absence is deliberately not an invitation to invent a nesting control.
++        childTypes[type] = (file.schema.allowed_child_types || []).filter(child => Object.hasOwn(schemas, child) && !isLiquidAppBlockType(child))
++    }
++    return {
++        schemas,
++        rootTypes: Object.keys(schema.blocks_schema || {}).filter(type => !isLiquidAppBlockType(type)),
++        childTypes,
++        rootLimits: Object.fromEntries((bundle?.sections[schema.type]?.schema.blocks || []).flatMap(block => 'limit' in block && block.limit !== undefined ? [[block.type, block.limit]] : [])),
++    }
++}
++
++export function findEditorBlock(blocks: BlockEntry[], id: string, depth = 1): { block: BlockEntry; depth: number } | null {
++    for (const block of blocks) {
++        if (block.id === id) return { block, depth }
++        const found = findEditorBlock(block.children || [], id, depth + 1)
++        if (found) return found
++    }
++    return null
++}
++
++function updateChildren(blocks: BlockEntry[], parentId: string, update: (children: BlockEntry[]) => BlockEntry[]): BlockEntry[] {
++    let changed = false
++    const next = blocks.map(block => {
++        const children = block.id === parentId ? update(block.children || []) : updateChildren(block.children || [], parentId, update)
++        if (children === block.children || (!block.children && children.length === 0)) return block
++        changed = true
++        return { ...block, children }
++    })
++    return changed ? next : blocks
++}
++
++export function editorBlockSiblings(section: SectionEntry, parentId: string): BlockEntry[] | null {
++    return parentId === section.id ? section.blocks : findEditorBlock(section.blocks, parentId)?.block.children || null
++}
++
++export function canAddEditorBlock(section: SectionEntry, catalog: EditorBlockCatalog, parentId: string, type: string): boolean {
++    if (isLiquidAppBlockType(type) || !Object.hasOwn(catalog.schemas, type)) return false
++    if (parentId === section.id) {
++        const limit = catalog.rootLimits[type]
++        // The existing editor DTO validator caps direct section blocks at50.
++        return catalog.rootTypes.includes(type) && section.blocks.length < 50 && (limit === undefined || section.blocks.filter(block => block.type === type).length < limit)
++    }
++    const parent = findEditorBlock(section.blocks, parentId)
++    return Boolean(parent && parent.depth < MAX_BUNDLE_BLOCK_NESTING_DEPTH && (parent.block.children?.length || 0) < 100 && catalog.childTypes[parent.block.type]?.includes(type))
++}
++
++export function addEditorBlock(section: SectionEntry, catalog: EditorBlockCatalog, parentId: string, block: BlockEntry): SectionEntry {
++    if (!canAddEditorBlock(section, catalog, parentId, block.type) || block.id === section.id || findEditorBlock(section.blocks, block.id) || block.children?.length) return section
++    const append = (siblings: BlockEntry[]) => [...siblings, { ...block, order: siblings.length * 10 + 10 }]
++    const blocks = parentId === section.id ? append(section.blocks) : updateChildren(section.blocks, parentId, append)
++    return { ...section, blocks }
++}
++
++export function moveEditorBlock(section: SectionEntry, parentId: string, id: string, direction: -1 | 1): SectionEntry {
++    const move = (siblings: BlockEntry[]) => {
++        const index = siblings.findIndex(block => block.id === id), nextIndex = index + direction
++        if (index < 0 || nextIndex < 0 || nextIndex >= siblings.length) return siblings
++        const next = [...siblings], [block] = next.splice(index, 1)
++        next.splice(nextIndex, 0, block)
++        return next.map((entry, order) => ({ ...entry, order: (order + 1) * 10 }))
++    }
++    const blocks = parentId === section.id ? move(section.blocks) : updateChildren(section.blocks, parentId, move)
++    return blocks === section.blocks ? section : { ...section, blocks }
++}
++
++export function toggleEditorBlock(section: SectionEntry, id: string): SectionEntry {
++    const toggle = (blocks: BlockEntry[]): BlockEntry[] => {
++        let changed = false
++        const next = blocks.map(block => {
++            if (block.id === id) { changed = true; return { ...block, visible: !block.visible } }
++            const children = toggle(block.children || [])
++            if (children === block.children || (!block.children && children.length === 0)) return block
++            changed = true
++            return { ...block, children }
++        })
++        return changed ? next : blocks
++    }
++    const blocks = toggle(section.blocks)
++    return blocks === section.blocks ? section : { ...section, blocks }
++}
+--- before/apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts
++++ after/apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts
+@@ -0,0 +1,76 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import { createLetbuyyCoreLiquidThemeBundleFixture, buildLiquidThemePackagePersistencePayload, parseLiquidThemePackageBundle } from '@letbuyy/theme-engine'
++import type { ExtendedSectionSchema } from '@letbuyy/theme-engine'
++import { addEditorBlock, canAddEditorBlock, editorBlockCatalog, editorBlockSiblings, findEditorBlock, moveEditorBlock, toggleEditorBlock } from './editor-block-actions'
++import type { BlockEntry, SectionEntry } from './editor-view-state'
++
++const block = (id: string, type = 'badge', children?: BlockEntry[]): BlockEntry => ({ id, type, order: 10, visible: true, settings: { text: 'Same label' }, ...(children ? { children } : {}) })
++const section = (blocks: BlockEntry[] = []): SectionEntry => ({ id: 'owned', type: 'trust-badges', order: 10, visible: true, settings: {}, blocks })
++function fixture() {
++    const bundle = createLetbuyyCoreLiquidThemeBundleFixture()
++    bundle.blocks.badge.schema.allowed_child_types = ['badge', '@app', 'app:forbidden', 'missing']
++    const schema = buildLiquidThemePackagePersistencePayload(bundle).schemaManifest.section_schemas['trust-badges'] as ExtendedSectionSchema
++    return { bundle, schema, catalog: editorBlockCatalog(schema, bundle) }
++}
++
++test('installed definitions alone permit first-party nesting and keep app seams/unknown types dormant', () => {
++    const { bundle, schema, catalog } = fixture()
++    assert.deepEqual(catalog.childTypes.badge, ['badge'])
++    assert.equal(canAddEditorBlock(section(), catalog, 'owned', '@app'), false)
++    assert.equal(canAddEditorBlock(section(), catalog, 'owned', 'app:forbidden'), false)
++    assert.equal(canAddEditorBlock(section(), catalog, 'owned', 'missing'), false)
++    assert.equal(canAddEditorBlock(section([block('parent')]), catalog, 'absent', 'badge'), false)
++    delete bundle.blocks.badge.schema.allowed_child_types
++    assert.deepEqual(editorBlockCatalog(schema, bundle).childTypes.badge, [])
++    assert.equal(canAddEditorBlock(section([block('parent')]), editorBlockCatalog(schema), 'parent', 'badge'), false)
++    assert.equal(parseLiquidThemePackageBundle(bundle).blocks.badge.schema.allowed_child_types, undefined)
++})
++
++test('adding preserves instance IDs and history and rejects duplicate or prebuilt hidden subtrees', () => {
++    const { catalog } = fixture(), before = section([block('parent')]), snapshot = structuredClone(before)
++    const after = addEditorBlock(before, catalog, 'parent', block('child'))
++    assert.deepEqual(before, snapshot)
++    assert.equal(after.blocks[0].id, 'parent')
++    assert.equal(findEditorBlock(after.blocks, 'child')?.depth, 2)
++    assert.equal(addEditorBlock(after, catalog, 'owned', block('child')), after)
++    assert.equal(addEditorBlock(before, catalog, 'owned', block('owned')), before)
++    assert.equal(addEditorBlock(before, catalog, 'owned', block('tree', 'badge', [block('hidden')])), before)
++    assert.equal(editorBlockSiblings(after, 'parent')?.[0].id, 'child')
++})
++
++test('depth, direct DTO count, nested canonical count and declared type limits refuse without mutation', () => {
++    const { catalog } = fixture()
++    const deepest = section([block('one', 'badge', [block('two', 'badge', [block('three')])])])
++    assert.equal(canAddEditorBlock(deepest, catalog, 'two', 'badge'), true)
++    assert.equal(addEditorBlock(deepest, catalog, 'three', block('four')), deepest)
++    const fullRoot = section(Array.from({ length: 50 }, (_, i) => block(`r${i}`)))
++    assert.equal(addEditorBlock(fullRoot, catalog, 'owned', block('extra')), fullRoot)
++    const fullChildren = section([block('parent', 'badge', Array.from({ length: 100 }, (_, i) => block(`c${i}`)))])
++    assert.equal(addEditorBlock(fullChildren, catalog, 'parent', block('extra')), fullChildren)
++    const limited = { ...catalog, rootLimits: { badge: 1 } }, once = section([block('one')])
++    assert.equal(addEditorBlock(once, limited, 'owned', block('two')), once)
++})
++
++test('flat/nested reorder uses exact sibling identities and refuses cross-parent or edge moves', () => {
++    const original = section([block('p', 'badge', [block('a'), block('b')]), block('q', 'badge', [block('c')])])
++    const nested = moveEditorBlock(original, 'p', 'b', -1)
++    assert.deepEqual(nested.blocks[0].children?.map(row => row.id), ['b', 'a'])
++    assert.equal(nested.blocks[1], original.blocks[1])
++    assert.equal(moveEditorBlock(original, 'q', 'b', -1), original)
++    assert.equal(moveEditorBlock(original, 'p', 'a', -1), original)
++    assert.equal(moveEditorBlock(original, 'p', 'b', 1), original)
++    const flat = moveEditorBlock(nested, 'owned', 'q', -1)
++    assert.deepEqual(flat.blocks.map(row => [row.id, row.order]), [['q', 10], ['p', 20]])
++    assert.deepEqual(original.blocks[0].children?.map(row => row.id), ['a', 'b'])
++})
++
++test('visibility targets the exact flat/nested instance, preserves unrelated values and round trips twice', () => {
++    const original = section([block('a', 'badge', [block('child')]), block('b')])
++    const hidden = toggleEditorBlock(original, 'child')
++    assert.equal(hidden.blocks[0].children?.[0].visible, false)
++    assert.equal(hidden.blocks[1], original.blocks[1])
++    assert.deepEqual(toggleEditorBlock(hidden, 'child'), original)
++    assert.equal(toggleEditorBlock(original, 'missing'), original)
++    assert.equal(toggleEditorBlock(original, 'b').blocks[1].visible, false)
++})
+--- before/apps/merchant/web/tests/theme-editor-block-actions.test.mjs
++++ after/apps/merchant/web/tests/theme-editor-block-actions.test.mjs
+@@ -0,0 +1,141 @@
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import { readFileSync } from 'node:fs';
++import ts from 'typescript';
++import { createRequire } from 'node:module';
++import * as domain from '@letbuyy/theme-engine';
++import { helpers } from './theme-draft-document.test.mjs';
++
++const require = createRequire(import.meta.url);
++const actions = require('../src/components/theme-editor/editor-block-actions.ts');
++const pagePath = new URL('../src/app/[store]/online-store/themes/[themeId]/editor/page.tsx', import.meta.url);
++const page = ts.createSourceFile(pagePath.pathname, readFileSync(pagePath, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
++function expression(name) {
++    let found;
++    function visit(node) {
++        if (ts.isVariableDeclaration(node) && node.name.getText(page) === name && ts.isCallExpression(node.initializer)) found = node.initializer.arguments[0];
++        ts.forEachChild(node, visit);
++    }
++    visit(page); assert.ok(found, `Missing production callback ${name}`); return found.getText(page);
++}
++function execute(code, dependencies = {}) {
++    const js = ts.transpileModule(code, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText;
++    return new Function('exports', ...Object.keys(dependencies), js)({}, ...Object.values(dependencies));
++}
++function local(name, dependencies) {
++    const node = page.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === name);
++    assert.ok(node); return execute(`${node.getText(page)}; return ${name}`, dependencies);
++}
++function document() {
++    // This definition is owned test data; no installed theme acquires nesting.
++    const bundle = domain.createLetbuyyCoreLiquidThemeBundleFixture();
++    bundle.blocks.badge.schema.allowed_child_types = ['badge'];
++    bundle.templates.index.sections.actions = { type: 'trust-badges', settings: {}, blocks: {}, block_order: [], disabled: false };
++    bundle.templates.index.order.push('actions');
++    const adapterPath = new URL('../../../../services/api-gateway/src/execution/schema-registry-execution.adapter.ts', import.meta.url);
++    const adapter = ts.createSourceFile(adapterPath.pathname, readFileSync(adapterPath, 'utf8'), ts.ScriptTarget.Latest, true);
++    const code = adapter.statements.filter(node => ts.isFunctionDeclaration(node) && ['asRecord', 'isLiquidBundle', 'buildBundleTemplateConfig'].includes(node.name?.text)).map(node => node.getText(adapter)).join('\n');
++    const base = execute(`${code};return buildBundleTemplateConfig`)(bundle);
++    const manifest = domain.buildLiquidThemePackagePersistencePayload(bundle).schemaManifest;
++    const settings = helpers.normalizeSettingsSchema(manifest.settings_schema);
++    const state = helpers.normalizeEditorState(base, bundle.package.slug, 'index', manifest.section_schemas, settings);
++    return { bundle, base, state, settings, schemas: manifest.section_schemas, catalog: actions.editorBlockCatalog(manifest.section_schemas['trust-badges'], bundle) };
++}
++
++test('actual page actions preserve confirmed deletion, selection, history and canonical saved identities/order/visibility', () => {
++    const doc = document();
++    const context = { state: doc.state, history: { past: [], future: [] }, selection: null, removal: null, dirty: false };
++    const getSectionById = local('getSectionById', { getAllSections: helpers.getAllSections });
++    const coerceFieldValue = local('coerceFieldValue', { numberValue: local('numberValue') });
++    const instantiate = name => execute(`return (${expression(name)})`, {
++        ...actions, ...helpers, getSectionById, coerceFieldValue,
++        editorState: context.state, savedState: doc.state,
++        blockCatalogs: { 'trust-badges': doc.catalog }, settingsSchema: doc.settings,
++        blockPendingRemoval: context.removal,
++        setEditorState: update => { context.state = typeof update === 'function' ? update(context.state) : update; },
++        setHistory: update => { context.history = update(context.history); },
++        setIsDirty: value => { context.dirty = value; },
++        setSelection: value => { context.selection = value; },
++        setBlockPendingRemoval: value => { context.removal = value; },
++        ...(name === 'applyChange' ? {} : { applyChange: instantiate('applyChange') }),
++        ...(name === 'addChildBlock' ? { addBlock: instantiate('addBlock') } : {}),
++    });
++    instantiate('addBlock')('actions', 'badge');
++    const first = context.selection.blockId;
++    instantiate('addBlock')('actions', 'badge');
++    const second = context.selection.blockId;
++    const added = context.state;
++    instantiate('moveBlock')('actions', 'actions', second, -1);
++    instantiate('toggleBlockVisibility')('actions', first);
++    instantiate('addChildBlock')('actions', second, 'badge');
++    const child = context.selection.blockId;
++    const textField = Object.keys(doc.catalog.schemas.badge.fields)[0];
++    instantiate('updateBlockSetting')('actions', child, textField, 'Saved nested marker');
++    assert.equal(helpers.getBlockById(getSectionById(context.state, 'actions'), child).settings[textField], 'Saved nested marker');
++    const beforeRefusal = context.state, historySize = context.history.past.length;
++    instantiate('addBlock')('actions', '@app');
++    instantiate('requestRemoveChildBlock')('actions', first, child);
++    assert.equal(context.removal, null);
++    assert.equal(context.state, beforeRefusal);
++    assert.equal(context.history.past.length, historySize);
++    const config = helpers.buildDraftConfig(doc.base, doc.bundle.package.slug, context.state, 'index');
++    const compiled = domain.compilePortableToLiquidBundle(config, { baseBundle: doc.bundle }).bundle;
++    const portable = compiled.templates.index.sections.actions;
++    assert.deepEqual(portable.block_order, [second, first]);
++    assert.equal(portable.blocks[first].disabled, true);
++    assert.deepEqual(portable.blocks[second].block_order, [child]);
++    assert.equal(portable.blocks[second].blocks[child].settings[textField], 'Saved nested marker');
++    const canonical = domain.toThemeDocumentV2(compiled);
++    assert.deepEqual(domain.fromThemeDocumentV2(canonical).templates.index.sections.actions, portable);
++    const reloaded = helpers.normalizeEditorState(config, doc.bundle.package.slug, 'index', doc.schemas, doc.settings);
++    assert.equal(helpers.getBlockById(getSectionById(reloaded, 'actions'), first).visible, false);
++    instantiate('requestRemoveChildBlock')('actions', second, child);
++    assert.equal(context.state, beforeRefusal, 'opening confirmation must not delete');
++    assert.equal(context.removal.block.id, child);
++    instantiate('removeBlock')();
++    assert.equal(helpers.getBlockById(getSectionById(context.state, 'actions'), child), null);
++    assert.deepEqual(context.selection, { kind: 'section', sectionId: 'actions' });
++    instantiate('undo')();
++    assert.ok(helpers.getBlockById(getSectionById(context.state, 'actions'), child));
++    instantiate('redo')();
++    assert.equal(helpers.getBlockById(getSectionById(context.state, 'actions'), child), null);
++    instantiate('addChildBlock')('actions', second, 'badge');
++    assert.notEqual(context.selection.blockId, child, 're-add obtains a new canonical instance identity');
++    assert.equal(getSectionById(added, 'actions').blocks[0].visible, true, 'earlier undo snapshot remains immutable');
++});
++
++test('the page passes executed actions to its tree, and actual flat/nested row affordances bind exact IDs and bounds', () => {
++    const tree = [];
++    function visit(node) {
++        if (ts.isJsxSelfClosingElement(node) && node.tagName.getText(page) === 'SectionTreePanel') tree.push(node);
++        ts.forEachChild(node, visit);
++    }
++    visit(page); assert.equal(tree.length, 1);
++    const props = Object.fromEntries(tree[0].attributes.properties.filter(ts.isJsxAttribute).map(attribute => [attribute.name.getText(page), attribute.initializer?.expression?.getText(page)]));
++    assert.equal(props.onAddChildBlock, 'addChildBlock');
++    assert.equal(props.onRemoveChildBlock, 'requestRemoveChildBlock');
++    assert.equal(props.onMoveChildBlock, 'moveBlock');
++    assert.equal(props.onToggleBlock, 'toggleBlockVisibility');
++    const file = new URL('../src/components/theme-editor/BlockChildRow.tsx', import.meta.url);
++    const source = ts.createSourceFile(file.pathname, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
++    const node = source.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'BlockChildRow');
++    const { Button } = require('@letbuyy/ui'), icons = require('lucide-react');
++    const row = execute(`${node.getText(source).replace(/^export /, "")};return BlockChildRow`, { require, Button, ...icons, MAX_EDITOR_BLOCK_DEPTH: domain.MAX_BUNDLE_BLOCK_NESTING_DEPTH });
++    const calls = [], doc = document();
++    const inputs = { block: { id: 'p', type: 'badge', visible: true, settings: {}, children: [] }, depth: 1, sectionId: 'actions', parentBlockId: 'actions', selectedBlockId: 'p', siblingIndex: 0, siblingCount: 2, allowedChildTypes: ['badge'], blockCatalog: doc.catalog, onSelectBlock: id => calls.push(['select', id]), onMoveChildBlock: (...args) => calls.push(['move', ...args]), onToggleBlock: (...args) => calls.push(['toggle', ...args]), onRemoveChildBlock: (...args) => calls.push(['remove', ...args]), onAddChildBlock: (...args) => calls.push(['add', ...args]) };
++    const buttons = element => {
++        if (!element || typeof element !== 'object') return [];
++        const children = [element.props?.children].flat(Infinity);
++        return [...(element.type === Button ? [element.props] : []), ...children.flatMap(buttons)];
++    };
++    const rendered = buttons(row(inputs));
++    assert.equal(rendered.find(button => button['aria-label'] === 'Move badge block up').disabled, true);
++    rendered.find(button => button['aria-label'] === 'Move badge block down').onClick();
++    rendered.find(button => button['aria-label'] === 'Toggle badge block visibility').onClick();
++    rendered.find(button => button['aria-label'] === 'Remove badge block').onClick();
++    rendered.find(button => button['aria-label']?.startsWith('Add child block:')).onClick();
++    assert.deepEqual(calls, [['move', 'actions', 'actions', 'p', 1], ['toggle', 'actions', 'p'], ['remove', 'actions', 'actions', 'p'], ['add', 'actions', 'p', 'badge']]);
++    const nested = buttons(row({ ...inputs, depth: 3, parentBlockId: 'parent', siblingCount: 1 }));
++    assert.equal(nested.some(button => button['aria-label']?.startsWith('Add child block:')), false);
++    assert.equal(nested.find(button => button['aria-label'] === 'Move child block down').disabled, true);
++});

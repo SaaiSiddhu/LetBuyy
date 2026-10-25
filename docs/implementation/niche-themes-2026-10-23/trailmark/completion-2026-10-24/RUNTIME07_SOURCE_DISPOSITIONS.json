@@ -1,0 +1,94 @@
+{
+  "recordedAt": "2026-10-24T20:23:40.061843+00:00",
+  "classification": "BOUNDED_CURRENT_TRAILMARK_SOURCE_DISPOSITION_NOT_RUNTIME_RESULTS",
+  "runId": "49ada80bc494",
+  "expectedBundleSha256": "cb800016da40faebc43da151a1429eee7a232b4226f66c0ae13434e4d8993ca7",
+  "sourceInputs": [
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488"
+    },
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "40b12590447f6689d59197e52f7f35841589d1b1b7da3e1ae3e11b84a50e9864"
+    },
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/commerce-core/src/trailmark-facts.ts",
+      "sha256": "9d8bb5ae2f033858ed77a48bd8425dbbd169c724021ae42835abf7993a4a903d"
+    }
+  ],
+  "findings": [
+    {
+      "id": "TM-G01",
+      "sourceStatus": "SHARED_CURRENT210_ELIGIBILITY_OUTLETS_CALLBACKS_QUALIFIED",
+      "proof": "RUNTIME07_EXPECTED_210_INVENTORY.json; RUNTIME07_SHARED_EVIDENCE_APPLICABILITY.json",
+      "installedStatus": "NOT_RUN",
+      "disposition": "Do not duplicate canonical editor/renderer repair. Execute15new210requirements plus retainedoriginalcontrol matrix underEditor."
+    },
+    {
+      "id": "TM-G02",
+      "sourceStatus": "APPROVED_TECHNICAL_MEDIA_PRESENTATION_REMAINS_UNIMPLEMENTED_PENDING_CURRENT_PAIRED_SCOPE",
+      "approvedReference": {
+        "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/source/05-product-specs.html",
+        "sha256": "515304ffe40e8eefc3e30de241748569afce3fd59a1695ca7dc198114f45f63c"
+      },
+      "approvedImage": {
+        "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/assets/racket.png",
+        "sha256": "7518637400e45a07c428eae0a16a28a0cf8280a3b0598c6fe3ad1443a39558a5"
+      },
+      "actualM1Component": "Existingillustrative racketPNG plusCSSmeasurementline andwrittenmeasurement labels; not an SVGsilhouette. Captionnot-to-scale andtypedsourcevalues required.",
+      "currentContract": "Canonical product.sports_display commonprojection and existing UUID-bound selectedFacts().sports remainsolefactprojections. No parsingimagegeometry, fabricatedmeasurement, duplicatepicker or common-only substitute. Mediaabsent/non-racket/no-length recovery required.",
+      "currentSharedDependency": "Controllerselectedroot replacesallchildren, creates only variantcurrent root; common/simple projection must remainserverbound. Newsemanticpresentation slot needed fromexistingselectedfactsowner.",
+      "versionGuardDependency": {
+        "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+        "lines": "182-193",
+        "sourceInference": "Existingexactinstalled-childqualification accepts only210/version5 and exactreference definitions. A futureversion-only bump wouldloseinlinechildeligibility; not an executedfailure.",
+        "current211Allocation": {
+          "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORDER_HEADING211_PRIVATE_PROPOSAL_ALLOCATION.json",
+          "sha256": "5e13e91976008006e3cf6dfee250142cb2b60a05a6cf50570702d9b95e3ffda8"
+        },
+        "scope": "Habitat owner currently reserves211/version6 onlyfor4headingdefectthemes; Trailmarkunaffected andexcluded. Do not duplicate/widen this repair, chooseacollidingversion, rewrite210 orapplyold202proposal.",
+        "nextOwnerAction": "Themes mustadmit appropriatefutureTrailmarkleaf/assets +singlecanonicalprojectionhook +exactchild-guard lineage scope before any Mainintegration. Original210shopping/Test/COD unaffected."
+      },
+      "previous202Request": "Historicalunimplementedproposal; fixedSVGgeometry idea is superseded by directapprovedM1assetinspection and current210guarddependency. No priorpatch/test wasrun."
+    },
+    {
+      "id": "TM-G03",
+      "status": "M01_PRIVATE_POSITIVE_CONTROL_AND_TITLE_UI_CLAUSES_OPEN",
+      "disposition": "Bindcurrent normalUI product/variantUUIDs andcanonical savedtitles/tuples; privatefieldproof requires specificallysanctioned actualpositivewitness. Do notinferredactionfromabsence orsilentlyrenameSMLoptions."
+    },
+    {
+      "id": "TM-G04",
+      "status": "P02_CURRENT_PRIVATE34_TRANSPORTS_NOT_RUN",
+      "disposition": "Exact34privatecollection/searchobservations remainrequired, no publicfallback orsource-only substitute."
+    },
+    {
+      "id": "TM-G05",
+      "status": "SHARED_RUNTIME_PREREQUISITES_CLOSED_THEME_SLOT_BINDINGS_QUEUED",
+      "disposition": "Currenthumanresume/readiness/independentreview allowcontrolledsingleEditor queue. Do notrepeatoldpause/native500blockers orstartanotherstack."
+    },
+    {
+      "id": "TM-G07",
+      "sourceStatus": "CURRENT210_DECLARED_ORDER_HEADING_RENDER_CONFIRMED_WITH_SAVED_FACTS_POSITIVE_CONTROL",
+      "proof": "RUNTIME07_SHARED_EVIDENCE_APPLICABILITY.json orderHeadingSource",
+      "installedStatus": "NOT_RUN",
+      "disposition": "No duplicateheadingrepair forTrailmark; actualbuyer/merchanthistoryandnormaleditorheadingchange stillrequired."
+    },
+    {
+      "id": "TM-G08",
+      "status": "CANONICAL_NEWSLETTER_FORM_CONSENT_OWNER_DISPOSITION_STILL_REQUIRED",
+      "disposition": "Retainexistingnormalformcase; do notinventhiddenname, contacts-as-subscription orlocalpaintedsuccess."
+    },
+    {
+      "id": "TM-G09",
+      "sourceStatus": "CURRENT210_INHERITS_EXPLICIT201_COLLECTION_HEADING_OVERRIDE",
+      "installedStatus": "NOT_RUN",
+      "disposition": "Retain3actualfield/instance cases andexecuteafterinstalledmanifestmatch, without rewritingfrozenfactory."
+    }
+  ],
+  "privateSourceChanges": [],
+  "nativeBuildBrowserProviderActions": [],
+  "newRuntimeCasePasses": 0,
+  "oldSourceProposalsRetained": true,
+  "noOutgoingChatMessages": true
+}

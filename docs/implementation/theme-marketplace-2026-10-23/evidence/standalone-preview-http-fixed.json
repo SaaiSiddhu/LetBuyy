@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-23T09:23:10.563137+00:00",
+  "responses": [
+    {
+      "name": "demo-fixed",
+      "status": "HTTP/1.1 200 OK",
+      "frameAncestors": "frame-ancestors 'self' http://localhost:56900 http://localhost:9005",
+      "xFrameOptions": null,
+      "cacheControl": "no-store, must-revalidate"
+    },
+    {
+      "name": "demo-embedded-fixed",
+      "status": "HTTP/1.1 200 OK",
+      "frameAncestors": "frame-ancestors 'self' http://localhost:56900 http://localhost:9005",
+      "xFrameOptions": null,
+      "cacheControl": "no-store, must-revalidate"
+    },
+    {
+      "name": "buyer-protected",
+      "status": "HTTP/1.1 200 OK",
+      "frameAncestors": "frame-ancestors 'self' http://localhost:56900",
+      "xFrameOptions": "SAMEORIGIN",
+      "cacheControl": "no-store"
+    },
+    {
+      "name": "checkout-protected",
+      "status": "HTTP/1.1 404 Not Found",
+      "frameAncestors": "frame-ancestors 'self' http://localhost:56900",
+      "xFrameOptions": "SAMEORIGIN",
+      "cacheControl": "no-store, must-revalidate"
+    }
+  ]
+}

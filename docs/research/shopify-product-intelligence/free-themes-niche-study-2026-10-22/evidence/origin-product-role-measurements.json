@@ -1,0 +1,308 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "featured",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "2Unfold Bag",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "featured",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "2Unfold Bag",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "2Unfold Bag",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "2Unfold Bag",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "2Unfold Bag",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "2Unfold Bag",
+      "complete": false,
+      "naturalWidth": 0
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "Cart",
+      "rect": {
+        "height": 138,
+        "width": 1200,
+        "x": 120,
+        "y": 39.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(17, 21, 28, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(17, 21, 28, 0.75)",
+        "fontFamily": "system_ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "28.8px",
+        "padding": "36px 50px 12px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "disabled": false,
+      "label": "2Unfold Bag",
+      "rect": {
+        "height": 58,
+        "width": 445,
+        "x": 825,
+        "y": 273.6484375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(17, 21, 28)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(17, 21, 28)",
+        "fontFamily": "Platypi, serif",
+        "fontSize": "46px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "58px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "Decrease quantity for 2Unfold Bag",
+      "rect": {
+        "height": 47,
+        "width": 45,
+        "x": 826,
+        "y": 1151.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(17, 21, 28)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(17, 21, 28)",
+        "fontFamily": "Arial",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "quantity",
+      "rect": {
+        "height": 47,
+        "width": 50,
+        "x": 871,
+        "y": 1151.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(17, 21, 28)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(17, 21, 28)",
+        "fontFamily": "system_ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px 5px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Increase quantity for 2Unfold Bag",
+      "rect": {
+        "height": 47,
+        "width": 45,
+        "x": 921,
+        "y": 1151.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(17, 21, 28)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(17, 21, 28)",
+        "fontFamily": "Arial",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 47,
+        "width": 440,
+        "x": 825,
+        "y": 1223.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgb(223, 223, 216)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(133, 88, 50)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(133, 88, 50)",
+        "fontFamily": "system_ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 30px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Buy it now",
+      "rect": {
+        "height": 47,
+        "width": 440,
+        "x": 825,
+        "y": 1280.5859375
+      },
+      "styles": {
+        "backgroundColor": "rgb(133, 88, 50)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(223, 223, 216)",
+        "borderRadius": "0px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+        "color": "rgb(223, 223, 216)",
+        "fontFamily": "system_ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "fontSize": "15px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "15px 30px"
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "url": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy"
+}

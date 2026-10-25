@@ -1,0 +1,2179 @@
+{
+  "status": "HISTORICAL_REFERENCE_NOT_LIVE_ADMIN_MEASUREMENT",
+  "retrieved": "2026-10-22",
+  "revision": "3f7954ae42fabf26d63cee68c23ceebfd7ef0972",
+  "revisionDate": "2026-09-09",
+  "scope": "Resolved literal and direct color/size/variable-reference entries from archived base theme. Not a complete runtime theme compiler. Shadows, template expressions and theme overrides are not resolved.",
+  "groups": {
+    "color": {
+      "color-scheme": {
+        "value": "light",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "'light'"
+      },
+      "color-bg": {
+        "value": "rgba(241, 241, 241, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[6]"
+      },
+      "color-bg-inverse": {
+        "value": "rgba(26, 26, 26, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[16]"
+      },
+      "color-bg-surface": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-bg-surface-hover": {
+        "value": "rgba(247, 247, 247, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[4]"
+      },
+      "color-bg-surface-active": {
+        "value": "rgba(243, 243, 243, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[5]"
+      },
+      "color-bg-surface-selected": {
+        "value": "rgba(241, 241, 241, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[6]"
+      },
+      "color-bg-surface-disabled": {
+        "value": "rgba(0, 0, 0, 0.05)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[5]"
+      },
+      "color-bg-surface-secondary": {
+        "value": "rgba(247, 247, 247, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[4]"
+      },
+      "color-bg-surface-secondary-hover": {
+        "value": "rgba(241, 241, 241, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[6]"
+      },
+      "color-bg-surface-secondary-active": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-bg-surface-secondary-selected": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-bg-surface-tertiary": {
+        "value": "rgba(243, 243, 243, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[5]"
+      },
+      "color-bg-surface-tertiary-hover": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-bg-surface-tertiary-active": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-bg-surface-brand": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-bg-surface-brand-hover": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-bg-surface-brand-active": {
+        "value": "rgba(241, 241, 241, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[6]"
+      },
+      "color-bg-surface-brand-selected": {
+        "value": "rgba(241, 241, 241, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[6]"
+      },
+      "color-bg-surface-info": {
+        "value": "rgba(234, 244, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[3]"
+      },
+      "color-bg-surface-info-hover": {
+        "value": "rgba(224, 240, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[4]"
+      },
+      "color-bg-surface-info-active": {
+        "value": "rgba(202, 230, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[6]"
+      },
+      "color-bg-surface-success": {
+        "value": "rgba(205, 254, 212, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[3]"
+      },
+      "color-bg-surface-success-hover": {
+        "value": "rgba(175, 254, 191, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[4]"
+      },
+      "color-bg-surface-success-active": {
+        "value": "rgba(146, 252, 172, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[5]"
+      },
+      "color-bg-surface-caution": {
+        "value": "rgba(255, 248, 219, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[2]"
+      },
+      "color-bg-surface-caution-hover": {
+        "value": "rgba(255, 244, 191, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[3]"
+      },
+      "color-bg-surface-caution-active": {
+        "value": "rgba(255, 239, 157, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[4]"
+      },
+      "color-bg-surface-warning": {
+        "value": "rgba(255, 241, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[3]"
+      },
+      "color-bg-surface-warning-hover": {
+        "value": "rgba(255, 235, 213, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[4]"
+      },
+      "color-bg-surface-warning-active": {
+        "value": "rgba(255, 228, 198, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[5]"
+      },
+      "color-bg-surface-critical": {
+        "value": "rgba(254, 232, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[4]"
+      },
+      "color-bg-surface-critical-hover": {
+        "value": "rgba(254, 225, 230, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[5]"
+      },
+      "color-bg-surface-critical-active": {
+        "value": "rgba(254, 217, 223, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[6]"
+      },
+      "color-bg-surface-emphasis": {
+        "value": "rgba(240, 242, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[3]"
+      },
+      "color-bg-surface-emphasis-hover": {
+        "value": "rgba(234, 237, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[4]"
+      },
+      "color-bg-surface-emphasis-active": {
+        "value": "rgba(226, 231, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[5]"
+      },
+      "color-bg-surface-magic": {
+        "value": "rgba(248, 247, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[2]"
+      },
+      "color-bg-surface-magic-hover": {
+        "value": "rgba(243, 241, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[3]"
+      },
+      "color-bg-surface-magic-active": {
+        "value": "rgba(233, 229, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[5]"
+      },
+      "color-bg-surface-inverse": {
+        "value": "rgba(48, 48, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[15]"
+      },
+      "color-bg-surface-transparent": {
+        "value": "rgba(0, 0, 0, 0)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[1]"
+      },
+      "color-bg-fill": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-bg-fill-hover": {
+        "value": "rgba(250, 250, 250, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[3]"
+      },
+      "color-bg-fill-active": {
+        "value": "rgba(247, 247, 247, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[4]"
+      },
+      "color-bg-fill-selected": {
+        "value": "rgba(204, 204, 204, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[10]"
+      },
+      "color-bg-fill-disabled": {
+        "value": "rgba(0, 0, 0, 0.05)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[5]"
+      },
+      "color-bg-fill-secondary": {
+        "value": "rgba(241, 241, 241, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[6]"
+      },
+      "color-bg-fill-secondary-hover": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-bg-fill-secondary-active": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-bg-fill-secondary-selected": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-bg-fill-tertiary": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-bg-fill-tertiary-hover": {
+        "value": "rgba(212, 212, 212, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[9]"
+      },
+      "color-bg-fill-tertiary-active": {
+        "value": "rgba(204, 204, 204, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[10]"
+      },
+      "color-bg-fill-brand": {
+        "value": "rgba(48, 48, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[15]"
+      },
+      "color-bg-fill-brand-hover": {
+        "value": "rgba(26, 26, 26, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[16]"
+      },
+      "color-bg-fill-brand-active": {
+        "value": "rgba(26, 26, 26, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[16]"
+      },
+      "color-bg-fill-brand-selected": {
+        "value": "rgba(48, 48, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[15]"
+      },
+      "color-bg-fill-brand-disabled": {
+        "value": "rgba(0, 0, 0, 0.17)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[9]"
+      },
+      "color-bg-fill-info": {
+        "value": "rgba(145, 208, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[9]"
+      },
+      "color-bg-fill-info-hover": {
+        "value": "rgba(81, 192, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[10]"
+      },
+      "color-bg-fill-info-active": {
+        "value": "rgba(0, 148, 213, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[11]"
+      },
+      "color-bg-fill-info-secondary": {
+        "value": "rgba(213, 235, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[5]"
+      },
+      "color-bg-fill-success": {
+        "value": "rgba(4, 123, 93, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[12]"
+      },
+      "color-bg-fill-success-hover": {
+        "value": "rgba(3, 94, 76, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[13]"
+      },
+      "color-bg-fill-success-active": {
+        "value": "rgba(1, 75, 64, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[14]"
+      },
+      "color-bg-fill-success-secondary": {
+        "value": "rgba(175, 254, 191, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[4]"
+      },
+      "color-bg-fill-warning": {
+        "value": "rgba(255, 184, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[9]"
+      },
+      "color-bg-fill-warning-hover": {
+        "value": "rgba(229, 165, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[10]"
+      },
+      "color-bg-fill-warning-active": {
+        "value": "rgba(178, 132, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[11]"
+      },
+      "color-bg-fill-warning-secondary": {
+        "value": "rgba(255, 214, 164, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[7]"
+      },
+      "color-bg-fill-caution": {
+        "value": "rgba(255, 230, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[6]"
+      },
+      "color-bg-fill-caution-hover": {
+        "value": "rgba(234, 211, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[8]"
+      },
+      "color-bg-fill-caution-active": {
+        "value": "rgba(225, 203, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[9]"
+      },
+      "color-bg-fill-caution-secondary": {
+        "value": "rgba(255, 235, 120, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[5]"
+      },
+      "color-bg-fill-critical": {
+        "value": "rgba(199, 10, 36, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[12]"
+      },
+      "color-bg-fill-critical-hover": {
+        "value": "rgba(163, 10, 36, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[13]"
+      },
+      "color-bg-fill-critical-active": {
+        "value": "rgba(142, 11, 33, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[14]"
+      },
+      "color-bg-fill-critical-selected": {
+        "value": "rgba(142, 11, 33, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[14]"
+      },
+      "color-bg-fill-critical-secondary": {
+        "value": "rgba(254, 209, 215, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[7]"
+      },
+      "color-bg-fill-emphasis": {
+        "value": "rgba(0, 91, 211, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[13]"
+      },
+      "color-bg-fill-emphasis-hover": {
+        "value": "rgba(0, 66, 153, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[14]"
+      },
+      "color-bg-fill-emphasis-active": {
+        "value": "rgba(0, 46, 106, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[15]"
+      },
+      "color-bg-fill-magic": {
+        "value": "rgba(128, 81, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[12]"
+      },
+      "color-bg-fill-magic-secondary": {
+        "value": "rgba(233, 229, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[5]"
+      },
+      "color-bg-fill-magic-secondary-hover": {
+        "value": "rgba(228, 222, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[6]"
+      },
+      "color-bg-fill-magic-secondary-active": {
+        "value": "rgba(223, 217, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[7]"
+      },
+      "color-bg-fill-inverse": {
+        "value": "rgba(48, 48, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[15]"
+      },
+      "color-bg-fill-inverse-hover": {
+        "value": "rgba(74, 74, 74, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[14]"
+      },
+      "color-bg-fill-inverse-active": {
+        "value": "rgba(97, 97, 97, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[13]"
+      },
+      "color-bg-fill-transparent": {
+        "value": "rgba(0, 0, 0, 0.02)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[3]"
+      },
+      "color-bg-fill-transparent-hover": {
+        "value": "rgba(0, 0, 0, 0.05)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[5]"
+      },
+      "color-bg-fill-transparent-active": {
+        "value": "rgba(0, 0, 0, 0.08)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[7]"
+      },
+      "color-bg-fill-transparent-selected": {
+        "value": "rgba(0, 0, 0, 0.08)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[7]"
+      },
+      "color-bg-fill-transparent-secondary": {
+        "value": "rgba(0, 0, 0, 0.06)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[6]"
+      },
+      "color-bg-fill-transparent-secondary-hover": {
+        "value": "rgba(0, 0, 0, 0.08)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[7]"
+      },
+      "color-bg-fill-transparent-secondary-active": {
+        "value": "rgba(0, 0, 0, 0.11)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[8]"
+      },
+      "color-text": {
+        "value": "rgba(48, 48, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[15]"
+      },
+      "color-text-secondary": {
+        "value": "rgba(97, 97, 97, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[13]"
+      },
+      "color-text-disabled": {
+        "value": "rgba(181, 181, 181, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[11]"
+      },
+      "color-text-link": {
+        "value": "rgba(0, 91, 211, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[13]"
+      },
+      "color-text-link-hover": {
+        "value": "rgba(0, 66, 153, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[14]"
+      },
+      "color-text-link-active": {
+        "value": "rgba(0, 46, 106, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[15]"
+      },
+      "color-text-brand": {
+        "value": "rgba(74, 74, 74, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[14]"
+      },
+      "color-text-brand-hover": {
+        "value": "rgba(48, 48, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[15]"
+      },
+      "color-text-brand-on-bg-fill": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-text-brand-on-bg-fill-hover": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-text-brand-on-bg-fill-active": {
+        "value": "rgba(204, 204, 204, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[10]"
+      },
+      "color-text-brand-on-bg-fill-disabled": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-text-info": {
+        "value": "rgba(0, 58, 90, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[15]"
+      },
+      "color-text-info-hover": {
+        "value": "rgba(0, 58, 90, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[15]"
+      },
+      "color-text-info-active": {
+        "value": "rgba(0, 33, 51, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[16]"
+      },
+      "color-text-info-secondary": {
+        "value": "rgba(0, 124, 180, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[12]"
+      },
+      "color-text-info-on-bg-fill": {
+        "value": "rgba(0, 33, 51, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[16]"
+      },
+      "color-text-success": {
+        "value": "rgba(1, 75, 64, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[14]"
+      },
+      "color-text-success-hover": {
+        "value": "rgba(7, 54, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[15]"
+      },
+      "color-text-success-active": {
+        "value": "rgba(2, 38, 34, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[16]"
+      },
+      "color-text-success-secondary": {
+        "value": "rgba(4, 123, 93, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[12]"
+      },
+      "color-text-success-on-bg-fill": {
+        "value": "rgba(250, 255, 251, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[1]"
+      },
+      "color-text-caution": {
+        "value": "rgba(79, 71, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[14]"
+      },
+      "color-text-caution-hover": {
+        "value": "rgba(51, 46, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[15]"
+      },
+      "color-text-caution-active": {
+        "value": "rgba(31, 28, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[16]"
+      },
+      "color-text-caution-secondary": {
+        "value": "rgba(130, 117, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[12]"
+      },
+      "color-text-caution-on-bg-fill": {
+        "value": "rgba(51, 46, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[15]"
+      },
+      "color-text-warning": {
+        "value": "rgba(94, 66, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[14]"
+      },
+      "color-text-warning-hover": {
+        "value": "rgba(65, 45, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[15]"
+      },
+      "color-text-warning-active": {
+        "value": "rgba(37, 26, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[16]"
+      },
+      "color-text-warning-secondary": {
+        "value": "rgba(149, 111, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[12]"
+      },
+      "color-text-warning-on-bg-fill": {
+        "value": "rgba(37, 26, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[16]"
+      },
+      "color-text-critical": {
+        "value": "rgba(142, 11, 33, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[14]"
+      },
+      "color-text-critical-hover": {
+        "value": "rgba(95, 7, 22, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[15]"
+      },
+      "color-text-critical-active": {
+        "value": "rgba(47, 4, 11, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[16]"
+      },
+      "color-text-critical-secondary": {
+        "value": "rgba(199, 10, 36, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[12]"
+      },
+      "color-text-critical-on-bg-fill": {
+        "value": "rgba(255, 250, 251, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[1]"
+      },
+      "color-text-emphasis": {
+        "value": "rgba(0, 91, 211, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[13]"
+      },
+      "color-text-emphasis-hover": {
+        "value": "rgba(0, 66, 153, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[14]"
+      },
+      "color-text-emphasis-active": {
+        "value": "rgba(0, 46, 106, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[15]"
+      },
+      "color-text-emphasis-on-bg-fill": {
+        "value": "rgba(252, 253, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[1]"
+      },
+      "color-text-emphasis-on-bg-fill-hover": {
+        "value": "rgba(226, 231, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[5]"
+      },
+      "color-text-emphasis-on-bg-fill-active": {
+        "value": "rgba(213, 220, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[7]"
+      },
+      "color-text-magic": {
+        "value": "rgba(87, 0, 209, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[14]"
+      },
+      "color-text-magic-secondary": {
+        "value": "rgba(113, 38, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[13]"
+      },
+      "color-text-magic-on-bg-fill": {
+        "value": "rgba(253, 253, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[1]"
+      },
+      "color-text-inverse": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-text-inverse-secondary": {
+        "value": "rgba(181, 181, 181, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[11]"
+      },
+      "color-text-link-inverse": {
+        "value": "rgba(197, 208, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[8]"
+      },
+      "color-border": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-border-hover": {
+        "value": "rgba(204, 204, 204, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[10]"
+      },
+      "color-border-disabled": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-border-secondary": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-border-tertiary": {
+        "value": "rgba(204, 204, 204, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[10]"
+      },
+      "color-border-focus": {
+        "value": "rgba(0, 91, 211, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[13]"
+      },
+      "color-border-brand": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-border-info": {
+        "value": "rgba(168, 216, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[8]"
+      },
+      "color-border-success": {
+        "value": "rgba(146, 252, 172, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[5]"
+      },
+      "color-border-caution": {
+        "value": "rgba(255, 235, 120, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[5]"
+      },
+      "color-border-warning": {
+        "value": "rgba(255, 200, 121, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[8]"
+      },
+      "color-border-critical": {
+        "value": "rgba(254, 193, 199, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[8]"
+      },
+      "color-border-critical-secondary": {
+        "value": "rgba(142, 11, 33, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[14]"
+      },
+      "color-border-emphasis": {
+        "value": "rgba(0, 91, 211, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[13]"
+      },
+      "color-border-emphasis-hover": {
+        "value": "rgba(0, 66, 153, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[14]"
+      },
+      "color-border-emphasis-active": {
+        "value": "rgba(0, 46, 106, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[15]"
+      },
+      "color-border-magic": {
+        "value": "rgba(228, 222, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[6]"
+      },
+      "color-border-magic-secondary": {
+        "value": "rgba(148, 116, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[11]"
+      },
+      "color-border-magic-secondary-hover": {
+        "value": "rgba(128, 81, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[12]"
+      },
+      "color-border-inverse": {
+        "value": "rgba(97, 97, 97, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[13]"
+      },
+      "color-border-inverse-hover": {
+        "value": "rgba(204, 204, 204, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[10]"
+      },
+      "color-border-inverse-active": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-tooltip-tail-down-border": {
+        "value": "rgba(212, 212, 212, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[9]"
+      },
+      "color-tooltip-tail-up-border": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-icon": {
+        "value": "rgba(74, 74, 74, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[14]"
+      },
+      "color-icon-hover": {
+        "value": "rgba(48, 48, 48, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[15]"
+      },
+      "color-icon-active": {
+        "value": "rgba(26, 26, 26, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[16]"
+      },
+      "color-icon-disabled": {
+        "value": "rgba(204, 204, 204, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[10]"
+      },
+      "color-icon-secondary": {
+        "value": "rgba(138, 138, 138, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[12]"
+      },
+      "color-icon-secondary-hover": {
+        "value": "rgba(97, 97, 97, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[13]"
+      },
+      "color-icon-secondary-active": {
+        "value": "rgba(74, 74, 74, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[14]"
+      },
+      "color-icon-brand": {
+        "value": "rgba(26, 26, 26, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[16]"
+      },
+      "color-icon-info": {
+        "value": "rgba(0, 148, 213, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[11]"
+      },
+      "color-icon-success": {
+        "value": "rgba(4, 123, 93, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[12]"
+      },
+      "color-icon-caution": {
+        "value": "rgba(153, 138, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.yellow[11]"
+      },
+      "color-icon-warning": {
+        "value": "rgba(178, 132, 0, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.orange[11]"
+      },
+      "color-icon-critical": {
+        "value": "rgba(226, 44, 56, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.red[11]"
+      },
+      "color-icon-emphasis": {
+        "value": "rgba(0, 91, 211, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[13]"
+      },
+      "color-icon-emphasis-hover": {
+        "value": "rgba(0, 66, 153, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[14]"
+      },
+      "color-icon-emphasis-active": {
+        "value": "rgba(0, 46, 106, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blue[15]"
+      },
+      "color-icon-magic": {
+        "value": "rgba(128, 81, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[12]"
+      },
+      "color-icon-inverse": {
+        "value": "rgba(227, 227, 227, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[8]"
+      },
+      "color-avatar-bg-fill": {
+        "value": "rgba(181, 181, 181, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[11]"
+      },
+      "color-avatar-five-bg-fill": {
+        "value": "rgba(253, 75, 146, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.rose[11]"
+      },
+      "color-avatar-five-text-on-bg-fill": {
+        "value": "rgba(255, 246, 248, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.rose[2]"
+      },
+      "color-avatar-four-bg-fill": {
+        "value": "rgba(81, 192, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[10]"
+      },
+      "color-avatar-four-text-on-bg-fill": {
+        "value": "rgba(0, 33, 51, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.azure[16]"
+      },
+      "color-avatar-one-bg-fill": {
+        "value": "rgba(197, 48, 197, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.magenta[12]"
+      },
+      "color-avatar-one-text-on-bg-fill": {
+        "value": "rgba(253, 239, 253, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.magenta[3]"
+      },
+      "color-avatar-seven-bg-fill": {
+        "value": "rgba(148, 116, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[11]"
+      },
+      "color-avatar-seven-text-on-bg-fill": {
+        "value": "rgba(248, 247, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.purple[2]"
+      },
+      "color-avatar-six-bg-fill": {
+        "value": "rgba(37, 232, 43, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.lime[9]"
+      },
+      "color-avatar-six-text-on-bg-fill": {
+        "value": "rgba(3, 61, 5, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.lime[15]"
+      },
+      "color-avatar-text-on-bg-fill": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-avatar-three-bg-fill": {
+        "value": "rgba(44, 224, 212, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.teal[9]"
+      },
+      "color-avatar-three-text-on-bg-fill": {
+        "value": "rgba(3, 60, 57, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.teal[15]"
+      },
+      "color-avatar-two-bg-fill": {
+        "value": "rgba(82, 244, 144, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[7]"
+      },
+      "color-avatar-two-text-on-bg-fill": {
+        "value": "rgba(1, 75, 64, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.green[14]"
+      },
+      "color-backdrop-bg": {
+        "value": "rgba(0, 0, 0, 0.71)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[14]"
+      },
+      "color-button-gradient-bg-fill": {
+        "value": "linear-gradient(180deg, rgba(48, 48, 48, 0) 63.53%, rgba(255, 255, 255, 0.15) 100%)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "'linear-gradient(180deg, rgba(48, 48, 48, 0) 63.53%, rgba(255, 255, 255, 0.15) 100%)'"
+      },
+      "color-checkbox-bg-surface-disabled": {
+        "value": "rgba(0, 0, 0, 0.08)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[7]"
+      },
+      "color-checkbox-icon-disabled": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-input-bg-surface": {
+        "value": "rgba(253, 253, 253, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[2]"
+      },
+      "color-input-bg-surface-hover": {
+        "value": "rgba(250, 250, 250, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[3]"
+      },
+      "color-input-bg-surface-active": {
+        "value": "rgba(247, 247, 247, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[4]"
+      },
+      "color-input-border": {
+        "value": "rgba(138, 138, 138, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[12]"
+      },
+      "color-input-border-hover": {
+        "value": "rgba(97, 97, 97, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[13]"
+      },
+      "color-input-border-active": {
+        "value": "rgba(26, 26, 26, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[16]"
+      },
+      "color-nav-bg": {
+        "value": "rgba(235, 235, 235, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[7]"
+      },
+      "color-nav-bg-surface": {
+        "value": "rgba(0, 0, 0, 0.02)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[3]"
+      },
+      "color-nav-bg-surface-hover": {
+        "value": "rgba(241, 241, 241, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[6]"
+      },
+      "color-nav-bg-surface-active": {
+        "value": "rgba(250, 250, 250, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[3]"
+      },
+      "color-nav-bg-surface-selected": {
+        "value": "rgba(250, 250, 250, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[3]"
+      },
+      "color-radio-button-bg-surface-disabled": {
+        "value": "rgba(0, 0, 0, 0.08)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[7]"
+      },
+      "color-radio-button-icon-disabled": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-video-thumbnail-play-button-bg-fill-hover": {
+        "value": "rgba(0, 0, 0, 0.81)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[15]"
+      },
+      "color-video-thumbnail-play-button-bg-fill": {
+        "value": "rgba(0, 0, 0, 0.71)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.blackAlpha[14]"
+      },
+      "color-video-thumbnail-play-button-text-on-bg-fill": {
+        "value": "rgba(255, 255, 255, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[1]"
+      },
+      "color-scrollbar-thumb-bg-hover": {
+        "value": "rgba(138, 138, 138, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[12]"
+      },
+      "color-scrollbar-thumb-bg": {
+        "value": "rgba(181, 181, 181, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/color.ts",
+        "expression": "colors.gray[11]"
+      }
+    },
+    "space": {
+      "space-0": {
+        "value": "0px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[0]"
+      },
+      "space-025": {
+        "value": "1px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size['025']"
+      },
+      "space-050": {
+        "value": "2px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size['050']"
+      },
+      "space-100": {
+        "value": "4px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[100]"
+      },
+      "space-150": {
+        "value": "6px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[150]"
+      },
+      "space-200": {
+        "value": "8px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[200]"
+      },
+      "space-300": {
+        "value": "12px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[300]"
+      },
+      "space-400": {
+        "value": "16px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[400]"
+      },
+      "space-500": {
+        "value": "20px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[500]"
+      },
+      "space-600": {
+        "value": "24px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[600]"
+      },
+      "space-800": {
+        "value": "32px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[800]"
+      },
+      "space-1000": {
+        "value": "40px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[1000]"
+      },
+      "space-1200": {
+        "value": "48px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[1200]"
+      },
+      "space-1600": {
+        "value": "64px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[1600]"
+      },
+      "space-2000": {
+        "value": "80px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[2000]"
+      },
+      "space-2400": {
+        "value": "96px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[2400]"
+      },
+      "space-2800": {
+        "value": "112px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[2800]"
+      },
+      "space-3200": {
+        "value": "128px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "size[3200]"
+      },
+      "space-button-group-gap": {
+        "value": "var(--p-space-200)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "createVar('space-200')"
+      },
+      "space-card-gap": {
+        "value": "var(--p-space-400)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "createVar('space-400')"
+      },
+      "space-card-padding": {
+        "value": "var(--p-space-400)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "createVar('space-400')"
+      },
+      "space-table-cell-padding": {
+        "value": "var(--p-space-150)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/space.ts",
+        "expression": "createVar('space-150')"
+      }
+    },
+    "font": {
+      "font-family-sans": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'San Francisco', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "\"'Inter', -apple-system, BlinkMacSystemFont, 'San Francisco', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif\""
+      },
+      "font-family-mono": {
+        "value": "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "\"ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace\""
+      },
+      "font-size-275": {
+        "value": "11px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[275]"
+      },
+      "font-size-300": {
+        "value": "12px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[300]"
+      },
+      "font-size-325": {
+        "value": "13px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[325]"
+      },
+      "font-size-350": {
+        "value": "14px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[350]"
+      },
+      "font-size-400": {
+        "value": "16px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[400]"
+      },
+      "font-size-450": {
+        "value": "18px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[450]"
+      },
+      "font-size-500": {
+        "value": "20px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[500]"
+      },
+      "font-size-550": {
+        "value": "22px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[550]"
+      },
+      "font-size-600": {
+        "value": "24px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[600]"
+      },
+      "font-size-750": {
+        "value": "30px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[750]"
+      },
+      "font-size-800": {
+        "value": "32px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[800]"
+      },
+      "font-size-900": {
+        "value": "36px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[900]"
+      },
+      "font-size-1000": {
+        "value": "40px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[1000]"
+      },
+      "font-weight-regular": {
+        "value": "450",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'450'"
+      },
+      "font-weight-medium": {
+        "value": "550",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'550'"
+      },
+      "font-weight-semibold": {
+        "value": "650",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'650'"
+      },
+      "font-weight-bold": {
+        "value": "700",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'700'"
+      },
+      "font-letter-spacing-densest": {
+        "value": "-0.54px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'-0.54px'"
+      },
+      "font-letter-spacing-denser": {
+        "value": "-0.3px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'-0.3px'"
+      },
+      "font-letter-spacing-dense": {
+        "value": "-0.2px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'-0.2px'"
+      },
+      "font-letter-spacing-normal": {
+        "value": "0px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "'0px'"
+      },
+      "font-line-height-300": {
+        "value": "12px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[300]"
+      },
+      "font-line-height-400": {
+        "value": "16px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[400]"
+      },
+      "font-line-height-500": {
+        "value": "20px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[500]"
+      },
+      "font-line-height-600": {
+        "value": "24px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[600]"
+      },
+      "font-line-height-700": {
+        "value": "28px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[700]"
+      },
+      "font-line-height-800": {
+        "value": "32px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[800]"
+      },
+      "font-line-height-1000": {
+        "value": "40px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[1000]"
+      },
+      "font-line-height-1200": {
+        "value": "48px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/font.ts",
+        "expression": "size[1200]"
+      }
+    },
+    "text": {
+      "text-heading-3xl-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-heading-3xl-font-size": {
+        "value": "var(--p-font-size-900)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-900')"
+      },
+      "text-heading-3xl-font-weight": {
+        "value": "var(--p-font-weight-bold)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-bold')"
+      },
+      "text-heading-3xl-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-densest)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-densest')"
+      },
+      "text-heading-3xl-font-line-height": {
+        "value": "var(--p-font-line-height-1200)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-1200')"
+      },
+      "text-heading-2xl-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-heading-2xl-font-size": {
+        "value": "var(--p-font-size-750)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-750')"
+      },
+      "text-heading-2xl-font-weight": {
+        "value": "var(--p-font-weight-bold)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-bold')"
+      },
+      "text-heading-2xl-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-denser)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-denser')"
+      },
+      "text-heading-2xl-font-line-height": {
+        "value": "var(--p-font-line-height-1000)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-1000')"
+      },
+      "text-heading-xl-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-heading-xl-font-size": {
+        "value": "var(--p-font-size-600)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-600')"
+      },
+      "text-heading-xl-font-weight": {
+        "value": "var(--p-font-weight-bold)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-bold')"
+      },
+      "text-heading-xl-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-dense)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-dense')"
+      },
+      "text-heading-xl-font-line-height": {
+        "value": "var(--p-font-line-height-800)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-800')"
+      },
+      "text-heading-lg-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-heading-lg-font-size": {
+        "value": "var(--p-font-size-500)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-500')"
+      },
+      "text-heading-lg-font-weight": {
+        "value": "var(--p-font-weight-semibold)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-semibold')"
+      },
+      "text-heading-lg-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-dense)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-dense')"
+      },
+      "text-heading-lg-font-line-height": {
+        "value": "var(--p-font-line-height-600)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-600')"
+      },
+      "text-heading-md-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-heading-md-font-size": {
+        "value": "var(--p-font-size-350)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-350')"
+      },
+      "text-heading-md-font-weight": {
+        "value": "var(--p-font-weight-semibold)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-semibold')"
+      },
+      "text-heading-md-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-normal)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-normal')"
+      },
+      "text-heading-md-font-line-height": {
+        "value": "var(--p-font-line-height-500)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-500')"
+      },
+      "text-heading-sm-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-heading-sm-font-size": {
+        "value": "var(--p-font-size-325)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-325')"
+      },
+      "text-heading-sm-font-weight": {
+        "value": "var(--p-font-weight-semibold)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-semibold')"
+      },
+      "text-heading-sm-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-normal)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-normal')"
+      },
+      "text-heading-sm-font-line-height": {
+        "value": "var(--p-font-line-height-500)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-500')"
+      },
+      "text-heading-xs-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-heading-xs-font-size": {
+        "value": "var(--p-font-size-300)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-300')"
+      },
+      "text-heading-xs-font-weight": {
+        "value": "var(--p-font-weight-semibold)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-semibold')"
+      },
+      "text-heading-xs-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-normal)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-normal')"
+      },
+      "text-heading-xs-font-line-height": {
+        "value": "var(--p-font-line-height-400)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-400')"
+      },
+      "text-body-lg-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-body-lg-font-size": {
+        "value": "var(--p-font-size-350)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-350')"
+      },
+      "text-body-lg-font-weight": {
+        "value": "var(--p-font-weight-regular)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-regular')"
+      },
+      "text-body-lg-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-normal)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-normal')"
+      },
+      "text-body-lg-font-line-height": {
+        "value": "var(--p-font-line-height-500)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-500')"
+      },
+      "text-body-md-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-body-md-font-size": {
+        "value": "var(--p-font-size-325)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-325')"
+      },
+      "text-body-md-font-weight": {
+        "value": "var(--p-font-weight-regular)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-regular')"
+      },
+      "text-body-md-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-normal)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-normal')"
+      },
+      "text-body-md-font-line-height": {
+        "value": "var(--p-font-line-height-500)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-500')"
+      },
+      "text-body-sm-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-body-sm-font-size": {
+        "value": "var(--p-font-size-300)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-300')"
+      },
+      "text-body-sm-font-weight": {
+        "value": "var(--p-font-weight-regular)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-regular')"
+      },
+      "text-body-sm-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-normal)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-normal')"
+      },
+      "text-body-sm-font-line-height": {
+        "value": "var(--p-font-line-height-400)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-400')"
+      },
+      "text-body-xs-font-family": {
+        "value": "var(--p-font-family-sans)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-family-sans')"
+      },
+      "text-body-xs-font-size": {
+        "value": "var(--p-font-size-275)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-size-275')"
+      },
+      "text-body-xs-font-weight": {
+        "value": "var(--p-font-weight-regular)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-weight-regular')"
+      },
+      "text-body-xs-font-letter-spacing": {
+        "value": "var(--p-font-letter-spacing-normal)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-letter-spacing-normal')"
+      },
+      "text-body-xs-font-line-height": {
+        "value": "var(--p-font-line-height-300)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/text.ts",
+        "expression": "createVar('font-line-height-300')"
+      }
+    },
+    "border": {
+      "border-radius-0": {
+        "value": "0px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[0]"
+      },
+      "border-radius-050": {
+        "value": "2px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size['050']"
+      },
+      "border-radius-100": {
+        "value": "4px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[100]"
+      },
+      "border-radius-150": {
+        "value": "6px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[150]"
+      },
+      "border-radius-200": {
+        "value": "8px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[200]"
+      },
+      "border-radius-300": {
+        "value": "12px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[300]"
+      },
+      "border-radius-400": {
+        "value": "16px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[400]"
+      },
+      "border-radius-500": {
+        "value": "20px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[500]"
+      },
+      "border-radius-750": {
+        "value": "30px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[750]"
+      },
+      "border-radius-full": {
+        "value": "9999px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "'9999px'"
+      },
+      "border-width-0": {
+        "value": "0px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size['0']"
+      },
+      "border-width-0165": {
+        "value": "0.66px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size['0165']"
+      },
+      "border-width-025": {
+        "value": "1px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size['025']"
+      },
+      "border-width-050": {
+        "value": "2px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size['050']"
+      },
+      "border-width-100": {
+        "value": "4px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/border.ts",
+        "expression": "size[100]"
+      }
+    },
+    "breakpoints": {
+      "breakpoints-xs": {
+        "value": "0px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/breakpoints.ts",
+        "expression": "'0px'"
+      },
+      "breakpoints-sm": {
+        "value": "490px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/breakpoints.ts",
+        "expression": "'490px'"
+      },
+      "breakpoints-md": {
+        "value": "768px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/breakpoints.ts",
+        "expression": "'768px'"
+      },
+      "breakpoints-lg": {
+        "value": "1040px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/breakpoints.ts",
+        "expression": "'1040px'"
+      },
+      "breakpoints-xl": {
+        "value": "1440px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/breakpoints.ts",
+        "expression": "'1440px'"
+      }
+    },
+    "height": {
+      "height-0": {
+        "value": "0px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[0]"
+      },
+      "height-025": {
+        "value": "1px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size['025']"
+      },
+      "height-050": {
+        "value": "2px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size['050']"
+      },
+      "height-100": {
+        "value": "4px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[100]"
+      },
+      "height-150": {
+        "value": "6px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[150]"
+      },
+      "height-200": {
+        "value": "8px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[200]"
+      },
+      "height-300": {
+        "value": "12px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[300]"
+      },
+      "height-400": {
+        "value": "16px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[400]"
+      },
+      "height-500": {
+        "value": "20px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[500]"
+      },
+      "height-600": {
+        "value": "24px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[600]"
+      },
+      "height-700": {
+        "value": "28px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[700]"
+      },
+      "height-800": {
+        "value": "32px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[800]"
+      },
+      "height-900": {
+        "value": "36px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[900]"
+      },
+      "height-1000": {
+        "value": "40px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[1000]"
+      },
+      "height-1200": {
+        "value": "48px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[1200]"
+      },
+      "height-1600": {
+        "value": "64px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[1600]"
+      },
+      "height-2000": {
+        "value": "80px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[2000]"
+      },
+      "height-2400": {
+        "value": "96px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[2400]"
+      },
+      "height-2800": {
+        "value": "112px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[2800]"
+      },
+      "height-3200": {
+        "value": "128px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/height.ts",
+        "expression": "size[3200]"
+      }
+    },
+    "width": {
+      "width-0": {
+        "value": "0px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[0]"
+      },
+      "width-025": {
+        "value": "1px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size['025']"
+      },
+      "width-050": {
+        "value": "2px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size['050']"
+      },
+      "width-100": {
+        "value": "4px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[100]"
+      },
+      "width-150": {
+        "value": "6px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[150]"
+      },
+      "width-200": {
+        "value": "8px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[200]"
+      },
+      "width-300": {
+        "value": "12px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[300]"
+      },
+      "width-400": {
+        "value": "16px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[400]"
+      },
+      "width-500": {
+        "value": "20px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[500]"
+      },
+      "width-600": {
+        "value": "24px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[600]"
+      },
+      "width-700": {
+        "value": "28px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[700]"
+      },
+      "width-800": {
+        "value": "32px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[800]"
+      },
+      "width-900": {
+        "value": "36px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[900]"
+      },
+      "width-1000": {
+        "value": "40px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[1000]"
+      },
+      "width-1200": {
+        "value": "48px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[1200]"
+      },
+      "width-1600": {
+        "value": "64px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[1600]"
+      },
+      "width-2000": {
+        "value": "80px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[2000]"
+      },
+      "width-2400": {
+        "value": "96px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[2400]"
+      },
+      "width-2800": {
+        "value": "112px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[2800]"
+      },
+      "width-3200": {
+        "value": "128px",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/width.ts",
+        "expression": "size[3200]"
+      }
+    },
+    "zIndex": {
+      "z-index-0": {
+        "value": "auto",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'auto'"
+      },
+      "z-index-1": {
+        "value": "100",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'100'"
+      },
+      "z-index-2": {
+        "value": "400",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'400'"
+      },
+      "z-index-3": {
+        "value": "510",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'510'"
+      },
+      "z-index-4": {
+        "value": "512",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'512'"
+      },
+      "z-index-5": {
+        "value": "513",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'513'"
+      },
+      "z-index-6": {
+        "value": "514",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'514'"
+      },
+      "z-index-7": {
+        "value": "515",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'515'"
+      },
+      "z-index-8": {
+        "value": "516",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'516'"
+      },
+      "z-index-9": {
+        "value": "517",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'517'"
+      },
+      "z-index-10": {
+        "value": "518",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'518'"
+      },
+      "z-index-11": {
+        "value": "519",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'519'"
+      },
+      "z-index-12": {
+        "value": "520",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/zIndex.ts",
+        "expression": "'520'"
+      }
+    },
+    "motion": {
+      "motion-duration-0": {
+        "value": "0ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'0ms'"
+      },
+      "motion-duration-50": {
+        "value": "50ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'50ms'"
+      },
+      "motion-duration-100": {
+        "value": "100ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'100ms'"
+      },
+      "motion-duration-150": {
+        "value": "150ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'150ms'"
+      },
+      "motion-duration-200": {
+        "value": "200ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'200ms'"
+      },
+      "motion-duration-250": {
+        "value": "250ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'250ms'"
+      },
+      "motion-duration-300": {
+        "value": "300ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'300ms'"
+      },
+      "motion-duration-350": {
+        "value": "350ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'350ms'"
+      },
+      "motion-duration-400": {
+        "value": "400ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'400ms'"
+      },
+      "motion-duration-450": {
+        "value": "450ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'450ms'"
+      },
+      "motion-duration-500": {
+        "value": "500ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'500ms'"
+      },
+      "motion-duration-5000": {
+        "value": "5000ms",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'5000ms'"
+      },
+      "motion-ease": {
+        "value": "cubic-bezier(0.25, 0.1, 0.25, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'cubic-bezier(0.25, 0.1, 0.25, 1)'"
+      },
+      "motion-ease-in": {
+        "value": "cubic-bezier(0.42, 0, 1, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'cubic-bezier(0.42, 0, 1, 1)'"
+      },
+      "motion-ease-out": {
+        "value": "cubic-bezier(0.19, 0.91, 0.38, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'cubic-bezier(0.19, 0.91, 0.38, 1)'"
+      },
+      "motion-ease-in-out": {
+        "value": "cubic-bezier(0.42, 0, 0.58, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'cubic-bezier(0.42, 0, 0.58, 1)'"
+      },
+      "motion-linear": {
+        "value": "cubic-bezier(0, 0, 1, 1)",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'cubic-bezier(0, 0, 1, 1)'"
+      },
+      "motion-keyframes-bounce": {
+        "value": "{ from, 65%, 85% { transform: scale(1) } 75% { transform: scale(0.85) } 82.5% { transform: scale(1.05) } }",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'{ from, 65%, 85% { transform: scale(1) } 75% { transform: scale(0.85) } 82.5% { transform: scale(1.05) } }'"
+      },
+      "motion-keyframes-fade-in": {
+        "value": "{ to { opacity: 1 } }",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'{ to { opacity: 1 } }'"
+      },
+      "motion-keyframes-pulse": {
+        "value": "{ from, 75% { transform: scale(0.85); opacity: 1; } to { transform: scale(2.5); opacity: 0; } }",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'{ from, 75% { transform: scale(0.85); opacity: 1; } to { transform: scale(2.5); opacity: 0; } }'"
+      },
+      "motion-keyframes-spin": {
+        "value": "{ to { transform: rotate(1turn) } }",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'{ to { transform: rotate(1turn) } }'"
+      },
+      "motion-keyframes-appear-above": {
+        "value": "{ from { transform: translateY(var(--p-space-100)); opacity: 0; } to { transform: none; opacity: 1; } }",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'{ from { transform: translateY(var(--p-space-100)); opacity: 0; } to { transform: none; opacity: 1; } }'"
+      },
+      "motion-keyframes-appear-below": {
+        "value": "{ from { transform: translateY(calc(var(--p-space-100) * -1)); opacity: 0; } to { transform: none; opacity: 1; } }",
+        "source": "https://github.com/Shopify/polaris-react-archive/blob/3f7954ae42fabf26d63cee68c23ceebfd7ef0972/polaris-tokens/src/themes/base/motion.ts",
+        "expression": "'{ from { transform: translateY(calc(var(--p-space-100) * -1)); opacity: 0; } to { transform: none; opacity: 1; } }'"
+      }
+    }
+  }
+}

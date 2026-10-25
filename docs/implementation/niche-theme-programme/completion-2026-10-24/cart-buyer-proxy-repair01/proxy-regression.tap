@@ -1,0 +1,526 @@
+TAP version 13
+# Subtest: GET /profile: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 1 - GET /profile: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 4.838458
+  type: 'test'
+  ...
+# Subtest: PATCH /profile: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 2 - PATCH /profile: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 1.291542
+  type: 'test'
+  ...
+# Subtest: PATCH /profile: foreign or missing Origin cannot trigger a cookie-authenticated write
+ok 3 - PATCH /profile: foreign or missing Origin cannot trigger a cookie-authenticated write
+  ---
+  duration_ms: 0.844708
+  type: 'test'
+  ...
+# Subtest: GET /addresses: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 4 - GET /addresses: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.837333
+  type: 'test'
+  ...
+# Subtest: POST /addresses: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 5 - POST /addresses: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.852791
+  type: 'test'
+  ...
+# Subtest: POST /addresses: foreign or missing Origin cannot trigger a cookie-authenticated write
+ok 6 - POST /addresses: foreign or missing Origin cannot trigger a cookie-authenticated write
+  ---
+  duration_ms: 0.1645
+  type: 'test'
+  ...
+# Subtest: PATCH /addresses/:id: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 7 - PATCH /addresses/:id: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.517792
+  type: 'test'
+  ...
+# Subtest: PATCH /addresses/:id: foreign or missing Origin cannot trigger a cookie-authenticated write
+ok 8 - PATCH /addresses/:id: foreign or missing Origin cannot trigger a cookie-authenticated write
+  ---
+  duration_ms: 0.114041
+  type: 'test'
+  ...
+# Subtest: DELETE /addresses/:id: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 9 - DELETE /addresses/:id: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.532667
+  type: 'test'
+  ...
+# Subtest: DELETE /addresses/:id: foreign or missing Origin cannot trigger a cookie-authenticated write
+ok 10 - DELETE /addresses/:id: foreign or missing Origin cannot trigger a cookie-authenticated write
+  ---
+  duration_ms: 0.286542
+  type: 'test'
+  ...
+# Subtest: GET /orders: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 11 - GET /orders: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 1.829916
+  type: 'test'
+  ...
+# Subtest: POST /orders claim: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 12 - POST /orders claim: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.467625
+  type: 'test'
+  ...
+# Subtest: POST /orders claim: foreign or missing Origin cannot trigger a cookie-authenticated write
+ok 13 - POST /orders claim: foreign or missing Origin cannot trigger a cookie-authenticated write
+  ---
+  duration_ms: 0.164208
+  type: 'test'
+  ...
+# Subtest: GET /orders?order_id=:id: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 14 - GET /orders?order_id=:id: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.365417
+  type: 'test'
+  ...
+# Subtest: GET /wishlist: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 15 - GET /wishlist: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.663584
+  type: 'test'
+  ...
+# Subtest: POST /wishlist: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 16 - POST /wishlist: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.527584
+  type: 'test'
+  ...
+# Subtest: POST /wishlist: foreign or missing Origin cannot trigger a cookie-authenticated write
+ok 17 - POST /wishlist: foreign or missing Origin cannot trigger a cookie-authenticated write
+  ---
+  duration_ms: 0.106834
+  type: 'test'
+  ...
+# Subtest: DELETE /wishlist: host resolution rejects another site's cookie and fails closed on unavailable resolution
+ok 18 - DELETE /wishlist: host resolution rejects another site's cookie and fails closed on unavailable resolution
+  ---
+  duration_ms: 0.302916
+  type: 'test'
+  ...
+# Subtest: DELETE /wishlist: foreign or missing Origin cannot trigger a cookie-authenticated write
+ok 19 - DELETE /wishlist: foreign or missing Origin cannot trigger a cookie-authenticated write
+  ---
+  duration_ms: 0.09825
+  type: 'test'
+  ...
+# Subtest: GET /orders forwards the authoritative site and only pagination fields, returning canonical history
+ok 20 - GET /orders forwards the authoritative site and only pagination fields, returning canonical history
+  ---
+  duration_ms: 1.354875
+  type: 'test'
+  ...
+# Subtest: GET /orders preserves auth/validation status but sanitizes failures and malformed success bodies
+ok 21 - GET /orders preserves auth/validation status but sanitizes failures and malformed success bodies
+  ---
+  duration_ms: 1.873708
+  type: 'test'
+  ...
+# Subtest: GET /orders?order_id= uses only the selected order id and the host-bound buyer session
+ok 22 - GET /orders?order_id= uses only the selected order id and the host-bound buyer session
+  ---
+  duration_ms: 1.536875
+  type: 'test'
+  ...
+# Subtest: POST /orders claims only this host-resolved store and returns aggregate counts
+ok 23 - POST /orders claims only this host-resolved store and returns aggregate counts
+  ---
+  duration_ms: 0.323125
+  type: 'test'
+  ...
+# Subtest: POST /orders maps unverified email, auth and gateway failures without leaking upstream detail
+ok 24 - POST /orders maps unverified email, auth and gateway failures without leaking upstream detail
+  ---
+  duration_ms: 0.719167
+  type: 'test'
+  ...
+# Subtest: POST /orders form submission redirects back to a safe same-origin page with a status code
+ok 25 - POST /orders form submission redirects back to a safe same-origin page with a status code
+  ---
+  duration_ms: 0.774292
+  type: 'test'
+  ...
+# Subtest: GET /profile: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 26 - GET /profile: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.497333
+  type: 'test'
+  ...
+# Subtest: PATCH /profile: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 27 - PATCH /profile: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.33
+  type: 'test'
+  ...
+# Subtest: GET /addresses: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 28 - GET /addresses: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.504041
+  type: 'test'
+  ...
+# Subtest: POST /addresses: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 29 - POST /addresses: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.535042
+  type: 'test'
+  ...
+# Subtest: PATCH /addresses/:id: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 30 - PATCH /addresses/:id: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.36525
+  type: 'test'
+  ...
+# Subtest: DELETE /addresses/:id: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 31 - DELETE /addresses/:id: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.344417
+  type: 'test'
+  ...
+# Subtest: GET /orders: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 32 - GET /orders: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.574083
+  type: 'test'
+  ...
+# Subtest: POST /orders claim: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 33 - POST /orders claim: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.311083
+  type: 'test'
+  ...
+# Subtest: GET /orders?order_id=:id: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 34 - GET /orders?order_id=:id: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.428292
+  type: 'test'
+  ...
+# Subtest: GET /wishlist: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 35 - GET /wishlist: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.276458
+  type: 'test'
+  ...
+# Subtest: POST /wishlist: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 36 - POST /wishlist: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.368917
+  type: 'test'
+  ...
+# Subtest: DELETE /wishlist: every missing or malformed buyer session is a 401 and the gateway is never called
+ok 37 - DELETE /wishlist: every missing or malformed buyer session is a 401 and the gateway is never called
+  ---
+  duration_ms: 0.290916
+  type: 'test'
+  ...
+# Subtest: GET /profile forwards only the buyer token to /storefront/buyer/profile and returns just the buyer
+ok 38 - GET /profile forwards only the buyer token to /storefront/buyer/profile and returns just the buyer
+  ---
+  duration_ms: 0.271625
+  type: 'test'
+  ...
+# Subtest: GET /profile: an expired or revoked session (gateway 401) is a 401, and the gateway body is not echoed
+ok 39 - GET /profile: an expired or revoked session (gateway 401) is a 401, and the gateway body is not echoed
+  ---
+  duration_ms: 0.154084
+  type: 'test'
+  ...
+# Subtest: GET /profile: a network failure or a gateway 5xx is a generic 503 that carries none of the underlying detail
+ok 40 - GET /profile: a network failure or a gateway 5xx is a generic 503 that carries none of the underlying detail
+  ---
+  duration_ms: 0.247125
+  type: 'test'
+  ...
+# Subtest: PATCH /profile binds the write to the currently verified buyer and forwards ONLY profile fields
+ok 41 - PATCH /profile binds the write to the currently verified buyer and forwards ONLY profile fields
+  ---
+  duration_ms: 0.280291
+  type: 'test'
+  ...
+# Subtest: PATCH /profile refuses a stale form identity before forwarding any write
+ok 42 - PATCH /profile refuses a stale form identity before forwarding any write
+  ---
+  duration_ms: 0.173625
+  type: 'test'
+  ...
+# Subtest: PATCH /profile fails closed when the signed-in buyer identity cannot be checked
+ok 43 - PATCH /profile fails closed when the signed-in buyer identity cannot be checked
+  ---
+  duration_ms: 0.173917
+  type: 'test'
+  ...
+# Subtest: PATCH /profile: a body with none of the allowed fields, or no JSON body, is a 400 and the gateway is never called
+ok 44 - PATCH /profile: a body with none of the allowed fields, or no JSON body, is a 400 and the gateway is never called
+  ---
+  duration_ms: 0.292916
+  type: 'test'
+  ...
+# Subtest: PATCH /profile: a gateway client-error message passes through (400 keeps its status); a 5xx body is never relayed
+ok 45 - PATCH /profile: a gateway client-error message passes through (400 keeps its status); a 5xx body is never relayed
+  ---
+  duration_ms: 0.689292
+  type: 'test'
+  ...
+# Subtest: GET /addresses forwards only the buyer token and returns just the address list
+ok 46 - GET /addresses forwards only the buyer token and returns just the address list
+  ---
+  duration_ms: 0.156417
+  type: 'test'
+  ...
+# Subtest: GET /addresses: an empty or missing list is an empty array, never null; failures are a generic 503
+ok 47 - GET /addresses: an empty or missing list is an empty array, never null; failures are a generic 503
+  ---
+  duration_ms: 0.248042
+  type: 'test'
+  ...
+# Subtest: POST /addresses forwards the body to the gateway as sent and answers 201 with the created address
+ok 48 - POST /addresses forwards the body to the gateway as sent and answers 201 with the created address
+  ---
+  duration_ms: 0.230292
+  type: 'test'
+  ...
+# Subtest: buyer address writes refuse a stale expected principal and never forward the comparison ID
+ok 49 - buyer address writes refuse a stale expected principal and never forward the comparison ID
+  ---
+  duration_ms: 0.672875
+  type: 'test'
+  ...
+# Subtest: buyer address writes fail closed when identity preflight is unavailable or the comparison ID is absent
+ok 50 - buyer address writes fail closed when identity preflight is unavailable or the comparison ID is absent
+  ---
+  duration_ms: 1.5435
+  type: 'test'
+  ...
+# Subtest: POST /addresses: no JSON body is a 400 without a gateway call; a gateway 400 keeps its message; other failures are 503
+ok 51 - POST /addresses: no JSON body is a 400 without a gateway call; a gateway 400 keeps its message; other failures are 503
+  ---
+  duration_ms: 0.81775
+  type: 'test'
+  ...
+# Subtest: PATCH /addresses/:id forwards to that one address and returns the updated address
+ok 52 - PATCH /addresses/:id forwards to that one address and returns the updated address
+  ---
+  duration_ms: 0.3395
+  type: 'test'
+  ...
+# Subtest: PATCH /addresses/:id: a gateway 400 keeps its message; a 5xx body is never relayed
+ok 53 - PATCH /addresses/:id: a gateway 400 keeps its message; a 5xx body is never relayed
+  ---
+  duration_ms: 0.753625
+  type: 'test'
+  ...
+# Subtest: an address id in the URL is only ever a path segment: traversal and query injection are encoded, not interpreted
+ok 54 - an address id in the URL is only ever a path segment: traversal and query injection are encoded, not interpreted
+  ---
+  duration_ms: 0.392584
+  type: 'test'
+  ...
+# Subtest: another buyer's address is indistinguishable from a missing one: gateway 404 is a plain 404 for PATCH and DELETE
+ok 55 - another buyer's address is indistinguishable from a missing one: gateway 404 is a plain 404 for PATCH and DELETE
+  ---
+  duration_ms: 0.434416
+  type: 'test'
+  ...
+# Subtest: DELETE /addresses/:id answers { deleted: true } on success; a gateway 401 is a 401; other failures are a generic 503
+ok 56 - DELETE /addresses/:id answers { deleted: true } on success; a gateway 401 is a 401; other failures are a generic 503
+  ---
+  duration_ms: 0.493667
+  type: 'test'
+  ...
+# Subtest: two different buyers never share a session: each request carries exactly its own token
+ok 57 - two different buyers never share a session: each request carries exactly its own token
+  ---
+  duration_ms: 0.2195
+  type: 'test'
+  ...
+# Subtest: buyer wishlist proxy returns only the explicit store relationship state and product ids
+ok 58 - buyer wishlist proxy returns only the explicit store relationship state and product ids
+  ---
+  duration_ms: 0.261041
+  type: 'test'
+  ...
+# Subtest: buyer wishlist writes project only product fields and cannot override site or customer ownership
+ok 59 - buyer wishlist writes project only product fields and cannot override site or customer ownership
+  ---
+  duration_ms: 2.010542
+  type: 'test'
+  ...
+# Subtest: buyer wishlist refuses a stale cross-tab mutation before calling the wishlist writer
+ok 60 - buyer wishlist refuses a stale cross-tab mutation before calling the wishlist writer
+  ---
+  duration_ms: 0.172875
+  type: 'test'
+  ...
+# Subtest: buyer wishlist fails closed when its loaded principal is missing or cannot be checked
+ok 61 - buyer wishlist fails closed when its loaded principal is missing or cannot be checked
+  ---
+  duration_ms: 0.229084
+  type: 'test'
+  ...
+# Subtest: buyer wishlist requires the explicit link and sanitizes an unavailable gateway
+ok 62 - buyer wishlist requires the explicit link and sanitizes an unavailable gateway
+  ---
+  duration_ms: 0.54825
+  type: 'test'
+  ...
+# Subtest: POST /api/reviews forwards only review content through the canonical buyer session
+ok 63 - POST /api/reviews forwards only review content through the canonical buyer session
+  ---
+  duration_ms: 0.392417
+  type: 'test'
+  ...
+# Subtest: POST /api/reviews refuses a stale buyer draft before calling the review writer
+ok 64 - POST /api/reviews refuses a stale buyer draft before calling the review writer
+  ---
+  duration_ms: 0.170166
+  type: 'test'
+  ...
+# Subtest: POST /api/reviews fails closed when the rendered buyer is missing or the current profile cannot be verified
+ok 65 - POST /api/reviews fails closed when the rendered buyer is missing or the current profile cannot be verified
+  ---
+  duration_ms: 0.236583
+  type: 'test'
+  ...
+# Subtest: POST /api/reviews requires a linked store account and hides upstream details
+ok 66 - POST /api/reviews requires a linked store account and hides upstream details
+  ---
+  duration_ms: 0.344916
+  type: 'test'
+  ...
+# Subtest: GET /api/buyer/loyalty forwards the current store token and projects only exact balance fields
+ok 67 - GET /api/buyer/loyalty forwards the current store token and projects only exact balance fields
+  ---
+  duration_ms: 0.230459
+  type: 'test'
+  ...
+# Subtest: GET /api/buyer/loyalty distinguishes no programme from zero points and fails closed on unsafe balances
+ok 68 - GET /api/buyer/loyalty distinguishes no programme from zero points and fails closed on unsafe balances
+  ---
+  duration_ms: 0.678292
+  type: 'test'
+  ...
+# Subtest: GET /api/buyer/loyalty/history returns only validated ledger fields
+ok 69 - GET /api/buyer/loyalty/history returns only validated ledger fields
+  ---
+  duration_ms: 0.539625
+  type: 'test'
+  ...
+# Subtest: a signed buyer cookie is sent only server-to-server to the store-bound checkout handoff
+ok 70 - a signed buyer cookie is sent only server-to-server to the store-bound checkout handoff
+  ---
+  duration_ms: 4.853792
+  type: 'test'
+  ...
+# Subtest: guest checkout remains available without adding an identity header
+ok 71 - guest checkout remains available without adding an identity header
+  ---
+  duration_ms: 0.982791
+  type: 'test'
+  ...
+# Subtest: same-origin checkout survives a trusted reverse proxy host while cross-site requests stay denied
+ok 72 - same-origin checkout survives a trusted reverse proxy host while cross-site requests stay denied
+  ---
+  duration_ms: 1.307666
+  type: 'test'
+  ...
+# Subtest: foreign origins, malformed cookies, invalid input, and unsafe checkout hosts fail closed
+ok 73 - foreign origins, malformed cookies, invalid input, and unsafe checkout hosts fail closed
+  ---
+  duration_ms: 2.085625
+  type: 'test'
+  ...
+# Subtest: production handoff honors its explicit checkout origin while rejecting other ports and tenant checkout hosts
+ok 74 - production handoff honors its explicit checkout origin while rejecting other ports and tenant checkout hosts
+  ---
+  duration_ms: 1.029
+  type: 'test'
+  ...
+# Subtest: signed-in cart PATCH forwards only the host-bound buyer session and retains acknowledged response
+ok 75 - signed-in cart PATCH forwards only the host-bound buyer session and retains acknowledged response
+  ---
+  duration_ms: 5.691958
+  type: 'test'
+  ...
+# Subtest: guest cart writes keep capability flow without caller-supplied identity
+ok 76 - guest cart writes keep capability flow without caller-supplied identity
+  ---
+  duration_ms: 1.145042
+  type: 'test'
+  ...
+# Subtest: cart GET remains available and never forwards identity or response cookies
+ok 77 - cart GET remains available and never forwards identity or response cookies
+  ---
+  duration_ms: 0.67025
+  type: 'test'
+  ...
+# Subtest: cross-site mutation is refused before any upstream write
+ok 78 - cross-site mutation is refused before any upstream write
+  ---
+  duration_ms: 0.362208
+  type: 'test'
+  ...
+# Subtest: malformed buyer cookie fails closed instead of downgrading to guest
+ok 79 - malformed buyer cookie fails closed instead of downgrading to guest
+  ---
+  duration_ms: 0.32175
+  type: 'test'
+  ...
+# Subtest: foreign cookie site cannot be forwarded to the current store
+ok 80 - foreign cookie site cannot be forwarded to the current store
+  ---
+  duration_ms: 0.860792
+  type: 'test'
+  ...
+# Subtest: a valid cookie cannot target another storefront path
+ok 81 - a valid cookie cannot target another storefront path
+  ---
+  duration_ms: 0.589375
+  type: 'test'
+  ...
+# Subtest: failed host resolution returns sanitized unavailable without a write
+ok 82 - failed host resolution returns sanitized unavailable without a write
+  ---
+  duration_ms: 0.395083
+  type: 'test'
+  ...
+# Subtest: invalid route, body and content type never reach cart authority
+ok 83 - invalid route, body and content type never reach cart authority
+  ---
+  duration_ms: 4.503125
+  type: 'test'
+  ...
+# Subtest: canonical stale and checkout-lock refusals pass through without retry
+ok 84 - canonical stale and checkout-lock refusals pass through without retry
+  ---
+  duration_ms: 1.454708
+  type: 'test'
+  ...
+# Subtest: upstream internal failures are sanitized without diagnostic leakage
+ok 85 - upstream internal failures are sanitized without diagnostic leakage
+  ---
+  duration_ms: 0.491625
+  type: 'test'
+  ...
+# Subtest: public rewrite is fallback so the dynamic cart handler executes first
+ok 86 - public rewrite is fallback so the dynamic cart handler executes first
+  ---
+  duration_ms: 0.126708
+  type: 'test'
+  ...
+1..86
+# tests 86
+# suites 0
+# pass 86
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 641.842167

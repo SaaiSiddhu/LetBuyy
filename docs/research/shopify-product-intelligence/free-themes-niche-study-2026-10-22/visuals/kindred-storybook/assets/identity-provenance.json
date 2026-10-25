@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-23",
+  "surface": "admin",
+  "theme": "light",
+  "sources": [
+    "apps/platform/identity/src/app/globals.css",
+    "apps/platform/identity/src/app/layout.tsx",
+    "packages/typescript/ui/src/tokens.ts"
+  ],
+  "primary": "#2C2642",
+  "primaryHover": "#362C58",
+  "primaryActive": "#181524",
+  "page": "#F6F7F9",
+  "surfaceColor": "#FFFFFF",
+  "text": "#111827",
+  "subdued": "#6B7280",
+  "inputBorder": "#8F88A9",
+  "focus": "#6C54C4",
+  "font": {
+    "family": "Geist Sans",
+    "source": "packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+    "copy": "assets/identity-geist-sans-latin.woff2",
+    "sha256": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8"
+  },
+  "logoSource": "apps/platform/identity/public/icons/letbuyy-logo-light.svg",
+  "logoMatchesCanonicalSource": true,
+  "productionSourceChanged": false
+}

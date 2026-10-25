@@ -1,0 +1,70 @@
+{
+  "recordedAt": "2026-10-24T05:06:13.423382+00:00",
+  "classification": "DELTA_CHECKPOINT_NOT_WHOLE_THEME_ACCEPTANCE",
+  "priorCheckpoint": {
+    "path": "programme-checkpoint-20261024-0439.json",
+    "sha256": "3c1aee314852c770373512abf733e499e77d8fa7149d7a894f6b7aa6b7983caa"
+  },
+  "runId": "936e5f577646",
+  "allTenAccepted": false,
+  "dewdropRecovery": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-R01-baseline-recovery-completed.json",
+    "sha256": "39daf82c93238c6f470124263fd2ee248bbc9a73798248c9a438d20f607702f5",
+    "nineChecks": true,
+    "currentVersion": 36,
+    "cart": "two original Pink at560, subtotal1120; full reload retained",
+    "remainingStock": "Rose4/Pink2/Terra0, no refill",
+    "bothOrdersAndSnapshotsExact": true
+  },
+  "dewdropControllerLedger": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-results-in-progress.json",
+    "sha256": "e5cad050eb3c0ea8936d33e912c53ee99db5980590b573521b2f6b7ece821e61",
+    "reported": {
+      "PASS": 24,
+      "PARTIAL": 6,
+      "NOT_RUN": 0
+    },
+    "independentOwnerAudit": "IN_PROGRESS_NO_WHOLE30_PROMOTION"
+  },
+  "previewConfigurationCorrection": {
+    "admission": {
+      "path": "editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+    },
+    "actualRetake": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-font-retake-02-result.json",
+      "sha256": "2e813586664fc730cc9b2d1b4019f89f8a80fc2a92ca3d3b3051ba5087577505"
+    },
+    "rootVisualInspection": "Viewed actual editor/public JPEGs. Editor iframe shows serif heading + product image; public heading serif. Normal section-selection bridge reported actual. Cross-origin computed iframe family unavailable; different effective viewport widths; no all-font/responsive pixel parity claim.",
+    "sourceChanged": false,
+    "oldBlockedFailurePreserved": true,
+    "status": "SCOPED_CONFIG_RETAKE_PASS"
+  },
+  "nextUI": {
+    "theme": "Pantry",
+    "cases": "P00-P12",
+    "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "packetSha256": "f4925aaed2d9462f231cd8964bd02bc57a446bb2cfc7f49150409caa55ccb1b6",
+    "status": "NAMED_ALLOCATION_GRANTED_ACTUAL_P00_AND_FOOD_VALIDATION_UNDERWAY",
+    "noNewFixture": true,
+    "safeCutoffUtc": "2026-10-24T08:50:00Z"
+  },
+  "publisher393": {
+    "runId": "fff117a317a5",
+    "nativeResult": {
+      "path": "publisher-acl393/native-runs/03/result.json",
+      "sha256": "b6a45b06364be998ccff5e8c4d2350b75d18c17c6934bff71ae6d285d86db90b"
+    },
+    "actualTAP": {
+      "tests": 5,
+      "pass": 3,
+      "fail": 2,
+      "skip": 0
+    },
+    "passed": "phase1 actual own install/GUC positive; phase2 exact UP+replay business/catalog invariants; phase3 direct tenant own/foreign/unset and anon/authenticated42501 with no effects",
+    "failure": "Phase4 mounted normal save retry200/replayedtrue: complete public-table hash assertion detected fresh request-auth claims/request logs/telemetry, not a demonstrated commerce-data duplicate.",
+    "fullQualification": false,
+    "next": "Dedicated phase4 test-only precise operational attribution/classification correction; full directSQL invariants and all security checks retained. No native04 or393394 source emission until reviewed."
+  },
+  "circuitCount": "Closed count/pagination scratch implementation and focused restoration tests active; no shared production writes/new privileges/native execution."
+}

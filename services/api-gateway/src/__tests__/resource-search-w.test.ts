@@ -1,10 +1,9 @@
 // ──────────────────────────────────────────────────────────────────────────────
 // Phase W — Cross-tenant isolation tests for the resource-search route.
 //
-// TESTING APPROACH: source-inspection (readFileSync) — the standard pattern in
-// this gateway test suite (see tenant-isolation.test.ts, theme-library-q.test.ts).
-// The Hono+Cloudflare Worker runtime cannot be fully exercised in Node.js without
-// a miniflare harness; source inspection definitively proves tenancy properties.
+// Source guards supplement the mounted-worker / real-Postgres resource-search
+// cases in owned-db/threadline-lifecycle.postgres.test.ts. Source presence alone
+// does not prove that projections match the schema or that resources are returned.
 //
 // COVERAGE
 //   1. resolveCustomUser called before any data table query (merchant gate)
@@ -236,11 +235,11 @@ test('W-T11: page search falls back to legacy pages table when storefront_pages 
 
 // ── RESPONSE SHAPE: no sensitive fields exposed ───────────────────────────────
 
-test('W-T12: results are slim — only id, title, handle, slug are selected; no price/email/token', () => {
-    // Products: only id, name, handle
-    assert.match(ROUTE_SRC, /select\('id,name,handle'\)/, 'products select must only fetch id,name,handle');
-    // Collections: only id, title, handle
-    assert.match(ROUTE_SRC, /select\('id,title,handle'\)/, 'collections select must only fetch id,title,handle');
+test('W-T12: results use slim schema-backed identity fields; no price/email/token', () => {
+    const products = ROUTE_SRC.slice(ROUTE_SRC.indexOf('async function searchProducts('), ROUTE_SRC.indexOf('async function searchCollections('));
+    const collections = ROUTE_SRC.slice(ROUTE_SRC.indexOf('async function searchCollections('), ROUTE_SRC.indexOf('async function searchPages('));
+    assert.match(products, /select\('id,name,slug'\)/, 'products use their actual slug column');
+    assert.match(collections, /select\('id,title'\)/, 'collections have no handle column');
     // Blog posts and pages: only id, title, slug
     assert.match(ROUTE_SRC, /select\('id,title,slug'\)/, 'pages/blog_posts select must only fetch id,title,slug');
 

@@ -1,0 +1,16 @@
+{
+  "retainedSource01": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness01",
+  "oldNineChecks": "Reused, except relevant modified runtime contract checks repeated in11case cohort; unchanged prebuilt3 not rerun.",
+  "failures": [
+    {
+      "kind": "dependency assembly",
+      "detail": "Inherited unused hoist.bin self-link stopped first materialization; corrected onlynew02 installed wrapper layout, old01 unchanged."
+    },
+    {
+      "kind": "compiler evidence output",
+      "detail": "First reused compiler helper completed compilation but failed to save JSON because preservation-evidence folder absent. Directory created and same compiler-only helper rerun successfully; no diagnostic credit from failed save."
+    }
+  ],
+  "priorTypeContext": "Frozen01 TYPECHECK_HISTORY.json retains five baseline diagnostics and one intermediate business-resolution-leak failure; narrower current context does not globally fix them.",
+  "apparel04": "Separate exact cohort15caf68f859f terminal1/spawnELOOP/0tests/full322/cleanupempty, all3cohorts consumed; no retry/newNative under this source grant."
+}

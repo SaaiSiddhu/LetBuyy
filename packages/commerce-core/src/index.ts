@@ -1,5 +1,25 @@
 import { z } from 'zod';
+export * from './storefront-discovery';
+export { summarizeProductFacts, type ProductFactSummarySection, type ProductFactSummaryRow } from './product-facts-summary';
+export { ProductFactSnapshotSchema, PersonalizationCartDraftSchema, PersonalizationReviewQuerySchema, PersonalizationReviewContextSchema, prepareProductFactSnapshot, readProductFactSnapshot, personalizationReviewFingerprint, validatePersonalizationRevisionTransition, type ProductFactSnapshot, type PersonalizationCartDraft, type PersonalizationReviewContext, type ProductFactSnapshotSource, type PreparedProductFactSnapshot } from './product-fact-snapshot';
+import { ProductMetadataSchema, type ApparelFacts } from './apparel';
+import { ProductVariantMetadataSchema, type ProductNicheFacts, type VariantNicheFacts } from './niche-product-facts';
+import { readGiftFacts, validateGiftMediaRoles } from './kindred-facts';
+import { readBeautyFacts } from './dewdrop-facts';
+export { ApparelFactsSchema, ProductMetadataSchema, StorefrontApparelQuerySchema, readApparelFacts, type ApparelFacts, type StorefrontApparelQuery } from './apparel';
+export { PRODUCT_NICHE_FACT_SCHEMAS, VARIANT_NICHE_FACT_SCHEMAS, ProductVariantMetadataSchema, readProductNicheFacts, readVariantNicheFacts, type ProductNicheFacts, type ProductNicheNamespace, type VariantNicheFacts } from './niche-product-facts';
+export { buildProductFactPresentation, buildVariantFactPresentation } from './product-fact-presentation';
+export { ToyFactsSchema, ToyVariantFactsSchema, ToyAgeBandSchema, ToyDimensionsSchema, readToyFacts, resolveToyFacts, type ToyFacts, type ToyVariantFacts } from './playfield-facts';
+export { ElectronicsFactsSchema, ElectronicsConnectorSchema, readElectronicsFacts, normalizeElectronicsMeasurement, type ElectronicsFacts } from './circuit-facts';
+export { FoodFactsSchema, FoodVariantFactsSchema, FoodNetQuantitySchema, readFoodFacts, deriveFoodUnitPrice, foodPackSummary, type FoodFacts, type FoodVariantFacts, type FoodNetQuantity, type FoodUnitPrice } from './pantry-facts';
+export { FurnitureFactsSchema, FurnitureVariantFactsSchema, FurnitureDimensionsSchema, FurnitureLengthSchema, FurnitureWeightSchema, readFurnitureFacts, resolveFurnitureFacts, furnitureLengthMm, type FurnitureFacts, type FurnitureVariantFacts, type FurnitureDimensions } from './habitat-facts';
+export { GiftFactsSchema, readGiftFacts, validateGiftMediaRoles, rebindGiftMediaRoles, type GiftFacts } from './kindred-facts';
+export { PersonalizationFactsSchema, PersonalizationDraftSchema, AcceptedPersonalizationSchema, readPersonalizationFacts, reviewPersonalization, personalizationFingerprintInput, countPersonalizationGraphemes, updatePersonalizationDraft, type PersonalizationFacts, type PersonalizationDraft, type AcceptedPersonalization, type PersonalizationReview } from './madeyours-facts';
+export { BeautyFactsSchema, BeautyShadeSchema, readBeautyFacts, type BeautyFacts, type BeautyShade } from './dewdrop-facts';
+export { SportsFactsSchema, SportsVariantFactsSchema, readSportsFacts, resolveSportsMeasurements, type SportsFacts, type SportsVariantFacts } from './trailmark-facts';
+export { BooksFactsSchema, BooksVariantFactsSchema, readBooksFacts, mergeBooksVariantFacts, type BooksFacts, type BooksVariantFacts } from './marginalia-facts';
 export { ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
+export { CollectionListPaginationSchema, CollectionListQuerySchema, type CollectionListPagination, type CollectionListQuery, type CollectionListQueryInput } from '@letbuyy/shared-types';
 import { CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
@@ -13,6 +33,10 @@ export const ProductVariantSchema = z.object({
   compare_price: MoneySchema.optional().nullable(),
   stock: z.number().int().min(0).default(0),
   options: z.record(z.string(), z.string().max(100)).default({}),
+  // Inline facts belong to the durable variant row. Omission on edit preserves
+  // existing facts; an explicit empty object clears them, and a namespace null
+  // marks that namespace unknown. A null metadata envelope is invalid.
+  metadata: ProductVariantMetadataSchema.optional(),
 });
 
 export const ProductOptionSchema = z.object({
@@ -29,6 +53,22 @@ export const ProductEditVariantSchema = ProductVariantSchema.omit({ stock: true,
   options: z.record(z.string(), z.string().max(100)).optional(),
 });
 
+function validateProductFactReferences(data: {
+  metadata?: Record<string, unknown>; images?: string[];
+  product_options?: Array<{ name: string; values?: string[] }>;
+}, ctx: z.RefinementCtx) {
+  if (data.images !== undefined && !validateGiftMediaRoles(readGiftFacts(data.metadata), data.images)) {
+    ctx.addIssue({ code: 'custom', path: ['metadata', 'gifts', 'mediaRoles'], message: 'Image roles must refer to supplied product images.' });
+  }
+  const beauty = readBeautyFacts(data.metadata);
+  if (beauty?.shades.length && data.product_options !== undefined) {
+    const option = data.product_options.find(candidate => candidate.name === beauty.shadeOptionName);
+    if (!option || beauty.shades.some(shade => !option.values?.includes(shade.value))) {
+      ctx.addIssue({ code: 'custom', path: ['metadata', 'beauty', 'shades'], message: 'Each shade must belong to its named product option.' });
+    }
+  }
+}
+
 export const CreateProductSchema = z
   .object({
     store_id: UuidSchema,
@@ -43,7 +83,7 @@ export const CreateProductSchema = z
     product_type: z.string().max(100).optional().nullable(),
     vendor: z.string().max(100).optional().nullable(),
     tags: z.array(z.string().max(50)).max(30).default([]),
-    metadata: z.record(z.string(), z.unknown()).default({}),
+    metadata: ProductMetadataSchema.default({}),
     variants: z.array(ProductVariantSchema).max(100).default([]),
     product_options: z.array(ProductOptionSchema).max(10).default([]),
     stock: z.number().int().min(0).default(10),
@@ -69,7 +109,7 @@ export const CreateProductSchema = z
   .refine(
     (data) => !data.compare_price || data.compare_price > data.price,
     { message: 'Compare-at price must exceed selling price', path: ['compare_price'] },
-  );
+  ).superRefine((data, ctx) => validateProductFactReferences(data, ctx));
 
 export const UpdateProductSchema = z.object({
   name: z.string().min(1).max(256).trim().optional(),
@@ -82,7 +122,7 @@ export const UpdateProductSchema = z.object({
   product_type: z.string().max(100).optional().nullable(),
   vendor: z.string().max(100).optional().nullable(),
   tags: z.array(z.string().max(50)).max(30).optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
+  metadata: ProductMetadataSchema.optional(),
   variants: z.array(ProductEditVariantSchema).max(100).optional(),
   product_options: z.array(ProductOptionSchema).max(10).optional(),
   stock: z.number().int().min(0).optional(),
@@ -117,7 +157,7 @@ export const UpdateProductSchema = z.object({
   idempotency_key: UuidSchema,
 }).refine(data => data.status === undefined || data.is_active === (data.status === 'active'), {
   message: 'Status requires its matching active flag', path: ['is_active'],
-});
+}).superRefine((data, ctx) => validateProductFactReferences(data, ctx));
 
 export const ListProductsQuery = z.object({
   store_id: UuidSchema.optional(),
@@ -481,7 +521,7 @@ export interface Product {
   updated_at: string;
 }
 
-export interface ProductVariant {
+export interface ProductVariant extends VariantNicheFacts {
   id: string;
   product_id?: string;
   name?: string;
@@ -496,6 +536,7 @@ export interface ProductVariant {
   inventory_qty?: number;
   options: Record<string, string>;
   image?: string;
+  metadata?: z.infer<typeof ProductVariantMetadataSchema>;
 }
 
 export interface ProductOption {
@@ -554,7 +595,7 @@ export interface VariantOption {
   values: string[];
 }
 
-export interface ProductModel {
+export interface ProductModel extends ProductNicheFacts {
   id: string;
   sellerId?: string;
   storeId?: string;
@@ -577,6 +618,7 @@ export interface ProductModel {
   variantOptions?: VariantOption[];
   tags?: string[];
   specifications?: Record<string, string>;
+  apparel?: ApparelFacts | null;
   seoTitle?: string;
   seoDescription?: string;
   isFeatured?: boolean;
@@ -1176,6 +1218,8 @@ export function mapInventoryLevelRecord(level: InventoryLevelSourceRow): Invento
 }
 
 export function planProductCreate(input: CreateProductCommand): ProductCreatePlan {
+  // Direct adapter callers receive the same validation as the HTTP boundary.
+  input = CreateProductSchema.parse(input);
   const slug = generateProductSlug(input.url_handle || input.name);
   const initialStock = input.stock ?? 10;
 

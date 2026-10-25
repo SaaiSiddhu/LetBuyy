@@ -102,42 +102,18 @@ class HelpScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Our support team is available 24/7 to help you',
+            'Contact the LetBuyy support team for help with your store',
             style: TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => _launchWhatsApp(context),
-                  icon: const Icon(Icons.chat_rounded, size: 18),
-                  label: const Text('Chat'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _launchEmail(context),
-                  icon: const Icon(Icons.email_rounded, size: 18),
-                  label: const Text('Email'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          ElevatedButton.icon(
+            onPressed: () => _launchEmail(context),
+            icon: const Icon(Icons.email_rounded, size: 18),
+            label: const Text('Email support'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.primary,
+            ),
           ),
         ],
       ),
@@ -151,12 +127,11 @@ class HelpScreen extends StatelessWidget {
     required String subtitle,
     required String url,
   }) {
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
+      color: Theme.of(context).colorScheme.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: Container(
           width: 40,
@@ -185,15 +160,6 @@ class HelpScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _launchWhatsApp(BuildContext context) async {
-    final uri = Uri.parse(
-      'https://wa.me/919876543210?text=Hi, I need help with LetBuyy Store',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   Future<void> _launchEmail(BuildContext context) async {
     final uri = Uri.parse(
       'mailto:support@letbuyy.com?subject=LetBuyy Store Support',
@@ -212,22 +178,22 @@ class HelpScreen extends StatelessWidget {
     {
       'q': 'How do I add products to my store?',
       'a':
-          'Go to the Products tab, search for your products, and tap to select which ones to show on your store.',
+          'Open Products and tap Add to create a product, or tap an existing product to edit it.',
     },
     {
       'q': 'Can I use my own domain?',
       'a':
-          'Yes! Premium users can connect a custom domain. Go to Settings > Domain Settings to set it up.',
+          'Open More > Domain Settings to check eligibility and configure your domain.',
     },
     {
       'q': 'How do I customize my store theme?',
       'a':
-          'Go to the Theme tab to choose a preset theme or customize colors and fonts.',
+          'Open Home > Customize Design to choose a theme and edit its settings.',
     },
     {
       'q': 'How do I add sections to my store?',
       'a':
-          'Go to the Editor tab and tap "Add Section" to choose from 13 different section types.',
+          'Open Customize Design, choose your theme, and use the theme editor to manage its supported sections.',
     },
   ];
 }
@@ -247,12 +213,11 @@ class _FaqTileState extends State<_FaqTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
+      color: Theme.of(context).colorScheme.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(

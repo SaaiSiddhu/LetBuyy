@@ -1,0 +1,26 @@
+Browser tab: 11, Title: "Cart | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart".
+1 AXWebArea Cart | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+	2 container
+		3 container
+			4 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+		5 container
+			6 button (collapsed) Secondary Actions: Expand
+			7 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917
+			8 button (collapsed) Secondary Actions: Expand
+			9 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/customers/login
+			10 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+		11 container
+			12 heading 1
+			13 content list
+				14 container
+					15 button
+					16 button
+					17 button
+			18 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/checkout
+		19 container
+			20 heading 3
+			21 heading 4
+			22 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/contact
+			23 link letbuyy.com/
+
+The focused UI element is 1 AXWebArea Cart | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart

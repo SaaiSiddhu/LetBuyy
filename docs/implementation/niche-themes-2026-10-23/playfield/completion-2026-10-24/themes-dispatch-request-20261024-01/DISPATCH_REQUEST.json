@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T12:03:23.986400+00:00",
+  "status": "HUMAN_AUTHORIZED_THEMES_REVIEW_APPLY_REQUEST_SENT_RUNTIME_NOT_ALLOCATED",
+  "humanRequest": "Bro, have Themes review and apply the 2.0.2 dispatch, then run all 14 installed cases, including failed-case retests, once the runtime slot is ready. Report actual results and keep frozen artifacts untouched.",
+  "recipient": {
+    "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "title": "Themes",
+    "operation": "send_message_to_thread"
+  },
+  "sendReceipt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"threadId\":\"01a164a4-a342-76d3-ab33-65e021ed57db\"}"
+      }
+    ],
+    "isError": false
+  },
+  "requestScope": [
+    "Independent sealed Playfield 2.0.2 Main leaf review",
+    "Themes-owned opt-in catalogue dispatch apply after exact current before-hash check",
+    "Current native/catalogue qualification and Editor common smoke",
+    "Fresh allocated current runtime, toys fixture, sole Editor browser controller and approved canonical effect observability",
+    "Execute PF-I01 through PF-I14 including historical PF-I05 and PF-I06 failed-case retests",
+    "Retain failures and preserve frozen source/artifacts/M1/captures"
+  ],
+  "handoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/HANDOFF.json",
+    "sha256": "525f64098cbf7400e092d0d45de081487e0a4c842964f9d03532f83470a03cb2"
+  },
+  "sourceObserved": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "sha256": "25aaec88541f8c46521596c1c01c3903018750e7057d1038a8ba13a773256bb1"
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "sha256": "c73c1365de4f57b97959aa1a27093974f824f63271d486bfb20b7aff82172b0e"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3"
+    }
+  ],
+  "sourceProof": "Existing sealed current source20 PASS, strict noEmit0. Not rerun or counted as installed acceptance.",
+  "recordsObserved": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json",
+      "sha256": "14526e17c218f476508b15b5f38e8c64f83fb5ee3014a405181008bbf2a1defc"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/capture-schedule.json",
+      "sha256": "976cbb89caf84008629571c8d2c85d29e363a1588895dc9e82ea28fdced54368"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/current-work-handoff.json",
+      "sha256": "873ee8189e19393c704ce8861d7b4ccf3de535dce924cc666f252abfd34a2fda"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c",
+      "runId": "936e5f577646",
+      "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+      "disposition": "HISTORICAL_EXPIRED_NOT_REUSED"
+    }
+  ],
+  "runtime": {
+    "allocated": false,
+    "runId": null,
+    "origins": null,
+    "fixtureBindings": null,
+    "browserLease": null,
+    "currentRuntimeHash": null
+  },
+  "sourceWriterReleased": true,
+  "dispatchAppliedHere": false,
+  "executedInstalledCasesHere": 0,
+  "frozenFilesWritten": [],
+  "runtimeDatabaseHeavyBuildBrowserProviderActionsHere": 0,
+  "automationChanges": [],
+  "observations": [
+    {
+      "timedOut": true,
+      "wake": null,
+      "polls": [
+        {
+          "schemaVersion": 1,
+          "cursor": "4a88ad91-a502-40c5-8554-f10ec1e43e00:28",
+          "revision": 28,
+          "changed": true,
+          "thread": {
+            "id": "01a164a4-a342-76d3-ab33-65e021ed57db",
+            "hostId": "local",
+            "status": {
+              "type": "active",
+              "activeFlags": []
+            }
+          },
+          "latestTurn": {
+            "id": "01a16da9-6e6d-7cf3-9b71-c6afbbcaf733",
+            "status": "inProgress",
+            "error": null,
+            "startedAt": 1792841182,
+            "completedAt": null,
+            "durationMs": null
+          },
+          "latestAssistantMessageId": "msg_0a6009e90c91f293016adc9c86e90c8191bb930a97d419ac67",
+          "latestAssistantMessage": {
+            "id": "msg_0a6009e90c91f293016adc9c86e90c8191bb930a97d419ac67",
+            "turnId": "01a16da9-6e6d-7cf3-9b71-c6afbbcaf733",
+            "phase": "commentary",
+            "text": "The helper requests global catalogue row locks while still under the tenant role. PostgreSQL requires UPDATE permission for those locks. I’m moving them into the existing guarded service-role block, with a second selection check before publication. Tenant ownership checks stay in place. PostgreSQL privilege rules"
+          },
+          "latestToolMarkerId": "exec-4a5538b9-08bf-42a5-bfc1-b6ff2fc9e7a0",
+          "latestToolMarker": {
+            "id": "exec-4a5538b9-08bf-42a5-bfc1-b6ff2fc9e7a0",
+            "turnId": "01a16da9-6e6d-7cf3-9b71-c6afbbcaf733",
+            "type": "mcpToolCall",
+            "name": "send_message_to_thread",
+            "status": "completed"
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "cursor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:14",
+          "revision": 14,
+          "changed": true,
+          "thread": {
+            "id": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+            "hostId": "local",
+            "status": {
+              "type": "active",
+              "activeFlags": []
+            }
+          },
+          "latestTurn": {
+            "id": "01a16da9-76bc-7ac3-907e-6930f93ec16c",
+            "status": "inProgress",
+            "error": null,
+            "startedAt": 1792841184,
+            "completedAt": null,
+            "durationMs": null
+          },
+          "latestAssistantMessageId": "msg_0a8b92ed3f77d90b016adc9e2826c48191a90a623fa6c81987",
+          "latestAssistantMessage": {
+            "id": "msg_0a8b92ed3f77d90b016adc9e2826c48191a90a623fa6c81987",
+            "turnId": "01a16da9-76bc-7ac3-907e-6930f93ec16c",
+            "phase": "commentary",
+            "text": "The coordinator has granted one bounded independent render review, which I’m running in a private copy with current dependencies pinned. Requests to finish the original Dewdrop, Pantry, Kindred and Habitat cases are also recorded. Those browser lanes can proceed when the shared fixture is admitted; the broader child-output work does not waive their remaining cases."
+          },
+          "latestToolMarkerId": "exec-17a2b9c7-faa9-4244-8017-42d50ed0aa54",
+          "latestToolMarker": {
+            "id": "exec-17a2b9c7-faa9-4244-8017-42d50ed0aa54",
+            "turnId": "01a16da9-76bc-7ac3-907e-6930f93ec16c",
+            "type": "commandExecution",
+            "name": "commandExecution",
+            "status": "completed"
+          }
+        }
+      ]
+    }
+  ]
+}

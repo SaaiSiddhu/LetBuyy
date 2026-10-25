@@ -265,6 +265,14 @@ export function startPostgrest({ name, runId, network, dbHost = 'pg', database, 
     return { name, runId, network };
 }
 
+/** Keep an owned REST credential valid for its bounded suite, including provisioning. */
+export function fixtureServiceKeyLifetimeSeconds(suiteTimeoutMs) {
+    if (!Number.isFinite(suiteTimeoutMs) || suiteTimeoutMs <= 0) {
+        throw new RangeError('an owned fixture requires a finite positive suite timeout');
+    }
+    return Math.max(7200, Math.ceil(suiteTimeoutMs / 1000) + 300);
+}
+
 /** HS256 JWT, for the per-suite service-role and anon keys the REST sidecar verifies. */
 export function signJwtHs256(secret, claims) {
     const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');

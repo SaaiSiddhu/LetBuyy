@@ -1,0 +1,285 @@
+{
+  "recordedAt": "2026-10-24T06:02:37.666993+00:00",
+  "status": "ACL393_CANONICAL_SOURCE_EMITTED_CURRENT_REGRESSION_BATCH_STABLE_PENDING_ROOT_REVIEW_NO_NEW_NATIVE_OR_GLOBAL_CLOSURE",
+  "rootNative04Qualification": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393-native04-root-qualification.json",
+    "sha256": "647d6bd4636dc2c7c5bed741354dd34a5efe646febf27bdfc6ce774f81e85b73",
+    "bytes": 2550
+  },
+  "sourceStatus": "Own requested source and compatibility changes stable. This is an own-file handoff, not a new whole-program closure seal/admission or current393 native acceptance.",
+  "files": [
+    {
+      "path": "database/supabase/migrations/393_theme_publisher_tenant_execute.sql",
+      "sha256": "7fb066b3f6b8d27728c43b2b6dd1beecc5f311856c81ec0bca84513f5b83ac10",
+      "bytes": 14062
+    },
+    {
+      "path": "database/supabase/rollback/393_theme_publisher_tenant_execute.rollback.sql",
+      "sha256": "0161356d994d6e97ea78405980770bb6d53793d6540336eec58c2bc62b45b930",
+      "bytes": 14156
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+      "sha256": "e033cc5a609cc7e7384d729a339161355a0c8b125ff91cd92e1852d9e78a36a3",
+      "bytes": 1092
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl-qualification.manual.ts",
+      "sha256": "1bb238a90f4667362c012674e4d2235ed0626bf9e4d94ce268277923e26dded4",
+      "bytes": 4372
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/publisher-acl-proof.ts",
+      "sha256": "c348f0faef75f6a990c9886a2886172e865971711ffc5c3a2b35a4bb47f9319d",
+      "bytes": 27327
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-promotion-qualification.manual.ts",
+      "sha256": "aa26dd41b09cbbb188b413b385acf80ad6e21f4e23bbdf789ebff68a8bc42782",
+      "bytes": 60541
+    },
+    {
+      "path": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
+      "sha256": "b1bda20c01d5a9738a9520276948f7bd268c95e64b99ef59002d394e4bc4e26d",
+      "bytes": 76856
+    },
+    {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "sha256": "430bc5dc1bc7b8fe74b5917f773da711d64f49655f12b45c1c8f8ea8d7cf9d6e",
+      "bytes": 26997
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts.test.mjs",
+      "sha256": "7f3dbadd04fad14aab0ab4c1fa3d143654904af4d5b6a44dd3e4c13123ab6570",
+      "bytes": 11643
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/check-native-types.mjs",
+      "sha256": "37e3598515754b9c299cf5d420e0d54106492a6a1ff1bbbecc8a8f18eaa7e928",
+      "bytes": 1278
+    }
+  ],
+  "emittedPair": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/emitted-pair-proof.json",
+    "sha256": "214e96cce134b1669b1971675f29c201b99c270648a83f145f03adbf387b13aa",
+    "bytes": 1359
+  },
+  "migrationSequence": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/source-migration-sequence.json",
+    "sha256": "6cf70cc8074250914d5f49122b75ebfeae74e3659c8d47c82aa03d4af1375ddf",
+    "bytes": 261
+  },
+  "testClassification": {
+    "permanent": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+    "sharedProof": "services/api-gateway/src/__tests__/owned-db/publisher-acl-proof.ts",
+    "manualPublisher": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl-qualification.manual.ts",
+    "continuousContract": "Ordinary requireOwnedDatabase() at entry; current default migrations supplied by official runner; entryTenantExecute=false. No Root source grant, fixed max392/count321 or frozen checkout closure. Complete qualified security/mounted/rollback logic reused in one shared registrar.",
+    "manualContract": "Publisher explicit historical qualifier retains exact admission/baseline checks and fails before owned guard on stale grant. Immutable e71 full source snapshot preserved. Old Playfield relocated byte-exact aa26; its old literal suitePath remains historical as specifically required, so it is not a current394 admission.",
+    "playfield": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/playfield-qualifier-relocation.json",
+      "sha256": "4d05bd0ccb8a23437471fc7db723351a9e18b4099864cbeb024d184e33cce27c",
+      "bytes": 986
+    },
+    "runtimeImporters": 0,
+    "runtimeReferenceScan": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/runtime-qualifier-importers.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "historicalSelfReferenceOnly": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/playfield-old-path-source-references.txt",
+      "sha256": "ea7440fd330bee6b7b9f2f418c7a355ba71c521d01f072362a0954ea27cf387c",
+      "bytes": 199
+    },
+    "conservation": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/shared-proof-conservation.json",
+      "sha256": "8aa5e63bd6e20a23574405ccc4659e5a78bc6354a0cb400c1008cfeafbcca8ee",
+      "bytes": 5333
+    },
+    "ordinaryInventoryAdds": [
+      "theme-publisher-acl.postgres.test.ts",
+      "collection-list-read.postgres.test.ts"
+    ],
+    "concurrentInventoryNote": "Second name is the concurrently admitted count batch permanent suite; only its reviewed inventory registration was added, no edits to its source.",
+    "redToGreen": {
+      "before": {
+        "tests": 14,
+        "pass": 12,
+        "fail": 2,
+        "evidence": {
+          "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/gateway-db-lane-before-playfield-classification.tap",
+          "sha256": "24e7d660c442bd11d71857c1edf6cfa66c7a93d655641f7e18bf06f4d247a60c",
+          "bytes": 81663
+        }
+      },
+      "concurrentCountArrival": {
+        "tests": 14,
+        "pass": 13,
+        "fail": 1,
+        "evidence": {
+          "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/gateway-db-lane-before-concurrent-count-registration.tap",
+          "sha256": "0c01a1e43bb0142b851287ed325905a31d022117b0fb3be61097a3bc0f4487d6",
+          "bytes": 19262
+        }
+      },
+      "after": {
+        "tests": 14,
+        "pass": 14,
+        "fail": 0,
+        "evidence": {
+          "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/gateway-db-lane.tap",
+          "sha256": "ddec4158fd89f6967c605708084c12801260fa31584559d2d83a57a9de5fec28",
+          "bytes": 4158
+        }
+      }
+    },
+    "catalogValidatorOrDiscoveryGlobChanged": false,
+    "securityBehaviorSkippedOrRemoved": false
+  },
+  "registryRefresh": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/registry-refresh-verification.json",
+    "sha256": "c80aec162c1e29b7a96e0472fe9710f0ad66ecbfd8494aa19afbef4244ab5a77",
+    "bytes": 3740
+  },
+  "registryDiff": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/registry-refresh.diff",
+    "sha256": "61bfd1764d5a0e5f6f10a7ec8a651f6d2367a0308a0c58383546a5fe87b00c73",
+    "bytes": 1063
+  },
+  "checks": [
+    {
+      "scope": "Focused pure source/security + unchanged precise HTTP classifier regressions",
+      "command": "node --import tsx --test docs/implementation/niche-theme-programme/publisher-acl393/source-contracts.test.mjs",
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "skip": 0,
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/source-contracts.tap",
+        "sha256": "9a86b942d229d4f80cbbaae360b6aaec62da29bd5b8f173bfefa4ef617d8e090",
+        "bytes": 5848
+      }
+    },
+    {
+      "scope": "Gateway lane discovery/inventory/ordinary-owned/no-skip/harness contracts",
+      "command": "node --test tests/governance/gateway-db-lane.test.mjs",
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/gateway-db-lane.tap",
+        "sha256": "ddec4158fd89f6967c605708084c12801260fa31584559d2d83a57a9de5fec28",
+        "bytes": 4158
+      }
+    },
+    {
+      "scope": "Permanent/shared proof and both historical manual roots with actual transitive source",
+      "command": "node docs/implementation/niche-theme-programme/publisher-acl393/check-native-types.mjs",
+      "exitCode": 0,
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/typecheck.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "scope": "All4 touched native/helper/manual roots",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/eslint.json",
+        "sha256": "cd75da27d43d9c561488e5b8d37420db59ed2d79c76f27ebd586ca8160ce5a29",
+        "bytes": 1137
+      },
+      "stderr": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/eslint-stderr.log",
+        "sha256": "6ef9f5cb3da64c6db4927355030d85ef24be96b5e7f9786e8b384ddb573a5503",
+        "bytes": 215
+      }
+    },
+    {
+      "scope": "Full unchanged tenant-isolation validator after metadata-only registry refresh",
+      "command": "node scripts/validators/tenant-isolation-validator.mjs",
+      "exitCode": 0,
+      "registeredTables": 317,
+      "unscopedBypasses": 0,
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/tenant-isolation-validator.log",
+        "sha256": "70f509fbf59e3071871e6ea4a1fda7e2d64103cc3ad61d05380d39395004c44b",
+        "bytes": 104
+      }
+    }
+  ],
+  "remainingRepositoryGates": [
+    {
+      "status": "FAIL_PREEXISTING388_ONLY_NO393_FINDING",
+      "validator": "scripts/validators/migration-safety-validator.mjs",
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/migration-safety-validator.log",
+        "sha256": "ea871229d1fbb9cd2557ea954e549546faf0f4ad23800dd52573f481b83d0d53",
+        "bytes": 148
+      },
+      "actualSource": "database/supabase/migrations/388_cart_order_fact_snapshots.sql:1739",
+      "finding": "privilege_type IN ('INSERT','UPDATE','DELETE','TRUNCATE') is a closed ACL-read guard, but existing classifier strips ANY-form only and flags this literal. No TRUNCATE statement introduced by393. Source/validator unchanged here; requires precise reviewed classification repair with destructive negative controls, not bypass."
+    },
+    {
+      "status": "FAIL_UNTRACKED_SOURCE_GATE",
+      "validator": "scripts/validators/sequential-migration-validator.mjs",
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/sequential-migration-validator.log",
+        "sha256": "7c7ec155d0d7e38b4918dc349bd3b697b059d2645df51eb9daff2479fe1ea007",
+        "bytes": 2677
+      },
+      "finding": "382\u2013393 are untracked local migrations. Full on-disk sequence is322/max393, no duplicate or gap and393has DOWN. No staging/commit of these shared edits was attempted."
+    }
+  ],
+  "historicalIntegrity": {
+    "oldFiveFiles": [
+      {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/manifest.json",
+        "sha256": "3908686ae847a493df721538bdc47afd69f1e9fbe72dfd8edda710621b130928",
+        "bytes": 9242
+      },
+      {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/letbuyy-bloom-2.0.1.json",
+        "sha256": "68bd7e7031f4e330d09fa7a7643c4159266c7ef04885917fe40320e4f9810c23",
+        "bytes": 641651
+      },
+      {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/semantic-diff.json",
+        "sha256": "5cbf422c27f9e18bd2f58c5194b46bc3524c82374eaf67bc929e7fb692faf563",
+        "bytes": 125
+      },
+      {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/393_playfield_catalog_201.up.draft.sql",
+        "sha256": "d4c0a6cc909709b07702cc2bc730bb1ff9f7f89bc8ad1ade486afa74f63da783",
+        "bytes": 1286907
+      },
+      {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/393_playfield_catalog_201.down.draft.sql",
+        "sha256": "75a2288863c1a1b5e1082e5cba5b1e76db1c9a95c79fb505955288b68e5a35e8",
+        "bytes": 1284605
+      }
+    ],
+    "factoryPinCount": 61,
+    "factoryPinMetadataUnchanged": true,
+    "currentFactorySourceDrift": [],
+    "oldNativeAa26BodyExact": true,
+    "qualifiedPublisherE71BodyArchivedExact": true,
+    "v2CandidatesAndManifestUnchanged": true,
+    "allPriorNativeFailuresAnd74Native04ProofsNotModified": true
+  },
+  "boundaries": {
+    "newNativeExecuted": false,
+    "globalClosureSealedOrRefreshed": false,
+    "newRootAdmissionWritten": false,
+    "393AppliedToHostedOrCurrentFixture": false,
+    "394Emitted": false,
+    "productionCountOrDSEditsMade": false,
+    "retainedThreadlinePreviewLoginTabsTouched": false,
+    "current936OrMarketplaceRuntimeTouched": false,
+    "mergePushDeployOrStage": false
+  },
+  "next": "Root review after both source owners report stable; resolve remaining388 classifier and source-staging gate in their authorized scope. Then independently grant focused current-default393 native + RT1..9 qualification. Do not run or seal a new whole closure before coordinated batch review."
+}

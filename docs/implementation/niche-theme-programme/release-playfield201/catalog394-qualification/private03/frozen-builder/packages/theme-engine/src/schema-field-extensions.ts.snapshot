@@ -1,0 +1,377 @@
+/**
+ * Phase U — Schema Field Extensions
+ *
+ * Extends the FROZEN SchemaField type (theme-registry.ts) with new field types
+ * needed for Shopify-parity control coverage in the merchant theme editor. This
+ * file is the ONLY correct place to add new field types. theme-registry.ts must
+ * NEVER be modified.
+ *
+ * RISK-DUAL-N01: these types describe schema metadata only. Controls that consume
+ * ExtendedSchemaField receive a `value` + `onChange` callback and never mutate
+ * the field descriptor object.
+ *
+ * BACKWARD COMPAT: ExtendedSchemaField is a strict superset of SchemaField.
+ * Every existing SchemaField object is assignable to ExtendedSchemaField.
+ * Unknown or legacy field types degrade gracefully (fall back to text treatment)
+ * and never cause a crash.
+ */
+
+import type { SchemaField, BlockSchema, SectionSchema, ThemeSettingsGroup, ThemeSettingsSchema } from './theme-registry';
+import { z } from 'zod';
+import { EXPERIENCE_FONT_REGISTRY } from './experience-fonts';
+
+// ---------------------------------------------------------------------------
+// Type definitions
+// ---------------------------------------------------------------------------
+
+/**
+ * New field types added in Phase U (not present in the frozen SchemaField union).
+ * These are the control types needed for Shopify parity.
+ */
+export type ExtendedFieldType =
+    // Color controls
+    | 'color_background'   // Solid color OR CSS gradient string
+    | 'color_scheme'       // Named experience color scheme selector
+    // Font control
+    | 'font_picker'        // Select from EXPERIENCE_FONT_REGISTRY (6 known families only)
+    // Markup controls
+    | 'html'               // Sanitized HTML textarea (sanitised at render time by renderer, not here)
+    | 'liquid'             // Liquid code textarea (canary-OFF badge; renders as static HTML)
+    // Boolean control (distinct from 'toggle' slide switch)
+    | 'checkbox'           // Native input[type=checkbox]
+    // Media controls
+    | 'video'              // Video file URL entry + upload (video/* accept)
+    | 'video_url'          // YouTube / Vimeo URL with protocol+domain validation
+    // Sidebar info controls (display-only; no value)
+    | 'header'             // Section heading in the sidebar (no value)
+    | 'paragraph'          // Descriptive text in the sidebar (no value)
+    // Resource pickers — Phase U: id text entry + NOT-CONNECTED badge
+    // Phase W will add live searchable pickers (dynamic sources)
+    | 'product'
+    | 'collection'
+    | 'blog'
+    | 'page'
+    | 'menu';
+
+/** Union of all field types: frozen SchemaField types + Phase U extensions. */
+export type AllFieldType = SchemaField['type'] | ExtendedFieldType;
+
+/** Shared descriptor vocabulary for storage and the editor adapter. */
+export const EDITOR_FIELD_TYPES = ['text', 'textarea', 'richtext', 'color', 'image', 'select', 'toggle', 'range', 'number', 'url', 'radio', 'product', 'collection', 'color_background', 'color_scheme', 'font_picker', 'html', 'liquid', 'checkbox', 'video', 'video_url', 'header', 'paragraph', 'blog', 'page', 'menu'] as const satisfies readonly AllFieldType[];
+export const ThemeFieldOptionSchema = z.union([
+    z.string().min(1).max(120),
+    z.object({ value: z.union([z.string().max(120), z.number().finite(), z.boolean()]), label: z.string().min(1).max(120) }).strict(),
+]);
+export type ThemeFieldOption = z.infer<typeof ThemeFieldOptionSchema>;
+
+/**
+ * Phase U extended field descriptor.
+ *
+ * A strict superset of the frozen SchemaField interface. All existing SchemaField
+ * values are assignable to ExtendedSchemaField because:
+ *  - `type` is widened to AllFieldType (a superset of SchemaField['type'])
+ *  - All other required SchemaField properties (`label`) are inherited unchanged
+ *  - New properties (`required`, `visible_if`, `resource_type`) are optional
+ *
+ * The frozen theme-registry.ts SchemaField is NOT modified by this file.
+ */
+export interface ExtendedSchemaField extends Omit<SchemaField, 'type' | 'options'> {
+    /** Widened type union: all frozen SchemaField types plus Phase U extensions. */
+    type: AllFieldType;
+    options?: ThemeFieldOption[];
+    /** Adapter-only diagnostic: preserve unknown values without offering a text edit. */
+    readOnlyReason?: string;
+
+    /**
+     * When true the control shows a required indicator and `validateFieldValue`
+     * returns an error for missing / empty values.
+     */
+    required?: boolean;
+
+    /**
+     * Conditional visibility. The field is rendered only when another field in
+     * the same settings object has the specified value.
+     * If absent the field is always visible.
+     */
+    visible_if?: {
+        /** Key of the sibling field to watch. */
+        field: string;
+        /** The exact value that triggers visibility. Uses strict equality. */
+        value: unknown;
+    };
+
+    /**
+     * Resource picker hint for product / collection / blog / page / menu types.
+     * Phase U: plain id text entry + NOT-CONNECTED badge. Live search deferred to Phase W.
+     */
+    resource_type?: string;
+}
+
+export type ExtendedBlockSchema = Omit<BlockSchema, 'fields'> & { fields: Record<string, ExtendedSchemaField> };
+export type ExtendedSectionSchema = Omit<SectionSchema, 'settings_schema' | 'blocks_schema'> & { settings_schema: Record<string, ExtendedSchemaField>; blocks_schema?: Record<string, ExtendedBlockSchema> };
+export type ExtendedThemeSettingsGroup = Omit<ThemeSettingsGroup, 'fields'> & { fields: Record<string, ExtendedSchemaField> };
+export type ExtendedThemeSettingsSchema = Omit<ThemeSettingsSchema, 'settings'> & { settings: Record<string, ExtendedThemeSettingsGroup> };
+
+export function resolveFieldOptions(field: Pick<ExtendedSchemaField, 'options'>): Array<{ value: string | number | boolean; label: string }> {
+    return (field.options || []).map(option => typeof option === 'string' ? { value: option, label: option.charAt(0).toUpperCase() + option.slice(1).replace(/_/g, ' ') } : option);
+}
+
+/** Normalize transport aliases once, retaining types, labels and visibility.
+ * This is an editor view adapter; it never mutates a package descriptor. */
+export function normalizeEditorSchemaField(value: unknown, fallbackLabel: string): ExtendedSchemaField {
+    const row = value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+    const rawType = typeof row.type === 'string' ? row.type : '';
+    const type = rawType === 'font' ? 'font_picker' : rawType;
+    const known = (EDITOR_FIELD_TYPES as readonly string[]).includes(type);
+    const options = row.options === undefined ? undefined : z.array(ThemeFieldOptionSchema).max(100).safeParse(row.options);
+    const visibility = row.visible_if && typeof row.visible_if === 'object' && !Array.isArray(row.visible_if) ? row.visible_if as Record<string, unknown> : null;
+    const text = (input: unknown) => typeof input === 'string' && input.length ? input : undefined;
+    return {
+        type: known ? type as AllFieldType : 'text', label: text(row.label) || fallbackLabel,
+        default: row.default, options: options?.success ? options.data : undefined,
+        required: typeof row.required === 'boolean' ? row.required : undefined,
+        visible_if: visibility && typeof visibility.field === 'string' && Object.hasOwn(visibility, 'value') ? { field: visibility.field, value: visibility.value } : undefined,
+        resource_type: text(row.resource_type),
+        maxLength: typeof row.maxLength === 'number' ? row.maxLength : typeof row.max_length === 'number' ? row.max_length : undefined,
+        min: typeof row.min === 'number' ? row.min : undefined, max: typeof row.max === 'number' ? row.max : undefined,
+        step: typeof row.step === 'number' ? row.step : undefined, unit: text(row.unit),
+        info: text(row.info) || text(row.help_text), description: text(row.description),
+        ...(!known ? { readOnlyReason: `Setting type ${rawType || 'unknown'} is not supported. Its saved value is preserved.` } : options && !options.success ? { readOnlyReason: 'These setting options are not supported. Its saved value is preserved.' } : {}),
+    };
+}
+
+// ---------------------------------------------------------------------------
+// URL safety (re-implementation of the private isUnsafeThemeUrl from index.ts)
+// RISK-1: cannot import the private function; same logic re-expressed here.
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns true when a URL string uses a protocol that is unsafe for theme content.
+ *
+ * Superset of the private `isUnsafeThemeUrl` in `src/index.ts`: it additionally blocks
+ * script-bearing `data:` MIME types (SVG can carry inline <script>; text/javascript and
+ * application/javascript execute) and `blob:` (which can reference script content). It is
+ * intentionally re-implemented here as a public export rather than importing the private
+ * function. Use this in UI controls to guard url / video_url / color_background fields.
+ */
+export function isUnsafeUrl(value: string): boolean {
+    const normalized = value.trim().toLowerCase();
+    // Collapse whitespace/control chars that could be used to smuggle a scheme (e.g. "java\tscript:").
+    const collapsed = normalized.replace(/[ - ]+/g, '');
+    return (
+        collapsed.startsWith('javascript:') ||
+        collapsed.startsWith('vbscript:') ||
+        collapsed.startsWith('blob:') ||
+        collapsed.startsWith('data:text/html') ||
+        collapsed.startsWith('data:application/xhtml') ||
+        collapsed.startsWith('data:image/svg') ||
+        collapsed.startsWith('data:text/javascript') ||
+        collapsed.startsWith('data:application/javascript') ||
+        collapsed.startsWith('data:application/ecmascript') ||
+        collapsed.startsWith('data:text/ecmascript')
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+
+/** Regex for YouTube and Vimeo URLs. Must use http or https. */
+const VIDEO_URL_PATTERN = /^https?:\/\/(www\.)?(youtube\.com\/|youtu\.be\/|vimeo\.com\/)/;
+
+/**
+ * Validate a field value against its schema definition.
+ *
+ * Returns a human-readable error string when the value is invalid, or null when
+ * the value is acceptable. Validation is additive and backward-compatible:
+ *  - Unknown / legacy field types always return null (never crash).
+ *  - Info controls (header, paragraph) have no value; always return null.
+ *  - Required check runs first; type checks run after.
+ *
+ * This function is PURE (no side effects, no DOM, no network).
+ */
+export function validateFieldValue(
+    field: ExtendedSchemaField,
+    value: unknown,
+): string | null {
+    // Info controls have no settable value — always valid.
+    if (field.type === 'header' || field.type === 'paragraph') {
+        return null;
+    }
+
+    // Required check: empty string, null, and undefined are all "missing".
+    if (field.required) {
+        if (value === null || value === undefined || value === '') {
+            return `${field.label} is required`;
+        }
+        // Boolean false is a valid required value (a required checkbox CAN be unchecked
+        // as long as the merchant explicitly chose false — required means "the merchant
+        // must interact"; we only reject absent/unset values).
+    }
+
+    // --- Type-specific validation ---
+    switch (field.type) {
+        case 'number':
+        case 'range': {
+            if (value !== undefined && value !== null && value !== '') {
+                const n = Number(value);
+                if (isNaN(n)) {
+                    return `${field.label} must be a number`;
+                }
+                if (field.min !== undefined && n < field.min) {
+                    return `${field.label} must be at least ${field.min}`;
+                }
+                if (field.max !== undefined && n > field.max) {
+                    return `${field.label} must be at most ${field.max}`;
+                }
+            }
+            break;
+        }
+
+        case 'url':
+        case 'video': {
+            if (typeof value === 'string' && value.length > 0) {
+                if (isUnsafeUrl(value)) {
+                    return `${field.label} contains an unsafe URL`;
+                }
+            }
+            break;
+        }
+
+        case 'video_url': {
+            if (typeof value === 'string' && value.length > 0) {
+                if (isUnsafeUrl(value)) {
+                    return `${field.label} contains an unsafe URL`;
+                }
+                if (!VIDEO_URL_PATTERN.test(value)) {
+                    return `${field.label} must be a YouTube or Vimeo URL`;
+                }
+            }
+            break;
+        }
+
+        case 'font_picker': {
+            if (typeof value === 'string' && value.length > 0) {
+                if (!(value in EXPERIENCE_FONT_REGISTRY)) {
+                    return `${field.label} must be a known font family`;
+                }
+            }
+            break;
+        }
+
+        case 'text':
+        case 'textarea':
+        case 'richtext':
+        case 'html':
+        case 'liquid': {
+            if (typeof value === 'string' && field.maxLength !== undefined) {
+                if (value.length > field.maxLength) {
+                    return `${field.label} must be at most ${field.maxLength} characters`;
+                }
+            }
+            break;
+        }
+
+        case 'color_background':
+        case 'color': {
+            // color / color_background values (incl. CSS gradient strings) are interpolated into the
+            // theme stylesheet, so they must not contain CSS-breakout or fetch constructs. A valid
+            // color or `linear-gradient(...)`/`radial-gradient(...)` never needs ; { } < @ or url(/expression().
+            if (typeof value === 'string' && value.length > 0) {
+                const v = value.toLowerCase();
+                if (/[;{}<>]/.test(value) || v.includes('url(') || v.includes('expression') || v.includes('@import') || v.includes('javascript:')) {
+                    return `${field.label} contains an invalid color value`;
+                }
+            }
+            break;
+        }
+
+        case 'select':
+        case 'radio': {
+            if (value !== undefined && value !== null && value !== '') {
+                const options = resolveFieldOptions(field);
+                if (options.length && !options.some(option => Object.is(option.value, value))) return `${field.label} must use one of its declared options`;
+                if (!options.length && typeof value !== 'string') return `${field.label} must be text`;
+            }
+            break;
+        }
+        case 'checkbox':
+        case 'toggle':
+            if (value !== undefined && value !== null && value !== '' && typeof value !== 'boolean') return `${field.label} must be a boolean`;
+            break;
+        case 'image':
+        case 'color_scheme':
+        case 'product':
+        case 'collection':
+        case 'blog':
+        case 'page':
+        case 'menu':
+            // No type-specific validation beyond the required check above.
+            break;
+
+        default:
+            // Unknown / legacy field type: degrade gracefully — no validation.
+            break;
+    }
+
+    return null;
+}
+
+// ---------------------------------------------------------------------------
+// Conditional visibility
+// ---------------------------------------------------------------------------
+
+/**
+ * Determine whether a field should be rendered given the current settings values.
+ *
+ * If the field has no `visible_if` constraint it is always visible.
+ * If the field has a `visible_if` constraint the field is visible only when the
+ * referenced sibling field has the specified value (strict equality).
+ *
+ * This is intentionally read-only and does not mutate the settings object.
+ */
+export function isFieldVisible(
+    field: ExtendedSchemaField,
+    values: Record<string, unknown>,
+): boolean {
+    if (!field.visible_if) return true;
+    const { field: depField, value: requiredValue } = field.visible_if;
+    return values[depField] === requiredValue;
+}
+
+// ---------------------------------------------------------------------------
+// Default resolution
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve the correct default value for a field when no stored value is present.
+ *
+ * Priority:
+ *  1. `field.default` (schema-declared default) — returned as-is when defined
+ *  2. Type-appropriate fallback:
+ *     - boolean controls (toggle, checkbox) → false
+ *     - numeric controls (number, range) → field.min if defined, else 0
+ *     - info controls (header, paragraph) → null (they carry no value)
+ *     - everything else → '' (empty string)
+ *
+ * The empty-string coercion in SchemaFormRenderer (`value ?? field.default ?? ''`)
+ * is type-unsafe for boolean/number fields. Use this function instead.
+ */
+export function resolveFieldDefault(field: ExtendedSchemaField): unknown {
+    if (field.default !== undefined) {
+        return field.default;
+    }
+    switch (field.type) {
+        case 'toggle':
+        case 'checkbox':
+            return false;
+        case 'number':
+        case 'range':
+            return field.min ?? 0;
+        case 'header':
+        case 'paragraph':
+            return null;
+        default:
+            return '';
+    }
+}

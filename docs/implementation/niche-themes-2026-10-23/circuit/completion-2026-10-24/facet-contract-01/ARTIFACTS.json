@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-24T11:34:20.067157+00:00",
+  "classification": "PRIVATE_CANONICAL_CONTRACT_PROPOSAL_AND_CURRENT_SOURCE_OBSERVATION",
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-contract-01/PROPOSAL.md",
+      "sha256": "6030ab2de436e76ca8b9d786bfe1e3b00e2ad1d178470c6a38c4d06b83175d4d",
+      "bytes": 5442
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-contract-01/observe-current.mjs",
+      "sha256": "8973286d8a936a57751625d3e67bcb885af8a5c53973fe00848665263da47423",
+      "bytes": 3718
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-contract-01/current-observation.json",
+      "sha256": "cc50c08d36061b0d6ad92a8de06683da21fdeb6b7eda1ee9f88bb68dc500f148",
+      "bytes": 2970
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/RESUME_CHECKPOINT_20261024_01.json",
+      "sha256": "06135907dcea78548a5e853369c8cdf24015d562aa07e3a311230acc194ff8d3",
+      "bytes": 4139
+    }
+  ]
+}

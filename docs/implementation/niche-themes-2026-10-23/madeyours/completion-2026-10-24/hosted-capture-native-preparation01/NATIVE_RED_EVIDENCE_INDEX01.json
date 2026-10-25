@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-25T01:51:27.208140+00:00",
+  "status": "CAUSAL_RED_REPRODUCED_NATIVE_FAILED_STOPPED_FOR_INDEPENDENT_REVIEW",
+  "runId": "487161ab7e7c",
+  "files": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_RED_ACTUAL_REPORT01.json",
+      "sha256": "522b171f2f7a04b4094e18b23fdbda951b9fa9bc3988b499280a030a2b6c6de4"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_RED_ACTUAL_REPORT01.md",
+      "sha256": "60a3232c37e503d898490c201951e7a8ff9ccd561c21759bf81760fb5790355e"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_RED_CAUSAL_WITNESSES01.json",
+      "sha256": "48c44672ded7fef58f24134d116ab251f8c8f87df1952e509c3a639ea81d552c"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_RED_FAILURES01.json",
+      "sha256": "96d8d0ed1517e35844d676125d6f96f4a15cd7055de37a4a6281d460d33746a7"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_RED_POSTRUN_PINS01.json",
+      "sha256": "46da6487c3db5ca7c40869be808806a06ed6a7d3493e5b930f10d71a2bf86f21"
+    }
+  ]
+}

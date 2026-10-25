@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-23T19:19:53.949005+00:00",
+  "status": "C8_SOURCE_BUNDLE_NOT_PROMOTABLE_ORDER_PRESENTATION_REGRESSION_DISCOVERED",
+  "priorAdmission": "playfield201-source-admission.json",
+  "preservedHistorical73Checks": true,
+  "preservedFresh20OlderBuilderDigestCheck": true,
+  "nonPromotableNewBundleSha256": "c8a1defdf97a0d8d9bf1060c86d5a1727d458747e56353db88f44b456a8bfc5d",
+  "sourceCause": "withNicheOrderPresentation accepts only package.version2.0.0, dropping previously captured order-line facts and CSS from explicit Playfield2.0.1",
+  "discovery": "Strict release-generator semantic difference gate, not a live installed failure",
+  "fixOwner": "01a161c9-36d1-7802-af70-d346f524bff3",
+  "fixScope": "Explicit exactbloom2.0.1 wrapper eligibility +focusedorder tests, preserve all historical outputs",
+  "newAdmissionRequired": true,
+  "captureGenerated": false,
+  "393SourceEmitted": false,
+  "393Applied": false
+}

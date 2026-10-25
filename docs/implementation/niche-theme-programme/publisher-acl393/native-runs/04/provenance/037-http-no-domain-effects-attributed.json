@@ -1,0 +1,27 @@
+{
+  "runId": "3948938e7c9b",
+  "name": "http-no-domain-effects-attributed",
+  "sequence": 37,
+  "suiteSha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+  "value": {
+    "label": "rollback-retry",
+    "attribution": {
+      "allTableHashesRetained": 487,
+      "domainAndAllUnclassifiedHashesExact": true,
+      "auth": {
+        "inserted": 1,
+        "expiredRemoved": 0,
+        "jtiHash": "5497371149004984ad6de8cae9e3ec7a21106794265ed9949f17d8faab4fa2ee"
+      },
+      "requestLogRows": 1,
+      "requestMetricRows": 1,
+      "latencyMs": 19,
+      "requestId": "9a558005-69e9-4261-9942-37f326c5291e",
+      "traceId": "70875023-65a8-4004-8438-774ce3ad6be9",
+      "actorId": "48e20ddb-e607-49b5-9d93-ef6047d88901",
+      "route": "/v1/themes/:slug/releases/:releaseId/rollback",
+      "status": 200,
+      "partitionCopiesExact": true
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T12:16:17.479217+00:00",
+  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "FRESH_EXACT_THREE_PATH_BOUNDED_CATALOGUE_READ_CAPABILITY_COMPLETION",
+  "files": [
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "beforeSHA256": "536eb0b6020a94d8784930543707d91ca9c8e544f0a5b24c7be25384370789c2"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/tenant-transaction.test.ts",
+      "beforeSHA256": "441de6392a5ed52cef5db208b81bca75d9fdb03c0d5c5b818eccbbb6ae0134a4"
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "beforeSHA256": "df46632ce72b129a0cda8137f29d64e9165aba468c9cf934968ebb3d2fda3f29"
+    }
+  ],
+  "scope": "Onefixedglobalversion/package/legacytheme selectorintheexistingcanonicaltenanttransactionmodule, boundtoverifiedactor/site/frame, fixedSQL+UUID, owner/privatevisibility checks, profile/role/context restoration andpoisoning. NocallerSQL/callback; noappTenantACLchange. ExistingThemeExecutionAdapterpreview/writeusesit. Existingpublicationcapability unchanged.",
+  "acceptance": "Strictpermissionmodel+private-scope/refusal/read-only/recoverytests; source roleguard nowacceptsexacttwofixedsame-modulecapabilities andnoadapterelevation; actualfullnative8phasegate"
+}

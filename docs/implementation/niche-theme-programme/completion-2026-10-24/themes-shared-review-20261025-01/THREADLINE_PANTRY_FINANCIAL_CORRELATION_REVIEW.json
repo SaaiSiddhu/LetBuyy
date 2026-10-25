@@ -1,0 +1,86 @@
+{
+  "recordedAt": "2026-10-24T20:34:35.948246+00:00",
+  "status": "ACCEPT_THREADLINE_AND_PANTRY_FINANCIAL_CORRELATION_WITH_METADATA_DISCREPANCY_OPEN",
+  "reviewer": "Themes",
+  "runId": "49ada80bc494",
+  "proofReceipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/THREADLINE_PANTRY_READONLY_PAYMENT_CORRELATION.json",
+    "sha256": "1d4ba014d79729cc1ddc2c6314b6832b51acae2679169abf76b1660426d56ee0"
+  },
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "containerLabelRunId": "49ada80bc494",
+    "ownerPid": 54685,
+    "databaseRunMarker": "49ada80bc494"
+  },
+  "readOnlyEvidenceBySource": true,
+  "independentReviewMethod": "Read and validate retained owned SELECT-only correlation, source selector contract, exact UI artifact hashes and current append-only redacted callback subset. No new SQL/provider/browser action by reviewer.",
+  "orders": [
+    {
+      "theme": "Threadline",
+      "orderNumber": "ORD-20261024-10001",
+      "orderId": "422fb669-9db5-4da6-bffc-7fcea4c31f8d",
+      "variantId": "f13d4b5d-f840-453b-8be8-e53e515cf94a",
+      "productId": "b2814421-b6ca-44d6-8eae-139d9fa0cfe1",
+      "paymentId": "pay_Trs8A3pb4lipen",
+      "providerOrderId": "order_Trs7ocV9z9qm6w",
+      "amountMinor": 251000,
+      "currency": "INR",
+      "financialCorrelation": "ACCEPT_RECORDED_OWNED_READBACK_AND_CURRENT_REDACTED_DELIVERY_SUBSET",
+      "captureTransactions": 1,
+      "ledgerEntries": 2,
+      "debitMinor": 251000,
+      "creditMinor": 251000,
+      "signatureValidDurableEvents": [
+        "payment.authorized",
+        "payment.captured"
+      ],
+      "actualCallbacks200": 2,
+      "orderLinkedQuantityConsumed": 1,
+      "hostedCaptureFlagObserved": false,
+      "captureFlagDisposition": "OPEN R07-HOSTED-CAPTURE-FLAG-01, do not treat false as proof that no ledger was posted",
+      "paymentsTableRows": 0,
+      "canonicalCaptureAuthority": "Existing settlement ledger source_id=razorpay:paymentId; no invented payments row required",
+      "fullThemeCertified": false
+    },
+    {
+      "theme": "Pantry",
+      "orderNumber": "ORD-20261024-10002",
+      "orderId": "d79f15fb-bbd6-4084-b391-1a7586294023",
+      "variantId": "7050ba6e-7fbe-4c34-8e07-63323fee7d9d",
+      "productId": "802e1d1c-7aad-4293-a7f4-442618f60f30",
+      "paymentId": "pay_TrsMHrL9Kx60ef",
+      "providerOrderId": "order_TrsM2jRQFxM7bm",
+      "amountMinor": 20000,
+      "currency": "INR",
+      "financialCorrelation": "ACCEPT_RECORDED_OWNED_READBACK_AND_CURRENT_REDACTED_DELIVERY_SUBSET",
+      "captureTransactions": 1,
+      "ledgerEntries": 2,
+      "debitMinor": 20000,
+      "creditMinor": 20000,
+      "signatureValidDurableEvents": [
+        "payment.authorized",
+        "payment.captured"
+      ],
+      "actualCallbacks200": 2,
+      "orderLinkedQuantityConsumed": 1,
+      "hostedCaptureFlagObserved": false,
+      "captureFlagDisposition": "OPEN R07-HOSTED-CAPTURE-FLAG-01, do not treat false as proof that no ledger was posted",
+      "paymentsTableRows": 0,
+      "canonicalCaptureAuthority": "Existing settlement ledger source_id=razorpay:paymentId; no invented payments row required",
+      "fullThemeCertified": false
+    }
+  ],
+  "existingUiEvidenceFilesIndependentlyRehashed": 5,
+  "redactedDeliveryLogNote": "Global file has additional legitimate events from later purchases; retained per-payment rows matched exact current subset. Original global snapshot hash is not falsely claimed as the current file hash.",
+  "open": [
+    "Both hosted capture flags false despite actual canonical balanced captures; source read filters ledger by browser-attempt idempotency key rather than canonical existing capture.",
+    "Threadline own-presentation saved-options display requires targeted current-template retest; generic options/snapshot are present under Pantry.",
+    "Snapshot apparel niche.facts is empty; do not claim unobserved fit/fabric/measurements were saved or lost without actual input/source-contract evidence.",
+    "Per-theme mandatory matrices, later-edit immutability, recovery and full review remain required."
+  ],
+  "newProviderPaymentsOrKeyReads": 0,
+  "databaseMutations": 0,
+  "fullThemeCertificatesGranted": 0
+}

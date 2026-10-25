@@ -1,0 +1,49 @@
+- banner:
+  - link "Threadline":
+    - /url: http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+    - generic: Threadline
+  - text: Secure checkout
+- link "Back to Cart":
+  - /url: http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+  - text: Back to Cart
+- generic: Address
+- generic: "2"
+- generic: Payment
+- heading "Delivering to" [level=3]:
+  - text: Delivering to
+- button "Change"
+- paragraph: Synthetic kindred-cod Buyer
+- paragraph: 24 Fixture Lane
+- paragraph: Bengaluru, Karnataka - 560001
+- paragraph: 9000000000 • syn-kindred-cod-runtime07@example.invalid
+- heading "Items (1)" [level=3]:
+  - text: Items (1)
+- img "Kindred lifecycle gift box"
+- paragraph: Kindred lifecycle gift box
+- paragraph: "Qty: 1"
+- paragraph: ₹1,100
+- heading "Payment Method" [level=3]:
+  - text: Payment Method
+- radio "Pay Online (Razorpay) UPI, Cards, Net Banking"
+- paragraph: Pay Online (Razorpay)
+- paragraph: UPI, Cards, Net Banking
+- radio "Cash on Delivery (COD) Pay cash when the courier delivers. Keep the exact order amount ready." [checked] [active]
+- paragraph: Cash on Delivery (COD)
+- paragraph: Pay cash when the courier delivers. Keep the exact order amount ready.
+- button "Confirm COD order":
+  - text: Confirm COD order
+- generic: COD order is confirmed server-side
+- heading "Order Summary" [level=2]
+- generic: Subtotal (1 items)
+- generic: ₹1,100
+- generic: Delivery
+- generic: ₹20
+- generic: Total
+- generic: ₹1,120
+- textbox "Coupon code"
+- button "Apply"
+- generic: Secure
+- generic: Fast
+- generic: Safe
+- img "Razorpay"
+- alert

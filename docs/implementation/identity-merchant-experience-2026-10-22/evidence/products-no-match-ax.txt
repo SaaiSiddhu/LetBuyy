@@ -1,0 +1,82 @@
+Browser tab: 8, Title: "LetBuyy Admin", URL: "http://localhost:9001/ux-audit-1022/products".
+1 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/products
+	2 container
+		3 link Description: LetBuyy dashboard, Value: localhost:9001/ux-audit-1022/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store UX Research Fixture, Secondary Actions: Expand
+			8 text UR
+			9 text UX Research Fixture
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: localhost:9001/ux-audit-1022/dashboard
+					15 link Description: Orders, Value: localhost:9001/ux-audit-1022/orders
+					16 container
+						17 link Description: Products, Value: localhost:9001/ux-audit-1022/products
+						18 button (expanded) Description: Toggle Products section, Secondary Actions: Collapse
+						19 content list
+							20 link Description: Add product, Value: localhost:9001/ux-audit-1022/products/new
+							21 link Description: Collections, Value: localhost:9001/ux-audit-1022/products/collections
+							22 link Description: Smart collections, Value: localhost:9001/ux-audit-1022/products/smart-collections
+							23 link Description: Categories, Value: localhost:9001/ux-audit-1022/categories
+							24 link Description: Export and import, Value: localhost:9001/ux-audit-1022/export
+					25 container
+						26 link Description: Inventory, Value: localhost:9001/ux-audit-1022/products/inventory
+						27 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					28 container
+						29 link Description: Purchasing, Value: localhost:9001/ux-audit-1022/products/purchase-orders
+						30 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					31 container
+						32 link Description: Customers, Value: localhost:9001/ux-audit-1022/customers
+						33 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					34 container
+						35 link Description: Money, Value: localhost:9001/ux-audit-1022/settings/billing
+						36 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					37 container
+						38 link Description: Marketing, Value: localhost:9001/ux-audit-1022/coupons
+						39 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					40 container
+						41 link Description: Content, Value: localhost:9001/ux-audit-1022/pages
+						42 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					43 link Description: Analytics, Value: localhost:9001/ux-audit-1022/analytics
+			44 text Sales channels
+			45 container Sales channels
+				46 content list
+					47 container
+						48 link Description: Online Store, Value: localhost:9001/ux-audit-1022/online-store
+						49 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			50 text Apps
+			51 container Apps
+				52 content list
+					53 link Description: Add, Value: localhost:9001/ux-audit-1022/apps
+		54 container Settings navigation
+			55 content list
+				56 link Description: Settings, Value: localhost:9001/ux-audit-1022/settings
+	57 container admin-page-scroll
+		58 text Your site is in 
+		59 text draft
+		60 text  mode. It is not visible to visitors yet.
+		61 container
+			62 heading Products, Value: 1
+				63 text Products
+			64 link Description: Collections, Value: localhost:9001/ux-audit-1022/products/collections
+			65 link Description: Add product, Value: localhost:9001/ux-audit-1022/products/new
+			66 container
+				67 heading Catalog, Value: 2
+					68 text Catalog
+				69 text 0 products shown in this view. Search products
+				70 text field (settable) Search products, Value: no-match-ux-audit
+				71 button Refresh
+				72 table
+					73 row
+						74 cell
+							75 heading No matching products, Value: 3
+								76 text No matching products
+							77 text Clear the search or adjust the current view to find products in this catalog.
+							78 button Clear search
+							79 button Add product
+
+The focused UI element is 70 text field (settable) Search products, Value: no-match-ux-audit

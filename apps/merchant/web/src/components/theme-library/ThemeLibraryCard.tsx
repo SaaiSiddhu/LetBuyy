@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import {
     Badge,
+    Card,
     Button,
     Dropdown,
     type DropdownItem,
@@ -180,8 +181,8 @@ export function ThemeLibraryCard({
     ]
 
     return (
-        <article
-            className="flex min-w-0 flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]"
+        <Card as="article"
+            className="flex flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)]"
             aria-label={`${theme.name} theme`}
         >
             {theme.thumbnail_url && <img className="theme-library-thumbnail" src={theme.thumbnail_url} alt={`${theme.name} design preview`} loading="lazy" />}
@@ -242,9 +243,10 @@ export function ThemeLibraryCard({
                         </Button>
                     )}
                     <Button
-                        unstyled
+                        variant="primary"
+                        size="sm"
                         type="button"
-                        className="inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border-strong)] bg-[var(--lb-color-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-on-primary)] hover:opacity-90 focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                        className="h-[var(--lb-size-control-sm)] gap-[var(--lb-space-1)] px-[var(--lb-space-3)] leading-none"
                         onClick={() => {
                             router.push(`/${store}/online-store/themes/${theme.slug}/editor`)
                         }}
@@ -256,6 +258,6 @@ export function ThemeLibraryCard({
                     </Button>
                 </div>
             </div>
-        </article>
+        </Card>
     )
 }

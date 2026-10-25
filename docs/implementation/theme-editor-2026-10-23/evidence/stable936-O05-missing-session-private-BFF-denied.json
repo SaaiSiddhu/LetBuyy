@@ -1,0 +1,10 @@
+{
+  "runId": "936e5f577646",
+  "stage": "Normal store sign-out after B tests; missing-session denial last",
+  "actual": {
+    "error": "Not authenticated"
+  },
+  "savedFactsAbsent": true,
+  "primaryIdAbsent": true,
+  "httpStatus": "NOT_OBSERVED_IN_BROWSER_NAVIGATION"
+}

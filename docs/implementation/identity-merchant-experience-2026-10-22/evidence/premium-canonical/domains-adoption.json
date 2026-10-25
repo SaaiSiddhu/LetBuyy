@@ -1,0 +1,10 @@
+[
+  {
+    "file": "apps/merchant/web/src/components/domains/ConnectDomainWizard.tsx",
+    "containers": 4
+  },
+  {
+    "file": "apps/merchant/web/src/components/domains/DomainDetailView.tsx",
+    "containers": 7
+  }
+]

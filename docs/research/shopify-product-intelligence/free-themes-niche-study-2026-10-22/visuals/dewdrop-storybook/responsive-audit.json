@@ -1,0 +1,1742 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:14.202Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1000,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "hero",
+        "display": "grid",
+        "columns": "604.797px 835.188px"
+      }
+    ],
+    "headings": [
+      "A little care.A daily ritual."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:14.305Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1112,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "hero",
+        "display": "grid",
+        "columns": "375.297px 458.688px"
+      }
+    ],
+    "headings": [
+      "A little care.A daily ritual."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1112
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:14.400Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1359,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "hero",
+        "display": "flex",
+        "columns": "45% 55%"
+      }
+    ],
+    "headings": [
+      "A little care.A daily ritual."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1359
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:14.637Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1966,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Three steps. Your choices."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1966
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:14.772Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1891,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Three steps. Your choices."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1891
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:14.880Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2575,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Three steps. Your choices."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2575
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "03-collection",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:15.012Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1787,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "240px 1000px"
+      },
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "240px 1000px"
+      },
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "240px 1000px"
+      }
+    ],
+    "headings": [
+      "Find your everyday."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1787
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "03-collection",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:15.129Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2086,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "180px 565px"
+      },
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "180px 565px"
+      },
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "180px 565px"
+      }
+    ],
+    "headings": [
+      "Find your everyday."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 2086
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "03-collection",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:15.249Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2409,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "350px"
+      },
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "350px"
+      },
+      {
+        "class": "shelf",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Find your everyday."
+    ],
+    "overflowElements": [
+      {
+        "tag": "DIV",
+        "class": "facet-options",
+        "text": "Rosewater · Pink Clay · Terracotta"
+      }
+    ],
+    "screenshot": {
+      "width": 390,
+      "height": 2409
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "04-product-selection",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:15.422Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1147,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "pdp",
+        "display": "grid",
+        "columns": "654.047px 555.938px"
+      }
+    ],
+    "headings": [
+      "Soft Colourlip tint"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1147
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "04-product-selection",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:15.541Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1285,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "pdp",
+        "display": "grid",
+        "columns": "369px 369px"
+      }
+    ],
+    "headings": [
+      "Soft Colourlip tint"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1285
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "04-product-selection",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:15.642Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1694,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "pdp",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Soft Colourlip tint"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1694
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "05-product-facts",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:15.763Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1323,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Inside Soft Colour."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1323
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "05-product-facts",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:15.859Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1414,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Inside Soft Colour."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1414
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "05-product-facts",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:15.958Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1763,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Inside Soft Colour."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1763
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:16.115Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1783,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "A place in your routine."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1783
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:16.257Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2219,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "A place in your routine."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 2219
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:16.343Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2191,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "A place in your routine."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2191
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "07-cart",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:16.448Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1336,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Your bag 2"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1336
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "07-cart",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:16.550Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2119,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Your bag 2"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 2119
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "07-cart",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:16.634Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2256,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Your bag 2"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2256
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:16.713Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1516,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-layout",
+        "display": "grid",
+        "columns": "631.906px 468.094px"
+      }
+    ],
+    "headings": [
+      "Where should it go?"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1516
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:16.804Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2099,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-layout",
+        "display": "grid",
+        "columns": "680px"
+      }
+    ],
+    "headings": [
+      "Where should it go?"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 2099
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:16.885Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2102,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-layout",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Where should it go?"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2102
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "13-orders",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:17.694Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1180,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "240px 995px"
+      }
+    ],
+    "headings": [
+      "Your orders."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1180
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "13-orders",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:17.771Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1472,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "770px"
+      }
+    ],
+    "headings": [
+      "Your orders."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1472
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "13-orders",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:17.850Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1822,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Your orders."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1822
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:17.950Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1725,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "240px 995px"
+      }
+    ],
+    "headings": [
+      "Order DD-1042"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1725
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:18.041Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2019,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "770px"
+      }
+    ],
+    "headings": [
+      "Order DD-1042"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 2019
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:18.116Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2328,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Order DD-1042"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2328
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:57:18.185Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1747,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "240px 995px"
+      }
+    ],
+    "headings": [
+      "Saved addresses."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1747
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:57:18.256Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2041,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "770px"
+      }
+    ],
+    "headings": [
+      "Saved addresses."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 2041
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:57:18.317Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2610,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Saved addresses."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2610
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:59:53.146Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1000,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "Geist, system-ui, sans-serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Sign in"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:59:53.203Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1112,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "Geist, system-ui, sans-serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Sign in"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1112
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:59:53.259Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1177,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "Geist, system-ui, sans-serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Sign in"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1177
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "11-create-account",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T01:59:53.320Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1235,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "Geist, system-ui, sans-serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1235
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "11-create-account",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T01:59:53.373Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1169,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "Geist, system-ui, sans-serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1169
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "11-create-account",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T01:59:53.427Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1445,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": true,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "Geist, system-ui, sans-serif"
+    },
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1445
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T03:32:10.836Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1309,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": false,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-layout",
+        "display": "grid",
+        "columns": "631.906px 468.094px"
+      }
+    ],
+    "headings": [
+      "Review, then pay."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1309
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T03:32:10.911Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1872,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": false,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-layout",
+        "display": "grid",
+        "columns": "680px"
+      }
+    ],
+    "headings": [
+      "Review, then pay."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1872
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T03:32:10.989Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1727,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": false,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "checkout-layout",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Review, then pay."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1727
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "12-profile",
+    "device": "desktop",
+    "capturedAt": "2026-10-23T03:32:11.061Z",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1617,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": false,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "240px 995px"
+      }
+    ],
+    "headings": [
+      "Your everyday space."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1617
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "12-profile",
+    "device": "tablet",
+    "capturedAt": "2026-10-23T03:32:11.122Z",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1907,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": false,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "770px"
+      }
+    ],
+    "headings": [
+      "Your everyday space."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 834,
+      "height": 1907
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  },
+  {
+    "scene": "12-profile",
+    "device": "mobile",
+    "capturedAt": "2026-10-23T03:32:11.190Z",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2205,
+    "brokenImages": [],
+    "fonts": {
+      "status": "loaded",
+      "lato": true,
+      "geist": false,
+      "cormorant": true,
+      "body": "Lato, -apple-system, \"system-ui\", \"Noto Sans Devanagari\", sans-serif",
+      "heading": "\"Cormorant Garamond\", Georgia, serif"
+    },
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "display": "grid",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Your everyday space."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2205
+    },
+    "capture": "Playwright isolated headless Chromium, local file, full-page PNG"
+  }
+]

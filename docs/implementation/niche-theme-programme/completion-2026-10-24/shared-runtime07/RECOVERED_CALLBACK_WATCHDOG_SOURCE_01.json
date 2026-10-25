@@ -1,0 +1,30 @@
+{
+  "recordedAt": "2026-10-25T04:05:41.976655+00:00",
+  "status": "SOURCE_READY_SYNTHETIC_BOUNDARY_CHECKS_PASS_NO_ACTIVATION",
+  "humanApproval": "shared-runtime07/PUBLIC_HTTPS_HUMAN_APPROVAL_20261025_04.json",
+  "publicUrl": "https://theme-e2e-rzp-20261024.letbuyy.com/razorpay",
+  "durationSeconds": 14400,
+  "activation": "Only after actual recovered receiver/source/runtime/health/signature qualification and new exact owned connector/listener identities",
+  "source": {
+    "path": "/private/tmp/letbuyy-theme-cloudflared-20261024/watchdog-recovered01.py",
+    "sha256": "1fbe95ce4549ec26272b219da0ce72a391174ea8b08340d3d3297af503353eca"
+  },
+  "test": {
+    "path": "/private/tmp/letbuyy-theme-cloudflared-20261024/watchdog-recovered01-test.py",
+    "sha256": "113336a5a9bc5a3f4b82f1bc9aa00cd8a9edceb94bec5970b94e41b94a8c17ab",
+    "pass": 6,
+    "fail": 0,
+    "seconds": 0.002,
+    "execution": "python3 /private/tmp/letbuyy-theme-cloudflared-20261024/watchdog-recovered01-test.py",
+    "scope": "Synthetic fake PIDs/clock/http/signals only; validates exact scope, qualification, expiry, old-owner refusal, monotonic expiry, changed-owner no signal"
+  },
+  "actualPublicActions": 0,
+  "actualProcessSignals": 0,
+  "watchdogOrConnectorStarted": false,
+  "windowStarted": false,
+  "providerSecretRead": false,
+  "limitations": [
+    "The watchdog rejection probe is liveness/unsigned rejection only, not a provider HMAC positive test.",
+    "Actual receiver identity/health/HMAC, new connector lease and TLS public route still unqualified."
+  ]
+}

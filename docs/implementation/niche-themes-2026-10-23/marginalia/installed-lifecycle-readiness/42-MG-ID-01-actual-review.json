@@ -1,0 +1,115 @@
+{
+  "recordedAt": "2026-10-24T07:04:42.296281+00:00",
+  "classification": "ACTUAL_MG_ID_01_PASS_FIRST_INSTALLED_CASE_NONORDER_ONLY",
+  "runId": "936e5f577646",
+  "case": "MG-ID-01",
+  "status": "PASS",
+  "adaptation": "Existing current-run products refined through normal merchant UI under current packet; no recreate/reseed. Current store25products includes earlier themes probes, not a reset to original17.",
+  "grantEvidence": {
+    "conditionalRootSchedule": "capture-schedule.json currentWorkAllocation.nextNonorder.marginalia after Trailmark clean checkpoint, recorded06:46:19UTC",
+    "predecessorBoundary": "stable936-trailmark-finite-nonorder-boundary.json at06:51:03UTC",
+    "ownerConfirmation": "Themes latest commentary says Marginalia now running nonorder journey (cursor895); Editor reports saved IDs/B00 progress (cursor1460).",
+    "scope": "Sole Editor nonorder only; no Marginalia-chat browser transfer/full16/cart/order grant."
+  },
+  "bindings": {
+    "product.books": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+    "books.en_hardback": "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+    "books.hi_paperback": "ec05efc6-dce5-4948-ae3e-a1c173542cc9",
+    "books.en_paperback_oos": "9e4fbca8-6bef-4a03-b9d4-274f524575ad",
+    "product.stationery": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+    "collection.books_and_paper": "d5609b77-743c-45b5-b435-814f2ca95058",
+    "cart.book": null,
+    "cart.stationery": null,
+    "order.id": null,
+    "order.book": null,
+    "order.stationery": null
+  },
+  "opaqueVersions": {
+    "bookBefore": 8,
+    "bookAfter": 15,
+    "stationery": 3,
+    "collectionMembership": 5
+  },
+  "identity": {
+    "originalTwoVariantsRetained": [
+      "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+      "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+    ],
+    "newOnlyOosVariant": "9e4fbca8-6bef-4a03-b9d4-274f524575ad",
+    "explicitPhysicalSlotsAndMetadataAcknowledged": true,
+    "commonBibliographyAndSampleIsbnRemoved": true,
+    "allThreeExactEditionFactsMatchPreparedOracle": true,
+    "distinctStationeryExactAndNoVariant": true
+  },
+  "stock": {
+    "existingParentAndBothVariantStocksOmittedInCanonicalCommand": true,
+    "existingInventoryRowsExact": true,
+    "newOosSuppliedZero": true,
+    "parent": 8,
+    "EnglishHardback": 4,
+    "HindiPaperback": 4,
+    "oos": 0,
+    "stationery": 6
+  },
+  "protectedWindow": {
+    "before": "06:52:37UTC",
+    "after": "06:55:46UTC",
+    "tables": 22,
+    "changed": [
+      "inventory_levels",
+      "outbox_events"
+    ],
+    "existingOrderProjectionsExact": true,
+    "wholeSliceFinalCartPreservation": "Not inferred from this setup-only window; require later final collector.",
+    "allProtectedScopesExceptDeclaredInventoryLevelAndOutboxChangesExact": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-lifecycle-before-ui.json",
+      "sha256": "e10a86d01a211ec5f98a313d255923ddd38bd720a425049525cae6e57a1df68a",
+      "bytes": 9619
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-lifecycle-after-book-save.json",
+      "sha256": "39f41ca4ec0efd48f4f419e2bc7cc35ebdeaa910968d42a9232e9955a5de4f11",
+      "bytes": 10851
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-MG-ID-products-readback.json",
+      "sha256": "35ebe0e15a0118990dab3b727a1ff2a2013651d50280ab0cacb37e72f08d0184",
+      "bytes": 4439
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-MG-ID-canonical-receipt.json",
+      "sha256": "87aba259dff4af7bec3116029128f0c036b1b6bb49d491b7fe2b44135c5ba73b",
+      "bytes": 3923
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-collection-saved.json",
+      "sha256": "19cdea58ae31d861993194f6778ac63fbb54917cc1cf42346ebe8ee3388997e9",
+      "bytes": 3193
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-book-saved.ax.txt",
+      "sha256": "859e7a35a38cde63ccfe5e16f6b8c457779dc5944aab920b79196e76c0fe5277",
+      "bytes": 15586
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-book-reloaded.ax.txt",
+      "sha256": "7f617f99b7e5dd9c9cbb019306b0ccf291963a210a50e0446a10a97f8ada2914",
+      "bytes": 14850
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-finite-nonorder-boundary.json",
+      "sha256": "7d0bcf7597bc17565e1929326fd9c7701892a4f888b688f900508385c66997e0",
+      "bytes": 38688
+    }
+  ],
+  "limits": [
+    "Persisted canonical mutation receipt is not raw HTTP capture.",
+    "No selected PDP/discovery/B00/full package-catalog linking acceptance inferred from setup facts.",
+    "B00 support artifacts exist and will be reviewed separately; all remaining15 cases NOT_RUN at this checkpoint.",
+    "Cart/COD/history/later edits remain excluded and no MG cart/order bindings exist."
+  ],
+  "reviewPerformedBy": "Marginalia read-only auditor; no live actions or source/native test reruns"
+}

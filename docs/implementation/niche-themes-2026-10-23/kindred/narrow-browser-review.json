@@ -1,0 +1,168 @@
+{
+  "theme": "Kindred",
+  "date": "2026-10-23",
+  "status": "pass",
+  "cases": 15,
+  "correction": "<=23rem header padding/gap/font adaptation; 44px icons and gallery hidden semantics retained",
+  "normalBrandLines": [
+    {
+      "scene": "home",
+      "width": 320,
+      "lines": 1
+    },
+    {
+      "scene": "product",
+      "width": 320,
+      "lines": 1
+    },
+    {
+      "scene": "missing-product",
+      "width": 320,
+      "lines": 1
+    },
+    {
+      "scene": "home",
+      "width": 360,
+      "lines": 1
+    },
+    {
+      "scene": "product",
+      "width": 360,
+      "lines": 1
+    },
+    {
+      "scene": "missing-product",
+      "width": 360,
+      "lines": 1
+    },
+    {
+      "scene": "home",
+      "width": 390,
+      "lines": 1
+    },
+    {
+      "scene": "product",
+      "width": 390,
+      "lines": 1
+    },
+    {
+      "scene": "missing-product",
+      "width": 390,
+      "lines": 1
+    }
+  ],
+  "hindiActualFonts": [
+    {
+      "kind": "hindi-brand",
+      "fonts": [
+        {
+          "familyName": "Devanagari MT",
+          "postScriptName": "DevanagariMT",
+          "isCustomFont": false,
+          "glyphCount": 40
+        },
+        {
+          "familyName": "Playfair Display",
+          "postScriptName": "PlayfairDisplay-Regular",
+          "isCustomFont": true,
+          "glyphCount": 2
+        }
+      ]
+    },
+    {
+      "kind": "hindi-title",
+      "fonts": [
+        {
+          "familyName": "Devanagari MT",
+          "postScriptName": "DevanagariMT",
+          "isCustomFont": false,
+          "glyphCount": 69
+        },
+        {
+          "familyName": "Playfair Display",
+          "postScriptName": "PlayfairDisplay-Regular",
+          "isCustomFont": true,
+          "glyphCount": 15
+        }
+      ]
+    }
+  ],
+  "glyphsPresent": true,
+  "focus": {
+    "active": true,
+    "outline": "solid",
+    "width": "2px"
+  },
+  "disclosure": true,
+  "closedNavSkipped": true,
+  "reviewedVisually": [
+    "home320normal",
+    "longHindiBrand320",
+    "product320text200"
+  ],
+  "lease": {
+    "slot": 2,
+    "port": 43275,
+    "browser": "closed",
+    "serverPid": 14211,
+    "server": "stopped",
+    "release": "explicitly sent to coordinator"
+  },
+  "limits": [
+    "Static actual current factory/dispatcher/binder/mapper/Liquid/assembly, no Next hydration/query/payment/order/DB claim"
+  ],
+  "sources": [
+    {
+      "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "ebc8218b0ec3b1b32ddb6f8764281ed130bfacad8a9e4218c90c356f181950ea"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "90bc326720b962d3a43ccd6625dcb153ab1507eecbc3151ec65698774b40eb1c"
+    },
+    {
+      "file": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "f5ed1b555d293089f6560b42ce4a916a539feaf830d237b2adfcfaa369b375d6"
+    },
+    {
+      "file": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "88e4189bf1703a938c9cabac6e2f5ba7bc78ddeeeafc2b45b780579becb08e14"
+    },
+    {
+      "file": "packages/commerce-core/src/kindred-facts.ts",
+      "sha256": "f227bfe56432182fffce4ccfda347785d28568f4bdd787e96ea82dd18ade58f4"
+    },
+    {
+      "file": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/kindred-demo.ts",
+      "sha256": "ec8dadf3750e18f5caac7ebc7c1478a72f1b17ef589f21054e82fa7d2f33c213"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "da96f8ef94d79e956a433dbe0eee17726ee99e702a3226561c3f8aeb917782a5"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "8a2bb2a9c650704ba7c70c31d0795f435df126d28247bf287ee44f671a068975"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "171aee207ee79add0106c2558a344d5e69b4f4b9044b401b7d5c5383e8513bf9"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765"
+    }
+  ]
+}

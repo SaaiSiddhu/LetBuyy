@@ -1,0 +1,587 @@
+[
+  {
+    "scene": "01-home-top",
+    "title": "Homepage · first half",
+    "device": "desktop",
+    "file": "images/01-home-top-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1233
+  },
+  {
+    "scene": "01-home-top",
+    "title": "Homepage · first half",
+    "device": "tablet",
+    "file": "images/01-home-top-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1132
+  },
+  {
+    "scene": "01-home-top",
+    "title": "Homepage · first half",
+    "device": "mobile",
+    "file": "images/01-home-top-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1224
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Homepage · second half",
+    "device": "desktop",
+    "file": "images/02-home-bottom-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2500
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Homepage · second half",
+    "device": "tablet",
+    "file": "images/02-home-bottom-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2297
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Homepage · second half",
+    "device": "mobile",
+    "file": "images/02-home-bottom-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 3071
+  },
+  {
+    "scene": "03-collection",
+    "title": "Products / collection",
+    "device": "desktop",
+    "file": "images/03-collection-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1697
+  },
+  {
+    "scene": "03-collection",
+    "title": "Products / collection",
+    "device": "tablet",
+    "file": "images/03-collection-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2413
+  },
+  {
+    "scene": "03-collection",
+    "title": "Products / collection",
+    "device": "mobile",
+    "file": "images/03-collection-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2001
+  },
+  {
+    "scene": "04-product-main",
+    "title": "Product detail · selection",
+    "device": "desktop",
+    "file": "images/04-product-main-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1152
+  },
+  {
+    "scene": "05-product-fit",
+    "title": "Product detail · fit & fabric",
+    "device": "desktop",
+    "file": "images/05-product-fit-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1645
+  },
+  {
+    "scene": "06-product-outfit",
+    "title": "Product detail · continuation",
+    "device": "desktop",
+    "file": "images/06-product-outfit-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1872
+  },
+  {
+    "scene": "07-cart",
+    "title": "Cart / bag",
+    "device": "desktop",
+    "file": "images/07-cart-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1365
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Shared checkout · address",
+    "device": "desktop",
+    "file": "images/08-checkout-address-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1480
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "Sign in",
+    "device": "desktop",
+    "file": "images/10-sign-in-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1000
+  },
+  {
+    "scene": "11-sign-up",
+    "title": "Create account",
+    "device": "desktop",
+    "file": "images/11-sign-up-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1000
+  },
+  {
+    "scene": "12-profile",
+    "title": "Profile overview",
+    "device": "desktop",
+    "file": "images/12-profile-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1416
+  },
+  {
+    "scene": "13-orders",
+    "title": "Order history",
+    "device": "desktop",
+    "file": "images/13-orders-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1329
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Order detail",
+    "device": "desktop",
+    "file": "images/14-order-detail-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1743
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Saved addresses",
+    "device": "desktop",
+    "file": "images/15-addresses-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1043
+  },
+  {
+    "scene": "04-product-main",
+    "title": "Product detail · selection",
+    "device": "tablet",
+    "file": "images/04-product-main-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1152
+  },
+  {
+    "scene": "05-product-fit",
+    "title": "Product detail · fit & fabric",
+    "device": "tablet",
+    "file": "images/05-product-fit-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1717
+  },
+  {
+    "scene": "06-product-outfit",
+    "title": "Product detail · continuation",
+    "device": "tablet",
+    "file": "images/06-product-outfit-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1882
+  },
+  {
+    "scene": "07-cart",
+    "title": "Cart / bag",
+    "device": "tablet",
+    "file": "images/07-cart-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1488
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Shared checkout · address",
+    "device": "tablet",
+    "file": "images/08-checkout-address-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1567
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "Sign in",
+    "device": "tablet",
+    "file": "images/10-sign-in-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1112
+  },
+  {
+    "scene": "11-sign-up",
+    "title": "Create account",
+    "device": "tablet",
+    "file": "images/11-sign-up-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1112
+  },
+  {
+    "scene": "12-profile",
+    "title": "Profile overview",
+    "device": "tablet",
+    "file": "images/12-profile-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1710
+  },
+  {
+    "scene": "13-orders",
+    "title": "Order history",
+    "device": "tablet",
+    "file": "images/13-orders-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1532
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Order detail",
+    "device": "tablet",
+    "file": "images/14-order-detail-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2139
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Saved addresses",
+    "device": "tablet",
+    "file": "images/15-addresses-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1459
+  },
+  {
+    "scene": "04-product-main",
+    "title": "Product detail · selection",
+    "device": "mobile",
+    "file": "images/04-product-main-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1589
+  },
+  {
+    "scene": "05-product-fit",
+    "title": "Product detail · fit & fabric",
+    "device": "mobile",
+    "file": "images/05-product-fit-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2296
+  },
+  {
+    "scene": "06-product-outfit",
+    "title": "Product detail · continuation",
+    "device": "mobile",
+    "file": "images/06-product-outfit-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2278
+  },
+  {
+    "scene": "07-cart",
+    "title": "Cart / bag",
+    "device": "mobile",
+    "file": "images/07-cart-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2030
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Shared checkout · address",
+    "device": "mobile",
+    "file": "images/08-checkout-address-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1405
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "Sign in",
+    "device": "mobile",
+    "file": "images/10-sign-in-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 844
+  },
+  {
+    "scene": "11-sign-up",
+    "title": "Create account",
+    "device": "mobile",
+    "file": "images/11-sign-up-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 844
+  },
+  {
+    "scene": "12-profile",
+    "title": "Profile overview",
+    "device": "mobile",
+    "file": "images/12-profile-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1816
+  },
+  {
+    "scene": "13-orders",
+    "title": "Order history",
+    "device": "mobile",
+    "file": "images/13-orders-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1586
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Order detail",
+    "device": "mobile",
+    "file": "images/14-order-detail-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 2158
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Saved addresses",
+    "device": "mobile",
+    "file": "images/15-addresses-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1424
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Shared checkout · review & pay",
+    "device": "desktop",
+    "file": "images/09-checkout-review-desktop.png",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1137
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Shared checkout · review & pay",
+    "device": "tablet",
+    "file": "images/09-checkout-review-tablet.png",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1636
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Shared checkout · review & pay",
+    "device": "mobile",
+    "file": "images/09-checkout-review-mobile.png",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page",
+    "height": 1500
+  }
+]

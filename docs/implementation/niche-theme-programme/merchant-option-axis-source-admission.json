@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-10-23T19:16:39.624128+00:00",
+  "status": "ROOT_TRAILING_OPTION_AXIS_SOURCE_ADMITTED_LIVE_SAME_IDS_PROOF_PENDING",
+  "ownerRelease": {
+    "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/source-release.json",
+    "sha256": "fa41ea4b90824a632ff2ffdb1ce836c13b05760efda8c311319a383bde9b5d44"
+  },
+  "files": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "beforeSha256": "23ff59003b3297384a8de416ea08edfb5923cf95dfbd6fa7ab93e0b0455ec120",
+      "sha256": "bebce783d3bd28990ac691a180f5ef85d60de14d76021a3c4be04daa43920af3",
+      "bytes": 26690
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "beforeSha256": "1a99ded9a1e0dbf98fdf520af6c3685ad9ee3d46d2137a9e0d38e5b1e12c0b20",
+      "sha256": "6963ac68ee0e4eb76704372dd65d46742efdcc9485157ee9ad2a509b365857c4",
+      "bytes": 87358
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "beforeSha256": "b95d0d9be33bbca45467084766369ed9a0a4f616469733a463e2802e1b50e8e6",
+      "sha256": "39f39b7f5737da6456e8c7830fb95b80a0f66a27571e5a265ee4569d3ec9df7e",
+      "bytes": 87233
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-axis.test.ts",
+      "beforeSha256": null,
+      "sha256": "8932cff89ab28da0ad70b4c465a38e071577523ab8c06026ee1eca2252b658c5",
+      "bytes": 9572
+    }
+  ],
+  "rootIndependentlyChecked": {
+    "sourcePins": 4,
+    "evidencePins": 15,
+    "actualRedPureAndMounted": {
+      "red-pure.tap": {
+        "pass": 0,
+        "fail": 1,
+        "skipped": 0
+      },
+      "red-mounted.tap": {
+        "pass": 0,
+        "fail": 1,
+        "skipped": 0
+      },
+      "shared-regression.tap": {
+        "pass": 107,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    "f607OriginalSourcePins": 2,
+    "a483MetadataFixPreserved": true
+  },
+  "semanticReview": [
+    "Explicit addition of one trailing empty axis preserves current sparse rows and order without a Cartesian rebuild.",
+    "Its first explicit single value extends each existing row once, retaining durable UUID, commercial fields and raw fact drafts.",
+    "Later values append only fresh idless rows with empty facts; total/schema/title limits and ambiguous/duplicate inputs fail closed.",
+    "General bound-row rebuild guard, rename and serializer/recovery bodies remain unchanged; no API/schema/SQL/domain change."
+  ],
+  "typecheckExit": 0,
+  "targetedLintErrors": 0,
+  "baselineWarnings": 11,
+  "liveIntegration": "NOT_RUN; preserve f607 tab21 and both actual Width UUIDs. Supplemental canonical merchant-client feasibility review pending; no external child replacement or new issuer.",
+  "themeAcceptance": "No source-only credit for Habitat26 or Marginalia16",
+  "candidateChanged": false
+}

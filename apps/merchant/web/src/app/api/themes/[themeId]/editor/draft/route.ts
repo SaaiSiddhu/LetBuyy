@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SaveThemeDraftSchema, DiscardThemeDraftSchema } from '@letbuyy/theme-engine'
-import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
+import { SaveThemeDraftSchema, DiscardThemeDraftSchema, ThemeEditorTemplateKeySchema } from '@letbuyy/theme-engine'
+import { createMerchantApiClient, merchantApiErrorResponse, MerchantApiRequestError } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 import { getSessionUser } from '@/lib/auth/session'
 
 function readTemplateKey(value: unknown): string {
-    return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
-        ? value.trim()
-        : 'index'
+    const parsed = ThemeEditorTemplateKeySchema.default('index').safeParse(value ?? undefined)
+    if (!parsed.success) throw new MerchantApiRequestError('Invalid theme template key.', 400, { error: { code: 'VALIDATION_ERROR', message: 'Invalid theme template key.' } })
+    return parsed.data
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -43,7 +43,7 @@ export async function POST(
         const { themeId } = await params
         const { searchParams } = new URL(request.url)
         const storeName = searchParams.get('store_name')
-        const queryTemplateKey = readTemplateKey(searchParams.get('template') || searchParams.get('template_key'))
+        const queryTemplateKey = readTemplateKey(searchParams.get('template') ?? searchParams.get('template_key'))
 
         if (!storeName) {
             return NextResponse.json(
@@ -55,7 +55,7 @@ export async function POST(
         const rawBody = await request.json()
         const body = isRecord(rawBody) ? rawBody : {}
         const draftConfig = isRecord(body.draftConfig) ? body.draftConfig : undefined
-        const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
+        const templateKey = readTemplateKey(body?.templateKey ?? body?.template_key ?? queryTemplateKey)
         const baseVersion = body.baseVersion ?? body.base_version
         const idempotencyKey = body.idempotencyKey ?? body.idempotency_key
         const actor = await getSessionUser()
@@ -110,7 +110,7 @@ export async function DELETE(
         const { themeId } = await params
         const { searchParams } = new URL(request.url)
         const storeName = searchParams.get('store_name')
-        const templateKey = readTemplateKey(searchParams.get('template') || searchParams.get('template_key'))
+        const templateKey = readTemplateKey(searchParams.get('template') ?? searchParams.get('template_key'))
 
         if (!storeName) {
             return NextResponse.json(

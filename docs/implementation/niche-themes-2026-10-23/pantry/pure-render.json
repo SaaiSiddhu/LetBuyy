@@ -1,0 +1,23 @@
+[
+  {
+    "key": "index",
+    "status": "rendered",
+    "warnings": [],
+    "file": "pure-render-index.html",
+    "scope": "Pure canonical renderer, synthetic public facts, not integrated hydration or publication"
+  },
+  {
+    "key": "collection",
+    "status": "rendered",
+    "warnings": [],
+    "file": "pure-render-collection.html",
+    "scope": "Pure canonical renderer, synthetic public facts, not integrated hydration or publication"
+  },
+  {
+    "key": "product",
+    "status": "rendered",
+    "warnings": [],
+    "file": "pure-render-product.html",
+    "scope": "Pure canonical renderer, synthetic public facts, not integrated hydration or publication"
+  }
+]

@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: actual recorded successful command replays byte-for-byte without exposing body, path capabilities or auth
+ok 1 - actual recorded successful command replays byte-for-byte without exposing body, path capabilities or auth
+  ---
+  duration_ms: 28.759167
+  type: 'test'
+  ...
+# Subtest: only exact successful confirm POSTs are captured; malformed, foreign, unsuccessful and oversized traffic stays out
+ok 2 - only exact successful confirm POSTs are captured; malformed, foreign, unsuccessful and oversized traffic stays out
+  ---
+  duration_ms: 2.213209
+  type: 'test'
+  ...
+# Subtest: finite controls reject wrong nonce/method and all caller-supplied paths, headers, bodies, indices and duplicate selectors
+ok 3 - finite controls reject wrong nonce/method and all caller-supplied paths, headers, bodies, indices and duplicate selectors
+  ---
+  duration_ms: 1.648042
+  type: 'test'
+  ...
+# Subtest: owned proof returns only hashes/counts, denies foreign selectors and checks bounded inventory before aggregation
+ok 4 - owned proof returns only hashes/counts, denies foreign selectors and checks bounded inventory before aggregation
+  ---
+  duration_ms: 0.368625
+  type: 'test'
+  ...
+# Subtest: replays are bounded, reject concurrent work, and disposal retires private records
+ok 5 - replays are bounded, reject concurrent work, and disposal retires private records
+  ---
+  duration_ms: 0.939084
+  type: 'test'
+  ...
+# Subtest: non-Editor/unbound construction fails, and the capture count is finite
+ok 6 - non-Editor/unbound construction fails, and the capture count is finite
+  ---
+  duration_ms: 1.239792
+  type: 'test'
+  ...
+# Subtest: a failed normal Gateway replay stays failed and cannot be credited from a control acknowledgement
+ok 7 - a failed normal Gateway replay stays failed and cannot be credited from a control acknowledgement
+  ---
+  duration_ms: 0.628125
+  type: 'test'
+  ...
+# Subtest: same-key conflict copies only a captured owned COD command, changes one nonkey field and reports the Gateway result
+ok 8 - same-key conflict copies only a captured owned COD command, changes one nonkey field and reports the Gateway result
+  ---
+  duration_ms: 0.787625
+  type: 'test'
+  ...
+# Subtest: fixed conflict mutation remains different when the captured intent already equals the first sentinel
+ok 9 - fixed conflict mutation remains different when the captured intent already equals the first sentinel
+  ---
+  duration_ms: 0.844208
+  type: 'test'
+  ...
+# Subtest: conflict mode is a strict selector and never accepts caller-controlled commands or capabilities
+ok 10 - conflict mode is a strict selector and never accepts caller-controlled commands or capabilities
+  ---
+  duration_ms: 0.589333
+  type: 'test'
+  ...
+# Subtest: conflict and exact replay share the same finite budget and busy guard
+ok 11 - conflict and exact replay share the same finite budget and busy guard
+  ---
+  duration_ms: 0.334833
+  type: 'test'
+  ...
+# Subtest: conflict replay rechecks current ownership and cannot use a retired capture
+ok 12 - conflict replay rechecks current ownership and cannot use a retired capture
+  ---
+  duration_ms: 0.1115
+  type: 'test'
+  ...
+# Subtest: conflict report preserves real failure codes/status and effect differences without leaking arbitrary errors
+ok 13 - conflict report preserves real failure codes/status and effect differences without leaking arbitrary errors
+  ---
+  duration_ms: 0.36225
+  type: 'test'
+  ...
+# Subtest: fixture platform SSO is scoped to one run and the canonical buyer host stays outside it
+ok 14 - fixture platform SSO is scoped to one run and the canonical buyer host stays outside it
+  ---
+  duration_ms: 1.15275
+  type: 'test'
+  ...
+# Subtest: the actual child environment shares only the run-bound platform parent and issuer
+ok 15 - the actual child environment shares only the run-bound platform parent and issuer
+  ---
+  duration_ms: 0.884041
+  type: 'test'
+  ...
+# Subtest: a second run cannot reuse the first platform cookie domain or artifact paths
+ok 16 - a second run cannot reuse the first platform cookie domain or artifact paths
+  ---
+  duration_ms: 0.165042
+  type: 'test'
+  ...
+# Subtest: invalid run IDs, real/ambiguous store handles and unbound app ports fail closed
+ok 17 - invalid run IDs, real/ambiguous store handles and unbound app ports fail closed
+  ---
+  duration_ms: 0.358375
+  type: 'test'
+  ...
+# Subtest: capture, state and client logs have strict run-scoped temporary paths
+ok 18 - capture, state and client logs have strict run-scoped temporary paths
+  ---
+  duration_ms: 0.104459
+  type: 'test'
+  ...
+# Subtest: Editor data setup requires the exact opt-in and refuses simultaneous Threadline QA
+ok 19 - Editor data setup requires the exact opt-in and refuses simultaneous Threadline QA
+  ---
+  duration_ms: 0.180166
+  type: 'test'
+  ...
+# Subtest: actual Editor fixture commands cover all nine common and exactly five supported inline variant fact namespaces
+ok 20 - actual Editor fixture commands cover all nine common and exactly five supported inline variant fact namespaces
+  ---
+  duration_ms: 14.298875
+  type: 'test'
+  ...
+# Subtest: owner Pantry and same-colour Dewdrop fixture identities retain exact distinct prices, stock and unknown facts
+ok 21 - owner Pantry and same-colour Dewdrop fixture identities retain exact distinct prices, stock and unknown facts
+  ---
+  duration_ms: 2.251542
+  type: 'test'
+  ...
+# Subtest: fixture data refuses real or unbound origins/IDs and binds a second run without reusing SKUs or handles
+ok 22 - fixture data refuses real or unbound origins/IDs and binds a second run without reusing SKUs or handles
+  ---
+  duration_ms: 17.871666
+  type: 'test'
+  ...
+# Subtest: Marginalia stationery stays a separate unvarianted product with actual ruling and no book-only facts
+ok 23 - Marginalia stationery stays a separate unvarianted product with actual ruling and no book-only facts
+  ---
+  duration_ms: 3.0375
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1826.0675

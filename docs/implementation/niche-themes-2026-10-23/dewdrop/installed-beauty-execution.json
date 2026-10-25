@@ -1,0 +1,1687 @@
+{
+  "schemaVersion": 1,
+  "classification": "ACTUAL_EXECUTION_LEDGER_NOT_ACCEPTANCE",
+  "requestedOutcome": "Run 30-case Dewdrop installed lifecycle on allocated fresh shared fixture",
+  "updatedAt": "2026-10-23T18:50:26.002193+00:00",
+  "state": "FIRST_PASS_RECORDED_FULL_MATRIX_INCOMPLETE_PENDING_TRUSTED_CORRECTED_BASELINE",
+  "runExecuted": true,
+  "runId": "9cd50e893016",
+  "sourceCheckpoint": {
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-final02",
+    "sourceManifest": {
+      "path": "/private/tmp/theme-editor-candidate-20261023-final02/theme-editor-candidate-source.json",
+      "sha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a"
+    },
+    "copyAdmission": "docs/implementation/niche-theme-programme/editor-final02-copy-admission.json",
+    "nativeAdmission": "docs/implementation/niche-theme-programme/native389390-final-admission.json",
+    "runningCandidateFrozen": true
+  },
+  "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+  "requestThreadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+  "fixtureOwnerThreadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "coordinationThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "resourceLease": {
+    "kind": "DIAGNOSTIC_CASE_EXECUTION_UNDER_EDITOR_UI_CONTROLLER",
+    "uiController": "Editor",
+    "fixtureWritesAuthorized": false,
+    "buyerMatrixActive": true,
+    "activation": "After Editor critical Dewdrop install/save/localpublish/anonymous readback/basic recovery and concrete handoff",
+    "source": "Main direct binding allocation",
+    "readonlyVerifier": "Dewdrop",
+    "status": "FIRST_PASS_FINITE_QUEUE_HANDOFF_SHARED_RESOURCES_RETAINED_BY_EDITOR",
+    "currentThemeMayDifferFromRecordedDewdropRelease": true
+  },
+  "resourcesStarted": [],
+  "dependencies": [
+    {
+      "id": "FRESH_FIXTURE",
+      "status": "RUNNING_READ_ONLY_BINDINGS_VERIFIED",
+      "runId": "9cd50e893016"
+    },
+    {
+      "id": "FINAL02_COPY",
+      "status": "ADMITTED_HASH_MATCH_VERIFIED",
+      "evidence": "docs/implementation/niche-theme-programme/editor-final02-copy-admission.json"
+    },
+    {
+      "id": "NATIVE389390",
+      "status": "ADMITTED_5_PASS_ZERO_FAIL_ZERO_SKIP",
+      "evidence": "docs/implementation/niche-theme-programme/native389390-final-admission.json"
+    },
+    {
+      "id": "EDITOR_CRITICAL_PATH_AND_HANDOFF",
+      "status": "IN_PROGRESS",
+      "knownFailures": [
+        "EDITOR-SHARED-ANNOUNCEMENT-LOST",
+        "EDITOR-PARENT-PREVIEW-CSP"
+      ]
+    }
+  ],
+  "preflight": {
+    "classification": "SOURCE_DATA_COMPARISON_ONLY",
+    "sharedRecipePath": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-data.plan.json",
+    "sharedRecipeSha256": "eefebbda07c13ebbdf5dd1a7f40d53ecdbe98c8af23ce464ffcdc5191deb4864",
+    "checks": [
+      {
+        "product": "cloudRinse",
+        "exactCommandRecipeMatches": true
+      },
+      {
+        "product": "dailyVeil",
+        "exactCommandRecipeMatches": true
+      },
+      {
+        "product": "tint",
+        "exactCommandRecipeMatches": true
+      },
+      {
+        "product": "palmWash",
+        "exactCommandRecipeMatches": true
+      }
+    ],
+    "browserOrDatabaseAcceptance": false,
+    "frozenDewdropSources": [
+      {
+        "path": "packages/theme-engine/src/dewdrop-theme.ts",
+        "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+        "matchesReleasedFreeze": true
+      },
+      {
+        "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+        "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+        "matchesReleasedFreeze": true
+      },
+      {
+        "path": "packages/theme-engine/test/dewdrop.test.ts",
+        "sha256": "066416e9c446ae28bb2e1be197589d947162c42a52c3d5baae642c7792f88b95",
+        "matchesReleasedFreeze": true
+      }
+    ],
+    "browserPreparation": {
+      "inventoryRead": true,
+      "inAppBrowserDocumentationLoaded": true,
+      "newTabsOpened": 0,
+      "navigationActions": 0,
+      "existingStorybookPreserved": true
+    },
+    "sourceCheckpoint03": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-release-checkpoint-03.json",
+      "sha256": "ca9f38e214884ea5959940018ad78769da91ec153144347c64a1b70f28bdd428",
+      "passedTemplates": 210,
+      "rootAdmission": "ACCEPT_SOURCE_GATE_FOR_ONE_FRESH_DRY_RUN_PROPOSAL",
+      "installedAcceptance": false
+    },
+    "sourceCheckpoint04": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-release-checkpoint-04.json",
+      "sha256": "382bfdb7b5c36a4b16ac74bb44f79eb34a460f7e0bae5187fde8811e9e3f9c6d",
+      "passedTemplates": 210,
+      "installedAcceptance": false
+    },
+    "sharedCartRepair": {
+      "owner": "Circuit",
+      "rootReportedIndependentCasesPassed": 67,
+      "classification": "SOURCE_REGRESSION_NOT_DEWDROP_INSTALLED_RESULT"
+    },
+    "actualFreshFixtureEvidence": "fresh-fixture-bindings-9cd50e893016.json",
+    "publicDataEvidence": "fresh-fixture-public-preflight-9cd50e893016.json"
+  },
+  "cases": [
+    {
+      "id": "B00",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [
+        {
+          "source": "Editor sole controller actual normal UI",
+          "observed": "Owner login, Aura2.0 Add,21templates load, heading autosave/reload, A/Bpublication/anonymousreadback, rollbackA/draftBpreserved/reapplyB observed. Full common acceptance remains open."
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-public-A.jpg"
+        }
+      ],
+      "durableEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-publication-A-proof.json"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-publication-B-proof.json"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-restore-A-proof.json"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-reapply-B-proof.json"
+        }
+      ],
+      "notes": [
+        "NormalownerUIlogin, actualAddDewdrop2.0, editor21templates, templateheading save/reload, A/Bpublish/anonymousreadback/restoreA/exacthashA/draftBpreserved/reapplyB exacthashB PASS.",
+        "Sharedannouncement save/reload FAIL; previewparentCSP FAIL; fullthemeacceptanceOPEN."
+      ],
+      "controllerStatus": "PARTIAL",
+      "controllerObservations": [
+        "NormalownerUIlogin, actualAddDewdrop2.0, editor21templates, templateheading save/reload, A/Bpublish/anonymousreadback/restoreA/exacthashA/draftBpreserved/reapplyB exacthashB PASS.",
+        "Sharedannouncement save/reload FAIL; previewparentCSP FAIL; fullthemeacceptanceOPEN."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "B00"
+      },
+      "subcases": [
+        {
+          "id": "basic_install_save_publish_recovery",
+          "status": "PASS"
+        },
+        {
+          "id": "shared_announcement_durability",
+          "status": "FAIL"
+        },
+        {
+          "id": "parent_preview",
+          "status": "FAIL"
+        },
+        {
+          "id": "full_common_setup_acceptance",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "id": "M01",
+      "status": "FAIL",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "268525d3-7f77-41ad-aec8-0558b1b65c91"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "m01-failed-save-readonly-9cd50e893016.json",
+          "meaning": "Independent GET200 after failed save retains exact originalv1 directions/stock12; public DTO exposes no version."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "source": "Editor sole controller first-hand report",
+          "observed": "Actual Cloud Rinse care disclosure/labels loaded. Directions edited to temporary UI checkpoint. Save product rejected: This change must originate from this merchant app. Attention banner, controls frozen, draft retained; no successful save/reload/restoration."
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-merchant-origin-failure.jpg"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-merchant-origin-failure.jpg",
+          "sha256": "4329c2fd119e0ac8ab7f0c7e34cd3f1a115741c7518bcf264040367dde0a8382"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-merchant-origin-banner.jpg",
+          "sha256": "5478ed65cc6b5b9b422afd17f1af2dee3e6c217ffd564c223b28a78165e585a2"
+        }
+      ],
+      "durableEvidence": [
+        {
+          "path": "m01-failed-save-readonly-9cd50e893016.json",
+          "meaning": "Owned proof200: siteorders0/productorderlines0/inventoryRows1/events0/adjustments1. No pre-action inventory digest is claimed."
+        }
+      ],
+      "notes": [
+        "ActualCloudRinse normalUI Directions edit→Saveproduct rejects This change must originate from this merchant app; unsaved draft kept and controls frozen.",
+        "Independent readonly publicGET confirms unchanged originalfacts/stock12; no successfulsave/restore claimed."
+      ],
+      "controllerStatus": "FAIL",
+      "controllerObservations": [
+        "ActualCloudRinse normalUI Directions edit→Saveproduct rejects This change must originate from this merchant app; unsaved draft kept and controls frozen.",
+        "Independent readonly publicGET confirms unchanged originalfacts/stock12; no successfulsave/restore claimed."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "M01"
+      },
+      "requestIdScopes": [
+        {
+          "id": "268525d3-7f77-41ad-aec8-0558b1b65c91",
+          "method": "GET",
+          "scope": "Independent product read after failed UI save; not the failed mutation request."
+        }
+      ]
+    },
+    {
+      "id": "M02",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Merchantauthoringroundtrip depends on observed origin guard repair; no alternate APIwrite used."
+      ],
+      "controllerStatus": "BLOCKED",
+      "controllerObservations": [
+        "Merchantauthoringroundtrip depends on observed origin guard repair; no alternate APIwrite used."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "M02"
+      }
+    },
+    {
+      "id": "M03",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Authenticated variant-metadata negative was not executed. Normal product mutation is blocked, and no permitted authenticated API-control path was used; static schema checks are not substituted."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "M03"
+      }
+    },
+    {
+      "id": "M04",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "No authenticated mutation/stale-version UI roundtrip after actual merchantorigin rejection."
+      ],
+      "controllerStatus": "BLOCKED",
+      "controllerObservations": [
+        "No authenticated mutation/stale-version UI roundtrip after actual merchantorigin rejection."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "M04"
+      }
+    },
+    {
+      "id": "M05",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "All13fixturecollectioncreates+membershipreadbacks passed as SETUP ONLY; actualmerchantcollection/editorresourcesauthoring NOT_RUN."
+      ],
+      "controllerStatus": "PARTIAL",
+      "controllerObservations": [
+        "All13fixturecollectioncreates+membershipreadbacks passed as SETUP ONLY; actualmerchantcollection/editorresourcesauthoring NOT_RUN."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "M05"
+      },
+      "subcases": [
+        {
+          "id": "canonical_fixture_membership_setup",
+          "status": "PASS",
+          "classification": "SETUP_ONLY"
+        },
+        {
+          "id": "actual_merchant_collection_resource_authoring",
+          "status": "NOT_RUN"
+        }
+      ]
+    },
+    {
+      "id": "D01",
+      "status": "PASS",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "7510fc51-b3b2-4a18-9c72-6b4377f810b9"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "d01-d02-ordinary-discovery-http-9cd50e893016.json"
+        },
+        {
+          "path": "d01-d02-ordinary-discovery-http-9cd50e893016.json",
+          "sha256": "f971cfc3a02099ec3f4e0e2e9121cdefc8b86c9a6873dfd273d330511fdfe1ac",
+          "scope": "Independent read-only counterpart; not browser response interception."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "source": "Editor actual controller observation",
+          "observed": "Public products page17, all4 beauty products, Palm Wash unknown/missing ingredients visible."
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Actualpublic/products displays17catalogitems includingall4beauty. Cloud/DailyVeil/Tintcorrectroutinegroups; PalmWashunknown underMoreproducts withmissingimage/ingredients guidance."
+      ],
+      "executionState": "PARTIAL_OBSERVED_AWAITING_COMPLETE_CONTROLLER_EVIDENCE",
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "Actualpublic/products displays17catalogitems includingall4beauty. Cloud/DailyVeil/Tintcorrectroutinegroups; PalmWashunknown underMoreproducts withmissingimage/ingredients guidance."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "D01"
+      }
+    },
+    {
+      "id": "D02",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "7510fc51-b3b2-4a18-9c72-6b4377f810b9"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "d01-d02-ordinary-discovery-http-9cd50e893016.json"
+        },
+        {
+          "path": "d01-d02-ordinary-discovery-http-9cd50e893016.json",
+          "sha256": "f971cfc3a02099ec3f4e0e2e9121cdefc8b86c9a6873dfd273d330511fdfe1ac",
+          "scope": "Independent read-only counterpart; not browser response interception."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "source": "Editor actual controller observation",
+          "observed": "Actual native routine colour, Format Lip tint, Shade Pink Clay Apply returns1Tint. Missing/malformed capability subcases not yet established."
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-unknown-metadata-browsing.ax.txt",
+          "sha256": "665aa055d1ad54212b5f71e3f89972acbae76806192af74839e9e3d4d34e2125"
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Native Routine/Format/Shade controls used from supplied metadata. Actual unknown Palm Wash cohort shows only Search and Sort, no niche chooser, with honest missing-facts guidance. Malformed-response branch deferred; no interception."
+      ],
+      "executionState": "PARTIAL_OBSERVED_AWAITING_COMPLETE_CONTROLLER_EVIDENCE",
+      "controllerStatus": "PARTIAL",
+      "controllerObservations": [
+        "Native Routine/Format/Shade controls used from supplied metadata. Actual unknown Palm Wash cohort shows only Search and Sort, no niche chooser, with honest missing-facts guidance. Malformed-response branch deferred; no interception."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "D02"
+      },
+      "subcases": [
+        {
+          "id": "supplied_native_choices",
+          "status": "PASS"
+        },
+        {
+          "id": "unknown_metadata_basic_browse",
+          "status": "PASS"
+        },
+        {
+          "id": "malformed_response_browser_branch",
+          "status": "NOT_RUN"
+        }
+      ]
+    },
+    {
+      "id": "D03",
+      "status": "PASS",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "b2f44cfc-c898-4991-9c38-84a8732bd6be",
+        "9b819d85-b95e-435b-b0be-1342c6d3f316"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "d03-selected-discovery-http-9cd50e893016.json"
+        },
+        {
+          "path": "d03-selected-discovery-http-9cd50e893016.json",
+          "sha256": "d01c42574a14941870c24dae865c52c7098976e4fa0aa7a288c3266a0b49b3df",
+          "scope": "Independent read-only counterpart; not browser response interception."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-colour-filter.ax.txt",
+          "sha256": "7ba40e51dd89828f07f3e48f925b3ae4e7c3c5b183dd51cc2ac95755a6f9b57f"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-search-filter.ax.txt",
+          "sha256": "7cf2850c8f64fcb216edd75e2d66c251ffc2c9dfd7778cb223b251dd4b4a683c"
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "ActualColourcollectionefac19f5→colour/Liptint/PinkClayApply returns1Tint andretainscollectionID.",
+        "Actual/search?search=Fixture→samecontrols returns1Tint andpreservessearchroute/query.",
+        "Ownerreadonlysame-response witness price560 andexactPinkUUID7f840c26-0e46-4b6a-a753-1f95190e2693."
+      ],
+      "executionState": "HTTP_COMPONENT_OBSERVED_UI_PENDING",
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "ActualColourcollectionefac19f5→colour/Liptint/PinkClayApply returns1Tint andretainscollectionID.",
+        "Actual/search?search=Fixture→samecontrols returns1Tint andpreservessearchroute/query.",
+        "Ownerreadonlysame-response witness price560 andexactPinkUUID7f840c26-0e46-4b6a-a753-1f95190e2693."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "D03"
+      }
+    },
+    {
+      "id": "D04",
+      "status": "PASS",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-search-five-sorts.json",
+          "sha256": "812d270df4940be29eca016d178acaa367819b805c5ac2ce4022207c08206776"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-search-pagination.json",
+          "sha256": "757b336c46b1883acac4db82a639c32900afd9d0cbe2e54112f51bdc26ffbc6f"
+        },
+        {
+          "path": "d04-ui-query-carrier-verification-9cd50e893016.json",
+          "classification": "Canonical parsing of actual captured UI URLs; no new HTTP request or synthetic form submission."
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Actual five native sort choices preserve search=Fixture, limit=1, country_of_origin=India and category=Care while resetting page to1. Next page2 and Previous page1 preserve carriers."
+      ],
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "Actual five native sort choices preserve search=Fixture, limit=1, country_of_origin=India and category=Care while resetting page to1. Next page2 and Previous page1 preserve carriers."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "D04"
+      }
+    },
+    {
+      "id": "D05",
+      "status": "PASS",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "361b04e0-b34f-4208-9ec5-0eb8fee7d37f",
+        "f904075f-66b7-41eb-b98e-58daae34a2cf",
+        "22f64a0a-9159-42e3-ae80-d03732b65437"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "d05-d06-query-recovery-readonly-9cd50e893016.json",
+          "sha256": "a325f4c2b7268be4b483fa026ade674afc822f418d367fb8c93c0d4ce81db696",
+          "scope": "Independent read-only counterpart; not browser response interception."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-repeated-filter-recovery.json",
+          "sha256": "a8aa198f147c64bbadf999cb3bd1e6d6e40857d81971785e8033ba24a84a858c"
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Actual repeated connector=usb-c and connector=hdmi survive sort; removing usb-c retains hdmi and other carriers; removing hdmi restores4 Care results/page1."
+      ],
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "Actual repeated connector=usb-c and connector=hdmi survive sort; removing usb-c retains hdmi and other carriers; removing hdmi restores4 Care results/page1."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "D05"
+      }
+    },
+    {
+      "id": "D06",
+      "status": "PASS",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "bba0c8e6-74ce-4563-a37a-50092e619a47",
+        "d00dee7a-6bcb-4b31-8ef8-c79de68ab7a6"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "d05-d06-query-recovery-readonly-9cd50e893016.json",
+          "sha256": "a325f4c2b7268be4b483fa026ade674afc822f418d367fb8c93c0d4ce81db696",
+          "scope": "Independent read-only counterpart; not browser response interception."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-stale-filter-recovery.json",
+          "sha256": "e4902c0627a935e6c8d91688910a98bb9991522a1e8d9c92a0f5e4eefb1bbabd"
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Actual retired format and named shade yield zero results without invented offered choices. Sort preserves both; clear format preserves shade and zero results."
+      ],
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "Actual retired format and named shade yield zero results without invented offered choices. Sort preserves both; clear format preserves shade and zero results."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "D06"
+      }
+    },
+    {
+      "id": "D07",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [
+        {
+          "path": "d07-scoped-ssr-sanitizer-9cd50e893016.json",
+          "sha256": "5d52d97a9bd23f344299fc5635153dc76220520d2dc492d38ff714023af62c5c",
+          "scope": "Independent read-only counterpart; not browser response interception."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-unsafe-search-observation.ax.txt",
+          "sha256": "4385569a8058027b6dee4a25875cfeb19df18d4ec62ab0e6e3981d05d2dd534e"
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Actual harmless closing-form/script search probe renders literal escaped title, empty niche search input and no executable probe script. Scoped SSR confirms hidden global filter carrier retains properly escaped query; payload is not absent from every input. This is the observed sanitizer case only.",
+        "Planned closing-script control was deferred by the finite queue. The observed closing-form vector and safely escaped hidden carrier are retained as narrower evidence, not silently credited as the planned script-context case."
+      ],
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "Actual harmless closing-form/script search probe renders literal escaped title, empty niche search input and no executable probe script. Scoped SSR confirms hidden global filter carrier retains properly escaped query; payload is not absent from every input. This is the observed sanitizer case only."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "D07"
+      },
+      "subcases": [
+        {
+          "id": "observed_closing_form_script_query",
+          "status": "PASS"
+        },
+        {
+          "id": "planned_closing_script_query",
+          "status": "NOT_RUN"
+        }
+      ]
+    },
+    {
+      "id": "P01",
+      "status": "PASS",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [
+        {
+          "source": "Editor actual controller observation",
+          "observed": "Rosewater520→PinkClay560/PC02/6ml. Expanded Pink ingredients exact CI77492. Keyboard Enter verification in progress."
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "ActualRosewater520→PinkClay560/PC02/exactingredientsCI77492/common6ml, exactpackएकइकाईselected.",
+        "KeyboardEnter switchesRose→Pink; sameRGB remains distinctownerreadonlyUUIDs."
+      ],
+      "executionState": "PARTIAL_OBSERVED_KEYBOARD_AND_EVIDENCE_PENDING",
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "ActualRosewater520→PinkClay560/PC02/exactingredientsCI77492/common6ml, exactpackएकइकाईselected.",
+        "KeyboardEnter switchesRose→Pink; sameRGB remains distinctownerreadonlyUUIDs."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "P01"
+      }
+    },
+    {
+      "id": "P02",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "78ae6cbb-ca05-4ab9-ab35-2ccf0fdc056f"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-oos-cart-negative.json",
+          "observed": "Separate actual anonymous canonicalcartPOST exactTerraUUID qty1 returns409 INSUFFICIENT_INVENTORY. This is an API control, not a UI-created cart."
+        },
+        {
+          "path": "p02-post-negative-effects-9cd50e893016.json",
+          "sha256": "94f547bb20aca0c88030f001c853a1c5da8be4377e64c418e7cc7e6adf4fd274",
+          "scope": "Independent read-only counterpart; not browser response interception."
+        }
+      ],
+      "uiEvidence": [
+        {
+          "source": "Editor actual controller observation",
+          "observed": "Terracotta590 unavailable with disabled Add."
+        }
+      ],
+      "durableEvidence": [
+        {
+          "path": "p02-post-negative-effects-9cd50e893016.json",
+          "scope": "Before/after PUBLIC stock/facts equal; post-negative owned counters; no pre-negative fullinventoryhash/cartrowcount claim."
+        }
+      ],
+      "notes": [
+        "Actual Terracotta590/unavailable/disabled purchase; canonical anonymous cart POST409 INSUFFICIENT_INVENTORY. Owner before/after public stock/facts match4/4/0; owned proof site orders0/product order lines0. No pre-negative full inventory hash or cart/reservation row-count proof invented."
+      ],
+      "executionState": "PARTIAL_UI_AND_HTTP_OBSERVED_EFFECT_PROOF_PENDING",
+      "controllerStatus": "PARTIAL",
+      "controllerObservations": [
+        "Actual Terracotta590/unavailable/disabled purchase; canonical anonymous cart POST409 INSUFFICIENT_INVENTORY. Owner before/after public stock/facts match4/4/0; owned proof site orders0/product order lines0. No pre-negative full inventory hash or cart/reservation row-count proof invented."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "P02"
+      },
+      "subcases": [
+        {
+          "id": "unavailable_ui",
+          "status": "PASS"
+        },
+        {
+          "id": "canonical_oos_rejection",
+          "status": "PASS"
+        },
+        {
+          "id": "public_stock_and_order_effects",
+          "status": "PASS"
+        },
+        {
+          "id": "cart_reservation_row_counts",
+          "status": "NOT_RUN"
+        }
+      ],
+      "negativeRequestId": null,
+      "requestIdScopes": [
+        {
+          "id": "78ae6cbb-ca05-4ab9-ab35-2ccf0fdc056f",
+          "method": "GET",
+          "scope": "Independent post-negative public stock read; negative POST requestId was actually null."
+        }
+      ]
+    },
+    {
+      "id": "P03",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "6b660f52-f256-4c4b-a6dd-0d8f95b155df",
+        "fcfdf1fc-fdb5-4a89-8890-9e689168045f"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-cart-authority-negatives.json",
+          "results": [
+            {
+              "case": "P03-omitted-variant",
+              "status": 409,
+              "expectedStatus": 409,
+              "error": {
+                "code": "VARIANT_REQUIRED",
+                "message": "Select a current variant before continuing."
+              },
+              "requestId": "6b660f52-f256-4c4b-a6dd-0d8f95b155df",
+              "responseSha256": "5a32fac76d020562a3a6ecd15c184637bd853c4a73da91467620b44c28f874bc",
+              "expectedCode": "VARIANT_REQUIRED",
+              "matched": true
+            },
+            {
+              "case": "P03-unknown-variant",
+              "status": 400,
+              "expectedStatus": 400,
+              "error": {
+                "code": "VARIANT_NOT_FOUND",
+                "message": "A selected variant is unavailable for this product."
+              },
+              "requestId": "fcfdf1fc-fdb5-4a89-8890-9e689168045f",
+              "responseSha256": "89a263be07174a3d145e15c827f7fa6ed3cd39949a8772f9bb54b26f74e3bb27",
+              "expectedCode": "VARIANT_NOT_FOUND",
+              "matched": true
+            }
+          ],
+          "scope": "Actual canonical anonymous worker negative controls; not UI-created carts."
+        }
+      ],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Actual canonical cart API omitted variant409 VARIANT_REQUIRED and unknown variant400 VARIANT_NOT_FOUND. Foreign-site cart-token test deferred; no valid foreign positive control."
+      ],
+      "controllerStatus": "PARTIAL",
+      "controllerObservations": [
+        "Actual canonical cart API omitted variant409 VARIANT_REQUIRED and unknown variant400 VARIANT_NOT_FOUND. Foreign-site cart-token test deferred; no valid foreign positive control."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "P03"
+      },
+      "subcases": [
+        {
+          "id": "required_variant_rejection",
+          "status": "PASS"
+        },
+        {
+          "id": "unknown_variant_rejection",
+          "status": "PASS"
+        },
+        {
+          "id": "valid_foreign_site_cart_control",
+          "status": "NOT_RUN"
+        }
+      ]
+    },
+    {
+      "id": "C01",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-cart-reload.jpg",
+          "sha256": "744592ecc1a79edea504a5c222157d00f615cdcbff374ec7138a5754dcb5d6c3"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-cart-reload.ax.txt",
+          "sha256": "12244cfe4ed1ad2ed2c8187a22733718acfdb341f932e09f4e3959d548f5ef04"
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Actual Pink Clay, exact Hindi pack, quantity2 Add acknowledgement; drawer and full cart show2x560=1120 and approved saved details. Normal reload retains exact visible cart. Canonical cart GET persistence proof deferred; no token extracted from hidden browser state."
+      ],
+      "controllerStatus": "PARTIAL",
+      "controllerObservations": [
+        "Actual Pink Clay, exact Hindi pack, quantity2 Add acknowledgement; drawer and full cart show2x560=1120 and approved saved details. Normal reload retains exact visible cart. Canonical cart GET persistence proof deferred; no token extracted from hidden browser state."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "C01"
+      },
+      "subcases": [
+        {
+          "id": "actual_add_ack_and_cart_reload",
+          "status": "PASS"
+        },
+        {
+          "id": "visible_saved_facts_quantity_and_total",
+          "status": "PASS"
+        },
+        {
+          "id": "canonical_cart_get_identity_version_fingerprints",
+          "status": "NOT_RUN"
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [
+        "aa61d74c-0f05-4ac2-a81f-8ee3002d2f47",
+        "b19adbfd-85d2-4b85-b8f6-b9c187729c3a",
+        "642d784f-802b-44f3-a043-da5b418be070"
+      ],
+      "redactedHttpEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-cart-authority-negatives.json",
+          "results": [
+            {
+              "case": "C02-price-extra",
+              "status": 400,
+              "expectedStatus": 400,
+              "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Request validation failed",
+                "details": [
+                  {
+                    "field": "lines.0",
+                    "message": "Unrecognized key: \"price\"",
+                    "code": "unrecognized_keys"
+                  }
+                ]
+              },
+              "requestId": "aa61d74c-0f05-4ac2-a81f-8ee3002d2f47",
+              "responseSha256": "35875704e1b91e4d0f55df21386e899c7f42e50943d76f4d819bc6d48f73b6a2",
+              "expectedCode": null,
+              "matched": true
+            },
+            {
+              "case": "C02-niche-snapshot-extra",
+              "status": 400,
+              "expectedStatus": 400,
+              "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Request validation failed",
+                "details": [
+                  {
+                    "field": "lines.0",
+                    "message": "Unrecognized key: \"niche_snapshot\"",
+                    "code": "unrecognized_keys"
+                  }
+                ]
+              },
+              "requestId": "b19adbfd-85d2-4b85-b8f6-b9c187729c3a",
+              "responseSha256": "950ce9b59c9704d9528e07fdd5eecb7bc5bc196f5175368877e35319bb56cd06",
+              "expectedCode": null,
+              "matched": true
+            },
+            {
+              "case": "C02-product-snapshot-extra",
+              "status": 400,
+              "expectedStatus": 400,
+              "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Request validation failed",
+                "details": [
+                  {
+                    "field": "lines.0",
+                    "message": "Unrecognized key: \"product_snapshot\"",
+                    "code": "unrecognized_keys"
+                  }
+                ]
+              },
+              "requestId": "642d784f-802b-44f3-a043-da5b418be070",
+              "responseSha256": "dd7c9ac8f65c4096135da180c88916fb7fbd07ba22abd761040de0f661e6a68c",
+              "expectedCode": null,
+              "matched": true
+            }
+          ],
+          "scope": "Actual canonical anonymous worker negative controls; not UI-created carts."
+        }
+      ],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Actual canonical anonymous cart commands reject client price/niche_snapshot/product_snapshot fields400 VALIDATION_ERROR. Properties shade-spoof subcase deferred."
+      ],
+      "controllerStatus": "PARTIAL",
+      "controllerObservations": [
+        "Actual canonical anonymous cart commands reject client price/niche_snapshot/product_snapshot fields400 VALIDATION_ERROR. Properties shade-spoof subcase deferred."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "C02"
+      },
+      "subcases": [
+        {
+          "id": "price_extra_rejected",
+          "status": "PASS"
+        },
+        {
+          "id": "niche_snapshot_extra_rejected",
+          "status": "PASS"
+        },
+        {
+          "id": "product_snapshot_extra_rejected",
+          "status": "PASS"
+        },
+        {
+          "id": "properties_spoof_ignored",
+          "status": "NOT_RUN"
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Deferred until primary purchase succeeds and a separate valid stale cart can be preserved before later product edit."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Deferred until primary purchase succeeds and a separate valid stale cart can be preserved before later product edit."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "C03"
+      }
+    },
+    {
+      "id": "A01",
+      "status": "PASS",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-buyer-account-reload.ax.txt",
+          "sha256": "75f8aa520ca04dd0fbe936f76aee9d306e544d583809a48e05ae7f5adff4e6a3"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-buyer-account-reload.jpg",
+          "sha256": "b77e6cde23c4a20fd30f586e35ce3c21b0ab5e96b74c050d1f790708e662c209"
+        }
+      ],
+      "durableEvidence": [],
+      "notes": [
+        "Normal buyer registration, issuer consent and callback completed; account positive control and reload passed. Visible token-free session reports expected buyer ID90214344-8291-4937-be43-4a1db9753ced; emailVerified=false.",
+        "This positive account/session result does not claim email verification or Buyer B/foreign-site order denials."
+      ],
+      "controllerStatus": "PASS",
+      "controllerObservations": [
+        "Normal buyer registration, issuer consent and callback completed; account positive control and reload passed. Visible token-free session reports expected buyer ID90214344-8291-4937-be43-4a1db9753ced; emailVerified=false."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "A01"
+      }
+    },
+    {
+      "id": "H01",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [
+        {
+          "path": "first-pass-handoff-counts-9cd50e893016.json",
+          "scope": "Current shared fixture orders0, no confirmation capture. Current theme metadata deliberately omitted because the finite queue advanced."
+        }
+      ],
+      "notes": [
+        "Actual normal Checkout navigation fails ERR_CERT_AUTHORITY_INVALID at https://checkout.localhost:57228 before hosted contact/delivery UI. Primary2-Pink cart preserved. No order created and no TLS bypass.",
+        "Editor requested normal trusted HTTPS from the human and is preparing the public certificate steps. No agent trust/security change, direct checkout API completion or order substitute was performed."
+      ],
+      "controllerStatus": "BLOCKED",
+      "controllerObservations": [
+        "Actual normal Checkout navigation fails ERR_CERT_AUTHORITY_INVALID at https://checkout.localhost:57228 before hosted contact/delivery UI. Primary2-Pink cart preserved. No order created and no TLS bypass."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "H01"
+      }
+    },
+    {
+      "id": "H02",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Depends on actual original hosted UI confirm; none reached because H01 TLS blocked. No arbitrary confirm/API-order substitute.",
+        "Owned confirmation capture list is empty; the finite replay hook cannot replay a confirmation that never happened. Altered-command worker subcase also has no supported recorded command."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Depends on actual original hosted UI confirm; none reached because H01 TLS blocked. No arbitrary confirm/API-order substitute."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "H02"
+      }
+    },
+    {
+      "id": "O01",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Depends on actual primary order, absent after H01 TLS block."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Depends on actual primary order, absent after H01 TLS block."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "O01"
+      }
+    },
+    {
+      "id": "O02",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Depends on actual primary order positive control, absent after H01 TLS block."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Depends on actual primary order positive control, absent after H01 TLS block."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "O02"
+      }
+    },
+    {
+      "id": "O03",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Later product edit deferred until primary order and additional active stale-cart positive controls exist; normal merchant save also failed M01."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Later product edit deferred until primary order and additional active stale-cart positive controls exist; normal merchant save also failed M01."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "O03"
+      }
+    },
+    {
+      "id": "O04",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Historical comparison depends on actual primary order and later successful edit; neither exists."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Historical comparison depends on actual primary order and later successful edit; neither exists."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "O04"
+      }
+    },
+    {
+      "id": "O05",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Depends on order/history preconditions and relevant later edit; deferred."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Depends on order/history preconditions and relevant later edit; deferred."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "O05"
+      }
+    },
+    {
+      "id": "S01",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Hostile merchant-facts case deferred after normal merchant save failed M01. Search D07 is separate evidence."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "Hostile merchant-facts case deferred after normal merchant save failed M01. Search D07 is separate evidence."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "S01"
+      }
+    },
+    {
+      "id": "S02",
+      "status": "NOT_RUN",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "No deliberate owned legacy order fixture allocated; no synthetic API purchase substituted."
+      ],
+      "controllerStatus": "NOT_RUN",
+      "controllerObservations": [
+        "No deliberate owned legacy order fixture allocated; no synthetic API purchase substituted."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "S02"
+      }
+    },
+    {
+      "id": "R01",
+      "status": "BLOCKED",
+      "runId": "9cd50e893016",
+      "sourceCheckpoint": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+      "requestIds": [],
+      "redactedHttpEvidence": [],
+      "uiEvidence": [],
+      "durableEvidence": [],
+      "notes": [
+        "Run9cd50e893016, original cart, failed merchant draft and all evidence retained for remaining ten-theme checks and corrected/trusted baseline. Cleanup not requested.",
+        "This ledger covers all30 current dispositions. No resources were created by the Dewdrop verifier; original user storybook and shared fixture/cart/draft remain preserved under Editor ownership. Corrected-baseline completion and owner cleanup remain open."
+      ],
+      "controllerStatus": "IN_PROGRESS",
+      "controllerObservations": [
+        "Run9cd50e893016, original cart, failed merchant draft and all evidence retained for remaining ten-theme checks and corrected/trusted baseline. Cleanup not requested."
+      ],
+      "controllerEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+        "caseId": "R01"
+      }
+    }
+  ],
+  "coordinationEvidence": [
+    {
+      "at": "2026-10-23T10:23:05.155611+00:00",
+      "kind": "MAIN_CHAT_ALLOCATION_RESPONSE",
+      "observed": "Main directly verified the human request and reserved Dewdrop on the single forthcoming Theme Editor-owned fixture. No launch or old ff994 reuse authorized before main lease."
+    },
+    {
+      "at": "2026-10-23T13:04:51.311694+00:00",
+      "kind": "MAIN_CHAT_COMPACT_SNAPSHOT",
+      "cursor": "07791e05-415a-455a-97a4-4cd2ae936928:170",
+      "observed": "Main chat remains active. Latest gate update: registry repair frozen36 focused checks; native catalog retest queued after measurement DB qualification. No fixture lease or bindings delivered."
+    },
+    {
+      "at": "2026-10-23T13:10:58.964720+00:00",
+      "kind": "DIRECT_EDITOR_COORDINATION",
+      "observed": "Human explicitly authorized direct Editor coordination; allocation/readiness request delivered successfully. Measurement native qualification and source checkpoint03 confirmed from evidence. Fresh fixture bindings/lease remain absent."
+    },
+    {
+      "at": "2026-10-23T13:19:58.102112+00:00",
+      "kind": "DIRECT_EDITOR_ALLOCATION_REPLY",
+      "observed": "Editor verified latest human authorization, marked all30 required, confirmed no fresh runtime/bindings exist, retains one controller/fixture; promises concrete nonsecret bindings/private path and sequential browser/API/durable-proof slice after main gates and common smoke."
+    },
+    {
+      "at": "2026-10-23T13:19:58.102112+00:00",
+      "kind": "MAIN_PREREQUISITE_SCOPE_REQUEST",
+      "observed": "Requested main assess decoupling unrelated blank-Core creation defect from actual Aura2.0 path after immutable389 qualifies. No waiver or independent startup performed."
+    },
+    {
+      "at": "2026-10-23T13:28:57.503332+00:00",
+      "kind": "PRIVATE_EVIDENCE_PREREQUISITE_SENT_TO_EDITOR",
+      "observed": "Requested original UI confirm command/key and request IDs privately plus read-only order snapshot digest and scoped one-effect counts. No production endpoint, alternate checkout or second fixture requested."
+    },
+    {
+      "at": "2026-10-23T14:10:13.039403+00:00",
+      "kind": "FINITE_MAIN_ALLOCATION_AND_EDITOR_COORDINATION",
+      "observed": "Main provided finite conditional launch path and reserved Dewdrop first buyer slice after common smoke. Editor owns one fixture/controller and will provide concrete non-secret bindings/private state path; original-confirm/durable proof hook was explicitly allocated,17 checks/typecheck reported green. No broad extra gate requested by Dewdrop."
+    }
+  ],
+  "scopeProtection": {
+    "heldFixtureReused": false,
+    "sourceModified": false,
+    "otherOwnersResourcesTouched": false,
+    "secretsCopiedToEvidence": false
+  },
+  "totals": {
+    "PASS": 7,
+    "FAIL": 1,
+    "BLOCKED": 12,
+    "NOT_RUN": 10
+  },
+  "requestAuthorization": {
+    "directMainCoordination": true,
+    "directEditorCoordination": true,
+    "all30CasesRequired": true,
+    "latestHumanInstruction": "Coordinate with main and Editor to fix merchant-origin blocker, give exact trusted-HTTPS step, then finish all30 Dewdrop cases and update evidence."
+  },
+  "upstreamFailures": [
+    {
+      "id": "UPSTREAM-BLANK-CORE-SAVE",
+      "owner": "Marketplace",
+      "classification": "REPORTED_UPSTREAM_NATIVE_FAILURE_NOT_DEWDROP_LIFECYCLE",
+      "source": "Direct Editor allocation reply",
+      "status": "RESOLVED_REPORTED",
+      "effect": "Main currently holds startup; request sent to assess whether blank-only path can remain separate from bounded Dewdrop lifecycle.",
+      "resolution": "Main/Editor report final native/catalog or corrected disk-integrity/SQL check green. Not credited as Dewdrop installed lifecycle."
+    },
+    {
+      "id": "UPSTREAM-RELEASE-RELOAD-INTEGRITY",
+      "owner": "Release generator owner via main",
+      "classification": "UPSTREAM_ARTIFACT_FAILURE_NOT_DEWDROP_LIFECYCLE",
+      "source": "docs/implementation/niche-theme-programme/release-v2/dry-run-checkpoint-03-verification.json",
+      "status": "RESOLVED_REPORTED",
+      "effect": "Cannot install unadmitted immutable v2 release; generator correction and actual saved/reload qualification required.",
+      "resolution": "Main/Editor report final native/catalog or corrected disk-integrity/SQL check green. Not credited as Dewdrop installed lifecycle."
+    },
+    {
+      "id": "UPSTREAM-PUBLIC-STOREFRONT-ACCESS-503",
+      "owner": "Threadline via main",
+      "classification": "UPSTREAM_COMBINED_NATIVE_FAILURE_NOT_DEWDROP_BROWSER_RESULT",
+      "source": "Main/Editor compact snapshots and direct coordination",
+      "status": "RESOLVED_NATIVE_ADMISSION",
+      "effect": "Combined qualification and conditional fresh shared fixture startup held; no concrete run/site/origins/state/release bindings yet.",
+      "resolution": "Final combined native admission5/5, cleanup/paired emission accepted; fresh public bootstrap and four products independently200."
+    }
+  ],
+  "executionCautions": [
+    "Shared fixture has14 new products plus3 apparel; assert the four beauty records remain browsable, not that the whole site has only4. Actual counts/pagination come from server.",
+    "If common editor smoke already published another theme, prove installation preserves the prior current release pointer until explicit Dewdrop publication; do not require the site to become unpublished.",
+    "B00 records admitted package identity, source bundle hash and configured published release hash separately; these are distinct objects and hashing/serialization domains.",
+    "H02 requires the original UI confirm body/key privately. Never generate a new key and call it exact replay. No extraction of hidden browser runtime state.",
+    "Order/inventory one-effect counts must scope to this primary checkout/order/variant, not assume zero orders across the shared site.",
+    "Legacy S02 setup must be labeled an independent canonical non-niche control, preferably Palm Wash with metadata{}, not represented as the actual Pink Clay hosted UI purchase.",
+    "Only supported CUA APIs perform browser UI actions. HTTP/API controls are separate evidence from actual normal login/consent, hydrated cart, hosted checkout and mounted order pages.",
+    "R01 closes only Dewdrop-owned tabs/releases its lease via Editor; shared fixture lifecycle/cleanup remains with Editor for subsequent owners."
+  ],
+  "launchAllocation": {
+    "status": "CONDITIONAL_FIRST_BUYER_SLICE_RESERVED",
+    "coordinator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "fixtureOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "runtimeBindingsExist": true,
+    "startupPredicates": [
+      "Combined native389 install/wire-save/rollback plus390 composition fully green, cleanup empty and qualified390 source pair emitted",
+      "Released Circuit cart repair with relevant regressions/typecheck",
+      "Released Editor bounded observation hook and unchanged14-product baseline",
+      "Final source-complete candidate/parity, three sequential production Next builds and actual runtime health",
+      "Editor common all10 install/save/localpublish/recovery smoke, then explicit Dewdrop lease and private state path"
+    ],
+    "noAdditionalHumanPromptRequiredForAlreadyAuthorizedRun": true
+  },
+  "fixtureObservationProtocol": {
+    "classification": "SOURCE_RELEASED_NOT_EXECUTED_IN_THIS_RUN",
+    "source": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+    "ownerReportedValidation": "17 focused checks and gateway noEmit passed",
+    "header": "x-fixture-control value stays private in allocated state",
+    "summaryPath": "/__threadline_proof",
+    "durableSelectors": [
+      "order_id",
+      "product_id"
+    ],
+    "durableValues": [
+      "snapshotSha256",
+      "orderLineCount",
+      "productOrderLineCount",
+      "inventorySha256",
+      "inventoryEventCount",
+      "inventoryAdjustmentCount"
+    ],
+    "replayPath": "/__threadline_editor_replay_confirm",
+    "replayBody": "Exactly {index} from captured successful real UI confirmation; at most3 replays. No caller command or altered payload accepted.",
+    "limits": "Exact original replay can be proved without exposing credentials. H02 altered-command worker subcase remains unsupported until an explicit permitted mechanism exists; never substitute the fixture selector rejection for gateway idempotency conflict."
+  },
+  "bindings": {
+    "runId": "9cd50e893016",
+    "databaseRunId": "9cd50e893016",
+    "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+    "subdomain": "syn-threadline-ui-d11a8917",
+    "identityOrigin": "http://accounts.threadline-9cd50e893016.localhost:57224",
+    "merchantOrigin": "http://admin.threadline-9cd50e893016.localhost:57225",
+    "commerceOrigin": "http://syn-threadline-ui-d11a8917.localhost:57226",
+    "checkoutOrigin": "https://checkout.localhost:57228",
+    "apiOrigin": "http://127.0.0.1:57229",
+    "productIds": {
+      "cloudRinse": "b75c7f3e-33aa-4a95-9b31-876cdd2bb200",
+      "dailyVeil": "458be437-96bb-4a5c-b851-6d391be17ff6",
+      "tint": "f5c6ac15-926c-4cb1-a9c5-c9f4912881df",
+      "palmWash": "74f7babe-6e6a-45ef-b866-87a261d18b86"
+    },
+    "variantIds": {
+      "rosewater": "5772193d-fb97-4532-95f4-7c28071fcf57",
+      "pinkClay": "7f840c26-0e46-4b6a-a753-1f95190e2693",
+      "terracotta": "df8fd727-ebee-4466-8e37-1630fef93ef3"
+    },
+    "collectionIds": {
+      "cleanse": "f7b9a018-cb6f-4c02-9bac-e7d00025d702",
+      "care": "53ca303e-f6a2-47ba-b83c-a4581363c3c7",
+      "colour": "efac19f5-23d5-4988-94e6-988073966bca"
+    },
+    "shippingRateId": "e26eb19b-7133-4e2b-8908-b0985346e97e",
+    "ownerId": null,
+    "buyerAId": "90214344-8291-4937-be43-4a1db9753ced",
+    "buyerBId": null,
+    "otherSiteId": null,
+    "themePackageId": null,
+    "themePackageVersionId": null,
+    "themeInstanceId": null,
+    "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+    "releaseSha256": "edcf38e81eda876fd62e8382a0c900c2ddcb7b3764351889d988c4276141ef6e",
+    "cartId": null,
+    "cartLineId": null,
+    "orderId": null
+  },
+  "partialEditorPrerequisiteExecuted": true,
+  "currentCommonFailures": [
+    {
+      "id": "EDITOR-SHARED-ANNOUNCEMENT-LOST",
+      "status": "OPEN",
+      "observedBy": "Editor",
+      "actual": "Versions2/3 acknowledged but shared announcement lost on reload; SQL384 template merge identified by owner."
+    },
+    {
+      "id": "EDITOR-PARENT-PREVIEW-CSP",
+      "status": "OPEN",
+      "observedBy": "Editor",
+      "actual": "Parent CSP blocks canonical root preview; public publicationA remains readable."
+    },
+    {
+      "id": "MERCHANT-PRODUCT-MUTATION-ORIGIN",
+      "status": "OPEN",
+      "observedBy": "Editor",
+      "actual": "M01 Save product rejected with merchant app origin error; unsaved draft retained; original public Cloud facts remain."
+    }
+  ],
+  "countingRule": "PASS requires the planned case coverage, not only a narrower observed component. Controller PARTIAL/IN_PROGRESS are normalized to BLOCKED. D07 closing-form probe passed, but the planned closing-script subcase did not execute and therefore D07 remains BLOCKED. No successful source/native/setup result substitutes for a live case.",
+  "runCompleted": false,
+  "caseSetFullyExecuted": false,
+  "fullThemeAcceptance": false,
+  "buyerAEmailVerified": false,
+  "controllerFirstPass": {
+    "sourcePath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-browser-diagnostics.json",
+    "archivePath": "docs/implementation/niche-themes-2026-10-23/dewdrop/controller-first-pass-9cd50e893016-153834.json",
+    "sha256": "4b82951156f348a5606b2781837b0f6a3da696deb206ab90ea7d85a3c7f853fb",
+    "recordedAt": "2026-10-23T15:38:34.319865+00:00",
+    "rawCounts": {
+      "PARTIAL": 7,
+      "FAIL": 1,
+      "BLOCKED": 3,
+      "NOT_RUN": 10,
+      "PASS": 8,
+      "IN_PROGRESS": 1
+    }
+  },
+  "completedCaseVerdicts": 8,
+  "observedExecutionCaseIds": [
+    "B00",
+    "M01",
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D05",
+    "D06",
+    "D07",
+    "P01",
+    "P02",
+    "P03",
+    "C01",
+    "C02",
+    "A01",
+    "H01"
+  ],
+  "resumeConditions": [
+    "Reinstate and verify Dewdrop2.0 published release/context before the remaining Dewdrop-specific UI cases; the finite queue has moved to Pantry.",
+    "Normal trusted HTTPS for the allocated checkout origin, with no browser certificate bypass or agent trust-store change.",
+    "Normal merchant mutation-origin repair applied to an admitted running candidate before authoring/history edit cases.",
+    "Real primary hosted UI purchase before replay/history/ownership denials; preserve or reaccept a valid separate stale cart before later product edit.",
+    "Explicit permitted controls for authenticated metadata negatives, foreign-site cart and legacy missing-snapshot order; no invented identities or API-order substitute.",
+    "Execute the planned closing-script search control and deferred properties-spoof/malformed-capability subcases through permitted mechanisms."
+  ],
+  "goalComplete": false,
+  "firstPassEvidenceArchive": [
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-merchant-origin-banner.jpg",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-merchant-origin-banner.jpg",
+      "sha256": "5478ed65cc6b5b9b422afd17f1af2dee3e6c217ffd564c223b28a78165e585a2"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-merchant-origin-failure.jpg",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-merchant-origin-failure.jpg",
+      "sha256": "4329c2fd119e0ac8ab7f0c7e34cd3f1a115741c7518bcf264040367dde0a8382"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-cart-reload.jpg",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-cart-reload.jpg",
+      "sha256": "744592ecc1a79edea504a5c222157d00f615cdcbff374ec7138a5754dcb5d6c3"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-publication-A-proof.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-publication-A-proof.json",
+      "sha256": "baa4ae909abab2a75e92798220562392d33b6fadabfafc1bfb1ab117e2d0deb9"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-publication-B-proof.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-publication-B-proof.json",
+      "sha256": "f817a1fd384f35296f9c23e3edca23caafafd597c8b9afcae7258c8280d0e2a1"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-restore-A-proof.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-restore-A-proof.json",
+      "sha256": "b651cb4e90bb64388797858ee8a4ed5f28212eaf53922032511b866793699bc8"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-reapply-B-proof.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-reapply-B-proof.json",
+      "sha256": "4e0cdc22d21fe3ab16a58da2090c25a8ba39cc9fb28c60e8a00cef5b6ef3805d"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-colour-filter.ax.txt",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-colour-filter.ax.txt",
+      "sha256": "7ba40e51dd89828f07f3e48f925b3ae4e7c3c5b183dd51cc2ac95755a6f9b57f"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-search-filter.ax.txt",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-search-filter.ax.txt",
+      "sha256": "7cf2850c8f64fcb216edd75e2d66c251ffc2c9dfd7778cb223b251dd4b4a683c"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-search-five-sorts.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-search-five-sorts.json",
+      "sha256": "812d270df4940be29eca016d178acaa367819b805c5ac2ce4022207c08206776"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-search-pagination.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-search-pagination.json",
+      "sha256": "757b336c46b1883acac4db82a639c32900afd9d0cbe2e54112f51bdc26ffbc6f"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-repeated-filter-recovery.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-repeated-filter-recovery.json",
+      "sha256": "a8aa198f147c64bbadf999cb3bd1e6d6e40857d81971785e8033ba24a84a858c"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-stale-filter-recovery.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-stale-filter-recovery.json",
+      "sha256": "e4902c0627a935e6c8d91688910a98bb9991522a1e8d9c92a0f5e4eefb1bbabd"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-unsafe-search-observation.ax.txt",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-unsafe-search-observation.ax.txt",
+      "sha256": "4385569a8058027b6dee4a25875cfeb19df18d4ec62ab0e6e3981d05d2dd534e"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-unknown-metadata-browsing.ax.txt",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-unknown-metadata-browsing.ax.txt",
+      "sha256": "665aa055d1ad54212b5f71e3f89972acbae76806192af74839e9e3d4d34e2125"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-cart-reload.ax.txt",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-cart-reload.ax.txt",
+      "sha256": "12244cfe4ed1ad2ed2c8187a22733718acfdb341f932e09f4e3959d548f5ef04"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-oos-cart-negative.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-oos-cart-negative.json",
+      "sha256": "4b8292ebc85f815a71fcae2f50e7e75af8165d833820fb2c674d2212dc71a701"
+    },
+    {
+      "originalPath": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-cart-authority-negatives.json",
+      "archivedPath": "docs/implementation/niche-themes-2026-10-23/dewdrop/first-pass-evidence-9cd50e893016/dewdrop-cart-authority-negatives.json",
+      "sha256": "36d003ad2eb38b58b0f3a0b7825381f08e9cb3840f80dd2f3e5d31fa5e380f2b"
+    }
+  ],
+  "privacyAudit": {
+    "recordedAt": "2026-10-23T15:53:32.347695+00:00",
+    "filesScanned": 49,
+    "knownFixturePasswordOrNonceMatches": 0,
+    "rawCapabilityQueryPatterns": 0,
+    "limitations": "Text/JSON/Markdown scan plus visual review of copied merchant/cart images; not an OCR audit of every other chat image."
+  },
+  "correctedBaselineCoordination": {
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-baseline-coordination-20261023.json",
+    "sha256": "a98b8f905a2b182fa736576acc24e2c8800216efc29207ce104b855b427eaee7",
+    "status": "SOURCE_REPAIRS_ADMITTED_CHECKOUT_OS_TRUST_VERIFIED_NEXT_RUNTIME_ALLOCATION_PENDING",
+    "caseVerdictsChanged": false
+  },
+  "correctedCandidateSourceVerification": {
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/latest392-manualtls-candidate-source-verification.json",
+    "sha256": "df9ff7fab9c9584addaeeccd165c4a091802d522d3181525bb3f548c81de0c05",
+    "runId": null,
+    "status": "CORRECTED_CANDIDATE_READ_ONLY_SOURCE_VERIFICATION_NOT_RUNTIME_ACCEPTANCE"
+  },
+  "activeCorrectedRun": {
+    "runId": "936e5f577646",
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-execution.json",
+    "classification": "ACTUAL_ALL_30_CASE_DISPOSITIONS_WITH_SIX_QUALIFIED_ROWS",
+    "totals": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3
+    },
+    "priorCaseVerdictsPreserved": true,
+    "historicalPassCountsPromoted": false,
+    "latestStage": "FINAL_FINITE_30_ROW_REPORT_26_PASS_1_FAIL_3_INCOMPLETE",
+    "primaryOrderConfirmed": true,
+    "humanHttpsStepRemaining": false,
+    "approvalDependency": "Resolved explicit human approval; one synthetic legacy read-control committed, distinct from primary.",
+    "controllerTotals": {
+      "PASS": 24,
+      "PARTIAL": 6
+    },
+    "state": "FINITE_30_CASE_MATRIX_RECONCILED_WITH_RECORDED_FAILURE_AND_LIVE_COVERAGE_LIMITS",
+    "evidence": "fresh-run-936e5f577646-execution.json",
+    "goalComplete": false,
+    "latestAudit": "docs/implementation/niche-themes-2026-10-23/dewdrop/remaining-controls-final-audit-936e5f577646.json",
+    "finiteCohortReportSealed": true,
+    "controllerLedgerEpoch": {
+      "recordedAt": "2026-10-24T04:41:28.057064+00:00",
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-finite-boundary-report.json",
+      "sha256": "e5cad050eb3c0ea8936d33e912c53ee99db5980590b573521b2f6b7ece821e61",
+      "totals": {
+        "PASS": 24,
+        "PARTIAL": 6
+      },
+      "qualification": "Saved controller ledger predates the final P03/M04 receipts. Independent reviewer26PASS/1FAIL/3BLOCKED is based on those later actual receipts; upstream aggregate was not edited by reviewer."
+    },
+    "derivedPartialNomenclatureEquivalent": {
+      "PASS": 26,
+      "PARTIAL": 4
+    }
+  },
+  "correctedRunHistory": [
+    {
+      "runId": "f6074d90e894",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-run-f6074d90e894-execution.json",
+      "classification": "HISTORICAL_CORRECTED_RUN_RETIRED_TIMEOUT_INCOMPLETE",
+      "totals": {
+        "PASS": 4,
+        "FAIL": 0,
+        "BLOCKED": 1,
+        "NOT_RUN": 25
+      },
+      "priorCaseVerdictsPreserved": true,
+      "latestStage": "RETIRED_TIMEOUT_INCOMPLETE_WAITING_GENUINELY_FRESH_FIXTURE",
+      "resolvedComponentBlockers": {
+        "normalDirectionsSaveReload": "PASS_SCOPED_SMOKE",
+        "visiblePreviewHeaderFooterPersistencePublicationA": "PASS_SCOPED_SETUP",
+        "browserHttpsHostedDeliveryForm": "PASS_SCOPED_ANONYMOUS_SMOKE"
+      },
+      "primaryOrderConfirmed": false,
+      "humanHttpsStepRemaining": false,
+      "controlAudit": "docs/implementation/niche-themes-2026-10-23/dewdrop/fixed-controls-readonly-audit-f6074d90e894.json",
+      "currentAllocation": {
+        "owner": "Themes",
+        "status": "GENUINELY_FRESH_FIXTURE_PREPARATION_AND_SOURCE_QUALIFICATION",
+        "grantYet": false,
+        "requestedAllocation": "Earliest safe Dewdrop slot with new actual IDs/auth and sufficient remaining lifetime",
+        "mustReestablish": [
+          "Owned site/owner/buyer and exact admitted source",
+          "Dewdrop installed/public release and actual product/variant/control bindings",
+          "Normal merchant positive and trusted ordinary buyer checkout",
+          "Normal primary 2Pink UI order before separate accepted v1 stale cart and O03"
+        ],
+        "noSilentCopyOrResurrection": true
+      },
+      "bindingValidity": "HISTORICAL_ONLY_DATABASE_REMOVED_ALL_LEASES_CLOSED",
+      "runtimeClosure": {
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/f607-timeout-closure-receipt.json",
+        "sha256": "be270695d0d4b22e3fc3346a268b35fabe0bc1fc6b746d0d34f6e2da7585a2ea",
+        "classification": "HISTORICAL_INCOMPLETE_RUN_CLOSED_OWNER_REPORTED_TIMEOUT_NOT_NEW_RUNTIME_PROBE"
+      }
+    }
+  ]
+}

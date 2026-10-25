@@ -1,0 +1,245 @@
+{
+  "scope": "Actual bound static Liquid browser facts and SSR sold-out eligibility only; no variant/cart/purchase hydration or persisted order claim.",
+  "browser": "155.0.8059.85",
+  "port": 43270,
+  "passed": true,
+  "checks": 24,
+  "results": [
+    {
+      "width": 1440,
+      "scene": "product",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 1440,
+      "scene": "missing-variant",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: net quantity not supplied · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 1440,
+      "scene": "sold-out",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g · unavailable",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": true,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 1440,
+      "scene": "unknown-food",
+      "ingredientsUnknown": true,
+      "allergensUnknown": true
+    },
+    {
+      "width": 1440,
+      "scene": "pulses",
+      "cardTitles": [
+        "Split red lentils"
+      ]
+    },
+    {
+      "width": 1440,
+      "scene": "rice-shelf",
+      "cardTitles": [
+        "Basmati rice"
+      ]
+    },
+    {
+      "width": 834,
+      "scene": "product",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 834,
+      "scene": "missing-variant",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: net quantity not supplied · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 834,
+      "scene": "sold-out",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g · unavailable",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": true,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 834,
+      "scene": "unknown-food",
+      "ingredientsUnknown": true,
+      "allergensUnknown": true
+    },
+    {
+      "width": 834,
+      "scene": "pulses",
+      "cardTitles": [
+        "Split red lentils"
+      ]
+    },
+    {
+      "width": 834,
+      "scene": "rice-shelf",
+      "cardTitles": [
+        "Basmati rice"
+      ]
+    },
+    {
+      "width": 390,
+      "scene": "product",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 390,
+      "scene": "missing-variant",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: net quantity not supplied · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 390,
+      "scene": "sold-out",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g · unavailable",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": true,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 390,
+      "scene": "unknown-food",
+      "ingredientsUnknown": true,
+      "allergensUnknown": true
+    },
+    {
+      "width": 390,
+      "scene": "pulses",
+      "cardTitles": [
+        "Split red lentils"
+      ]
+    },
+    {
+      "width": 390,
+      "scene": "rice-shelf",
+      "cardTitles": [
+        "Basmati rice"
+      ]
+    },
+    {
+      "width": 320,
+      "scene": "product",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 320,
+      "scene": "missing-variant",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g",
+        "500 g: net quantity not supplied · unavailable"
+      ],
+      "addButtonDisabled": false,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 320,
+      "scene": "sold-out",
+      "rows": [
+        "250 g: 250 g net per pack · INR 72.00 / 100 g · unavailable",
+        "500 g: 500 g net per pack · INR 68.00 / 100 g · unavailable"
+      ],
+      "addButtonDisabled": true,
+      "focus": {
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "width": 320,
+      "scene": "unknown-food",
+      "ingredientsUnknown": true,
+      "allergensUnknown": true
+    },
+    {
+      "width": 320,
+      "scene": "pulses",
+      "cardTitles": [
+        "Split red lentils"
+      ]
+    },
+    {
+      "width": 320,
+      "scene": "rice-shelf",
+      "cardTitles": [
+        "Basmati rice"
+      ]
+    }
+  ]
+}

@@ -453,7 +453,7 @@ export function Modal({ open, title, description, children, onClose, footer, cla
             <section
                 ref={dialogRef}
                 className={cx(
-                    'relative z-[var(--lb-z-base)] flex h-full max-h-none w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(640px,calc(100vw-var(--lb-space-6)))] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-color-border)]',
+                    'relative z-[var(--lb-z-base)] flex h-full max-h-none w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-color-surface)] text-[color:var(--lb-color-text)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(640px,calc(100vw-var(--lb-space-6)))] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-color-border)]',
                     className,
                 )}
                 role="dialog"
@@ -474,7 +474,7 @@ export function Modal({ open, title, description, children, onClose, footer, cla
                     </div>
                     <button
                         type="button"
-                        className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                        className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] shrink-0 items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] max-sm:min-h-[var(--lb-size-touch-target)] max-sm:min-w-[var(--lb-size-touch-target)]"
                         onClick={onClose}
                         aria-label="Close"
                     >
@@ -483,7 +483,7 @@ export function Modal({ open, title, description, children, onClose, footer, cla
                 </header>
                 <div className="overflow-auto p-[var(--lb-density-modal-padding)]">{children}</div>
                 {footer && (
-                    <footer className="flex flex-col-reverse justify-end gap-[var(--lb-space-2)] border-t border-[var(--lb-color-border)] p-[var(--lb-space-4)] [&>button]:w-full sm:flex-row sm:[&>button]:w-auto">
+                    <footer className="flex flex-col-reverse justify-end gap-[var(--lb-space-2)] border-t border-[var(--lb-color-border)] p-[var(--lb-space-4)] [&>button]:w-full max-sm:pb-[max(var(--lb-space-4),env(safe-area-inset-bottom))] max-sm:[&>button]:min-h-[var(--lb-size-touch-target)] sm:flex-row sm:[&>button]:w-auto">
                         {footer}
                     </footer>
                 )}

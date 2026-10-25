@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-24T19:32:31.075352+00:00",
+  "hypothesis": "Razorpay checkout SDK onredirect path constructs a form and submits it; current checkout form-action self denies cross-origin API bank redirects",
+  "observedHeader": "form-action self",
+  "vendorSource": "https://checkout.razorpay.com/v1/checkout.js",
+  "vendorCode": "onredirect calls navigation helper; non-GET navigation creates a form, sets action and submits",
+  "scope": "Named opt-in API-origin form destination only for canonical hosted checkout /checkout host; no generic form origin input, no wildcard, no global weakening",
+  "files": [
+    {
+      "path": "config/security/next-security-headers.ts",
+      "beforeSHA256": "8089e54450b0d7f4b02e93813e95afb562f04a0b5fb821d6d66a08c2b040a337"
+    },
+    {
+      "path": "apps/commerce/web/next.config.ts",
+      "beforeSHA256": "03ce25315ff387a90e005273139ac423b14da44a994247fe2fa18d679ccf3c00"
+    },
+    {
+      "path": "tests/contracts/security-headers.test.ts",
+      "beforeSHA256": "5fcef49c85f45c7790ac39a8ad865f5441a0d848640ae5b8cbaf5b877c1d6117"
+    }
+  ],
+  "actualBrowserPositive": "PENDING"
+}

@@ -1,0 +1,50 @@
+{
+  "status": "C939_AE513_97EB_EPOCH_PRESERVED_BEFORE_SOURCE_ONLY_CASE_CORRECTION",
+  "files": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+      "sha256": "ae513731224bfe171786efd8283965734b200e8323f59c4a4bec07d9b0d94a0d",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/theme-publisher-acl.postgres.test.ts.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts.test.mjs",
+      "sha256": "1d6ebdd0411840ec56c1508062c25a64de2aa1144908950f7ce84e0c700a3054",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/source-contracts.test.mjs.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/capture-source-inputs.mjs",
+      "sha256": "b62f2a496e404e3972ea6c49496b2e457d65dc60d3670d2c5d3ae8a77f1dd1bd",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/capture-source-inputs.mjs.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/admission.template.json",
+      "sha256": "aa71393a817950092ae0045cb3b502ab4ae17b8b1a393d7b6b7c007ce389dfd8",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/admission.template.json.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/admission.json",
+      "sha256": "56459293d035f1851ffb19e23ad6446a7ea3fda9ef5924c797269c464b093ec3",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/admission.json.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+      "sha256": "97eb85f25d95449f1d9bc4e159c379aba37080566e58420447d25cbc9594ae08",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/source-input-closure.json.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/manifest.json",
+      "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/manifest.json.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.up.candidate.sql",
+      "sha256": "b4fe24e45e1dc7c44f8ffb21acb128bc73e9622554c397948df9e972d88537f5",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/393_publisher_tenant_execute.up.candidate.sql.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.down.candidate.sql",
+      "sha256": "1d668472d0ee31d0cf5962533b7eec9b5c52142f9b384a96c30da10ff764ce59",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/393_publisher_tenant_execute.down.candidate.sql.before.snapshot"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "identity": {
+    "slug": "letbuyy-nova",
+    "name": "MadeYours",
+    "description": "An indigo text-personalization workspace: choose a base, specify exact details and review before purchase.",
+    "author_name": "LetBuyy",
+    "site_types": [
+      "store"
+    ],
+    "status": "active",
+    "pricing_type": "free",
+    "price": 0,
+    "currency": "INR",
+    "version": "2.0.0",
+    "version_number": 2,
+    "release_status": "published",
+    "compatibility_range": ">=2026-06-liquid-sections"
+  },
+  "notPublication": "Fixture metadata only; no release was published.",
+  "templates": [
+    "header",
+    "footer",
+    "index",
+    "product",
+    "collection",
+    "search",
+    "cart",
+    "list-collections",
+    "contact",
+    "customers/login",
+    "customers/register",
+    "customers/account",
+    "customers/orders",
+    "customers/order",
+    "customers/settings",
+    "customers/wishlist",
+    "customers/addresses",
+    "policy",
+    "blog",
+    "article",
+    "page",
+    "not_found",
+    "password"
+  ],
+  "homeOrder": [
+    "madeyours-intro",
+    "madeyours-process",
+    "madeyours-bases",
+    "madeyours-collections",
+    "madeyours-details"
+  ],
+  "manifest": {
+    "contentHash": "48071e544478504f1131f8bbc398d0b29257fe344daf2cc7711bcbcb6dcb2e84",
+    "fileCount": 74,
+    "bytes": 111539
+  },
+  "lint": {
+    "errors": [],
+    "introduced": [],
+    "retainedBaselineWarningCount": 20
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "date": "2026-10-22T14:40:02.806Z",
+  "label": "production-before",
+  "target": "http://localhost:9051",
+  "measurement": "HTTP response timing from a private CLI cookie jar created by normal canonical login; not browser click-to-paint. No cookie injection into browser.",
+  "catalogScope": "Existing synthetic account-owned catalog; no rows seeded/reset.",
+  "samples": [
+    {
+      "route": "products-html",
+      "phase": "cold",
+      "status": 200,
+      "headersMs": 329.39,
+      "totalMs": 333.38,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 43.89,
+      "totalMs": 58.56,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 39.2,
+      "totalMs": 51.04,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 28.67,
+      "totalMs": 34.84,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 29.74,
+      "totalMs": 36.62,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 29.58,
+      "totalMs": 36.89,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 24.7,
+      "totalMs": 32.43,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 25.21,
+      "totalMs": 32.24,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 30.57,
+      "totalMs": 36.48,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 24.92,
+      "totalMs": 31.96,
+      "bytes": 252928
+    },
+    {
+      "route": "products-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.57,
+      "totalMs": 34.07,
+      "bytes": 252928
+    },
+    {
+      "route": "general-html",
+      "phase": "cold",
+      "status": 200,
+      "headersMs": 29.45,
+      "totalMs": 39.33,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.71,
+      "totalMs": 31.5,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.53,
+      "totalMs": 31.15,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 22.55,
+      "totalMs": 34.4,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 27.81,
+      "totalMs": 35.64,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 24.52,
+      "totalMs": 33.23,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.44,
+      "totalMs": 32.17,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.02,
+      "totalMs": 32.51,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 28.94,
+      "totalMs": 51.45,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 54.1,
+      "totalMs": 62.37,
+      "bytes": 264037
+    },
+    {
+      "route": "general-html",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 36.08,
+      "totalMs": 48.3,
+      "bytes": 264037
+    },
+    {
+      "route": "products-bff",
+      "phase": "cold",
+      "status": 200,
+      "headersMs": 49.51,
+      "totalMs": 49.72,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 39.13,
+      "totalMs": 39.27,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 34.08,
+      "totalMs": 34.19,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 22.97,
+      "totalMs": 23.1,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 25.06,
+      "totalMs": 25.17,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 25.54,
+      "totalMs": 25.64,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.89,
+      "totalMs": 23.99,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.5,
+      "totalMs": 23.61,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 24.33,
+      "totalMs": 24.45,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.84,
+      "totalMs": 24.02,
+      "bytes": 666
+    },
+    {
+      "route": "products-bff",
+      "phase": "warm",
+      "status": 200,
+      "headersMs": 23.32,
+      "totalMs": 23.8,
+      "bytes": 666
+    }
+  ],
+  "summaries": [
+    {
+      "route": "products-html",
+      "samples": 10,
+      "p50Ms": 34.84,
+      "p95Ms": 58.56
+    },
+    {
+      "route": "general-html",
+      "samples": 10,
+      "p50Ms": 33.23,
+      "p95Ms": 62.37
+    },
+    {
+      "route": "products-bff",
+      "samples": 10,
+      "p50Ms": 24.02,
+      "p95Ms": 39.27
+    }
+  ],
+  "checks": [
+    {
+      "name": "expired valid-format session retains private destination",
+      "pass": false,
+      "status": 307,
+      "hasReturnTo": false
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-23T16:15:46.495362+00:00",
+  "runId": "0a9c7010222a",
+  "originalBeforeRunIdField": "ASSIGNED_BY_RUNNER_AFTER_START",
+  "explanation": "Runner assigns its ID after start. Original before source receipt is preserved byte-for-byte; this binding ties it to the one actual runner result and owned entry proof.",
+  "sourceBefore": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-before.json",
+    "sha256": "01859cb8dd135456e3f962b079982babd8e3f967f7b46435f9d9bc0cb1a8b284",
+    "bytes": 16596
+  },
+  "runnerResult": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/result.json",
+    "sha256": "3af1783022ef9988ad2373d9004d3e1f9a195fa7e229917a2c93f6e78329817c",
+    "bytes": 66344
+  },
+  "ownedEntryProof": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/entry.json",
+    "sha256": "f6fca8b7438fdc66027d7ecc59e73f447ea489a2483d623a27b054484401b5c1",
+    "bytes": 42498
+  },
+  "noOtherNativeRunsStarted": true
+}

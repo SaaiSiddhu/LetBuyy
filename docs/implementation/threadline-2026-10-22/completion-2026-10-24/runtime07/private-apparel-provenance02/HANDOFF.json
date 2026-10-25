@@ -1,0 +1,76 @@
+{
+  "recordedAt": "2026-10-24T21:16:43.020966+00:00",
+  "status": "SEALED_COHERENT_PRIVATE_PREPARATION_READY_FOR_INDEPENDENT_REVIEW_NOT_APPLY_OR_NATIVE_READY",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "allocation": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/THREADLINE_APPAREL_PROVENANCE_ALLOCATION_02.json",
+  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02",
+  "durableRoot": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance02",
+  "manifest": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance02/SOURCE_MANIFEST.json",
+    "sha256": "91a4aff94fa8626550263078e46bf677e3069804db275300c90f812dd8229201"
+  },
+  "artifactManifest": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance02/ARTIFACT_MANIFEST.json",
+    "sha256": "ec42364ae49543ece803cfbd707bba7630fbf2897e6ebb3e9706e56c7698648e"
+  },
+  "exactOverlayPaths": [
+    "packages/commerce-core/src/product-fact-snapshot.ts",
+    "packages/commerce-core/src/product-facts-summary.ts",
+    "packages/theme-engine/src/niche-order-presentation.ts",
+    "services/api-gateway/src/lib/cart-product-facts.ts",
+    "packages/commerce-core/test/apparel-order-history.test.ts",
+    "packages/theme-engine/test/threadline-order-facts-v211.test.ts",
+    "apps/commerce/web/src/lib/order-fact-readback.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts"
+  ],
+  "SQL": {
+    "up": {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance02/UNNUMBERED_apparel_order_facts.up.proposal.sql",
+      "sha256": "2bfb45a18178a0098780efad25171751a317060adb0282cd8e2022d4eaae68ce"
+    },
+    "down": {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance02/UNNUMBERED_apparel_order_facts.down.proposal.sql",
+      "sha256": "fca8fc2fb303f065ba98ed5fa4a2c1d08e12c0ed05c0cbb8a1797bdb406fa1d0"
+    },
+    "changedBodies": 2,
+    "productNamespaces": [
+      "toys",
+      "electronics",
+      "food",
+      "furniture",
+      "gifts",
+      "personalization",
+      "beauty",
+      "sports",
+      "books",
+      "apparel"
+    ],
+    "actualSQLExecution": false,
+    "actualOrderFullNativeProfile": "NOT_RETAINED; pinned-source constraints only until separately admitted fresh qualification"
+  },
+  "checks": {
+    "newFocusedCases": 13,
+    "existingReadbackExecutions": 3,
+    "focusedPass": 16,
+    "focusedFail": 0,
+    "existingCoreRegressionExecutions": 45,
+    "existingCoreRegressionFail": 0,
+    "frozenSenseRerunPass": 1,
+    "overlapNotAddedToUniqueCoverage": true
+  },
+  "typeEvidence": {
+    "focusedStrictDiagnostics": 0,
+    "eightOverlaySyntaxDiagnostics": 0,
+    "ownedWorkerClosureDiagnostics": 0,
+    "baselineAndPrivateCandidateDiagnostics": 5,
+    "exactDiagnosticEquality": true,
+    "mainBusinessLeaks": 0
+  },
+  "callerContract": "Explicit NEW Sense2.1.1/version6 input only; single catalogue/capture/eligibility owner Habitat must integrate and qualify after its current proposal. No capture emitted by Threadline.",
+  "noMainCandidateOrHistoricalRowsChanged": true,
+  "currentRuntime07": "SEALED_UNCHANGED_49ada80bc494",
+  "order10001": "original empty apparel facts and Oat/M options immutable; no fallback/backfill",
+  "captureFlagOwner": "MadeYours; not duplicated",
+  "nextRequired": "Themes independent review; resolve native input/source dependency closure and precise full-profile expectations, then separately grant owned native execution. Only a coherent qualified successor may be integrated/captured/admitted later.",
+  "fullThemeCertificate": false
+}

@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-23T16:18:40.915228+00:00",
+  "status": "EXACT_NATIVE_QUALIFIED391_PAIR_EMITTED_SOURCE_ONLY",
+  "rootNativeAdmission": {
+    "path": "docs/implementation/niche-theme-programme/shared-groups391-native-admission.json",
+    "sha256": "f22a9c45e6b9305a56904cb21904ff6e0f96c5274bcf66a15fe4e65400ed31f6"
+  },
+  "runId": "0a9c7010222a",
+  "files": [
+    {
+      "path": "database/supabase/migrations/391_theme_editor_shared_groups.sql",
+      "sha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+      "bytes": 26249,
+      "sourceDraft": "docs/implementation/threadline-2026-10-22/shared-group-durability/391_shared_group_durability.up.draft.sql"
+    },
+    {
+      "path": "database/supabase/rollback/391_theme_editor_shared_groups.rollback.sql",
+      "sha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54",
+      "bytes": 25784,
+      "sourceDraft": "docs/implementation/threadline-2026-10-22/shared-group-durability/391_shared_group_durability.down.draft.sql"
+    }
+  ],
+  "current9cdApplied": false,
+  "hostedApplied": false,
+  "next": "OnefreshdefaultLATEST391qualificationbefore392nativelease"
+}

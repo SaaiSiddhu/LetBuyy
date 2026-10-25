@@ -1,0 +1,493 @@
+{
+  "frozenArtifactCount": 113,
+  "frozenArtifactsUnchanged": true,
+  "originalArtworkUnchanged": true,
+  "assetCount": 4,
+  "totalWebpBytes": 387138,
+  "sourceFiles": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+    },
+    {
+      "path": "packages/theme-engine/test/playfield.test.ts",
+      "sha256": "f1bcd04f1c57737b50228cfe4ebbd66628473358a713bd6947ededd683cccbcd"
+    },
+    {
+      "path": "packages/commerce-core/src/playfield-facts.ts",
+      "sha256": "96c17f8c65c1aa1e12233b00368ba29f4e76eb07dcf0374f822747f4f472e9a4"
+    },
+    {
+      "path": "packages/commerce-core/test/playfield-facts.test.ts",
+      "sha256": "f3c6597abccae999a34eaeb04401f7e0065f3505475b72f9b3838b9df0acf188"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/playfield-demo.ts",
+      "sha256": "4bc0939f73483969b4966df9c9d55c941244473dfdb3f1bb280a1f1d9163d6af"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-source-manifest.test.ts",
+      "sha256": "abff692d008e88fe3a7493ec00aac8a5ee69bc6ee498fb53834fcca0e6cd321c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-discovery.test.ts",
+      "sha256": "9cfbf113afdcf537817ce2f997678cc7dca3fd8b013d930302a1cdaff0b7b2c2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-app-mapper.test.ts",
+      "sha256": "0b363c6a72bcbdba32db62f01294356c7d2c6d18054a6825568fd1457d7f7762"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-variant-fixtures.test.ts",
+      "sha256": "daa752f135d855befb012bc44bc259bb264b39774f5f73c6bedf877667d5365a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-variant-create-fixtures.json",
+      "sha256": "d238effa15ae0ac1c4ba5859f7bd8815f9e9ebe07014e82fa11cb64292199237"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-facts-editor.tsx",
+      "sha256": "6c36196072957c8fa94ec18c9883bed3e0567361a7dec22de4cc511b76408c0e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-facts-editor.test.tsx",
+      "sha256": "1ba4a351604b92096169597286f6a2a6b2e4c274638292dd0746bc0ae26117f3"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-facts-editor.module.css",
+      "sha256": "0ab26b1baaf7a4df65c6be1dcb7c870949fb3484eb4a86bdf5a5461d0fbb27ec"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-variant-facts-editor.tsx",
+      "sha256": "9d54d7363375921e4a1669f3792e242c0d21c8721254f0751d54d76a1bae196e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-variant-facts-editor.test.tsx",
+      "sha256": "7eb0527e441d1138cba181d6262f555dfe03d19837567628c9df5f0ba5162b7c"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-variant-facts-editor.module.css",
+      "sha256": "67331f58571af680b4bae94b11e2c9043ace4225423440fc5265025c8c8338c4"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-collection-membership.test.ts",
+      "sha256": "b23fc65f85c0667085b8818d0e0be72f6accfcf1d605b8a49664b136f33f3541"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/VariantFactsEditor.tsx",
+      "sha256": "505abd6430bd4c712edd30ea628e8f3981ca303529190ce9bdedd5437ca01487"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/VariantFactsEditor.test.tsx",
+      "sha256": "6f95b214c00d97429a82f49523757d86fd8de4d7ef5a2c2f58b55f9810e012cb"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.ts",
+      "sha256": "bb737af30a311b34128fb7d0d1d2b522e73898e889830d360c4d372c6b2af5e3"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+      "sha256": "a318ecc7594660d6c86ed1cfe4dbcbeab505705d929078c0a35648c27a2bf838"
+    }
+  ],
+  "sharedReadDependencies": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    }
+  ],
+  "sharedHashScope": "Current read-only verification checkpoint; archived renderer input/output bytes are separately pinned below and predate the later sample collection link update.",
+  "rendererInputs": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/home.html",
+      "sha256": "e3d785ff98b8dc5db962d92d26e5fac4aae4fac73ee7bcd4d2d86f268c8a187b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/collection.html",
+      "sha256": "f366416bc22d9eebb4f5a75d1b0e847ee49666fc671890341e9fbf4696a6d4b0"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/collection-all.html",
+      "sha256": "e368512897b6161ad1c22eaa1448f54ffc26afe79fc0b6303361df4ba7df4b99"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/product.html",
+      "sha256": "63d69262e458b8b22e10ac5e3f4670743f2b942b5f1779a3b5a358fb9098fbac"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/missing.html",
+      "sha256": "fc473768762d42ebc895d7a4601716a464ba8cd436610df5b0f617e4dc9c8b02"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/edition-cleared.html",
+      "sha256": "1b09c9537c7c87d6a51b27e1d515766fd9448ae82ce4f4c911dac2a9918fdd4b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/edition-different.html",
+      "sha256": "3607dc53dc8928a3a8cfa15d4c6e2924e18968fcb1a96965f1867cd655b2eb96"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/empty.html",
+      "sha256": "2f3aee8e5e5b2a334990d60eaefb866c77e26829cc3aee28860b94c358d69f86"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/long-copy.html",
+      "sha256": "617a10549e9d671e00f0951c665b1e66ee506c7556d0f794158bf64394eda623"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/actual-liquid/hindi.html",
+      "sha256": "ae844a20b7afe08105c43e3394d6f179e0dc61d137e04399f91a8bb3bcc999cb"
+    }
+  ],
+  "rendererCaptureCount": 43,
+  "rendererCaptureHashesMatch": true,
+  "appMapperLiquidAcceptance": "six targeted cases pass; generic depth4 unchanged",
+  "inlineBlockEditorAttributes": "ten roots annotated with raw server fragment; actual preview DOM ids and public-mode absence pass; interactive editor lifecycle pending",
+  "implementationBrowserAcceptance": "49 archived static assembled Liquid cases and native keyboard checks pass; owned browser/server closed and slot released; hydration/transactions/lifecycle pending",
+  "merchantFactsEditorAcceptance": "nine mounted tests, focused component/test typecheck and CSS stylelint pass; coordinator reports product controls connected with 21 separate parent tests",
+  "merchantVariantFactsEditorAcceptance": "13 mounted tests, focused component/test typecheck and scoped CSS stylelint pass; partial-variant parent atomic save/snapshot integration passes synthetic mounted acceptance; browser/API/DB gates separate",
+  "collectionMembershipAcceptance": "four pure shared resolver tests and focused typecheck pass; map ready for marketplace dispatcher integration",
+  "productionComplete": false,
+  "sharedVariantWrapperAcceptance": "69 current parent/wrapper/helper cases pass, including all 36 protected regressions; scoped TypeScript passes, ESLint zero errors and eleven identical baseline warnings; shared parent lease released; browser/API/DB acceptance separate",
+  "sharedParentReceipt": {
+    "scope": "explicit coordinator shared-parent grant; shared parent lease released after final passing checks",
+    "files": [
+      {
+        "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+        "sha256": "42d7323cab8cc15549304f7e7c63cb9c46f7ea9634989a3c42bc69e0da47ab00"
+      },
+      {
+        "path": "apps/merchant/web/src/app/[store]/products/[productId]/page.tsx",
+        "sha256": "8bb91993b68cdf4833083c47b2bc3a24535e235aa5932e779f67564cf4fbe612"
+      },
+      {
+        "path": "apps/merchant/web/src/lib/product-form-state.ts",
+        "sha256": "1babef7539a4e88b6f54fcb04e5990453391c71460a5760dc771bf8d69c2ffd2"
+      },
+      {
+        "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+        "sha256": "4da421caaea0ccbcb528189a9fbd227939d6257bca781baae14532a95f7c9872"
+      },
+      {
+        "path": "apps/merchant/web/src/components/products/VariantFactsEditor.tsx",
+        "sha256": "505abd6430bd4c712edd30ea628e8f3981ca303529190ce9bdedd5437ca01487"
+      },
+      {
+        "path": "apps/merchant/web/src/components/products/VariantFactsEditor.test.tsx",
+        "sha256": "6f95b214c00d97429a82f49523757d86fd8de4d7ef5a2c2f58b55f9810e012cb"
+      },
+      {
+        "path": "apps/merchant/web/src/lib/variant-facts-draft.ts",
+        "sha256": "bb737af30a311b34128fb7d0d1d2b522e73898e889830d360c4d372c6b2af5e3"
+      },
+      {
+        "path": "apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+        "sha256": "a318ecc7594660d6c86ed1cfe4dbcbeab505705d929078c0a35648c27a2bf838"
+      }
+    ],
+    "pageLines": 1446,
+    "testCount": 69,
+    "testCounts": {
+      "protected": 36,
+      "newParentMounted": 10,
+      "wrapperMounted": 10,
+      "draftHelper": 13
+    },
+    "typecheck": "pass",
+    "eslint": {
+      "errors": 0,
+      "warnings": 11,
+      "sameAsBaseline": true
+    },
+    "apiDbBuildDeployChangedOrRun": false,
+    "sharedParentLease": "released",
+    "nextTask": "own factory capability gate; canonical key pending"
+  },
+  "factorySourceReceipt": {
+    "scope": "fresh Playfield factory defaults only; no shared normalizer/index/registry or parent source edits",
+    "changedFields": [
+      {
+        "path": "templates.list-collections.sections.list-collections-grid.settings.subtitle",
+        "action": "remove unused inherited fresh-factory setting",
+        "previous": "Browse every collection in the store."
+      },
+      {
+        "path": "templates.search.sections.search-results.settings.title",
+        "action": "remove unused inherited fresh-factory setting",
+        "previous": "Results"
+      }
+    ],
+    "changedSourceFiles": [
+      {
+        "path": "packages/theme-engine/src/playfield-theme.ts",
+        "sha256": "0ea1add704d1c3442261b4d26543596e76f203cca9224a950173bad18a784d98"
+      },
+      {
+        "path": "packages/theme-engine/test/playfield.test.ts",
+        "sha256": "67c30c44e46d443a6cbc8c68d106cf54b862f6093964538da7dfd56eb556d97e"
+      },
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-source-manifest.test.ts",
+        "sha256": "abff692d008e88fe3a7493ec00aac8a5ee69bc6ee498fb53834fcca0e6cd321c"
+      }
+    ],
+    "currentReadDependencies": [
+      {
+        "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+        "sha256": "f07aaa2df0ac2414dead77260adfdc09a8c8a2752fd79080f3fa56d6a977b404"
+      },
+      {
+        "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+        "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+      },
+      {
+        "path": "packages/theme-engine/src/index.ts",
+        "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5"
+      },
+      {
+        "path": "packages/theme-engine/src/theme-bundle.ts",
+        "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+      },
+      {
+        "path": "packages/theme-engine/src/theme-document.ts",
+        "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+      },
+      {
+        "path": "packages/theme-engine/src/schema-field-extensions.ts",
+        "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+      },
+      {
+        "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+        "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+        "sha256": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/discovery-route-query.ts",
+        "sha256": "4d09769d8038f69b2aa31c4122f83102b8cd8368a654806e03f86e2757cd45f5"
+      },
+      {
+        "path": "packages/commerce-core/src/storefront-discovery.ts",
+        "sha256": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+      },
+      {
+        "path": "packages/theme-engine/src/theme-renderer.ts",
+        "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+      }
+    ],
+    "factorySchemaOrRenderFieldsAdded": false,
+    "tests": {
+      "targeted": 30,
+      "theme": 13,
+      "actualSourceManifest": 3,
+      "actualAppMapper": 6,
+      "discovery": 8
+    },
+    "validation": {
+      "actualRegistryConfigBeforeNormalization": [],
+      "actualRegistryConfigJsonWire": [],
+      "documentJsonWire": "full bundle values/arrays equal and all buyer template keys retained; matching manifest valid",
+      "strictNegative": "reintroducing both unsupported fields preserves raw values and reproduces exactly two original errors",
+      "buyerHtml": "search and list-collections identical with/without removed unused settings"
+    },
+    "typechecks": {
+      "engine": "pass",
+      "focusedSourceHarnessAndThemeTests": "pass"
+    },
+    "parentLease": "remains released",
+    "browserDbBuildDeployOrMigrationResourcesStarted": false,
+    "frozenM1Artifacts": 113,
+    "productionComplete": false
+  },
+  "queryContinuityReceipt": {
+    "scope": "own Playfield discovery/factory/tests only; no shared query schema, backend/index, browser/DB or parent work",
+    "changedSourceFiles": [
+      {
+        "path": "packages/theme-engine/src/playfield-discovery.ts",
+        "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+      },
+      {
+        "path": "packages/theme-engine/src/playfield-theme.ts",
+        "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+      },
+      {
+        "path": "packages/theme-engine/test/playfield.test.ts",
+        "sha256": "f1bcd04f1c57737b50228cfe4ebbd66628473358a713bd6947ededd683cccbcd"
+      },
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-discovery.test.ts",
+        "sha256": "9cfbf113afdcf537817ce2f997678cc7dca3fd8b013d930302a1cdaff0b7b2c2"
+      }
+    ],
+    "currentReadDependencies": [
+      {
+        "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+        "sha256": "a181fc35cb97ce58d2be93ebbd40fe299f95333640c54548284955c20be18e99"
+      },
+      {
+        "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+        "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+      },
+      {
+        "path": "packages/theme-engine/src/index.ts",
+        "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5"
+      },
+      {
+        "path": "packages/theme-engine/src/theme-bundle.ts",
+        "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+      },
+      {
+        "path": "packages/theme-engine/src/theme-document.ts",
+        "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+      },
+      {
+        "path": "packages/theme-engine/src/schema-field-extensions.ts",
+        "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+      },
+      {
+        "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+        "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+        "sha256": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/discovery-route-query.ts",
+        "sha256": "4d09769d8038f69b2aa31c4122f83102b8cd8368a654806e03f86e2757cd45f5"
+      },
+      {
+        "path": "packages/commerce-core/src/storefront-discovery.ts",
+        "sha256": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+      },
+      {
+        "path": "packages/theme-engine/src/theme-renderer.ts",
+        "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+        "sha256": "da96f8ef94d79e956a433dbe0eee17726ee99e702a3226561c3f8aeb917782a5"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.ts",
+        "sha256": "6d624d185a901a635fe0a269c87862f162a9404bcfab6007166bd7267358cc08"
+      }
+    ],
+    "queryPreservation": "canonical collection.discovery_query_fields; exclude page and only the fields actually edited by each form; conditional chooser absent means its active field stays hidden; repeated rows preserved",
+    "clearActions": "exact collection.active_filters[].clear_url and collection.clear_filters_url; canonical parser resets page1 and retains other values",
+    "selection": "canonical active value without matching supplied choice retained only inside an independently supported chooser",
+    "tests": {
+      "targeted": 37,
+      "theme": 13,
+      "discoveryFormAndCapability": 15,
+      "sourceManifest": 3,
+      "appMapper": 6,
+      "newFormCases": 7,
+      "networkCalls": 0
+    },
+    "typecheck": {
+      "engine": "pass",
+      "focusedHarnessAndTheme": "pass"
+    },
+    "eslint": "owned discovery module and tests exit0; app-config environment notices only",
+    "independentAuditOracle": {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/ui-facet-contract.test.ts",
+      "baselineSha256": "dc5d7cbc5ec8f23fb91275ef881ad5aabe2729913a51e968e67636fe9e708f31",
+      "handoffReadSha256": "427486957c0e18f08b192028fc6b7702be9c34d08a2f9ff8a7b124804b526d24",
+      "sourceAndReportsEditedOrRunByPlayfield": false,
+      "concurrentOwnerChangeObserved": true,
+      "rerun": "coordinator/Circuit owner to use approved current unweakened oracle after theme owner handbacks; no global oracle pass claimed here"
+    },
+    "parentLease": "released; untouched",
+    "frozenM1Artifacts": 113,
+    "productionComplete": false
+  },
+  "discoveryGateReceipt": {
+    "scope": "owned Playfield factory/discovery/style/test and evidence only; parent and shared frontend not edited",
+    "changedSourceFiles": [
+      {
+        "path": "packages/theme-engine/src/playfield-theme.ts",
+        "sha256": "53df2640657358d3c662fc32acf92d48e8a63f7ed3cb0e70e5b52bcc32032a37"
+      },
+      {
+        "path": "packages/theme-engine/src/playfield-discovery.ts",
+        "sha256": "fdf8853cc42fbeb7f65c6121fd90111d3fdf7f03f43ab55a5210d353140143e1"
+      },
+      {
+        "path": "packages/theme-engine/src/playfield-styles.ts",
+        "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+      },
+      {
+        "path": "packages/theme-engine/test/playfield.test.ts",
+        "sha256": "53ed747ea5d17915876a20101cc38d7703f6e9e1151adf56f88dd865a7909b44"
+      },
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/playfield/playfield-discovery.test.ts",
+        "sha256": "b0cb3c4dd0c27ff840f0e01301963ee328a797408a31b9f6c7f679b7262159ba"
+      }
+    ],
+    "readOnlySharedDependencies": [
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+        "sha256": "ea315f635cf104ded7b9dad8c80ede1d79e8ae97a61b49ea69d7fa31f2e116be"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/discovery-route-query.ts",
+        "sha256": "fb9cddfb6215e4da8b5847f90d849269d269a5ecc71e6416274f642792266328"
+      },
+      {
+        "path": "packages/commerce-core/src/storefront-discovery.ts",
+        "sha256": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+      },
+      {
+        "path": "packages/theme-engine/src/theme-renderer.ts",
+        "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+      }
+    ],
+    "tests": {
+      "currentOwnedRegression": 37,
+      "actualDiscoveryContract": 8,
+      "existingThemeUnit": 12,
+      "genericSEC4": 1
+    },
+    "typecheck": {
+      "engine": "pass",
+      "discoveryHarness": "pass"
+    },
+    "stylelint": "pass; complete extracted owned CSS via canonical config",
+    "newDiscoveryModuleAndTestsEslint": "exit0; app-config environment notices only",
+    "crossAppEslintExploration": {
+      "result": "seven pre-existing unchanged brand-hex errors in factory/CSS when applying commerce-app UI config outside the app; no package lint-green claim",
+      "brandValuesChanged": false
+    },
+    "parentLease": "released; no parent edits or repeat parent tests in this slice",
+    "frozenM1Artifacts": 113,
+    "browserApiDbBuildCommitPushDeployRun": false,
+    "productionComplete": false
+  },
+  "queryContinuityAcceptance": "37 current targeted tests pass; native FormData/URLSearchParams and canonical repeated-value parser cover collection/search, zero results, conditional choosers, search/sort, every active clear and repeated connector values; engine/harness TypeScript and owned-module/test lint pass; zero network calls; independent oracle untouched by Playfield, concurrent source change reported to coordinator",
+  "factorySourceAcceptance": "two unused inherited fresh defaults removed; 30 targeted tests and scoped TypeScript pass; actual registry config and JSON-wire matching-manifest validation green before normalization, full document JSON roundtrip and unchanged buyer HTML proven; negative unsupported fields still rejected",
+  "discoveryGateAcceptance": "eight actual validated-page/projection/public-v2/Liquid DOM cases and the current 37-case regression cohort pass; generic SEC-4 unchanged; scoped TypeScript and CSS Stylelint pass; archived browser audit predates this update"
+}

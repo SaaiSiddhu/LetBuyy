@@ -1,0 +1,26 @@
+{
+  "command": [
+    "node",
+    "scripts/governance/run-executable-suites.mjs",
+    "--suite",
+    "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "--kind",
+    "gateway-db",
+    "--through-migration",
+    "391",
+    "--jobs",
+    "1",
+    "--no-reap",
+    "--timeout",
+    "600",
+    "--prepared-transactions",
+    "2",
+    "--log-dir",
+    "/private/tmp/letbuyy-circuit392-native-01-3ku2tau6/suite-logs",
+    "--json-out",
+    "/private/tmp/letbuyy-circuit392-native-01-3ku2tau6/result.json",
+    "--json"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 24.929
+}

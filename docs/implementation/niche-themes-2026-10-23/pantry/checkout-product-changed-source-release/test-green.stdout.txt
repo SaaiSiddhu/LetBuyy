@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: checkout contact step forwards only validated JSON through the signed handoff route and strips returned PII
+ok 1 - checkout contact step forwards only validated JSON through the signed handoff route and strips returned PII
+  ---
+  duration_ms: 8.394292
+  type: 'test'
+  ...
+# Subtest: checkout confirm returns a minimal order projection, not the full database order row
+ok 2 - checkout confirm returns a minimal order projection, not the full database order row
+  ---
+  duration_ms: 1.610042
+  type: 'test'
+  ...
+# Subtest: checkout confirm preserves a safe stale-inventory conflict for the buyer
+ok 3 - checkout confirm preserves a safe stale-inventory conflict for the buyer
+  ---
+  duration_ms: 1.339959
+  type: 'test'
+  ...
+# Subtest: checkout confirm preserves a safe product-changed conflict with actionable cart guidance
+ok 4 - checkout confirm preserves a safe product-changed conflict with actionable cart guidance
+  ---
+  duration_ms: 0.81325
+  type: 'test'
+  ...
+# Subtest: checkout failure projection keeps unknown, malformed, and server errors sanitized
+ok 5 - checkout failure projection keeps unknown, malformed, and server errors sanitized
+  ---
+  duration_ms: 1.4025
+  type: 'test'
+  ...
+# Subtest: Razorpay payment-intent exposes only the server-created provider order needed by hosted checkout
+ok 6 - Razorpay payment-intent exposes only the server-created provider order needed by hosted checkout
+  ---
+  duration_ms: 0.8975
+  type: 'test'
+  ...
+# Subtest: Razorpay confirmation forwards signed provider proof and returns only the canonical order receipt
+ok 7 - Razorpay confirmation forwards signed provider proof and returns only the canonical order receipt
+  ---
+  duration_ms: 2.711083
+  type: 'test'
+  ...
+# Subtest: signed delivery options keep the handoff, project accurate COD eligibility, and never claim carrier confirmation
+ok 8 - signed delivery options keep the handoff, project accurate COD eligibility, and never claim carrier confirmation
+  ---
+  duration_ms: 0.935791
+  type: 'test'
+  ...
+# Subtest: marketplace delivery options reject bad origins and invalid pins before the Gateway call
+ok 9 - marketplace delivery options reject bad origins and invalid pins before the Gateway call
+  ---
+  duration_ms: 0.513916
+  type: 'test'
+  ...
+# Subtest: foreign and missing origins, unknown steps, malformed bodies, and invalid handoffs are refused before gateway access
+ok 10 - foreign and missing origins, unknown steps, malformed bodies, and invalid handoffs are refused before gateway access
+  ---
+  duration_ms: 1.692333
+  type: 'test'
+  ...
+# Subtest: gateway failures become a generic unavailable response without upstream details
+ok 11 - gateway failures become a generic unavailable response without upstream details
+  ---
+  duration_ms: 0.441875
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 657.245417

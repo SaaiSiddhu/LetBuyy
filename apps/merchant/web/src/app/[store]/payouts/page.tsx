@@ -217,7 +217,8 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="payments"
+                recipe="index"
                 eyebrow="Finance"
                 title="Payouts"
                 description="View pending and released payout statements. Release pending payouts after 2FA verification."

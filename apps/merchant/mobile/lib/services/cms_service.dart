@@ -468,15 +468,11 @@ class BlogPostInput {
       'is_featured': isFeatured,
       'is_pinned': isPinned,
       if (readingTimeMin != null) 'reading_time_min': readingTimeMin,
-      'seo_title': _nullableTrim(seoTitle),
-      'seo_description': _nullableTrim(seoDescription),
+      if (seoTitle != null) 'seo_title': seoTitle!.trim(),
+      if (seoDescription != null) 'seo_description': seoDescription!.trim(),
     };
   }
 
-  static String? _nullableTrim(String? value) {
-    final trimmed = value?.trim();
-    return trimmed == null || trimmed.isEmpty ? null : trimmed;
-  }
 }
 
 class NavigationPayload {

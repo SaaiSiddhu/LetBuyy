@@ -1,0 +1,170 @@
+{
+  "id": "section-experience-timeline",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "experience-timeline",
+    "group": "template",
+    "firstId": "section-6a7d8f5a-e993-4b2b-a351-72a662f6d2ad",
+    "finalId": "section-708d7538-ec96-4c70-9dac-ef5491e0568c",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "experience-timeline",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-3bf80f77-fe89-463e-a9f6-40bf77741bbe": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-e1c38a7e-1068-4989-8e80-214b088c5039": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-3bf80f77-fe89-463e-a9f6-40bf77741bbe",
+            "block-e1c38a7e-1068-4989-8e80-214b088c5039"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "experience-timeline",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-e1c38a7e-1068-4989-8e80-214b088c5039": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-3bf80f77-fe89-463e-a9f6-40bf77741bbe": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-e1c38a7e-1068-4989-8e80-214b088c5039",
+            "block-3bf80f77-fe89-463e-a9f6-40bf77741bbe"
+          ],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "experience-timeline",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-e1c38a7e-1068-4989-8e80-214b088c5039": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-3bf80f77-fe89-463e-a9f6-40bf77741bbe": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-e1c38a7e-1068-4989-8e80-214b088c5039",
+            "block-3bf80f77-fe89-463e-a9f6-40bf77741bbe"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "experience-timeline",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-188c2bf2-dd20-49a3-aef5-969ea066d330": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-1367aa6d-7579-4375-a226-d5328fdc7d10": {
+              "type": "experience",
+              "settings": {
+                "title": "Source fixture title",
+                "company": "Source fixture company",
+                "period": "Source fixture period"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-188c2bf2-dd20-49a3-aef5-969ea066d330",
+            "block-1367aa6d-7579-4375-a226-d5328fdc7d10"
+          ],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

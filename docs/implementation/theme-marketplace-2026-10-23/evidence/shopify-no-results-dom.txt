@@ -1,0 +1,107 @@
+- navigation:
+  - link "Shopify Theme Store":
+    - /url: /
+    - generic: Shopify Theme Store
+  - button "Browse themes":
+    - text: Browse themes
+  - button "Search":
+  - generic "My Store 4":
+- main:
+  - heading "No search results for “zzletbuyynotathemezz”" [level=2]
+  - paragraph: "Search tips: check words are spelled correctly, or try a different keyword."
+  - paragraph:
+    - button "Start a new search"
+    - text: or
+    - link "Browse all themes":
+      - /url: /?price=all
+- contentinfo:
+  - heading "Top industries" [level=6]
+  - link "Clothing":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=clothing
+  - link "Beauty":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=beauty
+  - link "Jewelry and accessories":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=jewelry-and-accessories
+  - link "Home":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=home
+  - heading "Categories" [level=6]
+  - link "All themes":
+    - /url: https://themes.shopify.com/themes
+  - link "Free themes":
+    - /url: https://themes.shopify.com/themes?price=free
+  - heading "Support" [level=6]
+  - link "Shopify Help Center":
+    - /url: https://help.shopify.com/en/
+  - link "API Documentation":
+    - /url: https://shopify.dev/api
+  - link "Shopify Community":
+    - /url: https://community.shopify.com/c/shopify-community-en/ct-p/en
+  - link "Blogs":
+    - /url: https://www.shopify.com/blog
+  - heading "Shopify" [level=6]
+  - link "About":
+    - /url: https://www.shopify.com/about
+  - link "Partners":
+    - /url: https://www.shopify.com/partners
+  - link "Legal":
+    - /url: https://www.shopify.com/legal
+  - link "Service status":
+    - /url: https://shopifystatus.com
+  - separator
+  - link "Terms of Service":
+    - /url: https://www.shopify.com/legal/terms
+  - link "Privacy Policy":
+    - /url: https://www.shopify.com/legal/privacy
+  - link "Your Privacy Choices California Consumer Privacy Act (CCPA) Opt-Out Icon":
+    - /url: https://privacy.shopify.com/en
+    - text: Your Privacy Choices
+    - img "California Consumer Privacy Act (CCPA) Opt-Out Icon"
+  - link "Sitemap":
+    - /url: https://themes.shopify.com/sitemap
+  - combobox "Change your language":
+    - option "Català"
+    - option "Čeština"
+    - option "Dansk"
+    - option "Deutsch"
+    - option "Eesti"
+    - option "English" [selected]
+    - option "Español"
+    - option "Euskara"
+    - option "Français"
+    - option "Galego"
+    - option "Hrvatski"
+    - option "Indonesia"
+    - option "Italiano"
+    - option "Latviešu"
+    - option "Lietuvių"
+    - option "Magyar"
+    - option "Melayu"
+    - option "Nederlands"
+    - option "Norsk (bokmål)"
+    - option "Polski"
+    - option "Português (Brasil)"
+    - option "Português (Portugal)"
+    - option "Română"
+    - option "Slovenčina"
+    - option "Slovenščina"
+    - option "Suomi"
+    - option "Svenska"
+    - option "Tiếng Việt"
+    - option "Türkçe"
+    - option "Ελληνικά"
+    - option "Български"
+    - option "Русский"
+    - option "Српски"
+    - option "Українська"
+    - option "मराठी"
+    - option "हिन्दी"
+    - option "বাংলা"
+    - option "ગુજરાતી"
+    - option "தமிழ்"
+    - option "తెలుగు"
+    - option "ภาษาไทย"
+    - option "Ქართული"
+    - option "日本語"
+    - option "简体中文"
+    - option "繁體中文"
+    - option "한국어"

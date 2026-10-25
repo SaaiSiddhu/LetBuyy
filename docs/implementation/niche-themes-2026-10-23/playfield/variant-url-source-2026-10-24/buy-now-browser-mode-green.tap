@@ -1,0 +1,124 @@
+TAP version 13
+# Subtest: Buy now waits for the canonical cart receipt, coalesces a double click and keeps a storefront-domain checkout path
+ok 1 - Buy now waits for the canonical cart receipt, coalesces a double click and keeps a storefront-domain checkout path
+  ---
+  duration_ms: 539.613208
+  type: 'test'
+  ...
+# Subtest: Buy now stays on the product when the canonical cart reports outage
+ok 2 - Buy now stays on the product when the canonical cart reports outage
+  ---
+  duration_ms: 7.982417
+  type: 'test'
+  ...
+# Subtest: Buy now stays on the product when the canonical cart reports missing-token
+ok 3 - Buy now stays on the product when the canonical cart reports missing-token
+  ---
+  duration_ms: 6.971125
+  type: 'test'
+  ...
+# Subtest: Buy now preserves the explicit path-routed storefront base
+ok 4 - Buy now preserves the explicit path-routed storefront base
+  ---
+  duration_ms: 10.105667
+  type: 'test'
+  ...
+# Subtest: variant purchases require a choice and retain durable variant identity through cart receipts and controls
+ok 5 - variant purchases require a choice and retain durable variant identity through cart receipts and controls
+  ---
+  duration_ms: 99.360042
+  type: 'test'
+  ...
+# Subtest: variant quick-add cards open the product picker without writing an unspecified cart line
+ok 6 - variant quick-add cards open the product picker without writing an unspecified cart line
+  ---
+  duration_ms: 4.86825
+  type: 'test'
+  ...
+# Subtest: actual hydration mounts on rendered content when a hoisted Liquid stylesheet precedes it
+ok 7 - actual hydration mounts on rendered content when a hoisted Liquid stylesheet precedes it
+  ---
+  duration_ms: 114.303708
+  type: 'test'
+  ...
+# Subtest: confirmed cart is retired before a new Buy now and old purchased lines never enter the new intent
+ok 8 - confirmed cart is retired before a new Buy now and old purchased lines never enter the new intent
+  ---
+  duration_ms: 4.901625
+  type: 'test'
+  ...
+# Subtest: pending checkout contact retains its cart and draft when adding another item
+ok 9 - pending checkout contact retains its cart and draft when adding another item
+  ---
+  duration_ms: 5.586875
+  type: 'test'
+  ...
+# Subtest: pending checkout payment_intent retains its cart and draft when adding another item
+ok 10 - pending checkout payment_intent retains its cart and draft when adding another item
+  ---
+  duration_ms: 6.677125
+  type: 'test'
+  ...
+# Subtest: pending checkout null retains its cart and draft when adding another item
+ok 11 - pending checkout null retains its cart and draft when adding another item
+  ---
+  duration_ms: 5.678459
+  type: 'test'
+  ...
+# Subtest: unknown previous checkout not-found preserves storage and starts no replacement purchase
+ok 12 - unknown previous checkout not-found preserves storage and starts no replacement purchase
+  ---
+  duration_ms: 4.882042
+  type: 'test'
+  ...
+# Subtest: unknown previous checkout outage preserves storage and starts no replacement purchase
+ok 13 - unknown previous checkout outage preserves storage and starts no replacement purchase
+  ---
+  duration_ms: 3.870917
+  type: 'test'
+  ...
+# Subtest: unknown previous checkout converted-without-order preserves storage and starts no replacement purchase
+ok 14 - unknown previous checkout converted-without-order preserves storage and starts no replacement purchase
+  ---
+  duration_ms: 3.654208
+  type: 'test'
+  ...
+# Subtest: unknown previous checkout active-completed preserves storage and starts no replacement purchase
+ok 15 - unknown previous checkout active-completed preserves storage and starts no replacement purchase
+  ---
+  duration_ms: 4.755125
+  type: 'test'
+  ...
+# Subtest: unknown previous checkout malformed preserves storage and starts no replacement purchase
+ok 16 - unknown previous checkout malformed preserves storage and starts no replacement purchase
+  ---
+  duration_ms: 4.67
+  type: 'test'
+  ...
+# Subtest: delayed committed receipt cannot erase another tab cart or later draft and equivalent in-flight reads coalesce
+ok 17 - delayed committed receipt cannot erase another tab cart or later draft and equivalent in-flight reads coalesce
+  ---
+  duration_ms: 3.824375
+  type: 'test'
+  ...
+# Subtest: React cart bootstrap is read-only and retires confirmed state before a fresh add
+ok 18 - React cart bootstrap is read-only and retires confirmed state before a fresh add
+  ---
+  duration_ms: 21.579583
+  type: 'test'
+  ...
+# Subtest: React cart bootstrap is read-only and preserves an unavailable checkout draft
+ok 19 - React cart bootstrap is read-only and preserves an unavailable checkout draft
+  ---
+  duration_ms: 8.337083
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4089.543416

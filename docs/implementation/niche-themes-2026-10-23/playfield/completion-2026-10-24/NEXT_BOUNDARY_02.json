@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-24T08:53:23.872362+00:00",
+  "status": "PRIVATE_PROPOSAL_FOCUSED_SOURCE_PASS_UNAPPLIED",
+  "result": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/proposal-subtitle-qualification-01/RESULT.json",
+    "sha256": "9a3b0eb9101f26e6408001263b5981b13cc6113763149a8a6960e391bf1719ab",
+    "bytes": 5560
+  },
+  "goalTurnClassification": "PROGRESS: meaningful private canonical-render RED/GREEN evidence and concrete test adaptation completed.",
+  "runtimeHandoff": "ABSENT",
+  "currentOriginal14": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14
+  },
+  "frozenAndAcceptedPreserved": true,
+  "sharedApplyGrant": null,
+  "nextAction": "Allocator reviews private proposal/test adaptation and assigns exact source/native/catalogue epoch. Existing catalogue qualification owner must coordinate artifact regeneration; never overwrite retained artifacts.",
+  "doNotRetryBroadSourceOrExportSuites": true
+}

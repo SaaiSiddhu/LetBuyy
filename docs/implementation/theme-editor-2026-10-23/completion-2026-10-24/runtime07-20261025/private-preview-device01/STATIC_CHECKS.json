@@ -1,0 +1,52 @@
+{
+  "recordedAt": "2026-10-25T01:46:40.376822+00:00",
+  "mountedRegression": {
+    "baseline": {
+      "exitCode": 1,
+      "pass": 4,
+      "fail": 2,
+      "log": "mounted-baseline-red-current.tap.txt",
+      "failureScope": "The two real iframe identity/device tests fail against unchanged full Main component9f1f7e; remaining4mounted tests pass."
+    },
+    "private": {
+      "exitCode": 0,
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "log": "mounted-private-green.tap.txt"
+    }
+  },
+  "typecheck": {
+    "privateDiagnostics": 0,
+    "readOnlyDependencyDiagnostics": 0,
+    "report": "focused-typecheck.json",
+    "noEmit": true,
+    "incremental": false
+  },
+  "patchCheck": {
+    "command": "git apply --check proposal.patch",
+    "exitCode": 0,
+    "log": "patch-check.txt"
+  },
+  "existingImmutableEvidenceReused": {
+    "sourceDiagnosis": "../PREVIEW_DEVICE_DIAGNOSIS_20261025_01.json",
+    "controlledFunctionExperiment": "../PREVIEW_DEVICE_SOURCE_REPRODUCTION_20261025_01.json",
+    "existing29PureTests": "../PREVIEW_DEVICE_PURE_BASELINE_TESTS_20261025_01.json",
+    "rerun": false
+  },
+  "presealHarnessAttempts": [
+    {
+      "status": "SETUP_FAILURE_NO_COMPONENT_VERDICT",
+      "observation": "Initial test setup assumed removed ResourceLoader API; installed jsdom29.1.1 uses disabled subresources by default. Corrected setup uses that default and rejects global fetch."
+    },
+    {
+      "status": "BASELINE_ATTEMPT_EXIT_MINUS9_NO_VERDICT",
+      "log": "mounted-baseline-red.tap.txt",
+      "observation": "First baseline run returned -9 while direct failed DOM-object identity assertions were being formatted. Exact termination cause not independently established. Assertions changed to boolean identity comparisons; current baseline completes normally with4pass/2fail. A guarded exact-unit-process cleanup check matched0and sent0signals; original fixture received no action."
+    }
+  ],
+  "newDependencies": 0,
+  "builds": 0,
+  "browserRuntimeDatabaseProviderProbes": 0,
+  "sourceContainment": "Only two granted app paths under private/apps; no Main or frozen source changed."
+}

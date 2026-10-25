@@ -1,0 +1,145 @@
+TAP version 13
+# Subtest: original frozen package, base input and private draft identity remain separate
+ok 1 - original frozen package, base input and private draft identity remain separate
+  ---
+  duration_ms: 11.314833
+  type: 'test'
+  ...
+# Subtest: actual canonical bundle/schema/manifest validator accepts every default template before and after document serialization
+ok 2 - actual canonical bundle/schema/manifest validator accepts every default template before and after document serialization
+  ---
+  duration_ms: 10.789584
+  type: 'test'
+  ...
+# Subtest: REGRESSION_category_subtitle reaches actual Liquid output after editor-document roundtrip
+ok 3 - REGRESSION_category_subtitle reaches actual Liquid output after editor-document roundtrip
+  ---
+  duration_ms: 100.616083
+  type: 'test'
+  ...
+# Subtest: REGRESSION_populated_collection_heading_edit overrides actual collection title
+ok 4 - REGRESSION_populated_collection_heading_edit overrides actual collection title
+  ---
+  duration_ms: 28.153166
+  type: 'test'
+  ...
+# Subtest: REGRESSION_order_heading_edit reaches actual guarded Liquid order output
+ok 5 - REGRESSION_order_heading_edit reaches actual guarded Liquid order output
+  ---
+  duration_ms: 25.213917
+  type: 'test'
+  ...
+# Subtest: collection heading omitted, cleared and whitespace values fall back to actual populated collection name
+not ok 6 - collection heading omitted, cleared and whitespace values fall back to actual populated collection name
+  ---
+  duration_ms: 72.6545
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/successor.test.ts:2:10154'
+  failureType: 'testCodeFailure'
+  error: |-
+    value "   "
+    
+    '   ' !== 'Dresses'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Dresses'
+  actual: '   '
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/successor.test.ts:116:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: explicit Clothing is an override, never a migration sentinel
+ok 7 - explicit Clothing is an override, never a migration sentinel
+  ---
+  duration_ms: 24.860334
+  type: 'test'
+  ...
+# Subtest: missing collection title and cleared override retain original Clothing fallback
+ok 8 - missing collection title and cleared override retain original Clothing fallback
+  ---
+  duration_ms: 28.6335
+  type: 'test'
+  ...
+# Subtest: category subtitle clear and whitespace remove the paragraph without removing silhouette navigation
+ok 9 - category subtitle clear and whitespace remove the paragraph without removing silhouette navigation
+  ---
+  duration_ms: 55.17
+  type: 'test'
+  ...
+# Subtest: order heading default, empty and whitespace retain Order and the canonical number
+ok 10 - order heading default, empty and whitespace retain Order and the canonical number
+  ---
+  duration_ms: 63.219875
+  type: 'test'
+  ...
+# Subtest: hostile subtitle and both editable headings remain inert at canonical sanitizer boundary
+ok 11 - hostile subtitle and both editable headings remain inert at canonical sanitizer boundary
+  ---
+  duration_ms: 69.355333
+  type: 'test'
+  ...
+# Subtest: guest, unavailable and missing order guards still hide private order body and customized heading
+ok 12 - guest, unavailable and missing order guards still hide private order body and customized heading
+  ---
+  duration_ms: 46.371333
+  type: 'test'
+  ...
+# Subtest: all untouched default page/chrome/style output remains exact before any merchant edits
+not ok 13 - all untouched default page/chrome/style output remains exact before any merchant edits
+  ---
+  duration_ms: 461.084958
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/successor.test.ts:2:14369'
+  failureType: 'testCodeFailure'
+  error: |-
+    index default content drift
+    + actual - expected
+    
+      '<section class="tl-theme tl-hero tl-focus-center tl-hero-empty" data-section-id="sense-heroBanner-index"><div class="tl-hero-copy"><span class="tl-eyebrow">THE EVERYDAY EDIT</span><h1>Made to move with you.</h1><p>Considered clothing for your everyday.</p><a class="tl-button" href="/store/threadline-private-render/products">Explore new arrivals</a><a class="tl-link" href="/store/threadline-private-render/products">Find your fit</a></div></section>\n' +
+    +   '<section class="tl-theme" data-section-id="sense-categoryGrid-index"><div class="tl-wrap tl-section"><div class="tl-heading"><div><h2>Find your silhouette</h2></div></div><div class="tl-categories"><a class="tl-category" href="/store/threadline-private-render/collections/dresses"><span class="tl-category-placeholder">Explore this collection</span><strong>Dresses <span aria-hidden="true">→</span></strong></a></div></div></section>\n' +
+    -   '<section class="tl-theme" data-section-id="sense-categoryGrid-index"><div class="tl-wrap tl-section"><div class="tl-heading"><h2>Find your silhouette</h2></div><div class="tl-categories"><a class="tl-category" href="/store/threadline-private-render/collections/dresses"><span class="tl-category-placeholder">Explore this collection</span><strong>Dresses <span aria-hidden="true">→</span></strong></a></div></div></section>\n' +
+        '<section class="tl-theme" data-section-id="sense-productGrid-index"><div class="tl-wrap tl-section"><div class="tl-heading"><div><h2>New arrivals</h2></div></div><div class="tl-grid" data-columns="3"><article class="tl-card"><a href="/product/synthetic-shirt"><div class="tl-card-media"><div class="tl-card-placeholder">Product image not supplied</div></div><div class="tl-card-info"><h3>Synthetic linen shirt</h3><span class="tl-card-price">INR 2,490.00</span></div></a><a class="tl-link" href="/product/synthetic-shirt">Choose your size →</a></article></div><nav class="tl-heading" aria-label="Product pages"></nav></div></section>\n' +
+        '<section class="tl-theme" data-section-id="sense-featuredProducts-index"><div class="tl-outfit tl-outfit-empty"><div class="tl-outfit-copy"><span class="tl-eyebrow">THE EVERYDAY PAIRING</span><h2>Wear it your way.</h2><p>Every piece, individually chosen.</p><p class="tl-outfit-note">Each piece is sold separately.</p><a class="tl-outfit-product" href="/product/synthetic-shirt"><div><h3>Synthetic linen shirt</h3><p>INR 2,490.00</p><span class="tl-link">Choose your size →</span></div></a></div></div></section>\n' +
+        '<section class="tl-theme" data-section-id="sense-aboutSection-index"></section>\n' +
+        '<section class="tl-theme" data-section-id="sense-trustBadges-index"><div class="tl-wrap tl-services"></div></section>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    <section class="tl-theme tl-hero tl-focus-center tl-hero-empty" data-section-id="sense-heroBanner-index"><div class="tl-hero-copy"><span class="tl-eyebrow">THE EVERYDAY EDIT</span><h1>Made to move with you.</h1><p>Considered clothing for your everyday.</p><a class="tl-button" href="/store/threadline-private-render/products">Explore new arrivals</a><a class="tl-link" href="/store/threadline-private-render/products">Find your fit</a></div></section>
+    <section class="tl-theme" data-section-id="sense-categoryGrid-index"><div class="tl-wrap tl-section"><div class="tl-heading"><h2>Find your silhouette</h2></div><div class="tl-categories"><a class="tl-category" href="/store/threadline-private-render/collections/dresses"><span class="tl-category-placeholder">Explore this collection</span><strong>Dresses <span aria-hidden="true">→</span></strong></a></div></div></section>
+    <section class="tl-theme" data-section-id="sense-productGrid-index"><div class="tl-wrap tl-section"><div class="tl-heading"><div><h2>New arrivals</h2></div></div><div class="tl-grid" data-columns="3"><article class="tl-card"><a href="/product/synthetic-shirt"><div class="tl-card-media"><div class="tl-card-placeholder">Product image not supplied</div></div><div class="tl-card-info"><h3>Synthetic linen shirt</h3><span class="tl-card-price">INR 2,490.00</span></div></a><a class="tl-link" href="/product/synthetic-shirt">Choose your size →</a></article></div><nav class="tl-heading" aria-label="Product pages"></nav></div></section>
+    <section class="tl-theme" data-section-id="sense-featuredProducts-index"><div class="tl-outfit tl-outfit-empty"><div class="tl-outfit-copy"><span class="tl-eyebrow">THE EVERYDAY PAIRING</span><h2>Wear it your way.</h2><p>Every piece, individually chosen.</p><p class="tl-outfit-note">Each piece is sold separately.</p><a class="tl-outfit-product" href="/product/synthetic-shirt"><div><h3>Synthetic linen shirt</h3><p>INR 2,490.00</p><span class="tl-link">Choose your size →</span></div></a></div></div></section>
+    <section class="tl-theme" data-section-id="sense-aboutSection-index"></section>
+    <section class="tl-theme" data-section-id="sense-trustBadges-index"><div class="tl-wrap tl-services"></div></section>
+  actual: |-
+    <section class="tl-theme tl-hero tl-focus-center tl-hero-empty" data-section-id="sense-heroBanner-index"><div class="tl-hero-copy"><span class="tl-eyebrow">THE EVERYDAY EDIT</span><h1>Made to move with you.</h1><p>Considered clothing for your everyday.</p><a class="tl-button" href="/store/threadline-private-render/products">Explore new arrivals</a><a class="tl-link" href="/store/threadline-private-render/products">Find your fit</a></div></section>
+    <section class="tl-theme" data-section-id="sense-categoryGrid-index"><div class="tl-wrap tl-section"><div class="tl-heading"><div><h2>Find your silhouette</h2></div></div><div class="tl-categories"><a class="tl-category" href="/store/threadline-private-render/collections/dresses"><span class="tl-category-placeholder">Explore this collection</span><strong>Dresses <span aria-hidden="true">→</span></strong></a></div></div></section>
+    <section class="tl-theme" data-section-id="sense-productGrid-index"><div class="tl-wrap tl-section"><div class="tl-heading"><div><h2>New arrivals</h2></div></div><div class="tl-grid" data-columns="3"><article class="tl-card"><a href="/product/synthetic-shirt"><div class="tl-card-media"><div class="tl-card-placeholder">Product image not supplied</div></div><div class="tl-card-info"><h3>Synthetic linen shirt</h3><span class="tl-card-price">INR 2,490.00</span></div></a><a class="tl-link" href="/product/synthetic-shirt">Choose your size →</a></article></div><nav class="tl-heading" aria-label="Product pages"></nav></div></section>
+    <section class="tl-theme" data-section-id="sense-featuredProducts-index"><div class="tl-outfit tl-outfit-empty"><div class="tl-outfit-copy"><span class="tl-eyebrow">THE EVERYDAY PAIRING</span><h2>Wear it your way.</h2><p>Every piece, individually chosen.</p><p class="tl-outfit-note">Each piece is sold separately.</p><a class="tl-outfit-product" href="/product/synthetic-shirt"><div><h3>Synthetic linen shirt</h3><p>INR 2,490.00</p><span class="tl-link">Choose your size →</span></div></a></div></div></section>
+    <section class="tl-theme" data-section-id="sense-aboutSection-index"></section>
+    <section class="tl-theme" data-section-id="sense-trustBadges-index"><div class="tl-wrap tl-services"></div></section>
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/successor.test.ts:173:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: base source and frozen migration bytes remain pinned after rendering
+ok 14 - base source and frozen migration bytes remain pinned after rendering
+  ---
+  duration_ms: 1.695459
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 12
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1852.356125

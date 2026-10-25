@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-25T00:47:15.369Z",
+  "status": "INDEPENDENT_REDISCOVERY_AND_SEVEN_NEGATIVE_GUARDS_PASS_SOURCE_ONLY",
+  "files": 6555,
+  "runtimeModules": 477,
+  "edges": 5430,
+  "vendorFiles": 6037,
+  "sourceOnly": true,
+  "negativeControls": [
+    "missing-new-probe-source",
+    "corrupt-pinned-source",
+    "incomplete-runtime-parser-closure",
+    "missing-installed-vendor-runtime-file",
+    "missing-node-import-export-condition",
+    "missing-current-rollback-set",
+    "corrupt-actual-node-bootstrap"
+  ],
+  "closureSha256": "e7499470fb865af5ec2f925e38033557cd8bf1a326b14b48d7aff4939cc247b2",
+  "actualNativeAdmissionCreated": false,
+  "actualPreflightReceiptCreated": false,
+  "discoveredModulesExecuted": false
+}

@@ -1,0 +1,62 @@
+--- a/services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts
++++ b/services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts
+@@ -48,6 +48,7 @@
+   sourceMigrationMaximum:z.literal(393),sourceMigrationCount:z.literal(322),migrationCeiling:z.null(),
+   candidateMigration:z.literal(394),candidateOutsideMigrationScan:z.literal(true),
+   inputClosurePath:z.literal(docs+'source-input-closure.json'),inputClosureSha256:digestSchema,
++  frozenBuilderPath:z.literal(docs+'private03/frozen-builder-inputs.json'),frozenBuilderSha256:digestSchema,
+   nativeLease:z.literal('GRANTED_ONE_FRESH_DEFAULT_LATEST393_JOBS1_NO_REAP_PREPARED2_600S'),
+ }).strict();
+ /** Fresh394 admission only. Historical393 grants are evidence, never authorization. No factory regeneration. */
+@@ -69,7 +70,19 @@
+   assert.equal(manifest.migration,394);assert.equal(manifest.sourceMigrationMaximum,393);assert.equal(manifest.sourceMigrationCount,322);
+   assert.equal(manifest.rawFactorySha256,'91dd7e6239aefa6a341dfc04ba5d8cc79d8136f1c4d46b48fda66799ecbbe9d7');
+   const sources=z.record(z.string(),digestSchema).parse(manifest.sourceHashes);assert.equal(Object.keys(sources).length,61);
+-  for(const[file,hash]of Object.entries(sources)){assert(!file.includes('..'));assert(!/liquid-hydration-islands|variant-selection-url/.test(file));assert.equal(sha(read(file)),hash);}
++  // Historical builder provenance and current executable inputs are distinct.
++  // The immutable package/SQL bytes and all61 original source hashes stay unchanged.
++  assert.equal(sha(read(admission.frozenBuilderPath)),admission.frozenBuilderSha256);
++  const builder=z.object({schemaVersion:z.literal(1),files:z.array(z.object({sourcePath:z.string(),archivePath:z.string(),sha256:digestSchema}).strict())}).strict().parse(JSON.parse(read(admission.frozenBuilderPath)));
++  assert.equal(builder.files.length,61);assert.equal(new Set(builder.files.map(f=>f.sourcePath)).size,61);
++  assert.deepEqual(builder.files.map(f=>f.sourcePath).sort(),Object.keys(sources).sort());
++  for(const file of builder.files){
++    assert(!file.sourcePath.includes('..')&&!file.sourcePath.startsWith('/'));
++    assert(!/liquid-hydration-islands|variant-selection-url/.test(file.sourcePath));
++    assert(file.archivePath.startsWith(docs+'private03/frozen-builder/')&&!file.archivePath.includes('..'));
++    assert.equal(file.sha256,sources[file.sourcePath]);assert.equal(sha(read(file.archivePath)),file.sha256);
++  }
++  // The full current runtime closure below independently pins actual Main inputs.
+   assert.equal(sha(read(admission.inputClosurePath)),admission.inputClosureSha256);
+   const closure=z.object({files:z.array(z.object({path:z.string(),sha256:digestSchema}).strict())}).passthrough().parse(JSON.parse(read(admission.inputClosurePath)));
+   assert(closure.files.some(f=>f.path===suitePath));
+@@ -309,8 +322,29 @@
+     }
+     await assert.rejects(()=>withTenantTx(gateway!.env,ownScope.tenant,async tx=>{
+       await bindOwnedTenantActor(tx,ownScope);
++      await tx.unsafe('CREATE TEMP TABLE themes(id uuid,slug text) ON COMMIT DROP');
++    }),{code:'42501'});assert.equal(fullState(),directState,'existing tenant DDL refusal has zero business effects');
++    await assert.rejects(()=>withTenantTx(gateway!.env,ownScope.tenant,async tx=>{
++      await bindOwnedTenantActor(tx,ownScope);
+       await tx.unsafe('UPDATE public.theme_instances SET theme_package_version_id=$2::uuid WHERE store_id=$1::uuid AND theme_slug=$3',[oldSite.siteId,String(newChoice.versionId),slug]);
+-      await tx.unsafe('CREATE TEMP TABLE themes(id uuid,slug text) ON COMMIT DROP');
++      const contextSql="SELECT current_user::text AS role,session_user::text AS session_user,pg_backend_pid() AS pid,current_setting('app.site_id',true) AS site_id,current_setting('app.request_id',true) AS request_id,current_setting('app.actor_id',true) AS actor_id,current_setting('request.jwt.claim.sub',true) AS subject";
++      const beforeShadow=await tx.unsafe(contextSql);assert.equal(beforeShadow.length,1);
++      assert.equal(beforeShadow[0].role,'app_tenant');assert.equal(beforeShadow[0].session_user,'postgres');
++      assert.equal(beforeShadow[0].site_id,ownScope.siteId);assert.equal(beforeShadow[0].actor_id,ownScope.customUser.id);
++      // Fixture-only setup on the exact owned backend. The unchanged360 INVOKER
++      // DDL guard refuses app_tenant before the publication guard is reached.
++      await tx.unsafe('SAVEPOINT owned_shadow_fixture_setup');
++      try{
++        await tx.unsafe('SET LOCAL ROLE postgres');
++        await tx.unsafe('CREATE TEMP TABLE themes(id uuid,slug text) ON COMMIT DROP');
++        await tx.unsafe('SET LOCAL ROLE app_tenant');
++        await tx.unsafe('RELEASE SAVEPOINT owned_shadow_fixture_setup');
++      }catch(error){
++        await tx.unsafe('ROLLBACK TO SAVEPOINT owned_shadow_fixture_setup');
++        await tx.unsafe('SET LOCAL ROLE app_tenant');throw error;
++      }
++      const afterShadow=await tx.unsafe(contextSql);assert.equal(afterShadow.length,1);
++      assert.deepEqual(afterShadow[0],beforeShadow[0],'fixture setup restores exact role,backend,tenant,request and actor before real publication');
+       await publishThemeReleaseInTenantTx(tx,ownScope,{themeSlug:slug,releaseConfig:{liquidBundle:inputs.bundle},targetPackageVersionId:String(newChoice.versionId),priorReleaseId:String(publishedOld.id),requestHash:'a'.repeat(64),makeStoreLive:true});
+       assert.fail('temporary-table shadow must refuse before privilege use');
+     }),TenantPublicationContextError);assert.equal(fullState(),directState,'temporary shadow refusal rolls back staged pin and all effects');

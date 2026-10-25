@@ -487,7 +487,8 @@ export default function SmartCollectionsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Smart collections"
                 description="Collections that automatically include products matching your rules."
                 breadcrumbs={[

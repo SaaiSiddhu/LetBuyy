@@ -1,0 +1,51 @@
+{
+  "purpose": "Explicit synthetic catalog preview only; never seeded into installed themes or live merchants",
+  "generation": "Built-in image_gen; original assets approved at M1",
+  "encoding": "1000px contained WebP, quality82, no crop",
+  "assets": [
+    {
+      "id": "cg7",
+      "file": "cg7-hub.webp",
+      "width": 1000,
+      "height": 1000,
+      "bytes": 25506,
+      "sha256": "06ae2e43ecc8b88dd6cd552aed3936054f1c7dec45667ea00b4c35c3b61f716e",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/circuit-storybook/assets/cg7-hub.png",
+      "prompt": "Use case: product-mockup. Asset type: original fictional electronics catalog photography for Circuit, a LetBuyy design storybook. Clean photorealistic studio shot on a pale cool gray seamless background, soft controlled sidelight, clear product edges, neutral graphite/silver materials, no text, no logo, no branding, no watermark, no UI. Complete object fully contained with generous whitespace, 3/4 elevated angle, square composition. This is an illustrative fictional product, not a real manufacturer device. Subject: one compact elongated graphite aluminum seven-port USB-C hub with a short captive USB-C host cable curling beside it. Show plausible HDMI, rectangular USB-A, oval USB-C, SD and microSD apertures along sides. Minimal technical industrial design; no laptop, hands or other accessories.",
+      "generatedOriginal": "/Users/saai_mithra/.codex/generated_images/01a164ba-a97f-7d80-9430-57924218664b/exec-748c3846-20ad-4eac-9eee-d5dfbb6a0a31.png"
+    },
+    {
+      "id": "cg5",
+      "file": "cg5-hub.webp",
+      "width": 1000,
+      "height": 1000,
+      "bytes": 24562,
+      "sha256": "46a58e6e26d9df74936bdb11090c838fdd89905c34beed217d474d6b83405409",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/circuit-storybook/assets/cg5-hub.png",
+      "prompt": "Use case: product-mockup. Asset type: original fictional electronics catalog photography for Circuit, a LetBuyy design storybook. Clean photorealistic studio shot on a pale cool gray seamless background, soft controlled sidelight, clear product edges, neutral graphite/silver materials, no text, no logo, no branding, no watermark, no UI. Complete object fully contained with generous whitespace, 3/4 elevated angle, square composition. This is an illustrative fictional product, not a real manufacturer device. Subject: one small silver aluminum five-port USB-C hub, distinctly short and square, with a short captive black USB-C host cable. Plausible HDMI, USB-A and USB-C ports. No card-reader slots. No laptop, hands or other accessories.",
+      "generatedOriginal": "/Users/saai_mithra/.codex/generated_images/01a164ba-a97f-7d80-9430-57924218664b/exec-a4f42f31-1cb4-42b1-a0fe-a94b2ee390dd.png"
+    },
+    {
+      "id": "ch65",
+      "file": "ch65-charger.webp",
+      "width": 1000,
+      "height": 1000,
+      "bytes": 41688,
+      "sha256": "37bb3af03f7f32017a0f9a45cd4e0c2969d93a402ccb9c6240be61d5ce30e754",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/circuit-storybook/assets/ch65-charger.png",
+      "prompt": "Use case: product-mockup. Asset type: original fictional electronics catalog photography for Circuit, a LetBuyy design storybook. Clean photorealistic studio shot on a pale cool gray seamless background, soft controlled sidelight, clear product edges, neutral graphite/silver materials, no text, no logo, no branding, no watermark, no UI. Complete object fully contained with generous whitespace, 3/4 elevated angle, square composition. This is an illustrative fictional product, not a real manufacturer device. Subject: one compact graphite 65 W USB-C wall charger with two round Indian plug pins and two oval USB-C output ports visible. Fully contain both pins. Soft small natural shadow; no cable, wall outlet, hands or extra accessories.",
+      "generatedOriginal": "/Users/saai_mithra/.codex/generated_images/01a164ba-a97f-7d80-9430-57924218664b/exec-5ca2cb9f-a8e0-41c7-ab2c-3cc47135a99b.png"
+    },
+    {
+      "id": "cl100",
+      "file": "cl100-cable.webp",
+      "width": 1000,
+      "height": 1000,
+      "bytes": 53642,
+      "sha256": "1942e150771d83fb4f2090648ff1aa27fd2c2d535d638dac9bb381e4f667e687",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/circuit-storybook/assets/cl100-cable.png",
+      "prompt": "Use case: product-mockup. Asset type: original fictional electronics catalog photography for Circuit, a LetBuyy design storybook. Clean photorealistic studio shot on a pale cool gray seamless background, soft controlled sidelight, clear product edges, neutral graphite/silver materials, no text, no logo, no branding, no watermark, no UI. Complete object fully contained with generous whitespace, 3/4 elevated angle, square composition. This is an illustrative fictional product, not a real manufacturer device. Subject: one graphite braided USB-C to USB-C cable loosely coiled into a clean oval with both identical USB-C male connectors visible, complete cable contained, detailed braid and metal tips. No adapters, hands or extra accessories.",
+      "generatedOriginal": "/Users/saai_mithra/.codex/generated_images/01a164ba-a97f-7d80-9430-57924218664b/exec-6b44f6fe-8c03-4f32-850d-bdff34da10ce.png"
+    }
+  ]
+}

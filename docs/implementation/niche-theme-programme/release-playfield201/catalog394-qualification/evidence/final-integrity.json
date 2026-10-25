@@ -1,0 +1,18 @@
+{
+  "status": "PRIVATE394_REVIEW_PACKET_ALL_REFERENCES_AND1089_INPUTS_EXACT",
+  "referencesRehashed": 28,
+  "inputsRehashed": 1089,
+  "readyJson": {
+    "path": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/READY-FOR-REVIEW.json",
+    "sha256": "13d40950851a9b4773d3a5fbb881d9620b0e3a989ad3a7e648937258a278efc0",
+    "bytes": 14660
+  },
+  "readyMarkdown": {
+    "path": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/READY-FOR-REVIEW.md",
+    "sha256": "443c98daa353686238cbcc29912eeb8ec54ff4e17c21c93bf93d2d4f2bc1dcef",
+    "bytes": 4703
+  },
+  "noMainPlacementOr394ScanEmission": true,
+  "actualAdmissionsAbsent": true,
+  "nativeBrowserBuildExecuted": false
+}

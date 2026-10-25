@@ -1,0 +1,28 @@
+- heading [level=1]: Domains
+- button "Connect existing":
+- button "Transfer domain":
+- button "Buy new domain":
+- heading "Domains" [level=1]
+- status:
+- paragraph:
+- paragraph:
+- link "Terms apply":
+- heading "Change to a new myshopify.com domain" [level=3]
+- paragraph:
+- button "Change myshopify.com domain":
+- table:
+- link "[test identity].myshopify.com":
+- link "Preview domain":
+- button "Change myshopify.com domain":
+- paragraph:
+- button "Learn more about domains":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

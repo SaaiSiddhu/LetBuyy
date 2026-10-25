@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-24T10:06:44.878042+00:00",
+  "status": "UNAPPLIED_ROOT_OWNED_CATALOGUE_DIFF_ONLY",
+  "target": "packages/theme-engine/src/first-party-theme-catalog.ts",
+  "baseSha256": "840af16589d97e99ebecdbc045e920567d4e71a3b30d9d00d22f440aa5cb34a8",
+  "proposedSha256": "3464bc35c39f811be3e785da8ff35499a1d38211244737aa45cc86e2a0a02c21",
+  "diff": "first-party-threadline-dispatch.UNAPPLIED.diff",
+  "changes": [
+    "Import compactThreadline201leaf",
+    "Add optionalthreadlineVersion2.0.1",
+    "Explicitsensebranch201optin; default200unchanged"
+  ],
+  "actualCatalogueFileUnchanged": true,
+  "dispatchRuntimeTested": false,
+  "requiredRootChecks": [
+    "Apply only against exact current base or reconcile intervening Root changes.",
+    "Actual explicit201dispatch plus frozen/default200 and other catalogued versions regression.",
+    "Independent source acceptance before any catalogue/migration/runtime admission."
+  ]
+}

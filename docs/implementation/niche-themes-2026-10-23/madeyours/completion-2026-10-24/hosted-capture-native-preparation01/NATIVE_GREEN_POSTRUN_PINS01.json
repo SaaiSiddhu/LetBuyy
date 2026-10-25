@@ -1,0 +1,778 @@
+{
+  "recordedAt": "2026-10-25T01:59:54.480520+00:00",
+  "sources": [
+    {
+      "manifest": "red-materialization.json",
+      "manifestSha256": "52df919c780a7f25e4501b666b871a16d9add81141c5e0b82c2f4db489be6398",
+      "root": "/private/tmp/letbuyy-hosted-capture-native-red-20261025-01",
+      "filesChecked": 6545,
+      "linksChecked": 2175,
+      "changedFiles": [],
+      "changedLinks": [],
+      "checkoutSha256": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e",
+      "witnessSha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76",
+      "wrapperSha256": "d5660a3d777799c6e74c06f659265196930f01639b0cb1e25a4ce566b84d1fcc"
+    },
+    {
+      "manifest": "green-materialization.json",
+      "manifestSha256": "761a9bbdf36f02e2a49013961f930c6621643446e0611d28813406105b3ee2c3",
+      "root": "/private/tmp/letbuyy-hosted-capture-native-green-20261025-01",
+      "filesChecked": 6545,
+      "linksChecked": 2175,
+      "changedFiles": [],
+      "changedLinks": [],
+      "checkoutSha256": "bed680202cc7ff86ee1a43ddfbeb327ae6732ade104b7d3b57b703bade50fa08",
+      "witnessSha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76",
+      "wrapperSha256": "d5660a3d777799c6e74c06f659265196930f01639b0cb1e25a4ce566b84d1fcc"
+    }
+  ],
+  "frozenSource": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/madeyours-theme.ts",
+      "expectedSha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+      "actualSha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+      "exact": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/madeyours-styles.ts",
+      "expectedSha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e",
+      "actualSha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e",
+      "exact": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/madeyours-discovery.ts",
+      "expectedSha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+      "actualSha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+      "exact": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/accepted-freeze.json",
+      "expectedSha256": "cbc40cd77d1895c7dfcea8939f6328bc340d1960ace76652b2ebeeb3a3e9a924",
+      "actualSha256": "cbc40cd77d1895c7dfcea8939f6328bc340d1960ace76652b2ebeeb3a3e9a924",
+      "exact": true
+    }
+  ],
+  "frozenArtifacts": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/MadeYours-45-mockups.zip",
+      "redObservedSha256": "f55dbecf497b42cb673660fef589fab4c8543e525672f307b98a07417b9e457d",
+      "greenObservedSha256": "f55dbecf497b42cb673660fef589fab4c8543e525672f307b98a07417b9e457d",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/GEIST-OFL-LICENSE.txt",
+      "redObservedSha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+      "greenObservedSha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/Inter-OFL.txt",
+      "redObservedSha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
+      "greenObservedSha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/block.png",
+      "redObservedSha256": "cc9d5ec3f8fd0b79db9abf144149fcb9bc82180bca5c9df67a886d4173134443",
+      "greenObservedSha256": "cc9d5ec3f8fd0b79db9abf144149fcb9bc82180bca5c9df67a886d4173134443",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/geist-sans-latin.woff2",
+      "redObservedSha256": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8",
+      "greenObservedSha256": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/hero.png",
+      "redObservedSha256": "3113274aeaa7e62bafc489971afa03c6587b5c12724e93f0f54fc6b4bb6c8166",
+      "greenObservedSha256": "3113274aeaa7e62bafc489971afa03c6587b5c12724e93f0f54fc6b4bb6c8166",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/inter-400.ttf",
+      "redObservedSha256": "1b08e7fc267a5c7e1d614100f604b83e7e8a0be241f0f288faa2b3ac93a683ba",
+      "greenObservedSha256": "1b08e7fc267a5c7e1d614100f604b83e7e8a0be241f0f288faa2b3ac93a683ba",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/inter-500.ttf",
+      "redObservedSha256": "8c883f63b2c4157d997319f2c8bc6995ed4357ef371940d31ca159004a4aae63",
+      "greenObservedSha256": "8c883f63b2c4157d997319f2c8bc6995ed4357ef371940d31ca159004a4aae63",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/inter-600.ttf",
+      "redObservedSha256": "e7a1aaf7eda9f2fad4131725fa556265ec75ca7b2d756260173a040363e8d4f7",
+      "greenObservedSha256": "e7a1aaf7eda9f2fad4131725fa556265ec75ca7b2d756260173a040363e8d4f7",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/inter-700.ttf",
+      "redObservedSha256": "b37284b5701b6b168dfc770aa1a4ac492106422fd3ba76bc7641e37434e8019c",
+      "greenObservedSha256": "b37284b5701b6b168dfc770aa1a4ac492106422fd3ba76bc7641e37434e8019c",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/inter-license-source.css",
+      "redObservedSha256": "34bd07407ad1de576cba1f67651fa31a8fe783e24a6e1817e08c24bdc54014f9",
+      "greenObservedSha256": "34bd07407ad1de576cba1f67651fa31a8fe783e24a6e1817e08c24bdc54014f9",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/letbuyy-logo.svg",
+      "redObservedSha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+      "greenObservedSha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/assets/notebook.png",
+      "redObservedSha256": "09a910f91a51f35d4b3ddf69dbcad8c0bf256f75729e18899c070cd6b8ca4c88",
+      "greenObservedSha256": "09a910f91a51f35d4b3ddf69dbcad8c0bf256f75729e18899c070cd6b8ca4c88",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/01-home-top.png",
+      "redObservedSha256": "27e287addb9880264f091c122a2c045e21506b6e279be057efb7a5383ff56d46",
+      "greenObservedSha256": "27e287addb9880264f091c122a2c045e21506b6e279be057efb7a5383ff56d46",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/02-home-bottom.png",
+      "redObservedSha256": "83c7f62a823366cb27d58f103d178e07de341a6e68dbf62632d51bb56fe1fa9f",
+      "greenObservedSha256": "83c7f62a823366cb27d58f103d178e07de341a6e68dbf62632d51bb56fe1fa9f",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/03-collection.png",
+      "redObservedSha256": "dba447a1e2bf118fbad432552e26ae3627204d25233a1da0a50b17a34c8cdf2f",
+      "greenObservedSha256": "dba447a1e2bf118fbad432552e26ae3627204d25233a1da0a50b17a34c8cdf2f",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/04-product-main.png",
+      "redObservedSha256": "96400031b7e54ff6e05b8a28933de24292d1a7fe13f8a14586c6369ea7c0ec91",
+      "greenObservedSha256": "96400031b7e54ff6e05b8a28933de24292d1a7fe13f8a14586c6369ea7c0ec91",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/05-product-specify.png",
+      "redObservedSha256": "cea47d60ef4b3e17ed65ceca5e246646de2bec5c47fdab6678ec43ce20d8888f",
+      "greenObservedSha256": "cea47d60ef4b3e17ed65ceca5e246646de2bec5c47fdab6678ec43ce20d8888f",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/06-product-review.png",
+      "redObservedSha256": "6dad6d94f768369a45377407262fe9945ca30abb570c898c64241ddbf714fa53",
+      "greenObservedSha256": "6dad6d94f768369a45377407262fe9945ca30abb570c898c64241ddbf714fa53",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/07-cart.png",
+      "redObservedSha256": "da53a7170229597cd73b1b3be3f43d148cb4b1d1f227dbf25a90261ee73cb7db",
+      "greenObservedSha256": "da53a7170229597cd73b1b3be3f43d148cb4b1d1f227dbf25a90261ee73cb7db",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/08-checkout-address.png",
+      "redObservedSha256": "b9a9dbd301c97542308fc039d6709d804c3381753ba1da6e47d09936a4df278b",
+      "greenObservedSha256": "b9a9dbd301c97542308fc039d6709d804c3381753ba1da6e47d09936a4df278b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/09-checkout-review.png",
+      "redObservedSha256": "17721e4637371e6a2025202858276f44f60580890f23c16ed171398d049196ae",
+      "greenObservedSha256": "17721e4637371e6a2025202858276f44f60580890f23c16ed171398d049196ae",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/10-sign-in.png",
+      "redObservedSha256": "6e5d2230e467910288f3a7ef31a2c05f135f4810df34c60d1877a3c0a6dd7bbd",
+      "greenObservedSha256": "6e5d2230e467910288f3a7ef31a2c05f135f4810df34c60d1877a3c0a6dd7bbd",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/11-sign-up.png",
+      "redObservedSha256": "25261e6962291c1e9dd621996a7eac0fea9806214584ffdf6ccaaf06a7a9b886",
+      "greenObservedSha256": "25261e6962291c1e9dd621996a7eac0fea9806214584ffdf6ccaaf06a7a9b886",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/12-profile.png",
+      "redObservedSha256": "207751999be2e3cac73b01307e1790e2a44edf0d0c9bee56ba9289b3306096e5",
+      "greenObservedSha256": "207751999be2e3cac73b01307e1790e2a44edf0d0c9bee56ba9289b3306096e5",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/13-orders.png",
+      "redObservedSha256": "d9d991c7954665e5dfc608bc63f9197d57550bf0a7dba3e51a689b2474d01409",
+      "greenObservedSha256": "d9d991c7954665e5dfc608bc63f9197d57550bf0a7dba3e51a689b2474d01409",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/14-order-detail.png",
+      "redObservedSha256": "c3a0bc212d483f32bc4f345ca89072772c5f05d251fd26a0a49f3ead22c70711",
+      "greenObservedSha256": "c3a0bc212d483f32bc4f345ca89072772c5f05d251fd26a0a49f3ead22c70711",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/boards/15-addresses.png",
+      "redObservedSha256": "816b10a1965fc694d014b14b075f85a8e8c9c1555fe29119184c72efc94c67be",
+      "greenObservedSha256": "816b10a1965fc694d014b14b075f85a8e8c9c1555fe29119184c72efc94c67be",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/01-home-top-desktop.png",
+      "redObservedSha256": "a7efe7e5d83d530d486b6cff81afc2579663ce65aec157e7601a459f6551bc6a",
+      "greenObservedSha256": "a7efe7e5d83d530d486b6cff81afc2579663ce65aec157e7601a459f6551bc6a",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/01-home-top-mobile.png",
+      "redObservedSha256": "bf38cde7f183c491e014a9ac030423c4e707ec825793cca4fa65bbb80416bd6d",
+      "greenObservedSha256": "bf38cde7f183c491e014a9ac030423c4e707ec825793cca4fa65bbb80416bd6d",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/01-home-top-tablet.png",
+      "redObservedSha256": "2dddca71f2af61df543534e811759d920f45844422700810f71250343d34dd76",
+      "greenObservedSha256": "2dddca71f2af61df543534e811759d920f45844422700810f71250343d34dd76",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/02-home-bottom-desktop.png",
+      "redObservedSha256": "0b22944910e26e1e61a40df5dfed6101e82fa5e48a2985331bc011b0e0335981",
+      "greenObservedSha256": "0b22944910e26e1e61a40df5dfed6101e82fa5e48a2985331bc011b0e0335981",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/02-home-bottom-mobile.png",
+      "redObservedSha256": "cdcc70e356919d748fd4ce2b86b6ba0fd79ddb3e590bbe7cd55084b654331a3b",
+      "greenObservedSha256": "cdcc70e356919d748fd4ce2b86b6ba0fd79ddb3e590bbe7cd55084b654331a3b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/02-home-bottom-tablet.png",
+      "redObservedSha256": "96e09f9ff84f2e24651b3746b4d488fcafb211e70ee0c89b328c960eaa80324e",
+      "greenObservedSha256": "96e09f9ff84f2e24651b3746b4d488fcafb211e70ee0c89b328c960eaa80324e",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/03-collection-desktop.png",
+      "redObservedSha256": "ba07b7f6cad66f6d3915746af6135818044faa179d8b976c942a99a2d9435b3b",
+      "greenObservedSha256": "ba07b7f6cad66f6d3915746af6135818044faa179d8b976c942a99a2d9435b3b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/03-collection-mobile.png",
+      "redObservedSha256": "8b29a4ae9e4e1ddb361bf15ae502deed29f61ed68d7d67bec07a08c56229723a",
+      "greenObservedSha256": "8b29a4ae9e4e1ddb361bf15ae502deed29f61ed68d7d67bec07a08c56229723a",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/03-collection-tablet.png",
+      "redObservedSha256": "add937ec8158b7f4eb384754f55454a0555d718c03f35edb91b0850b5d26fc0a",
+      "greenObservedSha256": "add937ec8158b7f4eb384754f55454a0555d718c03f35edb91b0850b5d26fc0a",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/04-product-main-desktop.png",
+      "redObservedSha256": "ce345e151acf646953fa6ca5a55252a85b2c363d3ea4f9ea5263283c6812a80c",
+      "greenObservedSha256": "ce345e151acf646953fa6ca5a55252a85b2c363d3ea4f9ea5263283c6812a80c",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/04-product-main-mobile.png",
+      "redObservedSha256": "589d63692c6013d409d6dbefe932c5438b32af1ecc46a341a2e0c9d01be69ba9",
+      "greenObservedSha256": "589d63692c6013d409d6dbefe932c5438b32af1ecc46a341a2e0c9d01be69ba9",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/04-product-main-tablet.png",
+      "redObservedSha256": "70e65365d328b42fa1143a0aca72af450dc0b192a3113f9a63d6ef813aeca924",
+      "greenObservedSha256": "70e65365d328b42fa1143a0aca72af450dc0b192a3113f9a63d6ef813aeca924",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/05-product-specify-desktop.png",
+      "redObservedSha256": "81ef1023a5f2eaafd890bb20f4ca3ccb58c897ad79c4fdc6cf2e1f8fd63a6d95",
+      "greenObservedSha256": "81ef1023a5f2eaafd890bb20f4ca3ccb58c897ad79c4fdc6cf2e1f8fd63a6d95",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/05-product-specify-mobile.png",
+      "redObservedSha256": "8670d126aa8541ed03acc214d1302ef12e990736bf5952063e3bca50ee099a17",
+      "greenObservedSha256": "8670d126aa8541ed03acc214d1302ef12e990736bf5952063e3bca50ee099a17",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/05-product-specify-tablet.png",
+      "redObservedSha256": "c2f2df539a049086e7751c2c9c48c7d4f472f14829d79b24c1e7dbf71fd83e98",
+      "greenObservedSha256": "c2f2df539a049086e7751c2c9c48c7d4f472f14829d79b24c1e7dbf71fd83e98",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/06-product-review-desktop.png",
+      "redObservedSha256": "c1010662134392a1fc06e289caed19ef4b791cda07ba43f4208d20cffd72bbb8",
+      "greenObservedSha256": "c1010662134392a1fc06e289caed19ef4b791cda07ba43f4208d20cffd72bbb8",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/06-product-review-mobile.png",
+      "redObservedSha256": "88823e0e1caf626d14b3fbff1f3d12acc07ce1d24537751c62cc699ec9ff24d9",
+      "greenObservedSha256": "88823e0e1caf626d14b3fbff1f3d12acc07ce1d24537751c62cc699ec9ff24d9",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/06-product-review-tablet.png",
+      "redObservedSha256": "0213f6c5d69489e4912a514199b05e6266df3f51c9dc4668764a5e8325fbe51b",
+      "greenObservedSha256": "0213f6c5d69489e4912a514199b05e6266df3f51c9dc4668764a5e8325fbe51b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/07-cart-desktop.png",
+      "redObservedSha256": "19d66d8824408b72d5ec9982007101bc8e6dec7fc8ef5fa1935ecf882892f602",
+      "greenObservedSha256": "19d66d8824408b72d5ec9982007101bc8e6dec7fc8ef5fa1935ecf882892f602",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/07-cart-mobile.png",
+      "redObservedSha256": "6522bd29928a5fbc53092872a2969cae3570f955b1132df91c738da71769e5ed",
+      "greenObservedSha256": "6522bd29928a5fbc53092872a2969cae3570f955b1132df91c738da71769e5ed",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/07-cart-tablet.png",
+      "redObservedSha256": "3bfbf3529a9a8a9ce5be5208e4cebdc8566a32db52f10b3c26b7a0792eb1cb0e",
+      "greenObservedSha256": "3bfbf3529a9a8a9ce5be5208e4cebdc8566a32db52f10b3c26b7a0792eb1cb0e",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/08-checkout-address-desktop.png",
+      "redObservedSha256": "280f70c6da8a1182ce26cc2006e626d404b13c10542cfacf990ce0e588f48480",
+      "greenObservedSha256": "280f70c6da8a1182ce26cc2006e626d404b13c10542cfacf990ce0e588f48480",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/08-checkout-address-mobile.png",
+      "redObservedSha256": "cc13eada0ae6f32e2f6898397fcd0249a84f16a899c67870f94048db07b759bc",
+      "greenObservedSha256": "cc13eada0ae6f32e2f6898397fcd0249a84f16a899c67870f94048db07b759bc",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/08-checkout-address-tablet.png",
+      "redObservedSha256": "56b0356f564939391ba784032991f606a1adca75ce420d8df9c76b35ab381bbd",
+      "greenObservedSha256": "56b0356f564939391ba784032991f606a1adca75ce420d8df9c76b35ab381bbd",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/09-checkout-review-desktop.png",
+      "redObservedSha256": "b38e1b325c0f1347d6c12fac03d99c02f3b1b232a939398546a86b07a9940ede",
+      "greenObservedSha256": "b38e1b325c0f1347d6c12fac03d99c02f3b1b232a939398546a86b07a9940ede",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/09-checkout-review-mobile.png",
+      "redObservedSha256": "66e42fe8e34c7ed13e60df04660d11f4b4d16da4b381d65ad41531be6f7f4700",
+      "greenObservedSha256": "66e42fe8e34c7ed13e60df04660d11f4b4d16da4b381d65ad41531be6f7f4700",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/09-checkout-review-tablet.png",
+      "redObservedSha256": "8a7810c0f32ff6dee3fed141a16121836df6e2dc1abe6954c9548cd74a927a8c",
+      "greenObservedSha256": "8a7810c0f32ff6dee3fed141a16121836df6e2dc1abe6954c9548cd74a927a8c",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/10-sign-in-desktop.png",
+      "redObservedSha256": "67f9c00879ab98f5260a35e9870d815cd1e77680d161a7ea8db3e307d9c171d9",
+      "greenObservedSha256": "67f9c00879ab98f5260a35e9870d815cd1e77680d161a7ea8db3e307d9c171d9",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/10-sign-in-mobile.png",
+      "redObservedSha256": "954967eddb4d353939d5b702a0dddda0da4396e8d5b34405941983c7c0c0096f",
+      "greenObservedSha256": "954967eddb4d353939d5b702a0dddda0da4396e8d5b34405941983c7c0c0096f",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/10-sign-in-tablet.png",
+      "redObservedSha256": "23880d5a250016f9eaee88540e0d0938c2a4f5864620e41ced572a6844903f72",
+      "greenObservedSha256": "23880d5a250016f9eaee88540e0d0938c2a4f5864620e41ced572a6844903f72",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/11-sign-up-desktop.png",
+      "redObservedSha256": "c0e9af758fbe6eff6a205a369f6a4ba17e8b6a15e7af08c90780bb8385a661ba",
+      "greenObservedSha256": "c0e9af758fbe6eff6a205a369f6a4ba17e8b6a15e7af08c90780bb8385a661ba",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/11-sign-up-mobile.png",
+      "redObservedSha256": "97f5bf78e0bf5c8eb0814bf4f83734259b267ff4901741ee8333a933f1981757",
+      "greenObservedSha256": "97f5bf78e0bf5c8eb0814bf4f83734259b267ff4901741ee8333a933f1981757",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/11-sign-up-tablet.png",
+      "redObservedSha256": "281b0efbf46f3e1e4db3f49b940ca66fff56b71b898e6f1bc8dd0df8ceeb633b",
+      "greenObservedSha256": "281b0efbf46f3e1e4db3f49b940ca66fff56b71b898e6f1bc8dd0df8ceeb633b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/12-profile-desktop.png",
+      "redObservedSha256": "a0d22f80be2fb3e9d95be969305a8fd8c4b97e5912043faf835b1450f34caa53",
+      "greenObservedSha256": "a0d22f80be2fb3e9d95be969305a8fd8c4b97e5912043faf835b1450f34caa53",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/12-profile-mobile.png",
+      "redObservedSha256": "4d2252a10f1d36502074def4ca08b65c050c97298e2d793eb4866f0d6900870a",
+      "greenObservedSha256": "4d2252a10f1d36502074def4ca08b65c050c97298e2d793eb4866f0d6900870a",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/12-profile-tablet.png",
+      "redObservedSha256": "a7677b7b466df4e4b098b1fed5f7324f7b4ac4220859ca1383385d0d4b2f80e5",
+      "greenObservedSha256": "a7677b7b466df4e4b098b1fed5f7324f7b4ac4220859ca1383385d0d4b2f80e5",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/13-orders-desktop.png",
+      "redObservedSha256": "c3b914b82bd7939c4eddb87e2c8ed7459a8de8ab74272c0d4db212af4d7bb293",
+      "greenObservedSha256": "c3b914b82bd7939c4eddb87e2c8ed7459a8de8ab74272c0d4db212af4d7bb293",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/13-orders-mobile.png",
+      "redObservedSha256": "a7310709223775254ef8c4483e6ed386de07bfd6b8d4299f4a4c41c552adbe0c",
+      "greenObservedSha256": "a7310709223775254ef8c4483e6ed386de07bfd6b8d4299f4a4c41c552adbe0c",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/13-orders-tablet.png",
+      "redObservedSha256": "7dec8620c1bd8966cdc71f11bb73c4e75fd4a24131d248694a9f94aa02b28527",
+      "greenObservedSha256": "7dec8620c1bd8966cdc71f11bb73c4e75fd4a24131d248694a9f94aa02b28527",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/14-order-detail-desktop.png",
+      "redObservedSha256": "d4a4a8829856cdcc14857985546b016d54666f739a5b637f8213cbd279d1ef3d",
+      "greenObservedSha256": "d4a4a8829856cdcc14857985546b016d54666f739a5b637f8213cbd279d1ef3d",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/14-order-detail-mobile.png",
+      "redObservedSha256": "4a2303932719d9e087186efbf10a8a3183b0d1e17eca67e317326631566ef7db",
+      "greenObservedSha256": "4a2303932719d9e087186efbf10a8a3183b0d1e17eca67e317326631566ef7db",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/14-order-detail-tablet.png",
+      "redObservedSha256": "8f74907f7476b86bd7fae788bed48b52b175d2876631df64ba73064486153a9b",
+      "greenObservedSha256": "8f74907f7476b86bd7fae788bed48b52b175d2876631df64ba73064486153a9b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/15-addresses-desktop.png",
+      "redObservedSha256": "5b3dc4ef488ace085c8c9d6d4d928de1668898589708353689ab85f3da7d45a5",
+      "greenObservedSha256": "5b3dc4ef488ace085c8c9d6d4d928de1668898589708353689ab85f3da7d45a5",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/15-addresses-mobile.png",
+      "redObservedSha256": "fea9c07b7e1264dbe7174c77d3c33e106afbf96cb7ad240b9584f9ccd9720a4d",
+      "greenObservedSha256": "fea9c07b7e1264dbe7174c77d3c33e106afbf96cb7ad240b9584f9ccd9720a4d",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/images/15-addresses-tablet.png",
+      "redObservedSha256": "fcc1a775f28b8e548d8dccc15863d9664c3485c881e13a459dfe374c90df615f",
+      "greenObservedSha256": "fcc1a775f28b8e548d8dccc15863d9664c3485c881e13a459dfe374c90df615f",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/01-home-top.html",
+      "redObservedSha256": "571b27f06d0d956e98d286869817eb8992c1a282f329416727f50f78667aa5ca",
+      "greenObservedSha256": "571b27f06d0d956e98d286869817eb8992c1a282f329416727f50f78667aa5ca",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/02-home-bottom.html",
+      "redObservedSha256": "976357e59db31b07ea96a9d2dec5ae1afdd0f8669d8860139b6e1c6f47ba2ddd",
+      "greenObservedSha256": "976357e59db31b07ea96a9d2dec5ae1afdd0f8669d8860139b6e1c6f47ba2ddd",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/03-collection.html",
+      "redObservedSha256": "7770a64c8f75da9d687ea40c79060ad4ac51d4c14faf6a9d9422a63623dfcb01",
+      "greenObservedSha256": "7770a64c8f75da9d687ea40c79060ad4ac51d4c14faf6a9d9422a63623dfcb01",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/04-product-main.html",
+      "redObservedSha256": "7da622c6c6d04893a70fe30eef9cec379d271bb8cea31f1dd04d40861d5a79cd",
+      "greenObservedSha256": "7da622c6c6d04893a70fe30eef9cec379d271bb8cea31f1dd04d40861d5a79cd",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/05-product-specify.html",
+      "redObservedSha256": "9edae9b3aeaf730ba91b0b99f2e791d6bbb2111eb898aaf27f1b7e4481372b49",
+      "greenObservedSha256": "9edae9b3aeaf730ba91b0b99f2e791d6bbb2111eb898aaf27f1b7e4481372b49",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/06-product-review.html",
+      "redObservedSha256": "1f8175f862004893d73a8caabf8974f34a64a2cdc1fe0f3538b836e472be6c04",
+      "greenObservedSha256": "1f8175f862004893d73a8caabf8974f34a64a2cdc1fe0f3538b836e472be6c04",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/07-cart.html",
+      "redObservedSha256": "b7dcc9d945496ae57f023dc5868594add7f2902d8f33fa885bf08480a16c98b0",
+      "greenObservedSha256": "b7dcc9d945496ae57f023dc5868594add7f2902d8f33fa885bf08480a16c98b0",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/08-checkout-address.html",
+      "redObservedSha256": "ab5449592b19a2d7574f757aa668791eaf4b42525f316bef3afead42f8a1d49b",
+      "greenObservedSha256": "ab5449592b19a2d7574f757aa668791eaf4b42525f316bef3afead42f8a1d49b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/09-checkout-review.html",
+      "redObservedSha256": "c09009ee8499af6e4c0aa5e185a22c58574c33f5a0aecc3c0b2fce8386038991",
+      "greenObservedSha256": "c09009ee8499af6e4c0aa5e185a22c58574c33f5a0aecc3c0b2fce8386038991",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/10-sign-in.html",
+      "redObservedSha256": "cdb172f05e67a4825d51d60ba67c61e8d40d373909bc72a7e343a3c05c61d08f",
+      "greenObservedSha256": "cdb172f05e67a4825d51d60ba67c61e8d40d373909bc72a7e343a3c05c61d08f",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/11-sign-up.html",
+      "redObservedSha256": "47b29453ada024d03d87db81f849bd7c87209902243f520ae40c6e1201a53715",
+      "greenObservedSha256": "47b29453ada024d03d87db81f849bd7c87209902243f520ae40c6e1201a53715",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/12-profile.html",
+      "redObservedSha256": "969a8dbf44844da2ebf26a9170e5a1ce9576632e7e137b409d10bb7367cf7021",
+      "greenObservedSha256": "969a8dbf44844da2ebf26a9170e5a1ce9576632e7e137b409d10bb7367cf7021",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/13-orders.html",
+      "redObservedSha256": "c74594b10039e524c98c2a8e52e2089399f168400dc82c9938fb99fc5b08e70f",
+      "greenObservedSha256": "c74594b10039e524c98c2a8e52e2089399f168400dc82c9938fb99fc5b08e70f",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/14-order-detail.html",
+      "redObservedSha256": "f92469adcd6c42c3b49e7cc2ee019007776b1f53bd04c9e60fff6847fec353e4",
+      "greenObservedSha256": "f92469adcd6c42c3b49e7cc2ee019007776b1f53bd04c9e60fff6847fec353e4",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/15-addresses.html",
+      "redObservedSha256": "3b3cd6dde3dbf973cf00e6c8a9b9db92d16771b82305478d11e0e896903471e9",
+      "greenObservedSha256": "3b3cd6dde3dbf973cf00e6c8a9b9db92d16771b82305478d11e0e896903471e9",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/address-add.html",
+      "redObservedSha256": "b0bae60db612dc642c23a23b6150ab1178341b0aac07eaa91912ed3f64cc1d70",
+      "greenObservedSha256": "b0bae60db612dc642c23a23b6150ab1178341b0aac07eaa91912ed3f64cc1d70",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/build-storybook.py",
+      "redObservedSha256": "c026457b229ca6a7a74fef498953337e04d9866a06416125adb6a5ddef95da1d",
+      "greenObservedSha256": "c026457b229ca6a7a74fef498953337e04d9866a06416125adb6a5ddef95da1d",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/capture.mjs",
+      "redObservedSha256": "0e04a29a85e9fec6b0f79d6766f34f7471e330a93dd8730c767ca5ba9505898b",
+      "greenObservedSha256": "0e04a29a85e9fec6b0f79d6766f34f7471e330a93dd8730c767ca5ba9505898b",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": false
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/fixtures.json",
+      "redObservedSha256": "22037b59c87f20c2ca64e1c06847429036e01c591976eb1355fc3f0a3a7ac3f2",
+      "greenObservedSha256": "22037b59c87f20c2ca64e1c06847429036e01c591976eb1355fc3f0a3a7ac3f2",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/generate-icons.mjs",
+      "redObservedSha256": "f658b219d99e5e65859434064826440dd4b16e38f1bbd0cc4e483342190a5a85",
+      "greenObservedSha256": "f658b219d99e5e65859434064826440dd4b16e38f1bbd0cc4e483342190a5a85",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/icons.json",
+      "redObservedSha256": "ef7a6c35e970c3258cca5c7c5363a0c18367709bb5f0a94045c63ea79fd45481",
+      "greenObservedSha256": "ef7a6c35e970c3258cca5c7c5363a0c18367709bb5f0a94045c63ea79fd45481",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/identity-continue.html",
+      "redObservedSha256": "c6755e041d91ea5b7b15bdc040d2b28de30d4d7d2a5ccd8fe890e04f465a74aa",
+      "greenObservedSha256": "c6755e041d91ea5b7b15bdc040d2b28de30d4d7d2a5ccd8fe890e04f465a74aa",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/identity-recovery.html",
+      "redObservedSha256": "a24a45c07dc552349a76341848b1eec7f03fb3b6feeebadf995195ed0d515657",
+      "greenObservedSha256": "a24a45c07dc552349a76341848b1eec7f03fb3b6feeebadf995195ed0d515657",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/notebook-reference.html",
+      "redObservedSha256": "6857b5c15567d9ece2979f182b29d183f317a78b610fb6af3b97d6d1a5aa4f8e",
+      "greenObservedSha256": "6857b5c15567d9ece2979f182b29d183f317a78b610fb6af3b97d6d1a5aa4f8e",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/package-storybook.py",
+      "redObservedSha256": "0669510e75172e6e83e10d54599a54e097007ab320f745a174da7c0f34074f14",
+      "greenObservedSha256": "0669510e75172e6e83e10d54599a54e097007ab320f745a174da7c0f34074f14",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/presentation.js",
+      "redObservedSha256": "283941546b3c6dda09a7f4ad0acb10289d4405d6c76923293d7999dec7aa8289",
+      "greenObservedSha256": "283941546b3c6dda09a7f4ad0acb10289d4405d6c76923293d7999dec7aa8289",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/qa-extra.mjs",
+      "redObservedSha256": "613adb4d1757a6634d00c3122b33682e3811c812ac5732608a41d8215fb63f24",
+      "greenObservedSha256": "613adb4d1757a6634d00c3122b33682e3811c812ac5732608a41d8215fb63f24",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/styles.css",
+      "redObservedSha256": "32067b37df9843fcc60a1d0fdb1ac6e8f7185784e9d2146485c1e0ade4df60ea",
+      "greenObservedSha256": "32067b37df9843fcc60a1d0fdb1ac6e8f7185784e9d2146485c1e0ade4df60ea",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/support-reference.html",
+      "redObservedSha256": "4bdabbe770c77f9079ee001c92adfd47e52c50131bc8c4a7c2e5a35c23ecd443",
+      "greenObservedSha256": "4bdabbe770c77f9079ee001c92adfd47e52c50131bc8c4a7c2e5a35c23ecd443",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/source/validate-storybook.py",
+      "redObservedSha256": "04cb964282ce9f37b377ce18175b0d4319c7e7f215ccc563ca3ad133c8920417",
+      "greenObservedSha256": "04cb964282ce9f37b377ce18175b0d4319c7e7f215ccc563ca3ad133c8920417",
+      "unchangedSinceRed": true,
+      "matchesAcceptedManifest": true
+    }
+  ]
+}

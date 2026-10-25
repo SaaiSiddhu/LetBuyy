@@ -1,0 +1,383 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 120
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Monolit",
+      "complete": false,
+      "naturalWidth": 0
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "ADD TO CART",
+      "rect": {
+        "height": 52,
+        "width": 151.9296875,
+        "x": 856.875,
+        "y": 1031.1953125
+      },
+      "styles": {
+        "backgroundColor": "rgb(0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "rgb(0, 0, 0) 0px 0px 0px 0px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 885,
+        "width": 708,
+        "x": 0,
+        "y": 0
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 885,
+        "width": 708,
+        "x": 0,
+        "y": 885
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 885,
+        "width": 708,
+        "x": 0,
+        "y": 1770
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 885,
+        "width": 708,
+        "x": 0,
+        "y": 2655
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 885,
+        "width": 708,
+        "x": 0,
+        "y": 3540
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 885,
+        "width": 708,
+        "x": 0,
+        "y": 4425
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Monolit",
+      "rect": {
+        "height": 52.796875,
+        "width": 400,
+        "x": 866,
+        "y": 124
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Newsreader, serif",
+        "fontSize": "48px",
+        "fontWeight": "200",
+        "gap": "normal",
+        "lineHeight": "52.8px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "ADD TO CART",
+      "rect": {
+        "height": 52,
+        "width": 194.3984375,
+        "x": 866,
+        "y": 302.1953125
+      },
+      "styles": {
+        "backgroundColor": "rgb(0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "rgb(0, 0, 0) 0px 0px 0px 0px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "BUY IT NOW",
+      "rect": {
+        "height": 52,
+        "width": 194.40625,
+        "x": 1071.59375,
+        "y": 302.1953125
+      },
+      "styles": {
+        "backgroundColor": "rgb(0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "rgb(0, 0, 0) 0px 0px 0px 0px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "\"Red Hat Text\", sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.2px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186"
+}

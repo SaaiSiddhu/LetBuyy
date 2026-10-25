@@ -1,0 +1,10 @@
+{
+  "classification": "SOURCE_RECIPE_VALIDATOR_FAILED_ON_UNBOUND_UPDATE_TRANSPORT_FIELDS_NOT_A_RUNTIME_FAILURE",
+  "createRecipesValidatedBeforeFailure": 3,
+  "missingBindings": [
+    "version",
+    "idempotency_key"
+  ],
+  "reason": "The current canonical UpdateProductSchema requires both fields. The plan already requires observed version/fresh logical key; validate only supplied fields and retain these execution prerequisites rather than inventing a binding.",
+  "newInstalledPasses": 0
+}

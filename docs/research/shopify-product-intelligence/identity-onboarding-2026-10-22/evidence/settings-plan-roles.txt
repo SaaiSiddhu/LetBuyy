@@ -1,0 +1,16 @@
+- heading "Plan" [level=1]
+- heading "Plan details" [level=2]:
+- button "Cancel trial":
+- link "Choose plan":
+- heading "Trial" [level=2]:
+- link "terms of service":
+- link "privacy policy":
+- status
+- status
+- status
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

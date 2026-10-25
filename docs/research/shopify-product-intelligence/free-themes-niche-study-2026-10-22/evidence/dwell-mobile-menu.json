@@ -1,0 +1,706 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 0, 0.71)",
+    "font": "Newsreader, serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Open hotspot",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Open hotspot",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Open hotspot",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SUBSCRIBE",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CUSTOMER CARE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "INFORMATION",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 1,
+      "line": "48.4px",
+      "size": "44px",
+      "tag": "H1",
+      "text": "Dwell",
+      "weight": "300",
+      "width": 1,
+      "x": -1,
+      "y": 41
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 96.796875,
+      "line": "48.4px",
+      "size": "44px",
+      "tag": "H2",
+      "text": "The Winter Collection",
+      "weight": "300",
+      "width": 358,
+      "x": 16,
+      "y": 394.015625
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 44,
+      "line": "44px",
+      "size": "40px",
+      "tag": "H3",
+      "text": "Shop the look",
+      "weight": "300",
+      "width": 200.296875,
+      "x": 16,
+      "y": 1375.6796875
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 44,
+      "line": "44px",
+      "size": "40px",
+      "tag": "H3",
+      "text": "Collection",
+      "weight": "300",
+      "width": 151.4140625,
+      "x": 16,
+      "y": 1675.5
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 44,
+      "line": "44px",
+      "size": "40px",
+      "tag": "H3",
+      "text": "Accessories",
+      "weight": "300",
+      "width": 180.7734375,
+      "x": 16,
+      "y": 2323.4921875
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "The Ultimate Set",
+      "weight": "400",
+      "width": 168.34375,
+      "x": 16,
+      "y": 3370.6796875
+    },
+    {
+      "font": "\"Red Hat Display\", sans-serif",
+      "height": 14.3984375,
+      "line": "14.4px",
+      "size": "12px",
+      "tag": "H2",
+      "text": "NEWSLETTER",
+      "weight": "500",
+      "width": 358,
+      "x": 16,
+      "y": 3589.453125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-dwell-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "SHOP THE BEDROOM EVENT - ON NOW!",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Bedding",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "Pillows & Duvets",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/pillows-duvets"
+    },
+    {
+      "text": "Sheets",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sheets"
+    },
+    {
+      "text": "Quilts & Comforters",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/quilts-comforters"
+    },
+    {
+      "text": "Bath",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "Towels",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/towels"
+    },
+    {
+      "text": "Bath mats",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-mats"
+    },
+    {
+      "text": "Robes",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/robes"
+    },
+    {
+      "text": "Slippers",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/slippers"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "Throws",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/throws"
+    },
+    {
+      "text": "Bath mats",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-mats"
+    },
+    {
+      "text": "Candles",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/candles"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Inspiration",
+      "url": "https://theme-dwell-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Bedding",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "Bath",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/"
+    },
+    {
+      "text": "SHOP NOW",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "LEARN MORE",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Brushed Cotton Duvet Cover",
+      "url": "https://theme-dwell-demo.myshopify.com/products/duvet-cover-brushed-cotton?variant=44977242308797"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/products/mattress-protector?variant=44977234968765"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/products/linen-pillowcases?variant=44977233887421"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-euro-pillow-cover?variant=44977226875069"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/products/silk-pillowcase?variant=44977225760957"
+    },
+    {
+      "text": "VIEW ALL",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Bedding",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "Bath",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "Mattress",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/mattress"
+    },
+    {
+      "text": "Quilts & Comforters",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/quilts-comforters"
+    },
+    {
+      "text": "Robes",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/robes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/slippers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/throws"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/candles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-mats"
+    },
+    {
+      "text": "SHOP NOW",
+      "url": "https://theme-dwell-demo.myshopify.com/products/top-sheet-brushed-cotton"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/shipping"
+    },
+    {
+      "text": "Returns",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/returns"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-dwell-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Responsible Design",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/responsible-design"
+    },
+    {
+      "text": "Care & Maintenance",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/care-maintenance"
+    },
+    {
+      "text": "Dwell",
+      "url": "https://theme-dwell-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__hero_G7CAX9",
+      "rect": {
+        "height": 457,
+        "width": 390,
+        "x": 0,
+        "y": 103
+      },
+      "tag": "SECTION",
+      "text": "The Winter Collection\nSHOP NOW"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__section",
+      "rect": {
+        "height": 377.59375,
+        "width": 390,
+        "x": 0,
+        "y": 560
+      },
+      "tag": "DIV",
+      "text": "From curated essentials to thoughtfully edited statement pieces, create the foundation for a timeless home with heirloom-quality goods.\n\nLEARN MORE"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__product_list_YidTcf",
+      "rect": {
+        "height": 391.6875,
+        "width": 390,
+        "x": 0,
+        "y": 937.59375
+      },
+      "tag": "DIV",
+      "text": "Brushed Cotton Duvet Cover\nBrushed Cotton Duvet Cover\n$310.00"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__section_mAEqNR",
+      "rect": {
+        "height": 90.3984375,
+        "width": 390,
+        "x": 0,
+        "y": 1329.28125
+      },
+      "tag": "DIV",
+      "text": "ELEVATED ESSENTIALS\n\nShop the look\nVIEW ALL"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__product_hotspots_HXKqqD",
+      "rect": {
+        "height": 177.421875,
+        "width": 390,
+        "x": 0,
+        "y": 1419.6796875
+      },
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__collection_list_3ejxRy",
+      "rect": {
+        "height": 666.3984375,
+        "width": 390,
+        "x": 0,
+        "y": 1597.1015625
+      },
+      "tag": "DIV",
+      "text": "SHOP BY\n\nCollection\nBedding\n\nBEDDING\n\nBath\n\nBATH\n\nDecor\n\nDECOR\n\nMattress\n\nMATTRESS\n\nQuilts & Comforters\n\nQUILTS & COMFORTERS"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__collection_list_XaY9C3",
+      "rect": {
+        "height": 445.984375,
+        "width": 390,
+        "x": 0,
+        "y": 2263.5
+      },
+      "tag": "DIV",
+      "text": "COMPLETE YOUR HOME WITH\n\nAccessories\nRobes\n\nROBES"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022003901__media_with_content_HP7Qpp",
+      "rect": {
+        "height": 837.96875,
+        "width": 390,
+        "x": 0,
+        "y": 2709.484375
+      },
+      "tag": "DIV",
+      "text": "OUR BESTSELLING PRODUCT\n\nThe Ultimate Set\n\nMade with care and unconditionally loved by our customers, this signature bestseller exceeds all expectations.\n\nSHOP NOW"
+    }
+  ],
+  "title": "Dwell",
+  "url": "https://theme-dwell-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "390px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 457,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 338.09375,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 338.09375,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 338.09375,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 338.09375,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 338.09375,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 338.09375,
+      "tag": "DIV",
+      "width": 234
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 457,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Brushed Cotton Duvet Cover",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Brushed Cotton Duvet Cover",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Brushed Cotton Duvet Cover",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Brushed Cotton Duvet Cover",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Brushed Cotton Duvet Cover",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Brushed Cotton Duvet Cover",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSHOP THE BEDROOM EVENT - ON NOW!\n\nSHOP THE BEDROOM EVENT - ON NOW!\nDwell\nBedding\nPillows & Duvets\nSheets\nQuilts & Comforters\nBath\nTowels\nBath mats\nRobes\nSlippers\nDecor\nThrows\nBath mats\nCandles\nSale\nInspiration\nBedding\n\nBedding\n\nBath\n\nBath\n\nDecor\n\nDecor\n\nSale\n\nSale\n\nThe Winter Collection\nSHOP NOW\n\nFrom curated essentials to thoughtfully edited statement pieces, create the foundation for a timeless home with heirloom-quality goods.\n\nLEARN MORE\nBrushed Cotton Duvet Cover\nBrushed Cotton Duvet Cover\n$310.00\n\nELEVATED ESSENTIALS\n\nShop the look\nVIEW ALL\n\nSHOP BY\n\nCollection\nBedding\n\nBEDDING\n\nBath\n\nBATH\n\nDecor\n\nDECOR\n\nMattress\n\nMATTRESS\n\nQuilts & Comforters\n\nQUILTS & COMFORTERS\n\nCOMPLETE YOUR HOME WITH\n\nAccessories\nRobes\n\nROBES\n\nOUR BESTSELLING PRODUCT\n\nThe Ultimate Set\n\nMade with care and unconditionally loved by our customers, this signature bestseller exceeds all expectations.\n\nSHOP NOW\nNEWSLETTER\nEmail\nSUBSCRIBE\nSHOP\nSale\nDecor\nCUSTOMER CARE\nFAQ\nShipping\nReturns\nContact\nINFORMATION\nAbout us\nBlog\nResponsible Design\nCare & Maintenance\n© 2026 Dwell, Powered by Shopify"
+}

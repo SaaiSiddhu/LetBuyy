@@ -1,0 +1,27 @@
+{
+  "purpose": "Public synthetic Threadline catalog demo only",
+  "generatedWith": "Built-in image_gen",
+  "originals": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/threadline-storybook/assets",
+  "derivatives": [
+    {
+      "file": "hero.webp",
+      "bytes": 126258
+    },
+    {
+      "file": "linen-shirt.webp",
+      "bytes": 86724
+    },
+    {
+      "file": "trousers.webp",
+      "bytes": 106554
+    },
+    {
+      "file": "cotton-dress.webp",
+      "bytes": 105668
+    },
+    {
+      "file": "linen-detail.webp",
+      "bytes": 178790
+    }
+  ]
+}

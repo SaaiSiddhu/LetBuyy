@@ -1,0 +1,88 @@
+{
+  "recordedAt": "2026-10-23T13:25:33.501994+00:00",
+  "runId": "898e86436b36",
+  "throughMigration": 387,
+  "tests": 10,
+  "pass": 10,
+  "fail": 0,
+  "skip": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "sourceHashesUnchanged": true,
+  "provenance": [
+    {
+      "slug": "letbuyy-forge",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-forge-provenance.json",
+      "sha256": "cda84d6a7281cd7095b048f41b95addc1f670c53f3af3ae4a56479374cdbc933"
+    },
+    {
+      "slug": "letbuyy-sense",
+      "version": "2.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-sense-provenance.json",
+      "sha256": "8481ab7b6dae1e7ce96c3212f1d2ffe7467cb45e871c7c16562be3fba6ef6348"
+    },
+    {
+      "slug": "letbuyy-aura",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-aura-provenance.json",
+      "sha256": "d6282a86836bc77c5449da7a008e64d9089c7432e6573dce54b5af6a1418df88"
+    },
+    {
+      "slug": "letbuyy-craft",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-craft-provenance.json",
+      "sha256": "6d0ef2f7ca70d869cc638ec4fd57bba41500e9baa859dfc89859b8c0d38f0765"
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-refresh-provenance.json",
+      "sha256": "615b35ec217b60425956db5260e337cdf25d1a601a040a8d45ef4c49e5a5be9d"
+    },
+    {
+      "slug": "letbuyy-ride",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-ride-provenance.json",
+      "sha256": "31ec910872df2989e19f9d27db0b000273cbc77e7b7cfbfbc890418e4a212871"
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-dawn-provenance.json",
+      "sha256": "9ce4c5da9c4a98394bd5d08d3ca6493dc43f0213adfb3917a6c4db783e2e2219"
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-bloom-provenance.json",
+      "sha256": "b0b842f91f1e8bf476e6500052731bdf618fa8934c152a5f04f4b25d8f7bc692"
+    },
+    {
+      "slug": "letbuyy-nova",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-nova-provenance.json",
+      "sha256": "4416da817faea70d6df66ca27cbf221cfd40f38a4cdef9982c029457a3b7c6f9"
+    },
+    {
+      "slug": "letbuyy-summit",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-summit-provenance.json",
+      "sha256": "1af673c78fe7d1e5e8c9807660d6b7a1252e7bfeb7ada5284b1b6116dbb3ab43"
+    },
+    {
+      "slug": "letbuyy-core",
+      "version": "1.0.0",
+      "path": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-898e86436b36-letbuyy-core-provenance.json",
+      "sha256": "49cff26e76859075dbc4ebff9eed668b8580ec557dbbc8c0e11e878a9e2c3ce3"
+    }
+  ],
+  "results": "/private/tmp/letbuyy-marketplace-install387-final04-results.json",
+  "scope": "All10 persisted catalog exact install receipts and editor loads, private Threadline clone/edit, private blank create/editor/save, access controls, outbox atomicity, publish and migration rollback/security; exact-version retry/concurrency/conflict suite. No nine-theme v2 promotion or hosted qualification."
+}

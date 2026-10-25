@@ -1,0 +1,63 @@
+{
+  "recordedAt": "2026-10-24T01:17:23.474Z",
+  "localId": "ed52fedf85eb",
+  "status": "ready",
+  "startedAt": "2026-10-24T01:14:42.495Z",
+  "sourceEpoch": "8c89302c8b1991d8bde035d9debe099f8460d24255a794c51a4157daec4f2082",
+  "origins": {
+    "marketplace": "http://themes.letbuyy-local.localhost:9015",
+    "api": "http://127.0.0.1:9020",
+    "identity": "http://accounts.letbuyy-local.localhost:9021",
+    "merchant": "http://admin.letbuyy-local.localhost:9022",
+    "commerce": "http://localhost:9023"
+  },
+  "expiresAt": null,
+  "supervisorPid": 67051,
+  "actualRoles": [
+    {
+      "role": "api",
+      "pid": 67358
+    },
+    {
+      "role": "identity",
+      "pid": 67536
+    },
+    {
+      "role": "merchant",
+      "pid": 68189
+    },
+    {
+      "role": "commerce",
+      "pid": 69071
+    },
+    {
+      "role": "marketplace",
+      "pid": 69679
+    }
+  ],
+  "allSixActualProcessIdentitiesVerified": true,
+  "files": [
+    {
+      "path": "scripts/dev/theme-marketplace-local.mjs",
+      "sha256": "67c1232c48fa0ce46d78911c76b34e1012fa218645d64ea037d96bf0c0f5889c",
+      "modifiedAt": "2026-10-24T01:07:42.329Z",
+      "modifiedBeforeSupervisorStart": true
+    },
+    {
+      "path": "scripts/dev/theme-marketplace-local-support.mjs",
+      "sha256": "9f758f51d277174b043c7d6293323021b75a8a3bddeafe4493b02c1a988461b0",
+      "modifiedAt": "2026-10-24T01:07:42.260Z",
+      "modifiedBeforeSupervisorStart": true
+    },
+    {
+      "path": "scripts/dev/theme-marketplace-worker.mjs",
+      "sha256": "1ea7059ac200f6634788431cb79d55df888df2add384d4eab5744e6f08b18fe0",
+      "modifiedAt": "2026-10-24T01:12:50.131Z",
+      "modifiedBeforeSupervisorStart": true
+    }
+  ],
+  "finalWorkerRefresh": "Hourly plus synchronous refresh before a request after laptop sleep; two-hour transport TTL; normal auth unchanged",
+  "stoppedReceipt": "persistent-local-stopped.json",
+  "conservationReceipt": "persistent-local-protected-after-restart.json",
+  "httpReceipt": "persistent-local-http-after-restart.json"
+}

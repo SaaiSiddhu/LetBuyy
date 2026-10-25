@@ -1,0 +1,259 @@
+{
+  "recordedAt": "2026-10-23T21:07:46.108325+00:00",
+  "runId": "f6074d90e894",
+  "classification": "ACTUAL_P00_TO_P08_FINITE_EXECUTION_CHECKPOINT_ALL13_STILL_OPEN",
+  "theme": "Pantry",
+  "version": "2.0.0",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "installedBindings": {
+    "slug": "letbuyy-refresh",
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "version": "2.0.0",
+    "packageId": "981c9e11-1243-430a-8b10-92007f3a7a6b",
+    "instanceId": "8e17f03c-6e75-467b-96da-360dd6f92d67",
+    "instanceStatus": "active",
+    "catalogChecksum": null,
+    "packageVersionId": "f8ce6870-b3ee-438c-accd-08806676f33f",
+    "liquidBundleSha256": "0e792cc5944a0bbaefc5e29771c1c4af6c44b62d907053e26293d0fe845f902c",
+    "installedConfigKeys": [
+      "themeId",
+      "sections",
+      "templates",
+      "experienceId",
+      "liquidBundle",
+      "themeSettings",
+      "rendererEngine",
+      "liquidRenderingCanary"
+    ],
+    "catalogManifestSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7",
+    "installedConfigSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12"
+  },
+  "currentRelease": {
+    "packageVersion": "2.0.0",
+    "releaseId": "30499509-be2d-41d2-9a8a-1240ea9b9ddd",
+    "sourceDraftVersion": 8,
+    "releaseSha256": "322b04957cdf672934509c0a933786501d41f65413a05ae0665427cf62fc8695",
+    "orders": 0,
+    "installed": 3,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "products": {
+    "lentils": "d9bd8cae-b211-48c5-8440-5f446dc57c0e",
+    "v250": "f275956c-688c-4435-bb96-ae23fc75f72d",
+    "v500": "ec9f2eae-bc7f-4de2-a32c-357ab75520c0",
+    "vUnknown": "b54e1a3f-dba9-4243-a2a4-6a31d168e79c",
+    "rice": "fb090833-cbd5-44aa-803d-af9e8c00c56a",
+    "lentilsCurrentVersion": 31,
+    "riceCurrentVersion": 9
+  },
+  "cases": [
+    {
+      "id": "P00",
+      "status": "PASS",
+      "actual": "Normal Pantry2.0.0 install/editor/full A/B/recovery; current anonymous home200 B and separate anonymous PDP200 real title/Inside the pack/ingredients. Actual installed instance/version/config+Liquid bundle/catalog manifest hashes bound; checksum actualSQLNULL. Native public home/PDP captured.",
+      "remaining": "Anonymous SSR does not contain client-added choose-all guidance; not claimed as SSR guidance proof.",
+      "evidence": [
+        "corrected-pantry-editor-cycle.json",
+        "corrected-first-three-actual-installed-bindings.json",
+        "corrected-pantry-P00-current-public-home.ax.txt",
+        "corrected-pantry-public-home.jpg",
+        "corrected-pantry-P00-anonymous-PDP.json"
+      ]
+    },
+    {
+      "id": "P01",
+      "status": "PASS",
+      "actual": "Same seeded IDs common lentils markerSave/fullreload/restore. Rice net0 actual useful validation/unsaved draft retained and exact version3/facts/inventory unchanged. Correct1000g +markerSave/reload/originalrestore verified. Unknownallergens preserved; no common lentils net editor.",
+      "remaining": "",
+      "evidence": [
+        "corrected-pantry-common-before.ax.txt",
+        "corrected-pantry-common-marker-reloaded.ax.txt",
+        "corrected-pantry-common-restored-readback.json",
+        "corrected-pantry-rice-zero-net-validation.ax.txt",
+        "corrected-pantry-rice-invalid-readback.json",
+        "corrected-pantry-rice-marker-reloaded.ax.txt",
+        "corrected-pantry-rice-saved-readback.json"
+      ]
+    },
+    {
+      "id": "P02",
+      "status": "PASS",
+      "actual": "Normal same unknownUUID b54e1a3f enter750g Save/reload/readback then explicit Clear/reload foodNULL. Other250/500 UUIDs quantities/prices/stock preserved. Additional normal250SKUmarker save/reload/revert retains exact sameUUID/250g facts and other rows. Current opaque lentils version31.",
+      "remaining": "Version conflict branch optional and not performed. Raw parent HTTP request body was not captured; normal UI acknowledgement/fullreload plus guarded persisted row readback is evidence.",
+      "evidence": [
+        "corrected-pantry-unknown-entered-readback.json",
+        "corrected-pantry-unknown-cleared-readback.json",
+        "corrected-pantry-unknown-temporary-750-reloaded.ax.txt",
+        "corrected-pantry-unknown-cleared-reloaded.ax.txt",
+        "corrected-pantry-250g-merchant-reloaded.ax.txt",
+        "corrected-pantry-500g-merchant-reloaded.ax.txt",
+        "corrected-pantry-250-sku-marker-reloaded.ax.txt",
+        "corrected-pantry-sku-saved-readback.json",
+        "corrected-pantry-sku-restored-readback.json"
+      ]
+    },
+    {
+      "id": "P03",
+      "status": "PASS",
+      "actual": "Unselected guidance/purchase blocked; actual250g count2 yields72/100g and500g derived total; blank and1.5 remove total/showwholecountguidance; restore2. Actual canonicalacceptedcart bindsUUIDf275956c/count2/unit180/per-item250g.",
+      "remaining": "No invalid-count Add was submitted.",
+      "evidence": [
+        "corrected-pantry-P03-unselected.ax.txt",
+        "corrected-pantry-P03-250g-two-packs.ax.txt",
+        "corrected-pantry-P03-blank-count.ax.txt",
+        "corrected-pantry-P03-fractional-count.ax.txt",
+        "corrected-cart-pantry-cart.json"
+      ]
+    },
+    {
+      "id": "P04",
+      "status": "PASS",
+      "actual": "500g/340/68per100g unavailable/Adddisabled; label-only210 actualunknown withnoinventednet; return250grestoresonly250. No forgedunmatchedoption.",
+      "remaining": "",
+      "evidence": [
+        "corrected-pantry-P04-500g-unavailable.ax.txt",
+        "corrected-pantry-P04-label-only-unknown.ax.txt",
+        "corrected-pantry-P04-return-250g.ax.txt"
+      ]
+    },
+    {
+      "id": "P05",
+      "status": "PASS",
+      "actual": "Unvariantedrice1000g/22per100g count2=2000g; returnlentilsunselectedguidance/disabledAdd andnoquantityleak; rice neveradded.",
+      "remaining": "",
+      "evidence": [
+        "corrected-pantry-P05-rice-two-packs.ax.txt",
+        "corrected-pantry-P05-return-lentils-unselected.ax.txt"
+      ]
+    },
+    {
+      "id": "P06",
+      "status": "PASS",
+      "actual": "Actual pulses-onlylentils/rice-onlyrice collections; positiveg250 suppliedfacet andexactserverUUIDwitness. Exactzero repeatedusb-c/hdmi+country/category/pack/limit1/page2. SortNameApplyresets1/preservesall; real6clear-one/all andplatformoriginApply/Clear/URLreload retainallotherfields, scalaruniqueness. Absentfacetpackremainsclearable/notinventedchoice.",
+      "remaining": "Earlier pre-navigation sort JSON retained and explicitly superseded by settled navigation addendum. First clear wait-helper argument error occurred after completed navigation; actual state retained, no application defect inferred.",
+      "evidence": [
+        "corrected-pantry-P06-pulses-collection.ax.txt",
+        "corrected-pantry-P06-rice-collection.ax.txt",
+        "corrected-pantry-P06-sort-apply-navigation-addendum.json",
+        "corrected-pantry-P06-clear-actual-results.json",
+        "corrected-pantry-P06-platform-origin-apply-settled.ax.txt",
+        "corrected-pantry-P06-platform-origin-clear-settled.ax.txt",
+        "corrected-pantry-P06-query-reload.ax.txt",
+        "corrected-pantry-discovery-actual-results.json"
+      ]
+    },
+    {
+      "id": "P07",
+      "status": "PASS",
+      "actual": "Actual250gUUID count2 unit180/subtotal360 accepted/reload/readback; savedper-item250g not500g. UnknownUUIDcount1 ownline210 savednetNULL andsameingredients/unknownallergen; removedONLYunknownline thenknown2 remains.",
+      "remaining": "Raw browser HTTP request/status not captured; normal UI actions and guarded canonical cart persistence prove actual accepted lines.",
+      "evidence": [
+        "corrected-cart-pantry-cart.json",
+        "corrected-pantry-P07-known-cart-reloaded.ax.txt",
+        "corrected-pantry-P07-unknown-added.ax.txt",
+        "corrected-cart-pantry-cart-2.json",
+        "corrected-pantry-P07-unknown-removed.ax.txt",
+        "corrected-cart-pantry-cart-3.json"
+      ]
+    },
+    {
+      "id": "P08",
+      "status": "PARTIAL",
+      "actual": "Actual repaired UI: hydrated5attempt returns row/header4/720 plus useful rejection message; valid3\u21922 and fullreload2/360. Original old-build UI5/server4 failure retained.",
+      "remaining": "ExactHTTP409/INSUFFICIENT_INVENTORY not observed; immediate post5 canonical read was not taken before valid3 retry; no repeat solely for documentation.",
+      "evidence": [
+        "corrected-pantry-P08-recovery-client-overstock-hydrated-error.ax.txt",
+        "corrected-pantry-P08-recovery-client-two-reloaded.ax.txt",
+        "corrected-cart-pantry-stock-3.json",
+        "corrected-cart-pantry-stock-4.json",
+        "corrected-cart-pantry-cart-4.json"
+      ]
+    },
+    {
+      "id": "P09",
+      "status": "PASS",
+      "actual": "Normal BuyerA new49944cart fb5355e6 \u2192trusted62082\u2192realCOD ORD10001/0be0a19d-5e79-41f5-a65e-488ccbb554f7. 2\u00d7180=360+20ship=380, pendingCOD/unpaid. Exact captured index1 retry200/sameorder/all22protected table hashes exact.",
+      "remaining": "Response byte hashes differ; no byte-identical claim.",
+      "evidence": [
+        "corrected-pantry-P09-COD-confirmed.ax.txt",
+        "corrected-pantry-lifecycle-after-order.json",
+        "corrected-pantry-P09-exact-confirm-retry.json"
+      ]
+    },
+    {
+      "id": "P10",
+      "status": "PASS",
+      "actual": "Actual owned order positive in BuyerA history and merchant detail, both expanded/fullreload old250g/ingredients/unknownallergen/Pack250g. Then sameBuyerA primary-store missing-order route displays Order not found. Wrong-site handle with real primaryorder returns generic404.",
+      "remaining": "Buyer displays360 line/380total; unit180 from canonical+merchant, no buyer-unittext claim. Missing-order ID is actual foreign-control cart UUID, known not an order. Wrong-site404 may be tenant/host path boundary; not cross-tenant order-RLS certification.",
+      "evidence": [
+        "corrected-pantry-P10-buyer-old-order-reloaded.ax.txt",
+        "corrected-pantry-P10-merchant-old-order-reloaded.ax.txt",
+        "corrected-pantry-P10-missing-order-denied.ax.txt",
+        "corrected-pantry-P10-other-site-order-denied.ax.txt"
+      ]
+    },
+    {
+      "id": "P11",
+      "status": "PASS",
+      "actual": "Normal new49943 freshpostpurchase32 edit, sameV250UUID renamed300g, price240/common+variant, explicitnet300g, revisedingredients/sesame/source. Save returned37/reload/currentPDP80per100g. Actual canonicalreceipt omits product/all3variantstock; currentstock2 retained. Both oldhistories unchanged250g/oldfacts; fullorder/snapshot exact.",
+      "remaining": "Productversion32\u219237 opaque; no +1 assertion.",
+      "evidence": [
+        "corrected-pantry-P11-canonical-edit-receipt.json",
+        "corrected-pantry-P11-current-300g-PDP.ax.txt",
+        "corrected-pantry-P11-buyer-old-order-after-edit.ax.txt",
+        "corrected-pantry-P11-merchant-old-order-after-edit.ax.txt",
+        "corrected-pantry-lifecycle-before-edit.json",
+        "corrected-pantry-lifecycle-after-edit.json"
+      ]
+    },
+    {
+      "id": "P12",
+      "status": "PARTIAL",
+      "actual": "Separate active7ba809cf-a1de-4c79-a569-42c0b66a8835 accepted250gq1/v32/fingerprint beforeedit. No reload/sync afteredit; normalhostedCODconfirm rejected once, noextraorder/inventory/reservation/ledger effects. Oldsnapshot exact. Explicit currentPDP review+Add reaccepts300g/240/v37/q2 normally, thenline removed.",
+      "remaining": "Actual HTTP/mapped CART_FACTS_CHANGED code not exposed; UI generic rejection only. Protectedhash changes onlycheckout_sessions and onecheckout.started outboxevent, classified; no whole-table invariance claim.",
+      "evidence": [
+        "corrected-pantry-P12-accepted-preedit-cart.ax.txt",
+        "corrected-cart-pantry-cart-5.json",
+        "corrected-pantry-P12-stale-confirm-result.ax.txt",
+        "corrected-pantry-lifecycle-before-stale-confirm.json",
+        "corrected-pantry-lifecycle-after-stale.json",
+        "corrected-pantry-P12-stale-window-event-classification.json",
+        "corrected-cart-pantry-cart-6.json",
+        "corrected-cart-pantry-cart-7.json",
+        "corrected-pantry-P12-current-line-removed.ax.txt"
+      ]
+    }
+  ],
+  "totals": {
+    "PASS": 11,
+    "PARTIAL": 2,
+    "FAIL": 0,
+    "NOT_RUN": 0
+  },
+  "cartConservation": {
+    "exactBeforeAfterWhitelistedActualEquality": true,
+    "overstockServerBeforeAfterWhitelistedActualEquality": true,
+    "allOriginalFoodFactsVariantIdsPricesAndInventoryPreservedAfterReversibleMerchantTests": true,
+    "orders": 0,
+    "notClaimed": "EntirecartDBrowtimestamps/privatecapabilities/reservations invariance or exact HTTP409"
+  },
+  "safeCheckpoint": {
+    "tab21": "Original stale rejectedHabitatdraft preserve/noSave",
+    "tab30": "ControlledHabitatfirstNatural savedclean actualversion16, same07d32+30e7 tuples",
+    "tab27": "PantryBpublished/editor savedclean",
+    "tab28": "Lentils sameSKUblank/originalfood current31 savedclean",
+    "tab29": "Pink2restorednormaldrawer",
+    "tab22": "555successfulrecoverylibrary; no furtherAdd"
+  },
+  "installedAccepted": false,
+  "next": "Independent review exactHTTP gaps; current synthetic food data intentionally retains revisionB/37, orders10000+10001 preserved. Resume Circuit then explicitDewdrop.",
+  "supersedesForCurrentOutcome": "corrected-pantry-browser-diagnostics.json (original failure preserved)",
+  "runtimeClients": {
+    "merchant": "http://admin.threadline-f6074d90e894.localhost:49943",
+    "commerce": "http://syn-threadline-ui-33be9d94.localhost:49944",
+    "checkout": "https://checkout.localhost:62082"
+  }
+}

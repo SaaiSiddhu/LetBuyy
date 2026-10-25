@@ -1,0 +1,55 @@
+Browser tab: 26, Title: "Habitat dimensional controls | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+width-only+shelf&max_width_cm=&max_depth_cm=100&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209&category=Habitat+dimensional+controls&country_of_origin=India".
+1 AXWebArea Habitat dimensional controls | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+width-only+shelf&max_width_cm=&max_depth_cm=100&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209&category=Habitat+dimensional+controls&country_of_origin=India
+	2 container
+		3 text Habitat shared header f6074d90e894
+		4 link syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+width-only+shelf&max_width_cm=&max_depth_cm=100&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209&category=Habitat+dimensional+controls&country_of_origin=India
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				14 button Apply filter
+				15 link Description: Clear origin filter, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?limit=20&search=Habitat+width-only+shelf&category=Habitat+dimensional+controls&sort=display_order&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209&max_depth_cm=100
+		16 container Breadcrumb
+			17 link Description: Home, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+			18 text Habitat dimensional controls
+		19 text A SPACE TO SLOW DOWN
+		20 heading Habitat dimensional controls, Value: 1
+			21 text Habitat dimensional controls
+		22 text Synthetic owned Habitat missing-axis controls.
+		23 container Furniture collections
+		24 container
+			25 text Search furniture
+			26 search text field (settable) Search furniture, Value: Habitat width-only shelf
+			27 text Sort
+			28 pop up button (collapsed, settable) Sort, Value: Featured, Secondary Actions: Expand
+				29 menu
+					30 (selected) Featured
+					31 Price: low to high
+					32 Price: high to low
+					33 Newest
+					34 Name
+			35 button Apply
+			36 link Description: Clear filters, Value: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?limit=20&search=Habitat+width-only+shelf&sort=display_order&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209
+		37 container Applied filters
+			38 link Description: Remove Category: Habitat dimensional controls, Value: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?limit=20&search=Habitat+width-only+shelf&country_of_origin=India&sort=display_order&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209&max_depth_cm=100
+			39 link Description: Remove Country of origin: India, Value: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?limit=20&search=Habitat+width-only+shelf&category=Habitat+dimensional+controls&sort=display_order&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209&max_depth_cm=100
+			40 link Description: Remove Maximum depth (cm): 100, Value: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?limit=20&search=Habitat+width-only+shelf&category=Habitat+dimensional+controls&country_of_origin=India&sort=display_order&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209
+		41 text 0 pieces
+		42 text Assembled measurements describe room fit. Check separate package measurements for access.
+		43 text No pieces found. Try a broader collection or clear the filters.
+		44 link Description: Explore all furniture, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/products
+		45 heading Threadline, Value: 3
+			46 text Threadline
+		47 text Habitat shared footer f6074d90e894
+		48 heading CONTACT, Value: 4
+			49 text CONTACT
+		50 link Description: Contact us, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/contact
+		51 text © Threadline. All rights reserved.
+		52 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Habitat dimensional controls | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/collections/bd1a8fea-6b45-4bdc-8517-170f184a5209?search=Habitat+width-only+shelf&max_width_cm=&max_depth_cm=100&sort=display_order&limit=20&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209&category=Habitat+dimensional+controls&country_of_origin=India

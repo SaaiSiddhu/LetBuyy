@@ -1,0 +1,116 @@
+{
+  "classification": "SOURCE_ONLY_REPRODUCTION_OF_CURRENT_DEFECT_NOT_FIXED_ACCEPTANCE",
+  "scope": "Actual current v2 factory + actual mapper + Liquid + current VariantFactsController in jsdom. Source recipe is synthetic test input; actual public IDs only identify carrier cases. This does not execute a browser, current runtime, API, DB or installed lifecycle case.",
+  "currentDefectReproduced": true,
+  "packageVersion": "2.0.0",
+  "declaredTargets": [
+    "data-lb-add-to-cart",
+    "data-lb-add-to-cart-status",
+    "data-lb-buy-now",
+    "data-lb-gallery-image",
+    "data-lb-gallery-thumb",
+    "data-lb-island",
+    "data-lb-variant-option",
+    "data-lb-variant-status"
+  ],
+  "observations": [
+    {
+      "variantId": "39b713a7-44a5-4327-ae9f-40d45c76bc2d",
+      "edition": "Inherited sample edition",
+      "carrierFacts": {
+        "age": "6–8 years",
+        "contents": "12 × tiles · 2 × idea cards · 1 × tray",
+        "dimensions": "24 length × 19 width × 1.5 height cm",
+        "additional_dimensions": "Each tile: 5 length × 5 width × 0.6 height cm",
+        "materials": "Wood",
+        "finish": "Sample blue finish",
+        "warnings": "Read the sample kit information. · Fictional integration fixture"
+      },
+      "visibleOuterAge": "6–8 years",
+      "visibleOuterWarning": "Read before choosingRead the sample kit information.Source: Fictional integration fixture",
+      "visibleOuterDetails": "THE DETAILS, BEFORE YOU BUYWhat’s in the box?12tiles2idea cards1tray15 items in total, according to the merchant.Know the object.DimensionsTrayLength 24 cm · Width 19 cm · Height 1.5 cmEach tileLength 5 cm · Width 5 cm · Height 0.6 cmMaterialsWoodProduct information is supplied by the merchant. Age recommendations are guidance for the adult choosing the product.",
+      "selectedPanel": "Inherited sample edition.Toy factsAge information6–8 yearsIncluded contents12 × tiles · 2 × idea cards · 1 × trayDimensions24 length × 19 width × 1.5 height cmOther dimensionsEach tile: 5 length × 5 width × 0.6 height cmMaterialsWoodFinishSample blue finishSupplied warningsRead the sample kit information. · Fictional integration fixture"
+    },
+    {
+      "variantId": "2fcc0c0f-3551-419b-a72b-cc4bfe012898",
+      "edition": "Explicit unknown sample edition",
+      "carrierFacts": {
+        "materials": "Wood"
+      },
+      "visibleOuterAge": "6–8 years",
+      "visibleOuterWarning": "Read before choosingRead the sample kit information.Source: Fictional integration fixture",
+      "visibleOuterDetails": "THE DETAILS, BEFORE YOU BUYWhat’s in the box?12tiles2idea cards1tray15 items in total, according to the merchant.Know the object.DimensionsTrayLength 24 cm · Width 19 cm · Height 1.5 cmEach tileLength 5 cm · Width 5 cm · Height 0.6 cmMaterialsWoodProduct information is supplied by the merchant. Age recommendations are guidance for the adult choosing the product.",
+      "selectedPanel": "Explicit unknown sample edition.Toy factsMaterialsWood"
+    },
+    {
+      "variantId": "d21309b4-c4a0-4eca-a591-c5a3f01d138f",
+      "edition": "Different paper sample edition",
+      "carrierFacts": {
+        "age": "Ages 9–12",
+        "contents": "36 × paper sheets",
+        "dimensions": "21 length × 14.8 width cm",
+        "materials": "Paper"
+      },
+      "visibleOuterAge": "6–8 years",
+      "visibleOuterWarning": "Read before choosingRead the sample kit information.Source: Fictional integration fixture",
+      "visibleOuterDetails": "THE DETAILS, BEFORE YOU BUYWhat’s in the box?12tiles2idea cards1tray15 items in total, according to the merchant.Know the object.DimensionsTrayLength 24 cm · Width 19 cm · Height 1.5 cmEach tileLength 5 cm · Width 5 cm · Height 0.6 cmMaterialsWoodProduct information is supplied by the merchant. Age recommendations are guidance for the adult choosing the product.",
+      "selectedPanel": "Different paper sample edition.Toy factsAge informationAges 9–12Included contents36 × paper sheetsDimensions21 length × 14.8 width cmMaterialsPaper"
+    },
+    {
+      "variantId": "39b713a7-44a5-4327-ae9f-40d45c76bc2d",
+      "edition": "Inherited sample edition",
+      "carrierFacts": {
+        "age": "6–8 years",
+        "contents": "12 × tiles · 2 × idea cards · 1 × tray",
+        "dimensions": "24 length × 19 width × 1.5 height cm",
+        "additional_dimensions": "Each tile: 5 length × 5 width × 0.6 height cm",
+        "materials": "Wood",
+        "finish": "Sample blue finish",
+        "warnings": "Read the sample kit information. · Fictional integration fixture"
+      },
+      "visibleOuterAge": "6–8 years",
+      "visibleOuterWarning": "Read before choosingRead the sample kit information.Source: Fictional integration fixture",
+      "visibleOuterDetails": "THE DETAILS, BEFORE YOU BUYWhat’s in the box?12tiles2idea cards1tray15 items in total, according to the merchant.Know the object.DimensionsTrayLength 24 cm · Width 19 cm · Height 1.5 cmEach tileLength 5 cm · Width 5 cm · Height 0.6 cmMaterialsWoodProduct information is supplied by the merchant. Age recommendations are guidance for the adult choosing the product.",
+      "selectedPanel": "Inherited sample edition.Toy factsAge information6–8 yearsIncluded contents12 × tiles · 2 × idea cards · 1 × trayDimensions24 length × 19 width × 1.5 height cmOther dimensionsEach tile: 5 length × 5 width × 0.6 height cmMaterialsWoodFinishSample blue finishSupplied warningsRead the sample kit information. · Fictional integration fixture"
+    }
+  ],
+  "sources": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "path": "packages/commerce-core/src/playfield-facts.ts",
+      "sha256": "96c17f8c65c1aa1e12233b00368ba29f4e76eb07dcf0374f822747f4f472e9a4"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "sha256": "dde42a5fa7ee6a578b636e9be533c8e2bb92cd708c60daf58cf0e88eebfa15cf"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "d91217543a463ba70ff8ec294f18cd27bb688a8f62e23f06edc9349997e13aca"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4"
+    }
+  ],
+  "productionEdits": false
+}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
-import { getAccountsUrl, getAdminUrl } from '@/lib/public-urls'
+import { getMerchantSignInUrl, MERCHANT_RETURN_PATH_HEADER } from '@/lib/public-urls'
 
 /**
  * Admin proxy:
@@ -27,19 +27,14 @@ export function proxy(request: NextRequest) {
     }
 
     if (!session.accepted) {
-        // The configured app origin survives NextURL's loopback normalization
-        // and cannot be replaced by an untrusted Host/Forwarded header.
-        const destination = new URL(getAdminUrl())
-        destination.pathname = pathname
-        destination.search = request.nextUrl.search
-        const returnUrl = encodeURIComponent(destination.toString())
-
-        return NextResponse.redirect(
-            `${getAccountsUrl('/lookup')}?return_to=${returnUrl}`
-        )
+        return NextResponse.redirect(getMerchantSignInUrl(pathname + request.nextUrl.search))
     }
 
-    return NextResponse.next()
+    // Overwrite caller input. The server layout needs this same path when a
+    // well-formed cookie is later refused by the authoritative session read.
+    const forwarded = new Headers(request.headers)
+    forwarded.set(MERCHANT_RETURN_PATH_HEADER, pathname + request.nextUrl.search)
+    return NextResponse.next({ request: { headers: forwarded } })
 }
 
 export const config = {

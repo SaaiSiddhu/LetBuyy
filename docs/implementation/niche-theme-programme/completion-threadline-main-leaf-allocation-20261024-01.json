@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:56:03.835965+00:00",
+  "id": "completion-threadline-main-v201-leaf01",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "status": "GRANTED_TWO_NEW_EXACT_MAIN_LEAF_TEST_PATHS",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "beforeSHA256": null
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-successor.test.ts",
+      "beforeSHA256": null
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    }
+  ],
+  "privateSemanticsProof": "../threadline-2026-10-22/completion-2026-10-24/private-successor-01/HANDOFF.json; independent15PASS/21defaulttemplateproof",
+  "scope": "Implement compact explicit2.0.1 wrapper around frozen Threadline constructor, not a copy of the17KBbuilder. Consume admitted withConfiguredOrderHeading helper. Reuse exact reviewed subtitle/collection source fixes, preserve defaults/unknownmerchantvalues/IDs/orderguards.",
+  "newDistributionVsSavedDocs": "Fresh creation may clear only the two proven inert inherited distribution defaults (list-collections-grid.subtitle and search-results.title). Existing200merchant bundle must be cloned with all values/layout/bindings retained, not run through defaults factory or blindly cleared. No runtime persisted document changes.",
+  "version": "2.0.1/version_number3; immutable200factory untouched; idempotent201 guard and canonical JSON roundtrip",
+  "tests": [
+    "Retain actual15private semantic/regression gates but bind them to new Mainleaf",
+    "Actual21template defaultbody/header/style equality",
+    "Normal populated collection headingoverride; empty/whitespacefallback; subtitleblank/default/hostile escaping",
+    "Canonicalorderheading sharedhelper with buyer/orderguards/number retained",
+    "Existingmerchantvalues,templateblocks/resources/unknownsettings preserved and inputimmutable; exactidentity/version/idempotency",
+    "Scoped strict type/lint; no broad unchanged reruns"
+  ],
+  "catalogue": "Root exclusively owns first-party-theme-catalog.ts. Supply exact proposed threadlineVersion import/dispatch diff in own evidence only; no sharedcataloguewrite.",
+  "expiresAt": "2026-10-24T10:56:03.835965+00:00",
+  "ends": "First sealed Mainleaf/test handoff or expiry; unexpected baseline/dependency difference stops affected edit",
+  "notGranted": [
+    "FrozenThreadline/theme-bundle/core/helper/sourceoverwrite",
+    "Any extraMainfiles orpackage/migration/schemawrites",
+    "Browser/native/build/DB/provider/runtime/server action"
+  ]
+}

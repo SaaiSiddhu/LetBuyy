@@ -1,0 +1,26 @@
+{
+  "decision": "ACCEPT_EXACT390_DOCS_DRAFT_NATIVE_QUALIFICATION_PENDING_SEQUENTIAL_SOURCE_PROMOTION",
+  "runId": "b07d0d6ed853",
+  "checks": {
+    "native10": true,
+    "nativeCleanup": true,
+    "pairMatches": true,
+    "laneReleased": true,
+    "noEmitPass": true
+  },
+  "drafts": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+      "qualifiedSha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+      "currentSha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+      "qualifiedSha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a",
+      "currentSha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    }
+  ],
+  "evidence": "docs/implementation/threadline-2026-10-22/measurement-discovery/native-qualification.json",
+  "nativeSuiteTypeOnlyFollowup": "docs/implementation/threadline-2026-10-22/measurement-discovery/native-runs/06-green/type-only-followup.json",
+  "limits": "10 executed native groups and15 pure checks, not all49 specification permutations; browser/installed/performance envelope still pending. No actual390 source until389 is accepted/emitted first."
+}

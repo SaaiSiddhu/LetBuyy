@@ -12,20 +12,19 @@
  * Conditional visibility: fields with visible_if are only rendered when the
  * referenced sibling field has the specified value (isFieldVisible helper).
  *
- * Backward compat: unknown / legacy field types fall back to a text input
- * and never crash. All frozen SchemaField type values render identically
+ * Unknown field types retain their saved values in a read-only output. All frozen SchemaField type values render identically
  * to the pre-Phase-U implementation.
  *
- * RISK-3 (editor page.tsx): the foreign-WIP page.tsx normalises unknown types
- * → 'text' before reaching this component. Phase U controls activate only when
- * the schema source natively emits those type strings. This is safe — the
- * default case already falls back to TextInput.
+ * Descriptors use the canonical extension adapter, including typed options and
+ * conditional metadata. Values remain instance data; no schema is edited here.
  */
 
+import { LoaderCircle, Upload, X } from 'lucide-react'
 import { useCallback, useState, useId, type ChangeEvent } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { isFieldVisible, isUnsafeUrl, validateFieldValue, resolveFieldDefault } from '@/lib/theme-schemas'
-import { Button, Input, MaterialIcon, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
+import { resolveFieldOptions } from '@letbuyy/theme-engine'
+import { Button, Input, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
 // Phase U new control components
 import { CheckboxControl } from './controls/CheckboxControl'
 import { ColorBackgroundControl } from './controls/ColorBackgroundControl'
@@ -90,6 +89,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
         [fieldKey, onChange]
     )
     const helpText = field.info || field.description
+    if (field.readOnlyReason) return <PreservedSetting label={field.label} value={value} reason={field.readOnlyReason} />
 
     switch (field.type) {
         // ── Frozen types (preserved byte-identically) ──────────────────────────────
@@ -120,7 +120,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
             return (
                 <RadioInput
                     label={field.label}
-                    value={String(value ?? '')}
+                    value={value}
                     options={field.options || []}
                     helpText={helpText}
                     required={field.required}
@@ -152,7 +152,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
             return (
                 <SelectInput
                     label={field.label}
-                    value={String(value ?? '')}
+                    value={value}
                     options={field.options || []}
                     helpText={helpText}
                     required={field.required}
@@ -219,7 +219,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
             return (
                 <ColorSchemeControl
                     field={field}
-                    value={String(value ?? '')}
+                    value={value}
                     onChange={handleChange}
                 />
             )
@@ -294,19 +294,14 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
             )
 
         // ── Default / unknown / legacy field types ────────────────────────────────
-        // BACKWARD COMPAT: unknown types fall back to a text input and never crash.
-        // (See RISK-3: editor page.tsx normalises many types → 'text' before reaching
-        // this renderer. The switch default is a safety net for any that slip through.)
+        // An unsupported descriptor must never coerce a saved object into text.
         default:
-            return (
-                <TextInput
-                    label={field.label}
-                    value={String(value ?? '')}
-                    helpText={helpText}
-                    onChange={handleChange}
-                />
-            )
+            return <PreservedSetting label={field.label} value={value} reason="This setting is not supported. Its saved value is preserved." />
     }
+}
+
+function PreservedSetting({ label, value, reason }: { label: string; value: unknown; reason: string }) {
+    return <div className="te-field"><span className="te-field-label">{label}</span><p className="generic-theme-editor__field-help">{reason}</p><output aria-label={`${label} saved value`}>{typeof value === 'string' ? value : JSON.stringify(value ?? null)}</output></div>
 }
 
 // ========== Field Components ==========
@@ -509,7 +504,7 @@ function ImageInput({
                             onClick={(e) => { e.preventDefault(); onChange('') }}
                             title="Remove image"
                         >
-                            <MaterialIcon name="close" size={14} />
+                            <X  size={14} aria-hidden="true" />
                         </Button>
                     </div>
                 ) : null}
@@ -521,7 +516,7 @@ function ImageInput({
                     onChange={(e) => onChange(e.target.value)}
                 />
                 <label className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''}`}>
-                    <MaterialIcon name={isUploading ? 'hourglass_top' : 'cloud_upload'} size={16} />
+                    {isUploading ? <LoaderCircle size={16} aria-hidden="true" /> : <Upload size={16} aria-hidden="true" />}
                     {isUploading ? 'Uploading...' : 'Upload image'}
                     <Input unstyled
                         className="te-field-file-input"
@@ -542,13 +537,15 @@ function SelectInput({
     label, value, options, helpText, required, onChange,
 }: {
     label: string
-    value: string
-    options: string[]
+    value: unknown
+    options: ExtendedSchemaField['options']
     helpText?: string
     required?: boolean
-    onChange: (v: string) => void
+    onChange: (v: string | number | boolean) => void
 }) {
     const id = useId()
+    const choices = resolveFieldOptions({ options })
+    const selected = choices.findIndex(option => Object.is(option.value, value))
     return (
         <div className="te-field">
             <label htmlFor={id} className="te-field-label">
@@ -558,13 +555,14 @@ function SelectInput({
             <select
                 id={id}
                 className="te-field-select"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
+                value={selected < 0 ? '' : String(selected)}
+                onChange={(e) => { const choice = choices[Number(e.target.value)]; if (e.target.value !== '' && choice) onChange(choice.value) }}
                 aria-required={required ? 'true' : undefined}
             >
-                {options.map((opt) => (
-                    <option key={opt} value={opt}>
-                        {opt.charAt(0).toUpperCase() + opt.slice(1).replace(/_/g, ' ')}
+                <option value="" disabled>{value === undefined || value === '' ? 'Choose an option' : 'Saved value unavailable'}</option>
+                {choices.map((option, index) => (
+                    <option key={index} value={String(index)}>
+                        {option.label}
                     </option>
                 ))}
             </select>
@@ -577,12 +575,13 @@ function RadioInput({
     label, value, options, helpText, required, onChange,
 }: {
     label: string
-    value: string
-    options: string[]
+    value: unknown
+    options: ExtendedSchemaField['options']
     helpText?: string
     required?: boolean
-    onChange: (v: string) => void
+    onChange: (v: string | number | boolean) => void
 }) {
+    const choices = resolveFieldOptions({ options })
     return (
         <div className="te-field" role="group" aria-label={label}>
             <span className="te-field-label">
@@ -590,16 +589,16 @@ function RadioInput({
                 {required ? <RequiredMark /> : null}
             </span>
             <div className="te-field-radio-group">
-                {options.map((opt) => (
+                {choices.map((option, index) => (
                     <Button unstyled
-                        key={opt}
+                        key={index}
                         type="button"
                         role="radio"
-                        aria-checked={value === opt}
-                        className={`te-field-radio ${value === opt ? 'te-field-radio--selected' : ''}`}
-                        onClick={() => onChange(opt)}
+                        aria-checked={Object.is(value, option.value)}
+                        className={`te-field-radio ${Object.is(value, option.value) ? 'te-field-radio--selected' : ''}`}
+                        onClick={() => onChange(option.value)}
                     >
-                        {opt.charAt(0).toUpperCase() + opt.slice(1).replace(/_/g, ' ')}
+                        {option.label}
                     </Button>
                 ))}
             </div>

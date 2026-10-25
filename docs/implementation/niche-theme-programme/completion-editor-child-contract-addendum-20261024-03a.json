@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-24T09:49:43.593551+00:00",
+  "id": "completion-editor-child-contract-03a",
+  "parentLease": "completion-editor-child-contract-allocation-20261024-03.json",
+  "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "status": "GRANTED_TWO_ADDITIONAL_EXACT_SOURCE_PATHS",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "beforeSHA256": "9dcee0fa73d47e3991faad1bd92dc5c259bbd1b6fe142d31cafadb4f6a495a90"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "beforeSHA256": "dc5de479b5c233e51a85a2d1828fbe6b701ecdad5ed0068fb1e58c39b33956a2"
+    }
+  ],
+  "scope": "Depth-aware reusable-vs-inline descriptor/default/label lookup. Actual reusable child definition owns nested controls; root inline definition retains its own descriptor. Preserve saved unknown data, canonical schema/bounds/app restrictions and actual nested identity.",
+  "requiredTests": "Use actual389 Marginalia/MadeYours inline badge label+description versus reusable badge label-only; no unsupported nested description default/control; root description remains; actual add/save/compile/roundtrip retains original unknown data. Existing03 helper/tests grant covers tests.",
+  "ends": "First sealed03handoff or existing03expiry, whichever first",
+  "notGranted": [
+    "Schema/package/defaultrewrite",
+    "Any otherMainfile or browser/native/build/DB/runtime action"
+  ]
+}

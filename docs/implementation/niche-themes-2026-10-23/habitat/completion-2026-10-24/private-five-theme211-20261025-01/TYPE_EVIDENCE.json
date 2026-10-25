@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-25T01:09:27.029Z",
+  "classification": "NO_EMIT_TYPESCRIPT_SOURCE_PROGRAM_NOT_BUILD_OR_NATIVE",
+  "rootPaths": [
+    "packages/theme-engine/src/first-party-theme-catalog.ts",
+    "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+    "docs/implementation/niche-theme-programme/completion-2026-10-24/five-theme211-integration01/generate-sense211-proposal.ts"
+  ],
+  "sourceFiles": 510,
+  "diagnostics": [],
+  "touchedDiagnostics": [],
+  "noEmit": true,
+  "modulesExecuted": false,
+  "nativeOrBuild": false
+}

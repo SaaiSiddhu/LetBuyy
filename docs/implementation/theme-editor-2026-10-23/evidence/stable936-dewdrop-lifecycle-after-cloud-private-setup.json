@@ -1,0 +1,319 @@
+{
+  "recordedAt": "2026-10-24T03:28:15.714Z",
+  "runId": "936e5f577646",
+  "phase": "after-cloud-private-setup",
+  "guardVerified": true,
+  "readOnly": true,
+  "actual": {
+    "orders": [
+      {
+        "id": "84a52d92-6cb4-46bb-b941-8d7f37e8cb74",
+        "tax": 0,
+        "items": [
+          {
+            "name": "Fixture Soft Colour",
+            "niche": {
+              "facts": {
+                "beauty": {
+                  "format": "Lip tint",
+                  "shades": [
+                    {
+                      "code": "RW01",
+                      "color": "#a36a65",
+                      "value": "Rosewater",
+                      "ingredients": "Rosewater v1: fixture oil, CI 77491."
+                    },
+                    {
+                      "code": "PC02",
+                      "color": "#a36a65",
+                      "value": "Pink Clay",
+                      "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+                    },
+                    {
+                      "code": "TC03",
+                      "color": "#89534a",
+                      "value": "Terracotta",
+                      "ingredients": null
+                    }
+                  ],
+                  "warnings": "Fixture warning v1: external use only.",
+                  "directions": "Fixture directions v1: use as supplied.",
+                  "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+                  "netQuantity": {
+                    "unit": "ml",
+                    "value": 6
+                  },
+                  "routineStage": "colour",
+                  "schemaVersion": 1,
+                  "shadeOptionName": "Shade name"
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Shade name",
+                  "value": "Pink Clay"
+                },
+                {
+                  "name": "पैक आकार",
+                  "value": "एक इकाई"
+                }
+              ]
+            },
+            "title": "Fixture Soft Colour",
+            "total": 1120,
+            "quantity": 2,
+            "productId": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+            "unitPrice": 560,
+            "variantId": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+            "snapshotSha256": "8c9540171cab8e50a2454ce823da7e4d01fc966a4955d1224293aa9b9f4461f7"
+          }
+        ],
+        "total": 1140,
+        "number": "ORD-20261024-10000",
+        "status": "pending_cod",
+        "discount": 0,
+        "shipping": 20,
+        "subtotal": 1120,
+        "rowSha256": "8e637e45b90da30f8d864d7cc316816c454b6ae00e665d9092adc3eaf24aeb87",
+        "paymentMethod": "cod",
+        "paymentStatus": "pending"
+      }
+    ],
+    "product": {
+      "id": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+      "name": "Fixture Soft Colour",
+      "price": 520,
+      "stock": 8,
+      "beauty": {
+        "format": "Lip tint",
+        "shades": [
+          {
+            "code": "RW01",
+            "color": "#a36a65",
+            "value": "Rosewater",
+            "ingredients": "Rosewater v1: fixture oil, CI 77491."
+          },
+          {
+            "code": "PC02",
+            "color": "#a36a65",
+            "value": "Pink Clay",
+            "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+          },
+          {
+            "code": "TC03",
+            "color": "#89534a",
+            "value": "Terracotta",
+            "ingredients": null
+          }
+        ],
+        "warnings": "Fixture warning v1: external use only.",
+        "directions": "Fixture directions v1: use as supplied.",
+        "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+        "netQuantity": {
+          "unit": "ml",
+          "value": 6
+        },
+        "routineStage": "colour",
+        "schemaVersion": 1,
+        "shadeOptionName": "Shade name"
+      },
+      "options": [
+        {
+          "id": "95cad505-b602-4e88-b777-1a6f4e708e0f",
+          "name": "Shade name",
+          "values": [
+            "Rosewater",
+            "Pink Clay",
+            "Terracotta"
+          ],
+          "position": 0,
+          "created_at": "2026-10-24T02:54:25.701991+00:00",
+          "product_id": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e"
+        },
+        {
+          "id": "aa0d5930-e30b-4469-8d23-dcfb02eb17d3",
+          "name": "पैक आकार",
+          "values": [
+            "एक इकाई"
+          ],
+          "position": 1,
+          "created_at": "2026-10-24T02:54:25.701991+00:00",
+          "product_id": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e"
+        }
+      ],
+      "version": 15,
+      "variants": [
+        {
+          "id": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+          "price": 560,
+          "stock": 2,
+          "title": "Fixture shade SKU",
+          "option1": "Pink Clay",
+          "option2": "एक इकाई",
+          "option3": null,
+          "metadata": {}
+        },
+        {
+          "id": "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+          "price": 590,
+          "stock": 0,
+          "title": "Fixture shade SKU",
+          "option1": "Terracotta",
+          "option2": "एक इकाई",
+          "option3": null,
+          "metadata": {}
+        },
+        {
+          "id": "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab",
+          "price": 520,
+          "stock": 4,
+          "title": "Fixture shade SKU",
+          "option1": "Rosewater",
+          "option2": "एक इकाई",
+          "option3": null,
+          "metadata": {}
+        }
+      ],
+      "inventory": [
+        {
+          "id": "1c134222-8b79-409d-93b5-e7470679cbe8",
+          "reserved": 0,
+          "available": 4,
+          "variantId": "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab"
+        },
+        {
+          "id": "86fb7b3e-07c7-49a2-b1c1-27962583d434",
+          "reserved": 0,
+          "available": 2,
+          "variantId": "3f4e08a8-bf2e-4899-bbeb-06c7283af499"
+        },
+        {
+          "id": "8caf82e1-5cc1-482b-bc10-43d7c7f7d065",
+          "reserved": 0,
+          "available": 0,
+          "variantId": "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b"
+        },
+        {
+          "id": "df054a58-a19f-4bf4-a87b-9cc8d415fb1f",
+          "reserved": 0,
+          "available": 8,
+          "variantId": null
+        }
+      ],
+      "otherMetadataSha256": "b536c2e59679592f5fa954cbf677e3e34a1d1da92774eff7bc6eb633910e34a4"
+    }
+  },
+  "protectedTableHashes": [
+    {
+      "count": 0,
+      "table": "ad_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 2,
+      "table": "carts",
+      "sha256": "759377af79918bdc7c2f1b69e2e9c6ef73c845619192a9a1e41042d78f993d08"
+    },
+    {
+      "count": 2,
+      "table": "checkout_sessions",
+      "sha256": "39754a7e793a18534eecaccf3dbd3ce8883d752f1cfd3d45dbe957a4b8388556"
+    },
+    {
+      "count": 0,
+      "table": "gift_card_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 39,
+      "table": "inventory_adjustments",
+      "sha256": "521b3e2d4bbc27d284a302ab87be4f784199dd57b6d08c68b44fbb5a08332cc8"
+    },
+    {
+      "count": 1,
+      "table": "inventory_events",
+      "sha256": "0500ab44cc84e43d942d79ed0ef2318188f5e76019871089dfe5bb9536114ecb"
+    },
+    {
+      "count": 43,
+      "table": "inventory_levels",
+      "sha256": "19ddd559b459fe6dde57855251eb96cae8de411b5ff77fa113219d3d69f6d273"
+    },
+    {
+      "count": 1,
+      "table": "inventory_reservations",
+      "sha256": "cf6113a00983a4eef6e33c34f15887b8fd6416eca62e407bc43ffca1fe2cba0c"
+    },
+    {
+      "count": 0,
+      "table": "ledger_accounts",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "loyalty_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_batches",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_traversal",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_site_reconciliations",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 1,
+      "table": "order_items",
+      "sha256": "40ee878daae0215ba4d4c3e1321c140d23f385848a4dc1177283637be19d6084"
+    },
+    {
+      "count": 1,
+      "table": "orders",
+      "sha256": "65849d4089fb17ae4e5ee0d219a291f0c5d7c1497ecbeab93fce26dbc2211877"
+    },
+    {
+      "count": 109,
+      "table": "outbox_events",
+      "sha256": "3234bb69f4883050f6ab37788522dd25449796b1fe02e55eee597efd38636719"
+    },
+    {
+      "count": 0,
+      "table": "partner_payout_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "payout_statement_source_ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "store_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "wallet_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-10-23T15:56:39.243Z",
+  "classification": "LOCAL_TEST_FIXTURE_PRECONDITION_POSTCOMMIT_READ_ONLY_DIAGNOSTIC",
+  "runId": "9cd50e893016",
+  "guardVerified": true,
+  "transactionResult": {
+    "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+    "planRow": null,
+    "subscriptions": [
+      {
+        "id": "64974fe2-3443-42cc-a188-cdfc8bfad898",
+        "plan": "enterprise",
+        "status": "active",
+        "userId": "287cf8fb-5bfa-4b2e-a078-14b47262bf58",
+        "storeId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+        "amountPaid": 0,
+        "paymentGateway": null,
+        "externalSubscriptionId": null
+      }
+    ],
+    "currentInvariants": {
+      "carts": {
+        "count": 1,
+        "sha256": "78feea2d19cec96724edb322901a7f2773dd3ef8f8f857fdb760435d2d36b42c"
+      },
+      "drafts": {
+        "count": 4,
+        "sha256": "2aafad27ca1adbf62eb4054cc86d16221b8a235cac2c58da47c343d3211b7b10"
+      },
+      "orders": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "patches": {
+        "count": 14,
+        "sha256": "4e8ca51749e9bf63cc38c9036211a29338fd21423f21ce6d5c9d15274a82953c"
+      },
+      "releases": {
+        "count": 4,
+        "sha256": "8624886e042f9059f0567ed7db12224d59a52df7adaf79ea8a62f6722a777b52"
+      },
+      "instances": {
+        "count": 1,
+        "sha256": "5804e68e266d3369272f71a20a0cf9769c57bcd55ba6a9b6d1c59b31c6b14857"
+      },
+      "currentPointer": {
+        "themeId": "letbuyy-aura",
+        "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+        "templateConfigSha256": "7867802f508a1b544283b2a6042cd0b02571d7e18f54863ddc4cc096fa13ad7b"
+      }
+    }
+  },
+  "effectiveCanonicalLimit": {
+    "limit": null,
+    "plan_name": "enterprise"
+  },
+  "mutationReplay": false,
+  "earlierCommitControlFlow": "Previous process reached postcommit effective-limit assertion only after SQL returned0, parsed JSON and all before/after nonbilling equality checks passed. Original numeric before/after digests were not durably saved before later JS assertion threw; current readback does not fabricate those earlier digest values."
+}

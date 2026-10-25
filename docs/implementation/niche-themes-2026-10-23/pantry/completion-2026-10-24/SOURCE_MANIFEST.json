@@ -1,0 +1,172 @@
+{
+  "recordedAt": "2026-10-24T08:45:00.627Z",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "scope": "Finite inputs for source-derived inventory; dirty shared tree is not represented by HEAD alone",
+  "sourceInputs": [
+    {
+      "path": "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md",
+      "sha256": "9d4af250a4fe524f7133d16848b492435a55ef83d66387548946eb3cd3360234"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "5d6cd3117f47c782e106447904287deee74a558c9768331968982c2f4cec8ddb"
+    },
+    {
+      "path": "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md",
+      "sha256": "9b373e41f80013a6eaf4a39c01eaf9d534ab816f61d54c6dfbe99ee3468c46dd"
+    },
+    {
+      "path": "docs/implementation/AGENTS.md",
+      "sha256": "9f9943b0c076f9c72861389c5d6b7e840b5c019df0bc3ff1dc7f8725cb43b5de"
+    },
+    {
+      "path": "packages/theme-engine/AGENTS.md",
+      "sha256": "0aa7d38d96b2e39a4f0e18ccf82d44daef9300326243bac59c836628593e2c1a"
+    },
+    {
+      "path": "apps/merchant/web/AGENTS.md",
+      "sha256": "208de1279e1401f45e3edc72a05cf184eff28fa3080aa85f5aacc60f659c96f4"
+    },
+    {
+      "path": "apps/commerce/web/AGENTS.md",
+      "sha256": "ebf71f1d662b3281d0d824ca5252cdc10279b03ef7873d591c6ab13c0435c819"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "sha256": "37d71edee334719e2d44e30512eeb695d56cda86dc67b40fe5e092631c4582f4"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "sha256": "fa4e30236d9f00af2276bcc0ed7c75a6e010923035bc678770ac74288e8ea0c5"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "sha256": "2ea8f4a5b10df83db4d12cf4821ca78700027f1edefcb6c852e0d22050eec7d9"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/TemplateSwitcherPanel.tsx",
+      "sha256": "33cb4a17d37e5b88ada4920ea48b89b8c28c577eb35466816f589f8dfee50254"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ResourcePickerControl.tsx",
+      "sha256": "92429413c57c5a9d56626d58de00e63b7e72b74d92a1556217358b588422439a"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ImagePickerControl.tsx",
+      "sha256": "59d1c012220378d52c3dc5a0325d298b21cddfaba35a47a65f5525392c0a58af"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/theme-schemas.ts",
+      "sha256": "e6f742d82223ee09b3161a7b368075735efe80ca63ad8e90297a29c0e2ad0201"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "4b8334b7e07e64209d3585671ff98a4c7c359719424715119e3a2ea2d667e56d"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/pantry-facts-editor.tsx",
+      "sha256": "05dc1c2ae34013f8979369fb1551070101889c3ca42ade425ebb58a11fbe60ef"
+    },
+    {
+      "path": "packages/commerce-core/src/pantry-facts.ts",
+      "sha256": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a"
+    },
+    {
+      "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/pantry-storybook/capabilities.json",
+      "sha256": "dc8d7e4ad63b17fbefb36d26b5da31473ec133cbdd845ddb33f7d472d0b324ef"
+    },
+    {
+      "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/letbuyy-design-blueprints/04-refresh-pantry.md",
+      "sha256": "83a60004f991bb74c02539317d6c4394faf5afb97484f5d6c4bf134068a401b4"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/OWNERSHIP.md",
+      "sha256": "a254bcab7433d559755fc896fb20cd9dcd50b85317a22278dd8d98cc5c252fbc"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_RUNBOOK.md",
+      "sha256": "7dc134bf44c3390b1c24087e527d0b53e5881b9dca53bdb24f25dad408589c09"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/COMMON_EXECUTION_PROMPT.md",
+      "sha256": "ec4858d5148c12b77ce8d6e77a98d7a210e1c485f5d426d622d3ab1bfcffeb36"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/assignments/pantry.md",
+      "sha256": "1351f655b6e4f19618691530afd32c5cb5bb18f68b58704085566ca308910067"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/pantry-variant-facts-editor.tsx",
+      "sha256": "4f8a414961e2a0ea0b78f8af6c1b9ca5380ef2a0a5d7193cc88d3b7556e1d5f6"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/VariantFactsEditor.tsx",
+      "sha256": "505abd6430bd4c712edd30ea628e8f3981ca303529190ce9bdedd5437ca01487"
+    }
+  ],
+  "package": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-refresh-2.0.0.json",
+    "sha256": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9"
+  },
+  "matrix": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-matrix.md",
+    "sha256": "87f2e8b22cef3d32c3bdf0228170d36b89ff41e22f96e5c526aae66996119dbd"
+  },
+  "historicalAdmissions": [
+    {
+      "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+    }
+  ],
+  "activeRuntimeLease": null,
+  "activeBrowserLease": null,
+  "activeSharedWriterLease": null,
+  "helperActivation": {
+    "themes": "AWAITING_EXPLICIT_MESSAGE_RESUME_AUTHORIZATION",
+    "editor": "AWAITING_EXPLICIT_MESSAGE_RESUME_AUTHORIZATION",
+    "marketplace": "NOT_RESUMED_PRESERVE_RUNNING_LOCAL_APP"
+  },
+  "protectedResources": "Existing Marketplace, user tabs/accounts/cookies, original drafts/releases, all existing carts/orders/inventory and env/signing files; old936/f607/9cd not adopted",
+  "actions": "Pure source reads/factory/schema projection and own evidence writes only"
+}

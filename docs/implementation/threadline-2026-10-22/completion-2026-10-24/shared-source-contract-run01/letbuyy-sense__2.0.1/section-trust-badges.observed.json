@@ -1,0 +1,74 @@
+{
+  "id": "section-trust-badges",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "trust-badges",
+    "group": "template",
+    "firstId": "section-927357fe-88df-410d-8bd6-e259df873e74",
+    "finalId": "section-51c69a86-f4fd-43b8-b6f5-54027b13769e",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "fitText": "Source fixture fitText",
+            "serviceText": "Source fixture serviceText",
+            "supportText": "Source fixture supportText"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "fitText": "Source fixture fitText",
+            "serviceText": "Source fixture serviceText",
+            "supportText": "Source fixture supportText"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "fitText": "Source fixture fitText",
+            "serviceText": "Source fixture serviceText",
+            "supportText": "Source fixture supportText"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "trust-badges",
+          "settings": {
+            "fitText": "Source fixture fitText",
+            "serviceText": "Source fixture serviceText",
+            "supportText": "Source fixture supportText"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

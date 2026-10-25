@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-25T01:42:38.582451+00:00",
+  "status": "ORIGINAL_OWNED_DATABASE_RETAINED_AFTER_SIX_HOUR_DEADLINE_NOT_SERVING_HEALTH",
+  "processStates": {
+    "54685": "Ts",
+    "55109": "T"
+  },
+  "database": {
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "fixtureRunId": "49ada80bc494",
+    "timeZone": "UTC",
+    "ownedOrders": 8
+  },
+  "containerRunning": true,
+  "sourceCleanupDeadlineApprox": "2026-10-25T01:36:21.870798Z",
+  "savedWitnessTimezone": "Default UTC confirmed; future comparison must use same UTC representation",
+  "signalsOrDatabaseMutations": 0,
+  "doNotSigcont": "Expired cleanup may execute immediately; qualified recovery remains necessary"
+}

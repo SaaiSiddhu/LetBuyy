@@ -1,0 +1,3 @@
+Read-only bounded search of apps and services at current checkout. Comments are not runtime invocations.
+apps/merchant/web/src/app/api/themes/[themeId]/editor/ai-customization/route.ts:38: *   applyExperienceToDocument(STYLE_ONLY) level for palette/typography intents.
+apps/merchant/web/src/components/theme-editor/AICustomizationPanel.tsx:796:                The proxy route forwards to applyExperienceToDocument in

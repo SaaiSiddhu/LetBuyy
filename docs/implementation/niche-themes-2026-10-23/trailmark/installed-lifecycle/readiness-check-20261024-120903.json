@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T12:09:03.238117+00:00",
+  "classification": "DIRECT_HUMAN_SLOT_CHECK_NO_ALLOCATION_NO_RUNTIME_ACCEPTANCE",
+  "slotAllocated": false,
+  "resourceLease": null,
+  "coordinator": {
+    "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "cursor": "4a88ad91-a502-40c5-8554-f10ec1e43e00:36",
+    "status": "active",
+    "observation": "Revised tenant permission model passed source checks; next native run still pending. Editor child-render source checks are not browser admission."
+  },
+  "fixtureOwner": {
+    "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "cursor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:23",
+    "status": "active",
+    "observation": "92 source review checks passed for Kindred; inline child-add control gap remains. No browser case promoted and no Trailmark runtime lease."
+  },
+  "programmeActiveBrowserLease": null,
+  "originalStageCounts": {
+    "PASS": 3,
+    "FAIL": 0,
+    "BLOCKED": 2,
+    "NOT_RUN": 7
+  },
+  "discovery": {
+    "recipes": 17,
+    "surfaces": [
+      "collection",
+      "search"
+    ],
+    "publicPairsPassedHistorical": 34,
+    "privatePairsNotRun": 34
+  },
+  "paymentScope": "LOCAL_COD_ONLY_PROVIDER_COD_MODE_SANDBOX",
+  "productionSourceEdits": [],
+  "runtimeActions": [],
+  "newFailures": [],
+  "oldResourcesAdopted": false,
+  "monitorStatus": "ACTIVE",
+  "nextAction": "Await explicit current fixture/runtime/release/identity bindings and serial Trailmark execution lease; then finish original missing matrix without substituting source tests or static storybook proof."
+}

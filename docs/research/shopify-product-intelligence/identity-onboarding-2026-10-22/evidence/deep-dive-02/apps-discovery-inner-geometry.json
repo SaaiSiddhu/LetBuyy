@@ -1,0 +1,3245 @@
+[
+  {
+    "className": "Polaris-Modal-Dialog",
+    "label": "",
+    "rect": {
+      "height": 596,
+      "width": 1440,
+      "x": 0,
+      "y": 202
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Modal-Dialog__Modal Polaris-Modal-Dialog--sizeLarge Polaris-Modal-Dialog--adminNext",
+    "label": "",
+    "rect": {
+      "height": 596,
+      "width": 980,
+      "x": 230,
+      "y": 202
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "24px",
+      "boxShadow": "rgba(0, 0, 0, 0.06) 0px 2px 3px -1px, rgba(0, 0, 0, 0.06) 0px 4px 6px -2px, rgba(0, 0, 0, 0.06) 0px 8px 12px -4px, rgba(0, 0, 0, 0.06) 0px 16px 24px -6px, rgba(0, 0, 0, 0.06) 0px 32px 48px -8px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 60,
+      "width": 980,
+      "x": 230,
+      "y": 202
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "16px 16px 16px 20px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineGrid",
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 944,
+      "x": 250,
+      "y": 218
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "16px",
+      "gridTemplateColumns": "900px 28px",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 900,
+      "x": 250,
+      "y": 218
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "16px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Text--root Polaris-Text--headingMd Polaris-Text--breakAlways",
+    "label": "Picked for you",
+    "rect": {
+      "height": 22,
+      "width": 100.7890625,
+      "x": 250,
+      "y": 221
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "15px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "22px",
+      "padding": "0px"
+    },
+    "tag": "H2"
+  },
+  {
+    "className": "Polaris-Button Polaris-Button--pressable Polaris-Button--variantSecondary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter Polaris-Button--iconOnly Polaris-Button--adminNext Polaris-Button--adminNextLight",
+    "label": "Close",
+    "rect": {
+      "height": 28,
+      "width": 28,
+      "x": 1166,
+      "y": 218
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "9999px",
+      "boxShadow": "rgba(0, 0, 0, 0.07) 0px 0px 0px 1px, rgba(0, 0, 0, 0.03) 0px 2px 20px 0px, rgba(0, 0, 0, 0.03) 0px 5px 20px 0px, rgba(0, 0, 0, 0.03) 0px 8px 60px 0px",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "2px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "4px"
+    },
+    "tag": "BUTTON"
+  },
+  {
+    "className": "Polaris-Modal__Body Polaris-Modal--adminNext Polaris-Modal__ScrollFadeGutter Polaris-Scrollable Polaris-Scrollable--vertical Polaris-Scrollable--horizontal Polaris-Scroll",
+    "label": "",
+    "rect": {
+      "height": 536,
+      "width": 980,
+      "x": 230,
+      "y": 262
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "2px 0px 0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 534,
+      "width": 980,
+      "x": 230,
+      "y": 264
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 534,
+      "width": 980,
+      "x": 230,
+      "y": 264
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 180,
+      "width": 980,
+      "x": 230,
+      "y": 264
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "16px 16px 0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Grid",
+    "label": "",
+    "rect": {
+      "height": 164,
+      "width": 948,
+      "x": 246,
+      "y": 280
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "16px",
+      "gridTemplateColumns": "305.328px 305.336px 305.336px",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 164,
+      "width": 305.328125,
+      "x": 246,
+      "y": 280
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 164,
+      "width": 305.328125,
+      "x": 246,
+      "y": 280
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 0px 0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_flexColumnContainer_1uo3o_1",
+    "label": "",
+    "rect": {
+      "height": 150,
+      "width": 303.328125,
+      "x": 247,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_textContainer_1uo3o_8",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 303.328125,
+      "x": 247,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 271.328125,
+      "x": 263,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "4px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--subdued",
+    "label": "Don’t have anything to sell yet? Use an app to find new products.",
+    "rect": {
+      "height": 40,
+      "width": 271.328125,
+      "x": 263,
+      "y": 319
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(74, 74, 74)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "H2"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 72,
+      "width": 303.328125,
+      "x": 247,
+      "y": 371
+    },
+    "styles": {
+      "backgroundColor": "rgb(247, 247, 247)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px 0px 12px 12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 271.328125,
+      "x": 263,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 219.328125,
+      "x": 315,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 219.328125,
+      "x": 315,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.328125,
+      "x": 315,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.328125,
+      "x": 315,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.328125,
+      "x": 315,
+      "y": 411
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.328125,
+      "x": 315,
+      "y": 411
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 164,
+      "width": 305.3359375,
+      "x": 567.328125,
+      "y": 280
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 164,
+      "width": 305.3359375,
+      "x": 567.328125,
+      "y": 280
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 0px 0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_flexColumnContainer_1uo3o_1",
+    "label": "",
+    "rect": {
+      "height": 150,
+      "width": 303.3359375,
+      "x": 568.328125,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_textContainer_1uo3o_8",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 303.3359375,
+      "x": 568.328125,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 271.3359375,
+      "x": 584.328125,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "4px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--subdued",
+    "label": "Customize your store to stand out and sell more.",
+    "rect": {
+      "height": 40,
+      "width": 271.3359375,
+      "x": 584.328125,
+      "y": 319
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(74, 74, 74)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "H2"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 72,
+      "width": 303.3359375,
+      "x": 568.328125,
+      "y": 371
+    },
+    "styles": {
+      "backgroundColor": "rgb(247, 247, 247)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px 0px 12px 12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 271.3359375,
+      "x": 584.328125,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 584.328125,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 584.328125,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 219.3359375,
+      "x": 636.328125,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 219.3359375,
+      "x": 636.328125,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 636.328125,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 636.328125,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 636.328125,
+      "y": 411
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 636.328125,
+      "y": 411
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 164,
+      "width": 305.3359375,
+      "x": 888.6640625,
+      "y": 280
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 164,
+      "width": 305.3359375,
+      "x": 888.6640625,
+      "y": 280
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 0px 0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_flexColumnContainer_1uo3o_1",
+    "label": "",
+    "rect": {
+      "height": 150,
+      "width": 303.3359375,
+      "x": 889.6640625,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_textContainer_1uo3o_8",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 303.3359375,
+      "x": 889.6640625,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 271.3359375,
+      "x": 905.6640625,
+      "y": 293
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "4px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--subdued",
+    "label": "Find new customers and keep them coming back for more.",
+    "rect": {
+      "height": 40,
+      "width": 271.3359375,
+      "x": 905.6640625,
+      "y": 319
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(74, 74, 74)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "H2"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 72,
+      "width": 303.3359375,
+      "x": 889.6640625,
+      "y": 371
+    },
+    "styles": {
+      "backgroundColor": "rgb(247, 247, 247)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px 0px 12px 12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 271.3359375,
+      "x": 905.6640625,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 905.6640625,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 905.6640625,
+      "y": 387
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 219.3359375,
+      "x": 957.6640625,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 219.3359375,
+      "x": 957.6640625,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 957.6640625,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 957.6640625,
+      "y": 395
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 957.6640625,
+      "y": 411
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 219.3359375,
+      "x": 957.6640625,
+      "y": 411
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 318,
+      "width": 980,
+      "x": 230,
+      "y": 444
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 286,
+      "width": 948,
+      "x": 246,
+      "y": 460
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "16px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 176,
+      "width": 948,
+      "x": 246,
+      "y": 460
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 176,
+      "width": 948,
+      "x": 246,
+      "y": 460
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 176,
+      "width": 948,
+      "x": 246,
+      "y": 460
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 20,
+      "width": 948,
+      "x": 246,
+      "y": 460
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 148,
+      "width": 948,
+      "x": 246,
+      "y": 488
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Grid",
+    "label": "",
+    "rect": {
+      "height": 148,
+      "width": 948,
+      "x": 246,
+      "y": 488
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "16px",
+      "gridTemplateColumns": "466px 466px",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "AppCardStyleProvider",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 246,
+      "y": 488
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 246,
+      "y": 488
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 432,
+      "x": 263,
+      "y": 501
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 501
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 501
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 315,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 315,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 525
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 525
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "AppCardStyleProvider",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 728,
+      "y": 488
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 728,
+      "y": 488
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 432,
+      "x": 745,
+      "y": 501
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 745,
+      "y": 501
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 745,
+      "y": 501
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 797,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 797,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 509
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 525
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 525
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "AppCardStyleProvider",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 246,
+      "y": 570
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 246,
+      "y": 570
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 432,
+      "x": 263,
+      "y": 583
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 583
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 583
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 315,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 315,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 607
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 607
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "AppCardStyleProvider",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 728,
+      "y": 570
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 728,
+      "y": 570
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 432,
+      "x": 745,
+      "y": 583
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 745,
+      "y": 583
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 745,
+      "y": 583
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 797,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 797,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 591
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 607
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 607
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 94,
+      "width": 948,
+      "x": 246,
+      "y": 652
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 94,
+      "width": 948,
+      "x": 246,
+      "y": 652
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 94,
+      "width": 948,
+      "x": 246,
+      "y": 652
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 20,
+      "width": 948,
+      "x": 246,
+      "y": 652
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 948,
+      "x": 246,
+      "y": 680
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Grid",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 948,
+      "x": 246,
+      "y": 680
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "16px",
+      "gridTemplateColumns": "466px 466px",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "AppCardStyleProvider",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 246,
+      "y": 680
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 246,
+      "y": 680
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 432,
+      "x": 263,
+      "y": 693
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 693
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 263,
+      "y": 693
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 315,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 315,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 717
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 315,
+      "y": 717
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "AppCardStyleProvider",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 728,
+      "y": 680
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 66,
+      "width": 466,
+      "x": 728,
+      "y": 680
+    },
+    "styles": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(208, 208, 208)",
+      "borderRadius": "12px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "12px 16px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-InlineStack",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 432,
+      "x": 745,
+      "y": 693
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "12px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_IconLink_jrpvq_15 _LinkDisabled_jrpvq_19",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 745,
+      "y": 693
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_Image_jrpvq_1 _medium_jrpvq_40 _ImageNoSource_jrpvq_10",
+    "label": "",
+    "rect": {
+      "height": 40,
+      "width": 40,
+      "x": 745,
+      "y": 693
+    },
+    "styles": {
+      "backgroundColor": "rgb(221, 221, 221)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "_MetadataContainer_19znh_1",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 797,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-BlockStack",
+    "label": "",
+    "rect": {
+      "height": 24,
+      "width": 380,
+      "x": 797,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "8px",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 701
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText__SkeletonBodyTextContainer",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 717
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-SkeletonBodyText",
+    "label": "",
+    "rect": {
+      "height": 8,
+      "width": 380,
+      "x": 797,
+      "y": 717
+    },
+    "styles": {
+      "backgroundColor": "rgb(235, 235, 235)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "4px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px"
+    },
+    "tag": "DIV"
+  },
+  {
+    "className": "Polaris-Box",
+    "label": "",
+    "rect": {
+      "height": 36,
+      "width": 980,
+      "x": 230,
+      "y": 762
+    },
+    "styles": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "gridTemplateColumns": "none",
+      "lineHeight": "20px",
+      "padding": "0px 0px 16px 16px"
+    },
+    "tag": "DIV"
+  }
+]

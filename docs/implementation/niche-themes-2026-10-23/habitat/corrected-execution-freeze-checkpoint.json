@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-23T19:20:17.067371+00:00",
+  "runId": "f6074d90e894",
+  "readOnly": true,
+  "checks": [
+    {
+      "manifest": "source-manifest.json",
+      "location": "workspace",
+      "checked": 11,
+      "mismatches": []
+    },
+    {
+      "manifest": "source-manifest.json",
+      "location": "f607-candidate",
+      "checked": 11,
+      "mismatches": []
+    },
+    {
+      "manifest": "measurement-consumer-source-manifest.json",
+      "location": "workspace",
+      "checked": 7,
+      "mismatches": []
+    },
+    {
+      "manifest": "measurement-consumer-source-manifest.json",
+      "location": "f607-candidate",
+      "checked": 7,
+      "mismatches": []
+    },
+    {
+      "manifest": "installed-matrix-preparation-receipt.json",
+      "location": "workspace",
+      "checked": 5,
+      "mismatches": []
+    },
+    {
+      "manifest": "installed-matrix-preparation-receipt.json",
+      "location": "f607-candidate",
+      "checked": 5,
+      "mismatches": []
+    },
+    {
+      "manifest": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/approved-mockup-freeze.json",
+      "location": "workspace-approved-originals",
+      "checked": 110,
+      "mismatches": []
+    }
+  ],
+  "candidateAssetsEqualWorkspace": [
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/ASSETS.json",
+      "workspaceSha256": "0e6d049233ae4c01010817e7668028d9d153954834bc28072324f7bc6375f9f1",
+      "candidateSha256": "0e6d049233ae4c01010817e7668028d9d153954834bc28072324f7bc6375f9f1"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/chair-smoked.webp",
+      "workspaceSha256": "972a2874558252ea556d2f3730520dbb7367fed238fcb685ce5f0b8bbe6ed225",
+      "candidateSha256": "972a2874558252ea556d2f3730520dbb7367fed238fcb685ce5f0b8bbe6ed225"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/chair.webp",
+      "workspaceSha256": "264557d00e0e3e10550b5018db473c8ca165a785e043431dc43b9e2a57102be8",
+      "candidateSha256": "264557d00e0e3e10550b5018db473c8ca165a785e043431dc43b9e2a57102be8"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/room.webp",
+      "workspaceSha256": "0b6714688cd5062c2dde7c101e219a9f1d7a3c15effbcd3180ce4d7ac7731a67",
+      "candidateSha256": "0b6714688cd5062c2dde7c101e219a9f1d7a3c15effbcd3180ce4d7ac7731a67"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/table.webp",
+      "workspaceSha256": "23ca0bc9525d295f4d3f8cc01bfac40b8ad3bfc5ecb7d4c2ac9fd20d9ebf61ed",
+      "candidateSha256": "23ca0bc9525d295f4d3f8cc01bfac40b8ad3bfc5ecb7d4c2ac9fd20d9ebf61ed"
+    }
+  ],
+  "assetScope": "Current candidate/workspace parity; original approved source manifests remain authority for frozen entries.",
+  "allFrozenEntriesExact": true,
+  "noUIorDBorRuntimeAction": true
+}

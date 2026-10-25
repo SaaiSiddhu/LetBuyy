@@ -1,6 +1,6 @@
 import { Card, ExternalLink, Section } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
-import { themeSandboxPreviewHref } from '@/lib/utils';
+import { getAnonymousPreviewFrameSrc } from './anonymous-preview-shell';
 import ThemeShareButton from './theme-share-button';
 
 function numberScore(value: unknown): number | null {
@@ -20,7 +20,7 @@ function changelogEntries(theme: Theme) {
 }
 
 export function ThemeLiveDemoEmbed({ theme }: { theme: Theme }) {
-    const src = theme.demo_url || themeSandboxPreviewHref(theme.slug);
+    const src = getAnonymousPreviewFrameSrc('', theme);
 
     return (
         <Section title="Live demo" description="Preview this theme inside the marketplace before installing it." className="px-0 py-0">
@@ -29,22 +29,22 @@ export function ThemeLiveDemoEmbed({ theme }: { theme: Theme }) {
                     <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
                         Embedded preview
                     </p>
-                    <a
+                    {src && <a
                         href={src}
                         className="inline-flex min-h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]"
                     >
                         <ExternalLink className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                         Open preview
-                    </a>
+                    </a>}
                 </div>
-                <iframe
+                {src ? <iframe
                     title={`${theme.name} live demo`}
                     src={src}
                     className="h-[520px] w-full border-0 bg-[var(--lb-color-surface-subdued)]"
                     loading="lazy"
-                    sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                    sandbox="allow-same-origin allow-scripts allow-forms"
                     data-testid="theme-live-demo-iframe"
-                />
+                /> : <p role="status" className="p-[var(--lb-space-4)]">Demo unavailable. Reload this theme’s details to confirm its package version.</p>}
             </Card>
         </Section>
     );

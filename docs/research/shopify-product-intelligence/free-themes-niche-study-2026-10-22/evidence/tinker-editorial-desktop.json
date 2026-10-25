@@ -1,0 +1,537 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "\"Instrument Sans\", sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load video: ",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Help",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Instrument Serif\", serif",
+      "height": 52.796875,
+      "line": "52.8px",
+      "size": "48px",
+      "tag": "H1",
+      "text": "Our story 2",
+      "weight": "400",
+      "width": 672,
+      "x": 384,
+      "y": 158.390625
+    },
+    {
+      "font": "\"Instrument Serif\", serif",
+      "height": 52.796875,
+      "line": "52.8px",
+      "size": "48px",
+      "tag": "H2",
+      "text": "Combining Form and Function",
+      "weight": "400",
+      "width": 503.140625,
+      "x": 40,
+      "y": 825.203125
+    },
+    {
+      "font": "\"Instrument Serif\", serif",
+      "height": 35.1953125,
+      "line": "35.2px",
+      "size": "32px",
+      "tag": "H2",
+      "text": "Quality Obsessed",
+      "weight": "400",
+      "width": 182.7890625,
+      "x": 268.6015625,
+      "y": 2115.9375
+    },
+    {
+      "font": "\"Instrument Serif\", serif",
+      "height": 105.59375,
+      "line": "52.8px",
+      "size": "48px",
+      "tag": "H2",
+      "text": "From our powder-coated steel to solid hardwood, no detail is overlooked.",
+      "weight": "400",
+      "width": 1092,
+      "x": 174,
+      "y": 2389.9140625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/our-story-2#MainContent"
+    },
+    {
+      "text": "Uplevel your office with new decor",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects"
+    },
+    {
+      "text": "",
+      "url": "https://theme-tinker-demo.myshopify.com/"
+    },
+    {
+      "text": "Organizers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/the-gather-collection"
+    },
+    {
+      "text": "Productivity",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/the-analog-system"
+    },
+    {
+      "text": "Chargers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/chargers"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects"
+    },
+    {
+      "text": "Analog Wood Card Holder",
+      "url": "https://theme-tinker-demo.myshopify.com/products/analog-wood-card-holder-maple?variant=51204706304303"
+    },
+    {
+      "text": "Analog - Dot Grid Cards",
+      "url": "https://theme-tinker-demo.myshopify.com/products/analog-dot-grid-cards-3-pack?variant=51204243587375"
+    },
+    {
+      "text": "Analog Premium Starter Kit",
+      "url": "https://theme-tinker-demo.myshopify.com/products/analog-starter-kit-maple?variant=51204664557871"
+    },
+    {
+      "text": "The Pen & Pen Tray Bundle",
+      "url": "https://theme-tinker-demo.myshopify.com/products/the-pen-pen-tray-bundle-black-maple?variant=51204316135727"
+    },
+    {
+      "text": "Shop Now",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/analog"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-tinker-demo.myshopify.com/search"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Organizers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/the-gather-collection"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Policies",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/policies"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-tinker-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Our story",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/our-story-2"
+    },
+    {
+      "text": "Tinker",
+      "url": "https://theme-tinker-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26058348855599__main",
+      "rect": {
+        "height": 204.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 118.390625
+      },
+      "tag": "DIV",
+      "text": "Our story 2"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26058348855599__hero_RYV9rj",
+      "rect": {
+        "height": 650,
+        "width": 1440,
+        "x": 0,
+        "y": 323.1875
+      },
+      "tag": "SECTION",
+      "text": "Combining Form and Function\n\nCreating and curating items that honor your everyday routine."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26058348855599__product_list_wjnABY",
+      "rect": {
+        "height": 600.9375,
+        "width": 1440,
+        "x": 0,
+        "y": 973.1875
+      },
+      "tag": "DIV",
+      "text": "Analog Wood Card Holder\nAdd\nAnalog Wood Card Holder\n$79.00\nAnalog - Dot Grid Cards\nSale\nAdd\nAnalog - Dot Grid Cards\nSale price \n$30.00 \nRegular price \n$39.00\nAnalog Premium Starter"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26058348855599__media_with_content_fkU6bA",
+      "rect": {
+        "height": 755.7890625,
+        "width": 1440,
+        "x": 0,
+        "y": 1574.125
+      },
+      "tag": "DIV",
+      "text": "Play video\nQuality Obsessed\n\nWe believe in designing and breathing life into products that last a lifetime and then some.\n\nShop Now"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26058348855599__section_nCgdBY",
+      "rect": {
+        "height": 225.59375,
+        "width": 1440,
+        "x": 0,
+        "y": 2329.9140625
+      },
+      "tag": "DIV",
+      "text": "From our powder-coated steel to solid hardwood, no detail is overlooked."
+    }
+  ],
+  "title": "Our story 2 – Tinker",
+  "url": "https://theme-tinker-demo.myshopify.com/pages/our-story-2",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "1440px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 650,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "\n    resource-list\n    \n    \n    resource-list--grid\n  ",
+      "columns": "331px 331px 331px 331px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 504.9375,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-41dbb9c3-0866-4036-9494-aa0e1c1cedda\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 504.9375,
+      "tag": "DIV",
+      "width": 331
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-41dbb9c3-0866-4036-9494-aa0e1c1cedda\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 504.9375,
+      "tag": "DIV",
+      "width": 331
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-41dbb9c3-0866-4036-9494-aa0e1c1cedda\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 504.9375,
+      "tag": "DIV",
+      "width": 331
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-41dbb9c3-0866-4036-9494-aa0e1c1cedda\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 504.9375,
+      "tag": "DIV",
+      "width": 331
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 100,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Analog Wood Card Holder",
+      "complete": true,
+      "naturalWidth": 360,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog Wood Card Holder",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog Wood Card Holder",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog Wood Card Holder",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog Wood Card Holder",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog - Dot Grid Cards",
+      "complete": true,
+      "naturalWidth": 360,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog - Dot Grid Cards",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog - Dot Grid Cards",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog - Dot Grid Cards",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog - Dot Grid Cards",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    },
+    {
+      "alt": "Analog Premium Starter Kit",
+      "complete": true,
+      "naturalWidth": 360,
+      "rect": {
+        "height": 413.75,
+        "width": 331
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nUplevel your office with new decor\n\nUplevel your office with new decor\nOrganizers\nProductivity\nChargers\nDecor\nTotal items in cart: 0\nOur story 2\nCombining Form and Function\n\nCreating and curating items that honor your everyday routine.\n\nAnalog Wood Card Holder\nAdd\nAnalog Wood Card Holder\n$79.00\nAnalog - Dot Grid Cards\nSale\nAdd\nAnalog - Dot Grid Cards\nSale price \n$30.00 \nRegular price \n$39.00\nAnalog Premium Starter Kit\nAdd\nAnalog Premium Starter Kit\n$118.00\nThe Pen & Pen Tray Bundle\nSale\nAdd\nThe Pen & Pen Tray Bundle\nSale price \n$65.00 \nRegular price \n$73.00\nPlay video\nQuality Obsessed\n\nWe believe in designing and breathing life into products that last a lifetime and then some.\n\nShop Now\nFrom our powder-coated steel to solid hardwood, no detail is overlooked.\n\nJoin our Newsletter — Get Updates, Offers and Invites.\n\nEmail\nShop\nSearch\nBestsellers\nOrganizers\nDecor\nHelp\nFAQ\nPolicies\nContact us\nAbout\nJournal\nOur story\n\nStay Connected\n\n© 2026 Tinker, Powered by Shopify"
+}

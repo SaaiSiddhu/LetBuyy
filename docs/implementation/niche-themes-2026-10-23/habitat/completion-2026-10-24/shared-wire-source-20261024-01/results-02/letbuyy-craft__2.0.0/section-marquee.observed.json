@@ -1,0 +1,66 @@
+{
+  "id": "section-marquee",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "marquee",
+    "group": "template",
+    "firstId": "section-cbc3d205-48d0-424e-9d08-d1014c0160f0",
+    "finalId": "section-ea297258-b49a-4810-aa7d-81bfe9a09670",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "marquee",
+          "settings": {
+            "text": "Source fixture text"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "marquee",
+          "settings": {
+            "text": "Source fixture text"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "marquee",
+          "settings": {
+            "text": "Source fixture text"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "marquee",
+          "settings": {
+            "text": "Source fixture text"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

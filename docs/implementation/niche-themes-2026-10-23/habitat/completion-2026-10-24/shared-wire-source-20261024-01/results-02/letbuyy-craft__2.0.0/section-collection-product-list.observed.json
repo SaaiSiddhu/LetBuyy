@@ -1,0 +1,70 @@
+{
+  "id": "section-collection-product-list",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "collection-product-list",
+    "group": "template",
+    "firstId": "section-909784d1-c3a0-4f5e-931b-16499ab3151b",
+    "finalId": "section-b88061d4-58c7-441f-977a-049f0e4a57e1",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title",
+            "showDimensionFilters": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: one emitted Sense-only payload, exact prior210/version6 and paired byte hashes
+ok 1 - one emitted Sense-only payload, exact prior210/version6 and paired byte hashes
+  ---
+  duration_ms: 5.773167
+  type: 'test'
+  ...
+# Subtest: all ten deterministic restored fields have exact emitted guards in both directions
+ok 2 - all ten deterministic restored fields have exact emitted guards in both directions
+  ---
+  duration_ms: 2.323833
+  type: 'test'
+  ...
+# Subtest: valid original merchant config stays exact without default reconstruction
+ok 3 - valid original merchant config stays exact without default reconstruction
+  ---
+  duration_ms: 1.724
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved name
+ok 4 - source predicate model refuses forged saved name
+  ---
+  duration_ms: 1.405667
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved category
+ok 5 - source predicate model refuses forged saved category
+  ---
+  duration_ms: 0.692333
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved version
+ok 6 - source predicate model refuses forged saved version
+  ---
+  duration_ms: 0.569125
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved default_template
+ok 7 - source predicate model refuses forged saved default_template
+  ---
+  duration_ms: 37.388792
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved section_schemas
+ok 8 - source predicate model refuses forged saved section_schemas
+  ---
+  duration_ms: 13.074375
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved block_schemas
+ok 9 - source predicate model refuses forged saved block_schemas
+  ---
+  duration_ms: 1.228083
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved settings_schema
+ok 10 - source predicate model refuses forged saved settings_schema
+  ---
+  duration_ms: 1.053292
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved renderer_manifest
+ok 11 - source predicate model refuses forged saved renderer_manifest
+  ---
+  duration_ms: 0.757334
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved schema_version
+ok 12 - source predicate model refuses forged saved schema_version
+  ---
+  duration_ms: 0.778
+  type: 'test'
+  ...
+# Subtest: source predicate model refuses forged saved renderer_version
+ok 13 - source predicate model refuses forged saved renderer_version
+  ---
+  duration_ms: 0.6935
+  type: 'test'
+  ...
+# Subtest: strict prior/journal shapes refuse missing/extra/null/array checkpoints
+ok 14 - strict prior/journal shapes refuse missing/extra/null/array checkpoints
+  ---
+  duration_ms: 1.835833
+  type: 'test'
+  ...
+# Subtest: original-config drift, nested checkpoint and wrong promotion hash are refused
+ok 15 - original-config drift, nested checkpoint and wrong promotion hash are refused
+  ---
+  duration_ms: 2.502583
+  type: 'test'
+  ...
+# Subtest: joint manifest only references four immutable heading payloads plus new Sense
+ok 16 - joint manifest only references four immutable heading payloads plus new Sense
+  ---
+  duration_ms: 4.284417
+  type: 'test'
+  ...
+# Subtest: paired source restores all11 metadata fields and never deletes captures/installed data or changes authority
+ok 17 - paired source restores all11 metadata fields and never deletes captures/installed data or changes authority
+  ---
+  duration_ms: 3.524042
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 225.082125

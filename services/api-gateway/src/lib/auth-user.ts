@@ -86,3 +86,15 @@ export async function findFirstOwnedSiteId(db: SupabaseClient, customUserId: str
 
     return site?.id || null;
 }
+
+/** Resolve current ownership before reading a tenant installation by its opaque id. */
+export async function resolveOwnedSiteId(
+    db: SupabaseClient, customUserId: string, requestedSiteId?: string | null, sessionStoreId?: string,
+): Promise<string> {
+    const siteId = requestedSiteId || sessionStoreId || await findFirstOwnedSiteId(db, customUserId);
+    if (!siteId) throw new AppError('Select a store before continuing.', 400, 'VALIDATION');
+    if (!await verifySiteOwnership(db, siteId, customUserId, sessionStoreId)) {
+        throw new AppError('Not authorized for this store.', 403, 'FORBIDDEN');
+    }
+    return siteId;
+}

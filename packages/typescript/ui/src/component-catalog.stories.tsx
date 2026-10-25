@@ -214,7 +214,7 @@ export function CoreControlsAndLayout() {
 
     return (
         <StoryFrame>
-            <Page>
+            <Page as="main">
                 <PageHeader
                     eyebrow="Component catalog"
                     title="Core controls and layout"
@@ -325,7 +325,7 @@ export function DataNavigationAndAnalytics() {
 
     return (
         <StoryFrame>
-            <Page>
+            <Page as="main">
                 <PageHeader
                     title="Data, navigation, and analytics"
                     description="Use these components for list workflows, dashboard scanning, and drill-down navigation."
@@ -417,7 +417,7 @@ export function FeedbackOverlaysAndResponsiveStates() {
     return (
         <StoryFrame>
             <ToastProvider>
-                <Page>
+                <Page as="main">
                     <PageHeader
                         title="Feedback and overlays"
                         description="Use these components for loading, empty, destructive, and guided workflow states."

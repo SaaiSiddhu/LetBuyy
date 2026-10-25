@@ -1,0 +1,137 @@
+{
+  "status": "UNNUMBERED_SOURCE_QUALIFIED_NATIVE_PENDING",
+  "version": "2.1.0",
+  "sourceHashes": {
+    "docs/implementation/niche-theme-programme/release-v2/generate-release.ts": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3",
+    "packages/theme-engine/package.json": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763",
+    "packages/theme-engine/src/built-in-section-schemas.ts": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+    "packages/theme-engine/src/circuit-discovery.ts": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+    "packages/theme-engine/src/circuit-styles.ts": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2",
+    "packages/theme-engine/src/circuit-theme-v201.ts": "ec2d68c29434e96404496cec44b10c2c293364cbfa98da113d2efa6f21c7c9be",
+    "packages/theme-engine/src/circuit-theme.ts": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+    "packages/theme-engine/src/dewdrop-discovery.ts": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+    "packages/theme-engine/src/dewdrop-styles.ts": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+    "packages/theme-engine/src/dewdrop-theme-v201.ts": "3b276b6513f0860092a8f2bdf03217c9f8d8a1fa27de9d7318e886d3bb8ea10c",
+    "packages/theme-engine/src/dewdrop-theme.ts": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+    "packages/theme-engine/src/experience-apply.ts": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4",
+    "packages/theme-engine/src/experience-compositions.ts": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68",
+    "packages/theme-engine/src/experience-fonts.ts": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488",
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+    "packages/theme-engine/src/habitat-styles.ts": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+    "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+    "packages/theme-engine/src/kindred-discovery.ts": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+    "packages/theme-engine/src/kindred-styles.ts": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+    "packages/theme-engine/src/kindred-theme.ts": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+    "packages/theme-engine/src/madeyours-discovery.ts": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+    "packages/theme-engine/src/madeyours-styles.ts": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e",
+    "packages/theme-engine/src/madeyours-theme.ts": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+    "packages/theme-engine/src/marginalia-discovery.ts": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3",
+    "packages/theme-engine/src/marginalia-styles.ts": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d",
+    "packages/theme-engine/src/marginalia-theme.ts": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+    "packages/theme-engine/src/niche-order-presentation.ts": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+    "packages/theme-engine/src/pantry-discovery.ts": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+    "packages/theme-engine/src/pantry-styles.ts": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278",
+    "packages/theme-engine/src/pantry-theme-v201.ts": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22",
+    "packages/theme-engine/src/pantry-theme.ts": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+    "packages/theme-engine/src/playfield-discovery.ts": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+    "packages/theme-engine/src/playfield-styles.ts": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243",
+    "packages/theme-engine/src/playfield-theme-v201.ts": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+    "packages/theme-engine/src/playfield-theme-v202.ts": "25aaec88541f8c46521596c1c01c3903018750e7057d1038a8ba13a773256bb1",
+    "packages/theme-engine/src/playfield-theme.ts": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+    "packages/theme-engine/src/schema-field-extensions.ts": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+    "packages/theme-engine/src/section-type-map.ts": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94",
+    "packages/theme-engine/src/template-registry.ts": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+    "packages/theme-engine/src/theme-bundle-core.ts": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/theme-document.ts": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+    "packages/theme-engine/src/theme-presets.ts": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+    "packages/theme-engine/src/theme-registry.ts": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+    "packages/theme-engine/src/threadline-discovery.ts": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+    "packages/theme-engine/src/threadline-styles.ts": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+    "packages/theme-engine/src/threadline-theme-v201.ts": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7",
+    "packages/theme-engine/src/threadline-theme.ts": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+    "packages/theme-engine/src/trailmark-discovery.ts": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+    "packages/theme-engine/src/trailmark-styles.ts": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0",
+    "packages/theme-engine/src/trailmark-theme-v201.ts": "9b70794b7bd71f8d0e83bc63e2eba0da46a888491985198fa52e0c157536c763",
+    "packages/theme-engine/src/trailmark-theme.ts": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+    "pnpm-lock.yaml": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a"
+  },
+  "payloadSha256": "cf10d8f413585425416d7555a2c786fe6b41d9e43b7add32f02043cf69d466bb",
+  "artifacts": [
+    {
+      "slug": "letbuyy-forge",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3"
+    },
+    {
+      "slug": "letbuyy-sense",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "bc754655eed2f5ee76a10a0d9e0dee0d449c6ef3efaf51b79f986ebf47b9f1a6"
+    },
+    {
+      "slug": "letbuyy-aura",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "41a6e941ef2410a2afc43041b3c30c6c2b06eb5155df94f8dd2ab241483cfc15"
+    },
+    {
+      "slug": "letbuyy-craft",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "95fd3f0fbfa026183a63a1fa111fa34fbf07b9492550752c96dd907a83785313"
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "1233403d2f7aa93714f6b634981f5f31f22cee8b454edf3e86bfed2d916fcae6"
+    },
+    {
+      "slug": "letbuyy-ride",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "cb800016da40faebc43da151a1429eee7a232b4226f66c0ae13434e4d8993ca7"
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "7b71abe8023049bc62e9229b68ac9d81e6c973225ac32291e06092b02fcfdf37"
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "version": "2.1.0",
+      "prior": "2.0.1",
+      "bundleSha256": "c720f1d47f00195932049753eff978ac268926834ebe514c785dbe79578b467e"
+    },
+    {
+      "slug": "letbuyy-nova",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "03595a3edf8eab4389ff9a62968633b9a51b04eb867d971dd909e7a7716f1e7a"
+    },
+    {
+      "slug": "letbuyy-summit",
+      "version": "2.1.0",
+      "prior": "2.0.0",
+      "bundleSha256": "1ae69b1ffb425510cd4e5e075bc6ef99be592066bdc6df014e4237e211acdbd4"
+    }
+  ],
+  "files": [
+    {
+      "path": "customization210.up.proposal.sql",
+      "sha256": "2266fe0f95b7fcb1364dfded188b318a311d91c7431c67af7c0c78d3707cfa29",
+      "bytes": 7051832
+    },
+    {
+      "path": "customization210.down.proposal.sql",
+      "sha256": "53eab3f42cbbfe3ae2ae739f8e23a231056d2f9e916861490ba93fb7774dc0e0",
+      "bytes": 1989
+    }
+  ],
+  "generatorSha256": "7f0712f159d99c87b9826ed8dce15ebc36bb218486b3b61bd6c6bacfacbce009",
+  "canonicalMigrationsEmitted": false
+}

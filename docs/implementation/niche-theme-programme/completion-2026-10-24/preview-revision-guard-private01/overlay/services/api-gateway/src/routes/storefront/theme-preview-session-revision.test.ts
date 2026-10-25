@@ -1,0 +1,115 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { runInNewContext } from 'node:vm';
+import { createHash } from 'node:crypto';
+import ts from 'typescript';
+import { Hono } from 'hono';
+
+// Execute the exact registered production handler with controlled transport seams.
+// This is an in-process route test, not a Worker/PostgreSQL integration test.
+const sourcePath = fileURLToPath(new URL('./public-routes.ts', import.meta.url));
+const source = readFileSync(sourcePath, 'utf8');
+const begin = source.indexOf("    router.get('/:subdomain/theme-preview', async (c) => {");
+const end = source.indexOf('    // Public/default mobile shape remains stable;', begin);
+assert.ok(begin >= 0 && end > begin);
+assert.equal(source.indexOf("    router.get('/:subdomain/theme-preview', async (c) => {", begin + 1), -1);
+const handler = ts.transpileModule(source.slice(begin, end), {
+    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
+}).outputText;
+type Row = Record<string, unknown>;
+type Mode = 'instance' | 'legacy';
+type Options = { minted?: unknown; current?: unknown; missingColumn?: boolean; missingInstanceTable?: boolean; missingDraft?: boolean; sessionStore?: string; expiresAt?: string; dbError?: boolean };
+const siteId = '11111111-1111-4111-8111-111111111111';
+const sessionId = '22222222-2222-4222-8222-222222222222';
+const instanceId = '33333333-3333-4333-8333-333333333333';
+const legacyId = '44444444-4444-4444-8444-444444444444';
+const tokenHash = createHash('sha256').update('synthetic-preview-capability').digest('hex');
+function fixture(mode: Mode, options: Options = {}) {
+    const calls: string[] = [];
+    const minted = Object.hasOwn(options, 'minted') ? options.minted : 4;
+    const current = Object.hasOwn(options, 'current') ? options.current : 4;
+    const session: Row = { id: sessionId, store_id: options.sessionStore || siteId, theme_id: 'letbuyy-sense', draft_id: legacyId, theme_instance_draft_id: mode === 'instance' ? instanceId : null, draft_version: minted, token_hash: tokenHash, expires_at: options.expiresAt || '2099-01-01T00:00:00Z' };
+    const instance: Row = { id: instanceId, store_id: siteId, draft_version: current, auto_saved_at: '2026-10-25T00:00:00Z' };
+    const legacy: Row = { id: legacyId, store_id: siteId, theme_id: 'letbuyy-sense', version: current, auto_saved_at: '2026-10-25T00:00:00Z' };
+    for (const [row, key] of [[instance, 'working_manifest'], [legacy, 'draft_config']] as const) Object.defineProperty(row, key, { get() { calls.push('manifest-value'); return { synthetic: 'owned-current-content' }; } });
+    class Query {
+        fields = '';
+        filters: Array<(row: Row) => boolean> = [];
+        readonly table: string;
+        constructor(table: string) { this.table = table; calls.push('table:' + table); }
+        select(fields: string) { this.fields = fields; return this; }
+        eq(key: string, value: unknown) { this.filters.push(row => row[key] === value); calls.push(`eq:${this.table}:${key}`); return this; }
+        gt(key: string, value: string) { this.filters.push(row => String(row[key]) > value); return this; }
+        async maybeSingle() {
+            if (options.dbError) return { data: null, error: { code: 'SYNTHETIC_DB_ERROR', message: 'PRIVATE_SQL_DETAIL' } };
+            if (this.table === 'theme_preview_sessions' && options.missingColumn && this.fields.includes('theme_instance_draft_id')) return { data: null, error: { code: '42703', column: 'theme_instance_draft_id' } };
+            if (this.table === 'theme_instance_drafts' && options.missingInstanceTable) return { data: null, error: { code: '42P01', table: this.table } };
+            const row = this.table === 'theme_preview_sessions' ? session : this.table === 'theme_instance_drafts' ? instance : legacy;
+            return { data: (!options.missingDraft || this.table === 'theme_preview_sessions') && this.filters.every(filter => filter(row)) ? row : null, error: null };
+        }
+    }
+    const router = new Hono();
+    const scopes = {
+        router, Date,
+        loadSiteByHandle: async (_c: unknown, handle: string) => handle === 'owned-preview' ? { id: siteId } : null,
+        getSupabaseAdmin: () => ({ from: (table: string) => new Query(table) }),
+        sha256Hex: async (value: string) => createHash('sha256').update(value).digest('hex'),
+        isMissingColumnError: (error: Row | null, column: string) => error?.code === '42703' && error.column === column,
+        isMissingTableError: (error: Row | null, table: string) => error?.code === '42P01' && error.table === table,
+        dbFailureBody: () => ({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Unable to complete request' } }),
+        readThemePreviewContent: async () => { calls.push('resource-content'); return { status: 200, body: { data: { content: 'owned-private-page' } } }; },
+        readThemePreviewCollection: async () => { calls.push('resource-collection'); return { status: 200, body: { data: { id: instanceId } } }; },
+        loadCollectionSummaries: async () => { calls.push('resource-collections'); return { data: [], error: null }; },
+        collectionBrowseQuery: () => ({}), collectionSummaryResult: () => [],
+        parseStorefrontDiscoveryRequest: () => ({ success: true, data: { page: 1, limit: 100 } }),
+        queryPublicProducts: async () => { calls.push('resource-products'); return { data: [], count: 0, error: null }; },
+        toPublicProduct: (row: Row) => row,
+        loadCurrentThemeRelease: async () => { calls.push('live-release'); return null; },
+        resolveLiquidBundleArtifact: () => null,
+        loadPublicStorefrontAppBlocks: async () => { calls.push('app-blocks'); return []; },
+        mapPublicStorePayload: (store: Row, release: Row) => ({ store_id: store.id, release_version: release.release_version, template: release.release_config }),
+        success: (data: unknown) => ({ success: true, data }),
+        paginated: (data: unknown) => ({ success: true, data }),
+    };
+    runInNewContext(handler, scopes, { timeout: 1000, filename: 'actual-registered-theme-preview-handler.js' });
+    return { calls, request: (resource = '', token = 'synthetic-preview-capability', handle = 'owned-preview') => router.request(`http://synthetic.local/${handle}/theme-preview?token=${encodeURIComponent(token)}${resource ? '&' + resource : ''}`) };
+}
+async function denied(f: ReturnType<typeof fixture>, resource = '') {
+    const result = await f.request(resource);
+    assert.equal(result.status, 404);
+    assert.match(result.headers.get('cache-control') || '', /private.*no-store/);
+    assert.doesNotMatch(await result.text(), /owned-current-content|owned-private-page|PRIVATE_SQL_DETAIL/);
+    assert.equal(f.calls.some(call => call === 'manifest-value' || call.startsWith('resource-') || call === 'live-release' || call === 'app-blocks'), false);
+}
+for (const mode of ['instance', 'legacy'] as const) {
+    test(`${mode}: equal valid revision renders the exact identity before negative controls`, async () => {
+        const f = fixture(mode); const response = await f.request();
+        assert.equal(response.status, 200); assert.match(response.headers.get('cache-control') || '', /private.*no-store/);
+        const body = await response.json() as { data: { release_version: number; theme_preview: { session_id: string; draft_version: number }; template: Row } };
+        assert.equal(body.data.release_version, 4); assert.equal(body.data.theme_preview.draft_version, 4); assert.equal(body.data.theme_preview.session_id, sessionId); assert.equal(body.data.template.synthetic, 'owned-current-content');
+        assert.equal((await fixture(mode).request('resource=page')).status, 200);
+    });
+    test(`${mode}: older/newer or invalid revisions fail before draft content and resources`, async () => {
+        for (const pair of [{ minted: 4, current: 5 }, { minted: 5, current: 4 }, ...[null, 0, -1, 1.5, '4', Number.MAX_SAFE_INTEGER + 1].flatMap(value => [{ minted: value, current: 4 }, { minted: 4, current: value }])]) {
+            for (const resource of ['', 'resource=page', 'resource=products', 'resource=collections']) await denied(fixture(mode, pair), resource);
+        }
+    });
+    test(`${mode}: existing store/token/expiry/missing-draft fences remain closed`, async () => {
+        for (const options of [{ sessionStore: 'foreign-store' }, { expiresAt: '2000-01-01T00:00:00Z' }, { missingDraft: true }]) await denied(fixture(mode, options));
+        const token = fixture(mode); assert.equal((await token.request('', 'wrong-token')).status, 404); assert.equal(token.calls.includes('manifest-value'), false);
+        const foreign = fixture(mode); assert.equal((await foreign.request('', undefined, 'foreign-preview')).status, 404); assert.equal(foreign.calls.length, 0);
+        const broken = await fixture(mode, { dbError: true }).request(); assert.equal(broken.status, 500); assert.doesNotMatch(await broken.text(), /PRIVATE_SQL_DETAIL/);
+    });
+}
+test('resolved mismatched instance never falls through to another legacy draft', async () => {
+    const f = fixture('instance', { current: 5 }); await denied(f, 'resource=page');
+    assert.equal(f.calls.includes('table:theme_editor_drafts'), false);
+});
+test('existing missing-column and missing-instance-table compatibility paths retain equal-revision positive control', async () => {
+    assert.equal((await fixture('legacy', { missingColumn: true }).request()).status, 200);
+    assert.equal((await fixture('instance', { missingInstanceTable: true }).request()).status, 200);
+    await denied(fixture('legacy', { missingColumn: true, current: 5 }));
+    await denied(fixture('instance', { missingInstanceTable: true, current: 5 }));
+});

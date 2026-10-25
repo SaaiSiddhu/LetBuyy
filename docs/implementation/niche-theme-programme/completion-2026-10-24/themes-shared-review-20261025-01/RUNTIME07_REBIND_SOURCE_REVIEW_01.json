@@ -1,0 +1,130 @@
+{
+  "recordedAt": "2026-10-25T00:41:20.403846+00:00",
+  "status": "CORRECTED_SOURCE_REVIEW_ORIGINAL_RUNNER_ALIVE_NO_OWNER_TRANSFER",
+  "runtimeActions": 0,
+  "privateStateOrSecretsRead": false,
+  "sources": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "bbcdc3c02d382a8c7bf2ddca24dc5996d42495dde26e6722df28984cb83b7c74"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gateway-harness.ts",
+      "sha256": "8ea080a22eda42ad030a849c9aed109d2224ad52a346081d3a0466c1f8b648f7"
+    },
+    {
+      "path": "scripts/governance/owned-client-launcher.mjs",
+      "sha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f"
+    },
+    {
+      "path": "scripts/governance/owned-next-production.mjs",
+      "sha256": "faca5a456437e6bc0979530cd28e712ad002d880e357215f2334aed7e5e68772"
+    },
+    {
+      "path": "scripts/governance/owned-fixture-guard.mjs",
+      "sha256": "c94f451113535b4c89a1a37d441453ba7803b08e46a328097c7086e1d22835f8"
+    },
+    {
+      "path": "scripts/governance/owned-rest-proxy.mjs",
+      "sha256": "1b42adf835aea3adde998692398b4780d21d8d3a3ad8afa5bdc16cdd67b221e8"
+    },
+    {
+      "path": "tests/owned-db/theme-completion-razorpay-browser.manual.ts",
+      "sha256": "2638469fe0f20eaa96d09bff79993ec1d945bcffb28288cc70b887a520d4c82b"
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes/theme-update-route.ts",
+      "sha256": "53cb5f2b80ef151e427fb7ce20388d29924812be4527e4720ddd36aca1593f75"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ThemeUpdatePanel.tsx",
+      "sha256": "3855438357bd9aeb7c60c71cc612d97fe51332647301584026826b4c4ccd75ee"
+    }
+  ],
+  "observedSourceFacts": [
+    {
+      "id": "REBIND-R01",
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "lines": [
+        95,
+        98,
+        134,
+        161,
+        173,
+        174,
+        210,
+        247,
+        254
+      ],
+      "fact": "Existing hold fixture refuses existing private state, seeds a new site/owner/catalogue, selects fresh app/API/TLS ports and fresh identity/checkout/cookie secrets. Gateway is constructed once and request bridge closes over it. No reload/rebind control exists. FINISH runs all-client/TLS/API cleanup."
+    },
+    {
+      "id": "REBIND-R02",
+      "path": "scripts/governance/owned-fixture-guard.mjs",
+      "lines": [
+        185,
+        187,
+        192,
+        203,
+        241
+      ],
+      "fact": "Canonical ordinary guard requires the original live runner and exact resource labels/markers/listener. Root correction verifies54685 ALIVE. Earlier owner-reported dead inference was false and is superseded; no orphan adoption, owner-transfer protocol or guard change is needed."
+    },
+    {
+      "id": "REBIND-R03",
+      "path": "scripts/governance/owned-client-launcher.mjs",
+      "lines": [
+        55,
+        61,
+        77,
+        127,
+        156,
+        165
+      ],
+      "fact": "Client supervisor binds launching parent and fixture runner, then stops child group when either disappears; no existing ownership-handoff message is supported. Killing55109 can remove all three app groups. stopOwnedClientRuntime also refuses unregistered external children."
+    },
+    {
+      "id": "REBIND-R04",
+      "path": "scripts/governance/owned-next-production.mjs",
+      "lines": [
+        24,
+        34,
+        39
+      ],
+      "fact": "Production launcher always builds after spawn and before listen; currently no validated start-prebuilt path. Dynamic PID-owned Next output directories mean merely copying .next or using --start is unsupported."
+    },
+    {
+      "id": "REBIND-R05",
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "lines": [
+        173,
+        174,
+        225,
+        227,
+        247
+      ],
+      "fact": "Private state schema contains origins/site/login/capabilities but not the generated gateway identity keys, checkout signing secret or Accounts cookie secret. Those remain closure/child-binding inputs. A replacement cannot infer or regenerate them and claim unchanged session/handoff continuity. Retained private configuration support is a hard pre-shutdown requirement, not authorization to inspect process memory or dump environments."
+    },
+    {
+      "id": "REBIND-R06",
+      "path": "services/api-gateway/src/routes/themes/theme-update-route.ts",
+      "lines": [
+        98,
+        169,
+        254,
+        258
+      ],
+      "fact": "Canonical theme update-preview and update routes plus ThemeUpdatePanel already exist. They use target package UUID, exact diff CAS, tenant ownership and canonical publisher. Use these for installed theme version transitions; global catalogue UP alone must not rewrite installed drafts/releases."
+    }
+  ],
+  "limitations": [
+    "Read-only source and retained redacted receipts only; no process/container/network/database/browser/secret/state probe performed.",
+    "No supported runtime-cutover command or state capsule has been proven ready. A normal fixture relaunch is specifically unsafe for the preservation goal."
+  ],
+  "next": "Root reviews fresh-owned full-state restore/no-seed/prebuilt scope; current ordinary ownership guard unchanged.",
+  "runnerLivenessCorrection": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNNER_LIVENESS_CORRECTION_03.json"
+}

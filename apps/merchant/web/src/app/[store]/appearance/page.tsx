@@ -233,7 +233,8 @@ export default function AppearancePage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="themes"
+                    recipe="index"
                     title="Appearance"
                     description="Control the storefront brand color, typography, logo assets, and custom CSS."
                     breadcrumbs={[{ label: 'Online Store' }, { label: 'Appearance' }]}
@@ -249,7 +250,8 @@ export default function AppearancePage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="themes"
+                recipe="index"
                 title="Appearance"
                 description="Control the storefront brand color, typography, logo assets, and custom CSS."
                 breadcrumbs={[{ label: 'Online Store' }, { label: 'Appearance' }]}

@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-24T18:59:23.749724+00:00",
+  "runId": "63c55b066db3",
+  "theme": "MadeYours",
+  "packageVersion": "2.1.0",
+  "status": "BROWSER_CANARY_PASS",
+  "cases": [
+    {
+      "id": "NORMAL_MERCHANT_SSO",
+      "status": "PASS"
+    },
+    {
+      "id": "ALL10_210_CATALOG",
+      "status": "PASS"
+    },
+    {
+      "id": "INSTALL_SAVED_DRAFT",
+      "status": "PASS"
+    },
+    {
+      "id": "MANIFEST_AND_REAL_LIQUID_PREVIEW",
+      "status": "PASS"
+    },
+    {
+      "id": "EDITOR_SAVE_RELOAD_PUBLISH",
+      "status": "PASS"
+    },
+    {
+      "id": "PUBLIC_CUSTOMIZATION_READBACK",
+      "status": "PASS"
+    },
+    {
+      "id": "NORMAL_LETBUYY_BUYER_SSO_CONSENT",
+      "status": "PASS"
+    },
+    {
+      "id": "CONFIGURED_PRODUCT_REVIEW_AND_ADD",
+      "status": "PASS"
+    },
+    {
+      "id": "CART_EDIT_MOSS_TO_OAT_AND_TEXT",
+      "status": "PASS"
+    },
+    {
+      "id": "CART_EDIT_SAVE_ACK",
+      "status": "PASS"
+    },
+    {
+      "id": "FULL_CART_RELOAD_RETAINS_EDIT",
+      "status": "PASS"
+    },
+    {
+      "id": "REMOVE_AND_RELOAD_EMPTY",
+      "status": "PASS"
+    },
+    {
+      "id": "REVIEW_READD_ONE_LINE",
+      "status": "PASS"
+    }
+  ],
+  "durableCart": {
+    "cartId": "215ff782-ac31-41dc-885b-953121cda42c",
+    "status": "active",
+    "revision": "2026-10-24T18:58:54.431129+00:00",
+    "lines": 1,
+    "quantity": 1,
+    "variantId": "45c1feb5-c127-40d7-acfb-296806bb0e5f",
+    "cover": "Oat",
+    "acceptedText": "Notebook Two",
+    "unitPrice": 690,
+    "snapshotText": "Notebook Two"
+  },
+  "screenshots": [
+    "configured-cart-edited-reloaded.png",
+    "configured-cart-readded.png"
+  ],
+  "proofLimits": "Existing buyer fixture login, not UI signup/email verification. Shared canary, not all23 MadeYours cases or all10 full certificates.",
+  "allTenCertified": false
+}

@@ -1,0 +1,177 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "banner-carousel",
+  "group": "template",
+  "originalId": "section-2fba7925-ec79-4c8e-85aa-642cd3530a48",
+  "finalId": "section-e753b2b0-6a73-4547-95bd-0bf8e42131aa",
+  "sectionFieldsExercised": [
+    "title",
+    "autoplay"
+  ],
+  "effectiveBlockFieldsExercised": [
+    "slide.heading",
+    "slide.image",
+    "slide.link"
+  ],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "autoplay": false
+        },
+        "disabled": false,
+        "block_order": [
+          "block-f479928d-7311-4051-8d20-3c82e7a7c2d9",
+          "block-8ead5506-64d5-4193-8793-1efa87a31b88"
+        ],
+        "blocks": {
+          "block-f479928d-7311-4051-8d20-3c82e7a7c2d9": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-8ead5506-64d5-4193-8793-1efa87a31b88": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "autoplay": false
+        },
+        "disabled": true,
+        "block_order": [
+          "block-8ead5506-64d5-4193-8793-1efa87a31b88",
+          "block-f479928d-7311-4051-8d20-3c82e7a7c2d9"
+        ],
+        "blocks": {
+          "block-8ead5506-64d5-4193-8793-1efa87a31b88": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-f479928d-7311-4051-8d20-3c82e7a7c2d9": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "autoplay": false
+        },
+        "disabled": false,
+        "block_order": [
+          "block-8ead5506-64d5-4193-8793-1efa87a31b88",
+          "block-f479928d-7311-4051-8d20-3c82e7a7c2d9"
+        ],
+        "blocks": {
+          "block-8ead5506-64d5-4193-8793-1efa87a31b88": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-f479928d-7311-4051-8d20-3c82e7a7c2d9": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "autoplay": false
+        },
+        "disabled": false,
+        "block_order": [
+          "block-215a13a5-1ee5-4965-a523-6a31a62839e2",
+          "block-1a02c862-1285-4faf-a29a-ef5bf539fed8"
+        ],
+        "blocks": {
+          "block-215a13a5-1ee5-4965-a523-6a31a62839e2": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-1a02c862-1285-4faf-a29a-ef5bf539fed8": {
+            "type": "slide",
+            "settings": {
+              "heading": "Circuit source heading",
+              "image": "https://example.invalid/circuit/image.webp",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

@@ -17,10 +17,11 @@
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
+import { CircleAlert, TriangleAlert } from 'lucide-react'
 import { useId } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-import { MaterialIcon } from '@letbuyy/ui'
+
 import styles from './controls.module.css'
 
 interface LiquidControlProps {
@@ -74,13 +75,13 @@ export function LiquidControl({ field, value, onChange }: LiquidControlProps) {
                 className={styles.notConnectedBadge}
                 aria-label="Liquid rendering is not active — feature flag is off"
             >
-                <MaterialIcon name="warning" size={12} aria-hidden />
+                <TriangleAlert size={12} aria-hidden />
                 NOT-CONNECTED — Liquid rendering disabled (canary flag off)
             </span>
 
             {error ? (
                 <p id={`${id}-error`} className={styles.fieldError} role="alert">
-                    <MaterialIcon name="error" size={12} aria-hidden />
+                    <CircleAlert size={12} aria-hidden />
                     {' '}{error}
                 </p>
             ) : null}

@@ -1,0 +1,27 @@
+{
+  "status": "SUBMITTED_CONFIRMED_BY_SUPABASE_UI",
+  "submitted_utc": "2026-10-21T20:14:51.247538+00:00",
+  "channel": "Authenticated Supabase staging project Help > Contact support",
+  "project": "Letbuyy-Store-Staging",
+  "project_ref": "yhhhjeaprrpjglriazad",
+  "organization": "bgtushwxatiejcaiyyqd",
+  "category": "Other",
+  "service": "Database",
+  "severity": "Low",
+  "subject": "Staging-first review: native catalog-lock helper for managed PostgreSQL migrations",
+  "confirmation_heading": "Support request sent",
+  "confirmation_text": "Your ticket has been logged for Letbuyy-Store-Staging",
+  "ticket_number": "Not displayed in confirmation UI",
+  "follow_up": "Supabase replies to the existing registered account email; no duplicate ticket needed",
+  "support_human_and_ai_diagnostic_access": false,
+  "attachment": {
+    "name": "LetBuyy-Supabase-Helper-Support.zip",
+    "bytes": 7491,
+    "sha256": "b0e2c336391c3d0b8ba36ac47cae2f11db0f697866b5ad66ffcd1489b8fece32",
+    "contains": "Installer, retirement, profile, read-only verification query, request and hash manifest; no secrets, records or backups"
+  },
+  "provider_installation": "Not confirmed",
+  "application_database_migrations": false,
+  "runtime_deployments": false,
+  "connection_or_credential_changes": false
+}

@@ -1,0 +1,25 @@
+- link "Transfers":
+- link "Transfers":
+- heading [level=1]: Create transfer
+- heading "Create transfer" [level=1]
+- button "Select origin":
+- button "Select destination":
+- button "Search products to add":
+- button "Import":
+- button "Use a barcode scanner to scan products":
+- heading "Transfer details" [level=2]:
+- button "Created at": October 22, 2026
+- button "Add reference name"
+- button "Add note"
+- button "Add tags"
+- button "Linked purchase order": Link purchase order
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

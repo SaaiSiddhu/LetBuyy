@@ -671,7 +671,8 @@ export default function OrdersPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="orders"
+                recipe="index"
                 eyebrow="Operations"
                 title="Orders"
                 description="Review purchases, confirm payment, ship orders, and keep fulfillment moving."

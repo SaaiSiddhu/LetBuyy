@@ -1,0 +1,89 @@
+{
+  "recordedAt": "2026-10-24T04:37:50.890244+00:00",
+  "classification": "CURRENT_COORDINATOR_CHECKPOINT_NOT_ALL_TEN_ACCEPTANCE",
+  "runId": "936e5f577646",
+  "mockups": {
+    "PNGs": 405,
+    "boards": 135,
+    "milestoneAccepted": true
+  },
+  "allTenAccepted": false,
+  "freshEditor": {
+    "status": "ACTIVE_ROOT_ADMITTED_EDITOR_SOLE_UI_CONTROLLER",
+    "runtimeAdmission": "editor-stable392-02-runtime-admission.json",
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "effectiveExpiryBoundUtc": [
+      "2026-10-24T08:55:37Z",
+      "2026-10-24T08:57:25Z"
+    ],
+    "oldF607": "RETIRED_HISTORY_ONLY_NO_IDS_REUSED"
+  },
+  "dewdrop": {
+    "controllerCounts": {
+      "PASS": 23,
+      "PARTIAL": 6,
+      "NOT_RUN": 1
+    },
+    "controllerCountsAreIndependentAcceptance": false,
+    "primaryPurchase": "ORD-20261024-10000 / INR1140 / pending COD unpaid",
+    "browserPurchases": 1,
+    "additionalSyntheticLegacyOrders": 1,
+    "s02": "DIRECT_HUMAN_APPROVED_IDENTICAL_THREE_ROW_SETUP_COMMITTED_ONCE",
+    "s02ApprovalVerification": {
+      "path": "docs/implementation/niche-theme-programme/dewdrop-s02-human-approval-verification.json",
+      "sha256": "f8a4dd49c75f98ab775200f5934a9950f47f9fe91ea61f05a458be502f32a5c2"
+    },
+    "historyAndStaleArchive": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-history-stale-archive-completed.json",
+      "sha256": "2e8ddf9eb06bba240cef9103ce1f37721fd1dbcf0e980e54184f235cf416ad68"
+    },
+    "priceCorrection": "Wrong variant row was edited by UI controller at version23; server matched submitted data. Normal correction at27 set Pink899/Rose520. No platform price defect established or source fix needed. Preserve original wrong-row evidence.",
+    "staleCheckout": "ONE actual409 CHECKOUT_PRODUCT_CHANGED; no order/inventory/reservation/ledger effect; checkout_sessions and ONEcheckout.started outbox event changed, so not all22-table invariant.",
+    "baselineRecovery": "NORMAL_UI_V1_RESTORE_AND_TWO_PINK_CART_GRANTED_IN_PROGRESS_NO_STOCK_REFILL",
+    "remaining": "Independent owner audit, R01 recovery, precise partial cases, preview typography retake, collection count fix/retest"
+  },
+  "supplementalClients": {
+    "candidate": "/private/tmp/theme-editor-font-axis-20261024-01",
+    "sourceFiles": 17245,
+    "sourceAdmission": "editor-font-axis-source-gate-admission.json",
+    "runtimeAdmission": "editor-font-axis-runtime-admission.json",
+    "sourceChanges": "Accepted font map plus axis-name rename only. Actual axis/value rename + canonical save/history passed.",
+    "actualPreview": "BLOCKED_PARENT_CSP_MISSING_PLATFORM_PREVIEW_ORIGIN",
+    "diagnosis": "Merchant helper intentionally uses http://localhost:58091; actual merchant CSP frame-src has tenant58091 but omits platformlocalhost58091. Commerce frame-ancestors includes58090. This is a supplemental launcher configuration gap; font parity not measured.",
+    "repair": "Prepared same-source same-origin launcher02 with configured storefront platform origin; await Editor no-dirty-form safe checkpoint, gracefully end only own supplemental clients, rebuild them. No source policy weakening, wildcard or browser bypass.",
+    "originalBuyer": "Retained on50494/50497, no cross-port cart/session-continuity claim"
+  },
+  "publisher393": {
+    "status": "NATIVE02_FAILED_UP_SYNTAX_PHASE1_PASSED",
+    "attempt": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/02/attempt-qualification.json",
+      "sha256": "d569970aab707c705ea1fa3322e6e1098ee4c38cc03bb50986a49f72836a1c62"
+    },
+    "runId": "bf6e2bc62ce7",
+    "appliedSourceMigrations": 321,
+    "maximumSourceMigration": 392,
+    "candidateUPQualified": false,
+    "exactSQLLineNativeObserved": false,
+    "next": "Threadline preserving old epoch, correcting versioned source candidate scalar CASE syntax without weakening security; review before new owned native execution.",
+    "393Or394Emitted": false
+  },
+  "circuitCollectionCount": {
+    "status": "CLOSED_OPERATION_IMPLEMENTATION_DRAFT_GRANTED_OFFSCAN",
+    "proposal": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/stable936-collection-count-read-boundary-proposal.json",
+    "noNewPrivileges": true,
+    "sharedProductionFilesFrozenDuring393": true,
+    "next": "Focused scratch implementation/contracts/pagination/fault tests, apply after security source epoch closes; own native qualification later."
+  },
+  "nextUI": "Pantry P00-P12 after Dewdrop recovery and preview configuration retake. Pantry owner preparing exact concise execution packet. No new theme UI allocation until Editor checkpoint.",
+  "persistentMarketplace": {
+    "url": "http://themes.letbuyy-local.localhost:9015/themes",
+    "status": "ROOT_ACCEPTED_RUNNING_UNTOUCHED",
+    "acceptance": "marketplace-persistent-local-acceptance.json"
+  },
+  "kindred": "HUMAN_SOURCE_ARTIFACT_FREEZE_REMAINS_KQA01_P2_OPEN",
+  "boundaries": [
+    "No merge/push/deploy/real PSP/fulfillment/external messages.",
+    "No timer extension, global Docker reaping, backup deletion, cookie/storage/token injection or TLS bypass.",
+    "No old runtime ID resurrection or source/native results promoted to unrun theme browser acceptance."
+  ]
+}

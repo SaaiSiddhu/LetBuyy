@@ -1,0 +1,66 @@
+{
+  "id": "section-blog-listing",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "blog-listing",
+    "group": "template",
+    "firstId": "section-d26302a1-3f45-45ea-8d05-ad246ed09644",
+    "finalId": "section-4656d69a-712c-4515-a298-7645b56aa675",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "blog-listing",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "blog-listing",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "blog-listing",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "blog-listing",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

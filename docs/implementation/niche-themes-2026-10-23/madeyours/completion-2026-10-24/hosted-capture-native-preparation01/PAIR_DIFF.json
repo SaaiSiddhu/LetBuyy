@@ -1,0 +1,15 @@
+{
+  "filesPerCandidate": 6545,
+  "originalReceiptFiles": 6547,
+  "excludedDeclaredEnvFiles": 6,
+  "allowedBaseSourceFiles": 6541,
+  "additionalWrapper": 1,
+  "copiedNodeWorkspaceMetadata": 1,
+  "recursiveRegisteredTestHelpers": 2,
+  "onlyDifferentFile": "services/api-gateway/src/routes/checkout.ts",
+  "redSha256": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e",
+  "greenSha256": "bed680202cc7ff86ee1a43ddfbeb327ae6732ade104b7d3b57b703bade50fa08",
+  "sameProposedWitnessSha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76",
+  "sameOriginalWrapperSha256": "d5660a3d777799c6e74c06f659265196930f01639b0cb1e25a4ce566b84d1fcc",
+  "sameSymlinkText": true
+}

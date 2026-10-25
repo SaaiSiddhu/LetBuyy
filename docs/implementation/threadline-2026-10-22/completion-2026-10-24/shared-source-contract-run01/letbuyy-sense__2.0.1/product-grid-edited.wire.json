@@ -1,0 +1,3668 @@
+{
+  "themeId": "letbuyy-sense",
+  "schema_version": "2026-06-liquid-sections",
+  "engineVersion": "0.1.0",
+  "rendererEngine": "liquid",
+  "liquidBundle": {
+    "schema_version": "2026-06-liquid-sections",
+    "package": {
+      "slug": "letbuyy-sense",
+      "name": "Threadline",
+      "description": "Editorial apparel storefront with silhouette discovery, garment facts and size-aware shopping.",
+      "author_name": "LetBuyy",
+      "site_types": [
+        "store"
+      ],
+      "status": "active",
+      "pricing_type": "free",
+      "price": 0,
+      "currency": "INR",
+      "version": "2.0.1",
+      "version_number": 3,
+      "release_status": "published",
+      "compatibility_range": ">=2026-06-liquid-sections"
+    },
+    "layout": {
+      "theme": {
+        "path": "layout/theme.liquid",
+        "source": "<!doctype html>\n<html lang=\"{{ request.locale | default: \"en\" }}\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  {% assign lb_page_title = shop.name %}\n  {% assign lb_meta_description = settings.metaDescription | default: shop.description | strip_html | truncate: 160 %}\n  <title>{{ lb_page_title }}</title>\n  {% if lb_meta_description != blank %}<meta name=\"description\" content=\"{{ lb_meta_description }}\">{% endif %}\n  <meta name=\"twitter:card\" content=\"{% if settings.socialImageUrl != blank %}summary_large_image{% else %}summary{% endif %}\">\n  <meta name=\"twitter:title\" content=\"{{ lb_page_title }}\">\n  {% if lb_meta_description != blank %}<meta name=\"twitter:description\" content=\"{{ lb_meta_description }}\">{% endif %}\n  {% if settings.socialImageUrl != blank %}<meta name=\"twitter:image\" content=\"{{ settings.socialImageUrl | image_url }}\">{% endif %}\n  <style data-lb-layout=\"1\">\n    :root{--lb-focus-ring-width:2px;--lb-focus-ring-color:var(--accent,#2563eb);--lb-focus-offset:2px;--lb-space-sm:0.5rem;--lb-space-md:0.75rem;--lb-space-lg:1rem;--lb-radius-sm:0.375rem;--lb-layout-max:72rem;--lb-layout-gutter:1rem;--lb-layout-breakpoint:48em;}\n    .lb-theme :where(a,button,input,select,textarea,summary,details,[tabindex]):focus-visible{outline:var(--lb-focus-ring-width) solid var(--lb-focus-ring-color);outline-offset:var(--lb-focus-offset);}\n    .lb-skip-link{position:absolute;left:-9999px;top:0;z-index:100;padding:var(--lb-space-md) var(--lb-space-lg);border-radius:var(--lb-radius-sm);background:var(--surface,#f8fafc);color:var(--foreground,#1a1a2e);font-weight:600;}\n    .lb-skip-link:focus,.lb-skip-link:focus-visible{left:var(--lb-space-lg);top:var(--lb-space-lg);}\n    .lb-layout__header,.lb-layout__footer{display:flex;flex-direction:column;align-items:flex-start;gap:var(--lb-space-md);margin-inline:auto;max-width:min(var(--lb-layout-max),calc(100vw - var(--lb-layout-gutter) * 2));padding-block:var(--lb-space-lg);padding-inline:var(--lb-layout-gutter);}\n    .lb-layout__brand{font-family:var(--font-display,inherit);font-weight:700;}\n    .lb-layout__nav{display:flex;flex-wrap:wrap;gap:var(--lb-space-md);}\n    .lb-layout__legal{margin:0;font-size:0.875rem;}\n    @media (min-width:48em){.lb-layout__header,.lb-layout__footer{flex-direction:row;align-items:center;justify-content:space-between;}}\n  </style>\n  {{ content_for_header | raw }}\n<style data-threadline=\"2\">\n.tl-theme{--font-display:var(--font-heading,Georgia,serif);--font-body:var(--font-main,Inter,Arial,sans-serif);--tl-muted:var(--tl-muted-color,#65574c);--tl-border:var(--tl-boundary-color,#766657);--tl-stone:var(--surface,#efe7dc);background:var(--background);color:var(--foreground);--footer-bg:var(--surface);--footer-text:var(--foreground);--footer-text-muted:var(--tl-muted);font:16px/1.55 var(--font-body,Inter,Arial,sans-serif)}\n.tl-theme *{box-sizing:border-box}.tl-theme img{max-width:100%}.tl-theme a{color:inherit}.tl-theme h1,.tl-theme h2,.tl-theme h3{font-family:var(--font-display,Georgia,serif);font-weight:400;line-height:1.15;letter-spacing:-.025em}.tl-theme h1{font-size:clamp(2rem,4.4vw,4rem)}.tl-theme h2{font-size:clamp(1.75rem,3vw,2.4rem)}.tl-theme p{color:var(--tl-muted)}\n.tl-theme :where(a,button,input,select,summary):focus-visible{outline:2px solid var(--tl-focus-color,#005fcc);outline-offset:4px}.tl-wrap{width:min(1280px,calc(100% - 112px));margin-inline:auto}.tl-section{padding-block:76px}.tl-eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:.7rem;color:var(--tl-muted)}.tl-button{min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:13px 23px;background:var(--primary);color:var(--tl-action-label,#fff)!important;border:1px solid var(--primary);border-radius:4px;text-decoration:none;font-size:.85rem}.tl-link{display:inline-flex;min-height:44px;align-items:center;border-bottom:1px solid var(--tl-border);text-decoration:none;font-size:.85rem}.tl-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:30px}.tl-heading h2{margin:0}.tl-empty{padding:40px 0;color:var(--tl-muted)}\n.tl-theme .lb-announcement-bar{background:var(--primary);color:var(--tl-action-label,#fff);padding:9px 20px;text-align:center;font-size:.75rem}.tl-theme .lb-announcement-bar__inner{justify-content:center}.tl-theme .lb-header{border-bottom:1px solid var(--border-color);background:var(--background);padding:14px 0}.tl-theme .lb-header__inner{padding:0;min-height:44px;max-width:1280px;width:calc(100% - 112px);margin:auto}.tl-theme .lb-header__brand{font-family:var(--font-display);font-weight:400;letter-spacing:.18em;font-size:1.5rem;text-transform:uppercase}.tl-theme .lb-header__nav-links{gap:26px}.tl-theme .lb-header__nav-links>a{font-size:.8rem;border:0}.tl-theme .lb-footer{background:var(--tl-stone);padding:55px max(28px,calc((100vw - 1280px)/2));border-top:1px solid var(--border-color)}\n.tl-hero{display:grid;grid-template-columns:1.5fr 1fr}.tl-hero-media{display:grid;grid-template-columns:1.7fr 1fr;gap:5px;min-width:0}.tl-hero-media img{width:100%;height:585px;object-fit:cover}.tl-focus-top img{object-position:center top}.tl-focus-bottom img{object-position:center bottom}.tl-hero-copy{padding:65px 56px;display:flex;flex-direction:column;align-items:start;justify-content:center}.tl-hero-copy h1{margin:22px 0}.tl-hero-copy p{margin:0 0 28px}.tl-hero-copy .tl-link{margin-top:15px}.tl-hero-empty{grid-template-columns:1fr}.tl-hero-empty .tl-hero-copy{max-width:760px;margin:auto;min-height:400px}\n.tl-categories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.tl-category{text-decoration:none;min-width:0}.tl-category img,.tl-category-placeholder{display:block;width:100%;height:205px;object-fit:cover;background:var(--tl-stone)}.tl-category-placeholder{display:grid;place-items:center;color:var(--tl-muted);font-size:.8rem}.tl-category strong{display:flex;align-items:center;justify-content:space-between;font-family:var(--font-display);font-size:1.4rem;font-weight:400;margin-top:12px}\n.tl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}.tl-grid[data-columns=\"2\"]{grid-template-columns:repeat(2,minmax(0,1fr))}.tl-grid[data-columns=\"4\"]{grid-template-columns:repeat(4,minmax(0,1fr))}.tl-card{min-width:0}.tl-card>a{text-decoration:none}.tl-card-media{position:relative;background:var(--tl-stone);aspect-ratio:3/4;overflow:hidden}.tl-card-media img{width:100%;height:100%;object-fit:cover;display:block}.tl-card-media span{position:absolute;bottom:10px;left:10px;background:var(--background);padding:4px 9px;font-size:.75rem}.tl-card-placeholder{height:100%;display:grid;place-items:center;font-size:.8rem;color:var(--tl-muted)}.tl-card-info{display:flex;justify-content:space-between;gap:12px;margin-top:14px}.tl-card h3{font-family:var(--font-body);font-size:.9rem;line-height:1.5;margin:0;letter-spacing:0}.tl-card-price{font-size:.85rem;white-space:nowrap;font-variant-numeric:tabular-nums}.tl-card-facts{font-size:.75rem;margin:6px 0}.tl-card .tl-link{font-size:.75rem}\n.tl-outfit{display:grid;grid-template-columns:1fr 1fr;background:var(--tl-stone)}.tl-outfit>img{width:100%;height:620px;object-fit:cover}.tl-outfit-empty{grid-template-columns:1fr}.tl-outfit-copy{padding:65px;align-self:center}.tl-outfit-copy h2{margin:15px 0}.tl-outfit-product{display:flex;align-items:center;gap:20px;padding:22px 0;border-top:1px solid var(--border-color);text-decoration:none}.tl-outfit-product img{width:72px;height:96px;object-fit:cover}.tl-outfit-product h3{font-size:1.35rem;margin:0 0 8px}.tl-outfit-product p{font-size:.8rem;margin:0}.tl-outfit-note{font-size:.8rem}.tl-fabric{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}.tl-fabric>img{width:100%;aspect-ratio:3/2;object-fit:cover}.tl-fabric h2{margin:15px 0}.tl-fabric-empty{grid-template-columns:1fr}.tl-services{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;padding-block:35px;border-top:1px solid var(--border-color)}.tl-service h3{font-family:var(--font-body);font-size:.9rem;letter-spacing:0}.tl-service p{font-size:.8rem}.tl-services:empty{display:none}\n.tl-theme .lb-product-detail{width:min(1280px,calc(100% - 112px));margin:auto;padding-block:32px 60px}.tl-theme .lb-product-detail__layout{display:grid;grid-template-columns:1.2fr 1fr;gap:65px}.tl-theme .lb-product-detail__gallery-image{aspect-ratio:4/5;object-fit:cover;width:100%}.tl-theme .lb-product-detail__title{font-size:clamp(1.8rem,3vw,2.8rem);font-weight:400}.tl-theme .lb-product-detail__price-current{font-size:1.25rem}.tl-theme .lb-product-detail__cta{border-radius:4px;min-height:48px}.tl-theme .lb-product-detail__cta--primary{background:var(--primary);color:var(--tl-action-label,#fff)}.tl-theme .lb-product-detail__variant-values{gap:9px}.tl-theme .lb-product-detail__variant-values button{min-width:44px;min-height:44px;border:1px solid var(--tl-border);border-radius:0;background:var(--background)}.tl-theme .lb-product-detail__variant-values button[aria-pressed=\"true\"]{background:var(--primary);color:var(--tl-action-label,#fff)}.tl-theme .lb-product-detail__variant-values button[disabled]{text-decoration:line-through}.tl-theme .lb-product-detail__info{min-width:0}.tl-fit{border-top:1px solid var(--border-color);padding-top:35px;margin-top:35px}.tl-fit h2{font-size:1.6rem}.tl-fit p{font-size:.9rem}.tl-fit table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:.8rem;margin:20px 0}.tl-fit caption{text-align:left;margin-bottom:12px}.tl-fit th,.tl-fit td{text-align:left;border-bottom:1px solid var(--border-color);padding:12px 8px;overflow-wrap:anywhere}.tl-fit thead{background:var(--tl-stone)}.tl-fit summary{min-height:44px;cursor:pointer;font-family:var(--font-display);font-size:1.35rem}.tl-filters{display:flex;align-items:end;flex-wrap:wrap;gap:16px;margin:24px 0}.tl-filters label{display:grid;gap:6px;font-size:.8rem}.tl-filters input,.tl-filters select{min-height:44px;max-width:100%;padding:10px;border:1px solid var(--tl-border);background:var(--background);color:var(--foreground)}.tl-filters input[type=\"number\"]{width:120px}\n.tl-theme .lb-cart,.tl-theme .lb-customer-account,.tl-theme .lb-customer-orders{max-width:1280px;margin:auto}.tl-theme .lb-cart__checkout,.tl-theme .lb-cart-drawer__checkout{background:var(--primary);color:var(--tl-action-label,#fff)}\n@media(max-width:1100px){.tl-wrap{width:calc(100% - 64px)}.tl-hero-copy{padding:45px 32px}.tl-outfit-copy{padding:40px}.tl-theme .lb-product-detail__layout{gap:32px}.tl-fabric{gap:35px}}\n@media(max-width:900px){.tl-section{padding-block:55px}.tl-hero{grid-template-columns:1.1fr 1fr}.tl-hero-media{grid-template-columns:1fr}.tl-hero-media img{height:515px}.tl-hero-media img+img{display:none}.tl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tl-grid[data-columns=\"4\"]{grid-template-columns:repeat(2,minmax(0,1fr))}.tl-outfit-copy{padding:32px}.tl-outfit>img{height:540px}.tl-theme .lb-header__inner{width:calc(100% - 64px)}}\n@media(max-width:640px){.tl-wrap{width:calc(100% - 48px)}.tl-section{padding-block:38px}.tl-heading{align-items:start;gap:12px}.tl-heading .tl-link{font-size:.75rem}.tl-hero{grid-template-columns:1fr}.tl-hero-media img{height:400px}.tl-hero-copy{padding:38px 28px;align-items:center;text-align:center}.tl-hero-copy h1{font-size:2.3rem;max-width:310px;margin:18px 0}.tl-hero-copy p{font-size:.9rem}.tl-categories{gap:12px}.tl-category img,.tl-category-placeholder{height:135px}.tl-category strong{font-size:1rem;gap:6px}.tl-grid,.tl-grid[data-columns=\"2\"],.tl-grid[data-columns=\"4\"]{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 12px}.tl-card-info{display:block}.tl-card-price{margin-top:5px}.tl-card h3{font-size:.8rem}.tl-card-facts{font-size:.7rem}.tl-outfit{grid-template-columns:1fr}.tl-outfit>img{height:auto;aspect-ratio:4/5}.tl-outfit-copy{padding:32px 24px}.tl-fabric{grid-template-columns:1fr;gap:25px}.tl-services{grid-template-columns:1fr;gap:20px}.tl-theme .lb-product-detail{width:calc(100% - 48px);padding-block:24px}.tl-theme .lb-product-detail__layout{grid-template-columns:1fr;gap:30px}.tl-theme .lb-product-detail__title{font-size:1.9rem}.tl-theme .lb-header__inner{width:calc(100% - 40px)}.tl-theme .lb-header__brand{font-size:1.2rem}.tl-fit th,.tl-fit td{padding:10px 4px}.tl-filters{gap:12px}.tl-filters label{max-width:100%}.tl-filters input[type=\"number\"]{width:105px}.tl-theme .lb-footer{padding:36px 24px}}\n@media(prefers-reduced-motion:reduce){.tl-theme *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}\n</style>\n</head>\n<body class=\"lb-theme lb-theme--letbuyy-core\">\n  <a class=\"lb-skip-link\" href=\"#MainContent\">Skip to content</a>\n  <header class=\"lb-layout__header\">\n    <a class=\"lb-layout__brand\" href=\"{{ routes.root_url }}\">{{ shop.name }}</a>\n    <nav class=\"lb-layout__nav\" aria-label=\"Primary\">\n      {% if linklists.main_menu.links.size > 0 %}{% for link in linklists.main_menu.links %}<a href=\"{{ link.url | store_url }}\"{% if link.active %} aria-current=\"page\"{% endif %}>{{ link.title }}</a>{% endfor %}\n      {% else %}<a href=\"{{ routes.all_products_collection_url }}\">Products</a><a href=\"{{ routes.search_url }}\">Search</a><a href=\"{{ routes.cart_url }}\">Cart</a><a href=\"{{ routes.account_url }}\">Account</a>{% endif %}\n    </nav>\n  </header>\n  <main id=\"MainContent\">\n    {{ content_for_layout | raw }}\n  </main>\n  <footer class=\"lb-layout__footer\">\n    {% if linklists.footer.links.size > 0 %}<nav class=\"lb-layout__nav\" aria-label=\"Footer\">{% for link in linklists.footer.links %}<a href=\"{{ link.url | store_url }}\">{{ link.title }}</a>{% endfor %}</nav>{% endif %}\n    <p class=\"lb-layout__legal\">&copy; {{ shop.name }}</p>\n  </footer>\n  {{ content_for_footer | raw }}\n</body>\n</html>"
+      }
+    },
+    "config": {
+      "settings_schema": {
+        "schema_version": "2026-05-json-contract",
+        "settings": {
+          "colors": {
+            "label": "Colors",
+            "description": "LetBuyy Core storefront color tokens.",
+            "fields": {
+              "primaryColor": {
+                "type": "color",
+                "label": "Primary color",
+                "default": "#8B5CF6"
+              },
+              "secondaryColor": {
+                "type": "color",
+                "label": "Secondary color",
+                "default": "#3B82F6"
+              },
+              "accentColor": {
+                "type": "color",
+                "label": "Accent color",
+                "default": "#F59E0B"
+              },
+              "backgroundColor": {
+                "type": "color",
+                "label": "Background color",
+                "default": "#FFFFFF"
+              },
+              "textColor": {
+                "type": "color",
+                "label": "Text color",
+                "default": "#1F2937"
+              },
+              "surfaceColor": {
+                "type": "color",
+                "label": "Surface color",
+                "default": "#F8FAFC"
+              }
+            }
+          },
+          "typography": {
+            "label": "Typography",
+            "description": "First-party type settings mirrored from the JSON-contract LetBuyy Core theme.",
+            "fields": {
+              "headingFontFamily": {
+                "type": "text",
+                "label": "Heading font",
+                "default": "Inter"
+              },
+              "bodyFontFamily": {
+                "type": "text",
+                "label": "Body font",
+                "default": "Inter"
+              }
+            }
+          },
+          "appearance": {
+            "label": "Appearance",
+            "description": "Layout tokens shared by every section.",
+            "fields": {
+              "borderRadius": {
+                "type": "number",
+                "label": "Corner radius",
+                "default": 12
+              }
+            }
+          },
+          "seo": {
+            "label": "SEO and social",
+            "description": "Metadata rendered into <head> by the theme layout.",
+            "fields": {
+              "metaDescription": {
+                "type": "textarea",
+                "label": "Meta description",
+                "default": "",
+                "info": "Falls back to the shop description. Truncated to 160 characters on output.",
+                "maxLength": 160
+              },
+              "socialImageUrl": {
+                "type": "url",
+                "label": "Social share image URL",
+                "default": "",
+                "info": "Used for og:image and twitter:image. Left empty until the merchant uploads one."
+              },
+              "faviconUrl": {
+                "type": "url",
+                "label": "Favicon URL",
+                "default": "",
+                "info": "Rendered as <link rel=\"icon\">. Left empty until the merchant uploads one."
+              }
+            }
+          }
+        }
+      },
+      "settings_data": {
+        "current": {
+          "primaryColor": "#713F35",
+          "secondaryColor": "#65574C",
+          "accentColor": "#005FCC",
+          "backgroundColor": "#FAF7F2",
+          "textColor": "#241E1A",
+          "surfaceColor": "#EFE7DC",
+          "headingFontFamily": "Playfair Display",
+          "bodyFontFamily": "Inter",
+          "borderRadius": 4,
+          "metaDescription": "",
+          "socialImageUrl": "",
+          "faviconUrl": ""
+        },
+        "presets": {
+          "Forge": {
+            "primaryColor": "#1E3A5F",
+            "secondaryColor": "#1E40AF",
+            "accentColor": "#00B4D8",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#1A202C",
+            "surfaceColor": "#F0F4F8",
+            "bodyFontFamily": "Inter",
+            "headingFontFamily": "Inter",
+            "borderRadius": 8
+          },
+          "Threadline": {
+            "primaryColor": "#713F35",
+            "secondaryColor": "#65574C",
+            "accentColor": "#005FCC",
+            "backgroundColor": "#FAF7F2",
+            "textColor": "#241E1A",
+            "surfaceColor": "#EFE7DC",
+            "bodyFontFamily": "Inter",
+            "headingFontFamily": "Playfair Display",
+            "borderRadius": 4
+          },
+          "Aura": {
+            "primaryColor": "#C2798B",
+            "secondaryColor": "#9E5A6F",
+            "accentColor": "#D4AF7A",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#2D1B22",
+            "surfaceColor": "#FFF8F9",
+            "bodyFontFamily": "Lato",
+            "headingFontFamily": "Cormorant Garamond",
+            "borderRadius": 16
+          },
+          "Craft": {
+            "primaryColor": "#3E2723",
+            "secondaryColor": "#5D3B2E",
+            "accentColor": "#8D6E63",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#2C1B12",
+            "surfaceColor": "#FFF8F0",
+            "bodyFontFamily": "Source Sans Pro",
+            "headingFontFamily": "Libre Baskerville",
+            "borderRadius": 6
+          },
+          "Refresh": {
+            "primaryColor": "#2D6A4F",
+            "secondaryColor": "#1B4332",
+            "accentColor": "#F4A261",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#1B2521",
+            "surfaceColor": "#F8FFF4",
+            "bodyFontFamily": "Inter",
+            "headingFontFamily": "Inter",
+            "borderRadius": 10
+          },
+          "Ride": {
+            "primaryColor": "#FF4D00",
+            "secondaryColor": "#1C1C1C",
+            "accentColor": "#FFD100",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#111111",
+            "surfaceColor": "#F5F5F5",
+            "bodyFontFamily": "Inter",
+            "headingFontFamily": "Inter",
+            "borderRadius": 6
+          },
+          "Dawn": {
+            "primaryColor": "#3B4F6B",
+            "secondaryColor": "#2C3E50",
+            "accentColor": "#C0832B",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#2C2C2C",
+            "surfaceColor": "#FDF6EC",
+            "bodyFontFamily": "Source Sans Pro",
+            "headingFontFamily": "Libre Baskerville",
+            "borderRadius": 4
+          },
+          "Bloom": {
+            "primaryColor": "#E07B39",
+            "secondaryColor": "#B55E24",
+            "accentColor": "#4CAF73",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#2C1A0A",
+            "surfaceColor": "#FFF9F0",
+            "bodyFontFamily": "Inter",
+            "headingFontFamily": "Inter",
+            "borderRadius": 14
+          },
+          "Nova": {
+            "primaryColor": "#8B5CF6",
+            "secondaryColor": "#6D28D9",
+            "accentColor": "#F59E0B",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#1A1A2E",
+            "surfaceColor": "#F8FAFC",
+            "bodyFontFamily": "Inter",
+            "headingFontFamily": "Inter",
+            "borderRadius": 10
+          },
+          "Summit": {
+            "primaryColor": "#00B3B3",
+            "secondaryColor": "#008080",
+            "accentColor": "#A4E500",
+            "backgroundColor": "#FFFFFF",
+            "textColor": "#1A1A2E",
+            "surfaceColor": "#F9FAFB",
+            "bodyFontFamily": "Inter",
+            "headingFontFamily": "Inter",
+            "borderRadius": 12
+          }
+        }
+      }
+    },
+    "templates": {
+      "article": {
+        "name": "Article",
+        "layout": "theme",
+        "sections": {
+          "article-content-default": {
+            "type": "article-content",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "article-content-default"
+        ]
+      },
+      "blog": {
+        "name": "Blog",
+        "layout": "theme",
+        "sections": {
+          "blog-listing-default": {
+            "type": "blog-listing",
+            "settings": {
+              "heading": "Our Blog"
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "blog-listing-default"
+        ]
+      },
+      "cart": {
+        "name": "LetBuyy Core cart",
+        "layout": "theme",
+        "sections": {
+          "cart-summary-default": {
+            "type": "cart-summary",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "cart-summary-default"
+        ]
+      },
+      "collection": {
+        "name": "LetBuyy Core collection",
+        "layout": "theme",
+        "sections": {
+          "sense-collectionFilter-collection": {
+            "type": "collection-filter",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "sense-productGrid-collection": {
+            "type": "product-grid",
+            "settings": {
+              "title": "Clothing",
+              "columns": 3,
+              "productLimit": 24
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "sense-collectionFilter-collection",
+          "sense-productGrid-collection"
+        ]
+      },
+      "contact": {
+        "name": "Contact",
+        "layout": "theme",
+        "sections": {
+          "contact-form-default": {
+            "type": "contact-form",
+            "settings": {
+              "title": "Contact us",
+              "showPhone": true
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "contact-form-default"
+        ]
+      },
+      "customers/account": {
+        "name": "Account",
+        "layout": "theme",
+        "sections": {
+          "customer-account-default": {
+            "type": "customer-account",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-account-default"
+        ]
+      },
+      "customers/addresses": {
+        "name": "Addresses",
+        "layout": "theme",
+        "sections": {
+          "customer-addresses-default": {
+            "type": "customer-addresses",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-addresses-default"
+        ]
+      },
+      "customers/login": {
+        "name": "Login",
+        "layout": "theme",
+        "sections": {
+          "customer-login-default": {
+            "type": "customer-login",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-login-default"
+        ]
+      },
+      "customers/order": {
+        "name": "Order detail",
+        "layout": "theme",
+        "sections": {
+          "customer-order-detail-default": {
+            "type": "customer-order-detail",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-order-detail-default"
+        ]
+      },
+      "customers/orders": {
+        "name": "Order history",
+        "layout": "theme",
+        "sections": {
+          "customer-orders-default": {
+            "type": "customer-orders",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-orders-default"
+        ]
+      },
+      "customers/register": {
+        "name": "Register",
+        "layout": "theme",
+        "sections": {
+          "customer-register-default": {
+            "type": "customer-register",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-register-default"
+        ]
+      },
+      "customers/settings": {
+        "name": "Account settings",
+        "layout": "theme",
+        "sections": {
+          "customer-settings-default": {
+            "type": "customer-settings",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-settings-default"
+        ]
+      },
+      "customers/wishlist": {
+        "name": "Wishlist",
+        "layout": "theme",
+        "sections": {
+          "customer-wishlist-default": {
+            "type": "customer-wishlist",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "customer-wishlist-default"
+        ]
+      },
+      "footer": {
+        "name": "LetBuyy Core footer",
+        "layout": "theme",
+        "sections": {
+          "footer-default": {
+            "type": "footer",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "footer-default"
+        ]
+      },
+      "header": {
+        "name": "LetBuyy Core header",
+        "layout": "theme",
+        "sections": {
+          "announcement-default": {
+            "type": "announcement-bar",
+            "settings": {
+              "text": "Meet the new everyday collection",
+              "linkLabel": "",
+              "linkHref": ""
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "header-default": {
+            "type": "header",
+            "settings": {
+              "showSearch": true,
+              "showCart": true,
+              "behavior": "sticky"
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "announcement-default",
+          "header-default"
+        ]
+      },
+      "index": {
+        "name": "LetBuyy Core home page",
+        "layout": "theme",
+        "sections": {
+          "sense-heroBanner-index": {
+            "type": "hero-banner",
+            "settings": {
+              "eyebrow": "THE EVERYDAY EDIT",
+              "heading": "Made to move with you.",
+              "subheading": "Considered clothing for your everyday.",
+              "ctaText": "Explore new arrivals",
+              "ctaLink": "/products",
+              "secondaryText": "Find your fit",
+              "secondaryLink": "/products"
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "sense-categoryGrid-index": {
+            "type": "category-grid",
+            "settings": {
+              "title": "Find your silhouette"
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "sense-productGrid-index": {
+            "type": "product-grid",
+            "settings": {
+              "title": "New arrivals",
+              "columns": 3,
+              "productLimit": 3
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "sense-featuredProducts-index": {
+            "type": "featured-products",
+            "settings": {
+              "requireSelection": true,
+              "title": "Wear it your way.",
+              "subtitle": "Every piece, individually chosen.",
+              "productLimit": 2
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "sense-aboutSection-index": {
+            "type": "about-section",
+            "settings": {
+              "title": "Good things take a little care.",
+              "content": ""
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "sense-trustBadges-index": {
+            "type": "trust-badges",
+            "settings": {
+              "fitText": "",
+              "serviceText": "",
+              "supportText": ""
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "sense-heroBanner-index",
+          "sense-categoryGrid-index",
+          "sense-productGrid-index",
+          "sense-featuredProducts-index",
+          "sense-aboutSection-index",
+          "sense-trustBadges-index"
+        ]
+      },
+      "list-collections": {
+        "name": "All collections",
+        "layout": "theme",
+        "sections": {
+          "list-collections-grid": {
+            "type": "category-grid",
+            "settings": {
+              "title": "All collections",
+              "subtitle": ""
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "list-collections-grid"
+        ]
+      },
+      "not_found": {
+        "name": "404 Not Found",
+        "layout": "theme",
+        "sections": {
+          "404-page-default": {
+            "type": "404-page",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "404-page-default"
+        ]
+      },
+      "page": {
+        "name": "Page",
+        "layout": "theme",
+        "sections": {
+          "page-content-default": {
+            "type": "page-content",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "page-content-default"
+        ]
+      },
+      "password": {
+        "name": "Password",
+        "layout": "theme",
+        "sections": {
+          "password-gate-default": {
+            "type": "password-gate",
+            "settings": {
+              "heading": "Coming Soon"
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "password-gate-default"
+        ]
+      },
+      "policy": {
+        "name": "Policy page",
+        "layout": "theme",
+        "sections": {
+          "policy-content-default": {
+            "type": "policy-content",
+            "settings": {},
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "policy-content-default"
+        ]
+      },
+      "product": {
+        "name": "LetBuyy Core product",
+        "layout": "theme",
+        "sections": {
+          "sense-productDetail-product": {
+            "type": "product-detail",
+            "settings": {
+              "showGallery": true,
+              "showDescription": true,
+              "showBuyNow": false,
+              "showReviews": false
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "sense-featuredProducts-product": {
+            "type": "featured-products",
+            "settings": {
+              "requireSelection": true,
+              "title": "Complete the look",
+              "productLimit": 2
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "sense-productDetail-product",
+          "sense-featuredProducts-product"
+        ]
+      },
+      "search": {
+        "name": "LetBuyy Core search",
+        "layout": "theme",
+        "sections": {
+          "search-box-default": {
+            "type": "search-box",
+            "settings": {
+              "placeholder": "Search products"
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          },
+          "search-results": {
+            "type": "collection-product-list",
+            "settings": {
+              "title": ""
+            },
+            "blocks": {},
+            "block_order": [],
+            "disabled": false
+          }
+        },
+        "order": [
+          "search-box-default",
+          "search-results"
+        ]
+      }
+    },
+    "sections": {
+      "customer-orders": {
+        "path": "sections/customer-orders.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-orders\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if buyer_unavailable %}<p class=\"lb-orders__error\" role=\"alert\">Orders are temporarily unavailable. Please try again.</p>{% elsif buyer %}\n  <form class=\"lb-orders__claim\" method=\"post\" action=\"/api/buyer/orders\"><input type=\"hidden\" name=\"return_to\" value=\"{{ routes.account_orders_url }}\"><p>Find past orders from this store placed with your verified LetBuyy email.</p><button type=\"submit\">Find past orders</button></form>\n  {% if request.query.buyer_claim == \"complete\" %}<p role=\"status\" aria-live=\"polite\">The verified orders for this store have been checked and linked.</p>{% elsif request.query.buyer_claim == \"partial\" %}<p role=\"status\" aria-live=\"polite\">Some eligible orders could not be linked. Contact the store for help.</p>{% elsif request.query.buyer_claim == \"unverified\" %}<p role=\"status\" aria-live=\"polite\">Verify your LetBuyy email before claiming historical orders.</p>{% elsif request.query.buyer_claim == \"unavailable\" %}<p role=\"status\" aria-live=\"polite\">Historical orders could not be checked right now. Please try again.</p>{% elsif request.query.buyer_claim == \"unauthorized\" %}<p role=\"status\" aria-live=\"polite\">Sign in to LetBuyy before claiming past orders.</p>{% endif %}\n  {% if buyer.orders and buyer.orders.size > 0 %}\n  <ul class=\"lb-orders__list\">{% for order in buyer.orders %}<li class=\"lb-orders__row\"><a href=\"{{ routes.account_orders_url }}/{{ order.id }}\"><span class=\"lb-orders__num\">#{{ order.number }}</span><span class=\"lb-orders__status\">{{ order.status }}</span><span class=\"lb-orders__total\">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>\n  {% if buyer.has_more and buyer.next_cursor %}<a class=\"lb-orders__next\" href=\"{{ routes.account_orders_url }}?cursor={{ buyer.next_cursor }}\">Older orders</a>{% endif %}\n  {% else %}<p class=\"lb-orders__empty\">No orders yet.</p>{% endif %}\n  {% else %}\n  <p class=\"lb-orders__guest\">Please <a href=\"/api/buyer-auth/start?return_to={{ routes.account_orders_url }}\">sign in with LetBuyy</a> to view your orders.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Order History\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Your orders\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Order History\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Order History",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Your orders",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Order History",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "customer-order-detail": {
+        "path": "sections/customer-order-detail.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-order-detail\" data-section-id=\"{{ section.id }}\">\n  {% if buyer_unavailable %}<p class=\"lb-order-detail__error\" role=\"alert\">This order is temporarily unavailable. Please try again.</p>{% elsif buyer %}\n  {% if order %}\n  <h1>{{ section.settings.heading | strip | default: 'Order' }} #{{ order.number }}</h1>\n  <p class=\"lb-order-detail__status\">Status: {{ order.status }}</p>\n  <ul class=\"lb-order-detail__items\">{% for item in order.line_items %}<li><span class=\"lb-order-detail__title\">{{ item.title }}</span><span class=\"lb-order-detail__qty\">{{ item.quantity }}</span><span class=\"lb-order-detail__line\">{{ item.line_price | money_with_currency: order.currency }}</span></li>{% endfor %}</ul>\n  <p class=\"lb-order-detail__total\">Total: {{ order.total | money_with_currency: order.currency }}</p>\n  {% if order.gst_invoice_number != blank %}<p class=\"lb-order-detail__invoice\">GST Invoice: {{ order.gst_invoice_number }} (Tax: {{ order.tax_total | money_with_currency: order.currency }})</p>{% endif %}\n  <ol class=\"lb-order-detail__timeline\">{% for step in order.timeline %}<li class=\"lb-order-detail__step{% if step.reached %} is-reached{% endif %}\">{{ step.label }}</li>{% endfor %}</ol>\n  {% if order.tracking_number != blank %}<p class=\"lb-order-detail__tracking\">Tracking: {{ order.tracking_number }}{% if order.carrier != blank %} ({{ order.carrier }}){% endif %}</p>{% endif %}\n  {% else %}<p class=\"lb-order-detail__missing\">Order not found.</p>{% endif %}\n  {% else %}<p class=\"lb-order-detail__guest\">Please <a href=\"/api/buyer-auth/start?return_to={{ routes.account_orders_url }}\">sign in with LetBuyy</a> to view this order.</p>{% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Order Detail\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Order\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Order Detail\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Order Detail",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Order",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Order Detail",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "customer-account": {
+        "path": "sections/customer-account.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-account\" data-section-id=\"{{ section.id }}\">\n  {% if buyer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <p class=\"lb-account__hello\">Signed in to LetBuyy as {{ buyer.full_name | default: buyer.email }}</p>\n  <nav class=\"lb-account__nav\"><a href=\"{{ routes.account_orders_url }}\">Orders</a><a href=\"{{ routes.account_addresses_url }}\">Addresses</a><a href=\"{{ routes.account_url }}/loyalty\">Rewards</a><a href=\"{{ routes.account_settings_url }}\">Settings</a><form method=\"post\" action=\"/api/buyer-auth/logout?return_to={{ routes.account_url }}\"><button type=\"submit\" class=\"lb-account__nav-link\">Sign out at this store</button></form></nav>\n  {% elsif buyer_unavailable %}<p class=\"lb-account__unavailable\" role=\"status\">We could not load your LetBuyy account right now. Please refresh and try again.</p>\n  {% elsif customer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <p class=\"lb-account__hello\">Signed in as {{ customer.name | default: customer.email }}</p>\n  <nav class=\"lb-account__nav\"><a href=\"{{ routes.account_orders_url }}\">Orders</a><a href=\"{{ routes.account_addresses_url }}\">Addresses</a><a href=\"{{ routes.account_settings_url }}\">Settings</a><lb-logout data-logout-url=\"{{ routes.account_logout_url }}\"><form method=\"post\" action=\"{{ routes.account_logout_url }}\"><button type=\"submit\" class=\"lb-account__nav-link\">Sign out</button></form></lb-logout></nav>\n  {% else %}\n  <p class=\"lb-account__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to view your account.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Customer Account\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Your account\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Customer Account\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Customer Account",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Your account",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Customer Account",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "customer-login": {
+        "path": "sections/customer-login.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-auth lb-auth--login\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if request.error %}<p class=\"lb-auth__error\" role=\"alert\">{% case request.error %}{% when \"missing_fields\" %}Please fill in all required fields.{% when \"invalid_credentials\" %}Incorrect email or password.{% when \"account_exists\" %}An account with this email already exists. Please sign in.{% when \"rate_limited\" %}Too many attempts. Please try again shortly.{% when \"bot_verification\" %}We could not verify you are not a robot. Please try again.{% else %}Something went wrong. Please try again.{% endcase %}</p>{% endif %}\n  <form class=\"lb-auth__form\" method=\"post\" action=\"/api/customer/login\">\n    <input type=\"hidden\" name=\"storeId\" value=\"{{ shop.id }}\">\n    <input type=\"hidden\" name=\"turnstileToken\" value=\"\">\n    <lb-turnstile data-lb-island=\"turnstile\"></lb-turnstile>\n    <label>Email<input type=\"email\" name=\"email\" autocomplete=\"email\" required></label>\n    <label>Password<input type=\"password\" name=\"password\" autocomplete=\"current-password\" required></label>\n    <button type=\"submit\">Sign in</button>\n  </form>\n  <a href=\"{{ routes.customer_register_url }}\">Create an account</a>\n  <p class=\"lb-auth__letbuyy\"><a href=\"/api/buyer-auth/start?return_to={{ routes.account_url }}\">Continue with LetBuyy</a></p>\n  <p>Have an older store account? Connect it with your verified LetBuyy account.</p>\n  <form class=\"lb-auth__link-store\" method=\"post\" action=\"/api/buyer-auth/start\">\n    <input type=\"hidden\" name=\"intent\" value=\"link_store_customer\">\n    <input type=\"hidden\" name=\"return_to\" value=\"{{ routes.account_url }}\">\n    <button type=\"submit\">Connect my store account</button>\n  </form>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Customer Login\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Sign in\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Customer Login\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Customer Login",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Sign in",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Customer Login",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "customer-register": {
+        "path": "sections/customer-register.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-auth lb-auth--register\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <p>Create one LetBuyy account to use across participating storefronts.</p>\n  <p class=\"lb-auth__letbuyy\"><a href=\"/api/buyer-auth/start?return_to={{ routes.account_url }}\">Create or sign in with LetBuyy</a></p>\n  <p>Have an older store-only account? <a href=\"{{ routes.customer_login_url }}\">Sign in to connect it with your verified LetBuyy account</a>.</p>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Customer Register\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Create account\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Customer Register\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Customer Register",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Create account",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Customer Register",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "customer-settings": {
+        "path": "sections/customer-settings.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-settings\" data-section-id=\"{{ section.id }}\">\n  {% if buyer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <div class=\"lb-settings__current\"><p class=\"lb-settings__email\">{{ buyer.email }}</p>{% if buyer.full_name %}<p class=\"lb-settings__name\">{{ buyer.full_name }}</p>{% endif %}{% if buyer.phone %}<p class=\"lb-settings__phone\">{{ buyer.phone }}</p>{% endif %}</div>\n  <lb-customer-settings data-lb-island=\"customer-settings\" data-account-type=\"buyer\" data-base-path=\"/store/{{ shop.subdomain }}\" data-authenticated=\"true\"></lb-customer-settings>\n  {% elsif buyer_unavailable %}<p class=\"lb-settings__unavailable\" role=\"status\">We could not load your LetBuyy profile right now. Please refresh and try again.</p>\n  {% elsif customer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <div class=\"lb-settings__current\">\n    <p class=\"lb-settings__email\">{{ customer.email }}</p>\n    {% if customer.name %}<p class=\"lb-settings__name\">{{ customer.name }}</p>{% endif %}\n    {% if customer.phone %}<p class=\"lb-settings__phone\">{{ customer.phone }}</p>{% endif %}\n  </div>\n  <lb-customer-settings\n    data-lb-island=\"customer-settings\"\n    data-email=\"{{ customer.email | escape }}\"\n    data-name=\"{{ customer.name | default: \"\" | escape }}\"\n    data-phone=\"{{ customer.phone | default: \"\" | escape }}\"\n    data-base-path=\"/store/{{ shop.subdomain }}\"\n    data-authenticated=\"true\"\n  ></lb-customer-settings>\n  {% else %}\n  <p class=\"lb-settings__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to manage your settings.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Account Settings\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Account settings\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Account Settings\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Account Settings",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Account settings",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Account Settings",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "customer-wishlist": {
+        "path": "sections/customer-wishlist.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-wishlist\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class=\"lb-wishlist__count\">({{ customer.wishlist_products.size }})</span>{% elsif buyer_wishlist.products.size > 0 %} <span class=\"lb-wishlist__count\">({{ buyer_wishlist.products.size }})</span>{% endif %}</h1>\n  {% if buyer_wishlist.authenticated %}\n    {% if buyer_wishlist.unavailable %}<p class=\"lb-wishlist__unavailable\" role=\"status\">Your wishlist is temporarily unavailable. Please try again.</p>\n    {% elsif buyer_wishlist.storeAccountUnavailable %}<p class=\"lb-wishlist__unavailable\" role=\"status\">This store account is unavailable. Contact the store for help.</p>\n    {% elsif buyer_wishlist.linked and buyer_wishlist.products.size > 0 %}\n      <div class=\"lb-product-grid__items\">{% for item in buyer_wishlist.products %}<article class=\"lb-product-card\"><a href=\"{{ item.url }}\"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"true\" data-authenticated=\"true\" data-account-type=\"buyer\" data-buyer-id=\"{{ buyer_wishlist.buyerId }}\" data-buyer-linked=\"true\" data-base-path=\"/store/{{ shop.subdomain }}\"></lb-wishlist-toggle></article>{% endfor %}</div>\n    {% elsif buyer_wishlist.linked %}<p class=\"lb-wishlist__empty\">Your wishlist is empty. <a href=\"{{ routes.all_products_collection_url }}\">Browse products</a></p>\n    {% else %}<p class=\"lb-wishlist__guest\">Connect your verified store account in <a href=\"{{ routes.account_settings_url }}\">account settings</a> to use this store wishlist.</p>{% endif %}\n  {% elsif customer.wishlist_products and customer.wishlist_products.size > 0 %}\n  <div class=\"lb-product-grid__items\">\n    {% for item in customer.wishlist_products %}<article class=\"lb-product-card\"><a href=\"{{ item.url }}\"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"true\" data-authenticated=\"true\" data-account-type=\"store_customer\" data-base-path=\"/store/{{ shop.subdomain }}\"></lb-wishlist-toggle></article>{% endfor %}\n  </div>\n  {% elsif customer %}\n  <p class=\"lb-wishlist__empty\">Your wishlist is empty. <a href=\"{{ routes.all_products_collection_url }}\">Browse products</a></p>\n  {% else %}\n  <p class=\"lb-wishlist__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to view your wishlist.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Wishlist\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Your wishlist\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Wishlist\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Wishlist",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Your wishlist",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Wishlist",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "customer-addresses": {
+        "path": "sections/customer-addresses.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-addresses\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if buyer %}\n  <lb-address-manager data-lb-island=\"address-manager\" data-account-type=\"buyer\" data-base-path=\"/store/{{ shop.subdomain }}\" data-authenticated=\"true\"></lb-address-manager>\n  {% elsif buyer_unavailable %}<p class=\"lb-addresses__unavailable\" role=\"status\">We could not load your LetBuyy addresses right now. Please refresh and try again.</p>\n  {% elsif customer %}\n  {% if customer.addresses and customer.addresses.size > 0 %}\n  <div class=\"lb-addresses__grid\">\n    {% for addr in customer.addresses %}<div class=\"lb-address-card{% if addr.is_default %} lb-address-card--default{% endif %}\"><span class=\"lb-address-card__label\">{{ addr.label | default: \"address\" }}</span>{% if addr.is_default %}<span class=\"lb-address-card__default-badge\">Default</span>{% endif %}<p class=\"lb-address-card__address\">{{ addr.address1 }}{% if addr.address2 %}, {{ addr.address2 }}{% endif %}</p><p class=\"lb-address-card__city\">{{ addr.city }}, {{ addr.province }} {{ addr.zip }}</p></div>{% endfor %}\n  </div>\n  {% else %}\n  <p class=\"lb-addresses__empty\">No saved addresses.</p>\n  {% endif %}\n  <lb-address-manager\n    data-lb-island=\"address-manager\"\n    data-base-path=\"/store/{{ shop.subdomain }}\"\n    data-authenticated=\"true\"\n  ></lb-address-manager>\n  {% else %}\n  <p class=\"lb-addresses__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to manage your addresses.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Addresses\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Your addresses\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Addresses\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Addresses",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Your addresses",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Addresses",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "policy-content": {
+        "path": "sections/policy-content.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-policy\" data-section-id=\"{{ section.id }}\">\n  {% if page %}\n  <h1 class=\"lb-policy__title\">{{ page.title }}</h1>\n  {% if page.body_html != blank %}<div class=\"lb-policy__body\">{{ page.body_html | raw }}</div>\n  {% elsif page.content != blank %}<div class=\"lb-policy__body\">{{ page.content | raw }}</div>{% endif %}\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Policy Content\",\"tag\":\"section\",\"settings\":[],\"blocks\":[],\"presets\":[{\"name\":\"Policy Content\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Policy Content",
+          "tag": "section",
+          "settings": [],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Policy Content",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "cart-summary": {
+        "path": "sections/cart-summary.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-cart-page\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <lb-cart data-lb-island=\"cart\" data-base-path=\"/store/{{ shop.subdomain }}\">\n    {% if cart.item_count > 0 %}\n    <ul class=\"lb-cart__items\">{% for item in cart.items %}<li class=\"lb-cart__item\"><span class=\"lb-cart__title\">{{ item.title }}</span><span class=\"lb-cart__qty\">x{{ item.quantity }}</span><span class=\"lb-cart__line\">{{ item.line_price | money_with_currency: cart.currency }}</span></li>{% endfor %}</ul>\n    <div class=\"lb-liquid-cart__totals\">\n      {% if cart.subtotal %}<div class=\"lb-liquid-cart__row\"><span>Subtotal</span><span>{{ cart.subtotal | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.coupon_codes.size > 0 %}<div class=\"lb-liquid-cart__row\"><span>Coupons</span><span>{{ cart.coupon_codes | join: \", \" }}</span></div>{% endif %}\n      {% if cart.discount_total %}<div class=\"lb-liquid-cart__row\"><span>Discounts</span><span>{{ cart.discount_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.shipping_total %}<div class=\"lb-liquid-cart__row\"><span>Shipping</span><span>{{ cart.shipping_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.tax_total %}<div class=\"lb-liquid-cart__row\"><span>Tax (GST)</span><span>{{ cart.tax_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n    </div>\n    <p class=\"lb-cart__total\">Total: {{ cart.total_price | money_with_currency: cart.currency }}</p>\n    <a class=\"lb-cart__checkout\" href=\"{{ cart.checkout_url }}\">Checkout</a>\n    {% else %}<p class=\"lb-cart__empty\">Your cart is empty. <a href=\"{{ routes.all_products_collection_url }}\">Browse products</a></p>{% endif %}\n  </lb-cart>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Cart\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Your cart\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Cart\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Cart",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Your cart",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Cart",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "search-box": {
+        "path": "sections/search-box.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-search\" data-section-id=\"{{ section.id }}\">\n  <lb-search data-lb-island=\"search\" data-search-url=\"{{ routes.search_url }}\">\n    <form role=\"search\" method=\"get\" action=\"{{ routes.search_url }}\" data-lb-search-form>\n      <label class=\"lb-sr-only\" for=\"lb-search-input-{{ section.id }}\">Search products</label>\n      <input type=\"search\" name=\"search\" id=\"lb-search-input-{{ section.id }}\" data-lb-search-input placeholder=\"{{ section.settings.placeholder }}\" aria-label=\"Search products\" value=\"{{ search.terms }}\">\n      <button type=\"submit\" aria-label=\"Search\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span class=\"lb-sr-only\">Search</span></button>\n    </form>\n  </lb-search>\n  {% if search.terms %}<p class=\"lb-search__terms\">Results for \"{{ search.terms }}\"</p>{% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Search\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Placeholder\",\"default\":\"Search products\",\"id\":\"placeholder\"}],\"blocks\":[],\"presets\":[{\"name\":\"Search\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Search",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Placeholder",
+              "default": "Search products",
+              "id": "placeholder"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Search",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "collection-banner": {
+        "path": "sections/collection-banner.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-collection-banner\" data-section-id=\"{{ section.id }}\">\n  {% if collection.image_url != blank %}<img class=\"lb-collection-banner__image\" src=\"{{ collection.image_url | image_url }}\" alt=\"{{ collection.title }}\">{% endif %}\n  <h1>{{ collection.title }}</h1>\n  {% if collection.products.size > 0 %}<p class=\"lb-collection-banner__count\">{{ collection.products.size }} products</p>{% endif %}\n  {% if section.settings.showDescription and collection.description %}<div class=\"lb-collection-banner__desc\">{{ collection.description }}</div>{% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Collection Banner\",\"tag\":\"section\",\"settings\":[{\"type\":\"toggle\",\"label\":\"Show description\",\"default\":true,\"id\":\"showDescription\"}],\"blocks\":[],\"presets\":[{\"name\":\"Collection Banner\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Collection Banner",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "toggle",
+              "label": "Show description",
+              "default": true,
+              "id": "showDescription"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Collection Banner",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "collection-product-list": {
+        "path": "sections/collection-product-list.liquid",
+        "source": "<section class=\"tl-theme\" data-section-id=\"{{ section.id }}\"><div class=\"tl-wrap tl-section\"><h1>{{ section.settings.title | strip | default: collection.title | default: 'Clothing' }}</h1>{% if collection.products.size > 0 %}<div class=\"tl-grid\">{% for item in collection.products %}<article class=\"tl-card\"><a href=\"{{ item.url }}\"><div class=\"tl-card-media\">{% if item.featured_image %}<img src=\"{{ item.featured_image | image_url }}\" alt=\"{{ item.title }}\" loading=\"lazy\" decoding=\"async\">{% else %}<div class=\"tl-card-placeholder\">Product image not supplied</div>{% endif %}{% if item.available == false %}<span>Unavailable</span>{% endif %}</div><div class=\"tl-card-info\"><h3>{{ item.title }}</h3><span class=\"tl-card-price\">{{ item.price | times: 100 | money_with_currency: item.currency }}</span></div></a>{% for option in item.option_summaries %}<p class=\"tl-card-facts\">{{ option.name }}: {{ option.summary }}</p>{% endfor %}<a class=\"tl-link\" href=\"{{ item.url }}\">{% if item.options.size > 0 %}Choose your size{% else %}View product{% endif %} →</a></article>{% endfor %}</div>{% else %}<p>No products found.</p><a class=\"tl-link\" href=\"{{ routes.all_products_collection_url | default: routes.search_url }}\">Explore all products</a>{% endif %}</div></section>\n{% schema %}\n{\"name\":\"Apparel collection\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading override (blank uses collection name)\",\"default\":\"\",\"id\":\"title\"}],\"blocks\":[],\"presets\":[{\"name\":\"Apparel collection\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Apparel collection",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading override (blank uses collection name)",
+              "default": "",
+              "id": "title"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Apparel collection",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "blog-listing": {
+        "path": "sections/blog-listing.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-blog-listing\" data-section-id=\"{{ section.id }}\">\n  <h1 class=\"lb-blog-listing__heading\">{{ section.settings.heading }}</h1>\n  {% if blog.articles and blog.articles.size > 0 %}\n  <div class=\"lb-blog-listing__articles\">\n    {% for article in blog.articles %}\n    <article class=\"lb-blog-article-card\">\n      <h2 class=\"lb-blog-article-card__title\"><a href=\"{{ routes.blog_url }}/{{ article.slug }}\">{{ article.title }}</a></h2>\n      {% if article.excerpt %}<p class=\"lb-blog-article-card__excerpt\">{{ article.excerpt }}</p>{% endif %}\n      {% if article.published_at %}<time class=\"lb-blog-article-card__date\" datetime=\"{{ article.published_at }}\">{{ article.published_at | date: \"%B %-d, %Y\" }}</time>{% endif %}\n    </article>\n    {% endfor %}\n  </div>\n  {% if blog.pages_count and blog.pages_count > 1 %}\n  <nav class=\"lb-blog-listing__pagination\" aria-label=\"Blog pagination\">\n    {% if blog.current_page and blog.current_page > 1 %}<a class=\"lb-blog-listing__prev\" href=\"{{ routes.blog_url }}?page={{ blog.current_page | minus: 1 }}\" rel=\"prev\">Previous</a>{% endif %}\n    {% assign next_page = blog.current_page | plus: 1 %}\n    {% if next_page <= blog.pages_count %}<a class=\"lb-blog-listing__next\" href=\"{{ routes.blog_url }}?page={{ next_page }}\" rel=\"next\">Next</a>{% endif %}\n  </nav>\n  {% endif %}\n  {% else %}\n  <p class=\"lb-blog-listing__empty\">No posts published yet.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Blog Listing\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Our Blog\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Blog Listing\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Blog Listing",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Our Blog",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Blog Listing",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "article-content": {
+        "path": "sections/article-content.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-article\" data-section-id=\"{{ section.id }}\">\n  {% if article %}\n  <h1 class=\"lb-article__title\">{{ article.title }}</h1>\n  {% if article.published_at %}<time class=\"lb-article__date\" datetime=\"{{ article.published_at }}\">{{ article.published_at | date: \"%B %-d, %Y\" }}</time>{% endif %}\n  {% if article.image %}<img class=\"lb-article__image\" src=\"{{ article.image | image_url }}\" alt=\"{{ article.title }}\">{% endif %}\n  {% if article.body_html != blank %}<div class=\"lb-article__body\">{{ article.body_html | raw }}</div>{% endif %}\n  {% else %}\n  <p class=\"lb-article__missing\">Article not found.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Article Content\",\"tag\":\"section\",\"settings\":[],\"blocks\":[],\"presets\":[{\"name\":\"Article Content\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Article Content",
+          "tag": "section",
+          "settings": [],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Article Content",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "page-content": {
+        "path": "sections/page-content.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-page\" data-section-id=\"{{ section.id }}\">\n  {% if page %}\n  <h1 class=\"lb-page__title\">{{ page.title }}</h1>\n  {% if page.body_html != blank %}<div class=\"lb-page__body\">{{ page.body_html | raw }}</div>\n  {% else %}<p class=\"lb-page__empty\">No content yet.</p>{% endif %}\n  {% else %}\n  <p class=\"lb-page__missing\">Page not found.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Page Content\",\"tag\":\"section\",\"settings\":[],\"blocks\":[],\"presets\":[{\"name\":\"Page Content\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Page Content",
+          "tag": "section",
+          "settings": [],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Page Content",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "404-page": {
+        "path": "sections/404-page.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-404\" data-section-id=\"{{ section.id }}\">\n  <h1 class=\"lb-404__code\">404</h1>\n  <p class=\"lb-404__message\">Page not found</p>\n  <a class=\"lb-404__home\" href=\"{{ routes.root_url }}\">Back to home</a>\n</section>\n</div>\n{% schema %}\n{\"name\":\"404 Not Found\",\"tag\":\"section\",\"settings\":[],\"blocks\":[],\"presets\":[{\"name\":\"404 Not Found\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "404 Not Found",
+          "tag": "section",
+          "settings": [],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "404 Not Found",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "password-gate": {
+        "path": "sections/password-gate.liquid",
+        "source": "<div class=\"tl-theme\"><!-- password gate rendering requires proxy routing update (Phase F) -->\n<section class=\"lb-password-gate\" data-section-id=\"{{ section.id }}\">\n  <h1 class=\"lb-password-gate__heading\">{{ shop.name }}</h1>\n  <p class=\"lb-password-gate__message\">{{ section.settings.heading }}</p>\n  <p class=\"lb-password-gate__info\">This store is password protected.</p>\n  <form class=\"lb-password-gate__form\" method=\"post\" action=\"/store-access/password\">\n    <label class=\"lb-password-gate__label\">Enter password<input class=\"lb-password-gate__input\" type=\"password\" name=\"password\" autocomplete=\"current-password\" required></label>\n    <button type=\"submit\" class=\"lb-password-gate__btn\">Enter</button>\n  </form>\n  {% if shop.access_message and shop.access_message != blank %}<p class=\"lb-password-gate__access-message\">{{ shop.access_message }}</p>{% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Password Gate\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Coming Soon\",\"id\":\"heading\"}],\"blocks\":[],\"presets\":[{\"name\":\"Password Gate\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Password Gate",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Coming Soon",
+              "id": "heading"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Password Gate",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "announcement-bar": {
+        "path": "sections/announcement-bar.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-announcement-bar\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-announcement-bar__inner\">\n    <span>{{ section.settings.text }}</span>\n    {% if section.settings.linkLabel != blank %}<a href=\"{{ section.settings.linkHref | store_url }}\">{{ section.settings.linkLabel }}</a>{% endif %}\n  </div>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Announcement Bar\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Message\",\"default\":\"Discover our latest products.\",\"id\":\"text\"},{\"type\":\"text\",\"label\":\"Link label\",\"default\":\"Shop now\",\"id\":\"linkLabel\"},{\"type\":\"url\",\"label\":\"Link URL\",\"default\":\"/products\",\"id\":\"linkHref\"}],\"blocks\":[],\"presets\":[{\"name\":\"Announcement Bar\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Announcement Bar",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Message",
+              "default": "Discover our latest products.",
+              "id": "text"
+            },
+            {
+              "type": "text",
+              "label": "Link label",
+              "default": "Shop now",
+              "id": "linkLabel"
+            },
+            {
+              "type": "url",
+              "label": "Link URL",
+              "default": "/products",
+              "id": "linkHref"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Announcement Bar",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "about-section": {
+        "path": "sections/about-section.liquid",
+        "source": "<section class=\"tl-theme\" data-section-id=\"{{ section.id }}\">{% if section.settings.content != blank or section.settings.image != blank %}<div class=\"tl-wrap tl-section tl-fabric{% unless section.settings.image != blank %} tl-fabric-empty{% endunless %}\">{% if section.settings.image != blank %}<img src=\"{{ section.settings.image | image_url }}\" alt=\"{{ section.settings.title }}\" loading=\"lazy\">{% endif %}<div><span class=\"tl-eyebrow\">THE DETAILS, CONSIDERED</span><h2>{{ section.settings.title }}</h2><p>{{ section.settings.content }}</p>{% if section.settings.linkLabel != blank and section.settings.linkUrl != blank %}<a class=\"tl-link\" href=\"{{ section.settings.linkUrl | store_url }}\">{{ section.settings.linkLabel }}</a>{% endif %}</div></div>{% endif %}</section>\n{% schema %}\n{\"name\":\"Fabric and care editorial\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Good things take a little care.\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Merchant editorial text\",\"default\":\"\",\"id\":\"content\"},{\"type\":\"image\",\"label\":\"Editorial photograph\",\"id\":\"image\"},{\"type\":\"text\",\"label\":\"Link label\",\"default\":\"\",\"id\":\"linkLabel\"},{\"type\":\"url\",\"label\":\"Link destination\",\"default\":\"\",\"id\":\"linkUrl\"}],\"blocks\":[],\"presets\":[{\"name\":\"Fabric and care editorial\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Fabric and care editorial",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Good things take a little care.",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Merchant editorial text",
+              "default": "",
+              "id": "content"
+            },
+            {
+              "type": "image",
+              "label": "Editorial photograph",
+              "id": "image"
+            },
+            {
+              "type": "text",
+              "label": "Link label",
+              "default": "",
+              "id": "linkLabel"
+            },
+            {
+              "type": "url",
+              "label": "Link destination",
+              "default": "",
+              "id": "linkUrl"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Fabric and care editorial",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "app-block-slot": {
+        "path": "sections/app-block-slot.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-app-block-slot\" data-section-id=\"{{ section.id }}\">\n  {% if section.settings.title != blank %}<h2>{{ section.settings.title }}</h2>{% endif %}\n  {% for block in section.blocks %}{{ block.content | raw }}{% endfor %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"App Block Slot\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Slot\",\"default\":\"storefront.home.after-hero\",\"id\":\"slot\"}],\"blocks\":[{\"type\":\"@app\",\"name\":\"App block\",\"settings\":[]}],\"presets\":[{\"name\":\"App Block Slot\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "App Block Slot",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Slot",
+              "default": "storefront.home.after-hero",
+              "id": "slot"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "@app",
+              "name": "App block",
+              "settings": []
+            }
+          ],
+          "presets": [
+            {
+              "name": "App Block Slot",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "banner-carousel": {
+        "path": "sections/banner-carousel.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-banner-carousel\" data-section-id=\"{{ section.id }}\" data-autoplay=\"{{ section.settings.autoplay }}\">\n  {% if section.settings.title != blank %}<h2>{{ section.settings.title }}</h2>{% endif %}\n  <div class=\"lb-banner-carousel__slides\">\n    {% for block in section.blocks %}<a href=\"{{ block.settings.link | store_url }}\">{% if block.settings.image %}<img src=\"{{ block.settings.image | image_url }}\" alt=\"{{ block.settings.heading }}\">{% endif %}<h3>{{ block.settings.heading }}</h3></a>{% endfor %}\n  </div>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Banner Carousel\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"id\":\"title\"},{\"type\":\"toggle\",\"label\":\"Autoplay\",\"default\":true,\"id\":\"autoplay\"}],\"blocks\":[{\"type\":\"slide\",\"name\":\"Slide\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"id\":\"heading\"},{\"type\":\"image\",\"label\":\"Image\",\"id\":\"image\"},{\"type\":\"url\",\"label\":\"Link\",\"id\":\"link\"}]}],\"presets\":[{\"name\":\"Banner Carousel\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Banner Carousel",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "id": "title"
+            },
+            {
+              "type": "toggle",
+              "label": "Autoplay",
+              "default": true,
+              "id": "autoplay"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "slide",
+              "name": "Slide",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Heading",
+                  "id": "heading"
+                },
+                {
+                  "type": "image",
+                  "label": "Image",
+                  "id": "image"
+                },
+                {
+                  "type": "url",
+                  "label": "Link",
+                  "id": "link"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Banner Carousel",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "brand-marquee": {
+        "path": "sections/brand-marquee.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-brand-marquee\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  <div>{% for block in section.blocks %}<span>{{ block.settings.name }}</span>{% endfor %}</div>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Brand Marquee\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"Featured brands\",\"id\":\"title\"}],\"blocks\":[{\"type\":\"brand\",\"name\":\"Brand\",\"settings\":[{\"type\":\"text\",\"label\":\"Name\",\"id\":\"name\"}]}],\"presets\":[{\"name\":\"Brand Marquee\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Brand Marquee",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "Featured brands",
+              "id": "title"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "brand",
+              "name": "Brand",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Name",
+                  "id": "name"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Brand Marquee",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "category-grid": {
+        "path": "sections/category-grid.liquid",
+        "source": "<section class=\"tl-theme\" data-section-id=\"{{ section.id }}\"><div class=\"tl-wrap tl-section\"><div class=\"tl-heading\">{% if section.settings.subtitle != blank %}<div><h2>{{ section.settings.title }}</h2><p>{{ section.settings.subtitle }}</p></div>{% else %}<h2>{{ section.settings.title }}</h2>{% endif %}</div>{% if collections.size > 0 %}<div class=\"tl-categories\">{% for item in collections limit: 100 %}{% if section.settings.collection1 != blank or section.settings.collection2 != blank or section.settings.collection3 != blank %}{% unless item.id == section.settings.collection1 or item.id == section.settings.collection2 or item.id == section.settings.collection3 %}{% continue %}{% endunless %}{% elsif forloop.index > 6 %}{% break %}{% endif %}<a class=\"tl-category\" href=\"{{ routes.collections_url }}/{{ item.handle }}\">{% if item.image %}<img src=\"{{ item.image | image_url }}\" alt=\"{{ item.title }}\" loading=\"lazy\">{% else %}<span class=\"tl-category-placeholder\">Explore this collection</span>{% endif %}<strong>{{ item.title }} <span aria-hidden=\"true\">→</span></strong></a>{% endfor %}</div>{% else %}<p class=\"tl-empty\">Collections added to this store will appear here.</p>{% endif %}</div></section>\n{% schema %}\n{\"name\":\"Silhouette collections\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Find your silhouette\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Description\",\"default\":\"\",\"id\":\"subtitle\"},{\"type\":\"collection\",\"label\":\"Silhouette collection 1\",\"id\":\"collection1\"},{\"type\":\"collection\",\"label\":\"Silhouette collection 2\",\"id\":\"collection2\"},{\"type\":\"collection\",\"label\":\"Silhouette collection 3\",\"id\":\"collection3\"}],\"blocks\":[],\"presets\":[{\"name\":\"Silhouette collections\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Silhouette collections",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Find your silhouette",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Description",
+              "default": "",
+              "id": "subtitle"
+            },
+            {
+              "type": "collection",
+              "label": "Silhouette collection 1",
+              "id": "collection1"
+            },
+            {
+              "type": "collection",
+              "label": "Silhouette collection 2",
+              "id": "collection2"
+            },
+            {
+              "type": "collection",
+              "label": "Silhouette collection 3",
+              "id": "collection3"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Silhouette collections",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "collection-filter": {
+        "path": "sections/collection-filter.liquid",
+        "source": "<section class=\"tl-theme\" data-section-id=\"{{ section.id }}\"><div class=\"tl-wrap tl-section\"><span class=\"tl-eyebrow\">THE EVERYDAY COLLECTION</span><h1>{{ collection.title | default: 'Clothing' }}</h1>{% if collection.total != nil %}<p>{{ collection.total }} products</p>{% endif %}<form class=\"tl-filters\" method=\"get\" action=\"{{ request.path }}\"><label>Size<input type=\"text\" name=\"size\" value=\"{{ request.query.size }}\" maxlength=\"100\" placeholder=\"Size label\"></label><label>Color<input type=\"text\" name=\"color\" value=\"{{ request.query.color }}\" maxlength=\"100\" placeholder=\"Color name\"></label><label>Minimum price<input type=\"number\" min=\"0\" step=\"0.01\" name=\"min_price\" value=\"{{ request.query.min_price }}\"></label><label>Maximum price<input type=\"number\" min=\"0\" step=\"0.01\" name=\"max_price\" value=\"{{ request.query.max_price }}\"></label><label>Sort<select name=\"sort\"><option value=\"display_order\"{% if request.query.sort == 'display_order' %} selected{% endif %}>Featured</option><option value=\"price-asc\"{% if request.query.sort == 'price-asc' %} selected{% endif %}>Price: low to high</option><option value=\"price-desc\"{% if request.query.sort == 'price-desc' %} selected{% endif %}>Price: high to low</option><option value=\"newest\"{% if request.query.sort == 'newest' %} selected{% endif %}>Newest</option><option value=\"name\"{% if request.query.sort == 'name' %} selected{% endif %}>Name</option></select></label>{% if request.query.search %}<input type=\"hidden\" name=\"search\" value=\"{{ request.query.search }}\">{% endif %}{% if request.query.category %}<input type=\"hidden\" name=\"category\" value=\"{{ request.query.category }}\">{% endif %}{% if request.query.country_of_origin %}<input type=\"hidden\" name=\"country_of_origin\" value=\"{{ request.query.country_of_origin }}\">{% endif %}<button class=\"tl-button\" type=\"submit\">Apply filters</button><a class=\"tl-link\" href=\"{{ request.path }}\">Clear filters</a></form><p class=\"tl-outfit-note\">Size and color match the same available variant.</p></div></section>\n{% schema %}\n{\"name\":\"Apparel discovery\",\"tag\":\"section\",\"settings\":[],\"blocks\":[],\"presets\":[{\"name\":\"Apparel discovery\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Apparel discovery",
+          "tag": "section",
+          "settings": [],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Apparel discovery",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "contact-form": {
+        "path": "sections/contact-form.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-contact-form\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  <p>{{ section.settings.subtitle }}</p>\n  <form action=\"/contact\" method=\"post\"><input name=\"name\" aria-label=\"Name\"><input type=\"email\" name=\"email\" aria-label=\"Email\">{% if section.settings.showPhone %}<input name=\"phone\" aria-label=\"Phone\">{% endif %}<button type=\"submit\">Send</button></form>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Contact Form\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"Contact us\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Subtitle\",\"id\":\"subtitle\"},{\"type\":\"toggle\",\"label\":\"Show phone field\",\"default\":true,\"id\":\"showPhone\"}],\"blocks\":[],\"presets\":[{\"name\":\"Contact Form\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Contact Form",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "Contact us",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Subtitle",
+              "id": "subtitle"
+            },
+            {
+              "type": "toggle",
+              "label": "Show phone field",
+              "default": true,
+              "id": "showPhone"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Contact Form",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "cta-section": {
+        "path": "sections/cta-section.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-cta-section\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.heading }}</h2>\n  <p>{{ section.settings.subheading }}</p>\n  <a href=\"{{ section.settings.ctaLink | store_url }}\">{{ section.settings.ctaText }}</a>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Call to Action\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Ready to get started?\",\"id\":\"heading\"},{\"type\":\"text\",\"label\":\"Subheading\",\"id\":\"subheading\"},{\"type\":\"text\",\"label\":\"Button text\",\"default\":\"Shop now\",\"id\":\"ctaText\"},{\"type\":\"url\",\"label\":\"Button link\",\"default\":\"/products\",\"id\":\"ctaLink\"}],\"blocks\":[],\"presets\":[{\"name\":\"Call to Action\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Call to Action",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Ready to get started?",
+              "id": "heading"
+            },
+            {
+              "type": "text",
+              "label": "Subheading",
+              "id": "subheading"
+            },
+            {
+              "type": "text",
+              "label": "Button text",
+              "default": "Shop now",
+              "id": "ctaText"
+            },
+            {
+              "type": "url",
+              "label": "Button link",
+              "default": "/products",
+              "id": "ctaLink"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Call to Action",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "featured-products": {
+        "path": "sections/featured-products.liquid",
+        "source": "<section class=\"tl-theme\" data-section-id=\"{{ section.id }}\">{% if section.products.size > 0 %}<div class=\"tl-outfit{% unless section.settings.image != blank %} tl-outfit-empty{% endunless %}\">{% if section.settings.image != blank %}<img src=\"{{ section.settings.image | image_url }}\" alt=\"{{ section.settings.title }}\" loading=\"lazy\">{% endif %}<div class=\"tl-outfit-copy\"><span class=\"tl-eyebrow\">THE EVERYDAY PAIRING</span><h2>{{ section.settings.title }}</h2><p>{{ section.settings.subtitle }}</p><p class=\"tl-outfit-note\">Each piece is sold separately.</p>{% for item in section.products limit: section.settings.productLimit %}<a class=\"tl-outfit-product\" href=\"{{ item.url }}\">{% if item.featured_image %}<img src=\"{{ item.featured_image | image_url }}\" alt=\"{{ item.title }}\" loading=\"lazy\">{% endif %}<div><h3>{{ item.title }}</h3><p>{{ item.price | times: 100 | money_with_currency: item.currency }}</p><span class=\"tl-link\">Choose your size →</span></div></a>{% endfor %}</div></div>{% endif %}</section>\n{% schema %}\n{\"name\":\"Curated outfit links\",\"tag\":\"section\",\"settings\":[{\"type\":\"toggle\",\"label\":\"Only show selected products\",\"default\":true,\"id\":\"requireSelection\"},{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Wear it your way.\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Description\",\"default\":\"Every piece, individually chosen.\",\"id\":\"subtitle\"},{\"type\":\"image\",\"label\":\"Outfit photograph\",\"id\":\"image\"},{\"type\":\"product\",\"label\":\"First independently sold product\",\"id\":\"product1\"},{\"type\":\"product\",\"label\":\"Second independently sold product\",\"id\":\"product2\"},{\"type\":\"product\",\"label\":\"Third independently sold product\",\"id\":\"product3\"},{\"type\":\"range\",\"label\":\"Products to show\",\"default\":2,\"min\":1,\"max\":8,\"step\":1,\"id\":\"productLimit\"}],\"blocks\":[],\"presets\":[{\"name\":\"Curated outfit links\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Curated outfit links",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "toggle",
+              "label": "Only show selected products",
+              "default": true,
+              "id": "requireSelection"
+            },
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Wear it your way.",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Description",
+              "default": "Every piece, individually chosen.",
+              "id": "subtitle"
+            },
+            {
+              "type": "image",
+              "label": "Outfit photograph",
+              "id": "image"
+            },
+            {
+              "type": "product",
+              "label": "First independently sold product",
+              "id": "product1"
+            },
+            {
+              "type": "product",
+              "label": "Second independently sold product",
+              "id": "product2"
+            },
+            {
+              "type": "product",
+              "label": "Third independently sold product",
+              "id": "product3"
+            },
+            {
+              "type": "range",
+              "label": "Products to show",
+              "default": 2,
+              "min": 1,
+              "max": 8,
+              "step": 1,
+              "id": "productLimit"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Curated outfit links",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "experience-timeline": {
+        "path": "sections/experience-timeline.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-experience-timeline\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.company }}</p><time>{{ block.settings.period }}</time></article>{% endfor %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Experience Timeline\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"Experience\",\"id\":\"title\"}],\"blocks\":[{\"type\":\"experience\",\"name\":\"Experience\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Company\",\"id\":\"company\"},{\"type\":\"text\",\"label\":\"Period\",\"id\":\"period\"}]}],\"presets\":[{\"name\":\"Experience Timeline\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Experience Timeline",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "Experience",
+              "id": "title"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "experience",
+              "name": "Experience",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Title",
+                  "id": "title"
+                },
+                {
+                  "type": "text",
+                  "label": "Company",
+                  "id": "company"
+                },
+                {
+                  "type": "text",
+                  "label": "Period",
+                  "id": "period"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Experience Timeline",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "faq-accordion": {
+        "path": "sections/faq-accordion.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-faq-accordion\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% if section.blocks.size > 0 %}\n  <div class=\"lb-faq-accordion__items\">\n    {% for block in section.blocks %}<details class=\"lb-faq-accordion__item\"{% unless section.settings.allowMultipleOpen %} name=\"lb-faq-{{ section.id }}\"{% endunless %}><summary class=\"lb-faq-accordion__question\">{{ block.settings.question }}</summary><div class=\"lb-faq-accordion__answer\">{{ block.settings.answer }}</div></details>{% endfor %}\n  </div>\n  {% else %}\n  <p class=\"lb-faq-accordion__empty\">No questions published yet.</p>\n  {% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"FAQ Accordion\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"Frequently asked questions\",\"id\":\"title\"},{\"type\":\"toggle\",\"label\":\"Allow multiple open\",\"default\":false,\"id\":\"allowMultipleOpen\"}],\"blocks\":[{\"type\":\"faq-item\",\"name\":\"FAQ item\",\"settings\":[{\"type\":\"text\",\"label\":\"Question\",\"id\":\"question\"},{\"type\":\"richtext\",\"label\":\"Answer\",\"id\":\"answer\"}]}],\"presets\":[{\"name\":\"FAQ Accordion\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "FAQ Accordion",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "Frequently asked questions",
+              "id": "title"
+            },
+            {
+              "type": "toggle",
+              "label": "Allow multiple open",
+              "default": false,
+              "id": "allowMultipleOpen"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "faq-item",
+              "name": "FAQ item",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Question",
+                  "id": "question"
+                },
+                {
+                  "type": "richtext",
+                  "label": "Answer",
+                  "id": "answer"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "FAQ Accordion",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "footer": {
+        "path": "sections/footer.liquid",
+        "source": "<div class=\"tl-theme\"><footer class=\"lb-footer\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-footer__grid\">\n    <div class=\"lb-footer__brand\">\n      <h3>{{ section.settings.storeName | default: shop.name }}</h3>\n      {% if section.settings.tagline != blank %}<p>{{ section.settings.tagline }}</p>{% endif %}\n      {% if section.settings.instagramUrl != blank or section.settings.facebookUrl != blank or section.settings.twitterUrl != blank %}\n      <div class=\"lb-footer__social\">\n        {% if section.settings.instagramUrl != blank %}<a href=\"{{ section.settings.instagramUrl }}\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Instagram\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" ry=\"5\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1\"></circle></svg></a>{% endif %}\n        {% if section.settings.facebookUrl != blank %}<a href=\"{{ section.settings.facebookUrl }}\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Facebook\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M15 4h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3z\"></path></svg></a>{% endif %}\n        {% if section.settings.twitterUrl != blank %}<a href=\"{{ section.settings.twitterUrl }}\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Twitter/X\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><line x1=\"4\" y1=\"4\" x2=\"20\" y2=\"20\"></line><line x1=\"20\" y1=\"4\" x2=\"4\" y2=\"20\"></line></svg></a>{% endif %}\n      </div>\n      {% endif %}\n    </div>\n    {% if section.blocks.size > 0 %}\n    <div class=\"lb-footer__col\"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href=\"{{ block.settings.href | store_url }}\">{{ block.settings.label }}</a>{% endfor %}</nav></div>\n    {% elsif linklists.footer_menu.links.size > 0 %}\n    <div class=\"lb-footer__col\"><h4>Quick links</h4><nav>{% for link in linklists.footer_menu.links %}<a href=\"{{ link.url | store_url }}\"{% if link.active %} aria-current=\"page\"{% endif %}>{{ link.title }}</a>{% endfor %}</nav></div>\n    {% endif %}\n    {% if shop.policies.size > 0 %}<div class=\"lb-footer__col\">\n      <h4>Policies</h4>\n      <nav>\n        {% if shop.policies contains 'privacy' %}<a href=\"{{ routes.root_url }}/privacy\">Privacy policy</a>{% endif %}\n        {% if shop.policies contains 'terms' %}<a href=\"{{ routes.root_url }}/terms\">Terms of service</a>{% endif %}\n        {% if shop.policies contains 'shipping' %}<a href=\"{{ routes.root_url }}/shipping\">Shipping policy</a>{% endif %}\n        {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}<a href=\"{{ routes.root_url }}/returns\">Returns policy</a>{% endif %}\n      </nav>\n    </div>{% endif %}\n    <div class=\"lb-footer__col\">\n      <h4>Contact</h4>\n      {% if section.settings.contactEmail != blank %}<p><a href=\"mailto:{{ section.settings.contactEmail }}\">{{ section.settings.contactEmail }}</a></p>{% endif %}\n      {% if section.settings.contactPhone != blank %}<p><a href=\"tel:{{ section.settings.contactPhone }}\">{{ section.settings.contactPhone }}</a></p>{% endif %}\n      <a href=\"{{ routes.contact_url }}\">Contact us</a>\n    </div>\n  </div>\n  <div class=\"lb-footer__bottom\">\n    <p>&copy; {{ shop.name }}. All rights reserved.</p>\n    <a class=\"lb-footer__watermark\" href=\"https://letbuyy.com\" target=\"_blank\" rel=\"noopener noreferrer\">Powered by LetBuyy</a>\n  </div>\n</footer>\n</div>\n{% schema %}\n{\"name\":\"Footer\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Store name\",\"id\":\"storeName\"},{\"type\":\"text\",\"label\":\"Tagline\",\"id\":\"tagline\"},{\"type\":\"text\",\"label\":\"Contact email\",\"id\":\"contactEmail\"},{\"type\":\"text\",\"label\":\"Contact phone\",\"id\":\"contactPhone\"},{\"type\":\"url\",\"label\":\"Instagram URL\",\"id\":\"instagramUrl\"},{\"type\":\"url\",\"label\":\"Facebook URL\",\"id\":\"facebookUrl\"},{\"type\":\"url\",\"label\":\"Twitter/X URL\",\"id\":\"twitterUrl\"}],\"blocks\":[{\"type\":\"link\",\"name\":\"Link\",\"settings\":[{\"type\":\"text\",\"label\":\"Label\",\"id\":\"label\"},{\"type\":\"url\",\"label\":\"URL\",\"id\":\"href\"}]}],\"presets\":[{\"name\":\"Footer\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Footer",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Store name",
+              "id": "storeName"
+            },
+            {
+              "type": "text",
+              "label": "Tagline",
+              "id": "tagline"
+            },
+            {
+              "type": "text",
+              "label": "Contact email",
+              "id": "contactEmail"
+            },
+            {
+              "type": "text",
+              "label": "Contact phone",
+              "id": "contactPhone"
+            },
+            {
+              "type": "url",
+              "label": "Instagram URL",
+              "id": "instagramUrl"
+            },
+            {
+              "type": "url",
+              "label": "Facebook URL",
+              "id": "facebookUrl"
+            },
+            {
+              "type": "url",
+              "label": "Twitter/X URL",
+              "id": "twitterUrl"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "link",
+              "name": "Link",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Label",
+                  "id": "label"
+                },
+                {
+                  "type": "url",
+                  "label": "URL",
+                  "id": "href"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Footer",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "header": {
+        "path": "sections/header.liquid",
+        "source": "<div class=\"tl-theme\"><header class=\"lb-header\" data-section-id=\"{{ section.id }}\" data-sticky=\"{% if section.settings.behavior == 'sticky' %}true{% else %}false{% endif %}\" data-layout=\"{{ section.settings.layout | default: 'inline' }}\">\n  <div class=\"lb-header__inner\">\n    <lb-mobile-nav class=\"lb-mobile-nav\" data-lb-island=\"mobile-nav\">\n      <button type=\"button\" class=\"lb-header__toggle\" data-lb-nav-toggle aria-expanded=\"false\" aria-controls=\"lb-nav-panel-{{ section.id }}\" aria-label=\"Menu\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><line x1=\"3\" y1=\"6\" x2=\"21\" y2=\"6\"></line><line x1=\"3\" y1=\"12\" x2=\"21\" y2=\"12\"></line><line x1=\"3\" y1=\"18\" x2=\"21\" y2=\"18\"></line></svg><span class=\"lb-sr-only\">Menu</span></button>\n      <nav class=\"lb-header__nav\" data-lb-nav-panel id=\"lb-nav-panel-{{ section.id }}\" aria-label=\"Primary\">\n        <div class=\"lb-header__nav-head\"><span class=\"lb-header__nav-head-brand\">{{ section.settings.storeName | default: shop.name }}</span><button type=\"button\" class=\"lb-header__nav-close\" data-lb-nav-close aria-label=\"Close menu\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\"></line><line x1=\"19\" y1=\"5\" x2=\"5\" y2=\"19\"></line></svg><span class=\"lb-sr-only\">Close menu</span></button></div>\n        <div class=\"lb-header__nav-links\">\n        {% if section.blocks.size > 0 %}\n          {% for block in section.blocks %}<a href=\"{{ block.settings.href | store_url }}\">{{ block.settings.label }}</a>{% endfor %}\n        {% else %}\n          {% assign lb_menu_handle = section.settings.menu | default: 'main_menu' %}\n          {% assign lb_nav_links = linklists[lb_menu_handle].links %}\n          {% for link in lb_nav_links %}\n            {% if link.links.size > 0 %}\n            <details class=\"lb-header__nav-item\" data-lb-nav-dropdown><summary{% if link.active %} aria-current=\"page\"{% endif %}>{{ link.title }}<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\" class=\"lb-icon-chevron\"><path d=\"M6 9l6 6 6-6\"></path></svg></summary>\n              <div class=\"lb-header__nav-submenu\">{% for child in link.links %}<a href=\"{{ child.url | store_url }}\"{% if child.active %} aria-current=\"page\"{% endif %}>{{ child.title }}</a>{% endfor %}</div>\n            </details>\n            {% else %}<a href=\"{{ link.url | store_url }}\"{% if link.active %} aria-current=\"page\"{% endif %}>{{ link.title }}</a>{% endif %}\n          {% endfor %}\n        {% endif %}\n        </div>\n        <div class=\"lb-header__nav-foot\">\n          {% if customer %}<a href=\"{{ routes.account_url }}\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"8\" r=\"4\"></circle><path d=\"M4 20c0-4 4-6 8-6s8 2 8 6\"></path></svg><span>Account</span></a>{% else %}<a href=\"{{ routes.customer_login_url }}\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"8\" r=\"4\"></circle><path d=\"M4 20c0-4 4-6 8-6s8 2 8 6\"></path></svg><span>Log in</span></a>{% endif %}\n        </div>\n      </nav>\n      <div class=\"lb-header__scrim\" data-lb-nav-scrim></div>\n    </lb-mobile-nav>\n    <a class=\"lb-header__brand\" href=\"{{ routes.root_url }}\">\n      {% if shop.logo_url %}<img class=\"lb-header__logo\" src=\"{{ shop.logo_url | image_url }}\" alt=\"{{ section.settings.storeName | default: shop.name }}\">{% else %}{{ section.settings.storeName | default: shop.name }}{% endif %}\n    </a>\n    <div class=\"lb-header__actions\">\n      {% if section.settings.showSearch %}<button type=\"button\" class=\"lb-header__search-toggle\" data-lb-search-toggle aria-expanded=\"false\" aria-controls=\"lb-search-overlay-{{ section.id }}\" aria-label=\"Search\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span class=\"lb-sr-only\">Search</span></button>{% endif %}\n      <a class=\"lb-header__account\" href=\"{% if customer %}{{ routes.account_url }}{% else %}{{ routes.customer_login_url }}{% endif %}\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"8\" r=\"4\"></circle><path d=\"M4 20c0-4 4-6 8-6s8 2 8 6\"></path></svg><span class=\"lb-sr-only\">{% if customer %}Account{% else %}Log in{% endif %}</span></a>\n      {% if section.settings.showCart %}<a class=\"lb-header__cart\" href=\"{{ routes.cart_url }}\" data-lb-cart-trigger><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 4h2l2 12h11l2-8H6\"></path><circle cx=\"9\" cy=\"20\" r=\"1\"></circle><circle cx=\"17\" cy=\"20\" r=\"1\"></circle></svg><span class=\"lb-sr-only\">{{ \"general.cart\" | t }}</span> (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}\n    </div>\n  </div>\n  {% if section.settings.showSearch %}\n  <div class=\"lb-header__search-overlay\" id=\"lb-search-overlay-{{ section.id }}\" data-lb-search-overlay hidden>\n    <lb-predictive-search class=\"lb-predictive-search\" data-lb-island=\"predictive-search\" data-search-url=\"{{ routes.search_url }}\">\n      <form role=\"search\" method=\"get\" action=\"{{ routes.search_url }}\" data-lb-search-form>\n        <label class=\"lb-sr-only\" for=\"lb-search-input-{{ section.id }}\">Search products</label>\n        <input type=\"search\" name=\"search\" id=\"lb-search-input-{{ section.id }}\" data-lb-search-input placeholder=\"Search products\" autocomplete=\"off\" role=\"combobox\" aria-expanded=\"false\" aria-controls=\"lb-search-results-{{ section.id }}\" aria-autocomplete=\"list\">\n        <button type=\"submit\" aria-label=\"Search\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span class=\"lb-sr-only\">Search</span></button>\n        <button type=\"button\" data-lb-search-close aria-label=\"Close search\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\"></line><line x1=\"19\" y1=\"5\" x2=\"5\" y2=\"19\"></line></svg><span class=\"lb-sr-only\">Close search</span></button>\n      </form>\n      <div id=\"lb-search-results-{{ section.id }}\" class=\"lb-predictive-search__results\" data-lb-search-results role=\"listbox\" aria-live=\"polite\"></div>\n    </lb-predictive-search>\n  </div>\n  {% endif %}\n</header>\n</div>\n{% schema %}\n{\"name\":\"Header\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Store name\",\"id\":\"storeName\"},{\"type\":\"toggle\",\"label\":\"Show search\",\"default\":true,\"id\":\"showSearch\"},{\"type\":\"toggle\",\"label\":\"Show cart\",\"default\":true,\"id\":\"showCart\"},{\"type\":\"select\",\"label\":\"Header behavior\",\"default\":\"sticky\",\"options\":[\"static\",\"sticky\"],\"id\":\"behavior\"},{\"type\":\"select\",\"label\":\"Menu\",\"default\":\"main_menu\",\"options\":[\"main_menu\",\"footer_menu\",\"policy_menu\"],\"id\":\"menu\"},{\"type\":\"select\",\"label\":\"Layout\",\"default\":\"inline\",\"options\":[\"inline\",\"centered\"],\"id\":\"layout\"}],\"blocks\":[{\"type\":\"link\",\"name\":\"Link\",\"settings\":[{\"type\":\"text\",\"label\":\"Label\",\"id\":\"label\"},{\"type\":\"url\",\"label\":\"URL\",\"id\":\"href\"}]}],\"presets\":[{\"name\":\"Header\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Header",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Store name",
+              "id": "storeName"
+            },
+            {
+              "type": "toggle",
+              "label": "Show search",
+              "default": true,
+              "id": "showSearch"
+            },
+            {
+              "type": "toggle",
+              "label": "Show cart",
+              "default": true,
+              "id": "showCart"
+            },
+            {
+              "type": "select",
+              "label": "Header behavior",
+              "default": "sticky",
+              "options": [
+                "static",
+                "sticky"
+              ],
+              "id": "behavior"
+            },
+            {
+              "type": "select",
+              "label": "Menu",
+              "default": "main_menu",
+              "options": [
+                "main_menu",
+                "footer_menu",
+                "policy_menu"
+              ],
+              "id": "menu"
+            },
+            {
+              "type": "select",
+              "label": "Layout",
+              "default": "inline",
+              "options": [
+                "inline",
+                "centered"
+              ],
+              "id": "layout"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "link",
+              "name": "Link",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Label",
+                  "id": "label"
+                },
+                {
+                  "type": "url",
+                  "label": "URL",
+                  "id": "href"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Header",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "hero-banner": {
+        "path": "sections/hero-banner.liquid",
+        "source": "<section class=\"tl-theme tl-hero tl-focus-{{ section.settings.imageFocus }}{% unless section.settings.image != blank %} tl-hero-empty{% endunless %}\" data-section-id=\"{{ section.id }}\">{% if section.settings.image != blank %}<div class=\"tl-hero-media\"><img src=\"{{ section.settings.image | image_url }}\" alt=\"{{ section.settings.heading }}\" fetchpriority=\"high\" decoding=\"async\">{% if section.settings.secondImage != blank %}<img src=\"{{ section.settings.secondImage | image_url }}\" alt=\"\" decoding=\"async\">{% endif %}</div>{% endif %}<div class=\"tl-hero-copy\"><span class=\"tl-eyebrow\">{{ section.settings.eyebrow }}</span><h1>{{ section.settings.heading }}</h1><p>{{ section.settings.subheading }}</p>{% if section.settings.ctaText != blank and section.settings.ctaLink != blank %}<a class=\"tl-button\" href=\"{{ section.settings.ctaLink | store_url }}\">{{ section.settings.ctaText }}</a>{% endif %}{% if section.settings.secondaryText != blank and section.settings.secondaryLink != blank %}<a class=\"tl-link\" href=\"{{ section.settings.secondaryLink | store_url }}\">{{ section.settings.secondaryText }}</a>{% endif %}</div></section>\n{% schema %}\n{\"name\":\"Editorial hero\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Eyebrow\",\"default\":\"THE EVERYDAY EDIT\",\"id\":\"eyebrow\"},{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Made to move with you.\",\"id\":\"heading\"},{\"type\":\"text\",\"label\":\"Description\",\"default\":\"Considered clothing for your everyday.\",\"id\":\"subheading\"},{\"type\":\"text\",\"label\":\"Primary button\",\"default\":\"Explore new arrivals\",\"id\":\"ctaText\"},{\"type\":\"url\",\"label\":\"Primary destination\",\"default\":\"/products\",\"id\":\"ctaLink\"},{\"type\":\"text\",\"label\":\"Secondary link\",\"default\":\"Find your fit\",\"id\":\"secondaryText\"},{\"type\":\"url\",\"label\":\"Secondary destination\",\"default\":\"/products\",\"id\":\"secondaryLink\"},{\"type\":\"image\",\"label\":\"Main campaign image\",\"id\":\"image\"},{\"type\":\"image\",\"label\":\"Supporting campaign image\",\"id\":\"secondImage\"},{\"type\":\"select\",\"label\":\"Image focal position\",\"default\":\"center\",\"options\":[\"center\",\"top\",\"bottom\"],\"id\":\"imageFocus\"}],\"blocks\":[],\"presets\":[{\"name\":\"Editorial hero\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Editorial hero",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Eyebrow",
+              "default": "THE EVERYDAY EDIT",
+              "id": "eyebrow"
+            },
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Made to move with you.",
+              "id": "heading"
+            },
+            {
+              "type": "text",
+              "label": "Description",
+              "default": "Considered clothing for your everyday.",
+              "id": "subheading"
+            },
+            {
+              "type": "text",
+              "label": "Primary button",
+              "default": "Explore new arrivals",
+              "id": "ctaText"
+            },
+            {
+              "type": "url",
+              "label": "Primary destination",
+              "default": "/products",
+              "id": "ctaLink"
+            },
+            {
+              "type": "text",
+              "label": "Secondary link",
+              "default": "Find your fit",
+              "id": "secondaryText"
+            },
+            {
+              "type": "url",
+              "label": "Secondary destination",
+              "default": "/products",
+              "id": "secondaryLink"
+            },
+            {
+              "type": "image",
+              "label": "Main campaign image",
+              "id": "image"
+            },
+            {
+              "type": "image",
+              "label": "Supporting campaign image",
+              "id": "secondImage"
+            },
+            {
+              "type": "select",
+              "label": "Image focal position",
+              "default": "center",
+              "options": [
+                "center",
+                "top",
+                "bottom"
+              ],
+              "id": "imageFocus"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Editorial hero",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "marquee": {
+        "path": "sections/marquee.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-marquee\" data-section-id=\"{{ section.id }}\">\n  <p>{{ section.settings.text }}</p>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Marquee\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Text\",\"default\":\"Featured announcement\",\"id\":\"text\"}],\"blocks\":[],\"presets\":[{\"name\":\"Marquee\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Marquee",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Text",
+              "default": "Featured announcement",
+              "id": "text"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Marquee",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "portfolio-grid": {
+        "path": "sections/portfolio-grid.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-portfolio-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.summary }}</p><a href=\"{{ block.settings.link | store_url }}\">View</a></article>{% endfor %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Portfolio Grid\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"Portfolio\",\"id\":\"title\"}],\"blocks\":[{\"type\":\"project\",\"name\":\"Project\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"id\":\"title\"},{\"type\":\"textarea\",\"label\":\"Summary\",\"id\":\"summary\"},{\"type\":\"url\",\"label\":\"Link\",\"id\":\"link\"}]}],\"presets\":[{\"name\":\"Portfolio Grid\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Portfolio Grid",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "Portfolio",
+              "id": "title"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "project",
+              "name": "Project",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Title",
+                  "id": "title"
+                },
+                {
+                  "type": "textarea",
+                  "label": "Summary",
+                  "id": "summary"
+                },
+                {
+                  "type": "url",
+                  "label": "Link",
+                  "id": "link"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Portfolio Grid",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "product-detail": {
+        "path": "sections/product-detail.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-product-detail\" data-section-id=\"{{ section.id }}\">\n  <nav class=\"lb-product-detail__breadcrumb\" aria-label=\"Breadcrumb\">\n    <a href=\"{{ routes.root_url }}\">Home</a>\n    <a href=\"{{ routes.all_products_collection_url }}\">Shop</a>\n    <span aria-current=\"page\">{{ product.title }}</span>\n  </nav>\n  <div class=\"lb-product-detail__layout\">\n  {% if section.settings.showGallery and product.images.size > 0 %}\n  <lb-product-gallery class=\"lb-product-detail__gallery\" data-lb-island=\"product-gallery\">\n    <div class=\"lb-product-detail__gallery-main\">\n      {% for image in product.images %}<img class=\"lb-product-detail__gallery-image\" src=\"{{ image | image_url }}\" alt=\"{{ product.title }}\" data-lb-gallery-image data-index=\"{{ forloop.index0 }}\"{% unless forloop.first %} hidden{% endunless %} loading=\"{% if forloop.first %}eager{% else %}lazy{% endif %}\" decoding=\"async\">{% endfor %}\n    </div>\n    {% if product.images.size > 1 %}\n    <div class=\"lb-product-detail__gallery-thumbs\" role=\"tablist\" aria-label=\"Product images\">\n      {% for image in product.images %}<button type=\"button\" class=\"lb-product-detail__gallery-thumb\" data-lb-gallery-thumb data-index=\"{{ forloop.index0 }}\" role=\"tab\" aria-selected=\"{% if forloop.first %}true{% else %}false{% endif %}\" tabindex=\"{% if forloop.first %}0{% else %}-1{% endif %}\" aria-label=\"Image {{ forloop.index }} of {{ product.images.size }}\"><img src=\"{{ image | image_url }}\" alt=\"\" aria-hidden=\"true\" loading=\"lazy\" decoding=\"async\"></button>{% endfor %}\n    </div>\n    {% endif %}\n  </lb-product-gallery>\n  {% endif %}\n  <div class=\"lb-product-detail__info\">\n  <h1>{{ product.title }}</h1>\n  {% if product.review_count > 0 %}<p class=\"lb-product-detail__rating\" aria-label=\"Rated {{ product.rating }} out of 5\">★ {{ product.rating }} <span class=\"lb-product-detail__rating-count\">({{ product.review_count }})</span></p>{% endif %}\n  <div class=\"lb-product-detail__price\">\n    <span class=\"lb-product-detail__price-current\">{{ product.price | times: 100 | money_with_currency: product.currency }}</span>\n    {% if product.compare_at_price and product.compare_at_price > product.price %}\n    <s class=\"lb-product-detail__price-compare\">{{ product.compare_at_price | times: 100 | money_with_currency: product.currency }}</s>\n    <span class=\"lb-product-detail__price-save\">Save {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>\n    {% endif %}\n  </div>\n  {% if section.settings.showGarmentFacts %}<a class=\"tl-link\" href=\"#fit-guide\">Fit &amp; garment measurements ↗</a>{% endif %}\n  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island=\"variant-picker\" data-product-id=\"{{ product.id }}\" data-variants=\"{{ product.variants | json }}\" class=\"lb-product-detail__variants\">{% for option in product.options %}<div class=\"lb-product-detail__variant-group\"><span class=\"lb-variant-option__name\">{{ option.name }}</span><div class=\"lb-product-detail__variant-values\">{% for value in option.values %}<button type=\"button\" data-lb-variant-option data-variant-name=\"{{ option.name }}\" data-variant-value=\"{{ value }}\" aria-pressed=\"false\">{{ value }}</button>{% endfor %}</div></div>{% endfor %}<p class=\"lb-product-detail__variant-status\" data-lb-variant-status role=\"status\"></p></lb-variant-picker>{% endif %}\n  <div class=\"lb-product-detail__purchase\">\n    <lb-add-to-cart data-lb-island=\"add-to-cart\" data-product-id=\"{{ product.id }}\" data-product-name=\"{{ product.title }}\" data-product-price=\"{{ product.price }}\" data-product-currency=\"{{ product.currency }}\" data-product-url=\"{{ product.url }}\">\n      <label class=\"lb-sr-only\" for=\"lb-quantity-{{ section.id }}\">Quantity</label>\n      <input type=\"number\" name=\"quantity\" id=\"lb-quantity-{{ section.id }}\" class=\"lb-product-detail__quantity\" value=\"1\" min=\"1\" inputmode=\"numeric\">\n      <button type=\"button\" class=\"lb-product-detail__cta lb-product-detail__cta--primary\" data-lb-add-to-cart{% if product.available == false %} disabled{% endif %}>{% if product.available == false %}Sold out{% else %}Add to cart{% endif %}</button>\n      {% if section.settings.showBuyNow %}<button type=\"button\" class=\"lb-product-detail__cta lb-product-detail__cta--secondary\" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>{% endif %}\n      <span data-lb-add-to-cart-status aria-live=\"polite\"></span>\n    </lb-add-to-cart>\n    <lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ product.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"{% if product.in_wishlist %}true{% endif %}\"{% if buyer_wishlist.authenticated %} data-authenticated=\"true\" data-account-type=\"buyer\" data-buyer-id=\"{{ buyer_wishlist.buyerId }}\" data-buyer-linked=\"{% if buyer_wishlist.linked %}true{% endif %}\" data-buyer-unavailable=\"{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}\"{% elsif customer %} data-authenticated=\"true\" data-account-type=\"store_customer\"{% endif %} data-base-path=\"/store/{{ shop.subdomain }}\" aria-label=\"Add {{ product.title }} to wishlist\"></lb-wishlist-toggle>\n  </div>\n  {% if section.settings.showDescription and product.description %}\n  <details class=\"lb-product-detail__accordion\"><summary>Description</summary><div class=\"lb-product-detail__accordion-body\">{{ product.description }}</div></details>\n  {% endif %}\n  {% if shop.policies contains 'shipping' %}\n  <details class=\"lb-product-detail__accordion\"><summary>Shipping</summary><div class=\"lb-product-detail__accordion-body\"><a href=\"{{ routes.root_url }}/shipping\">Read our shipping policy</a></div></details>\n  {% endif %}\n  {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}\n  <details class=\"lb-product-detail__accordion\"><summary>Returns</summary><div class=\"lb-product-detail__accordion-body\"><a href=\"{{ routes.root_url }}/returns\">Read our returns policy</a></div></details>\n  {% endif %}\n  </div>\n  </div>\n  {% if section.settings.showGarmentFacts %}<section class=\"tl-fit\" id=\"fit-guide\" aria-label=\"Fit and garment information\"><h2>A fit you can understand</h2>{% if product.apparel.fit %}<p>{{ product.apparel.fit }}</p>{% endif %}{% if product.apparel.measurements.size > 0 %}<table><caption>Garment measurements · {{ product.apparel.unit }} · Measure the garment, not the body.</caption><thead><tr><th scope=\"col\">Size</th><th scope=\"col\">Chest</th><th scope=\"col\">Shoulder</th><th scope=\"col\">Length</th></tr></thead><tbody>{% for row in product.apparel.measurements %}<tr><th scope=\"row\">{{ row.size }}</th><td>{{ row.chest | default: '—' }}</td><td>{{ row.shoulder | default: '—' }}</td><td>{{ row.length | default: '—' }}</td></tr>{% endfor %}</tbody></table>{% else %}<p>Garment measurements have not been supplied.</p>{% endif %}{% if product.apparel.fabric %}<details open><summary>Fabric</summary><p>{{ product.apparel.fabric }}</p></details>{% endif %}{% if product.apparel.care %}<details><summary>Care</summary><p>{{ product.apparel.care }}</p></details>{% endif %}</section>{% endif %}\n  {% if section.settings.showReviews and product.reviews.size > 0 %}<div class=\"lb-product-reviews\" data-section-id=\"{{ section.id }}-reviews\">\n    <h2 class=\"lb-product-reviews__title\">Customer reviews ({{ product.review_count }})</h2>\n    {% for review in product.reviews %}<article class=\"lb-product-review\">\n      <header class=\"lb-product-review__head\"><strong class=\"lb-product-review__author\">{{ review.author }}</strong><span class=\"lb-product-review__stars\" aria-label=\"Rated {{ review.rating }} out of 5\">★ {{ review.rating }}</span>{% if review.is_verified %}<span class=\"lb-product-review__verified\">Verified purchase</span>{% endif %}</header>\n      {% if review.title %}<h3 class=\"lb-product-review__heading\">{{ review.title }}</h3>{% endif %}\n      {% if review.body %}<p class=\"lb-product-review__body\">{{ review.body }}</p>{% endif %}\n      {% if review.helpful_count > 0 %}<footer class=\"lb-product-review__helpful\">{{ review.helpful_count }} found this helpful</footer>{% endif %}\n    </article>{% endfor %}\n  </div>{% endif %}\n  {% if section.settings.showReviews %}<lb-review-form data-lb-island=\"review-form\" data-product-id=\"{{ product.id }}\" data-store-id=\"{{ shop.id }}\"></lb-review-form>{% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Product Detail\",\"tag\":\"section\",\"settings\":[{\"type\":\"toggle\",\"label\":\"Show gallery\",\"default\":true,\"id\":\"showGallery\"},{\"type\":\"toggle\",\"label\":\"Show description\",\"default\":true,\"id\":\"showDescription\"},{\"type\":\"toggle\",\"label\":\"Show reviews\",\"default\":true,\"id\":\"showReviews\"},{\"type\":\"toggle\",\"label\":\"Show buy now\",\"default\":false,\"id\":\"showBuyNow\"},{\"type\":\"toggle\",\"label\":\"Show fit, fabric and care\",\"default\":true,\"id\":\"showGarmentFacts\"}],\"blocks\":[],\"presets\":[{\"name\":\"Product Detail\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Product Detail",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "toggle",
+              "label": "Show gallery",
+              "default": true,
+              "id": "showGallery"
+            },
+            {
+              "type": "toggle",
+              "label": "Show description",
+              "default": true,
+              "id": "showDescription"
+            },
+            {
+              "type": "toggle",
+              "label": "Show reviews",
+              "default": true,
+              "id": "showReviews"
+            },
+            {
+              "type": "toggle",
+              "label": "Show buy now",
+              "default": false,
+              "id": "showBuyNow"
+            },
+            {
+              "type": "toggle",
+              "label": "Show fit, fabric and care",
+              "default": true,
+              "id": "showGarmentFacts"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Product Detail",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "product-grid": {
+        "path": "sections/product-grid.liquid",
+        "source": "<section class=\"tl-theme\" data-section-id=\"{{ section.id }}\"><div class=\"tl-wrap tl-section\"><div class=\"tl-heading\"><div><h2>{{ section.settings.title }}</h2>{% if section.settings.subtitle != blank %}<p>{{ section.settings.subtitle }}</p>{% endif %}</div></div>{% assign apparel_products = section.products | default: collection.products %}{% if apparel_products.size > 0 %}<div class=\"tl-grid\" data-columns=\"{{ section.settings.columns }}\">{% for item in apparel_products limit: section.settings.productLimit %}<article class=\"tl-card\"><a href=\"{{ item.url }}\"><div class=\"tl-card-media\">{% if item.featured_image %}<img src=\"{{ item.featured_image | image_url }}\" alt=\"{{ item.title }}\" loading=\"lazy\" decoding=\"async\">{% else %}<div class=\"tl-card-placeholder\">Product image not supplied</div>{% endif %}{% if item.available == false %}<span>Unavailable</span>{% endif %}</div><div class=\"tl-card-info\"><h3>{{ item.title }}</h3><span class=\"tl-card-price\">{{ item.price | times: 100 | money_with_currency: item.currency }}</span></div></a>{% for option in item.option_summaries %}<p class=\"tl-card-facts\">{{ option.name }}: {{ option.summary }}</p>{% endfor %}<a class=\"tl-link\" href=\"{{ item.url }}\">{% if item.options.size > 0 %}Choose your size{% else %}View product{% endif %} →</a></article>{% endfor %}</div><nav class=\"tl-heading\" aria-label=\"Product pages\">{% if collection.pagination.previous_url %}<a class=\"tl-link\" href=\"{{ collection.pagination.previous_url }}\">← Previous</a>{% endif %}{% if collection.pagination.page %}<span>Page {{ collection.pagination.page }}</span>{% endif %}{% if collection.pagination.next_url %}<a class=\"tl-link\" href=\"{{ collection.pagination.next_url }}\">Next →</a>{% endif %}</nav>{% else %}<p class=\"tl-empty\">No products found. Try a broader collection or clear your filters.</p>{% endif %}</div></section>\n{% schema %}\n{\"name\":\"Apparel product grid\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"New arrivals\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Description\",\"default\":\"\",\"id\":\"subtitle\"},{\"type\":\"range\",\"label\":\"Desktop columns\",\"default\":3,\"min\":2,\"max\":4,\"step\":1,\"id\":\"columns\"},{\"type\":\"range\",\"label\":\"Products to show\",\"default\":6,\"min\":1,\"max\":24,\"step\":1,\"id\":\"productLimit\"},{\"type\":\"collection\",\"label\":\"Collection\",\"id\":\"collectionId\"}],\"blocks\":[],\"presets\":[{\"name\":\"Apparel product grid\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Apparel product grid",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "New arrivals",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Description",
+              "default": "",
+              "id": "subtitle"
+            },
+            {
+              "type": "range",
+              "label": "Desktop columns",
+              "default": 3,
+              "min": 2,
+              "max": 4,
+              "step": 1,
+              "id": "columns"
+            },
+            {
+              "type": "range",
+              "label": "Products to show",
+              "default": 6,
+              "min": 1,
+              "max": 24,
+              "step": 1,
+              "id": "productLimit"
+            },
+            {
+              "type": "collection",
+              "label": "Collection",
+              "id": "collectionId"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Apparel product grid",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "rich-content": {
+        "path": "sections/rich-content.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-rich-content\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.title }}</h1>\n  <div>{{ section.settings.body }}</div>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Rich Content\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"id\":\"title\"},{\"type\":\"richtext\",\"label\":\"Body\",\"id\":\"body\"}],\"blocks\":[],\"presets\":[{\"name\":\"Rich Content\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Rich Content",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "id": "title"
+            },
+            {
+              "type": "richtext",
+              "label": "Body",
+              "id": "body"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Rich Content",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "services-grid": {
+        "path": "sections/services-grid.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-services-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.description }}</p><a href=\"{{ block.settings.link | store_url }}\">Learn more</a></article>{% endfor %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Services Grid\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"Services\",\"id\":\"title\"}],\"blocks\":[{\"type\":\"service\",\"name\":\"Service\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"id\":\"title\"},{\"type\":\"textarea\",\"label\":\"Description\",\"id\":\"description\"},{\"type\":\"url\",\"label\":\"Link\",\"id\":\"link\"}]}],\"presets\":[{\"name\":\"Services Grid\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Services Grid",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "Services",
+              "id": "title"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "service",
+              "name": "Service",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Title",
+                  "id": "title"
+                },
+                {
+                  "type": "textarea",
+                  "label": "Description",
+                  "id": "description"
+                },
+                {
+                  "type": "url",
+                  "label": "Link",
+                  "id": "link"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Services Grid",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "skills-section": {
+        "path": "sections/skills-section.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-skills-section\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% if section.blocks.size > 0 %}<h3>General</h3>{% endif %}\n  {% for block in section.blocks %}<span data-level=\"{{ block.settings.level }}\">{{ block.settings.name }} {{ block.settings.level }}%</span>{% endfor %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Skills Section\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"Skills\",\"id\":\"title\"}],\"blocks\":[{\"type\":\"skill\",\"name\":\"Skill\",\"settings\":[{\"type\":\"text\",\"label\":\"Skill\",\"id\":\"name\"},{\"type\":\"range\",\"label\":\"Level\",\"min\":0,\"max\":100,\"step\":5,\"id\":\"level\"}]}],\"presets\":[{\"name\":\"Skills Section\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Skills Section",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "Skills",
+              "id": "title"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "skill",
+              "name": "Skill",
+              "settings": [
+                {
+                  "type": "text",
+                  "label": "Skill",
+                  "id": "name"
+                },
+                {
+                  "type": "range",
+                  "label": "Level",
+                  "min": 0,
+                  "max": 100,
+                  "step": 5,
+                  "id": "level"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Skills Section",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "testimonials": {
+        "path": "sections/testimonials.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-testimonials\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% if section.blocks.size > 0 %}<div class=\"lb-testimonials__items\">{% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}</div>\n  {% else %}<p class=\"lb-testimonials__empty\">Add customer reviews to build trust.</p>{% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Testimonials\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Title\",\"default\":\"What customers say\",\"id\":\"title\"}],\"blocks\":[{\"type\":\"testimonial\",\"name\":\"Testimonial\",\"settings\":[{\"type\":\"textarea\",\"label\":\"Quote\",\"id\":\"quote\"},{\"type\":\"text\",\"label\":\"Author\",\"id\":\"author\"}]}],\"presets\":[{\"name\":\"Testimonials\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Testimonials",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Title",
+              "default": "What customers say",
+              "id": "title"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "testimonial",
+              "name": "Testimonial",
+              "settings": [
+                {
+                  "type": "textarea",
+                  "label": "Quote",
+                  "id": "quote"
+                },
+                {
+                  "type": "text",
+                  "label": "Author",
+                  "id": "author"
+                }
+              ]
+            }
+          ],
+          "presets": [
+            {
+              "name": "Testimonials",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "trust-badges": {
+        "path": "sections/trust-badges.liquid",
+        "source": "<section class=\"tl-theme\" data-section-id=\"{{ section.id }}\"><div class=\"tl-wrap tl-services\">{% if section.settings.fitText != blank %}<div class=\"tl-service\"><h3>A fit you can understand</h3><p>{{ section.settings.fitText }}</p></div>{% endif %}{% if section.settings.serviceText != blank %}<div class=\"tl-service\"><h3>The details, before you buy</h3><p>{{ section.settings.serviceText }}</p></div>{% endif %}{% if section.settings.supportText != blank %}<div class=\"tl-service\"><h3>Here when you need us</h3><p>{{ section.settings.supportText }}</p></div>{% endif %}</div></section>\n{% schema %}\n{\"name\":\"Merchant service information\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Fit guidance\",\"default\":\"\",\"id\":\"fitText\"},{\"type\":\"text\",\"label\":\"Service information\",\"default\":\"\",\"id\":\"serviceText\"},{\"type\":\"text\",\"label\":\"Support information\",\"default\":\"\",\"id\":\"supportText\"}],\"blocks\":[],\"presets\":[{\"name\":\"Merchant service information\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Merchant service information",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Fit guidance",
+              "default": "",
+              "id": "fitText"
+            },
+            {
+              "type": "text",
+              "label": "Service information",
+              "default": "",
+              "id": "serviceText"
+            },
+            {
+              "type": "text",
+              "label": "Support information",
+              "default": "",
+              "id": "supportText"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Merchant service information",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "newsletter-signup": {
+        "path": "sections/newsletter-signup.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-newsletter-signup\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  <p>{{ section.settings.subtitle }}</p>\n  <form action=\"/contact\" method=\"post\">\n    <input type=\"email\" name=\"email\" aria-label=\"Email\" required>\n    <button type=\"submit\">{{ section.settings.buttonLabel }}</button>\n  </form>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Newsletter Signup\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Get first access\",\"id\":\"title\"},{\"type\":\"text\",\"label\":\"Subheading\",\"id\":\"subtitle\"},{\"type\":\"text\",\"label\":\"Button label\",\"default\":\"Sign up\",\"id\":\"buttonLabel\"}],\"blocks\":[],\"presets\":[{\"name\":\"Newsletter Signup\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Newsletter Signup",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Get first access",
+              "id": "title"
+            },
+            {
+              "type": "text",
+              "label": "Subheading",
+              "id": "subtitle"
+            },
+            {
+              "type": "text",
+              "label": "Button label",
+              "default": "Sign up",
+              "id": "buttonLabel"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Newsletter Signup",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "spotlight": {
+        "path": "sections/spotlight.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-first-party-spotlight\" data-section-id=\"{{ section.id }}\">\n  <p>{{ section.settings.subheading }}</p>\n  <h2>{{ section.settings.heading }}</h2>\n  <div class=\"lb-first-party-spotlight__blocks\">\n    {% for block in section.blocks %}\n      {{ block.content | raw }}\n    {% endfor %}\n  </div>\n</section>\n</div>\n{% schema %}\n{\"name\":\"Spotlight\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"Made for daily buyers\",\"id\":\"heading\"},{\"type\":\"text\",\"label\":\"Subheading\",\"id\":\"subheading\"}],\"blocks\":[{\"type\":\"badge\",\"name\":\"Badge\",\"settings\":[]},{\"type\":\"@app\",\"name\":\"App block\",\"settings\":[]}],\"presets\":[{\"name\":\"Spotlight\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Spotlight",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "Made for daily buyers",
+              "id": "heading"
+            },
+            {
+              "type": "text",
+              "label": "Subheading",
+              "id": "subheading"
+            }
+          ],
+          "blocks": [
+            {
+              "type": "badge",
+              "name": "Badge",
+              "settings": []
+            },
+            {
+              "type": "@app",
+              "name": "App block",
+              "settings": []
+            }
+          ],
+          "presets": [
+            {
+              "name": "Spotlight",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      },
+      "video-hero": {
+        "path": "sections/video-hero.liquid",
+        "source": "<div class=\"tl-theme\"><section class=\"lb-video-hero\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-video-hero__copy\">\n    <h2 class=\"lb-video-hero__heading\">{{ section.settings.heading }}</h2>\n    {% if section.settings.subheading != blank %}<p class=\"lb-video-hero__subheading\">{{ section.settings.subheading }}</p>{% endif %}\n  </div>\n  {% if section.settings.videoUrl != blank %}<div class=\"lb-video-hero__embed\"><iframe src=\"{{ section.settings.videoUrl | video_url }}\" title=\"{{ section.settings.heading }}\" loading=\"lazy\" sandbox=\"allow-scripts allow-same-origin allow-presentation\" allowfullscreen></iframe></div>{% endif %}\n</section>\n</div>\n{% schema %}\n{\"name\":\"Video Hero\",\"tag\":\"section\",\"settings\":[{\"type\":\"text\",\"label\":\"Heading\",\"default\":\"See the fit in motion\",\"id\":\"heading\"},{\"type\":\"textarea\",\"label\":\"Subheading\",\"default\":\"A quick look at how each drop moves, from the box to your feet.\",\"id\":\"subheading\"},{\"type\":\"url\",\"label\":\"Video embed URL\",\"info\":\"A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.\",\"id\":\"videoUrl\"}],\"blocks\":[],\"presets\":[{\"name\":\"Video Hero\",\"settings\":{},\"blocks\":[]}],\"enabled_on\":{\"templates\":[\"*\"]},\"disabled_on\":{\"templates\":[]}}\n{% endschema %}",
+        "schema": {
+          "name": "Video Hero",
+          "tag": "section",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Heading",
+              "default": "See the fit in motion",
+              "id": "heading"
+            },
+            {
+              "type": "textarea",
+              "label": "Subheading",
+              "default": "A quick look at how each drop moves, from the box to your feet.",
+              "id": "subheading"
+            },
+            {
+              "type": "url",
+              "label": "Video embed URL",
+              "info": "A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.",
+              "id": "videoUrl"
+            }
+          ],
+          "blocks": [],
+          "presets": [
+            {
+              "name": "Video Hero",
+              "settings": {},
+              "blocks": []
+            }
+          ],
+          "enabled_on": {
+            "templates": [
+              "*"
+            ]
+          },
+          "disabled_on": {
+            "templates": []
+          }
+        }
+      }
+    },
+    "blocks": {
+      "badge": {
+        "path": "blocks/badge.liquid",
+        "source": "<span class=\"lb-badge\" data-block-id=\"{{ block.id }}\">{{ block.settings.label }}</span>",
+        "schema": {
+          "name": "Badge",
+          "settings": [
+            {
+              "type": "text",
+              "label": "Label",
+              "default": "New",
+              "id": "label"
+            }
+          ],
+          "presets": []
+        }
+      }
+    },
+    "locales": {
+      "en": {
+        "general": {
+          "cart": "Cart"
+        }
+      }
+    },
+    "renderer": {
+      "engine": "liquid",
+      "renderer_version": "0.1.0",
+      "liquid_ready": true,
+      "assets": {}
+    }
+  },
+  "sections": {
+    "template": [
+      {
+        "id": "sense-heroBanner-index",
+        "type": "hero-banner",
+        "order": 0,
+        "visible": true,
+        "settings": {
+          "eyebrow": "THE EVERYDAY EDIT",
+          "heading": "Made to move with you.",
+          "subheading": "Considered clothing for your everyday.",
+          "ctaText": "Explore new arrivals",
+          "ctaLink": "/products",
+          "secondaryText": "Find your fit",
+          "secondaryLink": "/products"
+        },
+        "blocks": []
+      },
+      {
+        "id": "sense-categoryGrid-index",
+        "type": "category-grid",
+        "order": 10,
+        "visible": true,
+        "settings": {
+          "title": "Find your silhouette"
+        },
+        "blocks": []
+      },
+      {
+        "id": "sense-productGrid-index",
+        "type": "product-grid",
+        "order": 20,
+        "visible": true,
+        "settings": {
+          "title": "New arrivals",
+          "columns": 3,
+          "productLimit": 3
+        },
+        "blocks": []
+      },
+      {
+        "id": "sense-featuredProducts-index",
+        "type": "featured-products",
+        "order": 30,
+        "visible": true,
+        "settings": {
+          "requireSelection": true,
+          "title": "Wear it your way.",
+          "subtitle": "Every piece, individually chosen.",
+          "productLimit": 2
+        },
+        "blocks": []
+      },
+      {
+        "id": "sense-aboutSection-index",
+        "type": "about-section",
+        "order": 40,
+        "visible": true,
+        "settings": {
+          "title": "Good things take a little care.",
+          "content": ""
+        },
+        "blocks": []
+      },
+      {
+        "id": "sense-trustBadges-index",
+        "type": "trust-badges",
+        "order": 50,
+        "visible": true,
+        "settings": {
+          "fitText": "",
+          "serviceText": "",
+          "supportText": ""
+        },
+        "blocks": []
+      },
+      {
+        "id": "section-5db391aa-7874-4c80-9b9d-681f31ea027f",
+        "type": "product-grid",
+        "order": 1000,
+        "visible": true,
+        "settings": {
+          "title": "Source fixture title",
+          "subtitle": "Source fixture subtitle",
+          "columns": 2,
+          "productLimit": 1,
+          "collectionId": "22222222-2222-4222-8222-222222222222"
+        },
+        "blocks": []
+      }
+    ],
+    "header": {
+      "id": "announcement-default",
+      "type": "announcement-bar",
+      "order": 0,
+      "visible": true,
+      "settings": {
+        "text": "Meet the new everyday collection",
+        "linkLabel": "",
+        "linkHref": ""
+      },
+      "blocks": []
+    },
+    "footer": {
+      "id": "footer-default",
+      "type": "footer",
+      "order": 0,
+      "visible": true,
+      "settings": {},
+      "blocks": []
+    }
+  },
+  "templates": {
+    "article": {
+      "name": "Article",
+      "layout": "theme",
+      "sections": {
+        "article-content-default": {
+          "type": "article-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "article-content-default"
+      ]
+    },
+    "blog": {
+      "name": "Blog",
+      "layout": "theme",
+      "sections": {
+        "blog-listing-default": {
+          "type": "blog-listing",
+          "settings": {
+            "heading": "Our Blog"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "blog-listing-default"
+      ]
+    },
+    "cart": {
+      "name": "LetBuyy Core cart",
+      "layout": "theme",
+      "sections": {
+        "cart-summary-default": {
+          "type": "cart-summary",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "cart-summary-default"
+      ]
+    },
+    "collection": {
+      "name": "LetBuyy Core collection",
+      "layout": "theme",
+      "sections": {
+        "sense-collectionFilter-collection": {
+          "type": "collection-filter",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "sense-productGrid-collection": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Clothing",
+            "columns": 3,
+            "productLimit": 24
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "sense-collectionFilter-collection",
+        "sense-productGrid-collection"
+      ]
+    },
+    "contact": {
+      "name": "Contact",
+      "layout": "theme",
+      "sections": {
+        "contact-form-default": {
+          "type": "contact-form",
+          "settings": {
+            "title": "Contact us",
+            "showPhone": true
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "contact-form-default"
+      ]
+    },
+    "customers/account": {
+      "name": "Account",
+      "layout": "theme",
+      "sections": {
+        "customer-account-default": {
+          "type": "customer-account",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-account-default"
+      ]
+    },
+    "customers/addresses": {
+      "name": "Addresses",
+      "layout": "theme",
+      "sections": {
+        "customer-addresses-default": {
+          "type": "customer-addresses",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-addresses-default"
+      ]
+    },
+    "customers/login": {
+      "name": "Login",
+      "layout": "theme",
+      "sections": {
+        "customer-login-default": {
+          "type": "customer-login",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-login-default"
+      ]
+    },
+    "customers/order": {
+      "name": "Order detail",
+      "layout": "theme",
+      "sections": {
+        "customer-order-detail-default": {
+          "type": "customer-order-detail",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-order-detail-default"
+      ]
+    },
+    "customers/orders": {
+      "name": "Order history",
+      "layout": "theme",
+      "sections": {
+        "customer-orders-default": {
+          "type": "customer-orders",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-orders-default"
+      ]
+    },
+    "customers/register": {
+      "name": "Register",
+      "layout": "theme",
+      "sections": {
+        "customer-register-default": {
+          "type": "customer-register",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-register-default"
+      ]
+    },
+    "customers/settings": {
+      "name": "Account settings",
+      "layout": "theme",
+      "sections": {
+        "customer-settings-default": {
+          "type": "customer-settings",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-settings-default"
+      ]
+    },
+    "customers/wishlist": {
+      "name": "Wishlist",
+      "layout": "theme",
+      "sections": {
+        "customer-wishlist-default": {
+          "type": "customer-wishlist",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-wishlist-default"
+      ]
+    },
+    "footer": {
+      "name": "LetBuyy Core footer",
+      "layout": "theme",
+      "sections": {
+        "footer-default": {
+          "type": "footer",
+          "visible": true,
+          "settings": {},
+          "blocks": {},
+          "block_order": []
+        }
+      },
+      "order": [
+        "footer-default"
+      ]
+    },
+    "header": {
+      "name": "LetBuyy Core header",
+      "layout": "theme",
+      "sections": {
+        "announcement-default": {
+          "type": "announcement-bar",
+          "visible": true,
+          "settings": {
+            "text": "Meet the new everyday collection",
+            "linkLabel": "",
+            "linkHref": ""
+          },
+          "blocks": {},
+          "block_order": []
+        },
+        "header-default": {
+          "type": "header",
+          "visible": true,
+          "settings": {
+            "showSearch": true,
+            "showCart": true,
+            "behavior": "sticky"
+          },
+          "blocks": {},
+          "block_order": []
+        }
+      },
+      "order": [
+        "announcement-default",
+        "header-default"
+      ]
+    },
+    "index": {
+      "name": "LetBuyy Core home page",
+      "layout": "theme",
+      "sections": {
+        "sense-heroBanner-index": {
+          "type": "hero-banner",
+          "visible": true,
+          "settings": {
+            "eyebrow": "THE EVERYDAY EDIT",
+            "heading": "Made to move with you.",
+            "subheading": "Considered clothing for your everyday.",
+            "ctaText": "Explore new arrivals",
+            "ctaLink": "/products",
+            "secondaryText": "Find your fit",
+            "secondaryLink": "/products"
+          },
+          "blocks": {},
+          "block_order": []
+        },
+        "sense-categoryGrid-index": {
+          "type": "category-grid",
+          "visible": true,
+          "settings": {
+            "title": "Find your silhouette"
+          },
+          "blocks": {},
+          "block_order": []
+        },
+        "sense-productGrid-index": {
+          "type": "product-grid",
+          "visible": true,
+          "settings": {
+            "title": "New arrivals",
+            "columns": 3,
+            "productLimit": 3
+          },
+          "blocks": {},
+          "block_order": []
+        },
+        "sense-featuredProducts-index": {
+          "type": "featured-products",
+          "visible": true,
+          "settings": {
+            "requireSelection": true,
+            "title": "Wear it your way.",
+            "subtitle": "Every piece, individually chosen.",
+            "productLimit": 2
+          },
+          "blocks": {},
+          "block_order": []
+        },
+        "sense-aboutSection-index": {
+          "type": "about-section",
+          "visible": true,
+          "settings": {
+            "title": "Good things take a little care.",
+            "content": ""
+          },
+          "blocks": {},
+          "block_order": []
+        },
+        "sense-trustBadges-index": {
+          "type": "trust-badges",
+          "visible": true,
+          "settings": {
+            "fitText": "",
+            "serviceText": "",
+            "supportText": ""
+          },
+          "blocks": {},
+          "block_order": []
+        },
+        "section-5db391aa-7874-4c80-9b9d-681f31ea027f": {
+          "type": "product-grid",
+          "visible": true,
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": []
+        }
+      },
+      "order": [
+        "sense-heroBanner-index",
+        "sense-categoryGrid-index",
+        "sense-productGrid-index",
+        "sense-featuredProducts-index",
+        "sense-aboutSection-index",
+        "sense-trustBadges-index",
+        "section-5db391aa-7874-4c80-9b9d-681f31ea027f"
+      ]
+    },
+    "list-collections": {
+      "name": "All collections",
+      "layout": "theme",
+      "sections": {
+        "list-collections-grid": {
+          "type": "category-grid",
+          "settings": {
+            "title": "All collections",
+            "subtitle": ""
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "list-collections-grid"
+      ]
+    },
+    "not_found": {
+      "name": "404 Not Found",
+      "layout": "theme",
+      "sections": {
+        "404-page-default": {
+          "type": "404-page",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "404-page-default"
+      ]
+    },
+    "page": {
+      "name": "Page",
+      "layout": "theme",
+      "sections": {
+        "page-content-default": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "page-content-default"
+      ]
+    },
+    "password": {
+      "name": "Password",
+      "layout": "theme",
+      "sections": {
+        "password-gate-default": {
+          "type": "password-gate",
+          "settings": {
+            "heading": "Coming Soon"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "password-gate-default"
+      ]
+    },
+    "policy": {
+      "name": "Policy page",
+      "layout": "theme",
+      "sections": {
+        "policy-content-default": {
+          "type": "policy-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "policy-content-default"
+      ]
+    },
+    "product": {
+      "name": "LetBuyy Core product",
+      "layout": "theme",
+      "sections": {
+        "sense-productDetail-product": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": true,
+            "showDescription": true,
+            "showBuyNow": false,
+            "showReviews": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "sense-featuredProducts-product": {
+          "type": "featured-products",
+          "settings": {
+            "requireSelection": true,
+            "title": "Complete the look",
+            "productLimit": 2
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "sense-productDetail-product",
+        "sense-featuredProducts-product"
+      ]
+    },
+    "search": {
+      "name": "LetBuyy Core search",
+      "layout": "theme",
+      "sections": {
+        "search-box-default": {
+          "type": "search-box",
+          "settings": {
+            "placeholder": "Search products"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "search-results": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": ""
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "search-box-default",
+        "search-results"
+      ]
+    }
+  },
+  "themeSettings": {
+    "primaryColor": "#713F35",
+    "secondaryColor": "#65574C",
+    "accentColor": "#005FCC",
+    "backgroundColor": "#FAF7F2",
+    "textColor": "#241E1A",
+    "surfaceColor": "#EFE7DC",
+    "headingFontFamily": "Playfair Display",
+    "bodyFontFamily": "Inter",
+    "borderRadius": 4,
+    "metaDescription": "",
+    "socialImageUrl": "",
+    "faviconUrl": ""
+  },
+  "settings_data": {
+    "current": {
+      "primaryColor": "#713F35",
+      "secondaryColor": "#65574C",
+      "accentColor": "#005FCC",
+      "backgroundColor": "#FAF7F2",
+      "textColor": "#241E1A",
+      "surfaceColor": "#EFE7DC",
+      "headingFontFamily": "Playfair Display",
+      "bodyFontFamily": "Inter",
+      "borderRadius": 4,
+      "metaDescription": "",
+      "socialImageUrl": "",
+      "faviconUrl": ""
+    },
+    "presets": {
+      "Forge": {
+        "primaryColor": "#1E3A5F",
+        "secondaryColor": "#1E40AF",
+        "accentColor": "#00B4D8",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#1A202C",
+        "surfaceColor": "#F0F4F8",
+        "bodyFontFamily": "Inter",
+        "headingFontFamily": "Inter",
+        "borderRadius": 8
+      },
+      "Threadline": {
+        "primaryColor": "#713F35",
+        "secondaryColor": "#65574C",
+        "accentColor": "#005FCC",
+        "backgroundColor": "#FAF7F2",
+        "textColor": "#241E1A",
+        "surfaceColor": "#EFE7DC",
+        "bodyFontFamily": "Inter",
+        "headingFontFamily": "Playfair Display",
+        "borderRadius": 4
+      },
+      "Aura": {
+        "primaryColor": "#C2798B",
+        "secondaryColor": "#9E5A6F",
+        "accentColor": "#D4AF7A",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#2D1B22",
+        "surfaceColor": "#FFF8F9",
+        "bodyFontFamily": "Lato",
+        "headingFontFamily": "Cormorant Garamond",
+        "borderRadius": 16
+      },
+      "Craft": {
+        "primaryColor": "#3E2723",
+        "secondaryColor": "#5D3B2E",
+        "accentColor": "#8D6E63",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#2C1B12",
+        "surfaceColor": "#FFF8F0",
+        "bodyFontFamily": "Source Sans Pro",
+        "headingFontFamily": "Libre Baskerville",
+        "borderRadius": 6
+      },
+      "Refresh": {
+        "primaryColor": "#2D6A4F",
+        "secondaryColor": "#1B4332",
+        "accentColor": "#F4A261",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#1B2521",
+        "surfaceColor": "#F8FFF4",
+        "bodyFontFamily": "Inter",
+        "headingFontFamily": "Inter",
+        "borderRadius": 10
+      },
+      "Ride": {
+        "primaryColor": "#FF4D00",
+        "secondaryColor": "#1C1C1C",
+        "accentColor": "#FFD100",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#111111",
+        "surfaceColor": "#F5F5F5",
+        "bodyFontFamily": "Inter",
+        "headingFontFamily": "Inter",
+        "borderRadius": 6
+      },
+      "Dawn": {
+        "primaryColor": "#3B4F6B",
+        "secondaryColor": "#2C3E50",
+        "accentColor": "#C0832B",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#2C2C2C",
+        "surfaceColor": "#FDF6EC",
+        "bodyFontFamily": "Source Sans Pro",
+        "headingFontFamily": "Libre Baskerville",
+        "borderRadius": 4
+      },
+      "Bloom": {
+        "primaryColor": "#E07B39",
+        "secondaryColor": "#B55E24",
+        "accentColor": "#4CAF73",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#2C1A0A",
+        "surfaceColor": "#FFF9F0",
+        "bodyFontFamily": "Inter",
+        "headingFontFamily": "Inter",
+        "borderRadius": 14
+      },
+      "Nova": {
+        "primaryColor": "#8B5CF6",
+        "secondaryColor": "#6D28D9",
+        "accentColor": "#F59E0B",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#1A1A2E",
+        "surfaceColor": "#F8FAFC",
+        "bodyFontFamily": "Inter",
+        "headingFontFamily": "Inter",
+        "borderRadius": 10
+      },
+      "Summit": {
+        "primaryColor": "#00B3B3",
+        "secondaryColor": "#008080",
+        "accentColor": "#A4E500",
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#1A1A2E",
+        "surfaceColor": "#F9FAFB",
+        "bodyFontFamily": "Inter",
+        "headingFontFamily": "Inter",
+        "borderRadius": 12
+      }
+    }
+  },
+  "config": {
+    "settings_data": {
+      "current": {
+        "primaryColor": "#713F35",
+        "secondaryColor": "#65574C",
+        "accentColor": "#005FCC",
+        "backgroundColor": "#FAF7F2",
+        "textColor": "#241E1A",
+        "surfaceColor": "#EFE7DC",
+        "headingFontFamily": "Playfair Display",
+        "bodyFontFamily": "Inter",
+        "borderRadius": 4,
+        "metaDescription": "",
+        "socialImageUrl": "",
+        "faviconUrl": ""
+      },
+      "presets": {
+        "Forge": {
+          "primaryColor": "#1E3A5F",
+          "secondaryColor": "#1E40AF",
+          "accentColor": "#00B4D8",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#1A202C",
+          "surfaceColor": "#F0F4F8",
+          "bodyFontFamily": "Inter",
+          "headingFontFamily": "Inter",
+          "borderRadius": 8
+        },
+        "Threadline": {
+          "primaryColor": "#713F35",
+          "secondaryColor": "#65574C",
+          "accentColor": "#005FCC",
+          "backgroundColor": "#FAF7F2",
+          "textColor": "#241E1A",
+          "surfaceColor": "#EFE7DC",
+          "bodyFontFamily": "Inter",
+          "headingFontFamily": "Playfair Display",
+          "borderRadius": 4
+        },
+        "Aura": {
+          "primaryColor": "#C2798B",
+          "secondaryColor": "#9E5A6F",
+          "accentColor": "#D4AF7A",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#2D1B22",
+          "surfaceColor": "#FFF8F9",
+          "bodyFontFamily": "Lato",
+          "headingFontFamily": "Cormorant Garamond",
+          "borderRadius": 16
+        },
+        "Craft": {
+          "primaryColor": "#3E2723",
+          "secondaryColor": "#5D3B2E",
+          "accentColor": "#8D6E63",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#2C1B12",
+          "surfaceColor": "#FFF8F0",
+          "bodyFontFamily": "Source Sans Pro",
+          "headingFontFamily": "Libre Baskerville",
+          "borderRadius": 6
+        },
+        "Refresh": {
+          "primaryColor": "#2D6A4F",
+          "secondaryColor": "#1B4332",
+          "accentColor": "#F4A261",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#1B2521",
+          "surfaceColor": "#F8FFF4",
+          "bodyFontFamily": "Inter",
+          "headingFontFamily": "Inter",
+          "borderRadius": 10
+        },
+        "Ride": {
+          "primaryColor": "#FF4D00",
+          "secondaryColor": "#1C1C1C",
+          "accentColor": "#FFD100",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#111111",
+          "surfaceColor": "#F5F5F5",
+          "bodyFontFamily": "Inter",
+          "headingFontFamily": "Inter",
+          "borderRadius": 6
+        },
+        "Dawn": {
+          "primaryColor": "#3B4F6B",
+          "secondaryColor": "#2C3E50",
+          "accentColor": "#C0832B",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#2C2C2C",
+          "surfaceColor": "#FDF6EC",
+          "bodyFontFamily": "Source Sans Pro",
+          "headingFontFamily": "Libre Baskerville",
+          "borderRadius": 4
+        },
+        "Bloom": {
+          "primaryColor": "#E07B39",
+          "secondaryColor": "#B55E24",
+          "accentColor": "#4CAF73",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#2C1A0A",
+          "surfaceColor": "#FFF9F0",
+          "bodyFontFamily": "Inter",
+          "headingFontFamily": "Inter",
+          "borderRadius": 14
+        },
+        "Nova": {
+          "primaryColor": "#8B5CF6",
+          "secondaryColor": "#6D28D9",
+          "accentColor": "#F59E0B",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#1A1A2E",
+          "surfaceColor": "#F8FAFC",
+          "bodyFontFamily": "Inter",
+          "headingFontFamily": "Inter",
+          "borderRadius": 10
+        },
+        "Summit": {
+          "primaryColor": "#00B3B3",
+          "secondaryColor": "#008080",
+          "accentColor": "#A4E500",
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#1A1A2E",
+          "surfaceColor": "#F9FAFB",
+          "bodyFontFamily": "Inter",
+          "headingFontFamily": "Inter",
+          "borderRadius": 12
+        }
+      }
+    }
+  }
+}

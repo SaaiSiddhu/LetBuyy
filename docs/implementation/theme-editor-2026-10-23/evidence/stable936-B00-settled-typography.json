@@ -1,0 +1,54 @@
+{
+  "runId": "936e5f577646",
+  "releaseId": "76b466cf-79ef-4768-9d61-5550dfbb7da9",
+  "public": {
+    "fontsStatus": "loaded",
+    "headings": [
+      {
+        "fontFamily": "\"Cormorant Garamond\", Georgia, \"Times New Roman\", serif, system-ui, sans-serif",
+        "fontSize": "61.44px",
+        "text": "Dewdrop 936 B daily care",
+        "width": 437.078125
+      }
+    ],
+    "styles": [
+      {
+        "disabled": false,
+        "href": "/_next/static/css/9204f00e6531229f.css"
+      },
+      {
+        "disabled": false,
+        "href": "/_next/static/css/548a061c34654885.css"
+      },
+      {
+        "disabled": false,
+        "href": "/_next/static/css/0de294f24af93d32.css"
+      },
+      {
+        "disabled": false,
+        "href": "https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
+      }
+    ],
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "preview": {
+    "fontsStatus": "loaded",
+    "frames": [
+      {
+        "crossOriginDocumentUnavailable": false,
+        "height": 564.0555419921875,
+        "inlineWidth": "",
+        "title": "syn-threadline-ui-6815276b storefront preview",
+        "width": 572
+      }
+    ],
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "previewComputedFont": "UNAVAILABLE_CROSS_ORIGIN_DOM; screenshot is observed, not computed-style parity"
+}

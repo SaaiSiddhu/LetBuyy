@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-25T00:36:10.006026+00:00",
+  "status": "SEALED_PRIVATE04_TWO_PROFILE_TRANSPORTS_READY_FOR_INDEPENDENT_REVIEW_NOT_NATIVE_ADMISSION",
+  "onlySourceChanges": 2,
+  "sourceClosureFiles": 1120,
+  "resolvedModules": 478,
+  "importExportEdges": 3749,
+  "vendorToolFilePins": 5411,
+  "closureChangedPaths": [
+    "NATIVE_PREPARATION_PLAN.json",
+    "SOURCE_MANIFEST.json",
+    "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts"
+  ],
+  "sameSignatureReturnQueriesAssertionsGuardsAnd600sBudget": true,
+  "sevenOtherOverlayAndSQLHelperPinsUnchanged": true,
+  "prior03ArtifactsReverified": 61,
+  "originalSourceUniverse": 6547,
+  "copiedBaseFiles": 6541,
+  "envTemplateExclusions": 6,
+  "typecheck": {
+    "ownedDiagnostics": 0,
+    "otherDiagnostics": 5,
+    "sameContextBaselineDiagnostics": 5,
+    "introduced": 0,
+    "inputStable": true,
+    "businessLeaks": 0
+  },
+  "unchanged13RefusalFixturesAnd16_45_1NotRerun": true,
+  "retained13RefusalCasesNotNative": 13,
+  "actualNativeDatabaseDockerBuildAppProbeBrowserProviderActions": 0,
+  "fullThemeCertificate": false
+}

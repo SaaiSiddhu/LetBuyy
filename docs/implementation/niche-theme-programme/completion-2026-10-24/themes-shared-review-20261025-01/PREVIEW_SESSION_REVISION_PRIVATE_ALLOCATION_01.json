@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-25T01:35:14.167059+00:00",
+  "expiresAt": "2026-10-25T02:25:14.167059+00:00",
+  "ends": "First sealed handoff or expiry",
+  "status": "EXACT_PRIVATE_SOURCE_AND_PURE_TEST_PREPARATION_ONLY",
+  "authority": "Current verified human alltheme/sharedowner resume; Root source allocation request. Native approval04 does not cover these repairs.",
+  "diagnosis": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/PREVIEW_DEVICE_DIAGNOSIS_20261025_01.json",
+    "sha256": "366872a8c1d85d3b07534ec10ce62fb5065d22cd224be561ee5e79df2cfff9c6"
+  },
+  "forbidden": [
+    "No Main/sealed candidate/other private source-root edits",
+    "No runtime/build/browser/native/DB/Docker daemon/provider/network actions",
+    "No actual token/key/archive/private state/env reads",
+    "No weakened bridge origin/source/context/revision checks",
+    "No extra native cohort under current three-cohort human approval"
+  ],
+  "retainedSourceEvidence": "Reuse exact immutable diagnosis/current source inputs and existing tests without duplicate broad gates/copies. New focused tests must execute actual component/handler behavior.",
+  "certification": "Source acceptance cannot close captured v23 device failure or any fulltheme certificate",
+  "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "privateRoot": "/private/tmp/letbuyy-preview-revision-guard-prep-20261025-01",
+  "durableOutput": "docs/implementation/niche-theme-programme/completion-2026-10-24/preview-revision-guard-private01",
+  "mutablePaths": [
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "beforeSha256": "21a7e4e2ffc46c1d50305a8b08360ddbac86edd06058b921a6ff06729a37163c"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/theme-preview-session-revision.test.ts",
+      "beforeSha256": null
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-preview-content.postgres.test.ts",
+      "beforeSha256": "2d2fdf9b7b2e0aa0ced34508ea7eb9d28b3d4f6235a6fecd1a4984562d9e6f26"
+    }
+  ],
+  "scope": "In existing instance and legacy preview session branches reject invalid or unequal minted/current draft revisions with existing private/no-store404 before manifest/resource consumption; preserve exact store/token/expiry/isolation/column-fallback behavior. No snapshot/session-storage/issuer/auth/schema redesign.",
+  "requiredChecks": [
+    "Focused regression executes actual registered route/handler with controlled scoped DB/query spy, both instance and legacy branches, matching positive control before denial cases",
+    "Mintv4/currentv5 and invalid minted/current versions reject before protected manifest/resource read/response; never relabel current5 as minted4, no fallthrough from a resolved mismatched instance to legacy draft",
+    "Equal valid revision remains exact same response identity/version and no-store; wrong store/token/expiry/foreign/deleted existing gates retained",
+    "Actual Worker/PostgreSQL test extension is CASE SOURCE ONLY, not executed and not admitted as fourth cohort",
+    "Capture precise threepath before/after/patch and closed focused type/import inputs; no Main/candidate business-source leak",
+    "Retain source causal revision-drift finding separately from stillunproven cause of captured v23 aboutblank device failure"
+  ]
+}

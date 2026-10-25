@@ -1,0 +1,45 @@
+{
+  "phase": "mockups",
+  "theme": "Pantry",
+  "presetId": "refresh",
+  "chatId": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+  "currentAction": "Coordinator individual mockup review passed; accepted visuals frozen; read-only implementation impact inventory complete",
+  "blockers": [],
+  "requestedBrowserNeed": "None; both capture leases explicitly released",
+  "nextStep": "Wait for full405 portfolio gate and explicit coordinator file allocation; no production edits yet",
+  "delivered": {
+    "individualPngs": 45,
+    "boards": 15,
+    "zip": "Pantry-45-mockups.zip",
+    "stressRenderRecords": 47,
+    "targetViewports": {
+      "desktop": [
+        1440,
+        1000
+      ],
+      "tablet": [
+        834,
+        1112
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "dpr": 1
+  },
+  "acceptance": {
+    "artifactValidation": "PASS",
+    "programmeValidatorLocalRun": "PASS",
+    "themeAgentVisualReview": "PASS",
+    "coordinatorIndependentReview": "PASS (individual theme; programme gate still open)",
+    "implementation": "NOT_STARTED"
+  },
+  "updated": "2026-10-23",
+  "implementationInventory": {
+    "markdown": "IMPLEMENTATION_IMPACT.md",
+    "json": "implementation-impact.json",
+    "existingFilesFingerprintCount": 52,
+    "mockupFreeze": "mockup-freeze.json"
+  }
+}

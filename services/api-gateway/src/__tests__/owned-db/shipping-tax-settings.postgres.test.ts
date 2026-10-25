@@ -33,19 +33,19 @@ test('zone/rate CRUD preserves postal, weight and zero-day settings and refuses 
  assert.equal((await f.request('/shipping/'+rate,'DELETE',undefined,0,false)).status,200);assert.equal((await f.request('/shipping/zones/'+zone,'DELETE',undefined,0,false)).status,200);
 });
 test('country/state tax settings round-trip and reject foreign and stale owner authority',async t=>{
- const f=await fixture(t);const made=await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Synthetic country rate',rate:0.18,country:'IN'});assert.equal(made.status,201,made.text);const id=made.json!.data.id;assert.equal(made.json!.data.state,null);
- assert.equal((await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Invalid null create',rate:0.18,country:'IN',state:null})).status,400);
+ const f=await fixture(t);const made=await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Synthetic country rate',rate:18,country:'IN'});assert.equal(made.status,201,made.text);const id=made.json!.data.id;assert.equal(made.json!.data.state,null);
+ assert.equal((await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Invalid null create',rate:18,country:'IN',state:null})).status,400);
  const state=await f.request('/taxes/'+id,'PATCH',{state:'29'},0,false);assert.equal(state.status,200,state.text);assert.equal(state.json!.data.state,'29');
  const cleared=await f.request('/taxes/'+id,'PATCH',{state:null},0,false);assert.equal(cleared.status,200,cleared.text);assert.equal(cleared.json!.data.state,null);
  assert.equal((await f.request('/taxes/'+id,'PATCH',{rate:-1})).status,400);assert.equal((await f.request('/taxes/'+id,'DELETE',undefined,1,false)).status,403);
- owned.psql(`UPDATE sites SET custom_user_id='${f.actors[1]}' WHERE id='${f.sites[0].siteId}';`);try{assert.equal((await f.request('/taxes/'+id,'PATCH',{rate:0.01})).status,403);}finally{owned.psql(`UPDATE sites SET custom_user_id='${f.actors[0]}' WHERE id='${f.sites[0].siteId}';`);}
+ owned.psql(`UPDATE sites SET custom_user_id='${f.actors[1]}' WHERE id='${f.sites[0].siteId}';`);try{assert.equal((await f.request('/taxes/'+id,'PATCH',{rate:1})).status,403);}finally{owned.psql(`UPDATE sites SET custom_user_id='${f.actors[0]}' WHERE id='${f.sites[0].siteId}';`);}
  assert.equal(Number(owned.psql(`SELECT rate FROM tax_rates WHERE id='${id}';`)),0.18);assert.equal((await f.request('/taxes/'+id,'DELETE',undefined,0,false)).status,200);
 });
 test('configured merchant shipping and tax reach canonical COD totals with one order per intent',async t=>{
  const f=await fixture(t),site=f.sites[0];
  const z=await f.request('/shipping/zones','POST',{store_id:site.siteId,name:'Checkout zone',countries:['IN'],states:['Karnataka','29'],zip_codes:['560001']});assert.equal(z.status,201,z.text);
  const r=await f.request('/shipping','POST',{zone_id:z.json!.data.id,name:'Checkout delivery',type:'flat',price:20});assert.equal(r.status,201,r.text);const rate=r.json!.data.id;
- const tax=await f.request('/taxes','POST',{store_id:site.siteId,name:'Synthetic configured tax',rate:0.18,country:'IN',is_shipping:false});assert.equal(tax.status,201,tax.text);
+ const tax=await f.request('/taxes','POST',{store_id:site.siteId,name:'Synthetic configured tax',rate:18,country:'IN',is_shipping:false});assert.equal(tax.status,201,tax.text);
  const product=randomUUID();owned.psql(`INSERT INTO products(id,store_id,site_id,name,price,stock,sku,is_active,status)VALUES('${product}','${site.siteId}','${site.siteId}','Synthetic configured product',199,25,'SYN-${product}',true,'active');INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity)VALUES(gen_random_uuid(),'${site.siteId}','${product}','${site.locationId}',25,0,0,25,0,25);`);
  const quote=await f.gateway.request(`/v1/storefront/${site.subdomain}/shipping-rates?pincode=560001&state=Karnataka&state_code=29&subtotal_minor=19900`);assert.equal(quote.status,200,quote.text);assert.equal(quote.json!.data.rates[0].id,rate);assert.equal(quote.json!.data.rates[0].amount_minor,2000);assert.equal(quote.json!.data.serviceability.carrier_confirmed,false);
  const outside=await f.gateway.request(`/v1/storefront/${site.subdomain}/shipping-rates?pincode=600001&state=Karnataka&state_code=29&subtotal_minor=19900`);assert.equal(outside.status,200,outside.text);assert.deepEqual(outside.json!.data.rates,[]);
@@ -57,7 +57,7 @@ test('configured merchant shipping and tax reach canonical COD totals with one o
 });
 
 test('revoked owner cannot replay a saved settings response through the HTTP idempotency receipt', async t => {
- const f=await fixture(t), key=randomUUID(), body={store_id:f.sites[0].siteId,name:'Synthetic replay tax',rate:0.18,country:'IN'};
+ const f=await fixture(t), key=randomUUID(), body={store_id:f.sites[0].siteId,name:'Synthetic replay tax',rate:18,country:'IN'};
  const created=await f.request('/taxes','POST',body,0,true,key); assert.equal(created.status,201,created.text);
  owned.psql(`UPDATE sites SET custom_user_id='${f.actors[1]}' WHERE id='${f.sites[0].siteId}';`);
  const replay=await f.request('/taxes','POST',body,0,true,key); assert.equal(replay.status,403,replay.text);

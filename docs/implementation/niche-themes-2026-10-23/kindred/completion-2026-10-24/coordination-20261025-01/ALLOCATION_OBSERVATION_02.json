@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-10-24T20:33:24.101884+00:00",
+  "classification": "ALLOCATOR_RESERVED_KINDRED_ACTIVE_LEASE_NOT_GRANTED",
+  "observedAllocatorStatus": "RESERVED_NOT_ACTIVATED_EDITOR_CONTROLLER_UNAVAILABLE",
+  "actualHumanAuthorityVerifiedByAllocator": {
+    "threadId": "01a164ba-d306-7953-9745-b375f5cf21c9",
+    "turnId": "01a16de6-7676-7842-a4ba-09b69fe183e5",
+    "userMessageId": "01a16de6-768e-7163-91d1-8546c876ac20",
+    "instruction": "Have Themes resolve the shared fixture blocker and issue Editor a fresh Kindred lease, then resume G08 and the remaining cases. Keep Kindred source/artifacts frozen and KQA-01 open; report actual evidence and cleanup.",
+    "priorityNote": "This specific case request predates the earlier pause; later verified named-twelve human resume restores the case work. It does not revoke the current single-controller allocation."
+  },
+  "receiptChecks": {
+    "allocatorReceipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/KINDRED_NEXT_SLICE_ADMISSION_01.json",
+      "sha256": "ffc78518740d276e7d7d4d708534d10cc67611e85f2d9a5dd1e47897b6283a9b"
+    },
+    "packet": {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/runtime07-slice01/NEXT_BROWSER_SLICE.json",
+      "sha256": "9bb2d657588ca60a5f8a00050f548b217ce66cd2a85fb7c161787f8e384e499a",
+      "matchesAllocator": true
+    },
+    "sourceAdmission": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/source-runtime-admission.json",
+      "sha256": "60a841b2282aa75b9244586203b784ba7f90c46c7ab11ea0e921c16318ea3071",
+      "matchesAllocator": true
+    }
+  },
+  "runId": "49ada80bc494",
+  "expectedPackage": {
+    "slug": "letbuyy-summit",
+    "version": "2.1.0",
+    "canonicalBundleSha256": "1ae69b1ffb425510cd4e5e075bc6ef99be592066bdc6df014e4237e211acdbd4"
+  },
+  "actualInstalledPackageVersionId": null,
+  "actualDraftId": null,
+  "actualReleaseId": null,
+  "currentController": {
+    "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "status": "TEMPORARY_ROOT_CONTROLLER_DIRECT_HUMAN_AUTHORIZATION",
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "reason": "Editor sender-context automatic approval rejected fresh storefront under superseded pause; Editor instructed browser-idle. Root will try same ordinary UI under actual direct human resume; approval controls unchanged."
+  },
+  "activationRequires": [
+    "Current controller explicitly ends/returns its active slice and records successor controller in the existing shared queue. No concurrent browser control.",
+    "Any prior automatic-review denial remains respected; a new attempt requires valid actual human authorization/evidence and permitted ordinary UI, not changed security controls or a workaround.",
+    "Record exact current IDs/hashes, protected-state/effect baseline, already-completed/in-flight purchase IDs and finite per-slice expiry before mutation.",
+    "Final active source/controller grant names actual bindings; this reservation is not an execution lease."
+  ],
+  "blocker": "Shared functional fixture is accepted. Editor presently is browser-idle under temporary Root control after approval rejection, so issuing an active Editor lease now would conflict with the single-controller contract.",
+  "g08RecoveryResumed": false,
+  "caseTotals": {
+    "retainedHistoricalRun936": {
+      "PASS": 3,
+      "FAIL": 1,
+      "NOT_RUN": 15
+    },
+    "currentRuntime07": {
+      "PASS": 0,
+      "FAIL": 0,
+      "NOT_RUN": 19
+    }
+  },
+  "KQA01": "OPEN P2; exact768pxlong-brand evidence preserved",
+  "sourceOrAcceptedArtifactEdits": [],
+  "certificate": "NOT_ISSUED",
+  "cleanup": {
+    "resourcesAcquired": [],
+    "resourcesClosed": [],
+    "leasesAcquired": [],
+    "leasesReturned": [],
+    "sharedResourcesStopped": false,
+    "retained": "Shared runner/apps/DB/browser sessions/receiver, user apps, drafts, orders and stock remain under current controller/owners; no teardown or process-liveness audit claimed."
+  },
+  "nextAction": "Current controller must explicitly return its finite slice; Themes must record usable active Editor allocation, respecting approval denial, before normal G08 and outstanding-case execution. Reservation supplies no mutation authority.",
+  "automationChanged": false
+}

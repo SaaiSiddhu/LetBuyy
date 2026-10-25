@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-10-25T00:42:37.567696+00:00",
+  "status": "ROOT_GRANTED_PRIVATE_PRESERVED_FIXTURE_SOURCE_PROPOSAL_ONLY",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "privateRoot": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-01",
+  "ends": "Firstsealedhandoffor75minutes",
+  "expiresAt": "2026-10-25T01:57:37.567696+00:00",
+  "purpose": "Canonicalrunner/harness restore of full owned snapshot into new-owned emptyDB, no seeding; sameoriginalapplicationdata/site/origins/ports; offlineprebuiltstart and privatebindingcapsule",
+  "exactPaths": [
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "beforeSha256": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213"
+    },
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeSha256": "e537a426bf0284a32d49728f31ea55d5d265f1dc5562ccb527a36c55eaaa0db7"
+    },
+    {
+      "path": "scripts/governance/owned-client-launcher.mjs",
+      "beforeSha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f"
+    },
+    {
+      "path": "scripts/governance/owned-next-production.mjs",
+      "beforeSha256": "faca5a456437e6bc0979530cd28e712ad002d880e357215f2334aed7e5e68772"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "beforeSha256": "bbcdc3c02d382a8c7bf2ddca24dc5996d42495dde26e6722df28984cb83b7c74"
+    },
+    {
+      "path": "tests/owned-db/theme-completion-razorpay-browser.manual.ts",
+      "beforeSha256": "2638469fe0f20eaa96d09bff79993ec1d945bcffb28288cc70b887a520d4c82b"
+    },
+    {
+      "path": "scripts/governance/owned-fixture-backup-restore.mjs",
+      "beforeSha256": null
+    },
+    {
+      "path": "scripts/governance/owned-fixture-backup-restore.d.mts",
+      "beforeSha256": null
+    },
+    {
+      "path": "tests/governance/owned-fixture-backup-restore.test.mjs",
+      "beforeSha256": null
+    },
+    {
+      "path": "tests/governance/executable-runner-lifecycle.test.mjs",
+      "beforeSha256": "e5d757f4db13b5fd4b8922c0bd520035681285d85e3edc07fab1d9ca96a06702"
+    },
+    {
+      "path": "tests/governance/owned-next-directory.test.mjs",
+      "beforeSha256": "6870643921fe6f7a266b63f31aead3454bd9883e81194b4b05f83319e102634b"
+    }
+  ],
+  "ordinaryOwnershipGuard": "UNCHANGED. Originalrunner54685ALIVEverified; no orphanadoption/PIDreplacement/guardbypass/relabel",
+  "originalPersistentData": "Everybusinessrow/UUID/sequence/securitydefinition/account/passwordhash/draft/release/capture/ledger preserved. InitialbackupisNOTfinalrestorepoint; finalEditorfence+newbackup+witness needed. RestoreonlynewownedDB; neveroverlaterwork.",
+  "qaCapabilityRefreshProposal": "If originalephemeralkeysarenotretained, preparetruthfulscopedrefresh ofissuer/JWK,Accountscookiesealing andcheckout-handoffsigning keys underSAMEcanonicalissuer/origins. OldQAcookies/handoffURLs mayinvalidate. Persistentcredentials/providerTestkeys/HMACstayexact. No actualkeygeneration/rotation underthissource-onlygrant.",
+  "readOnlySources": [
+    "CONTROLLED_INTEGRATION_PLAN_20261025_01.json",
+    "RUNTIME07_REBIND_SOURCE_REVIEW_01.json",
+    "ROOT_CONTROLLED_INTEGRATION_REVIEW_01.json",
+    "../shared-runtime07/RUNNER_LIVENESS_CORRECTION_03.json",
+    "../shared-runtime07/INITIAL_DATA_BACKUP_20261025.json"
+  ],
+  "requirements": [
+    "Retainnormalfresh/disposablelaneunchanged;restoreflaglimitedtoapprovedthemebrowserentryandstrictprivateUID0600capsule/archivehash and exactsource/role/image/profile/originbindings.",
+    "Newownedrestore usesoriginalcanonicalcluster/roles/marker/REST/guard;no newauthority,service,app,DBadoptionorunownedconnection. No--clean/--createagainstoldDB.",
+    "Separate servefromallseeding;rebindmustnotcallseedSyntheticTenant/prepareThemeEditorQaStore orcreateidentity/catalogue/stock/defaultdrafts.",
+    "Preserveissuer/cookiedomains scopedtoonlyownedR07hostnames;realapps9001/9002/Marketplace/JaiShopuntouched.",
+    "Archiveconsistentrestore includesowners/ACL/functions/triggers/RLS/sequencevalues;newownershiprunmarker separatelyboundandallowed, applicationfixtureidentity/originsfixed.",
+    "Stagedbuildartifactmustcomplete/hashbeforeanyoldprocessstop;validatedclaim/copyintoonlynewPIDowneddistDir;no arbitrarycmd/outputdir/envfallback.",
+    "ExistingRzpTest/HMAC/TLS andexistingaccountpasswords readonlyatfutureauthorizedexecution;sourcepreparationusesonlysyntheticfakecapsuleinputs,norealprivateenv,state,archivecontentorsecrets.",
+    "Pure/lifecycle helpertests refusedigest/UID/permission/symlink/foreignsource/run/site/volume/image/profile/origin/port/key/build,nonewappDockerDBmodule-provideractions;captureallfailures.",
+    "Futurefencedbackup+sourcequalifiedrestore rehearsal+protected-row/securitywitness+normalSSOrelogin/TLS/checkout/profile tests precederealcutover.",
+    "Retainoriginalproposals/frozenTheme200/210/oldorders;no Main/candidate mutations."
+  ]
+}

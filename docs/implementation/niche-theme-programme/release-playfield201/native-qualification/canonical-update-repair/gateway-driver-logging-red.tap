@@ -1,0 +1,274 @@
+TAP version 13
+# Subtest: confirmation contract: digest binds the exact diff, current release and selected UUID independently
+ok 1 - confirmation contract: digest binds the exact diff, current release and selected UUID independently
+  ---
+  duration_ms: 13.410041
+  type: 'test'
+  ...
+# Subtest: target selection: exact captured published package is a read-only positive control
+ok 2 - target selection: exact captured published package is a read-only positive control
+  ---
+  duration_ms: 14.53625
+  type: 'test'
+  ...
+# Subtest: target selection: a private package owned by this verified store is a positive control
+ok 3 - target selection: a private package owned by this verified store is a positive control
+  ---
+  duration_ms: 8.179541
+  type: 'test'
+  ...
+# Subtest: target selection: deleted-version refuses without writes
+ok 4 - target selection: deleted-version refuses without writes
+  ---
+  duration_ms: 5.048791
+  type: 'test'
+  ...
+# Subtest: target selection: revoked-version refuses without writes
+ok 5 - target selection: revoked-version refuses without writes
+  ---
+  duration_ms: 4.788041
+  type: 'test'
+  ...
+# Subtest: target selection: disabled-package refuses without writes
+ok 6 - target selection: disabled-package refuses without writes
+  ---
+  duration_ms: 4.602
+  type: 'test'
+  ...
+# Subtest: target selection: deleted-package refuses without writes
+ok 7 - target selection: deleted-package refuses without writes
+  ---
+  duration_ms: 6.395958
+  type: 'test'
+  ...
+# Subtest: target selection: wrong-package refuses without writes
+ok 8 - target selection: wrong-package refuses without writes
+  ---
+  duration_ms: 4.690542
+  type: 'test'
+  ...
+# Subtest: target selection: identity-mismatch refuses without writes
+ok 9 - target selection: identity-mismatch refuses without writes
+  ---
+  duration_ms: 6.562917
+  type: 'test'
+  ...
+# Subtest: target selection: unsupported-schema refuses without writes
+ok 10 - target selection: unsupported-schema refuses without writes
+  ---
+  duration_ms: 6.874458
+  type: 'test'
+  ...
+# Subtest: target selection: private-other-store refuses without writes
+ok 11 - target selection: private-other-store refuses without writes
+  ---
+  duration_ms: 4.731459
+  type: 'test'
+  ...
+# Subtest: confirmed update control flow: one existing publisher call and receipt inside the same transaction with selected IDs
+ok 12 - confirmed update control flow: one existing publisher call and receipt inside the same transaction with selected IDs
+  ---
+  duration_ms: 34.421208
+  type: 'test'
+  ...
+# Subtest: confirmed update control flow: foreign refuses before any mutation
+ok 13 - confirmed update control flow: foreign refuses before any mutation
+  ---
+  duration_ms: 18.607291
+  type: 'test'
+  ...
+# Subtest: confirmed update control flow: stale refuses before any mutation
+ok 14 - confirmed update control flow: stale refuses before any mutation
+  ---
+  duration_ms: 18.802125
+  type: 'test'
+  ...
+# Subtest: confirmed update control flow: changed-key refuses before any mutation
+ok 15 - confirmed update control flow: changed-key refuses before any mutation
+  ---
+  duration_ms: 17.275125
+  type: 'test'
+  ...
+# Subtest: confirmed update control flow: receipt replay under the site lock has no second publisher or mutation
+ok 16 - confirmed update control flow: receipt replay under the site lock has no second publisher or mutation
+  ---
+  duration_ms: 17.894625
+  type: 'test'
+  ...
+# Subtest: confirmed update control flow: actual driver Date timestamps work for success-date
+not ok 17 - confirmed update control flow: actual driver Date timestamps work for success-date
+  ---
+  duration_ms: 20.398667
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:2:14148'
+  failureType: 'testCodeFailure'
+  error: 'The theme update could not commit. Retry the same confirmed request.'
+  code: 'THEME_UPDATE_UNAVAILABLE'
+  name: 'AppError'
+  stack: |-
+    ThemeExecutionAdapter.publishVersionUpdateRelease (/Volumes/Projects/LetBuyy/services/api-gateway/src/execution/theme-execution.adapter.ts:2106:19)
+    async TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:206:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: confirmed update control flow: actual driver Date timestamps work for replay-date
+not ok 18 - confirmed update control flow: actual driver Date timestamps work for replay-date
+  ---
+  duration_ms: 28.656708
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:2:14148'
+  failureType: 'testCodeFailure'
+  error: 'The original theme update receipt is unavailable.'
+  code: 'THEME_UPDATE_UNAVAILABLE'
+  name: 'AppError'
+  stack: |-
+    ThemeExecutionAdapter.versionUpdateReceipt (/Volumes/Projects/LetBuyy/services/api-gateway/src/execution/theme-execution.adapter.ts:2015:19)
+    <anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/execution/theme-execution.adapter.ts:2061:37)
+    async ThemeExecutionAdapter.publishVersionUpdateRelease (/Volumes/Projects/LetBuyy/services/api-gateway/src/execution/theme-execution.adapter.ts:2044:28)
+    async TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:206:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: confirmed update control flow: missing transactional transport refuses
+ok 19 - confirmed update control flow: missing transactional transport refuses
+  ---
+  duration_ms: 18.793
+  type: 'test'
+  ...
+# Subtest: confirmed update unexpected failure: one structured safe log and sanitized INTERNAL_ERROR, no raw SQL/message/request leakage
+not ok 20 - confirmed update unexpected failure: one structured safe log and sanitized INTERNAL_ERROR, no raw SQL/message/request leakage
+  ---
+  duration_ms: 29.521334
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:2:15279'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    AppError: The theme update could not commit. Retry the same confirmed request.
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    async TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:216:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: authMiddleware registered for /:slug/update-preview and /:slug/update (HS256 rejection)
+ok 21 - authMiddleware registered for /:slug/update-preview and /:slug/update (HS256 rejection)
+  ---
+  duration_ms: 0.3705
+  type: 'test'
+  ...
+# Subtest: update routes registered before /:slug catch-alls in themes.ts (route ordering)
+ok 22 - update routes registered before /:slug catch-alls in themes.ts (route ordering)
+  ---
+  duration_ms: 0.060125
+  type: 'test'
+  ...
+# Subtest: mountThemeUpdateRoutes is imported and called in themes.ts
+ok 23 - mountThemeUpdateRoutes is imported and called in themes.ts
+  ---
+  duration_ms: 0.046792
+  type: 'test'
+  ...
+# Subtest: UpdateVersionRejectedError propagated as 422 in route handler (source assertion)
+ok 24 - UpdateVersionRejectedError propagated as 422 in route handler (source assertion)
+  ---
+  duration_ms: 0.041875
+  type: 'test'
+  ...
+# Subtest: UpdateDowngradeError propagated as 422 in route handler (source assertion)
+ok 25 - UpdateDowngradeError propagated as 422 in route handler (source assertion)
+  ---
+  duration_ms: 0.032708
+  type: 'test'
+  ...
+# Subtest: confirm_diff_hash mismatch throws ConflictError before publish (source assertion)
+ok 26 - confirm_diff_hash mismatch throws ConflictError before publish (source assertion)
+  ---
+  duration_ms: 0.047792
+  type: 'test'
+  ...
+# Subtest: planThemeSafeUpdate called before any publish path (NO-DATA-LOSS source assertion)
+ok 27 - planThemeSafeUpdate called before any publish path (NO-DATA-LOSS source assertion)
+  ---
+  duration_ms: 0.047834
+  type: 'test'
+  ...
+# Subtest: idempotency pre-check: store_id is FIRST eq() filter on theme_releases (cross-tenant proof)
+ok 28 - idempotency pre-check: store_id is FIRST eq() filter on theme_releases (cross-tenant proof)
+  ---
+  duration_ms: 0.083917
+  type: 'test'
+  ...
+# Subtest: loadCurrentReleaseBundle: ForbiddenError when site not found (cross-tenant isolation)
+ok 29 - loadCurrentReleaseBundle: ForbiddenError when site not found (cross-tenant isolation)
+  ---
+  duration_ms: 1.443833
+  type: 'test'
+  ...
+# Subtest: loadCurrentReleaseBundle: NotFoundError when no current release exists
+ok 30 - loadCurrentReleaseBundle: NotFoundError when no current release exists
+  ---
+  duration_ms: 0.46175
+  type: 'test'
+  ...
+# Subtest: loadTargetPackageVersionBundle: NotFoundError when package version not found
+ok 31 - loadTargetPackageVersionBundle: NotFoundError when package version not found
+  ---
+  duration_ms: 0.395542
+  type: 'test'
+  ...
+# Subtest: loadTargetPackageVersionBundle: ValidationError when package_manifest has no liquidBundle
+ok 32 - loadTargetPackageVersionBundle: ValidationError when package_manifest has no liquidBundle
+  ---
+  duration_ms: 8.054292
+  type: 'test'
+  ...
+# Subtest: findVersionUpdateReplay: exact stored intent returns original release after its baseline changed
+ok 33 - findVersionUpdateReplay: exact stored intent returns original release after its baseline changed
+  ---
+  duration_ms: 1.02775
+  type: 'test'
+  ...
+# Subtest: findVersionUpdateReplay: idempotency pre-check filters by store_id and theme before idempotency key
+ok 34 - findVersionUpdateReplay: idempotency pre-check filters by store_id and theme before idempotency key
+  ---
+  duration_ms: 0.752
+  type: 'test'
+  ...
+# Subtest: GET update-preview returns FORBIDDEN for user profile not found (source assertion)
+ok 35 - GET update-preview returns FORBIDDEN for user profile not found (source assertion)
+  ---
+  duration_ms: 0.11725
+  type: 'test'
+  ...
+# Subtest: POST update returns FORBIDDEN for user profile not found (source assertion)
+ok 36 - POST update returns FORBIDDEN for user profile not found (source assertion)
+  ---
+  duration_ms: 0.081083
+  type: 'test'
+  ...
+# Subtest: POST update returns DIFF_HASH_MISMATCH on ConflictError (source assertion)
+ok 37 - POST update returns DIFF_HASH_MISMATCH on ConflictError (source assertion)
+  ---
+  duration_ms: 0.042708
+  type: 'test'
+  ...
+# Subtest: fromThemeDocumentV2 is imported and used in the POST update route (NO-DATA-LOSS assertion)
+ok 38 - fromThemeDocumentV2 is imported and used in the POST update route (NO-DATA-LOSS assertion)
+  ---
+  duration_ms: 0.030208
+  type: 'test'
+  ...
+1..38
+# tests 38
+# suites 0
+# pass 35
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1161.193041

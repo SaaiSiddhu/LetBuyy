@@ -1,0 +1,148 @@
+{
+  "recordedAt": "2026-10-23T16:19:10.598262+00:00",
+  "classification": "FINITE_ACTUAL_FIRST_PASS_NOT_FINAL_ACCEPTANCE",
+  "runId": "9cd50e893016",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+  "sourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+  "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "currentPublishedTheme": "Dewdrop 2.0.0",
+  "browserAccepted": false,
+  "theme": "Pantry 2.0.0",
+  "matrix": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-matrix.md",
+  "cases": [
+    {
+      "id": "P00",
+      "status": "PASS",
+      "observations": [
+        "New Enterprise baseline normal Add acknowledges Pantry2.0.0; headingA savedv2/fullreload exact; normalPublish release dee7f527-3b2b-43f3-aa88-18ee86599faa/hash0fff3985e633a547007aee9cbf9ef119e3f632d9094141ad813de7c84ad1e1be. Unauth publicGET200 exactA/PantryCSS/noDewdropmarker. Earlier Free refusal retained as historical prerequisite. No responsive/preview pass from this row."
+      ]
+    },
+    {
+      "id": "P01",
+      "status": "FAIL",
+      "observations": [
+        "Actual existing lentils normal merchant form displayed approved common facts/unknown allergens. Changed only preparation to Rinse before cooking. UI save checkpoint.; Save product rejected This change must originate from this merchant app. Failed draft retained/frozen; no successful write/reload or negative-validation proof."
+      ]
+    },
+    {
+      "id": "P02",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual merchant baseline shows Pack250g/500g/750glabelonly,250g explicit quantity/unit and unknown pack blank quantity/unit. Save/clear/rename roundtrip deferred after P01 actual origin rejection."
+      ]
+    },
+    {
+      "id": "P03",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual unselected PDP blocks Add; choose250g/count2 ->250g per pack/72 per100g/500g total. Fraction1.5 removes total and shows whole-count guidance. Exact canonical accepted cart variant dec5643b-ae0c-4db2-a654-07d314ac01f2 confirmed later. Blank-count subcase deferred."
+      ]
+    },
+    {
+      "id": "P04",
+      "status": "PASS",
+      "observations": [
+        "Actual500g ->340/unavailable/500g per pack/68 per100g/disabledAdd. Actual750glabelonly ->210/netnot supplied/no unit or net total. Returning250g restores only250g facts."
+      ]
+    },
+    {
+      "id": "P05",
+      "status": "PASS",
+      "observations": [
+        "Actual rice220/common1000g ->quantity2/2000g/22 per100g. Returnlentilsrequiresownoptions and blocks Add; no rice facts carried. OwnerpublicGET independently rice no variants/stock4/common1000g."
+      ]
+    },
+    {
+      "id": "P06",
+      "status": "PASS",
+      "observations": [
+        "Actual pulses collection onlylentils; rice collection onlyrice. Supplied250g pack filter nativeApply+Newest ->1lentils and retainscollectionID. Owner canonicalGET200 total1/exactproduct witness. Actual search zero cohort with repeatedusb-c/hdmi retains search/country/category/limit/pack throughsort, resets page; independent removals preserve unrelated values and recover1lentils. Clearpack/country/category and clearall eachpreserve search/sort/limit. Currentvalidselectedpack absentchoices preserved as removablechip/noinventedoption."
+      ]
+    },
+    {
+      "id": "P07",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual normalUI temporarycarttransition approved: preservedtwoPink baseline; removedPink viaUI, selected250g/count2 Add acknowledged, fullcart/reload correct360/savedfoodfacts. GuardedownedDB confirms exactline/variant/qty2/unit180/foodnet250gperitem. RemovedPantry andrestoredexact2Pinknormally; whitelistedbeforeafterequalitytrue/order0. UnknownlineAdd was auto-review rejected before execution; directhumanbatchapprovalpending, no workaround."
+      ]
+    },
+    {
+      "id": "P08",
+      "status": "NOT_RUN",
+      "observations": [
+        "Overstock/recovery subcase deferred pending direct human cart-test authorization after auto-review narrow-boundary rejection; originaltwoPinkcartrestored."
+      ]
+    },
+    {
+      "id": "P09",
+      "status": "NOT_RUN",
+      "observations": [
+        "Pantrycheckout notattempted: common hostedTLSblocked from actualDewdropH01; localCODauthorizationalso pending. No order fabricated."
+      ]
+    },
+    {
+      "id": "P10",
+      "status": "NOT_RUN",
+      "observations": [
+        "No Pantry order exists; order/history positive controls not reached."
+      ]
+    },
+    {
+      "id": "P11",
+      "status": "NOT_RUN",
+      "observations": [
+        "Later product edit requires completed P09/P10 and additional active250g cart. Preconditions absent; original data preserved."
+      ]
+    },
+    {
+      "id": "P12",
+      "status": "NOT_RUN",
+      "observations": [
+        "Required stale active-cart case deferred. No P10 primary order, no additional active250g cart, and no P11 later edit; no API order/seed workaround."
+      ]
+    }
+  ],
+  "evidence": [
+    "pantry-install-library-full.jpg",
+    "pantry-install-library-full.ax.txt",
+    "pantry-merchant-initial-facts.ax.txt",
+    "pantry-merchant-origin-banner.jpg",
+    "pantry-install-refusal-observation.json",
+    "pantry-publication-A-proof.json",
+    "pantry-public-A-readback.json",
+    "pantry-heading-A-reload.ax.txt",
+    "pantry-P03-250g-two-packs.ax.txt",
+    "pantry-P03-fractional-pack-count.ax.txt",
+    "pantry-P04-unknown-pack.ax.txt",
+    "pantry-P05-rice-two-packs.ax.txt",
+    "pantry-P06-repeated-query-recovery.json",
+    "pantry-P06-rice-collection.ax.txt",
+    "pantry-cart-transition-and-restoration.json"
+  ],
+  "notClaimed": [
+    "normal merchant fact mutation/reload",
+    "preview or responsive acceptance at0x0",
+    "unknown-line cart subcase",
+    "P08 overstock",
+    "P09-P12 order/lateredit/stalecart"
+  ],
+  "counts": {
+    "PASS": 4,
+    "FAIL": 1,
+    "PARTIAL": 3,
+    "NOT_RUN": 5
+  },
+  "evidenceLimit": "Install screenshot shows catalog context after transient refusal toast expired; actual immediate AX refusal is preserved as transcribed tool observation in pantry-install-refusal-observation.json. HTTP status/code not captured.",
+  "attempts": [
+    {
+      "baseline": "Free",
+      "P00": "FAIL quota1 (correct policy, fixture prerequisite)",
+      "P01": "FAIL normal origin rejection"
+    },
+    {
+      "baseline": "Direct-human-approved local Enterprise test subscription",
+      "P00": "CORE_PASS savev2/fullreload/publish/unauthreadback; preview and responsive acceptance remain open"
+    }
+  ]
+}

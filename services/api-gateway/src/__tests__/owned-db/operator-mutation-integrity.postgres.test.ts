@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test, { before } from 'node:test';
+import {setTimeout as pause} from 'node:timers/promises';
 import { LetbuyyApiClient } from '@letbuyy/api-client';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, queryJson, tapRest, newBarrier, restJson } from './gateway-harness';
 import { requireOwnedDatabase } from './owned-db-support';
@@ -19,6 +20,8 @@ before(async () => {
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys()));
 });
 async function send(path: string, body: unknown, key = crypto.randomUUID(), method = 'POST') {
+    // Real limiter: a 15-point mutation consumes 750ms at its 20-point/s refill.
+    await pause(800);
     const response = await gateway.request(`${OPS}${path}`, { method, headers: { ...await signedIdentityHeaders(actor.id, actor.email), 'Idempotency-Key': key }, body: JSON.stringify(body) });
     await gateway.settle();
     return response;
@@ -226,6 +229,7 @@ test('concurrent duplicates of every existing-ticket action and macro creation r
 test('typed support client preserves a logical action key with fresh signed identity on each retry', async () => {
     // The client transport drives the real worker rather than returning a fabricated API response.
     const client = new LetbuyyApiClient({ baseUrl: 'https://gateway.test', fetch: async (url, init) => {
+        await pause(800);
         const response = await gateway.request(new URL(String(url)).pathname, init);
         return new Response(response.text, { status: response.status, headers: response.headers });
     } });

@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-24T09:43:50.630Z",
+  "classification": "INDEPENDENT_ACTUAL08_RUNTIME_AND_FIXTURE_GUARD_PROOF_NOT_NATIVE",
+  "candidate": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08",
+  "buyerBindingResolved": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/packages/checkout-core/src/index.ts",
+  "workerFetch": true,
+  "actualHarnessNegativePositiveControls": "PASS",
+  "loadedPrivateModules": 456,
+  "loadedMainSource": 0,
+  "declarationsExecuted": 0,
+  "fetchCalls": 0,
+  "realSqlCalls": 0,
+  "testFileSha256": "2fcef3f55fb935c56b3c646ef54769a220136c447e171c649f393bd647793e10",
+  "nativeExecuted": false,
+  "browser": false,
+  "providerCalls": 0
+}

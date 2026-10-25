@@ -1,0 +1,607 @@
+{
+  "recordedAt": "2026-10-24T07:11:44.547786+00:00",
+  "classification": "ACTUAL_32_PUBLIC_DISCOVERY_ROWS_AND_BOTH_ROUTE_BROWSER_RECEIPTS_REVIEWED",
+  "runId": "936e5f577646",
+  "caseResults": {
+    "MG-AUTHOR-01": "PASS",
+    "MG-RULING-01": "NOT_RUN",
+    "MG-QUERY-01": "NOT_RUN",
+    "MG-CLEAR-01": "NOT_RUN"
+  },
+  "authorProof": "Both actual routes: Mira Sen/English/hardback has onlyEN witness; Hindi/paperback onlyHI; Mira Sen+Hindi/paperback and English/paperback have0 products despite positive controls. OOS never supplies an in-stock witness. Listing book420 differs intentionally from selected EN590.",
+  "rows": [
+    {
+      "route": "collection",
+      "id": "Q-asc1",
+      "total": 2,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-asc2",
+      "total": 2,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-name1",
+      "total": 2,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-name2",
+      "total": 2,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-desc1",
+      "total": 2,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-desc2",
+      "total": 2,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-books",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-stationery-lined",
+      "total": 1,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-author",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-author-English-hardback",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-Hindi-paperback",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-impossible-author",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-OOS-English-paperback",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-connectors-zero",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-HDMI-only-zero",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "collection",
+      "id": "Q-clear-ruling-positive",
+      "total": 1,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-asc1",
+      "total": 2,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-asc2",
+      "total": 2,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-name1",
+      "total": 2,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-name2",
+      "total": 2,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-desc1",
+      "total": 2,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-desc2",
+      "total": 2,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-books",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-stationery-lined",
+      "total": 1,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-author",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-author-English-hardback",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-Hindi-paperback",
+      "total": 1,
+      "productIds": [
+        "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+      ],
+      "variantWitnesses": [
+        "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+      ],
+      "basePrices": [
+        420
+      ],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-impossible-author",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-OOS-English-paperback",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-connectors-zero",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-HDMI-only-zero",
+      "total": 0,
+      "productIds": [],
+      "variantWitnesses": [],
+      "basePrices": [],
+      "review": "PASS"
+    },
+    {
+      "route": "search",
+      "id": "Q-clear-ruling-positive",
+      "total": 1,
+      "productIds": [
+        "43fba2a8-bc4d-4939-917e-8430991fbd09"
+      ],
+      "variantWitnesses": [],
+      "basePrices": [
+        320
+      ],
+      "review": "PASS"
+    }
+  ],
+  "rulingObserved": "Supplied onlylined count1 and stationery-only result320; native chooser interaction still pending review.",
+  "limits": [
+    "32 rows are actual public read-only response and browser-navigation evidence, not 32 installed cases.",
+    "Native Apply/sort/page/clear clicks and preservation require their own receipts; static URL navigation alone does not complete MG-RULING/QUERY/CLEAR.",
+    "No broader stable392 facet/count defect acceptance or later393/Main runtime inferred."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-discovery-public-actual.json",
+      "sha256": "3b185a44577eeffd440bc1500aba1d73c5cdd2e39c4b51d14f3d15242ca962e8",
+      "bytes": 94740
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-asc1-collection.ax.txt",
+      "sha256": "03a8cdf51ee034194255a57e38a6be3e137d6c830e4c94e8c1b0662375028428",
+      "bytes": 5097
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-asc2-collection.ax.txt",
+      "sha256": "cf657c11154ad386f9803f5cccbe7ede55e9eaae69b60282ad10f6d5d0247981",
+      "bytes": 5052
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-name1-collection.ax.txt",
+      "sha256": "88440f1e1b571a59ed6afb65873e0dc29250b239380be04ba0ba3583bc785b22",
+      "bytes": 5012
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-name2-collection.ax.txt",
+      "sha256": "d24765fe89edb53e8bb7c2a51549a27138950b5d06e7400f40dd52709489396b",
+      "bytes": 5052
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-desc1-collection.ax.txt",
+      "sha256": "57729eb7546f9995c495bdc7401c65a326c33f9662ae4ca75fa42d8383cb35af",
+      "bytes": 5061
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-desc2-collection.ax.txt",
+      "sha256": "b194efb4ea0ad131954b1e07d07a027636a71f001a25c5e16e90bce84094798e",
+      "bytes": 5101
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-books-collection.ax.txt",
+      "sha256": "9a9add60636017709741f165c71c7b539dd340f7968181d99945ef4d50b36819",
+      "bytes": 4910
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-stationery-lined-collection.ax.txt",
+      "sha256": "2c5e3cab74831e2f0a658c93375f5adae71ebeecb1b5d166cba6b8a12b4d8afb",
+      "bytes": 6079
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-author-collection.ax.txt",
+      "sha256": "ccc899c74129fa66eaaf96f86c10f1dd26152586e1571a33b56fed2fff6cb910",
+      "bytes": 5342
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-author-English-hardback-collection.ax.txt",
+      "sha256": "955243ee332b01e7b07ddf96e75aef29f157ddcd791b5dfb76c409b87b7575fc",
+      "bytes": 6346
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-Hindi-paperback-collection.ax.txt",
+      "sha256": "c863db7a54dc369c1a919ce2b5a4b9e3db54063102743bb02cdc290ded75d028",
+      "bytes": 5809
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-impossible-author-collection.ax.txt",
+      "sha256": "7681b718f7d0540ae81edd71baaa38174a6b12cbddfdfe196a5478d7594d323d",
+      "bytes": 5022
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-OOS-English-paperback-collection.ax.txt",
+      "sha256": "f3b02f30bd92db97e7ba14b6a328206232429e936a7948aa651e095b2cc2d5ad",
+      "bytes": 4528
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-connectors-zero-collection.ax.txt",
+      "sha256": "c3f36c4f9acbfd4edb08998b2aa7495ba0db3e9f168be8b927854c2f67fbb35c",
+      "bytes": 5469
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-HDMI-only-zero-collection.ax.txt",
+      "sha256": "768cce123e7990b533012d6bc91a1a8b31044814fa0354dd3f3123c1c935e6b6",
+      "bytes": 4975
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-clear-ruling-positive-collection.ax.txt",
+      "sha256": "ed970136812d1f758f7e9eda45470001aa3b32474e1a2420fc000f1b7936898f",
+      "bytes": 5634
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-asc1-search.ax.txt",
+      "sha256": "93783d9bcae984353acff4dc3a0d91fef5a966cfdb2947cc21c78f465e100682",
+      "bytes": 5139
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-asc2-search.ax.txt",
+      "sha256": "e4ef9211d5ee57acf4fbb56526d14973426c2e03a840c06945f882dbbc8c51ac",
+      "bytes": 5093
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-name1-search.ax.txt",
+      "sha256": "64691ef2093de8fbdacbc20840257cde74fca10ff375c411d94d899800ed951d",
+      "bytes": 5048
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-name2-search.ax.txt",
+      "sha256": "a9b360722cffd4305a1399263e02358f2d975fc3eea8636ddd8fc98d4a2cbdcb",
+      "bytes": 5088
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-desc1-search.ax.txt",
+      "sha256": "cb5469d900257a4ff7c3b0891177680af806913e69db1db04471379591475619",
+      "bytes": 5103
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-desc2-search.ax.txt",
+      "sha256": "623cfc0a23028e6b27218819eb015926cfb256f4530ccb7db56c4c274e132dc8",
+      "bytes": 5143
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-books-search.ax.txt",
+      "sha256": "7b02cc434f79cf5f700e3011c8bb866e41eb78dc102c56179466a05fa1645669",
+      "bytes": 4966
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-stationery-lined-search.ax.txt",
+      "sha256": "bfc7ed0e2959f3cbaa98ae24bdfcce7d4ff7057255c2c7599febcda9c720e107",
+      "bytes": 6097
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-author-search.ax.txt",
+      "sha256": "458c2109f22e21c6ca2102f5e353940c12fa0ac92bfc646f2f51b2b2d9423e1c",
+      "bytes": 5379
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-author-English-hardback-search.ax.txt",
+      "sha256": "ff814694a3a281145a90e10ed62b7e0c3aeaf8a9db8c8e446600d2c428d3daf7",
+      "bytes": 6344
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-Hindi-paperback-search.ax.txt",
+      "sha256": "d76a1255b5725b2068792904dba56ccad62700e529943a8290257318acd89359",
+      "bytes": 5826
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-impossible-author-search.ax.txt",
+      "sha256": "e72414cbe8b3864633dc358544485334487921c2cbf9b406d6ae5e447194b907",
+      "bytes": 5019
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-OOS-English-paperback-search.ax.txt",
+      "sha256": "64d7932f57ecad4efdc66aab24ccc3dc096f76d68a983d9127f05b2b6ed3321b",
+      "bytes": 4547
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-connectors-zero-search.ax.txt",
+      "sha256": "aae1aaa06dcacefb4d49b481cc9e632e8f538eb1e4a09e419c1d47dc8685ddb0",
+      "bytes": 5434
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-HDMI-only-zero-search.ax.txt",
+      "sha256": "ccb4b297d3531bd21742990e773a654179143a8dd31c3a05f42f8a4e4fae49f3",
+      "bytes": 4966
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-Q-clear-ruling-positive-search.ax.txt",
+      "sha256": "e0e6ed99726548ac888344485acd571df6904b87de148dd4696956aa75b83bee",
+      "bytes": 5675
+    }
+  ]
+}

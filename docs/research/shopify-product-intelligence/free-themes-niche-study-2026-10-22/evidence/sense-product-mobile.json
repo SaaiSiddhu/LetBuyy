@@ -1,0 +1,778 @@
+{
+  "body": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgba(46, 42, 57, 0.75)",
+    "font": "Poppins, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Lavender Algae Peel-off Mask",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Lavender Algae Peel-off Mask",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Ingredients",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "How to use",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shipping",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Return policy",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": -19.515625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 90,
+      "line": "45px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "Lavender Algae Peel-off Mask",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 633.625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "22.5px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Ingredients",
+      "weight": "500",
+      "width": 110.6328125,
+      "x": 51,
+      "y": 1751.625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "22.5px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "How to use",
+      "weight": "500",
+      "width": 106.1640625,
+      "x": 51,
+      "y": 1806.625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "22.5px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Shipping",
+      "weight": "500",
+      "width": 86.1171875,
+      "x": 51,
+      "y": 1861.625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "22.5px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Return policy",
+      "weight": "500",
+      "width": 127.96875,
+      "x": 51,
+      "y": 1916.625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 180,
+      "line": "30px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "“Each product is filled with not only some of the best botanicals but a little bit of happiness and kindness too.” -The Eco Hub",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 2091.625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Clean",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 2503.875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Cruelty free",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 2712.015625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Vegan",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 2920.15625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Pregnancy safe",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 3128.296875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 90,
+      "line": "45px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Natural ingredients",
+      "weight": "500",
+      "width": 280,
+      "x": 55,
+      "y": 3648.1875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 90,
+      "line": "45px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Get 20% off your first order",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4320.3046875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Menu",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4602.3046875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our Store",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4957.4765625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our Promise",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5383.140625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-sense-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing#ProductInfo-template--16716094111952__main"
+    },
+    {
+      "text": "Skin Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Hair Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Body Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Nail Polish",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "About Us",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "theme-sense-demo",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716094111952__main",
+      "rect": {
+        "height": 1862.640625,
+        "width": 390,
+        "x": 0,
+        "y": 138.984375
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\nOpen media 2 in modal\nOpen media 3 in modal\nOpen media 4 in modal\nOpen media 5 in modal\nOpen media 6 in modal\nOpen media 7 in moda"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716094111952__163958923438bceda6",
+      "rect": {
+        "height": 299,
+        "width": 390,
+        "x": 0,
+        "y": 2026.625
+      },
+      "tag": "SECTION",
+      "text": "“Each product is filled with not only some of the best botanicals but a little bit of happiness and kindness too.” -The Eco Hub"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716094111952__1637794306888a8d22",
+      "rect": {
+        "height": 851.5625,
+        "width": 390,
+        "x": 0,
+        "y": 2350.625
+      },
+      "tag": "SECTION",
+      "text": "Clean\nCruelty free\nVegan\nPregnancy safe"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716094111952__16395892383e667e63",
+      "rect": {
+        "height": 716,
+        "width": 390,
+        "x": 0,
+        "y": 3227.1875
+      },
+      "tag": "DIV",
+      "text": "Natural ingredients\n\nWe always choose the finest natural ingredients, then expertly blend them to benefit your hair, skin, and mind. ♡"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716094111952__16378071702344eb62",
+      "rect": {
+        "height": 276.1171875,
+        "width": 390,
+        "x": 0,
+        "y": 3968.1875
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716094111952__product-recommendations",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 4269.3046875
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716094111952__1640200765ebf22099",
+      "rect": {
+        "height": 321,
+        "width": 390,
+        "x": 0,
+        "y": 4269.3046875
+      },
+      "tag": "SECTION",
+      "text": "Get 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail"
+    }
+  ],
+  "title": "Algae Peel-off face mask Soothing | BKIND – theme-sense-demo",
+  "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    "Style\nMask\n Mask + applicator"
+  ],
+  "grids": [
+    {
+      "className": "product product--medium product--stacked grid grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 1799.640625,
+      "tag": "DIV",
+      "width": 360
+    },
+    {
+      "className": "product__media-list grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 400.640625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "product__media-item grid__item slider__slide is-active",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 360.640625,
+      "tag": "LI",
+      "width": 375
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 360.640625,
+      "tag": "LI",
+      "width": 360
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 360.640625,
+      "tag": "LI",
+      "width": 360
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 360.640625,
+      "tag": "LI",
+      "width": 360
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 360.640625,
+      "tag": "LI",
+      "width": 360
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 360.640625,
+      "tag": "LI",
+      "width": 360
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 360.640625,
+      "tag": "LI",
+      "width": 375
+    },
+    {
+      "className": "multicolumn-list grid grid--1-col grid--2-col-tablet grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 812.5625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--2-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 668,
+      "tag": "DIV",
+      "width": 360
+    }
+  ],
+  "images": [
+    {
+      "alt": "Algae Peel-off Mask - Lavender, Lemon Balm and Acai - BKIND",
+      "complete": true,
+      "naturalWidth": 326,
+      "rect": {
+        "height": 360,
+        "width": 360
+      }
+    },
+    {
+      "alt": "Algae Peel-off Mask - Lavender, Lemon Balm and Acai - BKIND",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360,
+        "width": 360
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360.640625,
+        "width": 360
+      }
+    },
+    {
+      "alt": "Algae Peel-off Mask - Lavender, Lemon Balm and Acai - BKIND",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360,
+        "width": 360
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 359.6796875,
+        "width": 360
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360.640625,
+        "width": 360
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360.640625,
+        "width": 360
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 360,
+      "rect": {
+        "height": 89.25,
+        "width": 179.984375
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 360,
+      "rect": {
+        "height": 89.25,
+        "width": 179.984375
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 360,
+      "rect": {
+        "height": 89.25,
+        "width": 179.984375
+      }
+    },
+    {
+      "alt": "Oceanbound plastic icon",
+      "complete": true,
+      "naturalWidth": 360,
+      "rect": {
+        "height": 89.25,
+        "width": 179.984375
+      }
+    },
+    {
+      "alt": "Woman's hand with colourful nails holding a papaya",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360,
+        "width": 360
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSave 15% on orders over $50 ♡ Use code 15OFF at checkout\n\nCart\nSkip to product information\nOpen media 1 in modal\nOpen media 2 in modal\nOpen media 3 in modal\nOpen media 4 in modal\nOpen media 5 in modal\nOpen media 6 in modal\nOpen media 7 in modal\n1\n/\nof\n7\n\nBKIND\n\nLavender Algae Peel-off Mask\nRegular price\n$32.00 CAD\nStyle\nMask\n Mask + applicator\nQuantity\nDecrease quantity for Lavender Algae Peel-off Mask\nIncrease quantity for Lavender Algae Peel-off Mask\nAdd to cart\nBuy it now\n\nThis is a demonstration store. You can purchase products like this from BKIND.\n\nAlgae Peel-off Mask with moisturizing and soothing properties.\n\nIn only 10 minutes, this face mask will help soothe, purify and moisturize the skin. Formulated with Lavender powder, to calm and soften the skin, with Melissa flower water (Lemon balm), to soothe and protect the skin, and with Acai extract, to regenerate and revive the skin, this face mask will leave your skin soothed and plumped!\n\nThis peel-off face mask comes in a powder form, which needs to be mixed with water in order to obtain a gel texture. Once dry, the mask should be peeled off the skin and does not need to be rinsed. Once your spa-time is done, you can compost the mask.\n\n80 g (5 uses)\n\nShare\nIngredients\nHow to use\nShipping\nReturn policy\n“Each product is filled with not only some of the best botanicals but a little bit of happiness and kindness too.” -The Eco Hub\nClean\nCruelty free\nVegan\nPregnancy safe\nNatural ingredients\n\nWe always choose the finest natural ingredients, then expertly blend them to benefit your hair, skin, and mind. ♡\n\nGet 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail\nMenu\nSkin Care\nHair Care\nBody Care\nNail Polish\nBlog\nAbout Us\nOur Store\n\n3455 St Laurent Blvd\nMontreal, Quebec H2X 2T6\nMon - Fri 9 a.m. - 7 p.m.\nSat - Sun 10a.m. - 6p.m.\n\n\nOur Promise\n\nTo create high quality, plant-based products that are safe for people and the planet.\n\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\n© 2026, theme-sense-demo Powered by Shopify"
+}

@@ -1,0 +1,87 @@
+{
+  "recordedAt": "2026-10-23T19:44:56.576Z",
+  "runId": "f6074d90e894",
+  "phase": "pantry-before",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Whitelisted owned active cart line/facts/fingerprints/image only; no session/token/handoff/catalog_source/customer",
+  "actual": {
+    "orders": 0,
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "activeCarts": [
+      {
+        "id": "59e347bf-98cc-4477-95e4-6aedb233f6f6",
+        "items": [
+          {
+            "id": "2bcbdf71-270c-40ac-8819-82d8921e35f0:f5adb52e-2e20-442a-b607-cc1b5c52ce88",
+            "image": null,
+            "title": "Fixture Soft Colour",
+            "currency": "INR",
+            "imageUrl": "http://syn-threadline-ui-33be9d94.localhost:62076/theme-assets/dewdrop/v2/lip-tint.webp",
+            "quantity": 2,
+            "lineTotal": 1120,
+            "productId": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+            "unitPrice": 560,
+            "variantId": "f5adb52e-2e20-442a-b607-cc1b5c52ce88",
+            "properties": {
+              "Shade name": "Pink Clay",
+              "पैक आकार": "एक इकाई"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "beauty": {
+                  "format": "Lip tint",
+                  "shades": [
+                    {
+                      "code": "RW01",
+                      "color": "#a36a65",
+                      "value": "Rosewater",
+                      "ingredients": "Rosewater v1: fixture oil, CI 77491."
+                    },
+                    {
+                      "code": "PC02",
+                      "color": "#a36a65",
+                      "value": "Pink Clay",
+                      "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+                    },
+                    {
+                      "code": "TC03",
+                      "color": "#89534a",
+                      "value": "Terracotta",
+                      "ingredients": null
+                    }
+                  ],
+                  "warnings": "Fixture warning v1: external use only.",
+                  "directions": "Fixture directions v1: use as supplied.",
+                  "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+                  "netQuantity": {
+                    "unit": "ml",
+                    "value": 6
+                  },
+                  "routineStage": "colour",
+                  "schemaVersion": 1,
+                  "shadeOptionName": "Shade name"
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Shade name",
+                  "value": "Pink Clay"
+                },
+                {
+                  "name": "पैक आकार",
+                  "value": "एक इकाई"
+                }
+              ]
+            },
+            "productVersion": 10,
+            "snapshotFingerprint": "5d24852a88f8779112d79cb5d7fe03de5d766bf1532a5d8338a8edfe6d7d546e",
+            "configurationFingerprint": null
+          }
+        ],
+        "status": "active"
+      }
+    ]
+  }
+}

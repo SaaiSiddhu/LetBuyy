@@ -1,0 +1,91 @@
+{
+  "recordedAt": "2026-10-23T18:39:03.275254+00:00",
+  "status": "ONE_COMMERCE_ENV_PROPERTY_IMPLEMENTED_SOURCE_VERIFIED_RELEASED_FUTURE_BROWSER_PENDING",
+  "source": {
+    "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+    "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+    "bytes": 23081
+  },
+  "previousSha256": "70f20dd157bb05a697af9c9b458cb7846ea6b012f72a2c7845382adf8344e835",
+  "sourceSnapshot": {
+    "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/threadline-browser-fixture.before.ts.snapshot",
+    "sha256": "70f20dd157bb05a697af9c9b458cb7846ea6b012f72a2c7845382adf8344e835",
+    "bytes": 23039
+  },
+  "delta": {
+    "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/commerce-preview-origin.diff",
+    "sha256": "22a3990f9aa4a1a367675477d12c1c39cc5d0947510fdba267aaa4ba2c5496d2",
+    "bytes": 1772
+  },
+  "exactScope": "Commerce spec env adds NEXT_PUBLIC_STOREFRONT_URL:commerceOrigin; merchant platform preview URL preserved; all other fixture bytes exact",
+  "otherSourceInputsConserved": 14,
+  "preservedContracts": [
+    "Verified synthetic commerceOrigin from existing strict origin function, exact same host/port; no new origin input",
+    "Marketplace optional flags/port binding and Threadline/Editor/QA/native/TLS paths byte exact outside added property",
+    "Owned helper bd87 unchanged; globalCSP8089 unchanged; Commerce/Merchant Next configs unchanged; launcher/url guard and tests/lock unchanged"
+  ],
+  "existingRegressionChecks": {
+    "command": [
+      "env",
+      "NODE_ENV=production",
+      "NEXT_PUBLIC_STOREFRONT_URL=http://syn-threadline-preview-csp.localhost:4103",
+      "node",
+      "--import",
+      "tsx",
+      "--test",
+      "--test-concurrency=1",
+      "services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts",
+      "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "tests/contracts/theme-preview-framing.test.mjs",
+      "tests/contracts/security-headers.test.ts"
+    ],
+    "pass": 29,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "exitCode": 0,
+    "tap": {
+      "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/existing-regressions.tap",
+      "sha256": "5237a32a3c1e2ba9d403ed27d5006f9dad7571b47b7c6ff7a69151d61afec869",
+      "bytes": 7617
+    }
+  },
+  "gatewayNoEmit": {
+    "cwd": "services/api-gateway",
+    "command": "../../node_modules/.bin/tsc --noEmit",
+    "exitCode": 0,
+    "log": {
+      "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/gateway-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "pureCspProbe": {
+    "record": {
+      "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/csp-origin-probe.json",
+      "sha256": "784f10fab091afc3f36b5436ab8f14af13f273e965b0e2b824cdb538ae28814b",
+      "bytes": 1201
+    },
+    "finding": "Existing unchanged builder adds only exactconfiguredtenantorigin to connect-src/img-src/frame-src; frame-ancestors and allotherdirectives unchanged",
+    "class": "Pure existing API parameter observation; not browser/image/runtime acceptance"
+  },
+  "preservedOptionalProbeInitialLoaderFailure": {
+    "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/csp-origin-probe-initial-module-red.json",
+    "sha256": "d465aec9fc21de247c8bb7a08cf69094135b2d96ca8e89713d60b73eddc698b6",
+    "bytes": 702
+  },
+  "futureBrowserOracle": {
+    "path": "docs/implementation/threadline-2026-10-22/preview-media-origin-2026-10-24/future-normal-image-load-oracle.json",
+    "sha256": "8d8bbdec6b8944738706ec4f1dbf22e356743b711c12e8bda387226c4cc36b2b",
+    "bytes": 1790
+  },
+  "productOrTestSourceEditsOtherThanOneFixtureProperty": false,
+  "newHarnessOrRuntime": false,
+  "candidateCopyRestartOrActivePatch": false,
+  "databaseOrBrowserOrAppStarted": false,
+  "activeF607AndMarketplaceResourcesTouched": false,
+  "existingPreviewMediaCaseClosed": false,
+  "writerLeaseReleased": true,
+  "next": "Root independently admits exact new source pin and schedules future corrected runtime normal-image proof; existing f607 case stays open."
+}

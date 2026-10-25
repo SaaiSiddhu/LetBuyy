@@ -11,6 +11,7 @@
 // rules that disagree produce a purge that misses, which is invisible until stale data is served.
 
 import type { Hono } from 'hono';
+import { z } from 'zod';
 import type { Env } from '../../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import {
@@ -21,6 +22,12 @@ import {
 } from '../../lib/storefront-cache';
 import { normalizeStorefrontHandle, type PublishedStoreRecord } from '@letbuyy/tenant-core';
 import type { AppContext } from './customer-engagement-routes';
+
+const paginationInteger = (maximum: number, fallback: number) => z.preprocess(
+    value => typeof value === 'string' && /^[1-9]\d*$/.test(value) ? Number(value) : value,
+    z.number().int().min(1).max(maximum).default(fallback),
+);
+const BlogPaginationSchema = z.object({ page: paginationInteger(1000, 1), limit: paginationInteger(50, 20) });
 
 export interface StorefrontBlogRoutesDeps {
     loadPublishedStore: (c: AppContext, handle: string) => Promise<PublishedStoreRecord | null>;
@@ -37,8 +44,10 @@ export function registerStorefrontBlogRoutes(
     const { loadPublishedStore, normalizePublicRouteToken, storefrontCacheTags } = deps;
 
     router.get('/:subdomain/blog', async (c) => {
-        const page = parseInt(c.req.query('page') || '1');
-        const limit = Math.min(parseInt(c.req.query('limit') || '10'), 50);
+        const single = (key: string) => { const values = c.req.queries(key); return values?.length === 1 ? values[0] : values; };
+        const pagination = BlogPaginationSchema.safeParse({ page: single('page'), limit: single('limit') });
+        if (!pagination.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid blog pagination' } }, 400);
+        const { page, limit } = pagination.data;
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
         return cachedJson(c, await storefrontRequestCacheKey(c, 'blog', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const db = getSupabaseAdmin(c);
@@ -49,8 +58,9 @@ export function registerStorefrontBlogRoutes(
                     body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
                 };
             }
-            const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
-                .eq('store_id', store.id).eq('status', 'published').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).range((page - 1) * limit, page * limit - 1);
+            const { data, count, error } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
+                .eq('store_id', store.id).eq('status', 'published').is('deleted_at', null).order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).order('id', { ascending: true }).range((page - 1) * limit, page * limit - 1);
+            if (error) return { status: 500, body: dbFailureBody() };
             return {
                 body: paginated(data || [], count || 0, page, limit),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:blog'),

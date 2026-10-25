@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-10-25T01:11:55.379219+00:00",
+  "default200201202210RawFingerprints": {
+    "assertions": 37,
+    "PASS": 37,
+    "evidence": "focused-final28.tap#retained37"
+  },
+  "four211CanonicalBundleHashes": [
+    {
+      "id": "7b669c70-0000-4000-8000-000000000004",
+      "slug": "letbuyy-craft",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "69aaa1eb1216cc8566c655c664755d034863a7bcbec6dd9606811bb1457de038",
+      "previousBundleSha256": "95fd3f0fbfa026183a63a1fa111fa34fbf07b9492550752c96dd907a83785313"
+    },
+    {
+      "id": "7b669c70-0000-4000-8000-000000000007",
+      "slug": "letbuyy-dawn",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "c0ff68be44608f192dbbefc77adb48fefc475dd2742ae6c52bcb4199b892649c",
+      "previousBundleSha256": "7b71abe8023049bc62e9229b68ac9d81e6c973225ac32291e06092b02fcfdf37"
+    },
+    {
+      "id": "7b669c70-0000-4000-8000-000000000009",
+      "slug": "letbuyy-nova",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "1c65162929a55eca8714fba1c6142b675503fdfa1eb7ff9b1536ad3fb665fca0",
+      "previousBundleSha256": "03595a3edf8eab4389ff9a62968633b9a51b04eb867d971dd909e7a7716f1e7a"
+    },
+    {
+      "id": "7b669c70-0000-4000-8000-000000000010",
+      "slug": "letbuyy-summit",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "e9abc22e1add95f65aecf178ceb1fbacee0f937d9e97c76d9aa0865a1379ed49",
+      "previousBundleSha256": "1ae69b1ffb425510cd4e5e075bc6ef99be592066bdc6df014e4237e211acdbd4"
+    }
+  ],
+  "fourImmutableHeadingPayloadSha256": "da476dc47ce16d55cd3a7ee05170e9618860febd844c7fcb83aaf349d00806b9",
+  "oldHeadingDistributionSha256": "54856b0d11e824ba97c058290041fa776f14435dc0183859ca90ab899c57a32d",
+  "singleNewSense": {
+    "id": "7b669c70-0000-4000-8000-000000000002",
+    "slug": "letbuyy-sense",
+    "version": "2.1.1",
+    "prior": "2.1.0",
+    "bundleSha256": "51fc92e650ffd460c50e5f22d2407ddd09450ce40e541c2ca9bf469a390ac1dc",
+    "previousBundleSha256": "bc754655eed2f5ee76a10a0d9e0dee0d449c6ef3efaf51b79f986ebf47b9f1a6"
+  },
+  "singleNewSensePayloadSha256": "644acaf43df7aa48c251260218d9738c73ef7e595034545b981bbf57098bbb56",
+  "fiveEligibility": "Exact slug+version+number and canonical section/reusable/order definitions, plus Sense helper-layout definition; normal merchant templates/settings stay free",
+  "oldPackageSelectionDefaultsChanged": false,
+  "generatorPayloadIdenticalAcrossPreparations": true,
+  "allOldSeals": [
+    {
+      "path": "private-heading211-20261025-01/HANDOFF.json",
+      "sealedFiles": 31,
+      "stillExact": true
+    },
+    {
+      "path": "private-heading211-20261025-02/HANDOFF.json",
+      "sealedFiles": 29,
+      "stillExact": true
+    },
+    {
+      "path": "private-heading211-native-source-20261025-03/HANDOFF.json",
+      "sealedFiles": 25,
+      "stillExact": true
+    }
+  ],
+  "oldFull61And31CasesRerun": false,
+  "focusedCasesCountIncludesRetainedAssertionsNotUniqueE2E": true,
+  "MainApplied": false,
+  "nativeExecuted": false
+}

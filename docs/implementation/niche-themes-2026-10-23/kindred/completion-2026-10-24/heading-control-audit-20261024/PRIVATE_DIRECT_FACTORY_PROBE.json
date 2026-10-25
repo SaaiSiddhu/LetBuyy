@@ -1,0 +1,142 @@
+{
+  "recordedAt": "2026-10-24T09:24:15.130Z",
+  "classification": "PRIVATE_ACTUAL_FACTORY_AND_HEADING_FRAGMENT_PROPOSAL_PROBE_NOT_A_RELEASE_OR_BROWSER_TEST",
+  "baselineFactoryEqualsAdmittedBundle": false,
+  "actualPrivateSourceModules": [
+    "baseline/src/theme-bundle-core.ts",
+    "baseline/src/theme-bundle.ts",
+    "baseline/src/kindred-theme.ts",
+    "baseline/src/kindred-discovery.ts",
+    "proposal/src/theme-bundle-core.ts",
+    "proposal/src/theme-bundle.ts",
+    "proposal/src/kindred-theme.ts",
+    "proposal/src/kindred-discovery.ts"
+  ],
+  "changedSections": [
+    "customer-order-detail",
+    "collection-product-list",
+    "collection-filter"
+  ],
+  "checks": [
+    {
+      "name": "Only three intended section sources change",
+      "passed": true
+    },
+    {
+      "name": "Schemas, defaults, templates, layout, blocks and every other bundle value are exact",
+      "passed": true
+    },
+    {
+      "name": "Filter normal default preserves baseline rendering",
+      "passed": true,
+      "baseline": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Gifts</h1>",
+      "proposal": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Gifts</h1>"
+    },
+    {
+      "name": "Filter default empty-collection fallback preserves baseline rendering",
+      "passed": true,
+      "baseline": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Find a thoughtful gift</h1>",
+      "proposal": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Find a thoughtful gift</h1>"
+    },
+    {
+      "name": "Filter clear with nonempty collection preserves baseline rendering",
+      "passed": true,
+      "baseline": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Gifts</h1>",
+      "proposal": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Gifts</h1>"
+    },
+    {
+      "name": "Filter whitespace with nonempty collection preserves baseline rendering",
+      "passed": true,
+      "baseline": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Gifts</h1>",
+      "proposal": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Gifts</h1>"
+    },
+    {
+      "name": "Deliberate filter heading overrides nonempty collection title",
+      "passed": true,
+      "proposal": "<section class=\"kr-theme\" data-section-id=\"\"><div class=\"kr-wrap kr-section\"><div class=\"kr-heading\"><div><p class=\"kr-eyebrow\">A LITTLE DIRECTION</p><h1>Birthday surprises</h1>"
+    },
+    {
+      "name": "Filter custom heading remains escaped",
+      "passed": true
+    },
+    {
+      "name": "Results default/clear/reset \"Your gift selection\" preserves optional heading absence",
+      "passed": true
+    },
+    {
+      "name": "Results default/clear/reset \"\" preserves optional heading absence",
+      "passed": true
+    },
+    {
+      "name": "Results default/clear/reset \"   \" preserves optional heading absence",
+      "passed": true
+    },
+    {
+      "name": "Deliberate results heading becomes visible",
+      "passed": true,
+      "proposal": "<div class=\"kr-heading\"><div><h2>Birthday surprises</h2></div></div>"
+    },
+    {
+      "name": "Results custom heading remains escaped",
+      "passed": true
+    },
+    {
+      "name": "Order default/clear \"Order\" preserves baseline and number",
+      "passed": true,
+      "baseline": "<h1>Order #SYNTHETIC-WITNESS</h1>",
+      "proposal": "<h1>Order #SYNTHETIC-WITNESS</h1>"
+    },
+    {
+      "name": "Order default/clear \"\" preserves baseline and number",
+      "passed": true,
+      "baseline": "<h1>Order #SYNTHETIC-WITNESS</h1>",
+      "proposal": "<h1>Order #SYNTHETIC-WITNESS</h1>"
+    },
+    {
+      "name": "Order default/clear \"   \" preserves baseline and number",
+      "passed": true,
+      "baseline": "<h1>Order #SYNTHETIC-WITNESS</h1>",
+      "proposal": "<h1>Order #SYNTHETIC-WITNESS</h1>"
+    },
+    {
+      "name": "Order prefix is editable and canonical number remains appended",
+      "passed": true,
+      "proposal": "<h1>Your gift order #SYNTHETIC-WITNESS</h1>"
+    },
+    {
+      "name": "Order prefix remains escaped with unchanged number",
+      "passed": true
+    },
+    {
+      "name": "Main source unchanged: packages/theme-engine/src/kindred-discovery.ts",
+      "passed": true
+    },
+    {
+      "name": "Main source unchanged: packages/theme-engine/src/kindred-theme.ts",
+      "passed": true
+    },
+    {
+      "name": "Main source unchanged: packages/theme-engine/src/theme-bundle.ts",
+      "passed": true
+    },
+    {
+      "name": "Accepted artifact file remains frozen",
+      "passed": true
+    }
+  ],
+  "totals": {
+    "pass": 22,
+    "fail": 0
+  },
+  "versionAssigned": false,
+  "mainApplied": false,
+  "acceptedArtifactEmitted": false,
+  "browserDatabaseApiCalls": 0,
+  "limits": [
+    "Synthetic data; no real buyer/order/provider execution",
+    "Heading fragments only, not full layout/browser verification",
+    "Shared Core prefix repair needs explicit owner allocation",
+    "Explicit non-default results heading is optional; exact default resets the previous absence",
+    "Successor identity/promotion and complete package provenance remain pending"
+  ]
+}

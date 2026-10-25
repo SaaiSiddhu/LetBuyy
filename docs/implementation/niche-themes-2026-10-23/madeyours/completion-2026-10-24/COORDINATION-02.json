@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "classification": "SEALED06_COMPLETED_PRIVATE_PACKAGING_AND_NAMED_COORDINATION_NO_NATIVE_RUN",
+  "recordedAt": "2026-10-24T09:15:57.948315+00:00",
+  "handoffSha256": "ae48f36486572dc7f006ec60fd2223b7723c1711466f835423dfe60af13ff44a",
+  "immutableBoundary": {
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-06/packaging-receipts/sealed-boundary.json",
+    "sha256": "bee033918c136b3e9f264d20b54a7d47423721e5c7349c61df11bc51b33a9f00"
+  },
+  "nativeCommand": {
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-06/packaging-receipts/native-command06.json",
+    "sha256": "125cd6ee36cbbd1609c7f7351210a395ca0d8fe9376afb817f08b4656f60e6d9"
+  },
+  "actualHelperResumeHumanMessage": "01a16d22-523d-7be0-a40d-774d113d358f",
+  "namedCoordination": [
+    {
+      "recipient": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "status": "DELIVERED",
+      "purpose": "Sealed06 handoff; preserve independent reviewer native22 lane; no Main/browser grant."
+    },
+    {
+      "recipient": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "status": "DELIVERED",
+      "purpose": "Current fixture/HTTPS proof and MY normal UI setup continuity; no stale position7/936 grant."
+    }
+  ],
+  "outboundToRequestingMonitor": false,
+  "frozenSourceBeforeAfter": [
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "before": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+      "after": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "before": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e",
+      "after": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "before": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+      "after": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "before": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582",
+      "after": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582"
+    },
+    {
+      "path": "packages/commerce-core/src/madeyours-facts.ts",
+      "before": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813",
+      "after": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "before": "d1b989d0e6ba07e0a5419a601becea3cef7f94fdfe01ee18d73639a9187f4239",
+      "after": "d1b989d0e6ba07e0a5419a601becea3cef7f94fdfe01ee18d73639a9187f4239"
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "before": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da",
+      "after": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "before": "7e37e13f53aef6f034e0b0312947122231e1ada01adb70f1b51d8bcb6859b40e",
+      "after": "7e37e13f53aef6f034e0b0312947122231e1ada01adb70f1b51d8bcb6859b40e"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "before": "19140df6be21304d0e5c764ad5175d55971253d45cf9255d32415c2f15d29c98",
+      "after": "19140df6be21304d0e5c764ad5175d55971253d45cf9255d32415c2f15d29c98"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "before": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588",
+      "after": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588"
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "before": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a",
+      "after": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a"
+    },
+    {
+      "path": "services/api-gateway/src/execution/order-execution.adapter.ts",
+      "before": "fd2975fb31972c5e4c20952b6b48e7476ac81cf0a6bc8882d9f173bc4b719aa1",
+      "after": "fd2975fb31972c5e4c20952b6b48e7476ac81cf0a6bc8882d9f173bc4b719aa1"
+    },
+    {
+      "path": "services/api-gateway/src/execution/product-mutation.adapter.ts",
+      "before": "39a23ad08cc835d22bf0feb951c5ec44515e6c466f01be8cdd81800577d1257d",
+      "after": "39a23ad08cc835d22bf0feb951c5ec44515e6c466f01be8cdd81800577d1257d"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "before": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+      "after": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "before": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b",
+      "after": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b"
+    }
+  ],
+  "originalLedgerUnchanged": true,
+  "runtimeMadeYoursCasesRun": 0,
+  "privateNativeTestsRun": 0,
+  "mainSourceWrites": 0,
+  "browserActions": 0,
+  "goal": "ACTIVE_INCOMPLETE",
+  "next": "Requesting independent reviewer verifies06 boundary and runs the single native22 cohort; normal browser/TLS/MY23 need fresh allocated fixture."
+}

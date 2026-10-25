@@ -1,0 +1,36 @@
+{
+  "classification": "SEALED_COMPLETE_CURRENT_SOURCE_INPUT_PREPARATION_NOT_EXECUTED",
+  "fileCount": 6,
+  "files": [
+    {
+      "path": "HANDOFF.json",
+      "sha256": "289abf9451538757d2f577ce74986404adb6070f74c59dd2c18faa8811a2e62a",
+      "bytes": 1915
+    },
+    {
+      "path": "harness-input.PROPOSAL.json",
+      "sha256": "e764901fef62ddad3b8b0244e4a5ad8fb400bbc8954356a611b1ac026b8d4928",
+      "bytes": 31198
+    },
+    {
+      "path": "preparation.log",
+      "sha256": "16c14a41964056f4cc373c3d4172b83535b129c161f724a3786f452a19c3fbe6",
+      "bytes": 236
+    },
+    {
+      "path": "prepare.mjs",
+      "sha256": "8b07195fea2dfc29ddaa8d6da45500d1917a6d88227890e631022cfc9d86ea34",
+      "bytes": 6115
+    },
+    {
+      "path": "source-pins-after.json",
+      "sha256": "d8228169657937b030da5f4f7a565906a23905d17688914a5161c3355b27b4df",
+      "bytes": 42191
+    },
+    {
+      "path": "source-pins-before.json",
+      "sha256": "d8228169657937b030da5f4f7a565906a23905d17688914a5161c3355b27b4df",
+      "bytes": 42191
+    }
+  ]
+}

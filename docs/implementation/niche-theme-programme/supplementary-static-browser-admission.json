@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-23T13:41:41.866037+00:00",
+  "classification": "SAVED_SUPPLEMENTARY_STATIC_BROWSER_PROOF_NOT_INSTALLED_ACCEPTANCE",
+  "playfield": {
+    "receipt": "docs/implementation/niche-themes-2026-10-23/playfield/browser-slot1-2026-10-23/completion-receipt.json",
+    "sha256": "ecd629b2af10d32bc0463fed42512cfc7f0cab0c80c4e5720cd89b9b0d5df997",
+    "outputsVerified": 14,
+    "primaryCases": 27,
+    "pass": 27,
+    "fail": 0,
+    "scopes": [
+      "R01 visibleSearchPurpose",
+      "R02 CircuitResponsiveFocusAndAX",
+      "PlayfieldCollectionSearchNativeRecovery"
+    ],
+    "resourcesReleased": true,
+    "crossChatHandoff": "Owner denied send was not retried; root read authorized normal saved outputs directly."
+  },
+  "kindred": {
+    "report": "docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/REPORT.md",
+    "sha256": "49a57b346361aa5cab2fe36ab4f2ed1c991b3e38fdf57d3bfdfaa96d87bdfbfa",
+    "release": "docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/resource-release.json",
+    "releaseSha256": "cc248922413e6676a32a465a813e056a14229a3029d37ac3c27af540df232b1c",
+    "layoutCases": 24,
+    "pass": 22,
+    "fail": 2,
+    "nativeIndependentClearClicks": 120,
+    "openFinding": {
+      "id": "KQA-01",
+      "severity": "P2",
+      "observed": "Long merchant name compresses four navigation targets to18.61\u201331.77px at768px oncollection/search.",
+      "status": "PRESERVED_OPEN_NO_UNREVIEWED_FACTORY_DELTA",
+      "next": "Observeagainstfinalinstalledcandidate; preparetargetedsubsequentversionfixaftercurrentfinitequalification,notcreditedfromsource."
+    },
+    "resourcesReleased": true
+  },
+  "limits": [
+    "Staticrealbrowser+finiteadmittedresponsefixtures;notSQL/liveAPI/installedbuyerproof",
+    "No originalM1artifactsreplaced",
+    "No productionfixmadeforKQA01",
+    "AlllivePlayfield14/Kindred19casesremainNOT_RUN"
+  ]
+}

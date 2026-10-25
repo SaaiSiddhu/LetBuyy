@@ -427,7 +427,8 @@ export default function ProductsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 eyebrow="Catalog"
                 title="Products"
                 description="Manage products, inventory, publishing status, vendors, and storefront visibility."

@@ -1,0 +1,27 @@
+{
+  "runId": "3948938e7c9b",
+  "name": "http-no-domain-effects-attributed",
+  "sequence": 24,
+  "suiteSha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+  "value": {
+    "label": "stale-save",
+    "attribution": {
+      "allTableHashesRetained": 487,
+      "domainAndAllUnclassifiedHashesExact": true,
+      "auth": {
+        "inserted": 1,
+        "expiredRemoved": 0,
+        "jtiHash": "919f997e58356ca236f8a2275ed4df388dcf681398fc081540c3bde7f509e437"
+      },
+      "requestLogRows": 1,
+      "requestMetricRows": 1,
+      "latencyMs": 44,
+      "requestId": "3c55fbd3-9713-49b3-ad94-e5778e43c797",
+      "traceId": "d8860be5-2846-46c0-808a-5078bd123d50",
+      "actorId": "48e20ddb-e607-49b5-9d93-ef6047d88901",
+      "route": "/v1/themes/:slug/editor/draft",
+      "status": 409,
+      "partitionCopiesExact": true
+    }
+  }
+}

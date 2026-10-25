@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-23T09:43:11.063109+00:00",
+  "scope": "PURE_CANONICAL_AND_SOURCE_CONSERVATION_NOT_SQL_EXECUTION",
+  "pureChecks": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0
+  },
+  "targetFunction": "public.browse_storefront_products_v1(uuid,jsonb,uuid[])",
+  "baselineBodyMd5": "9af9d5e2e51052a874ffad94fc8088d6",
+  "expandedBodyMd5": "95cda4d15f36172c5457ad5045600cde",
+  "equipmentOnlyBodyMd5": "d754946fdac247295acd267c81e1031e",
+  "equipmentOnlyArchiveVerified": true,
+  "historical13Receipt": "revisions/02-three-capabilities-before-effective-role-guard/conservation-report.json",
+  "originalBrowseTextAfterRemovingOnlyNewCTEsAndResultField": "byte-identical to qualified386",
+  "downDefinition": "byte-identical to qualified386",
+  "bothLegsGrantorAdmission": "explicit owner grantor required in every pre/post helper profile",
+  "bothLegsEffectiveDenial": [
+    "anon",
+    "authenticated",
+    "app_tenant",
+    "authenticator"
+  ],
+  "bothLegsCatalogConservationStructure": [
+    "pg_proc all fields except prosrc",
+    "rawACL/grantor/options",
+    "owner/signature/defaults/search_path/security flags",
+    "comment",
+    "direct dependencies",
+    "shared dependencies"
+  ],
+  "sqlParsedOrExecuted": false,
+  "databaseCatalogConservationExecuted": false,
+  "runtimeUiOrPerformanceQualified": false,
+  "drafts": [
+    {
+      "path": "390_measurement_discovery.down.draft.sql",
+      "sha256": "eb1d4886fd3c3f5fdb968eb1c134e92a1d4b550c77dea2fce5a8009d5d99af30"
+    },
+    {
+      "path": "390_measurement_discovery.up.draft.sql",
+      "sha256": "3b5274c6257976f28f952afbacf86569e4df782e162ce19c218aca741b5c4ed2"
+    }
+  ],
+  "acceptedCapabilities": [
+    "equipment_length",
+    "max_width_cm",
+    "max_depth_cm"
+  ],
+  "collectionProjection": "measurement_capabilities forwarded unchanged; direct leaf consumption",
+  "parentOptionalWhenPresentAllThreeRequired": true,
+  "plannedRegressionCases": 49
+}

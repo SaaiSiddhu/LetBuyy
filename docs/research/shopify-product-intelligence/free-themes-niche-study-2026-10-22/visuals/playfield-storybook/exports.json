@@ -1,0 +1,632 @@
+[
+  {
+    "scene": "01-home-top",
+    "title": "Home · choose a curious day",
+    "device": "desktop",
+    "file": "images/01-home-top-desktop.png",
+    "width": 1440,
+    "height": 1236,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "01-home-top",
+    "title": "Home · choose a curious day",
+    "device": "tablet",
+    "file": "images/01-home-top-tablet.png",
+    "width": 834,
+    "height": 1211,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "01-home-top",
+    "title": "Home · choose a curious day",
+    "device": "mobile",
+    "file": "images/01-home-top-mobile.png",
+    "width": 390,
+    "height": 1406,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Home · more to explore",
+    "device": "desktop",
+    "file": "images/02-home-bottom-desktop.png",
+    "width": 1440,
+    "height": 2763,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Home · more to explore",
+    "device": "tablet",
+    "file": "images/02-home-bottom-tablet.png",
+    "width": 834,
+    "height": 2461,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Home · more to explore",
+    "device": "mobile",
+    "file": "images/02-home-bottom-mobile.png",
+    "width": 390,
+    "height": 3853,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "03-collection",
+    "title": "Activities · age & interest",
+    "device": "desktop",
+    "file": "images/03-collection-desktop.png",
+    "width": 1440,
+    "height": 2498,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "03-collection",
+    "title": "Activities · age & interest",
+    "device": "tablet",
+    "file": "images/03-collection-tablet.png",
+    "width": 834,
+    "height": 2429,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "03-collection",
+    "title": "Activities · age & interest",
+    "device": "mobile",
+    "file": "images/03-collection-mobile.png",
+    "width": 390,
+    "height": 3265,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "04-product-main",
+    "title": "Pattern Studio · selection",
+    "device": "desktop",
+    "file": "images/04-product-main-desktop.png",
+    "width": 1440,
+    "height": 1436,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "04-product-main",
+    "title": "Pattern Studio · selection",
+    "device": "tablet",
+    "file": "images/04-product-main-tablet.png",
+    "width": 834,
+    "height": 2046,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "04-product-main",
+    "title": "Pattern Studio · selection",
+    "device": "mobile",
+    "file": "images/04-product-main-mobile.png",
+    "width": 390,
+    "height": 2225,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "05-product-contents",
+    "title": "Pattern Studio · contents & scale",
+    "device": "desktop",
+    "file": "images/05-product-contents-desktop.png",
+    "width": 1440,
+    "height": 2397,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "05-product-contents",
+    "title": "Pattern Studio · contents & scale",
+    "device": "tablet",
+    "file": "images/05-product-contents-tablet.png",
+    "width": 834,
+    "height": 2194,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "05-product-contents",
+    "title": "Pattern Studio · contents & scale",
+    "device": "mobile",
+    "file": "images/05-product-contents-mobile.png",
+    "width": 390,
+    "height": 3021,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "06-product-continuation",
+    "title": "Pattern Studio · more to consider",
+    "device": "desktop",
+    "file": "images/06-product-continuation-desktop.png",
+    "width": 1440,
+    "height": 2128,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "06-product-continuation",
+    "title": "Pattern Studio · more to consider",
+    "device": "tablet",
+    "file": "images/06-product-continuation-tablet.png",
+    "width": 834,
+    "height": 2121,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "06-product-continuation",
+    "title": "Pattern Studio · more to consider",
+    "device": "mobile",
+    "file": "images/06-product-continuation-mobile.png",
+    "width": 390,
+    "height": 3157,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "07-cart",
+    "title": "Cart · selected activities",
+    "device": "desktop",
+    "file": "images/07-cart-desktop.png",
+    "width": 1440,
+    "height": 1302,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "07-cart",
+    "title": "Cart · selected activities",
+    "device": "tablet",
+    "file": "images/07-cart-tablet.png",
+    "width": 834,
+    "height": 1748,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "07-cart",
+    "title": "Cart · selected activities",
+    "device": "mobile",
+    "file": "images/07-cart-mobile.png",
+    "width": 390,
+    "height": 1909,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Shared checkout · address",
+    "device": "desktop",
+    "file": "images/08-checkout-address-desktop.png",
+    "width": 1440,
+    "height": 1473,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Shared checkout · address",
+    "device": "tablet",
+    "file": "images/08-checkout-address-tablet.png",
+    "width": 834,
+    "height": 1999,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Shared checkout · address",
+    "device": "mobile",
+    "file": "images/08-checkout-address-mobile.png",
+    "width": 390,
+    "height": 1887,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Shared checkout · review & pay",
+    "device": "desktop",
+    "file": "images/09-checkout-review-desktop.png",
+    "width": 1440,
+    "height": 1248,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Shared checkout · review & pay",
+    "device": "tablet",
+    "file": "images/09-checkout-review-tablet.png",
+    "width": 834,
+    "height": 1770,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Shared checkout · review & pay",
+    "device": "mobile",
+    "file": "images/09-checkout-review-mobile.png",
+    "width": 390,
+    "height": 1658,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "LetBuyy buyer sign-in · Playfield",
+    "device": "desktop",
+    "file": "images/10-sign-in-desktop.png",
+    "width": 1440,
+    "height": 1147,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "LetBuyy buyer sign-in · Playfield",
+    "device": "tablet",
+    "file": "images/10-sign-in-tablet.png",
+    "width": 834,
+    "height": 1157,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "LetBuyy buyer sign-in · Playfield",
+    "device": "mobile",
+    "file": "images/10-sign-in-mobile.png",
+    "width": 390,
+    "height": 1046,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "11-sign-up",
+    "title": "LetBuyy create account · explicit Continue",
+    "device": "desktop",
+    "file": "images/11-sign-up-desktop.png",
+    "width": 1440,
+    "height": 1050,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "11-sign-up",
+    "title": "LetBuyy create account · explicit Continue",
+    "device": "tablet",
+    "file": "images/11-sign-up-tablet.png",
+    "width": 834,
+    "height": 1117,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "11-sign-up",
+    "title": "LetBuyy create account · explicit Continue",
+    "device": "mobile",
+    "file": "images/11-sign-up-mobile.png",
+    "width": 390,
+    "height": 1471,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "12-profile",
+    "title": "Account · overview & profile",
+    "device": "desktop",
+    "file": "images/12-profile-desktop.png",
+    "width": 1440,
+    "height": 1280,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "12-profile",
+    "title": "Account · overview & profile",
+    "device": "tablet",
+    "file": "images/12-profile-tablet.png",
+    "width": 834,
+    "height": 1437,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "12-profile",
+    "title": "Account · overview & profile",
+    "device": "mobile",
+    "file": "images/12-profile-mobile.png",
+    "width": 390,
+    "height": 2027,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "13-orders",
+    "title": "Account · order history",
+    "device": "desktop",
+    "file": "images/13-orders-desktop.png",
+    "width": 1440,
+    "height": 1416,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "13-orders",
+    "title": "Account · order history",
+    "device": "tablet",
+    "file": "images/13-orders-tablet.png",
+    "width": 834,
+    "height": 1555,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "13-orders",
+    "title": "Account · order history",
+    "device": "mobile",
+    "file": "images/13-orders-mobile.png",
+    "width": 390,
+    "height": 1833,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Account · owned order detail",
+    "device": "desktop",
+    "file": "images/14-order-detail-desktop.png",
+    "width": 1440,
+    "height": 1487,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Account · owned order detail",
+    "device": "tablet",
+    "file": "images/14-order-detail-tablet.png",
+    "width": 834,
+    "height": 1709,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Account · owned order detail",
+    "device": "mobile",
+    "file": "images/14-order-detail-mobile.png",
+    "width": 390,
+    "height": 2464,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Account · saved address & validation",
+    "device": "desktop",
+    "file": "images/15-addresses-desktop.png",
+    "width": 1440,
+    "height": 1523,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Account · saved address & validation",
+    "device": "tablet",
+    "file": "images/15-addresses-tablet.png",
+    "width": 834,
+    "height": 1914,
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Account · saved address & validation",
+    "device": "mobile",
+    "file": "images/15-addresses-mobile.png",
+    "width": 390,
+    "height": 2204,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "capture": "full-page"
+  }
+]

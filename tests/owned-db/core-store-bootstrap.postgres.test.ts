@@ -2,14 +2,18 @@ import {readFileSync} from 'node:fs';
 // Real canonical Gateway and owned PostgreSQL; only synthetic verified account credentials.
 // No theme/package, storefront, editor release, product or buyer is seeded by this suite.
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test, {before,after} from 'node:test';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import {requireOwnedDatabase} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 const owned=requireOwnedDatabase();
+let proxy:OwnedPooledSqlProxy;
+before(async()=>{proxy=await startOwnedPooledSqlProxy(owned);});
+after(async()=>{await closePooledSqlClients();await proxy?.stop();});
 async function fixture(){
  const id=crypto.randomUUID(),email=`syn-core-bootstrap-${id}@example.invalid`;
  owned.psql(`INSERT INTO users_custom(id,email,email_verified)VALUES('${id}','${email}',true);`);
- const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));
+ const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),proxy.env()));
  return {id,email,gateway,create:async(theme='letbuyy-core',key=crypto.randomUUID())=>{
   const slug='syn-core-'+crypto.randomUUID().slice(0,8);
   const body={name:'Synthetic Core Store',subdomain:slug,site_type:'store',theme_id:theme,template_config:{survey:{industry:'food'}}};
@@ -68,6 +72,7 @@ test('publication visibility commits with its release; failures and private acce
 });
 
 test('visibility migration and rollback preserve the publisher ABI/profile and refuse unexpected reapplication',()=>{
+ owned.script(readFileSync('database/supabase/rollback/376_atomic_theme_instance_switch.rollback.sql','utf8'));
  const signature="'public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)'::regprocedure";
  const profile=()=>owned.psql(`SELECT jsonb_build_object('owner',proowner,'acl',proacl::text,'args',proargnames,'defaults',pronargdefaults,'default_expressions',pg_catalog.pg_get_expr(proargdefaults,0),'all_types',proallargtypes,'modes',proargmodes,'result',pg_catalog.pg_get_function_result(oid),'definer',prosecdef,'config',proconfig,'volatile',provolatile,'strict',proisstrict,'leakproof',proleakproof,'parallel',proparallel,'cost',procost,'rows',prorows,'support',prosupport,'binary',probin,'sql_body',prosqlbody,'transforms',protrftypes)::text FROM pg_catalog.pg_proc WHERE oid=${signature};`);
  const body=()=>owned.psql(`SELECT md5(prosrc) FROM pg_catalog.pg_proc WHERE oid=${signature};`);
@@ -101,7 +106,7 @@ test('visibility migration and rollback preserve the publisher ABI/profile and r
   owned.psql(`REVOKE EXECUTE ON FUNCTION public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid) FROM anon;`);
   owned.psql(forward);assert.equal(body(),'8a1479af8ced3bbdb3cd6cc21d957f42');assert.equal(profile(),before);
   assert.throws(()=>owned.psql(forward),'a second forward invocation is not permission to replace an unknown live function');assert.equal(body(),'8a1479af8ced3bbdb3cd6cc21d957f42');
- }finally{if(body()==='fa4fae1749dc226ed066e5bf27020c84')owned.psql(forward);}
+ }finally{if(body()==='fa4fae1749dc226ed066e5bf27020c84')owned.psql(forward);owned.script(readFileSync('database/supabase/migrations/376_atomic_theme_instance_switch.sql','utf8'));}
 });
 
 test('an unpublished Core catalog is available only through a valid store-bound, unexpired preview capability',async()=>{

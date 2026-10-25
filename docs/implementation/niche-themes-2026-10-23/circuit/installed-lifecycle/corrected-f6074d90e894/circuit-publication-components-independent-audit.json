@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-23T20:32:29.985638+00:00",
+  "classification": "offline-independent-component-audit-not-installed-case-acceptance",
+  "runId": "f6074d90e894",
+  "status": "PASS_BOUNDED_COMPONENTS",
+  "theme": "Circuit",
+  "phases": [
+    {
+      "phase": "A",
+      "recordedAt": "2026-10-23T20:27:45.334364+00:00",
+      "releaseId": "ff5ba68f-1aa8-4751-a498-02006250212b",
+      "sourceDraftVersion": 2,
+      "releaseSha256": "74a52ca2e78d7f66dca62e81136068259291c4215ab5a095668ff32214ec7789",
+      "expectedHeading": "Circuit saved heading A f6074d90e894",
+      "recordedHttpStatus": 200
+    },
+    {
+      "phase": "B",
+      "recordedAt": "2026-10-23T20:28:50.378499+00:00",
+      "releaseId": "cd85dc6f-953d-4419-9e34-9ef21f1fed67",
+      "sourceDraftVersion": 5,
+      "releaseSha256": "86cb49c4b8ea0b8ef41d602b6f5fd13540c61dd53c4a5b9c486a349797ffddca",
+      "expectedHeading": "Circuit saved heading B f6074d90e894",
+      "recordedHttpStatus": 200
+    },
+    {
+      "phase": "restored-A",
+      "recordedAt": "2026-10-23T20:29:22.968243+00:00",
+      "releaseId": "8fd4439e-7e26-43d1-9c5b-1aee048a7a63",
+      "sourceDraftVersion": null,
+      "releaseSha256": "74a52ca2e78d7f66dca62e81136068259291c4215ab5a095668ff32214ec7789",
+      "expectedHeading": "Circuit saved heading A f6074d90e894",
+      "recordedHttpStatus": 200
+    },
+    {
+      "phase": "reapplied-B",
+      "recordedAt": "2026-10-23T20:30:38.176100+00:00",
+      "releaseId": "2809c34c-4299-45b7-947b-85c5cdeaf104",
+      "sourceDraftVersion": 7,
+      "releaseSha256": "86cb49c4b8ea0b8ef41d602b6f5fd13540c61dd53c4a5b9c486a349797ffddca",
+      "expectedHeading": "Circuit saved heading B f6074d90e894",
+      "recordedHttpStatus": 200
+    }
+  ],
+  "checks": [
+    "All four recorded proof and public readbacks are 200 with only the expected heading.",
+    "Four distinct release IDs; restored A and reapplied B retain their exact corresponding earlier content hashes; A and B differ.",
+    "Saved A draft v2, saved B draft v5 and retained B draft v7 are visible in the normal editor AX evidence.",
+    "Saved unpublished B remains private while public A and both shared header/footer markers remain present.",
+    "Actual hub PDP AX displays canonical separate 65 W input / 45 W output / 60 W pass-through, role-specific connector counts, supplied box content and unknown compatibility/host requirements.",
+    "All nine input evidence hashes were stable across this offline audit."
+  ],
+  "recordedCounts": {
+    "orders": 1,
+    "installed": 4,
+    "scope": "Each recorded publication proof only; no direct DB read and no claim about stock, cart, ledger or full row invariance."
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-publication-A-proof.json",
+      "sha256": "3c165ecf0ac5a59fe69f6f15aedbb943fadaecd2e1c893ce413cd2edbb745f63"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-publication-B-proof.json",
+      "sha256": "80a9bc7951ed5ec29c54f1b090144622279b07d5f0a6b461396a80e5cb1ccbef"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-publication-restored-A-proof.json",
+      "sha256": "bf947ce71c69257ac28f1cd4a8e70638b882cc4f286577c75fe69339972f33c5"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-publication-reapplied-B-proof.json",
+      "sha256": "f8e8c2727644af4586a39cca5a237d702b5271c25e7a79a31aa21fea61f10994"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-B-draft-public-isolation.json",
+      "sha256": "81226dac78565e930ffc0e47f3f2b07e4896a9b3731caba46f56bdac019e6240"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-A-reloaded.ax.txt",
+      "sha256": "e59e3be81b09baf265ba45537b54a5cc8198a1247f00e71eaf0918bc7d68a2e7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-B-reloaded-unpublished.ax.txt",
+      "sha256": "b906b02aeb2eace8393e08c3d03ae2420b2262660a5c495a2b97b515cd2a9f75"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-retained-B-after-restore.ax.txt",
+      "sha256": "429e1f78b7a9458e4901bf8648e59d042973ed1c41b87df1f1ca8b405406b1ac"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-circuit-baseline-hub-PDP.ax.txt",
+      "sha256": "8f6b177d7cc5f143e7a1633b4df6294baacda0f70b67b9d3dc75c2021b522a92"
+    }
+  ],
+  "resources": {
+    "httpRequests": 0,
+    "databaseReads": 0,
+    "browserActions": 0,
+    "sourceEdits": 0
+  },
+  "acceptance": {
+    "wholeCircuitCasesAdvanced": 0,
+    "allTenThemes": "OPEN",
+    "limitations": [
+      "Publication receipts do not expose an installed instance UUID, current hub product version or completed All4/known-empty catalog cohort.",
+      "PDP audit is observable facts only; no responsive/screenshot, cart, checkout or Circuit order proof.",
+      "Recorded order count includes the existing Habitat order; it is not a Circuit lifecycle purchase.",
+      "Existing finite API leases remain consumed/released."
+    ]
+  }
+}

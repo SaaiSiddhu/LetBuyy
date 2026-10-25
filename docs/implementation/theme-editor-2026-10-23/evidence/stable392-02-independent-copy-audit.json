@@ -1,0 +1,247 @@
+{
+  "recordedAt": "2026-10-24T01:40:12.300319+00:00",
+  "scope": "Independent read-only source-byte audit only; no gate/runtime/database/browser acceptance",
+  "candidate": "/private/tmp/theme-editor-stable392-20261024-02",
+  "proofSha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+  "expectedProofShaExact": true,
+  "filesRehashed": 17243,
+  "changed": [],
+  "unsafePaths": [],
+  "releasedDeltaBytesExact": {
+    "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts": true,
+    "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts": true,
+    "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts": true,
+    "apps/commerce/web/src/app/api/checkout/route.test.ts": true
+  },
+  "declaredWorkspaceResolutionTargets": [
+    {
+      "app": "apps/platform/identity",
+      "name": "@letbuyy/api-client",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/platform/identity",
+      "name": "@letbuyy/auth-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/platform/identity",
+      "name": "@letbuyy/tenant-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/platform/identity",
+      "name": "@letbuyy/ui",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/api-client",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/auth-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/cms-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/shared-types",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/tenant-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/theme-engine",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/ui",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/merchant/web",
+      "name": "@letbuyy/commerce-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/api-client",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/auth-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/checkout-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/cms-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/commerce-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/shared-types",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/tenant-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/theme-engine",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/commerce/web",
+      "name": "@letbuyy/ui",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/api-types",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/audit-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/auth-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/billing-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/checkout-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/cms-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/commerce-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/event-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/identity-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/infrastructure",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/notification-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/organization-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/payments",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/permission-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/session-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/shared-types",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/tenant-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/theme-engine",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "services/api-gateway",
+      "name": "@letbuyy/token-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/frozen/theme-store",
+      "name": "@letbuyy/api-client",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/frozen/theme-store",
+      "name": "@letbuyy/auth-core",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/frozen/theme-store",
+      "name": "@letbuyy/shared-types",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/frozen/theme-store",
+      "name": "@letbuyy/theme-engine",
+      "targetExistsAndContained": true
+    },
+    {
+      "app": "apps/frozen/theme-store",
+      "name": "@letbuyy/ui",
+      "targetExistsAndContained": true
+    }
+  ],
+  "moduleConsumerCount": 55,
+  "maxSourceMigration": 392,
+  "currentMainUpdaterExclusion": "Root-recorded isolation, not inferred as deployed/native393 acceptance",
+  "isolatedGates": "Root pending; no MainWIP suppression or duplicate gateway check run by Editor"
+}

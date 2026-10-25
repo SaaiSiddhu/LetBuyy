@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-25T04:53:18.406239+00:00",
+  "status": "ACTUAL_ARCHIVE_OMITS_DEFAULT_PUBLIC_CREATION_AND_REQUIRES_PUBLIC_OBJECTS",
+  "archiveSha256": "94ebf9c112b05068cf6a5f6edb236d27667785fa01b0ea51813f18e456d3ff9d",
+  "schemaExtractionExit": 0,
+  "hasCreateSchemaPublic": false,
+  "publicObjectDefinitionCount": 911,
+  "safeSchemaEntryHeaders": [
+    "-- Name: auth; Type: SCHEMA; Schema: -; Owner: postgres",
+    "-- Name: extensions; Type: SCHEMA; Schema: -; Owner: postgres",
+    "-- Name: letbuyy_fixture; Type: SCHEMA; Schema: -; Owner: postgres"
+  ],
+  "privateSchemaSql": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-restore05-private-predata-schema.sql",
+    "sha256": "55c19e9f367b131cfb497699c5b3e31bb6ca73290ed8687d7c23530490235d6c",
+    "bytes": 2495042,
+    "mode": "0600"
+  },
+  "diagnosis": "Verified archive pre-data contains911publicobjectdefinitions and noCREATEpublicschema. Harness dropped the fresh template0 defaultpublicschema before restoring; retained target shows no schemas/relations and server error missingpublic. Preserve the fresh empty default public schema rather than adding a newbootstrap or weakening emptiness/ownership checks.",
+  "retainedDiagnosticFailures": [
+    "First read-only pg_restore schema extraction omitted required --file stdout destination and failed before output/DB connection.",
+    "Extraction with --file=- succeeded. Initial metadata expectation for explicitpublicSCHEMAentry/initdbcomment was wrong; actualarchiveOMITSthatentry. Corrected reader inspected storedprivateSQL and proved noCREATEpublic plus911requiredobjects. No repeatedactualrestore."
+  ],
+  "actualDbConnectionsOrWritesOrRestoreOrNewResources": 0,
+  "rawSqlFunctionsRolesOrCredentialsPrinted": false
+}

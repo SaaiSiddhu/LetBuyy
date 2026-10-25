@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-24T20:40:23.424365+00:00",
+  "classification": "THEME_OWNER_SHARED_PROOF_APPLICABILITY_NOT_THEME_UI_CERTIFICATE",
+  "runId": "49ada80bc494",
+  "independentSharedReview": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/INDEPENDENT_SHARED_GATE_REVIEW.json",
+    "sha256": "848fce581928d617fb7de2d080ddf250f999f3c86df67a3edfdc949c65f8e5bd"
+  },
+  "sharedReviewStatus": "ACCEPT_SHARED_GATES_FOR_CONTROLLED_THEME_EXECUTION_WITH_FOUR_THEME_HEADING_DEFECTS",
+  "sourceMismatchCount": 0,
+  "expectedTrailmarkBundleSha256": "cb800016da40faebc43da151a1429eee7a232b4226f66c0ae13434e4d8993ca7",
+  "reusableCohorts": [
+    {
+      "gate": "catalog394",
+      "executionRunId": "0c23ed799a87",
+      "receipt": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/08/result.json",
+      "receiptSHA256": "d29367666294ad18e8506b0e94388f1ada10de7368cd561002e03c8a3bdfe8a8",
+      "scope": "Sharedcanonical source/native guarantees only; retain actualrun and perthemeUIproof."
+    },
+    {
+      "gate": "circuit-facets",
+      "executionRunId": "786c7515c57a",
+      "receipt": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/result.json",
+      "receiptSHA256": "fe20957711d91c0ac442ea9eb0fa21e90c18764b2143e7dee85697182c22528f",
+      "scope": "Sharedcanonical source/native guarantees only; retain actualrun and perthemeUIproof."
+    },
+    {
+      "gate": "converted-cart",
+      "executionRunId": "06fe9e80f1ae",
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-converted-cart-repair01/native04/result.json",
+      "receiptSHA256": "aa531746cbc467903cef2101a037b8575f6202398a7bdf30618cd73e4e160f83",
+      "scope": "Sharedcanonical source/native guarantees only; retain actualrun and perthemeUIproof."
+    },
+    {
+      "gate": "configured-cart",
+      "executionRunId": "3cafad0d3fe7",
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/result.json",
+      "receiptSHA256": "0197196a87926fff98e522b872b1eb1a769b85138ec6d34f4c4216991dda7850",
+      "scope": "Sharedcanonical source/native guarantees only; retain actualrun and perthemeUIproof."
+    },
+    {
+      "gate": "child-customization",
+      "executionRunId": "909a07fa1663",
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/native03/result.json",
+      "receiptSHA256": "8b45d0e6a5d11b9e04f32ea9b99a912019ed5c95f0838beaa6609e4ce63158b6",
+      "scope": "Sharedcanonical source/native guarantees only; retain actualrun and perthemeUIproof."
+    },
+    {
+      "gate": "webhook-first",
+      "executionRunId": "29f1032eaf9e",
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-webhook-first-repair01/native04/result.json",
+      "receiptSHA256": "81283970f36970bc4c3bb490ed8b0197e95e418458b2213511f1351a90657033",
+      "scope": "Sharedcanonical source/native guarantees only; retain actualrun and perthemeUIproof."
+    }
+  ],
+  "noSummedUniqueCount": true,
+  "currentCartBrowserReuse": {
+    "applicability": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/EVIDENCE_APPLICABILITY.json",
+      "sha256": "bb2698b3487ffd563c163440e8797a71972752db663897477141954132bf99f2"
+    },
+    "executionRunId": "63c55b066db3",
+    "scope": "Configuredcart13sharedoperations andexistingsession entry; not Trailmarksportsselection/cart/price/stock/history ornewbuyer signup."
+  },
+  "currentPaymentSmoke": {
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/REAL_PROVIDER_UI_PAYMENT_PASS.json",
+      "sha256": "8c69fbf61c438481fd6f56a088bf9e87866f17d597591c5c763426339b3880a3"
+    },
+    "scope": "Environment/provider capability only; MadeYours presentation/Circuitproduct purchase doesnot passTM-PSP-01."
+  },
+  "orderHeadingSource": {
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORDER_HEADING_ALL10_SOURCE_REVIEW.json",
+      "sha256": "edd1de2072d38219ce34813b9f88b4a10576a4bc46a867707c6a6d0e6bf41de9"
+    },
+    "TrailmarkResult": {
+      "slug": "letbuyy-ride",
+      "name": "Trailmark",
+      "version": "2.1.0",
+      "sectionSourceSha256": "95296370b343669259c1188e0a8cadfcabc118d4bfc7a29e053bde9e7a8eff34",
+      "declaredTextHeading": true,
+      "inputHeading": "Configured Trailmark heading",
+      "expectedHeading": "Configured Trailmark heading #HEADING-REVIEW",
+      "observedHeading": "Configured Trailmark heading #HEADING-REVIEW",
+      "headingApplied": true,
+      "savedFactsPositiveControl": true,
+      "renderedHtmlSha256": "08c07512115cdccac4c9738faf7b6edf5d481aae9b5878bb089e55e31d4cc975",
+      "originalBundleUnchanged": true,
+      "status": "HEADING_EFFECT_CONFIRMED_SOURCE_ONLY"
+    },
+    "scope": "Current210canonicalrender+savedfactspositivecontrol verifiedbyThemes; noactualUIheadingedit ororderhistorypass."
+  },
+  "stillThemeSpecific": [
+    "All12originalcases/17recipes with honestcurrentversiondata",
+    "Actualsports product/variant/common/override/no-length/price/stock sameUUIDproof",
+    "Actualnativecart/localCOD/exactretry andRazorpayTest purchase/realcallbacks/localledger",
+    "Bothsavedhistories aftersameUUIDfacts/priceedit andnegativeownership/stalecart",
+    "All451currentexpandedrequiredcases includingnormalnewsignup/customeridentity andactualUIcontrol/action/resource/quality/security/recovery",
+    "Independentfullthemeacceptance andpreservation"
+  ],
+  "newRuntimeOrNativeOrSourceTests": 0,
+  "newThemePasses": 0,
+  "certification": "ALL_NOT_ISSUED",
+  "sharedCaptureMetadataDependency": {
+    "id": "R07-HOSTED-CAPTURE-FLAG-01",
+    "observedAt": "2026-10-24T20:40:23.424365+00:00",
+    "source": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/HOSTED_CAPTURE_FLAG_FINDING.json",
+      "sha256": "7f68158e4711f759f8b2697bc0c6b6ac3a40a2394194dd5541214d9bb86b03e9"
+    },
+    "sourceUpdatedAt": "2026-10-24T20:35:17.264851+00:00",
+    "status": "OPEN_FOR_CANONICAL_OWNER_REVIEW",
+    "scope": "Shared observation on other themes; no Trailmark transaction observed or failure inferred. Canonical owner/reviewer disposition required before full certification. Do not rebuy, replay, edit source or alter existing captures to change metadata.",
+    "observedOrderCount": 3,
+    "canonicalOwnerAllocation": "Themes snapshot131 reports a private correction proposal assigned. This chat does not own or duplicate that correction."
+  }
+}

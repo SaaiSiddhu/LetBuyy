@@ -1,0 +1,814 @@
+{
+  "recordedAt": "2026-10-24T00:32:45.829680+00:00",
+  "classification": "RETIRED_RUN_TIMEOUT_WITH_PARTIAL_LOCAL_ACCEPTANCE_EVIDENCE",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "databaseThroughMigration": 392,
+  "runtimeAdmission": "../../niche-theme-programme/editor-latest392-startup-admission.json",
+  "uiController": "Editor solely",
+  "old9cdEvidence": "fresh-fixture-lifecycle.json retained historical without newrun overwrites",
+  "initialBaseline": {
+    "products": 17,
+    "collections": 16,
+    "carts": 0,
+    "orders": 0,
+    "themesInstalled": 0
+  },
+  "commonSmokes": {
+    "normalOwnerLogin": "PASS",
+    "actual1440x1000Screenshot": "PASS",
+    "normalProductSaveReloadAndV1Restore": "PASS_BOUNDED_ORIGIN_SMOKE_NOT_FULL_M01",
+    "normalSaveEvidence": "corrected-merchant-save-smoke.json",
+    "sameUuidRename": "NOT_RUN",
+    "shared391HeaderFooter": "PASS_DEWDROP_ONLY_SAVED_RELOAD_PREVIEW_AND_PUBLIC",
+    "normalParentPreview": "PASS_RENDER_AND_INSPECTOR_SELECTION_MEDIA_PARTIAL",
+    "normalTrustedCheckoutBrowser": "PASS_REAL_NORMAL_HTTPS_DELIVERY_FORM_AFTER_EXACT_LEAF_TRUST",
+    "real392ModelSearch": "NOT_RUN",
+    "normalTrustedCheckoutEvidence": "corrected-exact-leaf-browser-attempt.json",
+    "priorTlsFailure": "corrected-normal-checkout-tls-failure-observation.json preserved"
+  },
+  "themes": [
+    {
+      "name": "Dewdrop",
+      "status": "IN_PROGRESS",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/dewdrop/installed-beauty-lifecycle-matrix.md",
+      "actualBindings": null,
+      "cases": [],
+      "installedVersion": "2.0.0",
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "c68c4117-a6f1-430a-b321-ac76c5e7b145",
+        "sourceDraftVersion": 4,
+        "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicA": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Dewdrop saved heading A f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      },
+      "shared391Evidence": "corrected-391-dewdrop-published-readback.json",
+      "mediaIssue": "corrected-preview-cloud-image-diagnostic.json",
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "b8cab43c-b81c-476f-a63e-50a2f1a59399",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "f81297f28b702a26f4183b21501f6cd6564d520e40a81175d8e768ed07bee2c3",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicB": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Dewdrop saved heading B f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      },
+      "templateAndSharedGroupCycle": "PASS_BOUNDED_SCOPE",
+      "cycleEvidence": "corrected-dewdrop-editor-cycle.json",
+      "restoredReleaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "41f399d3-7df2-42ff-a916-85fea3c7a8c6",
+        "sourceDraftVersion": null,
+        "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "reappliedReleaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "9930c66a-c042-4583-9275-c737c71ba7c6",
+        "sourceDraftVersion": 9,
+        "releaseSha256": "f81297f28b702a26f4183b21501f6cd6564d520e40a81175d8e768ed07bee2c3",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      }
+    },
+    {
+      "name": "Pantry",
+      "status": "P00_TO_P08_EXECUTED_ONE_RECOVERY_FAIL_P09_TO_P12_REQUIRED",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-matrix.md",
+      "actualBindings": {
+        "slug": "letbuyy-refresh",
+        "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+        "version": "2.0.0",
+        "packageId": "981c9e11-1243-430a-8b10-92007f3a7a6b",
+        "instanceId": "8e17f03c-6e75-467b-96da-360dd6f92d67",
+        "instanceStatus": "active",
+        "catalogChecksum": null,
+        "packageVersionId": "f8ce6870-b3ee-438c-accd-08806676f33f",
+        "liquidBundleSha256": "0e792cc5944a0bbaefc5e29771c1c4af6c44b62d907053e26293d0fe845f902c",
+        "installedConfigKeys": [
+          "themeId",
+          "sections",
+          "templates",
+          "experienceId",
+          "liquidBundle",
+          "themeSettings",
+          "rendererEngine",
+          "liquidRenderingCanary"
+        ],
+        "catalogManifestSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7",
+        "installedConfigSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12"
+      },
+      "cases": [
+        {
+          "id": "P00",
+          "status": "PASS",
+          "actual": "Normal Pantry2.0.0 install/editor/full A/B/recovery; current anonymous home200 B and separate anonymous PDP200 real title/Inside the pack/ingredients. Actual installed instance/version/config+Liquid bundle/catalog manifest hashes bound; checksum actualSQLNULL. Native public home/PDP captured.",
+          "remaining": "Anonymous SSR does not contain client-added choose-all guidance; not claimed as SSR guidance proof.",
+          "evidence": [
+            "corrected-pantry-editor-cycle.json",
+            "corrected-first-three-actual-installed-bindings.json",
+            "corrected-pantry-P00-current-public-home.ax.txt",
+            "corrected-pantry-public-home.jpg",
+            "corrected-pantry-P00-anonymous-PDP.json"
+          ]
+        },
+        {
+          "id": "P01",
+          "status": "PASS",
+          "actual": "Same seeded IDs common lentils markerSave/fullreload/restore. Rice net0 actual useful validation/unsaved draft retained and exact version3/facts/inventory unchanged. Correct1000g +markerSave/reload/originalrestore verified. Unknownallergens preserved; no common lentils net editor.",
+          "remaining": "",
+          "evidence": [
+            "corrected-pantry-common-before.ax.txt",
+            "corrected-pantry-common-marker-reloaded.ax.txt",
+            "corrected-pantry-common-restored-readback.json",
+            "corrected-pantry-rice-zero-net-validation.ax.txt",
+            "corrected-pantry-rice-invalid-readback.json",
+            "corrected-pantry-rice-marker-reloaded.ax.txt",
+            "corrected-pantry-rice-saved-readback.json"
+          ]
+        },
+        {
+          "id": "P02",
+          "status": "PASS",
+          "actual": "Normal same unknownUUID b54e1a3f enter750g Save/reload/readback then explicit Clear/reload foodNULL. Other250/500 UUIDs quantities/prices/stock preserved. Additional normal250SKUmarker save/reload/revert retains exact sameUUID/250g facts and other rows. Current opaque lentils version31.",
+          "remaining": "Version conflict branch optional and not performed. Raw parent HTTP request body was not captured; normal UI acknowledgement/fullreload plus guarded persisted row readback is evidence.",
+          "evidence": [
+            "corrected-pantry-unknown-entered-readback.json",
+            "corrected-pantry-unknown-cleared-readback.json",
+            "corrected-pantry-unknown-temporary-750-reloaded.ax.txt",
+            "corrected-pantry-unknown-cleared-reloaded.ax.txt",
+            "corrected-pantry-250g-merchant-reloaded.ax.txt",
+            "corrected-pantry-500g-merchant-reloaded.ax.txt",
+            "corrected-pantry-250-sku-marker-reloaded.ax.txt",
+            "corrected-pantry-sku-saved-readback.json",
+            "corrected-pantry-sku-restored-readback.json"
+          ]
+        },
+        {
+          "id": "P03",
+          "status": "PASS",
+          "actual": "Unselected guidance/purchase blocked; actual250g count2 yields72/100g and500g derived total; blank and1.5 remove total/showwholecountguidance; restore2. Actual canonicalacceptedcart bindsUUIDf275956c/count2/unit180/per-item250g.",
+          "remaining": "No invalid-count Add was submitted.",
+          "evidence": [
+            "corrected-pantry-P03-unselected.ax.txt",
+            "corrected-pantry-P03-250g-two-packs.ax.txt",
+            "corrected-pantry-P03-blank-count.ax.txt",
+            "corrected-pantry-P03-fractional-count.ax.txt",
+            "corrected-cart-pantry-cart.json"
+          ]
+        },
+        {
+          "id": "P04",
+          "status": "PASS",
+          "actual": "500g/340/68per100g unavailable/Adddisabled; label-only210 actualunknown withnoinventednet; return250grestoresonly250. No forgedunmatchedoption.",
+          "remaining": "",
+          "evidence": [
+            "corrected-pantry-P04-500g-unavailable.ax.txt",
+            "corrected-pantry-P04-label-only-unknown.ax.txt",
+            "corrected-pantry-P04-return-250g.ax.txt"
+          ]
+        },
+        {
+          "id": "P05",
+          "status": "PASS",
+          "actual": "Unvariantedrice1000g/22per100g count2=2000g; returnlentilsunselectedguidance/disabledAdd andnoquantityleak; rice neveradded.",
+          "remaining": "",
+          "evidence": [
+            "corrected-pantry-P05-rice-two-packs.ax.txt",
+            "corrected-pantry-P05-return-lentils-unselected.ax.txt"
+          ]
+        },
+        {
+          "id": "P06",
+          "status": "PASS",
+          "actual": "Actual pulses-onlylentils/rice-onlyrice collections; positiveg250 suppliedfacet andexactserverUUIDwitness. Exactzero repeatedusb-c/hdmi+country/category/pack/limit1/page2. SortNameApplyresets1/preservesall; real6clear-one/all andplatformoriginApply/Clear/URLreload retainallotherfields, scalaruniqueness. Absentfacetpackremainsclearable/notinventedchoice.",
+          "remaining": "Earlier pre-navigation sort JSON retained and explicitly superseded by settled navigation addendum. First clear wait-helper argument error occurred after completed navigation; actual state retained, no application defect inferred.",
+          "evidence": [
+            "corrected-pantry-P06-pulses-collection.ax.txt",
+            "corrected-pantry-P06-rice-collection.ax.txt",
+            "corrected-pantry-P06-sort-apply-navigation-addendum.json",
+            "corrected-pantry-P06-clear-actual-results.json",
+            "corrected-pantry-P06-platform-origin-apply-settled.ax.txt",
+            "corrected-pantry-P06-platform-origin-clear-settled.ax.txt",
+            "corrected-pantry-P06-query-reload.ax.txt",
+            "corrected-pantry-discovery-actual-results.json"
+          ]
+        },
+        {
+          "id": "P07",
+          "status": "PASS",
+          "actual": "Actual250gUUID count2 unit180/subtotal360 accepted/reload/readback; savedper-item250g not500g. UnknownUUIDcount1 ownline210 savednetNULL andsameingredients/unknownallergen; removedONLYunknownline thenknown2 remains.",
+          "remaining": "Raw browser HTTP request/status not captured; normal UI actions and guarded canonical cart persistence prove actual accepted lines.",
+          "evidence": [
+            "corrected-cart-pantry-cart.json",
+            "corrected-pantry-P07-known-cart-reloaded.ax.txt",
+            "corrected-pantry-P07-unknown-added.ax.txt",
+            "corrected-cart-pantry-cart-2.json",
+            "corrected-pantry-P07-unknown-removed.ax.txt",
+            "corrected-cart-pantry-cart-3.json"
+          ]
+        },
+        {
+          "id": "P08",
+          "status": "FAIL",
+          "actual": "Positive2/available4; cart3/4accepted. Actual5attempt backendremains4/exactcartbefore==after/order0, butsettledUI5/headerCart4/720/noerror. Normaldecreasesrestorevalid2/360 withsamefacts; afterwardexactPinkbaseline restored.",
+          "remaining": "HTTP409/code and reservationtable invariance not directly captured; backend refusal alone not wholePASS. Sharedcart recovery source fix allocated byRoot; currentimmutablecommerce not repaired.",
+          "evidence": [
+            "corrected-cart-pantry-stock.json",
+            "corrected-cart-pantry-stock-2.json",
+            "corrected-pantry-P08-stock-stale-quantity.ax.txt",
+            "corrected-pantry-P08-stock-stale-quantity.jpg",
+            "corrected-cart-pantry-cart-3.json",
+            "corrected-cart-pantry-restored.json"
+          ]
+        },
+        {
+          "id": "P09",
+          "status": "NOT_RUN",
+          "actual": "No Pantry COD order created.",
+          "remaining": "Outside current P00\u2013P08 finite allocation; queued normal BuyerA hostedUI COD after recovery/source integration. No API/order factory substitute.",
+          "evidence": []
+        },
+        {
+          "id": "P10",
+          "status": "NOT_RUN",
+          "actual": "No order history proof yet.",
+          "remaining": "Requires P09 actual owned order, then both normal histories and snapshots.",
+          "evidence": []
+        },
+        {
+          "id": "P11",
+          "status": "NOT_RUN",
+          "actual": "No later300g edit attempted.",
+          "remaining": "Must complete P09/P10 and preserve separate accepted active250g cart before any destructive catalog edit.",
+          "evidence": []
+        },
+        {
+          "id": "P12",
+          "status": "NOT_RUN",
+          "actual": "Required stale active cart case retained.",
+          "remaining": "Separate accepted pre-edit cart plus actual P11 prerequisite; never resurrect converted cart, rewrite fingerprint or manufacture order.",
+          "evidence": []
+        }
+      ],
+      "totals": {
+        "PASS": 8,
+        "FAIL": 1,
+        "NOT_RUN": 4
+      },
+      "cycleEvidence": "corrected-pantry-editor-cycle.json",
+      "caseEvidence": "corrected-pantry-browser-diagnostics.json"
+    },
+    {
+      "name": "Habitat",
+      "status": "ACTUAL_NORMAL_COD_ORDER_AND_PREEDIT_CART_POSITIVE_HI16_SOURCE_CONSTRAINT_HELD",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/habitat/installed-lifecycle-matrix.md",
+      "actualBindings": {
+        "desk": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+        "originalVariantIds": [
+          "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+          "30e7bb70-6ef0-4175-83f0-16368a3e9fda"
+        ],
+        "stand": "646e8bcb-3267-4f70-b31b-e44fb5f542a6",
+        "shelf": "57d0c360-01a6-49dc-88f7-f3796e313b2e",
+        "probeCollection": "bd1a8fea-6b45-4bdc-8517-170f184a5209",
+        "currentRelease": {
+          "packageVersion": "2.0.0",
+          "releaseId": "3a3356f7-5a77-4dd4-84a5-bdbcdf4a3810",
+          "sourceDraftVersion": 10,
+          "releaseSha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b",
+          "orders": 0,
+          "installed": 3,
+          "editorObservations": {
+            "captureFailures": 0,
+            "records": []
+          }
+        },
+        "A": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "B": "50982c60-e567-42b4-85e4-2b893b234a4a",
+        "C": "30e7bb70-6ef0-4175-83f0-16368a3e9fda",
+        "D": "b1c16f63-5d1c-4ab0-995c-552b45f11fab",
+        "deskCollection": "6eaffbfd-c208-40ea-8988-67bf4e75da5c"
+      },
+      "cases": [
+        {
+          "id": "HI-01",
+          "status": "PASS",
+          "actual": "Actual installed2.0 instance/config/liquidBundle/catalog manifest hashes bound; normal owned merchant session and BuyerA account+own history order verified. SQLNULLcatalogchecksum preserved.",
+          "remaining": "",
+          "evidence": [
+            "corrected-first-three-actual-installed-bindings.json",
+            "corrected-habitat-buyer-A-account-before-COD.ax.txt",
+            "corrected-habitat-COD-and-preedit-cart-checkpoint.json"
+          ]
+        },
+        {
+          "id": "HI-02",
+          "status": "PASS",
+          "actual": "Earlier normalfirstFinishrejection preserved. Controlled admitted54183 normalfirstNatural Save/reload retains07d32/30e7; then exact four-row metadata/prices/stock4/3/0/2 saved/reloaded with actual newB/D IDs. Both probes and real named desk/probe collections persisted normally.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-controlled-axis-positive.json",
+            "corrected-habitat-axis-tuple-values-readback.json",
+            "corrected-habitat-four-cohort-validation.json",
+            "corrected-habitat-four-cohort-reloaded.ax.txt",
+            "corrected-habitat-desk-collection-public.ax.txt"
+          ]
+        },
+        {
+          "id": "HI-03",
+          "status": "PASS",
+          "actual": "ActualmissingunitCreateblocked+normalcorrectionprobe saved; canonical common and all four variant groups saved/reloaded exactly. Groupomissions preserved/no null furniture product namespace. Invalidprobe uses earlier62075 same unchanged protected furniture fact helper; axis-authoring save uses admitted54183.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-probe-invalid-create.ax.txt",
+            "corrected-habitat-four-cohort-validation.json",
+            "corrected-habitat-four-cohort-reloaded.ax.txt"
+          ]
+        },
+        {
+          "id": "HI-04",
+          "status": "PASS",
+          "actual": "All specified normal save/reload/preview/publishA/editB/publishB/restoreA/retainedB/reapplyB steps executed; exact A/B release content hashes reproduced.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-editor-cycle.json"
+          ]
+        },
+        {
+          "id": "HI-05",
+          "status": "PASS",
+          "actual": "Real desk-only collection; actual collection and search forms apply HQ01/HQ02 normalizedmaterial/finishlabels; server same-response variants exactA/D orB, storedbase8900 retained/Bmatching9300.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-four-cohort-query-results.json"
+          ]
+        },
+        {
+          "id": "HI-06",
+          "status": "PASS",
+          "actual": "Actualunselected/Finishonly states common/noUUID/purchaseblocked. Unmatched48inBlack exactunknownmessage/commonfacts/noUUID anddisabledAdd; validNaturalrecoversA.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-PDP-state-observations.json"
+          ]
+        },
+        {
+          "id": "HI-07",
+          "status": "PASS",
+          "actual": "ActualAselected UUID07d32/unit8900/enabled; exact48\u00d730\u00d729.5in/package50\u00d725in(noheight)/11.5kg/Wood/Atoolcare. Normalreloadclearsselectiontocommon/disabled; explicitreselectionrestoresexactA. Selectionpersistence NOTclaimed. Validq2fullsnapshotlateraccepted/reloaded.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-PDP-state-observations.json",
+            "corrected-cart-habitat-cart-3.json",
+            "corrected-habitat-full-A-cart-reloaded-before-COD.ax.txt"
+          ]
+        },
+        {
+          "id": "HI-08",
+          "status": "PASS",
+          "actual": "ActualB\u2192D\u2192A states correctdistinctUUIDs/prices9300/9000/8900; Bcommonassembly/Dwidth-only+commonpackage+Wood/common12kg; noBblackcare orAdeepdimensionsleak.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-PDP-state-observations.json"
+          ]
+        },
+        {
+          "id": "HI-09",
+          "status": "PASS",
+          "actual": "AllHQ03\u201307 executedactualcollection+searchforms; canonical18read-only responses exactwitnesses. Inclusive121.92/76.2 passesA,121.9199 fails; no crossvariantconjunction/Cfallback.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-collection-control-presence-addendum.json"
+          ]
+        },
+        {
+          "id": "HI-10",
+          "status": "PASS",
+          "actual": "HQ04zero fields hide butactivechips/hiddenvaluespreservedthroughSortNameApply. Bothactualindependentclears insearch+collection retainotheraxis/category/country/search/limit/sort/fixedcollection, resetpage2\u21921 andrecoveroneproduct; nativewitnessB orA/D exact.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-HQ04-sort-name-zero.ax.txt",
+            "corrected-habitat-HQ04-independent-clear-results.json",
+            "corrected-habitat-four-cohort-query-results.json"
+          ]
+        },
+        {
+          "id": "HI-11",
+          "status": "PARTIAL",
+          "actual": "Both probe PDPs honest unknowns; actual search+collection controls and same-response JSON capability tuples; off-page positive cohort retains true axes; real Clear recovers.",
+          "remaining": "No legacy absent-capability runtime target assigned/exercised.",
+          "evidence": [
+            "corrected-habitat-probe-query-results.json",
+            "corrected-habitat-probe-collection-query-results.json",
+            "corrected-habitat-HQ08-past-end.ax.txt",
+            "corrected-habitat-HQ09-past-end.ax.txt"
+          ]
+        },
+        {
+          "id": "HI-12",
+          "status": "PASS",
+          "actual": "Acurrentassembled48\u00d730\u00d729.5in andseparatepackage50\u00d725in/missingheight; common schematicexplicitcommon. HQ05canonicalonlyA despitepackagewidth127cm>122, preservedoriginalinches.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-PDP-state-observations.json",
+            "corrected-habitat-four-cohort-query-results.json"
+          ]
+        },
+        {
+          "id": "HI-13",
+          "status": "PASS",
+          "actual": "ActualC Common size/Natural UUID30e7 stateunavailable/price8700, inheritedcommonfactsvisibleandAdddisabled; stock0 verifiedcanonical, no bypassclick.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-PDP-state-observations.json",
+            "corrected-habitat-four-cohort-validation.json"
+          ]
+        },
+        {
+          "id": "HI-14",
+          "status": "FAIL",
+          "actual": "Original preserved variant q2\u00d78900=17800 accepted/reload/readback. q3/q4 accepted. q5 attempt server remains exactly4/orders0, but UI row remains5/header4/total35600 with no error, persisting reload. Normal decreases recover valid2; all desk lines removed and exact Pink baseline restored. Later FULLauthoredAq2/version30/17800/exactfullinchsnapshot accepted andactualreloadbeforeCOD; oldwidth-onlynegativefailure remains open, notrerun asfullfixedPASS.",
+          "remaining": "Planned full-A snapshot case blocked by HI02. Actual HTTP409/code and reservation invariance not captured; backend rejection alone does not establish whole-case PASS.",
+          "evidence": [
+            "corrected-cart-habitat-cart.json",
+            "corrected-cart-habitat-stock.json",
+            "corrected-cart-habitat-stock-2.json",
+            "corrected-habitat-stock-stale-quantity.ax.txt",
+            "corrected-habitat-stock-stale-quantity.jpg",
+            "corrected-habitat-cart-reload-after-stock-denial.ax.txt",
+            "corrected-cart-habitat-cart-2.json",
+            "corrected-cart-habitat-restored.json",
+            "corrected-cart-habitat-cart-3.json",
+            "corrected-habitat-full-A-cart-reloaded-before-COD.ax.txt"
+          ]
+        },
+        {
+          "id": "HI-15",
+          "status": "PASS",
+          "actual": "NormalBuyerA freshlysignedownedcarthandoff\u2192realtrustedHTTPS\u2192fixturecontact/Karnataka560001\u2192actual20shipping\u2192COD\u2192Confirm. Exactlyoneorderc5a7d7a4/ORD-20261023-10000 pending_cod/unpaid;2\u00d78900=17800+20tax0discount0=17820. Existingcapturedconfirmsamepath/body/key/headers exactretry200SAMEID andobservereffectsunchanged; bothnormalhistoryviews/reloadsreadoldfacts.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-COD-and-preedit-cart-checkpoint.json",
+            "corrected-habitat-COD-confirm-outcome.ax.txt",
+            "corrected-habitat-COD-exact-confirm-retry.json",
+            "corrected-habitat-order-before-edit-readback.json"
+          ]
+        },
+        {
+          "id": "HI-16",
+          "status": "BLOCKED",
+          "actual": "ActualoldCOD+bothhistorybaselinesandsnapshot/orderhashes pinned. SeparateNEWactivecart3877932f A1/version31/fulloldfacts accepted+reloaded beforeedit; consumedAstock2. Current54183serializeralwaysincludesstock, so NOlatercatalogmutation attempted. Rootassignedcanonicalomissionfix; onlythismutationholds.",
+          "remaining": "Await actuallylive omission fix then prescribed sameUUID lateedit +old bothhistories/digestparity +staleactivecart rejection.",
+          "evidence": [
+            "corrected-habitat-COD-and-preedit-cart-checkpoint.json",
+            "corrected-habitat-preedit-active-cart-settled-reload.ax.txt",
+            "corrected-habitat-axis-post-order-readback.json"
+          ]
+        },
+        {
+          "id": "HI-17",
+          "status": "NOT_RUN",
+          "actual": "No assigned malformed/legacy order exists.",
+          "remaining": "Conditional case; no synthetic legacy order manufactured.",
+          "evidence": []
+        },
+        {
+          "id": "HQ-01",
+          "status": "PASS",
+          "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-HQ04-independent-clear-results.json"
+          ]
+        },
+        {
+          "id": "HQ-02",
+          "status": "PASS",
+          "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-HQ04-independent-clear-results.json"
+          ]
+        },
+        {
+          "id": "HQ-03",
+          "status": "PASS",
+          "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-HQ04-independent-clear-results.json"
+          ]
+        },
+        {
+          "id": "HQ-04",
+          "status": "PASS",
+          "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-HQ04-independent-clear-results.json"
+          ]
+        },
+        {
+          "id": "HQ-05",
+          "status": "PASS",
+          "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-HQ04-independent-clear-results.json"
+          ]
+        },
+        {
+          "id": "HQ-06",
+          "status": "PASS",
+          "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-HQ04-independent-clear-results.json"
+          ]
+        },
+        {
+          "id": "HQ-07",
+          "status": "PASS",
+          "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-four-cohort-query-results.json",
+            "corrected-habitat-collection-query-form-results.json",
+            "corrected-habitat-search-query-form-results.json",
+            "corrected-habitat-HQ04-independent-clear-results.json"
+          ]
+        },
+        {
+          "id": "HQ-08",
+          "status": "PASS",
+          "actual": "Actual exact search/category/country and real probe collection yield only stand; width/depth controls true, no material/finish choices. Same-response public JSON validates IDs/total and whole three-member capabilities. Off-page positive cohort retains controls and normal clear recovers.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-HQ08-exact-query.ax.txt",
+            "corrected-habitat-HQ08-collection-form.ax.txt",
+            "corrected-habitat-probe-query-results.json",
+            "corrected-habitat-probe-collection-query-results.json"
+          ]
+        },
+        {
+          "id": "HQ-09",
+          "status": "PASS",
+          "actual": "Actual exact shelf search/category/country and collection yield only shelf; width true/depth false. Depth100 yields0 and real depth-only Clear recovers shelf while retaining scope/category/country. JSON agrees; off-page width capability retained.",
+          "remaining": "",
+          "evidence": [
+            "corrected-habitat-HQ09-exact-query.ax.txt",
+            "corrected-habitat-HQ09-collection-depth-zero.ax.txt",
+            "corrected-habitat-HQ09-collection-depth-recovery.ax.txt",
+            "corrected-habitat-probe-query-results.json",
+            "corrected-habitat-probe-collection-query-results.json"
+          ]
+        }
+      ],
+      "cycleEvidence": "corrected-habitat-editor-cycle.json",
+      "caseEvidence": "corrected-habitat-browser-diagnostics-after-cohort-and-COD.json",
+      "totals": {
+        "PASS": 22,
+        "PARTIAL": 1,
+        "FAIL": 1,
+        "BLOCKED": 1,
+        "NOT_RUN": 1
+      },
+      "order": {
+        "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+        "number": "ORD-20261023-10000",
+        "method": "cod",
+        "status": "pending_cod",
+        "total": 17820,
+        "snapshotSha256": "436431a4e61c70fd6cd1dd5a650f9bfe5d2f1f3f5bbbcaa1caecbb1d50665cb9"
+      },
+      "preEditCart": {
+        "id": "3877932f-b20c-437d-91d7-524cbba72011",
+        "variant": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "quantity": 1,
+        "productVersion": 31,
+        "snapshotFingerprint": "7ce55c10aed62f082841288066219392dd5ffed2a8560348eb8e23fa7b18523c"
+      }
+    },
+    {
+      "name": "Circuit",
+      "status": "EDITOR_CYCLE_COMPLETE_INDEPENDENT_COHORT_DISCOVERY_IN_PROGRESS",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/installed-lifecycle-matrix.json",
+      "actualBindings": null,
+      "cases": [],
+      "installedVersion": "2.0.0",
+      "cycleEvidence": "corrected-circuit-editor-cycle.json",
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "ff5ba68f-1aa8-4751-a498-02006250212b",
+        "sourceDraftVersion": 2,
+        "releaseSha256": "74a52ca2e78d7f66dca62e81136068259291c4215ab5a095668ff32214ec7789",
+        "orders": 1,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": [
+            {
+              "index": 0,
+              "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+              "commandSha256": "c124cad665231bfb09e9c1bceccb171993dcb381df39d4d13f592135dd6fec86",
+              "responseSha256": "009da83d4f0f56f22b7f0ff65aad5a11814647d38a97e00c712845d4878aca28",
+              "requestId": "da365b75-37b8-4ca3-8d6b-55385224c682",
+              "status": 200,
+              "replays": 2
+            }
+          ]
+        }
+      },
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "cd85dc6f-953d-4419-9e34-9ef21f1fed67",
+        "sourceDraftVersion": 5,
+        "releaseSha256": "86cb49c4b8ea0b8ef41d602b6f5fd13540c61dd53c4a5b9c486a349797ffddca",
+        "orders": 1,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": [
+            {
+              "index": 0,
+              "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+              "commandSha256": "c124cad665231bfb09e9c1bceccb171993dcb381df39d4d13f592135dd6fec86",
+              "responseSha256": "009da83d4f0f56f22b7f0ff65aad5a11814647d38a97e00c712845d4878aca28",
+              "requestId": "da365b75-37b8-4ca3-8d6b-55385224c682",
+              "status": 200,
+              "replays": 2
+            }
+          ]
+        }
+      },
+      "restoredA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "8fd4439e-7e26-43d1-9c5b-1aee048a7a63",
+        "sourceDraftVersion": null,
+        "releaseSha256": "74a52ca2e78d7f66dca62e81136068259291c4215ab5a095668ff32214ec7789",
+        "orders": 1,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": [
+            {
+              "index": 0,
+              "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+              "commandSha256": "c124cad665231bfb09e9c1bceccb171993dcb381df39d4d13f592135dd6fec86",
+              "responseSha256": "009da83d4f0f56f22b7f0ff65aad5a11814647d38a97e00c712845d4878aca28",
+              "requestId": "da365b75-37b8-4ca3-8d6b-55385224c682",
+              "status": 200,
+              "replays": 2
+            }
+          ]
+        }
+      },
+      "reappliedB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "2809c34c-4299-45b7-947b-85c5cdeaf104",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "86cb49c4b8ea0b8ef41d602b6f5fd13540c61dd53c4a5b9c486a349797ffddca",
+        "orders": 1,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": [
+            {
+              "index": 0,
+              "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+              "commandSha256": "c124cad665231bfb09e9c1bceccb171993dcb381df39d4d13f592135dd6fec86",
+              "responseSha256": "009da83d4f0f56f22b7f0ff65aad5a11814647d38a97e00c712845d4878aca28",
+              "requestId": "da365b75-37b8-4ca3-8d6b-55385224c682",
+              "status": 200,
+              "replays": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Playfield",
+      "status": "NOT_RUN",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/playfield/installed-fixture-preparation/LIFECYCLE_MATRIX.md",
+      "actualBindings": null,
+      "cases": []
+    },
+    {
+      "name": "Kindred",
+      "status": "NOT_RUN",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/installed-gifts-lifecycle.plan.json",
+      "actualBindings": null,
+      "cases": []
+    },
+    {
+      "name": "MadeYours",
+      "status": "NOT_RUN",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/madeyours/installed-buyer-lifecycle-matrix.md",
+      "actualBindings": null,
+      "cases": []
+    },
+    {
+      "name": "Trailmark",
+      "status": "NOT_RUN",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/trailmark/installed-lifecycle/installed-lifecycle-matrix.md",
+      "actualBindings": null,
+      "cases": []
+    },
+    {
+      "name": "Marginalia",
+      "status": "NOT_RUN",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/marginalia/installed-book-stationery-lifecycle.matrix.json",
+      "actualBindings": null,
+      "cases": []
+    },
+    {
+      "name": "Threadline",
+      "status": "NOT_RUN",
+      "matrix": "docs/implementation/threadline-2026-10-22/installed-lifecycle-index/installed-threadline-lifecycle.index.json",
+      "actualBindings": null,
+      "cases": []
+    }
+  ],
+  "currentPhase": "Runner timeout/cleanup confirmed by Themes coordinator; UI/data stopped. No cached-state continuation.",
+  "knownUnfixed": [
+    "Playfield2.0.0outercommonfacts; future2.0.1sourcelease notlive",
+    "KindredKQA01directhumanfreeze"
+  ],
+  "acceptance": "OPEN: all10notcompleted; Habitat23P2partial1conditionalNR, Pantry11P2partial, Circuit2P4partial19NR; remainingthemesqueued",
+  "deployed": false,
+  "freshCartBaseline": {
+    "cartId": "59e347bf-98cc-4477-95e4-6aedb233f6f6",
+    "productId": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+    "pinkVariantId": "f5adb52e-2e20-442a-b607-cc1b5c52ce88",
+    "quantity": 2,
+    "unitPriceINR": 560,
+    "totalINR": 1120,
+    "productVersion": 10,
+    "receipt": "corrected-cart-dewdrop-baseline.json",
+    "afterFailedHostedHandoffEqual": true,
+    "historicalConvertedCartNote": "Original59nowconvertedbyactualHabitatCOD; separateactiveA1cart3877932f preservedforHI16beforelateredit. RebuildsemanticPink2normalUIafterstalecheck; noSQLresurrection.",
+    "latestDisposition": "Original59convertedbyHabitatCOD; Pantryfb5355convertedbyPantryCOD; old387A1preserveduntilcleanup; new7ba empty bylastnativeRemove; Pinkbaseline NOT restored beforetimeout."
+  },
+  "runtimeDisposition": {
+    "rootConfirmed": "2026-10-23T21:1xZ",
+    "database": "Cleaned up by owned runner after configured timeout; do not attempt oldguards/credentials",
+    "next": "Root prepares and independently admits nextfixture; not yet ready",
+    "oldBindingReuseAllowed": false
+  },
+  "currentEvidenceIndex": "corrected-current-evidence.index.json"
+}

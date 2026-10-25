@@ -1,0 +1,20 @@
+--- /private/tmp/letbuyy-shared-integration-20261024-01/apps/commerce/web/src/lib/theme-engine/personalization-review-client.ts
++++ apps/commerce/web/src/lib/theme-engine/personalization-review-client.ts
+@@ -2,6 +2,7 @@
+ import { UuidSchema } from '@letbuyy/shared-types';
+ import { readStorefrontApiJson, storefrontBrowserApiFetch } from '@/lib/api/browser-client';
+ import { parsePickerVariants } from './variant-options-carrier';
++import { mapPublicProductVariants } from '@/lib/product-variants';
+ 
+ /** Uses the existing same-origin storefront proxy; no catalog version or price enters the client contract. */
+ export async function loadMadeYoursReviewContext(subdomain: string, productId: string, variantId: string | null, signal: AbortSignal): Promise<PersonalizationReviewContext | null> {
+@@ -26,5 +27,8 @@
+   const product = payload.data as Record<string, unknown>;
+   if (product.id !== productId || !Array.isArray(product.variants)) return null;
+   const facts = readPersonalizationFacts(product.metadata);
+-  return { variants: parsePickerVariants(JSON.stringify(product.variants)), facts };
++  const variants = product.variants.filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === 'object' && !Array.isArray(row));
++  // The public API uses positional option fields. Reuse the same adapter as
++  // product pages before feeding the existing bounded Liquid picker carrier.
++  return { variants: parsePickerVariants(JSON.stringify(mapPublicProductVariants(product, variants).variants)), facts };
+ }

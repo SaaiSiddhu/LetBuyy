@@ -1,0 +1,78 @@
+{
+  "id": "section-product-grid",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "product-grid",
+    "group": "template",
+    "firstId": "section-90383ac1-f33f-4639-9e17-45ad242b4f3c",
+    "finalId": "section-736c6d85-622f-4d85-a938-062ecc6829ee",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "recordedAt": "2026-10-23T16:27:43.929135+00:00",
+  "classification": "ACTUAL_RENDERED_PLATFORM_CLEAR_HREF_DROPS_STATE_ACTIVATION_NOT_RUN",
+  "runId": "9cd50e893016",
+  "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "source": {
+    "path": "apps/commerce/web/src/lib/theme-engine/platform-control-markup.ts",
+    "sha256": "2c7a5e05ab25c7ef29e6e96e9cbc238bdbd1f5805a6c7d01f1cdfd8f89abd413",
+    "lines": "18-26"
+  },
+  "actualHrefObservation": {
+    "step": "sort-empty-cohort",
+    "actualRenderedClearQuery": {
+      "search": [
+        "lentils"
+      ],
+      "category": [
+        "Staples"
+      ],
+      "page": [
+        "1"
+      ]
+    },
+    "currentQuery": {
+      "limit": [
+        "1"
+      ],
+      "category": [
+        "Staples"
+      ],
+      "country_of_origin": [
+        "India"
+      ],
+      "connector": [
+        "usb-c",
+        "hdmi"
+      ],
+      "pack_size": [
+        "g:250"
+      ],
+      "search": [
+        "lentils"
+      ],
+      "sort": [
+        "newest"
+      ]
+    }
+  },
+  "droppedCurrentFields": [
+    "limit",
+    "sort",
+    "pack_size",
+    "connector"
+  ],
+  "testedCanonicalPantryChipFlow": "PASS for seven actual sort/remove/clear steps; canonical Remove Country chip preserves other state.",
+  "actualInheritedLinkActivation": "NOT RUN; no response/navigation failure claimed",
+  "ownerDisposition": "Themes assigns existing shared platform-control owner. No source repair or additional browser from Pantry.",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P06-repeated-query-recovery.json",
+      "sha256": "01a34b71ea2deb9589ebbf0a90657f496823caa64bec26714ea8b1537d27db52"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+      "sha256": "56393ec86ca0fe52227ef3897dd3ee37c01c8ab28b7a6c76b3e6c40e14f22060"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-24T14:45:26.583534+00:00",
+  "provider": "Razorpay",
+  "mode": "test",
+  "providerOrderId": "order_TrmYARrKWcIDqv",
+  "items": [
+    {
+      "id": "pay_TrmYqPNwAgrq5D",
+      "order_id": "order_TrmYARrKWcIDqv",
+      "amount": 122000,
+      "currency": "INR",
+      "status": "captured",
+      "captured": true,
+      "method": "netbanking",
+      "error_code": null
+    }
+  ],
+  "localOrderStatus": "pending",
+  "localCartStatus": "converted",
+  "localHostedSessionState": "payment_intent",
+  "confirmationUI": "CHECKOUT_STATE_CONFLICT"
+}

@@ -1,0 +1,409 @@
+{
+  "date": "2026-10-23",
+  "status": "Coordinator accepted individual mockup artifact/design pack",
+  "rule": "Do not modify accepted mockup source/images absent a concrete coordinator finding",
+  "files": [
+    {
+      "file": "Pantry-45-mockups.zip",
+      "sha256": "e75fcc3cd7a089b50110965a5fb53221452779bd309d21b38772cac50bbabdd7"
+    },
+    {
+      "file": "assets/Inter-OFL.txt",
+      "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57"
+    },
+    {
+      "file": "assets/basmati-rice.png",
+      "sha256": "4a65fbb191369879607375fdf70fd84c699a94d7f3a6315c14f5feb2d207bad4"
+    },
+    {
+      "file": "assets/inter-400.ttf",
+      "sha256": "1b08e7fc267a5c7e1d614100f604b83e7e8a0be241f0f288faa2b3ac93a683ba"
+    },
+    {
+      "file": "assets/inter-500.ttf",
+      "sha256": "8c883f63b2c4157d997319f2c8bc6995ed4357ef371940d31ca159004a4aae63"
+    },
+    {
+      "file": "assets/inter-600.ttf",
+      "sha256": "e7a1aaf7eda9f2fad4131725fa556265ec75ca7b2d756260173a040363e8d4f7"
+    },
+    {
+      "file": "assets/inter-700.ttf",
+      "sha256": "b37284b5701b6b168dfc770aa1a4ac492106422fd3ba76bc7641e37434e8019c"
+    },
+    {
+      "file": "assets/letbuyy-logo.svg",
+      "sha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b"
+    },
+    {
+      "file": "assets/red-lentils.png",
+      "sha256": "619a01355199ba3a98f33e9b170dd8ff993572849f8553ee98cd68c7a08d7889"
+    },
+    {
+      "file": "assets/staples-still-life.png",
+      "sha256": "976b99816505516e8c83ceabf63abad6f06cbdf07393196161cfdc7166422f82"
+    },
+    {
+      "file": "boards/01-home-top.png",
+      "sha256": "a3915e0e2292c342955aa75d769c7b4aec019612a8ff5ebab7b78105916643ce"
+    },
+    {
+      "file": "boards/02-home-bottom.png",
+      "sha256": "2b782e397ecee93c4078c11bb5430173c22171d7f5204d77ea4ac4f1a648eed5"
+    },
+    {
+      "file": "boards/03-collection.png",
+      "sha256": "7206ea3e7ee2143ee6818a716bb5231a868c40d8833dcedc31934faa8fba93df"
+    },
+    {
+      "file": "boards/04-product-main.png",
+      "sha256": "d55ea1542680de05087ef7248fe54a71d5076f1e60c8b1829345d2699c116b9f"
+    },
+    {
+      "file": "boards/05-product-facts.png",
+      "sha256": "840283ba240acbb04541aecfe5723574c277206342d064d8eceb6bd454fc7d4b"
+    },
+    {
+      "file": "boards/06-product-continuation.png",
+      "sha256": "30be18d2b1babb2a666bf184a58f3ff27ab29bc036953a1d0d1866e206ae2ec0"
+    },
+    {
+      "file": "boards/07-cart.png",
+      "sha256": "ad3597aac16aecbf892a94d810ab5432d4eb8c6ede4b2af9cacc584d36679ea2"
+    },
+    {
+      "file": "boards/08-checkout-address.png",
+      "sha256": "f59301da0de9f14b373450a797c0568fedb92b25bfb28d5b8a9914e9846b3a83"
+    },
+    {
+      "file": "boards/09-checkout-review.png",
+      "sha256": "8c0ec4d632fc822aea5289f2bb44da46f72ad441996a7d21f9c408a1e19acd30"
+    },
+    {
+      "file": "boards/10-sign-in.png",
+      "sha256": "285bdc515ee0541cca477843c15eae906d6d08717b88916e7276678aa3411840"
+    },
+    {
+      "file": "boards/11-sign-up.png",
+      "sha256": "ff28be1068fc6bda535fb15552dd731f83fb6cf7306f0607c851d5b6d1b2f125"
+    },
+    {
+      "file": "boards/12-profile.png",
+      "sha256": "d7049eda2f21186d9f759a2f30f001c81547cd431891e8ee53448c43dd230ef9"
+    },
+    {
+      "file": "boards/13-orders.png",
+      "sha256": "dcba635276f2bf028ccd518ff4e0c62a49ee49067e3c1c9f9ece081a89901be1"
+    },
+    {
+      "file": "boards/14-order-detail.png",
+      "sha256": "545030558cd4d94a82eecae930c789456fff4bdda9e7ac973b4ef3408ec883ed"
+    },
+    {
+      "file": "boards/15-addresses.png",
+      "sha256": "ae9f58f7c03748b284d07d6e5228907bfd439399cb86c3a3d67fe6e0188fcc39"
+    },
+    {
+      "file": "images/01-home-top-desktop.png",
+      "sha256": "346cf151c46dc7acdbd8ab86286ca241dbcf16fd9b41292819746bb016e4a61d"
+    },
+    {
+      "file": "images/01-home-top-mobile.png",
+      "sha256": "f662962eaeb8022a31b65519902527f09de0cfdf05d30a8a45e12a546363a51d"
+    },
+    {
+      "file": "images/01-home-top-tablet.png",
+      "sha256": "83cfa5cb1a439554ebe9a1c9f03250afb0f66b3c826c0d9cbc85525fd39be102"
+    },
+    {
+      "file": "images/02-home-bottom-desktop.png",
+      "sha256": "3f9f6687cd9bebd133bd3acb18c871d3da1b240933632e63bd60663214ab3085"
+    },
+    {
+      "file": "images/02-home-bottom-mobile.png",
+      "sha256": "5616337d2a011ddbcd047e05f28dd876909f87de2398a0b222bb885cf368328b"
+    },
+    {
+      "file": "images/02-home-bottom-tablet.png",
+      "sha256": "0d41e6621e9baa3bbc5a5166a53e83f54e93a1a0d1f855e9390bf4a7ae946acb"
+    },
+    {
+      "file": "images/03-collection-desktop.png",
+      "sha256": "e12a335f4df45fdaef4ca63656c7d4b6d4e950e09a5bc1cf5dc5ccbdde43e49b"
+    },
+    {
+      "file": "images/03-collection-mobile.png",
+      "sha256": "83b500453254b9384f3d9b3735a34229d873171c51a149aa0c5f82d8e6f73a1f"
+    },
+    {
+      "file": "images/03-collection-tablet.png",
+      "sha256": "fbfb43731d1d62fe913a2d009420c18536594d72a8c815edf48c7cd8cd565532"
+    },
+    {
+      "file": "images/04-product-main-desktop.png",
+      "sha256": "68db3eb972b858f93c1f52e2e80118dc122cce81fbb1eac5dbdcfac9ea52c659"
+    },
+    {
+      "file": "images/04-product-main-mobile.png",
+      "sha256": "543478a497fe68f3c01e4c1db1e07f7ac9d0c24eaa9a5d446a878000cc1af899"
+    },
+    {
+      "file": "images/04-product-main-tablet.png",
+      "sha256": "3d029af793da51440976acdd36b3651f98729a2f870f87ad9fe453ae8f1ca6b9"
+    },
+    {
+      "file": "images/05-product-facts-desktop.png",
+      "sha256": "d66e49b43308ceb7c2c0a102dcd451ed62add8c4ee23bc102d864c6f6ab941bb"
+    },
+    {
+      "file": "images/05-product-facts-mobile.png",
+      "sha256": "5e904921562bebb6fac4a205d60e0106ef23132c5329c2b267a93a826b202254"
+    },
+    {
+      "file": "images/05-product-facts-tablet.png",
+      "sha256": "31924b81f46fa80558aa37d03f192ba2725c4fb52a0021cc731fc4cb3b63eb39"
+    },
+    {
+      "file": "images/06-product-continuation-desktop.png",
+      "sha256": "af044f7513166e3defcade64f2c09cec75b8236ad1fe7aebabe6083db77b1264"
+    },
+    {
+      "file": "images/06-product-continuation-mobile.png",
+      "sha256": "6beea7be43db62f4b9f7ad0e13d7f6d3a1752ba75206a7cf189271e04df826e1"
+    },
+    {
+      "file": "images/06-product-continuation-tablet.png",
+      "sha256": "e9dbf2c676e39e3b39623e31569691eb0534c176b1e8173edc75945d8423a9cf"
+    },
+    {
+      "file": "images/07-cart-desktop.png",
+      "sha256": "860793a5f34a19be8229c94169fb67a5e60067ef937e281f57fb1955fb456b38"
+    },
+    {
+      "file": "images/07-cart-mobile.png",
+      "sha256": "236c5b8f9b541e472452f77af0ed1a472b7488ff61b2e38d44d96144ed324ad4"
+    },
+    {
+      "file": "images/07-cart-tablet.png",
+      "sha256": "7e2c57602500e69a5fdfd1c7f80f0d1f4b18ec27cf7f9c1951a8cb0d3b1b0b03"
+    },
+    {
+      "file": "images/08-checkout-address-desktop.png",
+      "sha256": "eef45fb2e43031852c3af7a5de07618b805aea732964b44a81bec64a751da0ad"
+    },
+    {
+      "file": "images/08-checkout-address-mobile.png",
+      "sha256": "d06ecf565b82b34d78b74e9a8dac725232a0e2179701110fb38874bcb9f7c2a7"
+    },
+    {
+      "file": "images/08-checkout-address-tablet.png",
+      "sha256": "ecf4344f9593f1bb7c487597cbaae933acf54a0c173e1cd0b80d5e8113097c68"
+    },
+    {
+      "file": "images/09-checkout-review-desktop.png",
+      "sha256": "998321c2622764f3397980ab73e62f99a0bb10bd2cda5648ab54cb3512602f3b"
+    },
+    {
+      "file": "images/09-checkout-review-mobile.png",
+      "sha256": "5a9820239123dc11142b432e14d8c34bb1bca26940f203732c8a53d1834f755d"
+    },
+    {
+      "file": "images/09-checkout-review-tablet.png",
+      "sha256": "99a1811d13ce41dc57206018bdd8d1851bfb3a4ca41ae4495c6acc8273a3a7b1"
+    },
+    {
+      "file": "images/10-sign-in-desktop.png",
+      "sha256": "b6f49e2b06ef4ec4ba8753c8df8a316127010d65389f1a667ff78adea6d9764c"
+    },
+    {
+      "file": "images/10-sign-in-mobile.png",
+      "sha256": "9782cfaa1a5ed3b7aad7947a5158fb5c76e5cb58d6ee6f2a2a514729d4c06763"
+    },
+    {
+      "file": "images/10-sign-in-tablet.png",
+      "sha256": "acef74941209390c9b6644da65f8b0c82b72a44e62fa942fd927f8925fca7247"
+    },
+    {
+      "file": "images/11-sign-up-desktop.png",
+      "sha256": "62d045d011d01c191898c1a4cca8df1ef341f3a0b8bbd3362f506fedb6643faa"
+    },
+    {
+      "file": "images/11-sign-up-mobile.png",
+      "sha256": "b16a1c8c2de1e4db66cd6a3314933679b7e8714b50cc2cff85d2200c324b0cde"
+    },
+    {
+      "file": "images/11-sign-up-tablet.png",
+      "sha256": "b141889e091650e9274109332ded0f9325b4f0152fbcbad5cf9dcd352d8864cb"
+    },
+    {
+      "file": "images/12-profile-desktop.png",
+      "sha256": "4d84caefcecae401131a3c85d81e490c03ec619a004fa48e2ceec6b5b47be98f"
+    },
+    {
+      "file": "images/12-profile-mobile.png",
+      "sha256": "0878f96e9cc2c097fe9cc77600a44cf73ea286a86ace9cf81e24c4f38d24f09d"
+    },
+    {
+      "file": "images/12-profile-tablet.png",
+      "sha256": "5114a63bbfb6ffd409520c4c01c99ac8185e50792c627dedd42046f25e0b95f0"
+    },
+    {
+      "file": "images/13-orders-desktop.png",
+      "sha256": "fba6d17ed718966ea2d9978183d6f30e1d89850a3fd43dfd0b643a7dace23035"
+    },
+    {
+      "file": "images/13-orders-mobile.png",
+      "sha256": "57ca0319ffd1b2ada204827dd87c477eae7295e58d284a81bed2c2db2682e0d8"
+    },
+    {
+      "file": "images/13-orders-tablet.png",
+      "sha256": "97df9ba39f32dec117f270062b2ad5400b53e392800b4a86a5e21643c7c2294a"
+    },
+    {
+      "file": "images/14-order-detail-desktop.png",
+      "sha256": "59e6ff7bd433c68ee6129ba7f2bbc85c4ce9037b3427d460d4344eb16692a5d6"
+    },
+    {
+      "file": "images/14-order-detail-mobile.png",
+      "sha256": "0c2dfb679b809f0b9cf44819a3597f3edaffeddf26c31de01e7bf8b2af42e19f"
+    },
+    {
+      "file": "images/14-order-detail-tablet.png",
+      "sha256": "4848853977611530127a1f5e2dfe72bf519e70957a36689ef9bfcb3d61b62681"
+    },
+    {
+      "file": "images/15-addresses-desktop.png",
+      "sha256": "b4898ec78790e376b518d92192af3a8c7f33e6c23e567410a0b7ae6d9fe838b5"
+    },
+    {
+      "file": "images/15-addresses-mobile.png",
+      "sha256": "ea294f6d82b839550e2a0277e617458be85400a8175aee3aa88297ee1adcb7d5"
+    },
+    {
+      "file": "images/15-addresses-tablet.png",
+      "sha256": "961597e459e082a10115c250522c16195cf078234ab24573bebaa7fbea41e01f"
+    },
+    {
+      "file": "index.html",
+      "sha256": "e7ebe4aa527432f4428dd1c43a7df58dc23366e79fab05cf7ecd49fc04a11992"
+    },
+    {
+      "file": "prototype-index.html",
+      "sha256": "1e44249bc3969dced16f19bc7359e4fa1feed05af9ec179cbe526e61cc68215c"
+    },
+    {
+      "file": "scenes.json",
+      "sha256": "a72c21783cf85aac7b24330adf26d725075f7083a6268099683ccf7c7080843b"
+    },
+    {
+      "file": "source/01-home-top.html",
+      "sha256": "e54a3be4ea9ab62e1b2586bef458249b3fbdfcc65a86fc3df024a3f4bedf0df9"
+    },
+    {
+      "file": "source/02-home-bottom.html",
+      "sha256": "8c424c56f9c5b2883518bcc08cc81dfa9c38d4909e3f00c3ea16e760ca60ddd9"
+    },
+    {
+      "file": "source/03-collection.html",
+      "sha256": "a1da177557b6888a819848effd0cb672d1c8eafe11308b217b347d6762eb5a89"
+    },
+    {
+      "file": "source/04-product-main.html",
+      "sha256": "a8fdbcaaaf76f998c50a7238b1129c600df54bb58758dbf2cba9596380f6314e"
+    },
+    {
+      "file": "source/05-product-facts.html",
+      "sha256": "bfdd90b21a63e81ca8f83fcc524472e152f9ef6c2a2f74e6affad0e7e08fa604"
+    },
+    {
+      "file": "source/06-product-continuation.html",
+      "sha256": "06e6b4edf9be92ab725dca685444b88a1cb8daf8cf8a4ac9c8824e2c79bbf7cb"
+    },
+    {
+      "file": "source/07-cart.html",
+      "sha256": "eebf25f5089c90fb2348de7c7ac1a65ceed4e1dd4614e5350b8451120bc81d4e"
+    },
+    {
+      "file": "source/08-checkout-address.html",
+      "sha256": "94927d7254e3e26d9b894347f9b67fa613545f072a0cec762b7400971e2c8237"
+    },
+    {
+      "file": "source/09-checkout-review.html",
+      "sha256": "ab9886d07b7673ea3c7d19f6feceaee2c75dbb5f988b6cb4ccb1f12dc595e1b4"
+    },
+    {
+      "file": "source/10-sign-in.html",
+      "sha256": "1015f8e0b3c871db2fe45b841baa8bb4f4d7567cc51eb9a7b42e056c4e414881"
+    },
+    {
+      "file": "source/11-sign-up.html",
+      "sha256": "59bf021c4490b9a6cb21469c0bdc316adf2b88019788e870c4c6559c598001c8"
+    },
+    {
+      "file": "source/12-profile.html",
+      "sha256": "1028c5b04a1f95f91880cb51c8c91f104fa3bde9505171ca8f47f532cfb84b17"
+    },
+    {
+      "file": "source/13-orders.html",
+      "sha256": "28cde3f0b7af8115d8fab4af9f077aac5b37127c45789ec3d5f085e8e645abeb"
+    },
+    {
+      "file": "source/14-order-detail.html",
+      "sha256": "83db9984cad048d93b8574a3043b1df48f93b4232cbe988039a0b3c02bd5c89c"
+    },
+    {
+      "file": "source/15-addresses.html",
+      "sha256": "abde9f7bdd63067ab680f604c114653d654ab55e6f92a6fa5af2d85c5ea53440"
+    },
+    {
+      "file": "source/build-storybook.py",
+      "sha256": "d0be9da299fb5aaaf8d9428ccf7ab51cbefd6a3c50b1659bf64478545a79993a"
+    },
+    {
+      "file": "source/build-support.py",
+      "sha256": "51017c38dda7224d18082142decb7678623ccde763a359a0994310232bd05127"
+    },
+    {
+      "file": "source/capture.mjs",
+      "sha256": "cd8d9922e961c7c040d276b1aea3c6294db9b847ecad8fa2247095a6719db109"
+    },
+    {
+      "file": "source/generate-icons.mjs",
+      "sha256": "cc44817c289bd92a6aae161b0deb4f73208228f57ea730b7de6b3527641426a8"
+    },
+    {
+      "file": "source/icons.json",
+      "sha256": "539376bb4b288684886e562ff65e03277999252a9d8a1cb844772be2de2f46d6"
+    },
+    {
+      "file": "source/package-storybook.py",
+      "sha256": "a6a968f3a44f707ccdcc0d417074a6583f8198ee8c4162a7823f5b79a11c4c08"
+    },
+    {
+      "file": "source/product-rice.html",
+      "sha256": "ade560a232e6276205aa8f707caead4d27b1ef2c0f3f97b13fa4150252241c36"
+    },
+    {
+      "file": "source/prototype.js",
+      "sha256": "e7342dbb0f1efb2ffca5f701c8268b16dc6d7101e4ddd7ecd712f56f37016245"
+    },
+    {
+      "file": "source/stress.mjs",
+      "sha256": "bdbaf9c4c004ffb7e588a9d50edfb8361602715a064b6bcd6916ce6e458d88e3"
+    },
+    {
+      "file": "source/styles.css",
+      "sha256": "a6c854fe79bd826d03b4ca384f5467149bc3a43dd7c232f4a5148968c7936a7d"
+    },
+    {
+      "file": "source/validate-storybook.py",
+      "sha256": "39741ca93da86d273db3824b9847fd44afaf35ebfbcd070aeb8107e90161a92b"
+    }
+  ],
+  "inventoryExcluded": [
+    "IMPLEMENTATION_IMPACT.md",
+    "implementation-impact.json",
+    "STATUS.json",
+    "handoff.json"
+  ]
+}

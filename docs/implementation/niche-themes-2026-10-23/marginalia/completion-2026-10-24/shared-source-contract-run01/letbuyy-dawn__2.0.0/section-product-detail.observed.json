@@ -1,0 +1,82 @@
+{
+  "id": "section-product-detail",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "product-detail",
+    "group": "template",
+    "firstId": "section-3e13736f-61bd-4fdb-bb34-e45ebb6e9b21",
+    "finalId": "section-e626b25f-055a-4d4c-8c6a-a8d40d8a2818",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showBookFacts": false,
+            "showExcerpt": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showBookFacts": false,
+            "showExcerpt": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showBookFacts": false,
+            "showExcerpt": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showBookFacts": false,
+            "showExcerpt": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

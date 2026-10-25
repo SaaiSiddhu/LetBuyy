@@ -100,6 +100,10 @@ function loadCheckoutCore() {
           IndianStateCodeSchema: createRegexSchema(/^(0[1-9]|[12][0-9]|3[0-8]|97)$/, (value) => String(value).trim().padStart(2, '0')),
         };
       }
+      if (specifier === '@letbuyy/commerce-core') return {
+        PersonalizationCartDraftSchema: generic,
+        readProductFactSnapshot() { throw new Error('Order snapshot execution is outside this GST arithmetic unit.'); },
+      };
       throw new Error(`Unexpected test require from ${CHECKOUT_CORE_SOURCE}: ${specifier}`);
     },
     Date,

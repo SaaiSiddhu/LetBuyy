@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-24T06:02:37.666993+00:00",
+  "status": "ACL393_CANONICAL_SOURCE_EMITTED_CURRENT_REGRESSION_BATCH_STABLE_PENDING_ROOT_REVIEW_NO_NEW_NATIVE_OR_GLOBAL_CLOSURE",
+  "release": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/source-release.json",
+    "sha256": "93456d93edbe6307a6aa5073efb1d16eb152bb29affe9c7f3a58fa00693e7041",
+    "bytes": 14109
+  },
+  "handoff": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/SOURCE-RELEASE.md",
+    "sha256": "702600dc950217dc6699b33d5d41157228a2ee278fe8c04ba44e5288bed3fcba",
+    "bytes": 3591
+  },
+  "ownSourceStable": true,
+  "migration393PairEmitted": true,
+  "migration394Emitted": false,
+  "purePass": 22,
+  "laneGovernancePass": 14,
+  "tenantIsolationPass": true,
+  "registrySemanticChangeCount": 0,
+  "newNativeOrGlobalClosure": false,
+  "remainingGateCount": 2
+}

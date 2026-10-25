@@ -1,0 +1,29 @@
+--- docs/implementation/niche-theme-programme/heading-successor-integrations/05-dewdrop-catalog/first-party-theme-catalog.ts.before
++++ packages/theme-engine/src/first-party-theme-catalog.ts
+@@ -13,6 +13,7 @@
+ import { createKindredTheme } from './kindred-theme';
+ import { createMadeYoursTheme } from './madeyours-theme';
+ import { createDewdropTheme } from './dewdrop-theme';
++import { createDewdropThemeV201 } from './dewdrop-theme-v201';
+ import { createTrailmarkTheme } from './trailmark-theme';
+ import { createTrailmarkThemeV201 } from './trailmark-theme-v201';
+ import { createMarginaliaTheme } from './marginalia-theme';
+@@ -30,7 +31,7 @@
+     ride: { name: 'Trailmark', category: 'sports', factory: createTrailmarkTheme },
+     dawn: { name: 'Marginalia', category: 'books', factory: createMarginaliaTheme },
+ } as const;
+-type CatalogBuildOptions = { designVersion?: '2.0.0'; playfieldVersion?: '2.0.1'; circuitVersion?: '2.0.1'; pantryVersion?: '2.0.1'; trailmarkVersion?: '2.0.1'; threadlineVersion?: '2.0.1' };
++type CatalogBuildOptions = { designVersion?: '2.0.0'; playfieldVersion?: '2.0.1'; circuitVersion?: '2.0.1'; pantryVersion?: '2.0.1'; trailmarkVersion?: '2.0.1'; threadlineVersion?: '2.0.1'; dewdropVersion?: '2.0.1' };
+ // Identity is independent of catalog order and display copy. Existing Core/Urban
+ // Kicks stores and their saved experience selections are deliberately untouched.
+ const IDENTITIES: Readonly<Record<string, string>> = {
+@@ -81,6 +82,9 @@
+             : createThreadlineTheme(configured);
+     }
+     if (options.designVersion === '2.0.0' && Object.hasOwn(NICHE_V2, listing.presetId)) {
++        if (listing.presetId === 'aura' && options.dewdropVersion === '2.0.1') {
++            return createDewdropThemeV201(configured);
++        }
+         if (listing.presetId === 'forge' && options.circuitVersion === '2.0.1') {
+             return createCircuitThemeV201(configured);
+         }

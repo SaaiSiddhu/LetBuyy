@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-10-23T06:22:18.174Z",
+  "checks": [
+    {
+      "name": "facts-editor-lint",
+      "command": "node node_modules/eslint/bin/eslint.js src/components/products/niche-facts/dewdrop-facts-editor.tsx src/components/products/niche-facts/dewdrop-facts-editor.test.tsx",
+      "cwd": "apps/merchant/web",
+      "startedAt": "2026-10-23T06:22:10.997Z",
+      "exitCode": 0,
+      "success": true,
+      "log": "facts-editor-lint.log",
+      "summary": []
+    },
+    {
+      "name": "facts-editor-typecheck",
+      "command": "node node_modules/typescript/bin/tsc --noEmit --target ES2022 --module ESNext --jsx react-jsx --moduleResolution Bundler --skipLibCheck --esModuleInterop --strict apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.tsx apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.test.tsx",
+      "cwd": ".",
+      "startedAt": "2026-10-23T06:22:12.388Z",
+      "exitCode": 0,
+      "success": true,
+      "log": "facts-editor-typecheck.log",
+      "summary": []
+    },
+    {
+      "name": "targeted-tests",
+      "command": "node --import tsx --test packages/commerce-core/test/dewdrop-facts.test.ts packages/theme-engine/test/dewdrop.test.ts apps/commerce/web/src/lib/demo/dewdrop-demo.test.ts docs/implementation/niche-themes-2026-10-23/dewdrop/mapper-liquid.test.ts docs/implementation/niche-themes-2026-10-23/dewdrop/collection-membership.test.ts apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.test.tsx",
+      "cwd": ".",
+      "startedAt": "2026-10-23T06:22:14.106Z",
+      "exitCode": 0,
+      "success": true,
+      "log": "targeted-tests.log",
+      "summary": [
+        "# tests 34",
+        "# pass 34",
+        "# fail 0",
+        "# skipped 0"
+      ]
+    },
+    {
+      "name": "theme-typecheck",
+      "command": "node node_modules/typescript/bin/tsc --noEmit --incremental --tsBuildInfoFile /private/tmp/dewdrop-theme-typecheck.tsbuildinfo -p packages/theme-engine/tsconfig.json",
+      "cwd": ".",
+      "startedAt": "2026-10-23T06:22:15.431Z",
+      "exitCode": 0,
+      "success": true,
+      "log": "theme-typecheck.log",
+      "summary": []
+    },
+    {
+      "name": "facts-typecheck",
+      "command": "node node_modules/typescript/bin/tsc --noEmit --incremental --tsBuildInfoFile /private/tmp/dewdrop-facts-typecheck.tsbuildinfo -p packages/commerce-core/tsconfig.json",
+      "cwd": ".",
+      "startedAt": "2026-10-23T06:22:16.316Z",
+      "exitCode": 0,
+      "success": true,
+      "log": "facts-typecheck.log",
+      "summary": []
+    },
+    {
+      "name": "demo-typecheck",
+      "command": "node node_modules/typescript/bin/tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --skipLibCheck --esModuleInterop --strict apps/commerce/web/src/lib/demo/dewdrop-demo.ts apps/commerce/web/src/lib/demo/dewdrop-demo.test.ts docs/implementation/niche-themes-2026-10-23/dewdrop/collection-membership.test.ts",
+      "cwd": ".",
+      "startedAt": "2026-10-23T06:22:16.598Z",
+      "exitCode": 0,
+      "success": true,
+      "log": "demo-typecheck.log",
+      "summary": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.tsx",
+      "sha256": "489e8892a26e6e9a6b7465a5bd722fa6fec2e06428f156527cdfbb15fc09b098"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.test.tsx",
+      "sha256": "fd3847b4fd9ab4bdac98e1e469d63db4d15a14884f71adf8a7711e5c6a395427"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "f74d02112609e47d24d023ffbc05869645f43842e6ef669f8a5121cfe1354b96"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "917dbb6a0830a6f502c8c5bc382b82c44e875fc69a11425dd00f138127f2a5dc"
+    },
+    {
+      "path": "packages/theme-engine/test/dewdrop.test.ts",
+      "sha256": "89a157af7f621b9af30722d72fc67250af742b708d3ced210f7a74dbc2ecd04e"
+    },
+    {
+      "path": "packages/commerce-core/src/dewdrop-facts.ts",
+      "sha256": "5f4aee4b13d48a8575464a4ace5abb217eac029491ea3ac00b2dcf2e92b5aaed"
+    },
+    {
+      "path": "packages/commerce-core/test/dewdrop-facts.test.ts",
+      "sha256": "cc72f516f825fef57881ba08bb0085556c12c6b8f7c31c4bdd2fec51bf3767e0"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/dewdrop-demo.ts",
+      "sha256": "c30d8f5901ddc2d9d99e730b409ded2fbad9217d0546a9470fab1d2fbdba2487"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/dewdrop-demo.test.ts",
+      "sha256": "6184301a5cc0191ad26579ddf151c5656580131de87f8f57c610a12ec5f25f18"
+    }
+  ],
+  "sharedReadSnapshot": [
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "04591b02ec3673af603d16169e137d305ce0879d73670e5f9af7491a3ed974a3"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "88e4189bf1703a938c9cabac6e2f5ba7bc78ddeeeafc2b45b780579becb08e14"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "431a91090afd25f2d21b3fe954d5404cef8835422e7ca4325328359e2c68913d"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "b63a3792eef6704d8345314194050eff540df27b4084047f303688acd50fc58e"
+    }
+  ],
+  "browser": {
+    "success": true,
+    "cases": 18,
+    "screenshots": 18,
+    "widths": [
+      1440,
+      834,
+      390,
+      320
+    ],
+    "evidence": "browser-audit.json",
+    "scope": "Canonical Liquid output plus canonical page assembly served by allocated isolated fixture server; no Next runtime/HTTP catalog query/hydration lifecycle claim.",
+    "resourcesReleased": true
+  },
+  "complete": true,
+  "merchantComponentBrowserVerified": false,
+  "fullLifecycleAccepted": false
+}

@@ -1,0 +1,250 @@
+{
+  "recordedAt": "2026-10-25T00:42:57.632271+00:00",
+  "runId": "49ada80bc494",
+  "theme": "Pantry",
+  "slug": "letbuyy-refresh",
+  "phase": "temporary-readded",
+  "classification": "BOUNDED_READONLY_ACTIVE_EDITOR_INSTANCE_DRAFT_RELEASE_BINDING",
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "labelsAndRunMarkerVerified": true,
+    "originalOwnerPid": 54685
+  },
+  "binding": {
+    "draft": {
+      "id": "0327fc5c-3f87-4d43-8732-b05f4b717656",
+      "status": "active",
+      "version": 17,
+      "updatedAt": "2026-10-25T00:41:58.853743+00:00",
+      "workingManifestSha256": "b5086fdf79b45792d4cadd1b98c8370b516ac9e8120c3e9f41d315d85e24a62c",
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/5",
+          "idField": "pantry-information",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 50,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/sections/template/5/blocks/0",
+          "idField": "block-c204b4ad-14a3-42ef-a760-d1da3d3362b9",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary root A",
+          "title": null
+        },
+        {
+          "path": "/sections/template/5/blocks/0/children/0",
+          "idField": "block-320769ba-3cf8-4bb8-8d69-51ded38192b5",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child B",
+          "title": null
+        },
+        {
+          "path": "/sections/template/5/blocks/0/children/1",
+          "idField": "block-135f856c-dc46-4679-9b2e-e7bfe3e64cde",
+          "mapKey": null,
+          "type": "badge",
+          "order": 20,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information/blocks/block-c204b4ad-14a3-42ef-a760-d1da3d3362b9",
+          "idField": null,
+          "mapKey": "block-c204b4ad-14a3-42ef-a760-d1da3d3362b9",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary root A",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information/blocks/block-c204b4ad-14a3-42ef-a760-d1da3d3362b9/blocks/block-135f856c-dc46-4679-9b2e-e7bfe3e64cde",
+          "idField": null,
+          "mapKey": "block-135f856c-dc46-4679-9b2e-e7bfe3e64cde",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information/blocks/block-c204b4ad-14a3-42ef-a760-d1da3d3362b9/blocks/block-320769ba-3cf8-4bb8-8d69-51ded38192b5",
+          "idField": null,
+          "mapKey": "block-320769ba-3cf8-4bb8-8d69-51ded38192b5",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child B",
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "release": {
+      "id": "20fb1012-5468-4082-bee3-0d36da8ed516",
+      "createdAt": "2026-10-25T00:41:58.717856+00:00",
+      "snapshotSha256": "b5086fdf79b45792d4cadd1b98c8370b516ac9e8120c3e9f41d315d85e24a62c",
+      "sourceDraftVersion": 15,
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/5",
+          "idField": "pantry-information",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 50,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/sections/template/5/blocks/0",
+          "idField": "block-c204b4ad-14a3-42ef-a760-d1da3d3362b9",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary root A",
+          "title": null
+        },
+        {
+          "path": "/sections/template/5/blocks/0/children/0",
+          "idField": "block-320769ba-3cf8-4bb8-8d69-51ded38192b5",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child B",
+          "title": null
+        },
+        {
+          "path": "/sections/template/5/blocks/0/children/1",
+          "idField": "block-135f856c-dc46-4679-9b2e-e7bfe3e64cde",
+          "mapKey": null,
+          "type": "badge",
+          "order": 20,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information/blocks/block-c204b4ad-14a3-42ef-a760-d1da3d3362b9",
+          "idField": null,
+          "mapKey": "block-c204b4ad-14a3-42ef-a760-d1da3d3362b9",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary root A",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information/blocks/block-c204b4ad-14a3-42ef-a760-d1da3d3362b9/blocks/block-135f856c-dc46-4679-9b2e-e7bfe3e64cde",
+          "idField": null,
+          "mapKey": "block-135f856c-dc46-4679-9b2e-e7bfe3e64cde",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information/blocks/block-c204b4ad-14a3-42ef-a760-d1da3d3362b9/blocks/block-320769ba-3cf8-4bb8-8d69-51ded38192b5",
+          "idField": null,
+          "mapKey": "block-320769ba-3cf8-4bb8-8d69-51ded38192b5",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Pantry temporary child B",
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "instance": {
+      "id": "221891d7-e75e-489a-8afa-ff381e71d6fe",
+      "slug": "letbuyy-refresh",
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "packageId": "13d193ec-269a-41b8-9e88-8b54ade06a64",
+      "updatedAt": "2026-10-25T00:41:58.853743+00:00",
+      "currentDraftId": "0327fc5c-3f87-4d43-8732-b05f4b717656",
+      "instanceStatus": "active",
+      "activeReleaseId": "20fb1012-5468-4082-bee3-0d36da8ed516",
+      "packageVersionId": "1889bac2-641d-44de-b94d-bfe49c306739"
+    },
+    "siteCurrentTheme": {
+      "slug": "letbuyy-refresh",
+      "releaseId": "20fb1012-5468-4082-bee3-0d36da8ed516"
+    }
+  },
+  "nodeScope": "Only actual trust-badges hosts and uniquely labelled owned temporary nodes; schema declarations excluded. IDs and map keys are raw stored values, not inferred UUIDs.",
+  "browserActions": 0,
+  "businessMutations": 0,
+  "fullThemeCertified": false
+}

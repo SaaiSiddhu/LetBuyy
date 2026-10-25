@@ -1,0 +1,87 @@
+Browser tab: 77, Title: "Lifecycle books | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?collection_id=d5609b77-743c-45b5-b435-814f2ca95058&country_of_origin=India&search=Marginalia+lifecycle&limit=1&page=1&sort=price-asc&category=Stationery&books_kind=stationery".
+1 AXWebArea Lifecycle books | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?collection_id=d5609b77-743c-45b5-b435-814f2ca95058&country_of_origin=India&search=Marginalia+lifecycle&limit=1&page=1&sort=price-asc&category=Stationery&books_kind=stationery
+	2 container
+		3 container Description: Primary, ID: lb-nav-panel-header-default
+		4 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+		5 button (collapsed) Description: Search, Secondary Actions: Expand
+		6 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+		7 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/cart
+		8 container Filter products by country of origin
+			9 container
+				10 text Country of origin
+				11 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				12 button Apply filter
+				13 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&category=Stationery&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=stationery
+		14 container
+			15 text Search
+			16 search text field (settable) Search, Value: Marginalia lifecycle
+			17 button (expanded) Book and paper filters, Secondary Actions: Collapse
+				18 text Book and paper filters
+			19 container Book editions
+				20 container
+					21 text Author
+					22 text field (settable) Author
+				23 container
+					24 text Subject
+					25 text field (settable) Subject
+				26 container
+					27 text Language
+					28 text field (settable) Language
+				29 container
+					30 text Format
+					31 pop up button (collapsed, settable) Format, Value: Any format, Secondary Actions: Expand
+						32 menu
+							33 (selected) Any format
+							34 paperback
+							35 hardback
+							36 board book
+							37 spiral bound
+							38 other
+			39 container
+				40 text Product type
+				41 pop up button (collapsed, settable) Product type, Value: Stationery, Secondary Actions: Expand
+					42 menu
+						43 Books and stationery
+						44 Books
+						45 (selected) Stationery
+			46 container Stationery
+				47 container
+					48 text Ruling
+					49 pop up button (collapsed, settable) Ruling, Value: Any ruling, Secondary Actions: Expand
+						50 menu
+							51 (selected) Any ruling
+							52 lined (1)
+			53 text Sort
+			54 pop up button (collapsed, settable) Sort, Value: Price: low to high, Secondary Actions: Expand
+				55 menu
+					56 Featured
+					57 Title
+					58 (selected) Price: low to high
+					59 Price: high to low
+					60 Newest
+			61 button Apply
+		62 container Applied filters
+			63 link Description: Remove Category: Stationery, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=stationery
+			64 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&category=Stationery&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=stationery
+			65 link Description: Remove Product type: stationery, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058
+		66 heading Lifecycle books, Value: 1
+			67 text Lifecycle books
+		68 text 1 products
+		69 container
+			70 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:58091/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			71 heading Marginalia lifecycle lined notebook, Value: 3
+				72 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:58091/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			73 text 100 gsm · 148 × 210 mm 96 pages / 48 sheets · lined
+			74 text INR 320.00
+			75 link Description: View details, Value: syn-threadline-ui-6815276b.localhost:58091/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+		76 container Product pages
+			77 text Page 1
+		78 heading Threadline, Value: 3
+			79 text Threadline
+		80 heading CONTACT, Value: 4
+			81 text CONTACT
+		82 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/contact
+		83 text © Threadline. All rights reserved.
+		84 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle books | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?collection_id=d5609b77-743c-45b5-b435-814f2ca95058&country_of_origin=India&search=Marginalia+lifecycle&limit=1&page=1&sort=price-asc&category=Stationery&books_kind=stationery

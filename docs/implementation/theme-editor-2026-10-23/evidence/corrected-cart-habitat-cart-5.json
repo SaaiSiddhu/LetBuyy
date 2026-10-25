@@ -1,0 +1,81 @@
+{
+  "recordedAt": "2026-10-23T20:30:42.000Z",
+  "runId": "f6074d90e894",
+  "phase": "habitat-cart-5",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Whitelisted owned active cart line/facts/fingerprints/image only; no session/token/handoff/catalog_source/customer",
+  "actual": {
+    "orders": 1,
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "activeCarts": [
+      {
+        "id": "3877932f-b20c-437d-91d7-524cbba72011",
+        "items": [
+          {
+            "id": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6:07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "image": null,
+            "title": "Habitat lifecycle desk",
+            "currency": "INR",
+            "imageUrl": null,
+            "quantity": 1,
+            "lineTotal": 8900,
+            "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+            "unitPrice": 8900,
+            "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "properties": {
+              "Width": "48 in",
+              "Finish": "Natural"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "furniture": {
+                  "care": "Natural finish: wipe dry.",
+                  "finish": "Natural",
+                  "weight": {
+                    "unit": "kg",
+                    "value": 11.5
+                  },
+                  "package": {
+                    "unit": "in",
+                    "depth": 25,
+                    "width": 50
+                  },
+                  "assembly": {
+                    "tools": "4 mm hex key",
+                    "status": "required",
+                    "instructions": "Use the supplied sample instructions."
+                  },
+                  "assembled": {
+                    "unit": "in",
+                    "depth": 30,
+                    "width": 48,
+                    "height": 29.5
+                  },
+                  "materials": [
+                    "Wood"
+                  ]
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Finish",
+                  "value": "Natural"
+                },
+                {
+                  "name": "Width",
+                  "value": "48 in"
+                }
+              ]
+            },
+            "productVersion": 31,
+            "snapshotFingerprint": "7ce55c10aed62f082841288066219392dd5ffed2a8560348eb8e23fa7b18523c",
+            "configurationFingerprint": null
+          }
+        ],
+        "status": "active"
+      }
+    ]
+  }
+}

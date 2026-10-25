@@ -1,0 +1,126 @@
+{
+  "capturedAt": "2026-10-23T06:36:43.103781+00:00",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "fullSourceFileCount": 14105,
+  "fullSnapshotDigest": "b4c6c7c06ca9f2fe9da0d02ffd53bd9c636e8dab634246650122d515c10d2c90",
+  "scope": "functional integration fixture; dirty/untracked included; not immutable all-nine release",
+  "maxMigration": 385,
+  "newDraftMigrationsExcluded": [
+    386,
+    387
+  ],
+  "trackedDirtyAndUntrackedIncluded": true,
+  "sourceFiles": [
+    {
+      "path": "apps/commerce/web/src/app/api/buyer-auth/callback/route.ts",
+      "sha256": "fcab3c4285496e7d8942a707fca92d99e7a992551402e05af14ae896124dabf4",
+      "bytes": 7284
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+      "bytes": 54434
+    },
+    {
+      "path": "apps/commerce/web/src/lib/buyer-auth/flow.ts",
+      "sha256": "f545a5233588fe1488fe2a3bd2679d2e63bc3532ad63b7485d9f4e7bb2ec7093",
+      "bytes": 10817
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "404c6a3396a713fbf510ba72692b3b3cdc1b873832999e168470b3aa5270b428",
+      "bytes": 120092
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/login/route.ts",
+      "sha256": "755f384e2adedb1ae02ce504f53111ef3440541f9e9773a02d4302cda99f3202",
+      "bytes": 5610
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/login/route.ts",
+      "sha256": "d9f8656e94c4465cbae4a2279b5cac94fdd6575481f7bad344fc3249cd6751c3",
+      "bytes": 3412
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/oauth/authorize/route.ts",
+      "sha256": "a3029345670864341c5ae9ad7ec28fb1fd94d0fed128b7971ebb18dd63c8c5f1",
+      "bytes": 4029
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/oauth/token/route.ts",
+      "sha256": "80dace602b18fb39d9a0d273c5f2a601d7c50628d627fb835706c246afec1922",
+      "bytes": 4684
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/buyer-session.ts",
+      "sha256": "68e533ab0b7236479433fb88b4f8dc6736168227affa2de033aa53c6a19cd8cb",
+      "bytes": 2172
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/cookies.ts",
+      "sha256": "64be94c3028ae6fe89e9d0f342fb63c595926bf68510664b3bea9a11157e8a5a",
+      "bytes": 11025
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "sha256": "dea5377793fff39d69403089c1a5d33abe128240b40b0a81e2d3c3fc7f7d2cb0",
+      "bytes": 46625
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "45ddb1641de85d5dfa3b9cdc17dd6e6ee2b21f962fcece5a1c3767c1016faf73",
+      "bytes": 7636
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "49c34a59c788dad3761ed5b6d24cd152006f2d6cda64c82c53cbc65a4401bb5b",
+      "bytes": 18002
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-lifecycle.postgres.test.ts",
+      "sha256": "9dc5a362da88d411243e4064715d2d53420f6a28ccc898d25c03f04953204bfa",
+      "bytes": 15994
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "2a2e69fed6e596b92f4872e01d0f04254971a8c30a987980b274320b28d9681f",
+      "bytes": 8004
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts",
+      "sha256": "afdf2a7c540f5a93435cdeb4f188ed02cc5b568e54d40b4f63a2027d2f044b2a",
+      "bytes": 4528
+    }
+  ],
+  "candidateOnlyOverrides": [
+    {
+      "path": "apps/platform/identity/next.config.ts",
+      "sourceSha256": "f6120bc33e88db594cf163e8b2746712b3888d54d296a34aa352030a36e607c1",
+      "runtimeSha256": "fe1b58d1da0f97f441858d597665ec1e8ab0961ae2f7e6dcd1d71e6ae5aeff95",
+      "change": "owned runtime CPU2 only"
+    },
+    {
+      "path": "apps/merchant/web/next.config.ts",
+      "sourceSha256": "5f6fafd2bf71c42508c08df47e22e5dd7dbbfba95443f22e9e3f774ef86ee33a",
+      "runtimeSha256": "3014bb5584acc132f029def6b8f142ec6cedc25c1e3f0dfb5cf36f76d674b5f9",
+      "change": "owned runtime CPU2 only"
+    },
+    {
+      "path": "apps/commerce/web/next.config.ts",
+      "sourceSha256": "11ef89eaffd0bcccff6584de1e870cc3a793e762105e92eaae5614c03dd00822",
+      "runtimeSha256": "9823a53fb433d09ba35156c34bd757e7bb6f7b179416524b6034d935c791e215",
+      "change": "owned runtime CPU2 only"
+    }
+  ],
+  "configuration": {
+    "serialAppBuilds": true,
+    "cpusPerBuild": 2,
+    "reaping": "disabled --no-reap",
+    "authBypass": false,
+    "gatewayHost": "127.0.0.1",
+    "platformParent": "threadline-ff9941a78139.localhost",
+    "buyerOutsidePlatformParent": true,
+    "productionAuthOrOriginPolicyChanges": false
+  }
+}

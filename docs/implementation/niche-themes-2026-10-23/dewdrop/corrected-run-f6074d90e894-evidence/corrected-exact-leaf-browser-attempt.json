@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-23T18:14:51.363Z",
+  "runId": "f6074d90e894",
+  "normalUiNavigationCount": 1,
+  "securityBypass": false,
+  "priorFailedTabPreserved": 17,
+  "newTabId": "18",
+  "formReached": true,
+  "stage": "normal HTTPS delivery address form rendered",
+  "actualHostedOrigin": "https://checkout.localhost:62082",
+  "certificateRejection": false,
+  "rawSignedUrlSaved": false,
+  "orderConfirmed": false
+}

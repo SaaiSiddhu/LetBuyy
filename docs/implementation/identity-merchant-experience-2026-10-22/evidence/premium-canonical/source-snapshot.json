@@ -1,0 +1,679 @@
+{
+  "date": "2026-10-23",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "scope": "Current shared UI and Merchant owners/consumers plus generators and walker; includes preserved concurrent hunks, not exclusive authorship. Report-only updates are outside this source pin.",
+  "files": [
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3",
+      "validated_clone_sha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/public/theme-previews/threadline-2.0.0.webp",
+      "sha256": "e7c4df735a07dbde53701aa23880a22d72b9ef3e2868dfe0f0bf3e8600794f53",
+      "validated_clone_sha256": "e7c4df735a07dbde53701aa23880a22d72b9ef3e2868dfe0f0bf3e8600794f53",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/runtime.manifest.json",
+      "sha256": "46cf3f0a3a1b593cf78d5b5158c9e20be79228ca8a1c0f36a14a815767d816ff",
+      "validated_clone_sha256": "46cf3f0a3a1b593cf78d5b5158c9e20be79228ca8a1c0f36a14a815767d816ff",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/ai/page.tsx",
+      "sha256": "c69c694529c350ab0aeebad4e598ada0af8a0bc5d9e759ffda38edfc79fc035f",
+      "validated_clone_sha256": "c69c694529c350ab0aeebad4e598ada0af8a0bc5d9e759ffda38edfc79fc035f",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/analytics/page.tsx",
+      "sha256": "c5fbdba16c8080e7f884542a23ea344198648d7606ae527e9a94c3d0be2bf867",
+      "validated_clone_sha256": "c5fbdba16c8080e7f884542a23ea344198648d7606ae527e9a94c3d0be2bf867",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/appearance/page.tsx",
+      "sha256": "5c81f33a96837bff958cd99708d53f28a18d1fe2a219adc224dfaac43e2fe5d8",
+      "validated_clone_sha256": "5c81f33a96837bff958cd99708d53f28a18d1fe2a219adc224dfaac43e2fe5d8",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/apps/page.tsx",
+      "sha256": "e2fffaa00751f2edad69f8807fd339dfccfeb689e1a90732f70a5de15f0f195b",
+      "validated_clone_sha256": "e2fffaa00751f2edad69f8807fd339dfccfeb689e1a90732f70a5de15f0f195b",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/categories/page.tsx",
+      "sha256": "59dfbf080ea0d92deca4a833bdd310e1ef10d9ff8e6dc8088625355fbcd7b6bc",
+      "validated_clone_sha256": "59dfbf080ea0d92deca4a833bdd310e1ef10d9ff8e6dc8088625355fbcd7b6bc",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/certifications/page.tsx",
+      "sha256": "dc1d9cb8b27ac2f3e5ac6f82c82c5479ca662213033e27179e17812676cbf9ed",
+      "validated_clone_sha256": "dc1d9cb8b27ac2f3e5ac6f82c82c5479ca662213033e27179e17812676cbf9ed",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/comments/page.tsx",
+      "sha256": "c71891222bf32c8f61e58e75df54e99c8e6c80bf273f9ca757dbe0c9dbfcf761",
+      "validated_clone_sha256": "c71891222bf32c8f61e58e75df54e99c8e6c80bf273f9ca757dbe0c9dbfcf761",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/contact/page.tsx",
+      "sha256": "7b8db87082acd776507780aac68495ccfe2a72e68f430ed81d532bd5efd64172",
+      "validated_clone_sha256": "7b8db87082acd776507780aac68495ccfe2a72e68f430ed81d532bd5efd64172",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/coupons/page.tsx",
+      "sha256": "416e5a5648ae074d0c9d89ed0b0a00fe0586ac422f92ee111a4ac478edf551c2",
+      "validated_clone_sha256": "416e5a5648ae074d0c9d89ed0b0a00fe0586ac422f92ee111a4ac478edf551c2",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/customers/[email]/page.tsx",
+      "sha256": "3d51ff7f2127509c031c42cfd78a46825f304ffff73159b1f0c06cc8556e4f1d",
+      "validated_clone_sha256": "3d51ff7f2127509c031c42cfd78a46825f304ffff73159b1f0c06cc8556e4f1d",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/customers/page.tsx",
+      "sha256": "a78c7201e64323922dd714a3337c38f2169f5a1766a2dd36e6e67fcbc43758b5",
+      "validated_clone_sha256": "a78c7201e64323922dd714a3337c38f2169f5a1766a2dd36e6e67fcbc43758b5",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/customers/segments/page.tsx",
+      "sha256": "0c14000a9dd0daff92a5be17fe01cd1dbcb20bc579e5d9602c12ea0cb502fa28",
+      "validated_clone_sha256": "0c14000a9dd0daff92a5be17fe01cd1dbcb20bc579e5d9602c12ea0cb502fa28",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/dashboard/DashboardClient.tsx",
+      "sha256": "4b949058e438a884b14d202f423729fc2e18bcf87a70cb26079e5fa0ba37cff6",
+      "validated_clone_sha256": "4b949058e438a884b14d202f423729fc2e18bcf87a70cb26079e5fa0ba37cff6",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/education/page.tsx",
+      "sha256": "5aaf4609461a28b08391ce7b1d01acce4adef8031c66367513ed3d818be6f2d2",
+      "validated_clone_sha256": "5aaf4609461a28b08391ce7b1d01acce4adef8031c66367513ed3d818be6f2d2",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/experience/page.tsx",
+      "sha256": "2b745842d23739e96c6fd4a7686b1e3202fc2059f0ead1b6505991e562290776",
+      "validated_clone_sha256": "2b745842d23739e96c6fd4a7686b1e3202fc2059f0ead1b6505991e562290776",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/export/page.tsx",
+      "sha256": "d86390f3085d460058b7c3e4a7e4bbf2b89937041a451281500d5459b349de00",
+      "validated_clone_sha256": "d86390f3085d460058b7c3e4a7e4bbf2b89937041a451281500d5459b349de00",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/gallery/page.tsx",
+      "sha256": "74bf7131c323ff203c796d6a6948431fd038a29f65038692be30bd3840c62184",
+      "validated_clone_sha256": "74bf7131c323ff203c796d6a6948431fd038a29f65038692be30bd3840c62184",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/layout.tsx",
+      "sha256": "a4b2b464387f77fa923ab373146062db601763f38cad308ad0d747c31bff4da2",
+      "validated_clone_sha256": "a4b2b464387f77fa923ab373146062db601763f38cad308ad0d747c31bff4da2",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/leads/page.tsx",
+      "sha256": "dea7ed01298738285d58c4ddec8452cd94b7130322f87d501fb7f5ee08a0ca4e",
+      "validated_clone_sha256": "dea7ed01298738285d58c4ddec8452cd94b7130322f87d501fb7f5ee08a0ca4e",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/marketing/page.tsx",
+      "sha256": "3e8ee31bb5527de0eb7c0ab917c67a68b0da369406da16478fee5c1e7bc45ce9",
+      "validated_clone_sha256": "3e8ee31bb5527de0eb7c0ab917c67a68b0da369406da16478fee5c1e7bc45ce9",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/pages/page.tsx",
+      "sha256": "30d63ac005ffe446184ee962a76bbbe973bc0e0d0613e740f5178c21440b0afb",
+      "validated_clone_sha256": "30d63ac005ffe446184ee962a76bbbe973bc0e0d0613e740f5178c21440b0afb",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/preferences/page.tsx",
+      "sha256": "e03c345b859f49abeca9dae16343bfcd53a85a9075eddfabeee7a1bab77f2dcf",
+      "validated_clone_sha256": "e03c345b859f49abeca9dae16343bfcd53a85a9075eddfabeee7a1bab77f2dcf",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "74ea3e58de19f2041e5eaaba2eeb337eed9777f6e3af1e35689d84aaa91bdc17",
+      "validated_clone_sha256": "74ea3e58de19f2041e5eaaba2eeb337eed9777f6e3af1e35689d84aaa91bdc17",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+      "sha256": "aeb5a14d86f94e85b617a3c1385353fd40ecfe45efb5d20ab28cb5ea499bd446",
+      "validated_clone_sha256": "aeb5a14d86f94e85b617a3c1385353fd40ecfe45efb5d20ab28cb5ea499bd446",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/orders/page.tsx",
+      "sha256": "548c1e78fbd1d22e2e730da49245e973e961dfd9505a990cb4835f763aeb5004",
+      "validated_clone_sha256": "548c1e78fbd1d22e2e730da49245e973e961dfd9505a990cb4835f763aeb5004",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/pages/page.tsx",
+      "sha256": "96f8a1dc74e161b46e850eb13891956e7246a2bb1e765c14072418beb4851e88",
+      "validated_clone_sha256": "96f8a1dc74e161b46e850eb13891956e7246a2bb1e765c14072418beb4851e88",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/payouts/page.tsx",
+      "sha256": "230a7413a13c79d0a6e88809b6cc78553ab6eaea51fc8b0076f70b4f80fbb2f9",
+      "validated_clone_sha256": "230a7413a13c79d0a6e88809b6cc78553ab6eaea51fc8b0076f70b4f80fbb2f9",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/posts/page.tsx",
+      "sha256": "77fae44b6a96bf64ac763e59c74254e7ae417e7b2f1e6e849b41f658db0ea049",
+      "validated_clone_sha256": "77fae44b6a96bf64ac763e59c74254e7ae417e7b2f1e6e849b41f658db0ea049",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/collections/page.tsx",
+      "sha256": "c13843ea587cabd624b89c8ed25f9d4243cb098de375d61294fb0bd9ffd72737",
+      "validated_clone_sha256": "c13843ea587cabd624b89c8ed25f9d4243cb098de375d61294fb0bd9ffd72737",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/gift-cards/page.tsx",
+      "sha256": "29face682bdfffa5d84829a8a19c4e98e71414dc111c06f500934eefa9a16053",
+      "validated_clone_sha256": "29face682bdfffa5d84829a8a19c4e98e71414dc111c06f500934eefa9a16053",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/inventory-history/page.tsx",
+      "sha256": "88d4cada313b51de4d46b29941cb3bb0549f678a7fa1d038e350014f864b5ac5",
+      "validated_clone_sha256": "88d4cada313b51de4d46b29941cb3bb0549f678a7fa1d038e350014f864b5ac5",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/inventory/page.tsx",
+      "sha256": "86a72bb996df7f6e1f3b6675ef33c4a0d7cf145d9e547f3f28fc6a85c5fa67bd",
+      "validated_clone_sha256": "86a72bb996df7f6e1f3b6675ef33c4a0d7cf145d9e547f3f28fc6a85c5fa67bd",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/locations/page.tsx",
+      "sha256": "f262d313e9ae295dd96e69c47be2fa0b89148a17754f197007f9cd1d42ea2a06",
+      "validated_clone_sha256": "f262d313e9ae295dd96e69c47be2fa0b89148a17754f197007f9cd1d42ea2a06",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "361e52083c5de29a8483d334114d5a462a5a36cb001317c838aae02c3facc580",
+      "validated_clone_sha256": "361e52083c5de29a8483d334114d5a462a5a36cb001317c838aae02c3facc580",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/operations-dashboard/page.tsx",
+      "sha256": "d65f19b7228efea54e17fe93e431475332e0087f83bfe3467cf9e28078b5b16c",
+      "validated_clone_sha256": "d65f19b7228efea54e17fe93e431475332e0087f83bfe3467cf9e28078b5b16c",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/page.tsx",
+      "sha256": "c064384b9b9deacf1ce5a5f56906101329839fb2b762ad59de4516d235dd8e6a",
+      "validated_clone_sha256": "c064384b9b9deacf1ce5a5f56906101329839fb2b762ad59de4516d235dd8e6a",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/purchase-orders/page.tsx",
+      "sha256": "579f3109b72f30e34dec425e1811bcdf891e6e53c27dd9a958c3460124b85ec0",
+      "validated_clone_sha256": "579f3109b72f30e34dec425e1811bcdf891e6e53c27dd9a958c3460124b85ec0",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/receipts/page.tsx",
+      "sha256": "b8d80f9a33a3427625c65c83b78716d27000c63f4525641093518f2402d05156",
+      "validated_clone_sha256": "b8d80f9a33a3427625c65c83b78716d27000c63f4525641093518f2402d05156",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/reservations/page.tsx",
+      "sha256": "afe778c9b234bf7a35706e916196df6991f6117c5e6c7c38f31eaf52a0f2201b",
+      "validated_clone_sha256": "afe778c9b234bf7a35706e916196df6991f6117c5e6c7c38f31eaf52a0f2201b",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/smart-collections/page.tsx",
+      "sha256": "04205b9b99ab58a3485147375baf07a09d4836546365fbaebc02b8c78631ec49",
+      "validated_clone_sha256": "04205b9b99ab58a3485147375baf07a09d4836546365fbaebc02b8c78631ec49",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/suppliers/page.tsx",
+      "sha256": "c02e008fd024f79561e36100b48e6d0790754a6a39e5f6008821049d8d408325",
+      "validated_clone_sha256": "c02e008fd024f79561e36100b48e6d0790754a6a39e5f6008821049d8d408325",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/transfers/page.tsx",
+      "sha256": "c1f6c1d8513329f624af11eea3269f2e58990d28a9ad3e8fd0bcb66768eb828f",
+      "validated_clone_sha256": "c1f6c1d8513329f624af11eea3269f2e58990d28a9ad3e8fd0bcb66768eb828f",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/projects/page.tsx",
+      "sha256": "30ec84eaf3a0a37ee6f0fa08942828cd9f60f8adc22e6e11af455c2647a69bfa",
+      "validated_clone_sha256": "30ec84eaf3a0a37ee6f0fa08942828cd9f60f8adc22e6e11af455c2647a69bfa",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/reviews/page.tsx",
+      "sha256": "9b447636b629b336a2c0b2ae67758d49070d4adcccd33f91931631d468ad804f",
+      "validated_clone_sha256": "9b447636b629b336a2c0b2ae67758d49070d4adcccd33f91931631d468ad804f",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/apps/AppsSettingsClient.tsx",
+      "sha256": "7a5354af365f2bf2dd4c07c2dddbc184a019cceeae0ef0bf5e8b02e0abae84ec",
+      "validated_clone_sha256": "7a5354af365f2bf2dd4c07c2dddbc184a019cceeae0ef0bf5e8b02e0abae84ec",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
+      "sha256": "1aafe4c76f3dbcd92e106b8a777376fea2319f3caed2d1a812cbf30caebaeb08",
+      "validated_clone_sha256": "1aafe4c76f3dbcd92e106b8a777376fea2319f3caed2d1a812cbf30caebaeb08",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/billing/profile/page.tsx",
+      "sha256": "6a5455f6789aab73970430b9e4c2601c0ff5367d034fea8dda9075e2cdd492d7",
+      "validated_clone_sha256": "6a5455f6789aab73970430b9e4c2601c0ff5367d034fea8dda9075e2cdd492d7",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/business/page.tsx",
+      "sha256": "a1b5b42b12eacf0b1e037e3167e8a7e0d3fd688ed300b2b61d4e3c6bb9bbbf7f",
+      "validated_clone_sha256": "a1b5b42b12eacf0b1e037e3167e8a7e0d3fd688ed300b2b61d4e3c6bb9bbbf7f",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/checkout/page.tsx",
+      "sha256": "f5b86298596d3657c222f53a826a825a6ec82b689a26e33ba95f018a3ea34f78",
+      "validated_clone_sha256": "f5b86298596d3657c222f53a826a825a6ec82b689a26e33ba95f018a3ea34f78",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/domains/page.tsx",
+      "sha256": "0e764ff15041bf8d14b499cc0981384a5d26d35304c9392cba73e8809c408e0a",
+      "validated_clone_sha256": "0e764ff15041bf8d14b499cc0981384a5d26d35304c9392cba73e8809c408e0a",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/general/page.tsx",
+      "sha256": "5e4d19d369c1a78b7bb8b1b1f389071d9299d5c6a84bdce3d05b7cef4fa58487",
+      "validated_clone_sha256": "5e4d19d369c1a78b7bb8b1b1f389071d9299d5c6a84bdce3d05b7cef4fa58487",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/notifications/page.tsx",
+      "sha256": "05349a0d98a488b5d7089738361cf561d00dd3d347afc798fad054df8fac2dd1",
+      "validated_clone_sha256": "05349a0d98a488b5d7089738361cf561d00dd3d347afc798fad054df8fac2dd1",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/page.tsx",
+      "sha256": "73ef406e925e78feadd610e37b600f414f5780dfa67056c78a65ed590131691e",
+      "validated_clone_sha256": "73ef406e925e78feadd610e37b600f414f5780dfa67056c78a65ed590131691e",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/payments/page.tsx",
+      "sha256": "3a5f7907707312a421ae7337e29acdd2f293c27affb21abf1c2e5f39a236dfe1",
+      "validated_clone_sha256": "3a5f7907707312a421ae7337e29acdd2f293c27affb21abf1c2e5f39a236dfe1",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/plan/page.tsx",
+      "sha256": "ccd1b5e5dd53a459aa41d676e2ac1db2d58dbd4a60647da5a5cd2998c0370cd2",
+      "validated_clone_sha256": "ccd1b5e5dd53a459aa41d676e2ac1db2d58dbd4a60647da5a5cd2998c0370cd2",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/policies/page.tsx",
+      "sha256": "4c0857ba4b3f43a7599fc2a4d3d3c306f7881882951acf2a67c42d385612cf16",
+      "validated_clone_sha256": "4c0857ba4b3f43a7599fc2a4d3d3c306f7881882951acf2a67c42d385612cf16",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/security/page.tsx",
+      "sha256": "39e296d8a2e3c7f41a0514096f16f9b2d59df5053cc99c1595d5b45e414f3414",
+      "validated_clone_sha256": "39e296d8a2e3c7f41a0514096f16f9b2d59df5053cc99c1595d5b45e414f3414",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/shipping/page.tsx",
+      "sha256": "1271257710732887b94eeac2a16ece3c3ebe09489401adae7c27e6f684552033",
+      "validated_clone_sha256": "1271257710732887b94eeac2a16ece3c3ebe09489401adae7c27e6f684552033",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/taxes/page.tsx",
+      "sha256": "6985e84288d55facdc6f4d5ee93f09b46ccc8880c9ff511e7b8aa784fe009970",
+      "validated_clone_sha256": "6985e84288d55facdc6f4d5ee93f09b46ccc8880c9ff511e7b8aa784fe009970",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/users/page.tsx",
+      "sha256": "4b5ebf2932768c03f438c4343ab7c145dab01a93411af192837148bf336525dd",
+      "validated_clone_sha256": "4b5ebf2932768c03f438c4343ab7c145dab01a93411af192837148bf336525dd",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/skills/page.tsx",
+      "sha256": "b6130a58b2ec1fdec859b5af7df43bc3d8ec3d422d03b8d52b746be137be92d4",
+      "validated_clone_sha256": "b6130a58b2ec1fdec859b5af7df43bc3d8ec3d422d03b8d52b746be137be92d4",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/testimonials/page.tsx",
+      "sha256": "fbb30e5dc30b218a2545f99625676009c8082e32e861579d45318934c65e3b0c",
+      "validated_clone_sha256": "fbb30e5dc30b218a2545f99625676009c8082e32e861579d45318934c65e3b0c",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/globals.css",
+      "sha256": "13d3554a9a6c355401e19827a2ab6a45e74e200ea562f369e02371fe1ff324c4",
+      "validated_clone_sha256": "13d3554a9a6c355401e19827a2ab6a45e74e200ea562f369e02371fe1ff324c4",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/AdminShell.tsx",
+      "sha256": "1bc38db5d90d95cb3f5a6d7e75dd463cf9959395ccc7060a4d014ad9b3bcc465",
+      "validated_clone_sha256": "1bc38db5d90d95cb3f5a6d7e75dd463cf9959395ccc7060a4d014ad9b3bcc465",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/CommandPalette.tsx",
+      "sha256": "284f70026e39c7cc44dc9b8866a4ec560b142cfbb8c533a445042c56e7b0fcd9",
+      "validated_clone_sha256": "284f70026e39c7cc44dc9b8866a4ec560b142cfbb8c533a445042c56e7b0fcd9",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/HeaderBar.tsx",
+      "sha256": "7fb346b5e81e1fe3df3a1f93b9e2a6b137f09815d6a02c2ceea688aba24b69b7",
+      "validated_clone_sha256": "7fb346b5e81e1fe3df3a1f93b9e2a6b137f09815d6a02c2ceea688aba24b69b7",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/MerchantNavigationLink.tsx",
+      "sha256": "cb237584cfae723256dbe61589552b745f9c5600ae42b34ae29eb2fd96d6ab8b",
+      "validated_clone_sha256": "cb237584cfae723256dbe61589552b745f9c5600ae42b34ae29eb2fd96d6ab8b",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/MerchantNavigationProvider.tsx",
+      "sha256": "8e68183824ea558df22d0c5817da71d4b1edbd872599686f4379de4c5cb0c840",
+      "validated_clone_sha256": "8e68183824ea558df22d0c5817da71d4b1edbd872599686f4379de4c5cb0c840",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/domains/ConnectDomainWizard.tsx",
+      "sha256": "891b407ae8a29bb4cf58916c108d327410b832fa1cabc37d2d6c4b4f1c2528f8",
+      "validated_clone_sha256": "891b407ae8a29bb4cf58916c108d327410b832fa1cabc37d2d6c4b4f1c2528f8",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/domains/DomainDetailView.tsx",
+      "sha256": "2b045a6c060ff8f7ec43bf49fe417364db0e80f35ad8076c447a9224f1c86471",
+      "validated_clone_sha256": "2b045a6c060ff8f7ec43bf49fe417364db0e80f35ad8076c447a9224f1c86471",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+      "sha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba",
+      "validated_clone_sha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "1b73e2bed0a5a8c92aae47da6c7eb87e44fa001706cdfbad83feb5d9e00914cc",
+      "validated_clone_sha256": "1b73e2bed0a5a8c92aae47da6c7eb87e44fa001706cdfbad83feb5d9e00914cc",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/settings/SettingsPane.test.tsx",
+      "sha256": "0f92631d9f8baf14fae0fb4e89196ed23cbb843058324a65021cea4bd3c8bd5e",
+      "validated_clone_sha256": "0f92631d9f8baf14fae0fb4e89196ed23cbb843058324a65021cea4bd3c8bd5e",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/settings/SettingsPane.tsx",
+      "sha256": "2e1432059f50711e9b41fc2b05747c90bcaf560b4dd200d6ae6f39f9d9f1d0f1",
+      "validated_clone_sha256": "2e1432059f50711e9b41fc2b05747c90bcaf560b4dd200d6ae6f39f9d9f1d0f1",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/settings/SettingsShell.tsx",
+      "sha256": "43f4a46da91c44f5b6928bd646916ff8298925e5e07ab9d5a8d1a64bcfb62b3b",
+      "validated_clone_sha256": "43f4a46da91c44f5b6928bd646916ff8298925e5e07ab9d5a8d1a64bcfb62b3b",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx",
+      "sha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07",
+      "validated_clone_sha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-workspace.module.css",
+      "sha256": "0f7190fc2854b734d93e492b59d349cbbb24c0fd011d11bab7d29bd9423f7f0b",
+      "validated_clone_sha256": "0f7190fc2854b734d93e492b59d349cbbb24c0fd011d11bab7d29bd9423f7f0b",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/ThemeLibraryCard.tsx",
+      "sha256": "e325beca3394bb8076dc52c0a03bb8c2d034892c090bab229c23cbc364ce73ae",
+      "validated_clone_sha256": "e325beca3394bb8076dc52c0a03bb8c2d034892c090bab229c23cbc364ce73ae",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/ThemeWorkspace.tsx",
+      "sha256": "964845ea2261b2694b35980a6a5962c7ff84b72caffb1da6d153461e8ca6df47",
+      "validated_clone_sha256": "964845ea2261b2694b35980a6a5962c7ff84b72caffb1da6d153461e8ca6df47",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/theme-workspace.module.css",
+      "sha256": "c67621c9b37a2ada0b5d806ba7f11ef762113653c4b0d8a4a9042a958df4d923",
+      "validated_clone_sha256": "c67621c9b37a2ada0b5d806ba7f11ef762113653c4b0d8a4a9042a958df4d923",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/auth/session.ts",
+      "sha256": "d971e963b6249145ae102b5832c84a9b48abd6a5504abd3994e84e926e198cf4",
+      "validated_clone_sha256": "d971e963b6249145ae102b5832c84a9b48abd6a5504abd3994e84e926e198cf4",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/public-urls.ts",
+      "sha256": "7a84940f6ce6837f304763d159f32f773c4e9231b6f9f22afdb6be02bf9ca2a9",
+      "validated_clone_sha256": "7a84940f6ce6837f304763d159f32f773c4e9231b6f9f22afdb6be02bf9ca2a9",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/stores/resolve-owned-store.ts",
+      "sha256": "45c66ef04d1409c0c4004cf870a1075762ce3c5caccd605f37f375d9ac1ff3f9",
+      "validated_clone_sha256": "45c66ef04d1409c0c4004cf870a1075762ce3c5caccd605f37f375d9ac1ff3f9",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/src/proxy.ts",
+      "sha256": "faecfb0fa26c588fa710e337929b0ea7f2eea17afd91d1110f0e30aef4fd80cb",
+      "validated_clone_sha256": "faecfb0fa26c588fa710e337929b0ea7f2eea17afd91d1110f0e30aef4fd80cb",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/tests/merchant-read-performance.test.mjs",
+      "sha256": "699f88209077e378cf5a6f2318be0a9d63d23ff84372ca2b805b38f5d1e64fbd",
+      "validated_clone_sha256": "699f88209077e378cf5a6f2318be0a9d63d23ff84372ca2b805b38f5d1e64fbd",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "apps/merchant/web/tests/owned-store-resolution.test.mjs",
+      "sha256": "d476ff7f1c281dcd1f5715f4f55fc5b2a9f46f45674283fe131942862e059f34",
+      "validated_clone_sha256": "d476ff7f1c281dcd1f5715f4f55fc5b2a9f46f45674283fe131942862e059f34",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/token-aliases.json",
+      "sha256": "40e2537696f48e47d08482bcf0ce02e32bbfe6ea7edde5508746e34b33b98fd3",
+      "validated_clone_sha256": "40e2537696f48e47d08482bcf0ce02e32bbfe6ea7edde5508746e34b33b98fd3",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/token-variables.json",
+      "sha256": "8ebdf7ff742d18b84d4e7ccaecc28f95e5cca4694dcce1562cab893ff81b6a10",
+      "validated_clone_sha256": "8ebdf7ff742d18b84d4e7ccaecc28f95e5cca4694dcce1562cab893ff81b6a10",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/component-catalog.stories.tsx",
+      "sha256": "972b533c3ae414b22ad09d35e2233ec086d6b4f583c5b7518a182d801fcf6945",
+      "validated_clone_sha256": "972b533c3ae414b22ad09d35e2233ec086d6b4f583c5b7518a182d801fcf6945",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/controls.tsx",
+      "sha256": "7861895232df03212443ef7e4a28bf9ef3d89ed9dab31763fdced9bfc0bd634e",
+      "validated_clone_sha256": "7861895232df03212443ef7e4a28bf9ef3d89ed9dab31763fdced9bfc0bd634e",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/design-tokens.stories.tsx",
+      "sha256": "8829912f8238378fa19d5a3f591ac4ecd703003bb9f423a2714190e1a4e00f15",
+      "validated_clone_sha256": "8829912f8238378fa19d5a3f591ac4ecd703003bb9f423a2714190e1a4e00f15",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/feedback.tsx",
+      "sha256": "10477a5b22088a5c17b8be82b1b04b3364043c6fd3757095d1efd0177e00820e",
+      "validated_clone_sha256": "10477a5b22088a5c17b8be82b1b04b3364043c6fd3757095d1efd0177e00820e",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/form-workflow.stories.tsx",
+      "sha256": "f976050c446ea8ec0e0c7bd6b2267120fdfb9a032eabecea1c2e71d6e7e2aed0",
+      "validated_clone_sha256": "f976050c446ea8ec0e0c7bd6b2267120fdfb9a032eabecea1c2e71d6e7e2aed0",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/index.ts",
+      "sha256": "5d73af3b7b91afa2ae0d1c088b8b306b788b022eddb8616b9bf0a17a39f9aa55",
+      "validated_clone_sha256": "5d73af3b7b91afa2ae0d1c088b8b306b788b022eddb8616b9bf0a17a39f9aa55",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/layout.tsx",
+      "sha256": "d72670b0cde2d138f70aaf9dc8a735599b118e540bce430c5e2f0a80fd30ae41",
+      "validated_clone_sha256": "d72670b0cde2d138f70aaf9dc8a735599b118e540bce430c5e2f0a80fd30ae41",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/merchant-experience.stories.tsx",
+      "sha256": "f101a6d00cba057288439fe5e31f3cdd1df0314eea1b11a06693e5936a36962f",
+      "validated_clone_sha256": "f101a6d00cba057288439fe5e31f3cdd1df0314eea1b11a06693e5936a36962f",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/navigation/form-protection.tsx",
+      "sha256": "a7a4d573371945a8135ed303198fc7c5fe9cb9ca98701311ff40c32ca0708bb6",
+      "validated_clone_sha256": "a7a4d573371945a8135ed303198fc7c5fe9cb9ca98701311ff40c32ca0708bb6",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/overlays.tsx",
+      "sha256": "497904b29b19066b43120e3fcd70ca910361d809f58f35ab77242125b61e5af3",
+      "validated_clone_sha256": "497904b29b19066b43120e3fcd70ca910361d809f58f35ab77242125b61e5af3",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/premium-canonical.stories.tsx",
+      "sha256": "57bd51e2eab36832f3fa74f24464b7ca31eba528d3b979e8f6f25f515a2c0611",
+      "validated_clone_sha256": "57bd51e2eab36832f3fa74f24464b7ca31eba528d3b979e8f6f25f515a2c0611",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/primitives.stories.tsx",
+      "sha256": "c1b41614bd317a8449cc57b3a4a7f29185332baf285af13f29a87660f9910876",
+      "validated_clone_sha256": "c1b41614bd317a8449cc57b3a4a7f29185332baf285af13f29a87660f9910876",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/productivity.tsx",
+      "sha256": "e31e965c1bb654af05c2c06b0b6bd35fe3a59ef0ca0955439f6144566493c8df",
+      "validated_clone_sha256": "e31e965c1bb654af05c2c06b0b6bd35fe3a59ef0ca0955439f6144566493c8df",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "sha256": "0016d74e707c0173e4e1ff5422e558ebeff3de12b12ba74241774201d46c0918",
+      "validated_clone_sha256": "0016d74e707c0173e4e1ff5422e558ebeff3de12b12ba74241774201d46c0918",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/tests/components/form-protection.test.tsx",
+      "sha256": "a3709b19351e379a49e7d5e556a9b329da485c3e7c5465d0f7bc609ff86f476b",
+      "validated_clone_sha256": "a3709b19351e379a49e7d5e556a9b329da485c3e7c5465d0f7bc609ff86f476b",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/tests/components/premium-canonical.test.tsx",
+      "sha256": "f3d4d5900329fb7efe50b6d1cc20c2ba2cba14807373128f043fa9a4a88aca41",
+      "validated_clone_sha256": "f3d4d5900329fb7efe50b6d1cc20c2ba2cba14807373128f043fa9a4a88aca41",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "packages/typescript/ui/tokens.json",
+      "sha256": "1394bec991a6e85a098f5db58213744c92842a3c62d57bc6e5bc92d701348b65",
+      "validated_clone_sha256": "1394bec991a6e85a098f5db58213744c92842a3c62d57bc6e5bc92d701348b65",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "scripts/generators/generate-design-tokens.mjs",
+      "sha256": "117bf8094178842bc8b1e0e29ad0219689f22e5e6bd59cce771a0a76f0a2a9d7",
+      "validated_clone_sha256": "117bf8094178842bc8b1e0e29ad0219689f22e5e6bd59cce771a0a76f0a2a9d7",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "scripts/generators/generate-mobile-tokens.mjs",
+      "sha256": "c1ee0f5b45b55168cfd38b28b431e5ac2f3998ff90977c41b988bf57b5ba0a9c",
+      "validated_clone_sha256": "c1ee0f5b45b55168cfd38b28b431e5ac2f3998ff90977c41b988bf57b5ba0a9c",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "scripts/validators/governance-common.mjs",
+      "sha256": "9bdf9639b0f554a094aa824dd18809f0435c5f2d4b2becce188f1936cb368167",
+      "validated_clone_sha256": "9bdf9639b0f554a094aa824dd18809f0435c5f2d4b2becce188f1936cb368167",
+      "matches_validated_clone": true
+    },
+    {
+      "path": "tests/governance/governance-source-traversal.test.mjs",
+      "sha256": "31ebbbe0a55a593518d7a56305a4c3abd548872a5a98545bbb00599a4e65f5dd",
+      "validated_clone_sha256": "31ebbbe0a55a593518d7a56305a4c3abd548872a5a98545bbb00599a4e65f5dd",
+      "matches_validated_clone": true
+    }
+  ]
+}

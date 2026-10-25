@@ -1,0 +1,5 @@
+{
+  "status": "not_captured",
+  "original_result": [],
+  "reason": "The transient progress element had been removed before the follow-up style read. Fill color, animation duration and easing were not established."
+}

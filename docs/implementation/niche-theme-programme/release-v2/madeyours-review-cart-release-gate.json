@@ -1,0 +1,33 @@
+{
+  "id": "madeyours_actual_review_to_cart_binding",
+  "state": "HOLD_AWAITING_OWNER_CHECKPOINTS",
+  "recordedAt": "2026-10-23T08:33:26.305584+00:00",
+  "heldProposalSha256": "1686be9e72bd721b6bcb553951f6fd0cf26bcf7e91af49d714041bee03307615",
+  "proposalAccepted": false,
+  "migration389SqlEmissionAllowed": false,
+  "owners": {
+    "readOnlyReviewContextAndVariantBoundDigest": "MadeYours",
+    "actualClientReviewToCanonicalCartBinding": "Pantry",
+    "finalFreezeAndNewProposalRequest": "Themes coordinator"
+  },
+  "existingContracts": [
+    "docs/implementation/niche-themes-2026-10-23/madeyours/SERVER-INTEGRATION.md",
+    "docs/implementation/niche-themes-2026-10-23/madeyours/ENGINEERING-REPORT.md",
+    "packages/commerce-core/src/product-fact-snapshot.ts"
+  ],
+  "contractAuthority": "Use the final owner-provided canonical review-context/digest/cart contracts. This gate defines no copied schema, alternate digest, API or cart implementation.",
+  "requiredAcceptance": [
+    "MadeYours releases the exact read-only review-context producer and variant-bound digest contract/source hashes.",
+    "Pantry releases the real existing client/controller review-to-cart binding and relevant API/client source hashes, including affected actual integration evidence.",
+    "Review state is tied to the canonical selected variant/configuration and is invalidated by relevant changes; the actual cart side effect forwards only the canonical reviewed draft/echo and remains subject to server validation.",
+    "Owners identify whether any MadeYours factory/markup hook changed. Include every necessary final factory hook in the next content-addressed package proposal; if markup is unchanged, retain a separate exact shared-runtime checkpoint instead of altering bundle bytes.",
+    "All eight routed factory schema/default corrections and the existing all-ten-theme, all-21-template actual editor JSON-wire/document roundtrip gate must pass on the final source checkpoint. Threadline remains a protected control outside nine-theme promotion.",
+    "Regenerate only after the coordinator requests a new proposal for the final affected source/markup checkpoints. Do not regenerate for intermediate edits."
+  ],
+  "affectedSourceHashes": null,
+  "factoryMarkupChanged": "UNKNOWN_PENDING_OWNER_RELEASE",
+  "newProposalGenerated": false,
+  "sqlCreated": false,
+  "databaseOrBrowserOrBuildStarted": false,
+  "existingProposalFilesVerifiedUnchanged": true
+}

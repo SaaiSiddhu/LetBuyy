@@ -101,6 +101,57 @@ test('checkout confirm preserves a safe stale-inventory conflict for the buyer',
     });
 });
 
+test('checkout confirm preserves a safe product-changed conflict with actionable cart guidance', async () => {
+    await withGateway(() => jsonResponse({
+        success: false,
+        error: {
+            code: 'CHECKOUT_PRODUCT_CHANGED',
+            message: 'CART_FACTS_CHANGED: SELECT private_snapshot FROM orders; buyer=private@example.invalid; signature=secret-handoff',
+            details: { customer_email: 'private@example.invalid', stack: 'private database stack' },
+        },
+    }, { status: 409 }), async (calls) => {
+        const response = await call(request('confirm', { idempotency_key: 'product-changed-confirm-001' }), 'confirm');
+        assert.equal(response.status, 409);
+        assert.equal(response.headers.get('cache-control'), 'no-store');
+        const responseText = await response.text();
+        assert.deepEqual(JSON.parse(responseText), {
+            success: false,
+            error: {
+                code: 'CHECKOUT_PRODUCT_CHANGED',
+                message: 'Some products changed. Review the current items in your cart before checking out again.',
+            },
+        });
+        assert.doesNotMatch(responseText, /CART_FACTS_CHANGED|SELECT|private_snapshot|private@example|secret-handoff|database stack/);
+        assert.equal(calls.length, 1);
+        assert.equal(calls[0].method, 'POST');
+        assert.equal(calls[0].url.pathname, `/v1/checkout/${CART_ID}/confirm`);
+        assert.equal(calls[0].url.searchParams.get('signature'), HANDOFF.get('signature'));
+        assert.deepEqual(JSON.parse(calls[0].body || '{}'), { idempotency_key: 'product-changed-confirm-001' });
+    });
+});
+
+test('checkout failure projection keeps unknown, malformed, and server errors sanitized', async () => {
+    for (const scenario of [
+        { status: 409, code: 'CHECKOUT_NEW_CONFLICT', expectedStatus: 409, expectedCode: 'CHECKOUT_NEW_CONFLICT', message: 'Checkout could not continue.' },
+        { status: 400, code: '<script>private</script>', expectedStatus: 400, expectedCode: 'CHECKOUT_REQUEST_FAILED', message: 'Checkout could not continue.' },
+        { status: 500, code: 'CHECKOUT_PRODUCT_CHANGED', expectedStatus: 503, expectedCode: 'CHECKOUT_UNAVAILABLE', message: 'Checkout is temporarily unavailable. Please try again.' },
+    ]) {
+        await withGateway(() => jsonResponse({
+            success: false,
+            error: { code: scenario.code, message: 'SELECT private_snapshot; private@example.invalid' },
+        }, { status: scenario.status }), async (calls) => {
+            const response = await call(request('confirm', { idempotency_key: 'sanitized-confirm-001' }), 'confirm');
+            assert.equal(response.status, scenario.expectedStatus);
+            assert.equal(response.headers.get('cache-control'), 'no-store');
+            assert.deepEqual(await response.json(), {
+                success: false,
+                error: { code: scenario.expectedCode, message: scenario.message },
+            });
+            assert.equal(calls.length, 1);
+        });
+    }
+});
+
 test('Razorpay payment-intent exposes only the server-created provider order needed by hosted checkout', async () => {
     await withGateway((upstream) => {
         assert.equal(upstream.method, 'POST');
@@ -217,5 +268,24 @@ test('gateway failures become a generic unavailable response without upstream de
         const response = await call(request('contact', { idempotency_key: 'contact-key-123', email: 'buyer@example.test', name: 'Buyer' }), 'contact');
         assert.equal(response.status, 503);
         assert.doesNotMatch(await response.text(), /private-hostname|10\.0\.0\.1/);
+    });
+});
+
+
+test('opaque delegated buyer proof crosses contact and delivery-options boundaries unchanged; malformed proof is refused', async()=>{
+    const proof='c'.repeat(64);
+    await withGateway(upstream=>{
+        assert.equal(upstream.url.searchParams.get('buyer_binding'),proof);
+        return upstream.method==='GET' ? jsonResponse({data:{serviceable:true,rates:[]}}) : jsonResponse({data:{checkout:{id:'session-opaque',state:'contact'}}});
+    },async calls=>{
+        const original=request('contact',{idempotency_key:'opaque-contact-key',email:'buyer@example.test',name:'Buyer'});
+        const url=new URL(original.url);url.searchParams.set('buyer_binding',proof);
+        const req=new NextRequest(url,{method:'POST',headers:original.headers,body:await original.text()});
+        assert.equal((await call(req,'contact')).status,200);
+        const options=optionsRequest();const optionsUrl=new URL(options.url);optionsUrl.searchParams.set('buyer_binding',proof);
+        assert.equal((await callOptions(new NextRequest(optionsUrl,{headers:options.headers}))).status,200);
+        assert.equal(calls.length,2);
+        const bad=request('contact',{idempotency_key:'opaque-invalid-key',email:'buyer@example.test',name:'Buyer'});const badUrl=new URL(bad.url);badUrl.searchParams.set('buyer_binding','forged');
+        assert.equal((await call(new NextRequest(badUrl,{method:'POST',headers:bad.headers,body:await bad.text()}),'contact')).status,400);assert.equal(calls.length,2);
     });
 });

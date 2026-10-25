@@ -1,0 +1,37 @@
+{
+  "originalReceiptCount": 6547,
+  "excluded": [
+    {
+      "path": "config/env/production.env.example",
+      "sha256": "dc56def2fbacd0a54e9842d8aa538d30f8177f1f9b5f2775020c7651f605f3df",
+      "bytes": 10238
+    },
+    {
+      "path": "config/env/production.env.template",
+      "sha256": "1f8e5213d0da12b597875e249b1d53607d397b5b8068b65a553804eb5e495856",
+      "bytes": 7329
+    },
+    {
+      "path": "config/env/staging.env.example",
+      "sha256": "2be08bdbffce331c28e8885bd759700394104b8ba118ca7f617ca2b52c9eeaa2",
+      "bytes": 10183
+    },
+    {
+      "path": "config/env/staging.env.template",
+      "sha256": "776f5eb04c93c8ead31dc4438c4a3e5b724d8b21fca065314784e255d7e447a5",
+      "bytes": 7283
+    },
+    {
+      "path": "config/env/templates/next-app.env.example",
+      "sha256": "c66709d58646953d5ae8c615072e1ef21b73716ab84dd98257c55a78642d19ab",
+      "bytes": 3730
+    },
+    {
+      "path": "config/env/templates/worker.env.example",
+      "sha256": "5225d6fe14f0a0ff1137be9ab246cb445e6a13a80b1040d051ad48fe1c82ec6c",
+      "bytes": 6034
+    }
+  ],
+  "rule": "Declared names/hashes only; no value printing or runtime environment copy. Any actual import/read of an omitted path must refuse closure.",
+  "valuesInspectedOrPrinted": false
+}

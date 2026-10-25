@@ -1,0 +1,233 @@
+{
+  "recordedAt": "2026-10-23T20:43:48.967298+00:00",
+  "classification": "READ_ONLY_ROOT_ADMITTED_RECOVERY_SOURCE_COPY_AUDIT_NO_RUNTIME_OR_E2E_CREDIT",
+  "status": "SEALED_ADMITTED_COPY_HASHES_MATCH_AWAIT_EXPLICIT_RUNTIME_AND_EDITOR_HANDOFF",
+  "databaseRun": "f6074d90e894",
+  "candidateRoot": "/private/tmp/theme-editor-recovery-20261024-01",
+  "sourceBase": "/private/tmp/theme-editor-merchant-axis-20261024-01",
+  "sourceMax": 392,
+  "copyAdmission": {
+    "path": "docs/implementation/niche-theme-programme/supplemental-recovery-copy-admission.json",
+    "sha256": "ca83d7fa9a5c1c4d163012efb15005e59866aa4022eb38d2199c772121363345"
+  },
+  "cartSourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/cart-url-facts-order-source-final-admission.json",
+    "sha256": "a7c033be9c74587297a4031fcc804fcf2de678b2cc9def3ef0b0c0e7f1440b91"
+  },
+  "merchantStockSourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/merchant-stock-intent-source-admission.json",
+    "sha256": "67492c19205e43aaab4914875640778b699ed3956ce3121aa68e9e4df8dd05b4"
+  },
+  "candidateSourceProof": {
+    "path": "/private/tmp/theme-editor-recovery-20261024-01/supplemental-recovery-source-proof.json",
+    "sha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f"
+  },
+  "candidateSourceDeltasChecked": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts",
+      "sha256": "1cc8bd46a88302dc9319f00d8e4a3c5688760bfcc8a76f494936b83943245070",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/playfield-v201-facts.test.ts",
+      "sha256": "d71ff4afa6fbd7417f7d836589a25b55f78fdb43ce8889b0cd3d382b48eb72e0",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "40b12590447f6689d59197e52f7f35841589d1b1b7da3e1ae3e11b84a50e9864",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "sha256": "829f6f49e4330c819a640ef11be87cd0f48eca02c03722c6072234c6c14b35dd",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts",
+      "sha256": "1d4febedd0d6babf2cd0a3146f758adf082293a5bb8065291034bfdc8b6b477f",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-selection-url.ts",
+      "sha256": "290b94804e758325f8262a4dd53bdc81ddbbf30b4ae1a811f7affacde5158ed1",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/final-combined-source-2026-10-24/builder-proof.ts",
+      "sha256": "a35eff916f84e1533d72f9caf36ec657878ea5206652fd1d4c3046084e85f029",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "packages/theme-engine/test/niche-order-presentation.test.ts",
+      "sha256": "20cef99b2deea24bb02b0c08ecfe7224eb3e8fe90b2a30c09c06afc88502eb19",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-v201.test.ts",
+      "sha256": "5253b640529109e96ce4c04c76085f79160f77be90bff06be992e7198ed20eae",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "0e43c56ea73b3b60d3e8c99da545849272e578a0f352580004f7a5ef1ad07145",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "686d437aeed4a295a175a8b94bd8c3e2c758f4454d60fabcaa55685d4710bac4",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "cdc702e0375f75bbcac4149b18fdf1fe682d191f67f0dab8238663f15d945883",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+      "sha256": "0accbb3037ccb1c6f10022e93921394bee471a6742d1219752179c136cdc4757",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts",
+      "sha256": "413a6e3c42ac78f3352e29139034134c51163f7287a83dfb6379f74071d17fca",
+      "matchesAdmissionHash": true,
+      "bytesMatch": true
+    }
+  ],
+  "principalCartSourcePinsChecked": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts",
+      "sha256": "1cc8bd46a88302dc9319f00d8e4a3c5688760bfcc8a76f494936b83943245070",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-selection-url.ts",
+      "sha256": "290b94804e758325f8262a4dd53bdc81ddbbf30b4ae1a811f7affacde5158ed1",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts",
+      "sha256": "1d4febedd0d6babf2cd0a3146f758adf082293a5bb8065291034bfdc8b6b477f",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "packages/theme-engine/test/niche-order-presentation.test.ts",
+      "sha256": "20cef99b2deea24bb02b0c08ecfe7224eb3e8fe90b2a30c09c06afc88502eb19",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+      "matchesAdmissionHash": true
+    }
+  ],
+  "merchantStockPinsChecked": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+      "matchesAdmissionHash": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts",
+      "matchesAdmissionHash": true
+    }
+  ],
+  "rootSavedSourceValidation": {
+    "cartDistinctPass": 164,
+    "cartFail": 0,
+    "stockPass": 124,
+    "stockFail": 0,
+    "runtimeAcceptanceCredit": 0
+  },
+  "retainedOriginalRunCases": {
+    "P00_P07": "PASS on original f607 client epoch retained separately",
+    "P08": "FAIL on original f607 client epoch pending actual controlled-client recheck",
+    "P09_P12": "NOT RUN; P12 stale result NOT RUN"
+  },
+  "requiredBeforeAcceptanceAdvances": [
+    "Explicit Root runtime/source handoff to sole Editor on existing f607 fixture.",
+    "Actual normal Pantry P08 overstock/retry/reload recheck; source-only gate does not resolve failure.",
+    "Reverify affected current250g/unknown variant and accepted cart behavior in normal flow on the new commerce source epoch.",
+    "Actual normal Pantry order and both histories; preserve separate accepted250g active cart before P11.",
+    "Actual P11 normal later edit payload omits unchanged stock; consumed/reserved inventory and old order/cart provenance conserved.",
+    "P12 actual stale provenance rejection with exact surfaced mapping and unchanged original order/history."
+  ],
+  "limits": [
+    "Read-only filesystem hashes/byte counts checked; no app builds, tests, DB/API/browser/runtime actions by Pantry.",
+    "Root-reported17243-source closure/2174dependency links/256contained links/45workspace resolutions not independently rewalked or re-resolved here.",
+    "Root-owned source proof hash is recorded as a proof artifact, not substituted for the earlier f607 source manifest.",
+    "Copy admission runtimeStarts0 is a saved-at-admission fact; live readiness is not inferred.",
+    "Source-level lint retains inherited diagnostics; no full lint-green claim."
+  ],
+  "sourceChangesByPantry": []
+}

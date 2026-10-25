@@ -263,7 +263,8 @@ export default function CategoriesPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="collections"
+                    recipe="index"
                     title="Categories"
                     description="Organize products into shopper-friendly catalog groups."
                     breadcrumbs={[{ label: 'Products' }, { label: 'Categories' }]}
@@ -279,7 +280,8 @@ export default function CategoriesPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="collections"
+                recipe="index"
                 title="Categories"
                 description="Organize products into shopper-friendly catalog groups."
                 breadcrumbs={[{ label: 'Products' }, { label: 'Categories' }]}

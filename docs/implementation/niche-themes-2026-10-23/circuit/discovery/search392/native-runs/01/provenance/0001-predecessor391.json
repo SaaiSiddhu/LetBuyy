@@ -1,0 +1,18 @@
+{
+  "runId": "e9e26bcac125",
+  "sequence": 1,
+  "operation": "predecessor391",
+  "inputs": {
+    "suiteSha256": "f0893696d1104c7f46e382eab4eb44ea48758eceeed223e52a6f052385ce1617",
+    "upSha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+    "downSha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+    "admissionSha256": "7365adc5beeb9a86c2b05f43e1aefde8a7342fa2384579da0a971f21625b6afe",
+    "validatorCasesSha256": "34af5bba863bc02a82e65413fd96e9843df5690df01d44917a0f9d742e9727cf",
+    "predecessor391UpSha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+    "predecessor391DownSha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54"
+  },
+  "value": {
+    "signature": "public.mutate_owned_theme_draft_v1(uuid,uuid,text,text,integer,text,text,jsonb,jsonb,uuid,text,jsonb)",
+    "actualBody": "f14f2252157119e56f6614decef4c4aa"
+  }
+}

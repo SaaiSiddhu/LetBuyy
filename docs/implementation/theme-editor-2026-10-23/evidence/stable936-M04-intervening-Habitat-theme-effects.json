@@ -1,0 +1,93 @@
+{
+  "runId": "936e5f577646",
+  "readOnly": true,
+  "since": "2026-10-24T05:22:25.829Z",
+  "actual": {
+    "events": [
+      {
+        "id": "9ca7d012-d14b-4d40-9e01-549279e7ea87",
+        "type": "theme.draft.saved",
+        "createdAt": "2026-10-24T05:24:13.314149+00:00",
+        "aggregateId": "f202cb78-0bf3-4144-b101-40a7c95720a5",
+        "aggregateType": "theme_draft"
+      },
+      {
+        "id": "4dc64108-b095-4606-99f1-6e460e3c56e2",
+        "type": "theme.installed",
+        "createdAt": "2026-10-24T05:24:13.314149+00:00",
+        "aggregateId": "807b2c76-ae1a-4a94-850f-fe774a742279",
+        "aggregateType": "theme"
+      },
+      {
+        "id": "0c4f5733-3e63-4c02-81b5-903a8fe80c15",
+        "type": "theme.draft.saved",
+        "createdAt": "2026-10-24T05:24:43.012062+00:00",
+        "aggregateId": "f202cb78-0bf3-4144-b101-40a7c95720a5",
+        "aggregateType": "theme_draft"
+      },
+      {
+        "id": "e2ad1f78-a7b4-4c39-b6b2-b5858a83e949",
+        "type": "theme.draft.saved",
+        "createdAt": "2026-10-24T05:24:57.943258+00:00",
+        "aggregateId": "f202cb78-0bf3-4144-b101-40a7c95720a5",
+        "aggregateType": "theme_draft"
+      },
+      {
+        "id": "a0d9bc1c-50a6-48fe-9aef-1adeb2cbbe9f",
+        "type": "theme.release.published",
+        "createdAt": "2026-10-24T05:25:08.552416+00:00",
+        "aggregateId": "2a450ba2-c5a1-40b4-b928-532a5f2f54fd",
+        "aggregateType": "theme_release"
+      },
+      {
+        "id": "4054495e-4b79-487e-b7e0-95f6e507fb43",
+        "type": "theme.draft.saved",
+        "createdAt": "2026-10-24T05:25:08.81059+00:00",
+        "aggregateId": "f202cb78-0bf3-4144-b101-40a7c95720a5",
+        "aggregateType": "theme_draft"
+      }
+    ],
+    "idempotency": [
+      {
+        "id": "3aee2b7a-94d1-42c9-9c62-4dad138ac93d",
+        "scope": "theme-draft-v1:f6315386-e12f-4816-956f-3a2088e7c714:letbuyy-craft",
+        "status": "completed",
+        "createdAt": "2026-10-24T05:24:13.314149+00:00",
+        "resourceId": "8c883734-37f8-4b74-b895-6a063ff159fe",
+        "resourceType": "theme_draft"
+      },
+      {
+        "id": "1a014e37-43cf-4d81-a542-a0a8dd8669b6",
+        "scope": "theme-draft-v1:f6315386-e12f-4816-956f-3a2088e7c714:letbuyy-craft",
+        "status": "completed",
+        "createdAt": "2026-10-24T05:24:43.012062+00:00",
+        "resourceId": "8c883734-37f8-4b74-b895-6a063ff159fe",
+        "resourceType": "theme_draft"
+      },
+      {
+        "id": "d2cc5a75-eb73-428c-bc9d-68fd71151e39",
+        "scope": "theme-draft-v1:f6315386-e12f-4816-956f-3a2088e7c714:letbuyy-craft",
+        "status": "completed",
+        "createdAt": "2026-10-24T05:24:57.943258+00:00",
+        "resourceId": "8c883734-37f8-4b74-b895-6a063ff159fe",
+        "resourceType": "theme_draft"
+      },
+      {
+        "id": "400126ba-1b7b-458c-bb72-86adc2d5c550",
+        "scope": "theme-draft-v1:f6315386-e12f-4816-956f-3a2088e7c714:letbuyy-craft",
+        "status": "completed",
+        "createdAt": "2026-10-24T05:25:08.552416+00:00",
+        "resourceId": "8c883734-37f8-4b74-b895-6a063ff159fe",
+        "resourceType": "theme_draft"
+      },
+      {
+        "id": "4ed03991-5674-42b9-b9e0-d4b35b299d2d",
+        "scope": "theme-draft-v1:f6315386-e12f-4816-956f-3a2088e7c714:letbuyy-craft",
+        "status": "completed",
+        "createdAt": "2026-10-24T05:25:08.81059+00:00",
+        "resourceId": "8cc7fbee-8474-41bd-9e55-05efbdd3cca3",
+        "resourceType": "theme_draft"
+      }
+    ]
+  }
+}

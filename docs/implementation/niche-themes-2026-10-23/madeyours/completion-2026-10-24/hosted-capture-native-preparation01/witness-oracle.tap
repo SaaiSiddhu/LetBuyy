@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: valid canonical capture plus false flag retains witness before the intended metadata failure
+ok 1 - valid canonical capture plus false flag retains witness before the intended metadata failure
+  ---
+  duration_ms: 2.091375
+  type: 'test'
+  ...
+# Subtest: the identical oracle accepts a truthful flag after the same valid capture
+ok 2 - the identical oracle accepts a truthful flag after the same valid capture
+  ---
+  duration_ms: 0.329916
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_site
+ok 3 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_site
+  ---
+  duration_ms: 0.393625
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_order
+ok 4 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_order
+  ---
+  duration_ms: 0.305375
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_payment
+ok 5 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_payment
+  ---
+  duration_ms: 0.351125
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_amount
+ok 6 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_amount
+  ---
+  duration_ms: 0.276542
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: unpaid
+ok 7 - invalid causal prerequisite cannot be misclassified as metadata RED: unpaid
+  ---
+  duration_ms: 0.309291
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: double_capture
+ok 8 - invalid causal prerequisite cannot be misclassified as metadata RED: double_capture
+  ---
+  duration_ms: 0.311708
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_original_key
+ok 9 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_original_key
+  ---
+  duration_ms: 0.459917
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_entry_amount
+ok 10 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_entry_amount
+  ---
+  duration_ms: 0.517917
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_entry_scope
+ok 11 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_entry_scope
+  ---
+  duration_ms: 3.164833
+  type: 'test'
+  ...
+# Subtest: invalid causal prerequisite cannot be misclassified as metadata RED: wrong_hosted_order
+ok 12 - invalid causal prerequisite cannot be misclassified as metadata RED: wrong_hosted_order
+  ---
+  duration_ms: 0.370792
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 152.84025

@@ -1,0 +1,298 @@
+{
+  "theme": "Pantry",
+  "phase": "M2_installed_Pantry_lifecycle_coordination_active",
+  "version": "2.0.0",
+  "namespace": "food",
+  "factory": "createPantryTheme",
+  "currentAction": "Actual fresh936 checkpoint9PASS(P00-P08),1FAIL(P09normal COD entry and one permitted recovery both failed/no new Pantry order),3NOT RUN(P10-P12). Exact failed checkout HTTP/step unobserved; Root actual sessionpayment_intent/CODnotfailed, source candidate qualified. Root-assigned private owner diagnosis; shared main/current UI frozen.",
+  "source": [
+    "packages/theme-engine/src/pantry-theme.ts",
+    "packages/theme-engine/src/pantry-styles.ts",
+    "packages/theme-engine/src/pantry-discovery.ts",
+    "packages/theme-engine/test/pantry.test.ts",
+    "packages/commerce-core/src/pantry-facts.ts",
+    "packages/commerce-core/test/pantry-facts.test.ts",
+    "apps/commerce/web/src/lib/demo/pantry-demo.ts",
+    "apps/commerce/web/public/theme-assets/pantry/v2/"
+  ],
+  "tests": {
+    "owned": "20 passed /0 failed (6food+14theme)",
+    "domainTypecheck": "PASS",
+    "themeTypecheck": "PASS (discovery-typecheck.log)",
+    "demo": "2 canonical ProductModel fixtures validated",
+    "pureRenderer": "index/collection/product rendered; no warnings",
+    "browser": "PASS80/80:10scenes\u00d74widths\u00d71x/2x;0bounds/textclipping/contrast/smalltargets/media/closed-navtabfailures;0JS/requesterrors",
+    "databaseLifecycle": "PASS11/11,0failed/0cancelled/0skipped/0todo; positively owned fresh PG/REST; fullcleanup verified",
+    "variantContract": "10 passed /0 failed (4new+6existing)",
+    "adapter": "2 passed /0 failed",
+    "appMapper": "3 passed /0 failed",
+    "storefrontRegression": "15 passed /0 failed",
+    "merchantEditor": "6 passed /0 failed",
+    "gatewayTypecheck": "Other-owner theme-editor-preview-content Headers diagnostic; no owned diagnostic",
+    "merchantTypecheck": "PASS: pnpm --filter @letbuyy/merchant-web typecheck (merchant-variant-typecheck.log)",
+    "variantProjection": "2 passed /0 failed",
+    "merchantVariantEditor": "6 passed /0failed /0skipped; FoodVariantFactsSchema and real controlled DOM edits",
+    "demoCollectionMembership": "3 passed /0failed; real shared resolver with supplied map; dispatcher integration separate",
+    "browserPackShelf": "PASS24/24:perwidth known/missing/soldout/unknownfacts and named memberships",
+    "browserNativeInteraction": "8native disclosure/focus checks;2mobile navigation open/Escape/focus/scroll checks pass",
+    "selectedVariantNative": "PASS8/8 new actualmapper/Liquid/nativecustom-element DOM cases",
+    "retainedCarrierCart": "PASS27/27 originalcohort",
+    "selectedVariantIntegrated": "PASS35/35,0fail/skip/cancel",
+    "commerceTypecheck": "PASS (madeyours-client-typecheck.log)",
+    "freshFactoryManifest": "PASS: pre-normalization actual registry helper + JSON/document/compile roundtrip;23templates retained; strict unknown-field negative control",
+    "pantryDiscoveryForms": "PASS5/5 real FormData\u2192canonical query parser using actual same-response projection",
+    "pantryDiscoveryCombined": "PASS25/25,0fail/skip/cancel",
+    "madeYoursClientCombined": "PASS57/57;35retained+9helper+13rendered/native/adapter"
+  },
+  "sharedDependencies": [
+    "Root actual raw-to-flat food projection and selected variant/quantity updates",
+    "Unified food facets/query state",
+    "Catalog/preview/editor dispatch",
+    "Canonical immutable pack order snapshot and merchant/owned readback"
+  ],
+  "browserResources": "CLOSED: freshChromeprofiles/browsers and only own127.0.0.1:43270server; portno listener; slot2explicitlyreleased",
+  "next": "Root-designated owner source diagnosis/fix qualification and actual admitted normal UI order retry; P09 reverify, then P10, preserve distinct pre-edit250gcart, P11, P12. No extra live writes or source/resource actions by Pantry.",
+  "strictMissingVariant": "PASS: missing variant does not inherit product quantity/unit price",
+  "databaseRun": {
+    "runId": "fda7d2c5db61",
+    "report": "owned-db-385-run.json",
+    "tap": "owned-db-385/pantry-variant-facts.postgres.log",
+    "ownership": "verified before start",
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "wallSeconds": 40.6,
+    "reaped": [],
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "slot": "explicitly released to coordinator"
+  },
+  "claimsNotMade": [
+    "public read-only HTML conversion/Next routing",
+    "variant/cart/purchase hydration",
+    "immutable cart/order persistence/readback",
+    "live install/editor/publish/recovery browser acceptance",
+    "hosted deployment"
+  ],
+  "sharedSourceLease": "RELEASED_TO_COORDINATOR",
+  "staticBrowserScope": "Actual explicit v2 factory \u2192 trusted dispatcher \u2192 actual StoreService/template resolver \u2192 actual section binder \u2192 actual mapper/compositor helpers \u2192 LiquidRenderer \u2192 canonical assembly and unchanged app storefront CSS. Isolated native navigation class only; no cart/variant/purchase hydration, public read-only conversion, Next/API/DB/order claim.",
+  "selectedVariantSourceLease": "RELEASED_TO_COORDINATOR",
+  "lifecyclePreparation": {
+    "matrix": "installed-buyer-lifecycle-matrix.md",
+    "sourceManifest": "installed-buyer-lifecycle-matrix-source.json",
+    "rows": 13,
+    "executed": 7,
+    "sourceFreezeChanges": [],
+    "coordinationLedger": "installed-buyer-lifecycle-coordination.json",
+    "fixtureRecipeHook": "Released prepareThemeEditorQaStore canonical API recipes; not runtime seeded",
+    "sharedRunExists": true,
+    "pantryScopeAllocated": "Editor finite diagnostic only",
+    "baselineOnly": 1,
+    "unrun": 6,
+    "accepted": 3,
+    "firstPassEvidence": "installed-buyer-lifecycle-first-pass.json",
+    "currentResults": {
+      "PASS": 3,
+      "FAIL": 1,
+      "BLOCKED": 3,
+      "NOT RUN": 6
+    },
+    "executedScope": "Actual attempted rows; P03 incomplete blank-count and P07 partial known-line do not confer whole-case PASS."
+  },
+  "platformOriginControlRepair": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/platform-origin-control-repair/source-release.json",
+    "sha256": "a403a7672972964b72319119232fff7e942dc43524c1bb8347934a96365c6f6a"
+  },
+  "remainingCartApproval": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/remaining-cart-approval-coordinator-readback.json",
+    "sha256": "5a241acd373b1219b923bf3ce7a021e0e749ff0f5a8cb24213a382914e1791c5"
+  },
+  "platformOriginSourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/platform-origin-query-source-admission.json",
+    "sha256": "821d9cd4273b1d602bda09014614f8fde8ce56797ccfd9e2b5a64963383df8a2"
+  },
+  "trustedCheckoutHandoffCheck": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/editor-corrected-fixture-copy-gate.json",
+    "sha256": "a26a9c95b4fbeee1de499c20a233e2a015794055a613fd97acd2c328d0d9f104"
+  },
+  "correctedCandidateReadonlyAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-latest392-candidate-readonly-audit.json",
+    "sha256": "0e069999673619d5367977f8d50c23b0302eda72ac8f983cb5d3d7935f432835"
+  },
+  "correctedRuntimeStartupAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-startup-readonly-audit.json",
+    "sha256": "cb743049ed2aa92547c18ec91f8d562018a81d64dfe7896d136826edc196864a"
+  },
+  "normalMerchantOriginAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-merchant-origin-smoke-audit.json",
+    "sha256": "be7c8dd2e76b371a3de669b15b5e08737ec1f6e41e7a74a09ef1c0bf08e9620c"
+  },
+  "browserTlsFailureAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-browser-tls-failure-audit.json",
+    "sha256": "ea29533ec67f22410e537174cf02d1dc33b89533d1e8fc53639c94546867d4aa"
+  },
+  "browserTlsCodeCorrection": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-browser-tls-code-correction.json",
+    "sha256": "5b59113ee02a529e11858e8eab12cf4482cd026fd7b9ff5c2c0e3e7c581eda45"
+  },
+  "continuationAllocation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-p08-continuation-allocation.json",
+    "sha256": "e1ab77bf7eb079cf59ac03bd2adee3a0181e06578b9c57e124bf38eda4359e1e"
+  },
+  "normalHttpsFormAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-normal-https-form-audit.json",
+    "sha256": "4366825c33af3e8f2b84b206a3a10f8f5f7fec00afe0ff6016bae6752c1aeabb"
+  },
+  "buyerCheckoutBindingAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-buyer-checkout-binding-audit.json",
+    "sha256": "f55c31fc7915f9df940aa46af946b5a9594bbb7c547e3e89af564bcb9be1987e"
+  },
+  "currentQueueAllocation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-p08-root-queue-change.json",
+    "sha256": "40bcc95a4219830604b0290818114be5a9b9a68c29ab6892e53d5e92f6ea2861"
+  },
+  "correctedRunResults": {
+    "PASS": 11,
+    "FAIL": 0,
+    "BLOCKED": 2,
+    "NOT RUN": 0
+  },
+  "correctedRunId": "f6074d90e894",
+  "pantryPublicationChainAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-pantry-publication-chain-audit.json",
+    "sha256": "ea7f08e6b73d6794936baa9df5c69a79f4d18404d9af0dcd7ba8701926ff501b"
+  },
+  "sharedCartRecoveryAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-shared-cart-recovery-audit.json",
+    "sha256": "ae1e4efa2840cf11728604a6c3e226c7d75dbc02dd54f33364d3dfd499624ff5"
+  },
+  "p01FreshMerchantAcceptance": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p01-merchant-facts-acceptance.json",
+    "sha256": "ed1246e42462ce9b981c2e34b100ecfda0fe3246704562d7c93c7039c159f9d9"
+  },
+  "p02FreshVariantClearAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p02-variant-clear-audit.json",
+    "sha256": "583931fc0a9261ad68da05cb55da52fd9fbe0b42a6756ef6bec63bb7724a570d"
+  },
+  "p04FreshSelectionAcceptance": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p04-selection-acceptance.json",
+    "sha256": "fdbff94db19d9a4beccbed682fe2830097047149b1b61eb8ecd84688e9eae2f3"
+  },
+  "p05FreshRiceAcceptance": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p05-unvarianted-acceptance.json",
+    "sha256": "12ca16146f6441de4b0f36dc98c401c87411aa0b288c1e69b1522e66623fa46b"
+  },
+  "freshCaseAudits": {
+    "P00": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p00-install-publication-acceptance.json",
+      "sha256": "7ce3196628dde6d529adf51be0cef83e366b0e2e0c4ea8d0e5acd548f13c2868"
+    },
+    "P02": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p02-variant-facts-acceptance.json",
+      "sha256": "20ba98fda58dc10cbb2090aa6691e2c8debfc3d5e9bcd87c56f02aa2c04f4659"
+    },
+    "P03": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p03-pack-count-acceptance.json",
+      "sha256": "475d1f87db01928f34ae5e8e053e6c511a308b607cbafcb67866ea85664f1078"
+    },
+    "P07": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p07-cart-acceptance.json",
+      "sha256": "6d40ec1f7a3ee4471ab2d93528b4b4d6a50373425d4612e0f84f5a454a10ae7e"
+    },
+    "P08": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p08-cart-recovery-failure.json",
+      "sha256": "60ced882bc07ad535530dff562cb556f7001b44aa92431d0ece472d940616396"
+    },
+    "P06": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p06-discovery-acceptance.json",
+      "sha256": "749a57575799520a3d8d53a3af84609777cd55fe0e8372a1c8dd222769d7a5c7"
+    },
+    "P09": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p09-normal-cod-acceptance.json",
+      "sha256": "a6744d839d3fb2e5140acd7b4627341fae2f10ff1d2ba3428fd9ef19db1cd3ec"
+    },
+    "P10": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p10-history-acceptance.json",
+      "sha256": "868137fa0b32dd63c8307f91bfc6a598a44bb0aeb72c93edada427211f524a96"
+    },
+    "P11": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p11-later-edit-acceptance.json",
+      "sha256": "b5c83785dd7cd3eae20f7f8fccadf4dfe87c72744075148c33a5039e35f31320"
+    }
+  },
+  "controlledRecoveryCopyAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-recovery-copy-readonly-audit.json",
+    "sha256": "a30d2502e15469873d2d409fe86f4642fcf8c355796f2446a4237b433b1cf8f5"
+  },
+  "controlledRecoveryRuntimeAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-recovery-runtime-readonly-audit.json",
+    "sha256": "b9d5cebf02354b2556cb538c3a0949c08bc021b5740caa995c2dc65343611094"
+  },
+  "p12StaleAttemptAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p12-stale-attempt-blocked-audit.json",
+    "sha256": "48b35348abf76a3e43365a6d8b2e1e867f704231e43d2c978dd398f5c4211646"
+  },
+  "errorMappingSourceTrace": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/f607-stock-stale-error-mapping-source-trace.json",
+    "sha256": "4e1c0f3910d1ced63f0b78ae6a755294f9619bedaf32f6ef79564404682c1e41"
+  },
+  "checkoutProductChangedSourceRelease": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/checkout-product-changed-source-release/source-release.json",
+    "sha256": "9626c5be898b01792bf92c7d51d83c0808833db25e58255d14d24da2238596e8"
+  },
+  "checkoutProductChangedSourceLease": "ROOT_INDEPENDENTLY_ADMITTED_RELEASED_AND_FROZEN",
+  "checkoutProductChangedSourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/checkout-product-changed-source-admission.json",
+    "sha256": "2d1d7bcbfbdca43c8fdc0b90749bda37e4289f126f1a66d3bd8ed98c282c1c8a"
+  },
+  "queuedRunId": "936e5f577646",
+  "freshRuntimeAdmission": {
+    "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+    "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+  },
+  "freshRunResults": {
+    "PASS": 9,
+    "FAIL": 1,
+    "BLOCKED": 0,
+    "NOT RUN": 3
+  },
+  "freshRunResultScope": "Actual current936 finite checkpoint: P00-P08 PASS, P09 FAIL after first entry+one permitted recovery, P10-P12 NOT RUN due unmet order/history dependency. All13 classified; acceptance incomplete and required owner repair/reverification still pending.",
+  "freshExecutionPacket": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/stable936-single-controller-execution-packet.json",
+    "sha256": "f4925aaed2d9462f231cd8964bd02bc57a446bb2cfc7f49150409caa55ccb1b6"
+  },
+  "freshNamedAllocation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/stable936-named-editor-allocation.json",
+    "sha256": "63ce1ecbc6d748ce2276f82761a722995e8823ac48409c66cf6bdad09f8c856a"
+  },
+  "freshCorrectedClientAdmission": {
+    "path": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+    "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+  },
+  "freshRunUnfinalizedCaseCount": 0,
+  "fresh936Audits": {
+    "P00": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p00-install-publication-acceptance.json",
+      "sha256": "f6917c8bd0b3715a2768581fa6ed67ef2befd4515865e7c03ec77efb7bd8d5bf"
+    },
+    "P01": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p01-merchant-facts-acceptance.json",
+      "sha256": "a7363d92cd852cff149e062ad4bf072f11396d0cd32c2e5642c35f5f3217ee88"
+    }
+  },
+  "fresh936P02P08Checkpoint": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+    "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa"
+  },
+  "fresh936P09FailureAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p09-normal-checkout-failure-audit.json",
+    "sha256": "42d7d934a369903acf6693d749aae9bfef7813e1703a01728f989684809243a0"
+  }
+}

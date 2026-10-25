@@ -1,0 +1,18 @@
+{
+  "status": "ROOT_PLAYFIELD201_NATIVE_SOURCE_ADMITTED_FOR_ONE_DEFAULT_LATEST393_CANDIDATE394",
+  "recordedAt": "2026-10-24T09:22:27.193150+00:00",
+  "suitePath": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+  "suiteSha256": "95dee5d4dd9dd2b9ad38dc2d42b4bb5a175e502c9731f3ddc499d21e601c1d07",
+  "rootProposalPath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/proposal-admission.json",
+  "rootProposalSha256": "471a0fcf9a5b830e1219b9290c06387af8ca180dc7c2865eabe1979c51818dc6",
+  "manifestSha256": "f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e",
+  "manifestFileSha256": "a363ce4d0fed00f8989194d9e531da11939f2e4d1bf3f97bf4b3863ece0887f1",
+  "sourceMigrationMaximum": 393,
+  "sourceMigrationCount": 322,
+  "migrationCeiling": null,
+  "candidateMigration": 394,
+  "candidateOutsideMigrationScan": true,
+  "inputClosurePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/source-input-closure.json",
+  "inputClosureSha256": "4915164907934c91ec6662111eb7bb898f10f41890374832de79cd0e1a4e73e3",
+  "nativeLease": "GRANTED_ONE_FRESH_DEFAULT_LATEST393_JOBS1_NO_REAP_PREPARED2_600S"
+}

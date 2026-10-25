@@ -1,0 +1,10 @@
+{
+  "classification": "ONLY_COPY_LOCAL_SOURCE_AND_OUTPUT_PATHS_REBOUND_SAME_SUPERVISOR_LOGIC",
+  "beforePath": "/private/tmp/letbuyy-original210-restore-monitor01.py",
+  "beforeSha256": "aa57db99ee887c913069cfe514b7988cce91a870ff6e0ab60acb8e1a42a2b571",
+  "afterPath": "/private/tmp/letbuyy-original210-restore-monitor02.py",
+  "afterSha256": "951f414dbf5151574dfb4107d0ca758aac2bb5a4014acdb1e1ae2c53eb919e80",
+  "allOtherBytesIncludingEnvironment600sSafetyAndApprovalChecksExact": true,
+  "syntax": "PASS",
+  "executions": 0
+}

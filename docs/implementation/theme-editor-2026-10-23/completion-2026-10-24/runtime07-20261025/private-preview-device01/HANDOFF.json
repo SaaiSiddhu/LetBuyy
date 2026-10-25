@@ -1,0 +1,101 @@
+{
+  "sealedAt": "2026-10-25T01:46:40.376822+00:00",
+  "status": "SEALED_PRIVATE_TWO_FILE_PROPOSAL_UNAPPLIED",
+  "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "grant": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/EDITOR_PREVIEW_DEVICE_PRIVATE_ALLOCATION_02.json",
+    "sha256": "bf30637ca0c7640273d7745b4d7d5e6f26b9be8284cc2dbfef4a8abd4a505647",
+    "endsAtFirstSeal": true
+  },
+  "privateRoot": "/private/tmp/letbuyy-editor-preview-device-prep-20261025-01",
+  "durableOutput": "/Volumes/Projects/LetBuyy/docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/private-preview-device01",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.tsx",
+      "beforeSha256": "9f1f7e384214bdee7d3d8ce9956e3b849043e281d4c242c36aa6d27c1547f453",
+      "afterSha256": "48b005ce5fb42463af50210c3c8c3771d96aee6c3820e1ecff0657f13febcb1a",
+      "newFile": false
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.preview-device.test.tsx",
+      "beforeSha256": null,
+      "afterSha256": "75bd341ca4055c9ee387ae1040dbad0f5c254717fc3629948e9805e628ff854d",
+      "newFile": true
+    }
+  ],
+  "patch": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/private-preview-device01/proposal.patch",
+    "sha256": "8ecb4828ee3beb37b8d8b06a98e542d4aaedb9c28a83a2c8120a1472ba5545ae",
+    "applyCheck": 0
+  },
+  "behavior": "Device-only geometry stays within current signed iframe; canonical viewport message reapplies after load/verifiedREADY and while inspection is off. Real token/template/resource/page navigation and20sreadiness/retry remain. Origin/source/context/revision guards unchanged.",
+  "checks": {
+    "mountedOriginal": {
+      "pass": 4,
+      "fail": 2
+    },
+    "mountedPrivate": {
+      "pass": 6,
+      "fail": 0
+    },
+    "typeDiagnostics": 0,
+    "dependencyTypeDiagnostics": 0,
+    "patchCheck": 0
+  },
+  "sourceReadOnlyConfirmed": [
+    "Main CenterPanel9f1f7e...",
+    "Main pagec5fd47...",
+    "Main CSSa18b46...",
+    "sealed Runtime07 CenterPanel9f1f7e...",
+    "earlier independent CSSproposalb937e271 remains separate; not recreated or edited"
+  ],
+  "artifacts": {
+    "focused-typecheck.json": {
+      "sha256": "8354c831a844b3564838652fb683daf8abbac3068bdd9f2b9b7d06caa556fed9",
+      "bytes": 596
+    },
+    "LIMITATIONS.json": {
+      "sha256": "d9ba174e853d0f456baff2752a4e1dab517811df980c51443bb26d90a0a2af11",
+      "bytes": 1226
+    },
+    "SOURCE_MANIFEST.json": {
+      "sha256": "81be00e4956b55304519852071c09c785bbd814e5a02a2a87e71b38091b39a31",
+      "bytes": 867
+    },
+    "proposal.patch": {
+      "sha256": "8ecb4828ee3beb37b8d8b06a98e542d4aaedb9c28a83a2c8120a1472ba5545ae",
+      "bytes": 17834
+    },
+    "mounted-baseline-red.tap.txt": {
+      "sha256": "7cb03ab03edf5190a8aa546c78285344395fad3d42d4011cd224f934aef96b3f",
+      "bytes": 15
+    },
+    "STATIC_CHECKS.json": {
+      "sha256": "36d1a2d134b47735d1e7434504ac50a61580dd5c1e161f3b982c618cfead893a",
+      "bytes": 2119
+    },
+    "mounted-baseline-red-current.tap.txt": {
+      "sha256": "58bf4b642979f18abd8a65cfb6258a06713a1489f4f6933a8cdbb541b105684c",
+      "bytes": 3067
+    },
+    "patch-check.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "mounted-private-green.tap.txt": {
+      "sha256": "dde82a0eb8fdb681eeea31f201bfe6f89f0d8286572a98a0b5975841cfae86b7",
+      "bytes": 1587
+    },
+    "BROWSER_ACCEPTANCE_PLAN.json": {
+      "sha256": "26d395389e559c58efb704ec13f6d6b3258da216e1302a24806954f804a0b859",
+      "bytes": 1879
+    }
+  },
+  "limits": "See LIMITATIONS.json. Capturedv23aboutblank root cause and real browser repair remain unverified. No source/runtime/fulltheme certificate.",
+  "browserFence": "Retained. No original app/process/DB/browser/provider action. Original stopped runner must not be continued by this proposal.",
+  "next": "Themes/Root review exact sealed two-file patch; fresh Main/source bundle/native/browser admission precedes integration/acceptance. Root separately owns gateway revision guard.",
+  "sourceWriterGrantEnded": true,
+  "MainOrFrozenApplied": false,
+  "buildStarted": false,
+  "privateSourceFilesFrozen": true
+}

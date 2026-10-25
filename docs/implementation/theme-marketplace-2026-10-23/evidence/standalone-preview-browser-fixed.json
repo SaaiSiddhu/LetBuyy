@@ -1,0 +1,17 @@
+{
+  "origin": "http://localhost:9005",
+  "detailPath": "/themes/letbuyy-sense",
+  "sandboxPath": "/preview/letbuyy-sense?theme=letbuyy-sense&version=2.0.0",
+  "detail": {
+    "loaded": true,
+    "nestedSampleStore": true,
+    "refusedToConnect": false
+  },
+  "sandbox": {
+    "loaded": true,
+    "nestedSampleStore": true,
+    "refusedToConnect": false
+  },
+  "noHydrationOverlay": true,
+  "scope": "Owner-created tab, normal marketplace navigation, no cookie/storage/session inspection/reset, no install/provider mutation."
+}

@@ -1,0 +1,1101 @@
+{
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "elements": [
+    {
+      "className": "",
+      "label": "Skip to content\n[test identity].myshopify.com\nHorizon · Added: Yesterday at 5:14 pm\nSelect a pla",
+      "rect": {
+        "height": 844,
+        "width": 379,
+        "x": 0,
+        "y": 0
+      },
+      "styles": {
+        "backgroundColor": "rgb(241, 241, 241)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "BODY"
+    },
+    {
+      "className": "Polaris-Frame__Skip",
+      "label": "Skip to content",
+      "rect": {
+        "height": 32.5,
+        "width": 125.1484375,
+        "x": 8,
+        "y": 10
+      },
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "6px 12px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-Frame__Main Polaris-Frame__NoScrollbarGutterLine",
+      "label": "[test identity].myshopify.com\nHorizon · Added: Yesterday at 5:14 pm\nSelect a plan to launch stor",
+      "rect": {
+        "height": 844,
+        "width": 379,
+        "x": 0,
+        "y": 0
+      },
+      "styles": {
+        "backgroundColor": "rgb(241, 241, 241)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "MAIN"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "[test identity].myshopify.com\nHorizon · Added: Yesterday at 5:14 pm\nSelect a plan to launch stor",
+      "rect": {
+        "height": 3268,
+        "width": 363,
+        "x": 0,
+        "y": 76
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "16px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Link Polaris-Link--monochrome Polaris-Link--removeUnderline",
+      "label": "Edit theme",
+      "rect": {
+        "height": 550,
+        "width": 363,
+        "x": 0,
+        "y": 76
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "_Screenshot_sw7l8_1",
+      "label": "Theme preview screenshot",
+      "rect": {
+        "height": 933.421875,
+        "width": 363,
+        "x": 0,
+        "y": 76
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "IMG"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "[test identity].myshopify.com\nHorizon · Added: Yesterday at 5:14 pm",
+      "rect": {
+        "height": 52,
+        "width": 331,
+        "x": 16,
+        "y": 458
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "4px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "[test identity].myshopify.com",
+      "rect": {
+        "height": 24,
+        "width": 331,
+        "x": 16,
+        "y": 458
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "4px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "_ViewStoreButton_7wbza_1",
+      "label": "[test identity].myshopify.com",
+      "rect": {
+        "height": 24,
+        "width": 223.59375,
+        "x": 16,
+        "y": 458
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontSize": "18px",
+        "fontWeight": "600",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "",
+      "label": "Domain settings",
+      "rect": {
+        "height": 20,
+        "width": 20,
+        "x": 243.59375,
+        "y": 460
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 238)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 238)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "_ThemeActionButton_xaf5q_1 _tertiary_xaf5q_66 _PrelaunchAction_1df7o_8",
+      "label": "Select a plan to launch store",
+      "rect": {
+        "height": 56,
+        "width": 363,
+        "x": 0,
+        "y": 570
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "12px",
+        "fontWeight": "550",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "padding": "18px 8px 18px 12px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Select a plan to launch store",
+      "rect": {
+        "height": 20,
+        "width": 230.65625,
+        "x": 68.171875,
+        "y": 588
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "12px",
+        "fontWeight": "550",
+        "gap": "8px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Edit theme",
+      "rect": {
+        "height": 28,
+        "width": 121.390625,
+        "x": 16,
+        "y": 526
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "8px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "_ThemeActionButton_xaf5q_1 _primary_xaf5q_36 _CustomizeButtonBorderNone_9eeat_1",
+      "label": "Edit theme",
+      "rect": {
+        "height": 28,
+        "width": 85.390625,
+        "x": 16,
+        "y": 526
+      },
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "12px",
+        "fontWeight": "550",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "padding": "6px 12px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "_ThemeActionButton_xaf5q_1 _tertiary_xaf5q_66 _small_xaf5q_75 _PublishedThemeAction_1x4mc_5",
+      "label": "Click for more theme actions",
+      "rect": {
+        "height": 28,
+        "width": 28,
+        "x": 109.390625,
+        "y": 526
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "12px",
+        "fontWeight": "550",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "padding": "2px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Discover themes\nVisit Theme Store\nImport",
+      "rect": {
+        "height": 60,
+        "width": 343,
+        "x": 20,
+        "y": 650
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "8px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Visit Theme Store\nImport",
+      "rect": {
+        "height": 28,
+        "width": 212.1875,
+        "x": 20,
+        "y": 682
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "8px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Visit Theme Store",
+      "rect": {
+        "height": 28,
+        "width": 126.3515625,
+        "x": 20,
+        "y": 682
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Button Polaris-Button--pressable Polaris-Button--variantSecondary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter",
+      "label": "Visit Theme Store",
+      "rect": {
+        "height": 28,
+        "width": 126.3515625,
+        "x": 20,
+        "y": 682
+      },
+      "styles": {
+        "backgroundColor": "rgb(227, 227, 227)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "2px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "4px 12px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Import",
+      "rect": {
+        "height": 20,
+        "width": 61.8359375,
+        "x": 166.3515625,
+        "y": 686
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "12px",
+        "fontWeight": "550",
+        "gap": "4px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Horizonby Shopify\nAdd\nTinkerby Shopify\nAdd\nDwellby Shopify\nAdd\nSavorby Shopify\nAdd\nAtelier",
+      "rect": {
+        "height": 2618,
+        "width": 363,
+        "x": 0,
+        "y": 726
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "16px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-InlineGrid",
+      "label": "Horizonby Shopify\nAdd\nTinkerby Shopify\nAdd\nDwellby Shopify\nAdd\nSavorby Shopify\nAdd\nAtelier",
+      "rect": {
+        "height": 2618,
+        "width": 363,
+        "x": 0,
+        "y": 726
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "16px",
+        "gridTemplateColumns": "363px",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Link Polaris-Link--monochrome Polaris-Link--removeUnderline",
+      "label": "",
+      "rect": {
+        "height": 363,
+        "width": 363,
+        "x": 0,
+        "y": 726
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Horizonby Shopify\nAdd",
+      "rect": {
+        "height": 40,
+        "width": 363,
+        "x": 0,
+        "y": 1105
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Horizonby Shopify",
+      "rect": {
+        "height": 40,
+        "width": 66.125,
+        "x": 0,
+        "y": 1105
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Link Polaris-Link--monochrome Polaris-Link--removeUnderline",
+      "label": "",
+      "rect": {
+        "height": 363,
+        "width": 363,
+        "x": 0,
+        "y": 1177
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Tinkerby Shopify\nAdd",
+      "rect": {
+        "height": 40,
+        "width": 363,
+        "x": 0,
+        "y": 1556
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Tinkerby Shopify",
+      "rect": {
+        "height": 40,
+        "width": 66.125,
+        "x": 0,
+        "y": 1556
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Link Polaris-Link--monochrome Polaris-Link--removeUnderline",
+      "label": "",
+      "rect": {
+        "height": 363,
+        "width": 363,
+        "x": 0,
+        "y": 1628
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Dwellby Shopify\nAdd",
+      "rect": {
+        "height": 40,
+        "width": 363,
+        "x": 0,
+        "y": 2007
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Dwellby Shopify",
+      "rect": {
+        "height": 40,
+        "width": 66.125,
+        "x": 0,
+        "y": 2007
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Link Polaris-Link--monochrome Polaris-Link--removeUnderline",
+      "label": "",
+      "rect": {
+        "height": 363,
+        "width": 363,
+        "x": 0,
+        "y": 2079
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Savorby Shopify\nAdd",
+      "rect": {
+        "height": 40,
+        "width": 363,
+        "x": 0,
+        "y": 2458
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Savorby Shopify",
+      "rect": {
+        "height": 40,
+        "width": 66.125,
+        "x": 0,
+        "y": 2458
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Link Polaris-Link--monochrome Polaris-Link--removeUnderline",
+      "label": "",
+      "rect": {
+        "height": 363,
+        "width": 363,
+        "x": 0,
+        "y": 2530
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Atelierby Shopify\nAdd",
+      "rect": {
+        "height": 40,
+        "width": 363,
+        "x": 0,
+        "y": 2909
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Atelierby Shopify",
+      "rect": {
+        "height": 40,
+        "width": 66.125,
+        "x": 0,
+        "y": 2909
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "_ThemeStoreCard_1k2cj_72",
+      "label": "Explore more themesBrowse professionally designed free and paid themes\nVisit Theme Store",
+      "rect": {
+        "height": 363,
+        "width": 363,
+        "x": 0,
+        "y": 2981
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "_ThemeStoreCardContent_1k2cj_78",
+      "label": "Explore more themesBrowse professionally designed free and paid themes\nVisit Theme Store",
+      "rect": {
+        "height": 323,
+        "width": 279,
+        "x": 20,
+        "y": 3001
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Explore more themesBrowse professionally designed free and paid themes\nVisit Theme Store",
+      "rect": {
+        "height": 112,
+        "width": 279,
+        "x": 20,
+        "y": 3106.5
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "20px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Explore more themesBrowse professionally designed free and paid themes",
+      "rect": {
+        "height": 64,
+        "width": 279,
+        "x": 20,
+        "y": 3106.5
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "13px",
+        "fontWeight": "450",
+        "gap": "4px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Link",
+      "label": "themes",
+      "rect": {
+        "height": 14.5,
+        "width": 42.1953125,
+        "x": 212.5,
+        "y": 3364.5
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontSize": "12px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "A"
+    }
+  ]
+}

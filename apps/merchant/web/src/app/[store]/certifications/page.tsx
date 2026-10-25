@@ -287,7 +287,8 @@ export default function CertificationsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Certifications"
                     description="Show verified credentials and professional certificates on your resume."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Certifications' }]}
@@ -303,7 +304,8 @@ export default function CertificationsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Certifications"
                 description="Show verified credentials and professional certificates on your resume."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Certifications' }]}

@@ -1,0 +1,125 @@
+Browser tab: 33, Title: "LetBuyy Admin", URL: "http://admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/orders/c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/orders/c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/dashboard
+					15 link Description: Orders, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store
+						43 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			44 text Apps
+			45 container Apps
+				46 content list
+					47 link Description: Add, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/apps
+		48 container Settings navigation
+			49 content list
+				50 link Description: Settings, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/settings
+	51 container admin-page-scroll
+		52 container
+			53 heading Order #ORD-20261023-10000, Value: 1
+				54 text Order #ORD-20261023-10000
+			55 link Description: All orders, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/orders
+		56 container
+			57 heading Order summary, Value: 2
+				58 text Order summary
+			59 text Pending Cod Payment: Pending Fulfillment: Unfulfilled Refund: None Order number #ORD-20261023-10000 Placed 24 Oct 2026, 01:40 am Last updated 24 Oct 2026 Payment method COD
+		60 container
+			61 heading Customer, Value: 2
+				62 text Customer
+			63 text Name Synthetic QA Buyer Email
+			64 button syn-dewdrop-a-f6074d90e894@example.invalid
+			65 text Phone 9000000088
+			66 button View customer profile
+		67 container
+			68 heading Line items, Value: 2
+				69 text Line items
+			70 text 1 item Habitat lifecycle desk 48 in / Natural / SYN-EDITOR-furniture-f6074d90e894 2  ×  ₹8,900.00 ₹17,800.00
+			71 button (expanded) Saved product details for Habitat lifecycle desk, Secondary Actions: Collapse
+				72 text Saved product details
+				73 text  for Habitat lifecycle desk
+			82 container Saved options
+				83 heading Saved options, Value: 3
+					84 text Saved options
+				85 definition list
+					86 container Finish
+						87 text Finish
+					88 text Natural
+					89 container Width
+						90 text Width
+					91 text 48 in
+			92 container Furniture details
+				93 heading Furniture details, Value: 3
+					94 text Furniture details
+				95 definition list
+					96 container Assembled dimensions
+						97 text Assembled dimensions
+					98 text Width 48 in · Depth 30 in · Height 29.5 in
+					99 container Package dimensions
+						100 text Package dimensions
+					101 text Width 50 in · Depth 25 in
+					102 container Weight
+						103 text Weight
+					104 text 11.5 kg
+					105 container Materials
+						106 text Materials
+					107 text Wood
+					108 container Finish
+						109 text Finish
+					110 text Natural
+					111 container Assembly
+						112 text Assembly
+					113 text Assembly required.
+					114 container Assembly instructions
+						115 text Assembly instructions
+					116 text Use the supplied sample instructions.
+					117 container Assembly tools
+						118 text Assembly tools
+					119 text 4 mm hex key
+					120 container Care
+						121 text Care
+					122 text Natural finish: wipe dry.
+		74 container
+			75 heading Addresses, Value: 2
+				76 text Addresses
+			77 text SHIP TO 1 Fixture Road Bengaluru, Karnataka 560001 9000000088 BILL TO Same as shipping Shipping method standard
+		78 container
+			79 heading Payment summary, Value: 2
+				80 text Payment summary
+			81 text Subtotal ₹17,800.00 Shipping ₹20.00 Tax (GST) ₹0.00 Total ₹17,820.00 Refund status None Return status None
+
+The focused UI element is 71 button (expanded) Saved product details for Habitat lifecycle desk, Secondary Actions: Collapse

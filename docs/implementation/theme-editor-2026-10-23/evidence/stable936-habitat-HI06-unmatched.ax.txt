@@ -1,0 +1,238 @@
+Browser tab: 63, Title: "Habitat lifecycle desk | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40".
+0 AXWebArea Habitat lifecycle desk | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+	1 container
+		2 text Habitat 936 B — saved recovery draft.
+		3 link syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: THREADLINE, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		8 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		9 container Breadcrumb
+			10 link Description: Home /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+			11 link Description: Shop /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+			12 text Habitat lifecycle desk
+		13 heading Habitat lifecycle desk, Value: 1
+			14 text Habitat lifecycle desk
+		15 text INR 8,900.00
+		16 container Common product dimensions
+			17 container
+				18 text Common product dimensions  · check the selected finish below.
+			19 container
+				20 text 120 W × 60 D × 75 H cm
+				21 text Assembled dimensions
+			22 link Description: Dimensions, material & access ↓, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40#habitat-dimensions-habitat-product-selection
+		23 container
+			24 text Width
+			25 checkbox 48 in, Value: 1
+			26 checkbox Common size, Value: 0
+			27 checkbox 130 cm, Value: 0
+			28 checkbox 48 in width only, Value: 0
+			29 text Finish
+			30 checkbox Natural, Value: 0
+			31 checkbox Black, Value: 1
+			235 text This combination is currently unavailable
+		33 container No variant matches these options. Common product facts are shown.
+			236 text No variant matches these options. Common product facts are shown.
+			35 definition list
+				36 container Assembled
+					37 text Assembled
+				237 text 120 W × 60 D × 75 H cm
+				39 container Package
+					40 text Package
+				238 text 130 W × 65 D × 20 H cm
+				42 container Weight
+					43 text Weight
+				239 text 12 kg
+				45 container Seat height
+					46 text Seat height
+				240 text Seat height not supplied.
+				48 container Materials
+					49 text Materials
+				241 text Wood
+				51 container Assembly
+					52 text Assembly
+				242 text Assembly required · Use the sample desk instructions. · Tools: Hex key
+				54 container Care
+					55 text Care
+				243 text Wipe dry.
+			57 text Only supplied measurements are listed. An absent width, depth, height or diameter is not supplied. Assembled and package measurements describe different things.
+			58 link Description: Common reference, named finishes & access guidance ↓, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40#habitat-dimensions-habitat-product-selection
+		59 container
+			60 text Quantity
+			61 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-habitat-product-selection
+			62 button (disabled) Add to cart
+		63 container Add Habitat lifecycle desk to wishlist
+			64 checkbox Description: Connect store account to use wishlist, Value: 0
+		65 button (collapsed) Description, Secondary Actions: Expand
+			66 text Description
+		67 container Description: Furniture measurements and materials, ID: habitat-dimensions-habitat-product-selection
+			68 text MAKE SPACE FOR IT
+			69 heading Know every dimension., Value: 2
+				70 text Know every dimension.
+			71 text Measure the room it will live in, then the access path it will take to get there.
+			72 text Product facts below are common reference information. A selected finish may override them; use its current facts above.
+			73 container Common product footprint schematic
+				74 text Width: 120 cm
+				75 text Footprint
+				76 text Depth: 60 cm
+			77 text Common product footprint only. Schematic, not to scale. Check the current finish measurements; no access or fit is guaranteed.
+			78 table Product facts (common) · selected finish facts are shown above
+				79 text Product facts (common) · selected finish facts are shown above
+				80 row
+					81 cell
+						82 text Assembled dimensions
+					83 cell
+						84 text 120 W × 60 D × 75 H cm
+				85 row
+					86 cell
+						87 text Package W × D × H
+					88 cell
+						89 text 130 W × 65 D × 20 H cm
+				90 row
+					91 cell
+						92 text Product weight
+					93 cell
+						94 text 12 kg
+			95 text Package size is not assembled size. Compare supplied package dimensions with doors, stairs, turns and lifts.
+			96 heading Product material & assembly (common), Value: 3
+				97 text Product material & assembly (common)
+			98 text Wood
+			99 text Assembly required.
+			100 text Use the sample desk instructions.
+			101 text Tools: Hex key
+			102 container
+				103 button (expanded) Product care (common), Secondary Actions: Collapse
+					104 text Product care (common)
+				105 text Wipe dry.
+			106 container
+				107 button (expanded) Delivery & access, Secondary Actions: Collapse
+					108 text Delivery & access
+				109 text Delivery options and charges are confirmed by checkout for your address. A delivery date is not available unless a service result supplies one.
+			110 heading Facts by named finish, Value: 3
+				111 text Facts by named finish
+			112 text Compare supplied facts for each actual option. Each list includes resolved product facts unless that finish overrides them. Choose every option above to see the current finish.
+			113 heading Natural, Value: 4
+				114 text Natural
+			115 definition list
+				116 container Assembled
+					117 text Assembled
+				118 text 48 W × 30 D × 29.5 H in
+				119 container Package
+					120 text Package
+				121 text 50 W × 25 D in
+				122 container Weight
+					123 text Weight
+				124 text 11.5 kg
+				125 container Seat height
+					126 text Seat height
+				127 text Seat height not supplied.
+				128 container Materials
+					129 text Materials
+				130 text Wood
+				131 container Assembly
+					132 text Assembly
+				133 text Assembly required · Use the supplied sample instructions. · Tools: 4 mm hex key
+				134 container Care
+					135 text Care
+				136 text Natural finish: wipe dry.
+			137 heading Common size / Natural, Value: 4
+				138 text Common size / Natural
+			139 definition list
+				140 container Assembled
+					141 text Assembled
+				142 text 120 W × 60 D × 75 H cm
+				143 container Package
+					144 text Package
+				145 text 130 W × 65 D × 20 H cm
+				146 container Weight
+					147 text Weight
+				148 text 12 kg
+				149 container Seat height
+					150 text Seat height
+				151 text Seat height not supplied.
+				152 container Materials
+					153 text Materials
+				154 text Wood
+				155 container Assembly
+					156 text Assembly
+				157 text Assembly required · Use the sample desk instructions. · Tools: Hex key
+				158 container Care
+					159 text Care
+				160 text Wipe dry.
+			161 heading Black, Value: 4
+				162 text Black
+			163 definition list
+				164 container Assembled
+					165 text Assembled
+				166 text 130 W × 60 D × 75 H cm
+				167 container Package
+					168 text Package
+				169 text 135 W × 65 D × 20 H cm
+				170 container Weight
+					171 text Weight
+				172 text 13 kg
+				173 container Seat height
+					174 text Seat height
+				175 text Seat height not supplied.
+				176 container Materials
+					177 text Materials
+				178 text Metal
+				179 container Assembly
+					180 text Assembly
+				181 text Assembly required · Use the sample desk instructions. · Tools: Hex key
+				182 container Care
+					183 text Care
+				184 text Black finish: use a dry cloth.
+			185 heading 48 in width only / Natural, Value: 4
+				186 text 48 in width only / Natural
+			187 definition list
+				188 container Assembled
+					189 text Assembled
+				190 text 48 W in
+				191 container Package
+					192 text Package
+				193 text 130 W × 65 D × 20 H cm
+				194 container Weight
+					195 text Weight
+				196 text 12 kg
+				197 container Seat height
+					198 text Seat height
+				199 text Seat height not supplied.
+				200 container Materials
+					201 text Materials
+				202 text Wood
+				203 container Assembly
+					204 text Assembly
+				205 text Assembly required · Use the sample desk instructions. · Tools: Hex key
+				206 container Care
+					207 text Care
+				208 text Wipe dry.
+		209 container
+			210 heading Write a review, Value: 3
+				211 text Write a review
+			212 Your rating
+				213 radio button (settable, integer) Value: 0, ID: lb-review-star-1
+				214 checkbox Description: 1 star, Value: 0
+				215 radio button (settable, integer) Value: 0, ID: lb-review-star-2
+				216 checkbox Description: 2 stars, Value: 0
+				217 radio button (settable, integer) Value: 0, ID: lb-review-star-3
+				218 checkbox Description: 3 stars, Value: 0
+				219 radio button (settable, integer) Value: 0, ID: lb-review-star-4
+				220 checkbox Description: 4 stars, Value: 0
+				221 radio button (settable, integer) Value: 0, ID: lb-review-star-5
+				222 checkbox Description: 5 stars, Value: 0
+			223 text field (settable)
+			224 text field (settable)
+			225 text entry area (settable)
+			226 button Submit review
+		227 heading Threadline, Value: 3
+			228 text Threadline
+		229 text Habitat 936 B footer saved
+		230 heading CONTACT, Value: 4
+			231 text CONTACT
+		232 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		233 text © Threadline. All rights reserved.
+		234 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 25 checkbox 48 in, Value: 1

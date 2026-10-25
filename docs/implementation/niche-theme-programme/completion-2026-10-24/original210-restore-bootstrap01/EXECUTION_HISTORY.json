@@ -1,0 +1,30 @@
+{
+  "finalOracle": "BASELINE_RED03 andPRIVATE_GREEN03 same17tests",
+  "baseline": {
+    "pass": 7,
+    "fail": 10,
+    "skip": 0,
+    "cancel": 0,
+    "todo": 0
+  },
+  "private": {
+    "pass": 17,
+    "fail": 0,
+    "skip": 0,
+    "cancel": 0,
+    "todo": 0
+  },
+  "baselineFailureInterpretation": [
+    "One directdefaultpublic positive fails RESTORE_FAILED; parity-negative cannotreachparitydue sameearlierdefaultpublicfailure.",
+    "Six unsafe-pathreport/diagnostic failure cases lackcanonicalaccounting/errorredaction orlosecheckpointcause.",
+    "Successfulpreservedcheckpointbaseline test checksnewexecutionmetadata; itsfailureisnewmetadata absence, notproofthatoldsuccessfulcleanupwasbroken.",
+    "Unknown protected error andnonJSONraw-row controls requireadditional redactedaccounting fields, preservedscope only."
+  ],
+  "pureScope": "ActualMJSfunctions VM-executedwithrecordingPostgres/Docker/files/childseams. No realrestore/parity/security/provider/build claim; realarchive schema metadata suppliedseparately.",
+  "intermediateHistory": [
+    "Initial ordinaryfake fixture return0 typo correctedbeforeanytestexecution.",
+    "RED01/GREEN01 were15cases; RED02/GREEN02 addedunknown-codeleak control; final17casepairaddsnonJSONleakcontrol. Prioroutputsretained, no broadunchangedtests repeated."
+  ],
+  "actualFreshResources": 0,
+  "actualOriginalResourceWrites": 0
+}

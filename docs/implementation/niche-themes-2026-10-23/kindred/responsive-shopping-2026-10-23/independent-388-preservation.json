@@ -1,0 +1,87 @@
+{
+  "classification": "READ_ONLY_PRESERVATION_NO_REOPENED_REVIEW",
+  "files": [
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/kindred/REVIEW_388_SECURITY_ROLLBACK.md",
+      "sha256": "cc9100133e6ee65f3860610add73ad8716458e8f9ad3b9d1c6fcac6eea4ec340"
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/kindred/review-388-manifest.json",
+      "sha256": "b8b31f6c97c94978b48dd78e5bb93c7a72f8b3ea5de68cf62bc0b46069da367b"
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/kindred/REVIEW_388_FOLLOWUP.md",
+      "sha256": "37299b4783b3c4aff33882d5ba3232e6f1afd1bc03a627228ce5b9f70a7bced3"
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/kindred/review-388-followup-results.json",
+      "sha256": "996a8c31e9223a2c96358b1db84842d7b0f1537ba791366b630da337e9f8f92a"
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/kindred/review-388-followup-manifest.json",
+      "sha256": "54e729e1072a186bcb42dde9c913e2e2545429566e334e0a295effeeca817e72"
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/kindred/review-388-final-closure.json",
+      "sha256": "be395f922d5c409f390d19ef6cbb57429e48339b1b580de1469a4cad098dec73"
+    },
+    {
+      "file": "docs/implementation/niche-theme-programme/snapshot388-final-source-match.json",
+      "sha256": "6705cfc389240585452fd66b9f6d1a09aa4b88f3196db54f757a89088cef579e"
+    },
+    {
+      "file": "docs/implementation/niche-theme-programme/n7-rollback349-pin-disposition.json",
+      "sha256": "46f45ae268116a833a2ff6e6ff76d52b4561a6c43351b4d0928e02ad6bfd7c2a"
+    }
+  ],
+  "checkedAt": "2026-10-23T13:29:51.238414+00:00",
+  "filesChanged": [],
+  "closureReceiptHashChecks": [
+    {
+      "file": "docs/implementation/niche-theme-programme/snapshot388-final-source-match.json",
+      "expectedSha256": "6705cfc389240585452fd66b9f6d1a09aa4b88f3196db54f757a89088cef579e",
+      "currentSha256": "6705cfc389240585452fd66b9f6d1a09aa4b88f3196db54f757a89088cef579e",
+      "matches": true
+    },
+    {
+      "file": "docs/implementation/niche-theme-programme/n7-rollback349-pin-disposition.json",
+      "expectedSha256": "46f45ae268116a833a2ff6e6ff76d52b4561a6c43351b4d0928e02ad6bfd7c2a",
+      "currentSha256": "46f45ae268116a833a2ff6e6ff76d52b4561a6c43351b4d0928e02ad6bfd7c2a",
+      "matches": true
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/madeyours/n7-candidate-receipt.json",
+      "expectedSha256": "2d557b7885a3886b5c1ac839541f7ab735f8c74cc71b6dc24d58d6532fb5e923",
+      "currentSha256": "2d557b7885a3886b5c1ac839541f7ab735f8c74cc71b6dc24d58d6532fb5e923",
+      "matches": true
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/madeyours/n7-isolated-results.json",
+      "expectedSha256": "e84efafad5ffe9eecfe1f0693d09b8482fd278146d47ff44060cf8a1f42c471e",
+      "currentSha256": "e84efafad5ffe9eecfe1f0693d09b8482fd278146d47ff44060cf8a1f42c471e",
+      "matches": true
+    },
+    {
+      "file": "docs/implementation/niche-themes-2026-10-23/madeyours/final-gate-results.json",
+      "expectedSha256": "0ca1ef1bd2f756f179473443cfe89a3d644cbd9fc87a07eb3a6b7b25765be537",
+      "currentSha256": "0ca1ef1bd2f756f179473443cfe89a3d644cbd9fc87a07eb3a6b7b25765be537",
+      "matches": true
+    }
+  ],
+  "sqlPreservationOnly": [
+    {
+      "file": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "expectedSha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+      "currentSha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+      "matches": true
+    },
+    {
+      "file": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "expectedSha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b",
+      "currentSha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b",
+      "matches": true
+    }
+  ],
+  "testsRerun": false,
+  "reviewReopened": false
+}

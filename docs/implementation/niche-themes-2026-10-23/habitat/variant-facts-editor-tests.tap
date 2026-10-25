@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: editing actual variant furniture controls emits distinct units and complete canonical supplied facts
+ok 1 - editing actual variant furniture controls emits distinct units and complete canonical supplied facts
+  ---
+  duration_ms: 276.318291
+  type: 'test'
+  ...
+# Subtest: canonical errors stay attached to invalid fields and correction preserves the rest of the draft
+ok 2 - canonical errors stay attached to invalid fields and correction preserves the rest of the draft
+  ---
+  duration_ms: 32.80225
+  type: 'test'
+  ...
+# Subtest: removing optional overrides omits their groups; returning to all product facts emits null
+ok 3 - removing optional overrides omits their groups; returning to all product facts emits null
+  ---
+  duration_ms: 30.508167
+  type: 'test'
+  ...
+# Subtest: disabled controls cannot emit edits and external parent values replace old drafts
+ok 4 - disabled controls cannot emit edits and external parent values replace old drafts
+  ---
+  duration_ms: 24.13125
+  type: 'test'
+  ...
+# Subtest: labels and button semantics remain accessible and hostile supplied text stays inert
+ok 5 - labels and button semantics remain accessible and hostile supplied text stays inert
+  ---
+  duration_ms: 25.257042
+  type: 'test'
+  ...
+# Subtest: malformed historical optional groups expose canonical errors and can be cleared without losing care
+ok 6 - malformed historical optional groups expose canonical errors and can be cleared without losing care
+  ---
+  duration_ms: 19.292917
+  type: 'test'
+  ...
+# Subtest: product context stays read-only; measurement groups and material lists override atomically and omission restores inheritance
+ok 7 - product context stays read-only; measurement groups and material lists override atomically and omission restores inheritance
+  ---
+  duration_ms: 30.670375
+  type: 'test'
+  ...
+# Subtest: canonical variant schema rejects inline identity and null clear shapes; recovery emits only supplied override facts
+ok 8 - canonical variant schema rejects inline identity and null clear shapes; recovery emits only supplied override facts
+  ---
+  duration_ms: 12.863
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1309.188084

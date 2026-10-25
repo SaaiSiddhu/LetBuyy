@@ -1,0 +1,37 @@
+{
+  "framework": "Next.js",
+  "version": "16.1.6",
+  "observations": [
+    {
+      "profile": "direct-constructor",
+      "inputUrl": "http://admin.threadline-9cd50e893016.localhost:57225",
+      "requestUrl": "http://admin.threadline-9cd50e893016.localhost:57225/api/stores/synthetic/products",
+      "nextUrlOrigin": "http://admin.threadline-9cd50e893016.localhost:57225",
+      "host": "admin.threadline-9cd50e893016.localhost:57225",
+      "origin": "http://admin.threadline-9cd50e893016.localhost:57225",
+      "guardStatus": null
+    },
+    {
+      "profile": "normalized-route-URL",
+      "inputUrl": "http://localhost:57225",
+      "requestUrl": "http://localhost:57225/api/stores/synthetic/products",
+      "nextUrlOrigin": "http://localhost:57225",
+      "host": "admin.threadline-9cd50e893016.localhost:57225",
+      "origin": "http://admin.threadline-9cd50e893016.localhost:57225",
+      "guardStatus": null
+    }
+  ],
+  "primaryFiles": [
+    {
+      "name": "next/dist/server/web/spec-extension/request.js",
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/next@16.1.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/server/web/spec-extension/request.js",
+      "sha256": "2490a352d271fb39e1fccce06ee6887999dffa7909ccfd5ca0cc8bab8008065b"
+    },
+    {
+      "name": "next/dist/server/web/next-url.js",
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/next@16.1.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/server/web/next-url.js",
+      "sha256": "5b467b1b3e8ab98a0c2baad575421b575e075773d2022ccb12f3b0f845a4ac1c"
+    }
+  ],
+  "scope": "In-memory installed NextRequest and actual guard; public URL/Host/Origin only; no cookies, tokens, browser, app runtime or DB."
+}

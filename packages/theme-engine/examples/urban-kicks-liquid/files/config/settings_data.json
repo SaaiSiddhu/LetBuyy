@@ -25,13 +25,13 @@
       "headingFontFamily": "Inter",
       "borderRadius": 8
     },
-    "Sense": {
-      "primaryColor": "#1A1A2E",
-      "secondaryColor": "#2D2D44",
-      "accentColor": "#E63946",
-      "backgroundColor": "#FFFFFF",
-      "textColor": "#1A1A2E",
-      "surfaceColor": "#FAFAFA",
+    "Threadline": {
+      "primaryColor": "#713F35",
+      "secondaryColor": "#65574C",
+      "accentColor": "#005FCC",
+      "backgroundColor": "#FAF7F2",
+      "textColor": "#241E1A",
+      "surfaceColor": "#EFE7DC",
       "bodyFontFamily": "Inter",
       "headingFontFamily": "Playfair Display",
       "borderRadius": 4

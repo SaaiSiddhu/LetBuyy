@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T05:49:11.663069+00:00",
+  "source": {
+    "capturedAt": "2026-10-23T05:38:55.826162+00:00",
+    "files": [
+      {
+        "path": "apps/commerce/web/package.json",
+        "sha256": "e20e2f225259e33bf3cca93461e5edcdc65d576b2c5b94ab459b25f5f1a1b40b"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+        "sha256": "309a9bb3022d87fc74140ce56191f9bad14fcb0406794923264b866a275fb806"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+        "sha256": "cc7144356922dc1d3c51c5d52d7f681d3deadd19cbde3f36c9b7af9fadafacec"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/liquid-predictive-search.test.ts",
+        "sha256": "0da3754230e9e7c5edfafd9d749e57e635bbca4279d2c6d1980b44f2056579cf"
+      },
+      {
+        "path": "apps/commerce/web/src/app/api/store/[subdomain]/search-suggest/route.ts",
+        "sha256": "5f7de0f11606cc949fe0a5842dacfdb7a721100473be583e7bd13d342083965c"
+      },
+      {
+        "path": "apps/commerce/web/src/app/api/store/search-suggest-route.test.ts",
+        "sha256": "12194437fb12dcda91cbf05b6b3eb472d04e74f6534e67483db075c1c609ba7a"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/customer-drop.ts",
+        "sha256": "3377df7d060126f13fc17ee00bde71a0271c2963c6f7c8798e4e6ba42c4c6bb7"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/buyer-order-drop.ts",
+        "sha256": "c854c31af611a21c85601e12c6bbcbee5479ae2e644bcd6865e1f10f31e6fa8a"
+      },
+      {
+        "path": "apps/commerce/web/src/lib/customer-order-money.test.ts",
+        "sha256": "73d7dfaebeb3bdba352b84f1ad436fb9c73a2996cd3ff069a83942cfacbf4971"
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+        "sha256": "c64c5b054a4104b87fe94704cbd162abedbb3e03f63b3104f38eaca312af1af7"
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+        "sha256": "2a2e69fed6e596b92f4872e01d0f04254971a8c30a987980b274320b28d9681f"
+      },
+      {
+        "path": "apps/platform/identity/next.config.ts",
+        "candidateOnly": true,
+        "sha256": "fe1b58d1da0f97f441858d597665ec1e8ab0961ae2f7e6dcd1d71e6ae5aeff95"
+      },
+      {
+        "path": "apps/merchant/web/next.config.ts",
+        "candidateOnly": true,
+        "sha256": "3014bb5584acc132f029def6b8f142ec6cedc25c1e3f0dfb5cf36f76d674b5f9"
+      },
+      {
+        "path": "apps/commerce/web/next.config.ts",
+        "candidateOnly": true,
+        "sha256": "9823a53fb433d09ba35156c34bd757e7bb6f7b179416524b6034d935c791e215"
+      },
+      {
+        "path": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+        "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+      }
+    ],
+    "scope": "Final owner-requested320/390 acceptance refresh; adds mobile orders-list total reflow to previously pinned runtime repairs. Immutable Sense2.0.0 package bytes preserved."
+  },
+  "validation": {
+    "commerceGroups": [
+      162,
+      148,
+      1052
+    ],
+    "commerceBoundary": "Full commerce result covers the runtime logic repairs; later changes are bounded responsive CSS and QA setup. Counts overlap; no unique aggregate claimed.",
+    "focusedCartSearchTests": 4,
+    "stylelint": "pass",
+    "commerceTypecheck": "pass",
+    "gatewayTypecheck": "pass",
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "governanceOk": true,
+    "productionAppsReady": [
+      "identity",
+      "merchant",
+      "commerce"
+    ],
+    "browserReflowCases": 16,
+    "merchantLogin": "Normal lookup/password flow completed, dashboard and published Threadline2.0.0 read back.",
+    "heldRunner": "Lifecycle assertions reached ready; six-hour manual review hold is active, so this held runner is not represented as a completed green test run.",
+    "merchantSessionContinuity": "Fresh password sign-in followed by hard reload retained dashboard; an earlier reload after mixed buyer/local-fixture activity required sign-in again, cause unestablished."
+  },
+  "localEvidence": [
+    {
+      "localPath": "/private/tmp/threadline-qa-20261023-commerce-full-tests.log",
+      "sha256": "0cf4cdcddd696cb4dca352226853dfcf6834b0a2d4191a9888dbbadf997b126d"
+    },
+    {
+      "localPath": "/private/tmp/threadline-qa-20261023-commerce-typecheck.log",
+      "sha256": "2befae50f88eeb7c08601ae4aa2008be8b9db7700ee83ebeaa3ef39128d06eb9"
+    },
+    {
+      "localPath": "/private/tmp/threadline-qa-20261023-reflow-gateway-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "/private/tmp/threadline-qa-20261023-reflow-islands.log",
+      "sha256": "a3119e69c1fcb605f6acb9537d2be3b045d2ac1fcd698155615e1717ad138be5"
+    },
+    {
+      "localPath": "/private/tmp/threadline-qa-20261023-review-stylelint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "localPath": "/private/tmp/threadline-qa-20261023-governance-review.json",
+      "sha256": "c84d24813a2b8ee68153ab387aa6fcf1726a119b96fb209c4d21cc02ca693c31"
+    },
+    {
+      "localPath": "/private/tmp/threadline-qa-20261023-reflow-package-check.log",
+      "sha256": "45932d3d9ef16de61b52721be499cbd52f151fb7912da77eed5643b437f9c1b6"
+    }
+  ],
+  "artifactEvidence": [
+    {
+      "path": "buyer-order-after.jpg",
+      "sha256": "db0993101a92bf1531f3e0a3fcbd178315bd9099a995edf3038a056dd37af649"
+    },
+    {
+      "path": "buyer-order-after.json",
+      "sha256": "36831253864233b09395f617d58437f5cd7a2d22e27f6e43e121f6361db770be"
+    },
+    {
+      "path": "buyer-order-before.jpg",
+      "sha256": "33eddd5428c4fb00e0c4c4c16838553640e7c75a16cc5fe505461d10f56f7791"
+    },
+    {
+      "path": "buyer-order-mobile.jpg",
+      "sha256": "a57597b4dc344dbbec319c05cd06b9a7ab85cf55b0a156f994963106a3f45421"
+    },
+    {
+      "path": "cart-focus-after.jpg",
+      "sha256": "dc403735d19f344fdbb9f9c9f926e806ae2bf344e11357093affad2219ed466f"
+    },
+    {
+      "path": "cart-focus-after.json",
+      "sha256": "b8a984cef1f805ae0df2ace832f3117c11b533b40c5b0b571a80b50bac4b66d2"
+    },
+    {
+      "path": "cart-focus-before.jpg",
+      "sha256": "116b83fec1bf55860c67ad3e36f9f4c1a47b17395d03c7840802bfe57b759078"
+    },
+    {
+      "path": "cart-focus-before.json",
+      "sha256": "70572f5e5b40afd6d0aeb9ba848306e974103987de87232be02cdd6c6ded6858"
+    },
+    {
+      "path": "cart-mobile-320-final.jpg",
+      "sha256": "17b6bfc0537bf7aebbcc967785527b5e9c30ab7a2d94f089b03cc2ec232dfa52"
+    },
+    {
+      "path": "cart-modal-mobile.jpg",
+      "sha256": "08ab764778345cef528d5942e20f8ab60525c89d7d78b0653758c5f5772dfd91"
+    },
+    {
+      "path": "cart-page-mobile-320-final.jpg",
+      "sha256": "85bbe077d75114206348f9af06d53b137771f0e98d7bc281da3979432d746fef"
+    },
+    {
+      "path": "cart-page-mobile-390-final.jpg",
+      "sha256": "ac32983e4ffdaa77afc7cbb4df9ac1e5efa71f7151e7506794e06dec4aec1dd1"
+    },
+    {
+      "path": "cart-page-mobile.jpg",
+      "sha256": "d2f2d5d655790405680c02b9bdbd410476f6dd50adc4856365262da98cb57383"
+    },
+    {
+      "path": "cart-populated-mobile-320-final.jpg",
+      "sha256": "db263d39199e1a62f7f45af0894e555619fabf4daaacd62796103b777b54da3b"
+    },
+    {
+      "path": "cart-populated-mobile-390-final.jpg",
+      "sha256": "5e9f5f9434432d8077c44b879cb01a193f8668efa35f75b1c878ec7cdd4e49c1"
+    },
+    {
+      "path": "computed-colors.json",
+      "sha256": "648a4b7de97d4dd1b6a300f70897d1a0ee1fae8f6a90e9809de8088340f1fac9"
+    },
+    {
+      "path": "contrast-input.json",
+      "sha256": "33d8450d19fb0f43ca561d2df37c58e77b81a17b3643ccfec563b7addb47ed0b"
+    },
+    {
+      "path": "contrast-results.json",
+      "sha256": "b5d4d94c283040616958393780a3a60c89eed4ef75d7d1d87b7acf693a236cdd"
+    },
+    {
+      "path": "home-mobile-390-final.jpg",
+      "sha256": "8df478d31a4c22ff46ddb7de4f213a20a60f1a26275853f9e10359006f63d017"
+    },
+    {
+      "path": "home-mobile-final.jpg",
+      "sha256": "3fec072defd69f91ec0ed3e6c1634cf879c866e9268b5f188eb2b8a98d6180cf"
+    },
+    {
+      "path": "home-mobile.jpg",
+      "sha256": "6443e8cb10cc6248ff7de8a618ee20118f6dd1a88f4aa6891fde1e55f5752027"
+    },
+    {
+      "path": "http-performance.json",
+      "sha256": "3c20bf953adb3b034cb0461467caded7e01728cf5a4c198f35af2f905226a22d"
+    },
+    {
+      "path": "mobile-header-before.jpg",
+      "sha256": "04076f05b852810d3329f7de1e27cbdb27662d136a3b1ebe6d88ccf5593c6bf6"
+    },
+    {
+      "path": "mobile-header-before.json",
+      "sha256": "2b67217f90c5513020fce91a0045170c8d6ecba9d5d654f69ebc0fe83eab37aa"
+    },
+    {
+      "path": "order-mobile-320-final.jpg",
+      "sha256": "a072643a19af64956ffbdacab9415480ca274b74255d60b6bedc7bd103623f59"
+    },
+    {
+      "path": "order-mobile-390-final.jpg",
+      "sha256": "86fc6da8b16fe5a70df01275bd7a86372be060a6f218e68bb843fa6f6a438235"
+    },
+    {
+      "path": "order-server-amounts.json",
+      "sha256": "b4dcf580f7b20140b995da4088d7862b2d536c38294c597eb1f4d3416bc04607"
+    },
+    {
+      "path": "orders-list-mobile-320-before.jpg",
+      "sha256": "ee614c2a84fb1de5bc77fd0c6fb562794ed0488522912f3dad529eaae8f90d5e"
+    },
+    {
+      "path": "product-mobile-320-final.jpg",
+      "sha256": "f1fd819baf6d05b07a2a12af3a91365950e71cf3489bdae30260e27f4021c762"
+    },
+    {
+      "path": "product-mobile-390-final.jpg",
+      "sha256": "b2789c9e7b3564fc42a8617c425831e0469f469653e2324553735f7122042399"
+    },
+    {
+      "path": "product-mobile.jpg",
+      "sha256": "abbebed029cfdae5d74afa8c76bbde59032325bad5eabcbd2e9ce4e4aa7b776e"
+    },
+    {
+      "path": "reflow-before.json",
+      "sha256": "b129a84085425c66cb025e2af5b2107d3a897242a70ea89c549747a2b743079a"
+    },
+    {
+      "path": "review-cart-320.jpg",
+      "sha256": "06ccf4b813471caa2489eda4586be54309aa48d4ced4eee3e6bdabe1180b52ea"
+    },
+    {
+      "path": "review-cart-390.jpg",
+      "sha256": "0ffc5ec7102e4f36c281c746435a79c66aa8e532df784b4b2ab201c696970c81"
+    },
+    {
+      "path": "review-home-320.jpg",
+      "sha256": "9207cf788632a7e372997a51426245f6fea32192fb5eb950e268a33570122379"
+    },
+    {
+      "path": "review-home-390.jpg",
+      "sha256": "7418d0889748fc69a999f488f9d58f5fa06f05c69a526506d1518141a218f0d0"
+    },
+    {
+      "path": "review-merchant-login.jpg",
+      "sha256": "ecae7847f4dd47a5c478a48ae9f73cd42393c3d97194f7bfb5966b09932c854a"
+    },
+    {
+      "path": "review-merchant-session.json",
+      "sha256": "275d33dfaeb4fe2176924692e24f2fb1d1412b30831a38185eaade92b792b3b5"
+    },
+    {
+      "path": "review-merchant-themes.jpg",
+      "sha256": "bcea91781e02060af0f8152cd7ee7f6e52dabbe6a95dff3cee85adece3bcbc9f"
+    },
+    {
+      "path": "review-mobile-checks.json",
+      "sha256": "048d2f631d735245ae1921163dfb0a5f5eb028cf96fa5ca7c89d390e38183569"
+    },
+    {
+      "path": "review-order-detail-320.jpg",
+      "sha256": "a072643a19af64956ffbdacab9415480ca274b74255d60b6bedc7bd103623f59"
+    },
+    {
+      "path": "review-order-detail-390.jpg",
+      "sha256": "86fc6da8b16fe5a70df01275bd7a86372be060a6f218e68bb843fa6f6a438235"
+    },
+    {
+      "path": "review-orders-320.jpg",
+      "sha256": "d2be9a65b7fe34629116d74462cf10aad62a23ef6f55c9e9cee8f4e0afd72e1e"
+    },
+    {
+      "path": "review-orders-390.jpg",
+      "sha256": "16e961e19228437931312f2c3d1e08b89445c0dc1c09cb29f909d2ac48f5622f"
+    },
+    {
+      "path": "search-after.jpg",
+      "sha256": "86542dc417a36dcf656a564f8def96b6ea6c4f8aa9c269a53ec05c1ef79052b9"
+    },
+    {
+      "path": "search-after.json",
+      "sha256": "168414a911b28c757dcfacd409ee66cadc54a9f48fee668d9eab26c0aef80474"
+    },
+    {
+      "path": "search-fixture-setup.json",
+      "sha256": "20148f96dbc8ab457c8dc515e09666e26b63abb75a3baa04293996bb3e24581e"
+    },
+    {
+      "path": "search-results-after.jpg",
+      "sha256": "3f5f8381820bff238fe8cd5d7369eb3b755797a0910b1f484dbeb92816e7d5a5"
+    },
+    {
+      "path": "working-preview.json",
+      "sha256": "d89e85ac79d23f96a852ce6b803f9697f42045b1bb48ad321557fd5e78fb251e"
+    }
+  ],
+  "status": "Requested mobile cart/reflow/local-preview/login outcome verified; broader acceptance remains limited by checkout TLS, public signup handoff, unsupported zoom/motion and browser performance measurements."
+}

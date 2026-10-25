@@ -1,0 +1,16 @@
+import {createRequire} from 'node:module';
+import path from 'node:path';
+import fs from 'node:fs';
+const candidate='/private/tmp/letbuyy-shared-completion-20261024-06';
+const req=createRequire(candidate+'/packages/commerce-core/package.json');
+const ts=req('typescript');
+const nodeTypes=createRequire(candidate+'/apps/merchant/web/package.json').resolve('@types/node/package.json');
+const files=['core/src/product-fact-snapshot.ts','core/src/product-facts-summary.ts','order-fact-readback.private.ts','niche-order-presentation.private.ts'].map(file=>path.resolve(file));
+const options={target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext,moduleResolution:ts.ModuleResolutionKind.Bundler,strict:true,noEmit:true,skipLibCheck:true,esModuleInterop:true,allowImportingTsExtensions:true,types:['node'],typeRoots:[path.dirname(path.dirname(nodeTypes))],lib:['lib.es2022.d.ts','lib.dom.d.ts','lib.dom.iterable.d.ts']};
+const program=ts.createProgram(files,options);
+const diagnostics=ts.getPreEmitDiagnostics(program);
+const leaks=program.getSourceFiles().map(file=>file.fileName).filter(file=>file.startsWith('/Volumes/Projects/LetBuyy/packages/')||file.startsWith('/Volumes/Projects/LetBuyy/apps/')||file.startsWith('/Volumes/Projects/LetBuyy/services/'));
+const out={classification:'FOCUSED_PRIVATE_NOEMIT_SOURCE_TYPECHECK_NOT_MAIN_BUILD',diagnostics:diagnostics.map(d=>({file:d.file?.fileName,line:d.file&&d.start!==undefined?d.file.getLineAndCharacterOfPosition(d.start).line+1:null,code:d.code,message:ts.flattenDiagnosticMessageText(d.messageText,'\n')})),MainWorkspaceBusinessLeaks:leaks,sourceFiles:program.getSourceFiles().length,roots:files};
+fs.writeFileSync('typecheck01.json',JSON.stringify(out,null,2)+'\n');
+console.log(JSON.stringify({diagnostics:diagnostics.length,MainWorkspaceBusinessLeaks:leaks.length,sourceFiles:out.sourceFiles}));
+process.exitCode=diagnostics.length||leaks.length?1:0;

@@ -1,0 +1,32 @@
+{
+  "classification": "READ_ONLY_PEER_REVIEW_CONCRETE_SCOPED_DELTA",
+  "blockingFindings": [],
+  "sourceReceipt": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/SOURCE_RELEASE.json",
+    "sha256": "47366e5ddf86b94897538b50759d605ca2b229f371c4503ead78560107a2b50c"
+  },
+  "reviewedFiles": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts",
+      "sha256": "1cc8bd46a88302dc9319f00d8e4a3c5688760bfcc8a76f494936b83943245070"
+    }
+  ],
+  "checks": {
+    "onlyExistingCartClassChanged": true,
+    "pickerExact": true,
+    "canonicalReadRecoveryWithoutImplicitMutationRetry": true,
+    "draftCapabilitySiteAttemptAndReceiptGuards": true,
+    "unknownOutcomeExplicitAndCheckoutBlocked": true,
+    "serverTotalsRenderedWithoutClientDerivation": true,
+    "newTestsUseActualNativeIslandHeaderAndReactEffectWithSyntheticTransport": true,
+    "normalReactModeRequiredForRecoveryTests": true
+  },
+  "limitations": "Source review and synthetic transport tests only. Live f607 stock recovery and Playfield lifecycle failures remain open until allocated browser retest.",
+  "sourceEdits": false,
+  "writerHeld": false,
+  "next": "Run exactly131RSC+19normalReactBuyNow+14normalReactrecovery once on stable actual source closure."
+}

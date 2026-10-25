@@ -1,0 +1,45 @@
+{
+  "reviewedAt": "2026-10-23T19:49:23.241522+00:00",
+  "classification": "INDEPENDENT_EXPLICIT_CANONICAL_TUPLE_READBACK_CLOSES_SHARED_REPAIR_GAP_NOT_MG_EXECUTION",
+  "verdict": "PASS_BOUNDED_NORMAL_FIRST_AXIS_SAVE_FULLRELOAD_SAME_UUID_FACTS_STOCK_CART",
+  "runId": "f6074d90e894",
+  "previousPreservationReview": {
+    "path": "docs/implementation/niche-themes-2026-10-23/marginalia/installed-lifecycle-readiness/live-option-axis-preservation-review.json",
+    "sha256": "1aced6467a68238b33fa5299fc5807c5ec04ac6681942a884f2e33f33348b711"
+  },
+  "tupleReadback": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-tuple-values-readback.json",
+    "sha256": "c3af615dd900e24fcd417f06f11db26f04012cde48376adceee55faacf4489b0"
+  },
+  "acknowledgedTupleBindings": [
+    {
+      "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+      "option1": "48 in",
+      "option2": "Natural",
+      "option3": null
+    },
+    {
+      "variantId": "30e7bb70-6ef0-4175-83f0-16368a3e9fda",
+      "option1": "Common size",
+      "option2": "Natural",
+      "option3": null
+    }
+  ],
+  "allEarlierPreservationChecksStillExact": true,
+  "absentApparelFurnitureLiveControl": "PASS_GENUINELY_ABSENT_BEFORE_AND_AFTER_NORMAL_SAVE",
+  "priorTupleGapClosed": true,
+  "noLabelOrSkuInference": true,
+  "scopeLimits": {
+    "wholeHabitatFourVariantCohort": false,
+    "laterFreshVariantUuidAcceptance": false,
+    "all9OrPrivateSiblingLiveClaim": false,
+    "sameUuidOptionValueRenameExecuted": false,
+    "marginaliaCaseCredit": false,
+    "marginaliaBindingsAssigned": false
+  },
+  "sideEffectsHere": {
+    "sourceEdits": false,
+    "testsBuildsOrRuntimeControls": false,
+    "browserOrApiOrDbOrOsControls": false
+  }
+}

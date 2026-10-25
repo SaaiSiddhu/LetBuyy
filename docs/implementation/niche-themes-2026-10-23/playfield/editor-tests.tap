@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: unknown facts stay absent and editing one supplied fact emits only that draft field
+ok 1 - unknown facts stay absent and editing one supplied fact emits only that draft field
+  ---
+  duration_ms: 1172.377375
+  type: 'test'
+  ...
+# Subtest: contents rows preserve incomplete drafts, expose canonical field errors and accept corrected quantities
+ok 2 - contents rows preserve incomplete drafts, expose canonical field errors and accept corrected quantities
+  ---
+  duration_ms: 98.999333
+  type: 'test'
+  ...
+# Subtest: supplied age, interests and product type use the canonical schema without inferred shopper facts
+ok 3 - supplied age, interests and product type use the canonical schema without inferred shopper facts
+  ---
+  duration_ms: 140.482833
+  type: 'test'
+  ...
+# Subtest: a completeness assertion without supplied contents remains invalid and can be explicitly removed
+ok 4 - a completeness assertion without supplied contents remains invalid and can be explicitly removed
+  ---
+  duration_ms: 67.693792
+  type: 'test'
+  ...
+# Subtest: primary and additional measured parts retain distinct labelled dimensions and clear deliberately
+ok 5 - primary and additional measured parts retain distinct labelled dimensions and clear deliberately
+  ---
+  duration_ms: 237.5165
+  type: 'test'
+  ...
+# Subtest: warning text requires its supplied source and hostile text remains inert literal data
+ok 6 - warning text requires its supplied source and hostile text remains inert literal data
+  ---
+  duration_ms: 76.139042
+  type: 'test'
+  ...
+# Subtest: invalid existing facts remain editable and only an explicit namespace clear removes them
+ok 7 - invalid existing facts remain editable and only an explicit namespace clear removes them
+  ---
+  duration_ms: 36.521584
+  type: 'test'
+  ...
+# Subtest: disabled fields and buttons emit no changes, including programmatic input events
+ok 8 - disabled fields and buttons emit no changes, including programmatic input events
+  ---
+  duration_ms: 39.343667
+  type: 'test'
+  ...
+# Subtest: multiple editors have unique labelled controls and all editor actions avoid submitting the parent form
+ok 9 - multiple editors have unique labelled controls and all editor actions avoid submitting the parent form
+  ---
+  duration_ms: 77.7365
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2811.058084

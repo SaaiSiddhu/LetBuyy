@@ -1,0 +1,151 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor".
+0 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor
+	1 container
+		2 link Description: Back to themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+		3 checkbox Description: Toggle navigation panel, Value: 1
+		4 button Sections
+		5 button Theme settings
+		6 button Theme styles
+		7 button Versions
+		8 text Threadline Draft theme
+		9 text Saved
+		10 container Template
+			11 pop up button (collapsed, settable) Description: Template, Value: LetBuyy Core home page, Secondary Actions: Expand
+				12 menu
+					13 (selected) LetBuyy Core home page
+					14 LetBuyy Core product
+					15 LetBuyy Core collection
+					16 Page
+					17 LetBuyy Core cart
+					18 Blog
+					19 Article
+					20 Policy page
+					21 LetBuyy Core search
+					22 Contact
+					23 Password
+					24 404 Not Found
+					25 Login
+					26 Order detail
+					27 Order history
+					28 All collections
+					29 Account
+					30 Register
+					31 Account settings
+					32 Wishlist
+					33 Addresses
+		34 button Undo
+		35 button (disabled) Redo
+		36 button (disabled) Save
+		37 button Publish
+		38 container Theme editor navigation
+			39 heading LetBuyy Core home page, Value: 2
+				40 text LetBuyy Core home page
+			41 text v5
+			42 outline Theme sections
+				43 container
+					44 text HEADER
+					45 button Announcement Bar
+					47 button Header
+				48 container
+					49 text TEMPLATE
+					50 container Template sections
+						51 row (selectable) Editorial hero
+							52 button Editorial hero
+						53 row (selectable) Silhouette collections
+							54 button Silhouette collections
+						55 row (selectable) Apparel product grid
+							56 button Apparel product grid
+						57 row (selectable) Curated outfit links
+							58 button Curated outfit links
+						59 row (selectable) Fabric and care editorial
+							60 button Fabric and care editorial
+						61 row (selected) Merchant service information Toggle Merchant service information visibility Move Merchant service information up Move Merchant service information down Remove Merchant service information
+							62 button Merchant service information
+							188 checkbox Description: Toggle Merchant service information visibility, Value: 1
+							189 button Move Merchant service information up
+							190 button (disabled) Move Merchant service information down
+							191 button Remove Merchant service information
+					63 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						64 menu
+							65 (selected) Marquee
+							66 404 Not Found
+							67 Spotlight
+							68 Search
+							69 Video Hero
+							70 Call to Action
+							71 Editorial hero
+							72 Blog Listing
+							73 Cart
+							74 Contact Form
+							75 Page Content
+							76 Apparel product grid
+							77 Rich Content
+							78 Testimonials
+							79 Merchant service information
+							80 Fabric and care editorial
+							81 Brand Marquee
+							82 Silhouette collections
+							83 FAQ Accordion
+							84 Password Gate
+							85 Services Grid
+							86 App Block Slot
+							87 Customer Login
+							88 Policy Content
+							89 Portfolio Grid
+							90 Product Detail
+							91 Skills Section
+							92 Article Content
+							93 Banner Carousel
+							94 Order History
+							95 Announcement Bar
+							96 Customer Account
+							97 Collection Banner
+							98 Apparel discovery
+							99 Customer Register
+							100 Account Settings
+							101 Wishlist
+							102 Curated outfit links
+							103 Newsletter Signup
+							104 Addresses
+							105 Experience Timeline
+							106 Order Detail
+							107 Apparel collection
+					108 button Add
+				109 container
+					110 text FOOTER
+					111 button Footer
+		112 container Live theme preview
+			113 text Live preview
+			114 text syn-threadline-ui-ae3f0477 . localhost  -  1440 px
+			115 container Preview device
+				116 checkbox Desktop, Value: 1
+				117 checkbox Tablet, Value: 0
+				118 checkbox Mobile, Value: 0
+			119 container
+				120 text syn-threadline-ui-ae3f0477 . localhost
+				121 checkbox Description: Inspect preview, Value: 1
+				192 container syn-threadline-ui-ae3f0477 storefront preview
+					193 AXWebArea about:blank
+		173 container Theme properties
+			174 text Selected section
+			175 heading Merchant service information, Value: 2
+				176 text Merchant service information
+			177 container Smart defaults
+				178 button (collapsed) Smart defaults, Secondary Actions: Expand
+					179 text Smart defaults
+			180 container
+				194 text Fit guidance
+				195 text field (settable) Fit guidance, Value: Threadline fit guidance — temporary editor check
+				196 text Service information
+				197 text field (settable) Service information
+				198 text Support information
+				199 text field (settable) Support information
+				187 text BLOCKS
+				200 button Add Badge
+					201 text Add 
+					202 text Badge
+	203 container
+		204 text Draft saved LetBuyy Core home page draft and local preview are in sync.
+		205 button Dismiss notification
+
+The focused UI element is 0 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor

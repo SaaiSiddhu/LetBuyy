@@ -1,0 +1,115 @@
+{
+  "recordedAt": "2026-10-25T00:36:10.018088+00:00",
+  "status": "SEALED_PRIVATE04_TWO_PROFILE_TRANSPORTS_READY_FOR_INDEPENDENT_REVIEW_NOT_NATIVE_ADMISSION",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "allocation": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/THREADLINE_APPAREL_PROVENANCE_IO_AMENDMENT_ALLOCATION_04.json",
+  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04",
+  "durableRoot": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04",
+  "prior03": {
+    "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-03",
+    "durableRoot": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03",
+    "handoffSha256": "db438bacfa02f47620e96340d34bc99b7cc69de3e26eeb173e3faf254ca29a57",
+    "artifactsReverifiedUnchanged": 61
+  },
+  "exactNativeLeaf": {
+    "path": "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+    "beforeSha256": "a102b41961da43c73fdd96032e6158839e1ff8656870f5bfa318adc265565e2d",
+    "afterSha256": "a2cb454b17885c2bdc5c51d9916caf3c5c17b05298de7160a30577637f7ea7f3",
+    "delta": "Only functions() and tables() SELECT callee psql -> existing owned.scriptLarge; all other bytes exact"
+  },
+  "sevenOtherOverlays": [
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "2f20d1555ff729e11215d8bee70a85391d7f473523b3a75b2b9e2b6ed1723ae3"
+    },
+    {
+      "path": "packages/commerce-core/src/product-facts-summary.ts",
+      "sha256": "e9ead6d7d043022ab1886a9a75fde03ba088ffcaaa2a748e5d5dcf5722560913"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "63e5a3836f9602a843df27bc61be28572ab8c5491a2ae4f60d38e04acd5d686b"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "sha256": "57bdd378f890b55b241c70141ba366c732b9bc458829f179b1359c94e9908fc1"
+    },
+    {
+      "path": "packages/commerce-core/test/apparel-order-history.test.ts",
+      "sha256": "46112ebd032ad054d13829e04435c8da8ec22e9fc35cf15a1f00e43d4cb095bc"
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-order-facts-v211.test.ts",
+      "sha256": "714179af00e3f76811c08ebd23abd4308675adbff6d224a06b4bed13b5d7cec9"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/order-fact-readback.test.ts",
+      "sha256": "dcf663fd71f5ebdc1bc5017bbf9e6ad9473aa3544698789eeef0459bd3018049"
+    }
+  ],
+  "SQLPairUnchanged": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03/UNNUMBERED_apparel_order_facts.up.proposal.sql",
+      "sha256": "2bfb45a18178a0098780efad25171751a317060adb0282cd8e2022d4eaae68ce"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03/UNNUMBERED_apparel_order_facts.down.proposal.sql",
+      "sha256": "fca8fc2fb303f065ba98ed5fa4a2c1d08e12c0ed05c0cbb8a1797bdb406fa1d0"
+    }
+  ],
+  "metadataHelpersByteExact": true,
+  "pins": {
+    "native-source-closure.json": "72d47209758ab5c503a91ebb36db3a62c62f0bd0d908dad74eb7a81ed7449f0b",
+    "NATIVE_PREPARATION_PLAN.json": "b9ea9ee5f367e8f3663952c0423cd30a93e11e222dd218b9c76cb1f3300f837b",
+    "SOURCE_MANIFEST.json": "2f5f6758288c8caad49d6ecd69670be9050cac34ab028139189535675bf718aa",
+    "ARTIFACT_MANIFEST.json": "a3077f22d6e0e33897c6c2096bee8d0d56e5f4f36ec62687c2d3a7808dc4fa5b"
+  },
+  "verification": {
+    "recordedAt": "2026-10-25T00:36:10.006026+00:00",
+    "status": "SEALED_PRIVATE04_TWO_PROFILE_TRANSPORTS_READY_FOR_INDEPENDENT_REVIEW_NOT_NATIVE_ADMISSION",
+    "onlySourceChanges": 2,
+    "sourceClosureFiles": 1120,
+    "resolvedModules": 478,
+    "importExportEdges": 3749,
+    "vendorToolFilePins": 5411,
+    "closureChangedPaths": [
+      "NATIVE_PREPARATION_PLAN.json",
+      "SOURCE_MANIFEST.json",
+      "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts"
+    ],
+    "sameSignatureReturnQueriesAssertionsGuardsAnd600sBudget": true,
+    "sevenOtherOverlayAndSQLHelperPinsUnchanged": true,
+    "prior03ArtifactsReverified": 61,
+    "originalSourceUniverse": 6547,
+    "copiedBaseFiles": 6541,
+    "envTemplateExclusions": 6,
+    "typecheck": {
+      "ownedDiagnostics": 0,
+      "otherDiagnostics": 5,
+      "sameContextBaselineDiagnostics": 5,
+      "introduced": 0,
+      "inputStable": true,
+      "businessLeaks": 0
+    },
+    "unchanged13RefusalFixturesAnd16_45_1NotRerun": true,
+    "retained13RefusalCasesNotNative": 13,
+    "actualNativeDatabaseDockerBuildAppProbeBrowserProviderActions": 0,
+    "fullThemeCertificate": false
+  },
+  "futureNativeEnvelope": {
+    "status": "QUEUED_AFTER_CAPTURE_PAIR_NOT_GRANTED",
+    "cohorts": 1,
+    "expectedTests": 4,
+    "jobs": 1,
+    "timeoutSeconds": 600,
+    "preparedTransactions": 2,
+    "noReap": true,
+    "maxAttempts": 1,
+    "actualNativeAdmissionCreated": false,
+    "exactArgvEffectsCleanupAndRequiredAdmissionFields": "NATIVE_PREPARATION_PLAN.json",
+    "actualParentApplied322MigrationAndCleanupGateRequired": true
+  },
+  "preservation": "No Main/candidate/currentruntime writes, alluserapps/drafts/data/ORD10001/stock unchanged. Frozen200/201/210 retained. No Sense capture emitted; Habitat sole catalogue/eligibility/capture owner.",
+  "limits": "Native SQL/parser/RPC/row/security/rollback and actual profile size NOT_RUN. No new native attempt or global green build claimed;13 prior metadata refusal fixtures retained without repetition.",
+  "next": "Themes independent04 review and a separate exact one-cohort native resource grant after capture pair; no Main/source application until coherent qualification."
+}

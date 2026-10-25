@@ -1,0 +1,121 @@
+{
+  "recordedAt": "2026-10-24T01:11:18.052Z",
+  "gallery": 200,
+  "detail": 200,
+  "installEntry": 307,
+  "canonicalReturnMatches": true,
+  "catalogCount": 10,
+  "demos": [
+    {
+      "slug": "letbuyy-sense",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 407228,
+      "sha256": "c411abda715246de398f9459b6dc4d1a82d614080d27a3dce24a38f6691fe664"
+    },
+    {
+      "slug": "letbuyy-aura",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 416836,
+      "sha256": "dcc5e565043a5d657e3a67224621b3874d2f1e1645f84867a8d487216783fb45"
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 416824,
+      "sha256": "9c8f2a8a5e7f33ab75c2f8bfe8cca3ae1cce617184107e23f26925198210db0f"
+    },
+    {
+      "slug": "letbuyy-craft",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 417221,
+      "sha256": "984d697040769dead8cd986f60f83f71666f4e6aa8d18e2b62e96c49342a98bf"
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 414738,
+      "sha256": "85c5d400293e7900862e6af7f7991aa7172374768c6e8ca6f1a22f42ed6655d2"
+    },
+    {
+      "slug": "letbuyy-nova",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 403206,
+      "sha256": "dea49949190b622afa02a47426140ddecc89646ed02b13cf713669ecf4657996"
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 409611,
+      "sha256": "668aeec572204c6cbce6dab1fedfde3554c28d58e5b9639dec571ca106a0c803"
+    },
+    {
+      "slug": "letbuyy-ride",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 412129,
+      "sha256": "9f154e0a35c721b51338877cc1fe8798f2c4b2d333e1955c743e47ab7bffc03f"
+    },
+    {
+      "slug": "letbuyy-forge",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 410361,
+      "sha256": "250cf951b57b310bf22832fac158f4bc5056a11c092e1889fc89bb15ef0efc97"
+    },
+    {
+      "slug": "letbuyy-summit",
+      "version": "2.0.0",
+      "status": 200,
+      "readOnlyNotice": true,
+      "unavailable": false,
+      "marketplaceAllowed": true,
+      "xFrameOptions": null,
+      "bytes": 408784,
+      "sha256": "7bb157ab7d315f0873c03876c1493493057e1196fc35d91dbe57bebbdd0e7067"
+    }
+  ],
+  "pass": true
+}

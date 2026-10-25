@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-23T17:29:57.269365+00:00",
+  "classification": "DIRECT_EDITOR_READINESS_REPORT_NOT_PANTRY_RUNTIME_ACCEPTANCE",
+  "ownerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "ownerTitle": "Theme Editor \u2014 End-to-End",
+  "reportedReadinessTime": "17:29 as supplied by Editor",
+  "trustedSetup": "Complete; verify-cert exit0 recorded by owner",
+  "normalBrowserHttpsVerified": false,
+  "current9cd": "Old self-signed runtime unchanged; no retrofit",
+  "correctedCandidateAllocated": false,
+  "newRunOrSourceManifestOrPublishedReleaseReceived": false,
+  "normalMerchantSavePreviewAndQueryRuntimePass": false,
+  "editorSourcePreparation": "Root-granted Editor-only startup Enterprise fixture precondition patch applied; focused17 and noEmit validating at report time. No validation PASS inferred.",
+  "safeCheckpoint": "Editor reports Kindred6 checkpoint complete; exact2Pink restored through normalUI plus guarded readback; orders0.",
+  "controller": "Sole Editor UI paused for Root controlled new candidate",
+  "requiredPantryRows": "All13 P00\u2013P12 remain required; P10 actual order then separate accepted active250g cart BEFORE P11; stale reject and original history.",
+  "pantryRuntimeBrowserCertSourceOrApiOrderActions": false,
+  "actualPantryCountsUnchanged": {
+    "PASS": 3,
+    "FAIL": 1,
+    "BLOCKED": 3,
+    "NOT RUN": 6
+  },
+  "acceptanceComplete": false
+}

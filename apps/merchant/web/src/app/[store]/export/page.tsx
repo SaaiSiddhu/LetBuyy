@@ -241,7 +241,8 @@ function ExportWorkspace({ store }: { store: string }) {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Export and import"
                 description="Move store data safely with CSV exports and product imports."
                 breadcrumbs={[{ label: 'Store' }, { label: 'Export and import' }]}

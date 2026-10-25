@@ -1,0 +1,1962 @@
+{
+  "maximumConcurrentExports": 2,
+  "sharedInteractiveBrowser": {
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "ownerThreadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "status": "ACTIVE_SOLE_EDITOR_LOCAL_UI_ACCEPTANCE_RUNTIME07",
+    "updatedAt": "2026-10-25T00:18:49.407536+00:00",
+    "runId": "49ada80bc494",
+    "browser": "Chrome existing test session",
+    "tabs": {
+      "merchant": "173052882",
+      "buyer": "173052885"
+    },
+    "rootBrowserActions": "STOPPED_AFTER_HANDOFF",
+    "provider": "HELD_PENDING_CALLBACK_DURATION_APPROVAL",
+    "scope": "Existingownedsite/drafts; localfunctionalcustomizationandhistory, no source/build/process/DBmutation"
+  },
+  "isolatedExports": [
+    {
+      "slot": 1,
+      "theme": "playfield",
+      "owner": null,
+      "status": "released_static_browser27_pass_originalR01_R02_closed",
+      "scope": "Actualsaved49screenshots/27primarycases;rootverifiedoutputhashes/releasedresources.14installedcasesNOT_RUN."
+    },
+    {
+      "slot": 2,
+      "theme": "kindred",
+      "owner": null,
+      "status": "released_static_layout22_of24_pass_KQA01_P2_open",
+      "scope": "Actual24cases/120nativeclears. Longname768navcompression retainedopen.19installedcasesNOT_RUN."
+    }
+  ],
+  "waiting": [],
+  "correctionQueue": [],
+  "heavyBuild": {
+    "owner": null,
+    "status": "RELEASED_SOURCE_SEALED_BUILDS_COMPLETE",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "maximumConcurrentBuilds": 1
+  },
+  "sharedProductionWriters": [
+    {
+      "owner": "01a161c9-36d1-7802-af70-d346f524bff3",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+        "targeted cart dialog regression tests",
+        "existing server Liquid island basePath binding",
+        "apps/commerce/web/src/app/api/store/[subdomain]/search-suggest/route.ts",
+        "apps/commerce/web/src/app/api/store/search-suggest-route.test.ts",
+        "apps/commerce/web/src/lib/customer-drop.ts",
+        "apps/commerce/web/src/lib/buyer-order-drop.ts",
+        "targeted order monetary display/status projection regressions"
+      ],
+      "scope": "existing cart modal accessibility and canonical-storehost predictive search basePath/error distinction; canonical order money-unit/status display projection only",
+      "status": "released_by_owner_final_mobile_QA_complete"
+    },
+    {
+      "owner": "01a161c9-36d1-7802-af70-d346f524bff3",
+      "files": [
+        "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css"
+      ],
+      "scope": "Threadline-scoped320px runtime header compatibility repair; corrected actual path; immutable pinned2.0.0 bundle unchanged",
+      "status": "released_by_owner_final_mobile_QA_complete"
+    },
+    {
+      "owner": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "status": "released11caseownedDBpassed",
+      "files": [
+        "packages/commerce-core/src/index.ts",
+        "services/api-gateway/src/execution/product-execution.adapter.ts",
+        "services/api-gateway/src/execution/product-mutation.adapter.ts",
+        "services/api-gateway/src/routes/storefront.ts",
+        "services/api-gateway/src/lib/public-product-view.ts",
+        "apps/commerce/web/src/lib/product-variants.ts",
+        "database/supabase/migrations/385_*",
+        "database/supabase/rollback/385_*"
+      ],
+      "scope": "variant metadata DTO, same atomic canonical create/edit persistence, product snapshot/mirror/readback, validated public variant hydration only; no product query/cart/order/theme changes; targeted new tests allowed"
+    },
+    {
+      "owner": "01a164ba-d306-7953-9745-b375f5cf21c9",
+      "status": "released36mounted/purecasespassed",
+      "files": [
+        "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+        "apps/merchant/web/src/lib/product-form-state.ts",
+        "apps/merchant/web/src/components/products/NicheFactsEditor.tsx",
+        "apps/merchant/web/src/lib/product-facts-draft.ts",
+        "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+        "apps/merchant/web/src/components/products/product-conflict.test.tsx"
+      ],
+      "scope": "root shared9factform foundation21casespassed; Kindred solely fixes imageidentitybinding/recovery/reorder usingcanonicalhelper, no additionalAPI/schema/runtime"
+    },
+    {
+      "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+      "status": "released_backend_SDK_runner_qualification_complete",
+      "files": [
+        "packages/commerce-core/src/storefront-discovery.ts",
+        "packages/commerce-core/test/storefront-discovery.test.ts",
+        "services/api-gateway/src/lib/storefront-discovery.ts",
+        "focused_discovery_tests",
+        "database/supabase/migrations/386_*",
+        "database/supabase/rollback/386_*",
+        "packages/commerce-core/src/index.ts (discovery exports only)",
+        "packages/commerce-core/src/apparel.ts (legacy query alias only)",
+        "services/api-gateway/src/routes/storefront.ts (queryPublicProducts only)",
+        "services/api-gateway/src/routes/storefront/public-routes.ts (product/list/collection query only)",
+        "packages/typescript/api-client/src/index.ts (storefront query contract/types/methods only)"
+      ],
+      "scope": "canonical shared discovery; preserve385 variant/product changes and signedCMS previewhook; frontendbinder/compositor stillMarketplace untilrelease",
+      "releaseEvidence": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/source-release.json"
+    },
+    {
+      "owner": "coordinator",
+      "status": "released_to_Pantry_after_27_tests_and_commerce_tsc_pass",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+        "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+        "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+        "targeted variant picker/cart tests"
+      ],
+      "scope": "boundedlabel-as-data JSONcarrier preserves spaces/Unicode; genericLiquidlimits unchanged; no themebundlebytes change",
+      "rootSourceReview": "merchant-source-repairs-admission.json;79rename+17originPASS;nextcandidateonly"
+    },
+    {
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "status": "granted_new_snapshot_contract_and_inventory",
+      "files": [
+        "packages/commerce-core/src/product-fact-snapshot.ts",
+        "focused snapshot contract tests"
+      ],
+      "scope": "purecanonicalfact/configsnapshot; no sharedcart/checkoutmutationsuntilpathallocation"
+    },
+    {
+      "owner": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "status": "released_after132_readback_checks_and_Habitat5_roundtrip",
+      "files": [
+        "packages/commerce-core/src/product-facts-summary.ts",
+        "focused summary tests",
+        "apps/commerce/web/src/components/storefront/niche-order-facts.tsx",
+        "apps/merchant/web/src/components/orders/niche-order-facts.tsx",
+        "focused wrapper tests"
+      ],
+      "scope": "pureformatterandthinwrappers; no sharedorder/projectionwritesuntilallocation",
+      "releaseEvidence": "docs/implementation/niche-themes-2026-10-23/dewdrop/order-readback-verification.json"
+    },
+    {
+      "owner": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "granted_exact_version_install",
+      "files": [
+        "packages/theme-engine/src/index.ts (InstallThemeSchema only)",
+        "services/api-gateway/src/execution/theme-execution.adapter.ts (install only)",
+        "services/api-gateway/src/routes/themes.ts (install handler only)",
+        "focused install tests"
+      ],
+      "scope": "existingcanonicalinstaller versionprecondition+receipt; SQLnextallocationrequiresroot; SDKindexCircuit"
+    },
+    {
+      "owner": "01a164ba-4751-75e1-8148-605cd263848e",
+      "status": "released_owner69_and_root_independent69_passed",
+      "files": [
+        "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+        "apps/merchant/web/src/lib/product-form-state.ts",
+        "apps/merchant/web/src/components/products/product-conflict.test.tsx"
+      ],
+      "scope": "canonicalfivevariantfacteditorssinglecreate/editrequest; protect36gift/recoverycases andid-basedbaseline/metadataomission"
+    },
+    {
+      "owner": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "status": "released_after35_native_cases",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+        "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+        "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx (variant/facts/quantity only)",
+        "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+        "focused mapper/picker/facts tests"
+      ],
+      "scope": "Connect validated selected-variant facts and pack quantity to the actual picker; preserve durable UUID/options carrier and server cart behavior.",
+      "dispatchEvidence": "next-work-dispatch-2026-10-23.json",
+      "releaseEvidence": "docs/implementation/niche-themes-2026-10-23/pantry/selected-variant-source-release.json",
+      "rootSourceReview": "merchant-source-repairs-admission.json;79rename+17originPASS;nextcandidateonly"
+    },
+    {
+      "owner": "01a164ba-f650-7f00-beea-90431a510973",
+      "status": "released_discovery_frontend14_and_commerce_noEmit_passed",
+      "files": [
+        "apps/commerce/web/src/lib/product-service.ts",
+        "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts (live discovery only)",
+        "apps/commerce/web/src/lib/theme-engine/collection-discovery.ts",
+        "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx (live collection/search/discovery only)",
+        "focused live frontend discovery tests",
+        "apps/commerce/web/src/lib/theme-engine/apparel-route-query.ts (canonical parser with legacy export compatibility)",
+        "apps/commerce/web/src/lib/theme-engine/types.ts (discovery query typing only)",
+        "apps/commerce/web/src/app/store/[subdomain]/products/page.tsx (query threading only)",
+        "apps/commerce/web/src/app/store/[subdomain]/shop/page.tsx (query threading only)",
+        "apps/commerce/web/src/app/store/[subdomain]/collections/[slug]/page.tsx (query threading only)",
+        "apps/commerce/web/src/app/store/[subdomain]/search/page.tsx (query threading only)",
+        "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.ts (trusted selector discoveryQuery only)",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts (canonical projection helper)"
+      ],
+      "scope": "Integrate canonical live discovery filters, facets, sort, pagination and error states for all nine niches.",
+      "dispatchEvidence": "next-work-dispatch-2026-10-23.json",
+      "releaseEvidence": "docs/implementation/niche-themes-2026-10-23/trailmark/discovery-frontend/source-release.json"
+    },
+    {
+      "owner": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "status": "released_after132_readback_checks_and_Habitat5_roundtrip",
+      "files": [
+        "services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts (order item allowlist only)",
+        "apps/commerce/web/src/app/api/buyer/orders/route.ts (parsed niche field only)",
+        "apps/commerce/web/src/lib/customer-drop.ts (facts only)",
+        "apps/commerce/web/src/lib/buyer-order-drop.ts (facts only)",
+        "apps/commerce/web/src/app/store/[subdomain]/account/orders/[id]/order-detail-client.tsx",
+        "apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+        "packages/theme-engine/src/niche-order-presentation.ts (new opt-in helper only)",
+        "focused readback/UI/presentation tests"
+      ],
+      "scope": "Wire parsed historical snapshots into private buyer/merchant readback, actual order UI and safe Liquid scalar presentation.",
+      "dispatchEvidence": "next-work-dispatch-2026-10-23.json",
+      "releaseEvidence": "docs/implementation/niche-themes-2026-10-23/dewdrop/order-readback-verification.json"
+    },
+    {
+      "owner": "01a164ba-d306-7953-9745-b375f5cf21c9",
+      "status": "granted_next_implementation_slice",
+      "files": [
+        "packages/theme-engine/src/kindred-theme.ts",
+        "packages/theme-engine/src/kindred-styles.ts",
+        "packages/theme-engine/test/kindred.test.ts",
+        "packages/commerce-core/test/niche-order-snapshot-acceptance.test.ts",
+        "docs/implementation/niche-themes-2026-10-23/kindred/"
+      ],
+      "scope": "Repair narrow header and add independent immutable order-snapshot acceptance across all nine fact namespaces.",
+      "dispatchEvidence": "next-work-dispatch-2026-10-23.json"
+    },
+    {
+      "owner": "01a164ba-c402-7212-990d-ed4792274b37",
+      "status": "granted_next_implementation_slice",
+      "files": [
+        "packages/theme-engine/src/habitat-theme.ts",
+        "packages/theme-engine/src/habitat-styles.ts",
+        "packages/theme-engine/test/habitat.test.ts",
+        "docs/implementation/niche-themes-2026-10-23/habitat/"
+      ],
+      "scope": "Implement current-finish measurements with whole-unit overrides; qualify final PDP/FAQ rendering and integrate shared picker hooks.",
+      "dispatchEvidence": "next-work-dispatch-2026-10-23.json"
+    },
+    {
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "status": "granted_canonical_snapshot_integration388",
+      "files": [
+        "packages/checkout-core/src/index.ts (cart contract/order normalization only)",
+        "services/api-gateway/src/routes/storefront/cart-routes.ts",
+        "services/api-gateway/src/routes/checkout.ts (server line handoff)",
+        "services/api-gateway/src/execution/order-execution.adapter.ts (p_items handoff)",
+        "services/api-gateway/src/execution/product-mutation.adapter.ts (personalization revision guard only)",
+        "database/supabase/migrations/388_*",
+        "database/supabase/rollback/388_*",
+        "new private snapshot catalog loader; focused acceptance tests"
+      ],
+      "scope": "canonical existing cart/order writers only; normalized niche_snapshot parsed from immutable product_snapshot.niche; no direct caller snapshot authority"
+    },
+    {
+      "owner": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "granted_exact_catalog_registry_version_repair",
+      "files": [
+        "services/api-gateway/src/execution/schema-registry-execution.adapter.ts (ensureThemePackageRuntime/findPackageRuntime)",
+        "focused canonical registry tests"
+      ],
+      "scope": "append/select exact catalog embedded package version; preserve old snapshots and strict install preconditions"
+    },
+    {
+      "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+      "status": "released_backend_SDK_runner_qualification_complete",
+      "files": [
+        "scripts/governance/run-executable-suites.mjs (--through-migration only)",
+        "scripts/governance/owned-database-provision.mjs (bounded migration listing/template only)",
+        "focused migration prefix option/selection tests"
+      ],
+      "scope": "Default unchanged; exact through385 fixture allows draft386 qualification before later387/388; preserve all cleanup/secret/resource boundaries",
+      "releaseEvidence": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/source-release.json",
+      "rootSourceReview": "merchant-source-repairs-admission.json;79rename+17originPASS;nextcandidateonly"
+    },
+    {
+      "owner": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "status": "granted_release_artifact_dry_run",
+      "files": [
+        "docs/implementation/niche-theme-programme/release-v2/ (new generator/artifacts/tests)",
+        "database/supabase/migrations/389_* (only after accepted stable freeze)",
+        "database/supabase/rollback/389_* (only after accepted stable freeze)"
+      ],
+      "scope": "Reuse canonical Threadline immutable artifact/catalog pattern; no emitted applied SQL until root freeze; no DB/build/browser/deploy."
+    },
+    {
+      "owner": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "granted_canonical_install_receipt_contract",
+      "files": [
+        "packages/theme-engine/src/theme-install-receipt.ts (new canonical receipt schema/helper)",
+        "focused receipt contract tests",
+        "packages/theme-engine/src/index.ts (new receipt export only)"
+      ],
+      "scope": "Same actual exact-version install receipt validation across owned merchant/standalone transports; canonical installer unchanged."
+    },
+    {
+      "owner": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "status": "granted_adjacent_demo_test_import_spies",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.test.ts"
+      ],
+      "scope": "Forbidden dependency spies for new PreviewContent imports; preserve actual no-network public demo branch and positive controls, no production changes."
+    },
+    {
+      "owner": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "status": "granted_personalization_client_and_cart_line_binding",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx (personalization/cart-line binding only)",
+        "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts",
+        "focused personalization/cart DOM tests",
+        "storefront cart BFF review adapter only"
+      ],
+      "scope": "Reuse canonical reviewed draft/context and existing form/controller; exact server line/config identity; trusted demo stays inert; no backend/SQL/ProductService/compositor changes."
+    },
+    {
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "status": "granted_review_context_producer",
+      "files": [
+        "services/api-gateway/src/routes/storefront/cart-routes.ts (read-only review context operation)",
+        "existing private cart catalog loader",
+        "packages/commerce-core/src/product-fact-snapshot.ts (canonical response schema)",
+        "packages/commerce-core/src/index.ts (response export only)",
+        "packages/typescript/api-client/src/index.ts (review context method/types only)"
+      ],
+      "scope": "Published store/product/variant no-store context; no writes/raw product version/client price authority; Pantry owns client integration."
+    },
+    {
+      "owner": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "granted_private_clone_version_metadata",
+      "files": [
+        "services/api-gateway/src/execution/theme-execution.adapter.ts (privateThemeDefinition commerce version +THEME_REGISTRY_COLUMNS only)",
+        "focused private clone/version tests"
+      ],
+      "scope": "Preserve confirmed source commerce version and strict private package coherence; no normalizer/schema/version exemption."
+    },
+    {
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "status": "granted_existing_owned_fixture_repair_only",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+        "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts"
+      ],
+      "scope": "Add approved owned pooled proxy and paired cleanup to hosted checkout fixture; capture/report child stderr for ledger traversal startup diagnosis. Keep every assertion, ownership refusal and guard intact. Existing388 DB lane, --no-reap, no unrelated resource changes."
+    },
+    {
+      "owner": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "released_after_source_header_HTTP_and_IAB_proofs",
+      "files": [
+        "apps/commerce/web/next.config.ts (public /theme-preview-only frame ancestors policy)",
+        "focused framing/header tests"
+      ],
+      "scope": "Verified latest direct human marketplace demo request01a16808-e185-7cb0-b1ef-df28ed5399a1. Exact configured marketplace/admin origins only; buyer/checkout/auth policy unchanged; no global security helper edits.",
+      "releaseEvidence": "docs/implementation/theme-marketplace-2026-10-23/evidence/standalone-preview-browser-fixed.json"
+    },
+    {
+      "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+      "status": "granted_measurement_metadata_after_final55_oracle_receipt",
+      "files": [
+        "packages/commerce-core/src/storefront-discovery.ts (measurement metadata only)",
+        "packages/commerce-core/test/storefront-discovery.test.ts (measurement metadata cases)",
+        "services/api-gateway/src/lib/storefront-discovery.ts (strict raw response measurement admission/propagation only)",
+        "focused gateway measurement metadata tests"
+      ],
+      "scope": "Canonical optional whole measurement_capabilities object; when present strict required equipment_length {available,allowed_units}, max_width_cm {available}, max_depth_cm {available}. Existing canonical length unit enum/order and query limits; old responses absent remain supported as unavailable. No SQL/SDK/client/factory/index edits unless separately needed and granted.",
+      "rootSourceReview": "merchant-source-repairs-admission.json;79rename+17originPASS;nextcandidateonly"
+    },
+    {
+      "owner": "01a164ba-f650-7f00-beea-90431a510973",
+      "status": "shared_projection_frozen_Habitat_consumer_released_to_start",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts (measurement validation/projection only)",
+        "focused measurement projection/ProductService tests",
+        "packages/theme-engine/src/trailmark-discovery.ts (consume canonical equipment_length capability only)",
+        "focused Trailmark actual measurement FormData tests"
+      ],
+      "scope": "Use released canonical metadata; no local alternate schema/unit invention. Source edits start only after Circuit contract handoff; no other frontend binder/SQL/SDK writes. Explicit absent/unavailable/available/zero/past-end states, same-response capability and active pair recovery.",
+      "releaseEvidence": "Trailmark reports frontend20/20, forms9/theme11 and full commerce noEmit; exact receipt pending."
+    },
+    {
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "status": "released14_products10_focused_tests_gateway_noEmit_pass",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts (existing hold helper opt-in Editor seed hook and private IDs only)",
+        "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts (bounded prepareThemeEditorQaStore canonical data helper only)",
+        "focused owned fixture profile/data validation tests"
+      ],
+      "scope": "Start edits after next N7 source copy/parity/dependency resolution succeeds; no need to await whole isolated N7 run. Runtime startup still needs separate grant. Existing strict Editor hold flag, reject simultaneous Threadline QA mode. Nine common/five supported variant fact namespaces via existing canonical gateway product commands and durable response IDs; exact beauty Shade options/personalization facts. Existing owned collection/search-projection seams allowed. No new fixture harness/auth/provider/browser-session shortcut; manual wrapper stays tiny; no database/build/browser launch until separately granted.",
+      "activationEvidence": "MadeYours candidate-e ready:14843 files,256 links,required10 hashes and6 workspace resolutions verified by owner; N7 isolated, no more main source copy.",
+      "releaseEvidence": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-preparation-source-release-14-products.json",
+      "followUp": "Separate real stationery product is absent from13 plan; Marginalia provides schema-validated payload, Editor folds bounded14th into the same seed helper/tests/plan. No new harness or startup.",
+      "rootSourceReview": "merchant-source-repairs-admission.json;79rename+17originPASS;nextcandidateonly"
+    },
+    {
+      "owner": "01a164ba-c402-7212-990d-ed4792274b37",
+      "status": "released_after29_owned_source_contract_tests",
+      "files": [
+        "packages/theme-engine/src/habitat-discovery.ts (per-axis measurement capability only)",
+        "focused Habitat discovery FormData tests",
+        "own Habitat evidence/docs"
+      ],
+      "scope": "Shared projection explicitly frozen by Trailmark; direct exact same-response per-axis available booleans, no categorical proxy/numeric facet inference. Existing labels/assembled cm semantics/query preservation/clears retained. No shared files or runtime resources.",
+      "releaseEvidence": "docs/implementation/niche-themes-2026-10-23/habitat/measurement-consumer-source-manifest.json"
+    },
+    {
+      "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+      "status": "active_Circuit_filter_accessible_count_label_correction",
+      "files": [
+        "packages/theme-engine/src/circuit-discovery.ts (label/count semantics only)",
+        "focused Circuit actual accessibility/form tests",
+        "own Circuit evidence/docs"
+      ],
+      "scope": "Independent Playfield immutable review found32 radio/checkbox names concatenate bare numeric counts. Preserve exact supplied value/label plus meaningful count access; use real computed-name regression. No shared metadata/projection/SQL/resources. Prior55 green archive stays historical."
+    },
+    {
+      "owner": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "granted_blank_private_producer_immutable_Core_contract_copy",
+      "files": [
+        "services/api-gateway/src/execution/theme-execution.adapter.ts (privateBlankThemeDefinition/createSiteTheme only)",
+        "focused private/blank producer contract tests"
+      ],
+      "scope": "Concrete native blankCore save400; all10 catalog install/load alreadypassed. Resolve validated immutable Core DB contract and detached copy into newprivate definition before capture. No registry/normalizer/renderer/SQL/private exception or source-capture mutation."
+    },
+    {
+      "owner": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "status": "active389_generator_wire_roundtrip_correction_only",
+      "files": [
+        "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+        "owned generator tests/evidence and new immutable proposal directory"
+      ],
+      "scope": "Normalize fresh bundle before persistence derivation, strict actual disk reload/SQL equality and array-order/membership regressions; preserve all previous proposals/global factories/persistence builder/Threadline. No appliedSQL/resources."
+    },
+    {
+      "owner": "01a161c9-36d1-7802-af70-d346f524bff3",
+      "status": "granted389_390_owned_qualification_suite_preparation_only",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+        "own qualification docs"
+      ],
+      "scope": "Exact corrected root-admitted disk artifact promotion/rollback/idempotency/install/editor/tenant/immutable-capture qualification and390 composition. Missing admission fails, no stale fallback. No runtime before exact manifest and DB allocation; central inventory root-owned."
+    },
+    {
+      "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+      "status": "released_sourcefix_root_independent67green_inventory14green_installedrecheckrequired",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx (generic LbAddToCartElement/existing sync result only)",
+        "focusedactualnativecart/variant/personalizationregressions"
+      ],
+      "scope": "CIRCUIT-CART-409-001 actualinprocessstock409 saysAdded/cachesrejected9. Serveracceptance/error/retry/BuyNow gating withqueue-safeoptimisticrecovery; preserveselectedvariant/personalization/demo. Backend/factory/SQL frozen; exactreleasehashrequiredbeforefinalcandidate.",
+      "releaseEvidence": "docs/implementation/niche-theme-programme/circuit-cart-repair-source-admission.json"
+    },
+    {
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "status": "granted_bounded_existing_Editor_fixture_private_observability",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts (Editorprofile finiteproof/replay only)",
+        "focusedfixturetests/adjacenttesthelperifneeded"
+      ],
+      "scope": "Memory-only exact actualsite-ownedconfirmcommands; nonce+recordedindex-onlybounded replay; nosuppliedauth/path/body/SQL, nosecretjournal/browserinspection. Site-boundUUIDproofreturnsdigest/oneeffectcounts,notrawsnapshots.14recipes/QAhelperunchanged; no production/auth/checkout/harnesschanges/startup."
+    },
+    {
+      "owner": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "status": "granted_exact_accepted389_paired_emission_noDB",
+      "files": [
+        "database/supabase/migrations/389_*",
+        "database/supabase/rollback/389_*",
+        "ownrelease-v2emissionreceipt"
+      ],
+      "scope": "Rootaccepted corrected81e918manifest/filec0e8, generatorccbd. ExactrenderedUP3d9a5e/DOWNaecbd6 only; wxwrites/max388/unique389. Preserveoldproposals/reds/Threadline/defaultv1. NoDB/build/browser/deploy/senddenyretry."
+    },
+    {
+      "owner": "01a164ba-4751-75e1-8148-605cd263848e",
+      "files": [
+        "apps/merchant/web/src/lib/api/request-origin.ts",
+        "apps/merchant/web/src/lib/api/request-origin.test.ts"
+      ],
+      "status": "RELEASED_SOURCE4e1671_FOCUSED15_CONSUMER2_TSC0_LIVE_RECHECK_PENDING",
+      "scope": "Exacttrustedconfiguredadminorigin bound Host/protocol/port, no forwarded/wildcard/bypass. InstalledNextdirectaliaspreserved; normalizedroutecontextsupportisunit-proven, internalbrowsercauseunobserved.",
+      "rootSourceReview": "merchant-source-repairs-admission.json;79rename+17originPASS;nextcandidateonly"
+    },
+    {
+      "owner": "01a161c9-36d1-7802-af70-d346f524bff3",
+      "files": [
+        "docs/implementation/threadline-2026-10-22/shared-group-durability/",
+        "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts"
+      ],
+      "status": "GRANTED391_DOCS_DRAFT_AND_NATIVE_TEST_PREP_NO_APPLY",
+      "scope": "Canonicalsharedheader/footerpersistence, preserveotherpages/CAS/idempotency/tenant/ACL/profile;noappfrontendworkaround/capturemutation."
+    },
+    {
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts (merchantpreviewenvonly)"
+      ],
+      "status": "RELEASED_FUTURE_SOURCE_DBF1AA_17_TESTS_TSC0_CURRENT9CD_STILL_FAIL",
+      "scope": "OnlymerchantadvertisedNEXT_PUBLIC_STOREFRONT_URL\u2192localhost:samecommerceport;buyertenantorigin/recipes/securitypolicyunchanged."
+    },
+    {
+      "owner": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "files": [
+        "apps/merchant/web/src/app/[store]/products/new/page.tsx (optionvalueRenameUIonly)",
+        "apps/merchant/web/src/lib/product-form-state.ts (atomicrenamehelperonly)",
+        "focusedoption-renameUI/state tests"
+      ],
+      "status": "RELEASED_ROOT79PASS_NEXT_CANDIDATE_ONLY",
+      "scope": "ExplicitnormalUIrename existingvalue/title;preservevariantIDs/optionsotheraxes/metadata/stock/recovery/versionrequest;rejectcollisions;nonewendpoint/schema/backend.",
+      "rootSourceReview": "merchant-source-repairs-admission.json;79rename+17originPASS;nextcandidateonly"
+    },
+    {
+      "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+      "files": [
+        "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/",
+        "newguardednativeelectronicssearchtests"
+      ],
+      "status": "RELEASED_ROOT8PLUS19NATIVE_SOURCEEMITTED_FROZEN",
+      "scope": "ExistingbrowseRPCvalidatedsuppliedmodel/connectortextterms only;preserveallquery/RLS/availability/facets/contracts/profile. No newsearchsystem/index/titlemutation."
+    },
+    {
+      "owner": "01a164ba-d306-7953-9745-b375f5cf21c9",
+      "files": [
+        "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css (exactKindredheadercompatblock)"
+      ],
+      "status": "SUSPENDED_DIRECT_HUMAN_KINDRED_SOURCE_FREEZE_CLARIFICATION_PENDING",
+      "scope": "Directhuman01a1694d keep source/artifactsfrozen,KQA01open supersedesrootgrant.Privateproposalpreserved;nootheragentapply."
+    },
+    {
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts (manualpreissuedleafbranchonly)",
+        "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts (fixedEditorTLSflagonly)",
+        "focusedmanualTLScrypto/pathnegative tests"
+      ],
+      "status": "SOURCE_FROZEN_RELEASED_ROOT_REVIEWED_NEXT_CANDIDATE_ONLY",
+      "scope": "Defaultnativegeneration/ownershipguardsunchanged;noCAcreation/keyread/toolinstall/trustchange/DB/browser/build/runtime"
+    },
+    {
+      "owner": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "files": [
+        "apps/commerce/web/src/lib/theme-engine/platform-control-markup.ts",
+        "apps/commerce/web/src/lib/theme-engine/product-origin-filter.test.tsx",
+        "focusedappquerycontroltests/docs"
+      ],
+      "status": "RELEASED_ROOT_SOURCE_ADMITTED_36PASS_NEXT_CANDIDATE_ONLY",
+      "scope": "Apply/Clearcountryonlypreserveothercanonicalbrowsefields/repeatedvalues/localpath/XSS;noSQL/core/SDK/themeartifact/current9cd/browser/DBchanges",
+      "rootSourceReview": "platform-origin-query-source-admission.json"
+    },
+    {
+      "owner": "01a161c9-36d1-7802-af70-d346f524bff3",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+        "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+        "focusedsourcecontracts/docs"
+      ],
+      "status": "RELEASED_ROOT_ALL3_LATEST19_NATIVE_VERIFIED",
+      "scope": "Archiveoldqualifiedsources/admissionsfirst;exactRoot392realreceiptschema+knownbodies/orderedDOWN/fullphases/restore;nonewphase/harness/runnerceiling/SQLorcurrentUIchange;newsourceadmissionbeforeDB",
+      "rootSourceReview": "dependent-latest392-source-admission.json"
+    },
+    {
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts (Editor-only synthetic Enterprise startup precondition)"
+      ],
+      "status": "RELEASED_ROOT_EXACTDELTA_AND_17TAP_VERIFIED",
+      "scope": "Exactreviewed10linepatchbaseline3cd5to8a58;nootheredits;newsourceepochseparatefromnative19;old9cduntouched"
+    },
+    {
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "files": [
+        "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+        "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts"
+      ],
+      "status": "RELEASED_ROOT_SOURCE_ADMITTED_23PASS",
+      "scope": "StrictfixedsamekeyconflictselectoronlyaftercapturedownedCODsuccess;noMadeYours15/TLS/domainchanges",
+      "rootSourceReview": "confirm-conflict-observer-source-admission.json"
+    },
+    {
+      "owner": "01a164ba-4751-75e1-8148-605cd263848e",
+      "files": [
+        "packages/theme-engine/src/playfield-theme-v201.ts (new)",
+        "packages/theme-engine/src/first-party-theme-catalog.ts (explicitPlayfield2.0.1optinonly)",
+        "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts (resolvedtoypubliccarrieronly)",
+        "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts (typedboundedresolvedtoys)",
+        "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts (declaredtoyhookrenderer)",
+        "focusedadjacenttests/docs"
+      ],
+      "status": "ROOT_GRANTED_APPEND_ONLY_PLAYFIELD201_SOURCE_PREPARATION",
+      "scope": "Canonicalselectedtoyswholestructuredfacts;preserveallimmutable2.0.0/M1/artifacts/cart/domainSQL;nohotpatchf607/nohydrationedit/catalogcapture/migrationemission/DB/runtime/browser",
+      "rootDecision": "SOURCE_REPAIR_PROPOSAL.mdChoiceB",
+      "distribution": "Docsproposalonly;no393reservationyet"
+    },
+    {
+      "owner": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "files": [
+        "apps/merchant/web/src/lib/product-facts-draft.ts",
+        "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+        "focusedmountedconsumertests/docs"
+      ],
+      "status": "ROOT_GRANTED_BOUNDED_ABSENT_APPAREL_SERIALIZATION_REPAIR",
+      "scope": "Preventunsuppliedapparelfromemptydraft/noexistingnamespace;preserveexistingmeaningfulgarment/private/niche/gift/recovery;no page/backend/schema/SQL/runtime/candidateedits"
+    }
+  ],
+  "adjacentWorkstreams": [
+    {
+      "theme": "editor",
+      "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "authorization": "direct human replies01a166f2-bc86-7f21-bf20-4f1c2afe9f19 and01a166f5-4a7f-75f1-8e5e-54aebd33db0f verified via read_thread",
+      "status": "source_writer_granted_after_M1",
+      "reservedFiles": [
+        "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/",
+        "apps/merchant/web/src/components/theme-editor/",
+        "apps/merchant/web/src/lib/theme-draft-client.ts"
+      ],
+      "browser": "granted owned new Editor Lab store only on isolated ff9941a78139 admin origin",
+      "heavyBuild": "not_yet_allocated",
+      "docs": "docs/implementation/theme-editor-2026-10-23/",
+      "requestedSharedPaths": [
+        "packages/theme-engine/src/editor-bridge-protocol.ts",
+        "apps/commerce/web/src/lib/theme-engine/liquid-preview-inspector.ts",
+        "apps/commerce/web/src/app/preview/storefront-preview-bridge.tsx"
+      ],
+      "migration": "384 reserved alternate-template contracts, rollback required",
+      "additionalGrantedFiles": [
+        "packages/theme-engine/src/theme-renderer.ts (preview block metadata only)",
+        "merchant editor GET/draft/preview-session API routes (template keys only)",
+        "services/api-gateway/src/execution/theme-execution.adapter.ts (template normalization/options only)",
+        "services/api-gateway/src/routes/storefront/public-routes.ts (signed theme-preview handler only; exclusive file writer)",
+        "services/api-gateway/src/routes/resource-search.ts (pagination/semantic labels)",
+        "merchant resource-search BFF",
+        "apps/commerce/web/src/lib/content-service.ts (preview helper only)",
+        "packages/theme-engine/src/index.ts (validateFieldValue/validateSchemaSettings helpers/types only; root exports complete)",
+        "packages/typescript/api-client/src/index.ts (storefront themePreviewContent method/types only; exclusive file writer until release)",
+        "services/api-gateway/src/routes/storefront/theme-preview-content.ts (verified signed-preview CMS helper only)",
+        "services/api-gateway/src/routes/storefront/theme-preview-content.test.ts (focused boundary tests)",
+        "existing public-urls.ts (editor platform-preview-base helper only)",
+        "CenterPanel editor preview URL usage/tests",
+        "apps/merchant/web/src/lib/public-urls.ts (getStorefrontStoreUrl tenant-origin normalization only) and focused regression test"
+      ],
+      "excludedSharedRendererScope": "No Liquid sandbox limits or commerce product-drop changes",
+      "releasedFilesToCoordinator": [
+        "services/api-gateway/src/execution/theme-execution.adapter.ts",
+        "packages/theme-engine/src/index.ts",
+        "apps/commerce/web/src/app/preview/preview-content.tsx"
+      ],
+      "nextGate": "Run actual all10 raw and JSON-wire editor probe after all nine final discovery source handbacks. Prepare fresh fixture without launching before required DB/catalog/release readiness."
+    },
+    {
+      "theme": "marketplace",
+      "threadId": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "active_marketplace_writer_granted_after_M1",
+      "scope": "active merchant/storefront discovery/detail/demo/install/library; frozen theme-store stays dormant",
+      "sharedFiles": "exact_path_allocation_required",
+      "overlap": "preview-content.tsx editor writes first; marketplace prepares patch/helper",
+      "additionalGrantedFiles": [
+        "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+        "apps/commerce/web/src/app/theme-preview/page.tsx",
+        "apps/commerce/web/src/app/preview/preview-content.tsx",
+        "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+        "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+        "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.ts"
+      ],
+      "browser": "releasedafterpublicproof; ownmerchantinteractiveblockeduntilrunisolatedauthhosts",
+      "releasedFilesToCoordinator": [
+        "apps/commerce/web/src/app/preview/preview-content.tsx",
+        "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+        "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+        "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.ts"
+      ]
+    }
+  ],
+  "completedImplementationReviews": [
+    {
+      "theme": "circuit",
+      "reportedCasesPassed": 33,
+      "reportedFailed": 0,
+      "scope": "actual v2 factory/data binding/app mapper/Liquid/assembly responsive review; no hydrated commerce/DB/performance acceptance",
+      "evidenceDirectory": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/",
+      "resourceRelease": "owner reported Chromium/server closed, capture process exited"
+    }
+  ],
+  "databaseVerification": {
+    "owner": null,
+    "status": "RELEASED_ROOT_QUALIFIED_ALL3_DEFAULT_LATEST392_19PASS",
+    "runId": "bc5db405796b",
+    "evidence": "dependent-latest392-native-admission.json"
+  },
+  "completedDatabaseVerification": [
+    {
+      "owner": "pantry",
+      "migration": 385,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "docs/implementation/niche-themes-2026-10-23/pantry/owned-db-385-run.json",
+      "cleanup": "ownerreportsallownedcontainers/networks/volumesremoved; nootherresourcesreaped"
+    },
+    {
+      "owner": "editor",
+      "migrations": [
+        384
+      ],
+      "passedGroups": [
+        2,
+        35,
+        1
+      ],
+      "skipped": 0,
+      "evidence": "docs/implementation/theme-editor-2026-10-23/evidence/owned-pg-results.json",
+      "cleanup": "ownerreportsallownedcontainers/networks/volumesremoved; reaped[]"
+    },
+    {
+      "owner": "circuit",
+      "migration": 386,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "runId": "0d6117b8e98f",
+      "evidence": "discovery386-admission-proof.json",
+      "cleanup": "owner reports all owned resources removed; no unrelated cleanup"
+    },
+    {
+      "owner": "marketplace",
+      "migration": 387,
+      "runId": "fc763272c692",
+      "result": "install-version9passed0skip; public catalog suite failed canonical default/schema400; not overall accepted",
+      "cleanup": "owner reports failures and all remaining owned resources empty"
+    },
+    {
+      "owner": "madeyours",
+      "migration": 388,
+      "runId": "2250e55744bb",
+      "passed": 59,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Fourqualifiedcomponents23snapshot+10auth+15hosted+11refund=59PASS;notwholeartifactgreen",
+      "cleanup": "Owner reports failures[] and remaining owned resources empty.",
+      "rawArtifactCorrection": {
+        "overallPass": 59,
+        "overallFail": 1,
+        "failedComponent": "scheduledledgerparent;separatequalified68fc2c08fd3611/11",
+        "reason": "Priorpassed59/failed0referredonlyfourcomponents;preserverawfailedparent"
+      }
+    },
+    {
+      "owner": "madeyours",
+      "runId": "68fc2c08fd36",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Isolated N7 real scheduled ledger traversal with explicit prepared2; exact one-line reviewed349 stale test-pin refresh, no SQL/assertion weakening.",
+      "evidence": "docs/implementation/niche-themes-2026-10-23/madeyours/n7-isolated-results.json",
+      "cleanup": "Owner explicitly released lane; failures[] and remaining containers/networks/volumes[]."
+    },
+    {
+      "owner": "marketplace",
+      "migration": 387,
+      "runId": "54884f7b6bbd",
+      "passed": 9,
+      "failed": 1,
+      "skipped": 0,
+      "scope": "Exact version/security/receipt9pass; actual persisted372 legacy default/catalog compatibility still400 at Forge. Immutable provenance captured before installer; no validation weakened.",
+      "evidence": "docs/implementation/theme-marketplace-2026-10-23/evidence/install387-requalification-result.json",
+      "cleanup": "Owner explicitly released; failures[] remaining containers/networks/volumes[]."
+    },
+    {
+      "owner": "threadline",
+      "migrationDraft": 390,
+      "runId": "b07d0d6ed853",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Fresh through388 exact docs-draft native qualification; completecatalog/dataUP-DOWN-UP, roles/grantor/inheritance, original parity, SQL measurement semantics and HTTP. Earlier reds preserved.",
+      "evidence": "docs/implementation/threadline-2026-10-22/measurement-discovery/native-runs/06-green/result.json",
+      "cleanup": "Owner explicitly released; failures[] and remaining containers/networks/volumes[]."
+    },
+    {
+      "owner": "marketplace",
+      "migration": 387,
+      "runId": "898e86436b36",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "All10actualpersistedinstalls/editorloads+strictversion/security/privateThreadline/privateblank save/publish/rollback. Root independentlyverified19sources/11provenancefiles andactualrunJSON. Ninev2promotionnotclaimed.",
+      "evidence": "marketplace387-final-native-admission.json",
+      "cleanup": "Rootverified failures[] and remainingcontainers/networks/volumes[];reaped[]."
+    },
+    {
+      "owner": "threadline",
+      "migrations": [
+        389,
+        390
+      ],
+      "runId": "1a4e6e2c85ad",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "All9actualinstall/wiresave/publish+conflict/security/rollback and390composition/profile conservation; originalfirstattemptHTTP200; rootverified63pins/nativeprovenance/current88/apprepair/fixturehook.",
+      "evidence": "native389390-final-admission.json",
+      "cleanup": "Rootverifiedfailures[]/allremaining[]/reaped[]."
+    },
+    {
+      "owner": "threadline",
+      "migration": 391,
+      "runId": "0a9c7010222a",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "AllTENactualchanged+omittedgroups/save/reload/publish/publicreadback+CAS/security/outboxatomicity/DOWN-UP",
+      "evidence": "shared-groups391-native-admission.json",
+      "cleanup": "Rootverifiedallremaining[]/failures[]/reaped[]/79sourcesexact"
+    },
+    {
+      "owner": "threadline",
+      "migration": 391,
+      "runId": "c36541761c7f",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "DefaultLATEST391entrystrictDOWN/fullallTENphases/UP391,noceiling;107currentandfirstproofsconserved",
+      "evidence": "shared-groups391-latest-native-admission.json",
+      "cleanup": "Rootverifiedallremaining[]/failures[]/reaped[]"
+    },
+    {
+      "owner": "circuit",
+      "migrationDraft": 392,
+      "runId": "e9e26bcac125",
+      "passed": 0,
+      "failed": 8,
+      "skipped": 0,
+      "scope": "All8hookfailurebecausefixtureattemptedforbiddenelectronicsvariantmetadata;canonicalCHECKcorrectlydeniedbefore392SQL;noSQLqualificationcredit",
+      "evidence": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/",
+      "cleanup": "owner/rootresultemptycontainers/networks/volumes/failures/reaped;190pinsownerverifiedunchanged"
+    },
+    {
+      "owner": "circuit",
+      "migrationDraft": 392,
+      "runId": "3273631a2c5b",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "ExistingRPCvalidatedmodel/connectorsearch+native13catalog/role/defaultAST/refusals/SQLandHTTP/rollback;notcurrentUI",
+      "evidence": "circuit-search392-native-admission.json",
+      "cleanup": "Rootallremaining[]/failures[]/reaped[];215currentpins+341original/copiedproofs+367manifestfilesverified"
+    },
+    {
+      "owner": "threadline",
+      "runId": "bc5db405796b",
+      "migrations": [
+        389,
+        390,
+        391,
+        392
+      ],
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "ALL3fullfreshdefaultLATEST392/noceiling;Root376manifest/816currentpairs/365originalcopiedproofs/31archives/allTEN30omissioncases/restorations",
+      "evidence": "dependent-latest392-native-admission.json",
+      "cleanup": "Rootemptyremaining/failures/reaped"
+    }
+  ],
+  "heldRuntimeFixtures": [
+    {
+      "runId": "ff9941a78139",
+      "status": "held_ready_for_editor_marketplace_functional_UI",
+      "identity": "http://accounts.threadline-ff9941a78139.localhost:51235",
+      "merchant": "http://admin.threadline-ff9941a78139.localhost:51236",
+      "commerce": "http://syn-threadline-ui-41eb3f07.localhost:51237",
+      "privateStateReference": "/private/tmp/threadline-ff9941a78139-state.json",
+      "sourceBoundary": "pinnedmax385functionalhostfixture; notfinalall9release",
+      "hostProof": "17liveHTTP+normalIABmerchant/buyerconsentPKCEreload; buyerlogoutUIrequiresreload"
+    },
+    {
+      "runId": "d4eb85047858",
+      "owner": "01a166fc-411f-7092-b982-a055c186d87d",
+      "status": "retained_owned_current_marketplace_through388_not_final_nine_v2",
+      "identity": "http://accounts.threadline-d4eb85047858.localhost:59594",
+      "merchant": "http://admin.threadline-d4eb85047858.localhost:59595",
+      "commerce": "http://localhost:59596",
+      "api": "http://127.0.0.1:59599",
+      "marketplace": "http://localhost:9005",
+      "privateStateReference": "/private/tmp/threadline-marketplace-current-20261023-02-state.json",
+      "startupReleaseReceipt": "docs/implementation/theme-marketplace-2026-10-23/evidence/current-runtime-startup-lease-release.json",
+      "retention": "Reviewed6hhold/session77059;mustnotstop/reapforotherqualification."
+    },
+    {
+      "runId": "f6074d90e894",
+      "owner": "coordinator",
+      "status": "READY_EDITOR_SOLE_UI_ACTIVE",
+      "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+      "privateStateReference": "/private/tmp/threadline-f6074d90e894-state.json",
+      "sessionId": 79090,
+      "scope": "FreshdefaultLATEST392/manualOSTLS/canonicalsyntheticenterprise;all3ready/normalUIsmokePENDING",
+      "receipt": "editor-latest392-startup-admission.json"
+    }
+  ],
+  "sourceSnapshotWindow": {
+    "status": "NO_SHARED_NATIVE_SNAPSHOT_ACTIVE",
+    "sourceWriter": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "checkoutPrivateNativeReviewer": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "receipt": "docs/implementation/niche-theme-programme/completion-shared-allocation-20261024-01.json"
+  },
+  "pendingCanonicalRepair": {
+    "owner": "01a161c9-36d1-7802-af70-d346f524bff3",
+    "status": "BOUNDED_CANONICAL_UPDATE_SOURCE_REPAIR_ACTIVE_NO_NATIVE_LANE",
+    "scope": "Existing package updater reproduces2.0.0 instead of2.0.1 when schema IDs match; source planner/target availability and atomic normal update review.",
+    "migration393": "Reserved catalogue-only immutable proposal; not emitted or applied. No migration changes granted."
+  },
+  "buyerQueue": [
+    {
+      "theme": "Threadline",
+      "key": "threadline",
+      "threadId": "01a16d03-613e-71b0-a591-07d4d24347d4",
+      "position": 1,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Pantry",
+      "key": "pantry",
+      "threadId": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "position": 2,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Dewdrop",
+      "key": "dewdrop",
+      "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "position": 3,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Habitat",
+      "key": "habitat",
+      "threadId": "01a164ba-c402-7212-990d-ed4792274b37",
+      "position": 4,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Circuit",
+      "key": "circuit",
+      "threadId": "01a164ba-a97f-7d80-9430-57924218664b",
+      "position": 5,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Trailmark",
+      "key": "trailmark",
+      "threadId": "01a164ba-f650-7f00-beea-90431a510973",
+      "position": 6,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Marginalia",
+      "key": "marginalia",
+      "threadId": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "position": 7,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Kindred",
+      "key": "kindred",
+      "threadId": "01a164ba-d306-7953-9745-b375f5cf21c9",
+      "nextSliceRequest": {
+        "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/runtime07-slice01/NEXT_BROWSER_SLICE.json",
+        "sha256": "9bb2d657588ca60a5f8a00050f548b217ce66cd2a85fb7c161787f8e384e499a",
+        "runId": "49ada80bc494",
+        "packageVersion": "2.1.0",
+        "priorityRequest": "Intended gift KRP-01/KRP-02 Test purchase before existing HTTPS expiry; actual controller allocation required",
+        "publicReceiverExpiresAt": "2026-10-24T22:20:00Z",
+        "productId": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+        "resourceGrant": false,
+        "currentCaseOutcomes": "NOT_RUN"
+      },
+      "position": 8,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "MadeYours",
+      "key": "madeyours",
+      "threadId": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "position": 9,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    },
+    {
+      "theme": "Playfield",
+      "key": "playfield",
+      "threadId": "01a164ba-4751-75e1-8148-605cd263848e",
+      "position": 10,
+      "status": "RUNTIME07_READY_RECONCILE_ORIGINAL_MATRIX_AND_EXECUTE"
+    }
+  ],
+  "currentRuntimeDefects": {
+    "sharedHeaderSave": "LATEST392_NATIVE_AND_F607_BROWSER_CYCLES_PASS;old384failurehistorical",
+    "previewFrame": "Newf607actualDewdroprender/crossframeinspectorworks;all10remaining",
+    "merchantProductSave": "Newf607actualoriginSave+reloadworks;old9cd403historical;emptyapparelserializationnewseparatesourcefix",
+    "CircuitModelSearch": "LATEST392_NATIVE_AND_THREE_REAL_REQUESTS_PASS;fullCircuitmatrixpending",
+    "KindredTabletHeader": "KQA01P2current9cdsourceunchanged;privatepatchreviewedfutureintegration",
+    "platformOriginClear": "Actualoldhrefdropsqueryfields;SOURCEa027repairrootindependent36PASS;nextcandidateonly/currentP06hold",
+    "CircuitDemoLink": "ACTUALexactlinkedtenant/theme-preview/letbuyy-forgePageNotFound404;CL24inertnessNOT_RUN;consistentwithinferredknownfixtureplatformoriginconfigfuture3cd5\u2014notlivetested",
+    "cartQuantityRecovery": "Old failure retained; new49944 actual Pantry UI rejection/recovery/valid retry/fullreload COMPONENT_PASS. Individual theme case reconciliation remains.",
+    "merchantStockIntent": "New49943 actual canonical mutation omits stock; consumed inventory and old order histories conserved. Source/live components PASS, other theme cases remain."
+  },
+  "trustedCheckoutReadiness": {
+    "status": "ACTUAL_NORMAL_BROWSER_HTTPS_FORM_POSITIVE_NO_ORDER",
+    "runId": "f6074d90e894",
+    "origin": "https://checkout.localhost:62082",
+    "code": "ERR_CERT_AUTHORITY_INVALID",
+    "currentCartPreserved": "Originalreceipttestcartpreserved;finitePantrynormalUItransition+exactrestorationallocated",
+    "orderCreated": false,
+    "noBypass": true,
+    "existingMkcertProbe": "binarynotfound/knownpublicrootCApathsabsent;notexhaustivealltruststoreclaim",
+    "proposalOwner": "01a164ba-e017-7b90-9053-efc5357459a6",
+    "scope": "Directhumanapproval call_33e9769d719343559c208b9b69c8f15f exacthostuserSSLlogintrustexecuted;nohumanstepremaining;freshmanualfixturebrowserpositivepending",
+    "proposalStatus": "SOURCE_ADMITTED_OS_READY",
+    "sourceAdmission": "manual-checkout-tls-source-admission.json",
+    "executionReceipt": "trusted-checkout-setup-receipt.json",
+    "current9cdSelfSignedUnchanged": true,
+    "latestTrustReceipt": "trusted-checkout-exact-leaf-result.json",
+    "effectiveScope": "OnlyED31nonCAserverleaf/SANcheckout.localhost;userloginSSL;wronghostanddescendantsdenied;originalhostscopedCAunchanged",
+    "noBroaderCaOrSystemTrust": true,
+    "browserVerification": "SameIAB6freshowntab18normalcartcheckoutnewhandoff\u2192realDeliveryAddressform1120/nointerstitial",
+    "exactFreshErrorCode": "Notretained;oldERR_CERT_AUTHORITY_INVALIDwithdrawn",
+    "browserAdmission": "trusted-checkout-browser-admission.json",
+    "humanTrustStepRemaining": false
+  },
+  "sharedTestSubscriptionProvisioning": {
+    "status": "DIRECT_HUMAN_APPROVED_COMMITTED_ONE_ROW_CANONICAL_LIMIT_NULL",
+    "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "runId": "9cd50e893016",
+    "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+    "evidence": "CurrentFreeplan1 correctlyrefusedPantryAdd; publishedDewdroparchivecorrectlydenied. ExistingNativeall9seedusescanonicalsubscriptionsenterpriseactive.",
+    "bounds": "verifyOwnedFixture+syntheticsite/owner/noeligibleexistingrow,ONEINSERTsubscriptionsonly,beforeafterinvariants;noquotaguard/limits/planrows/payments/provider/role/source/productmutation",
+    "acceptance": "Setupbaselineonly; no paidupgradeclaim/no retroactiveP00pass",
+    "reviewHistory": "Firstautomaticreviewrejected;Editordidnotretryuntildirecthumanapproval;thenapprovedoriginalcommandcommitted. SubsequentJSnameassertionfailedandonlyREADONLYrecoveryverifiedslugfallback.",
+    "limitation": "SQLintransactionbefore==afterpassed;numericdigestvaluesnotpersistedbeforepostcommitJSfailure;noinventedbeforevalues."
+  },
+  "pantryCartBoundary": {
+    "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "status": "GRANTED_FINITE_NORMAL_UI_TRANSITION_AND_RESTORE",
+    "runId": "9cd50e893016",
+    "before": "Captureandassertonly2Pink1120/order0;unexpecteditemsstop",
+    "test": "NormalremoveownPink;addexactPantryvariant2/reload/facts/totals",
+    "after": "NormalremovePantrytestline/restoreexact2Pinkvariant/reload1120/facts/order0",
+    "prohibited": [
+      "hiddenstorage/context/tokeninjection",
+      "SQLcartreset",
+      "APIorders"
+    ],
+    "acceptance": "Retainoriginalreceipt;explicittemporarytransitionandseparaterestorationproof;noCODuntiltrustedHTTPS",
+    "temporaryTwoLentilsObserved": "ControllerreportsactualUI+guardedserverqty2/unit180/total360/peritem250g/order0;normalreload+Pinkrestorationpending",
+    "laterHumanApproval": "All10syntheticcart+localCODscopeexpandedbydirecthuman01a169b7;earlierlimitedboundarieshistorical"
+  },
+  "additionalCartApprovalGate": {
+    "status": "DIRECT_HUMAN_APPROVED_SYNTHETIC_CART_AND_LOCAL_COD_ALL10",
+    "verifiedByRoot": "read_threadEditor01a166ebturn1includeOutputsfalse",
+    "humanUserMessageId": "01a169b7-8956-7292-95e0-09c5a3fc8602",
+    "questionCall": "call_e454d68765774e9e8a9ef59e6933dd0c",
+    "answer": "Approve synthetic cart and COD tests",
+    "scope": "All10ownedsyntheticfixturevariantadds/removes/overstocknegatives/localCOD;restoreexact2Pinkaftereachslice;noPSP/realfulfillment",
+    "TLSApprovalSeparate": true
+  },
+  "futureFixtureSubscriptionSourceProposal": {
+    "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "status": "ROOT_SOURCE_ADMITTED_8a58_17PASS_ACTUALSTARTUP_PENDING",
+    "baseline": "3cd5e06a69fe97d6094a0b5dda168b7a67908ba975166008f9638b1e42eae445",
+    "scope": "ExactsyntheticEditorprofilecanonicalEnterpriseprecondition;futuremanifesttransparent;current9cdrowunchanged;nofreshstartuntilRootcopyadmission"
+  },
+  "templateLocalCyclesObserved": {
+    "count": 6,
+    "themes": [
+      "Dewdrop",
+      "Pantry",
+      "Habitat",
+      "Circuit",
+      "Playfield",
+      "Kindred"
+    ],
+    "scope": "NormalA_B_publish_restoreA_draftBretained_reapplyB_exactpublicsnapshotmarkers;commonpreview/headerdefectsnotaccepted"
+  },
+  "habitatIndependentAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-execution-evidence-audit.json",
+    "sha256": "c1ffd920d9a5411a850830821be53a761217a9d36fc8a0aac62b94d0a7292680",
+    "cases": 26,
+    "totals": {
+      "PASS": 0,
+      "FAIL": 1,
+      "PARTIAL": 7,
+      "NOT_RUN": 18
+    },
+    "lifecycleTotals": {
+      "PASS": 0,
+      "FAIL": 1,
+      "PARTIAL": 7,
+      "NOT_RUN": 9
+    },
+    "queryTotals": {
+      "PASS": 0,
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "NOT_RUN": 9
+    },
+    "all26Executed": false,
+    "accepted": false,
+    "scopedABRecovery": {
+      "AHashEqualsRestoredA": true,
+      "BHashEqualsReappliedB": true,
+      "AAndBDistinct": true,
+      "allFourAnonymousReadbacksHttp200": true,
+      "activeReleaseMatchesReappliedB": true,
+      "ordersCreated": 0
+    }
+  },
+  "CircuitPublicReadbackLease": {
+    "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+    "status": "NO_CURRENT_NETWORK_LEASE_WAIT_EXACT_FRESH_COLLECTION_AND_RELEASE_BINDING",
+    "preparedPublicDriverRequests": 16,
+    "scope": "14 listProducts +2 positive controls; extra invalid role/foreign collection/security controls require separate exact allocation."
+  },
+  "CircuitCurrentUIDiagnostic": {
+    "sharedRun": "9cd50e893016",
+    "scope": "Editorfinite25firstpassongoing",
+    "modelSearch": "ActualCL25baselinefailure:advertisedmodelsearchnormalUI+canonicalexactqueryreturns0/namepositive1;future392native8PASSnotlive",
+    "normalProductSave": "ActualDescription-onlyoriginFAILretaineddraft;additionalcohortnotcreated",
+    "templateLocalABRecovery": "PASSscopedcomponent/publicsnapshotmarkers",
+    "currentCart": "2Pink1120/orders0",
+    "full25Accepted": false,
+    "demo": "ExactnormalcatalogPreviewlinkactual404;CL24preconditionblocked;nodemo-inertnesscredit"
+  },
+  "currentWorkAllocation": {
+    "status": "RUNTIME07_READY_TWELVE_DIRECT_RESUMPTION",
+    "recordedAt": "2026-10-24T19:50:01.620384+00:00",
+    "authority": "completion-2026-10-24/HUMAN_RESUME_20261025.json",
+    "readiness": "completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+    "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "singleBrowserController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "oldGrantsRevived": false,
+    "sealedCandidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runId": "49ada80bc494",
+    "newNativeOrBuildGrant": false,
+    "automations": "REMAIN_PAUSED"
+  },
+  "marketplace555": {
+    "runId": "555b91e19691",
+    "preview": "ACTUAL_NORMAL_EMBEDDED_PASS",
+    "login": "ACTUAL_NORMAL_PASS_DIRECT_HUMAN_APPROVED",
+    "add": "ACTUAL_NORMAL_RECOVERY_EXACTEDITOR_LIBRARY_PASS_ONE_PRIVATEINSTANCE",
+    "protectedState": "All7fulltableJSONbeforeafterexact;no duplicate/draftrewrite/publish",
+    "receipt": "marketplace555-normal-add-acceptance.json",
+    "url": "http://themes.threadline-555b91e19691.localhost:9015/themes",
+    "holdExpiresIndia": "2026-10-24T06:07:45+05:30",
+    "runtimeStatus": "OLD_NODE_BACKEND_ENDED; OWNER_PRESERVING_BACKUP_FOR_PERSISTENT_REPLACEMENT",
+    "oldUrlIsHistorical": true
+  },
+  "supplementalMerchant": {
+    "origin": "http://admin.threadline-f6074d90e894.localhost:54183",
+    "kind": "merchant-next-production",
+    "execSession": 19399,
+    "parentPid": 58307,
+    "supervisorPid": 58471,
+    "sourceEpoch": "sealedMP971e+axis4",
+    "scope": "Editor only product authoring; original62075editorpreview unchanged",
+    "actualSession": "ACTUAL_NATURAL_SESSION_SAVE_FULLRELOAD_PASS_FIRST_FINISH_AXIS"
+  },
+  "recordedAt": "2026-10-24T19:50:01.620384+00:00",
+  "latestVerifiedCheckpoint": {
+    "path": "docs/implementation/niche-theme-programme/programme-checkpoint-20261024-count02-and-catalog-interruption.json",
+    "sha256": "b61986b93a35989977027f9350dfc29f0f815cc7eae423466a3a892eddd35667",
+    "recordedAt": "2026-10-24T07:31:46.158801+00:00",
+    "allTenAccepted": false
+  },
+  "activeSharedSourceLeases": [],
+  "historicalLeaseNotice": "Historical fields/old grants are retained as evidence only. currentWorkAllocation and activeSharedSourceLeases supersede earlier live allocations; no old runtime/browser permission survives the human pause and bounded resume.",
+  "runtimeLifecycle": {
+    "recordedAt": "2026-10-24T04:37:50.890244+00:00",
+    "status": "HISTORICAL936_SAFE_CUTOFF_PASSED_NO_CURRENT_ADMISSION",
+    "activeRunId": null,
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "receipt": "editor-stable392-02-runtime-admission.json",
+    "oldF607Receipt": "editor-f607-timeout-cleanup-receipt.json",
+    "historicalRunId": "936e5f577646",
+    "observedLiveness": "NOT_PROBED_NO_USE_ALLOWED"
+  },
+  "checkoutGuidanceSource": {
+    "recordedAt": "2026-10-24T01:06:01.916926+00:00",
+    "status": "ROOT_SOURCE_ADMITTED_RUNTIME_RETEST_REQUIRED",
+    "receipt": "checkout-product-changed-source-admission.json",
+    "focusedPass": 11,
+    "typecheck": 0,
+    "lintErrors": 0,
+    "lintWarnings": 0
+  },
+  "persistentMarketplaceLocal": {
+    "status": "ROOT_ACCEPTED_REUSABLE_LOCAL_MARKETPLACE",
+    "threadId": "01a166fc-411f-7092-b982-a055c186d87d",
+    "directHumanMessageId": "01a16b51-d7f4-7a70-bbca-c5cd7d3d0abf",
+    "currentUrl": "http://themes.letbuyy-local.localhost:9015/themes",
+    "acceptance": "marketplace-persistent-local-acceptance.json",
+    "sourceEpoch": "8c89302c8b1991d8bde035d9debe099f8460d24255a794c51a4157daec4f2082",
+    "scope": "Persistent dedicated local DB; normal sign-in, embedded previews, same-selection Add recovery/library and one normal stop/start accepted. No timed app shutdown; auth expiry unchanged.",
+    "sevenProtectedTables": "Full before/restart/after-settled-UI equality verified",
+    "lease": "CLOSED_NO_MORE_ADD_RESTART_OR_TESTING_REQUIRED",
+    "allTenBuyerAcceptance": false
+  },
+  "freshStable392Editor": {
+    "status": "ROOT_ADMITTED_CURRENT936_CIRCUIT_NONORDER_ACTIVE",
+    "candidate": "/private/tmp/theme-editor-stable392-20261024-02",
+    "statePath": "/private/tmp/threadline-stable392-20261024-02-state.json",
+    "runnerSession": 33247,
+    "runnerResult": "/private/tmp/theme-editor-stable392-20261024-02-retry02-runner.json",
+    "sourceGate": "editor-stable392-02-source-gate-admission.json",
+    "sourceEpoch": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+    "sourceFiles": 17243,
+    "overlays": 5,
+    "observerAndOrigins": 36,
+    "checkoutBff": 11,
+    "gatewayNoEmit": 0,
+    "commerceNoEmit": 0,
+    "migrationMaximum": 392,
+    "migrationCeiling": null,
+    "movingMainUpdaterExcluded": true,
+    "priorPreApplicationFailures": [
+      "editor-stable392-02-first-launch-correction.json",
+      "editor-stable392-02-second-launch-correction.json"
+    ],
+    "currentGrant": "EDITOR_SOLE_UI_CIRCUIT_NONORDER_THEN_TRAILMARK",
+    "nextTheme": "Trailmark_NONORDER_after_Circuit_checkpoint",
+    "runId": "936e5f577646",
+    "runtimeAdmission": "editor-stable392-02-runtime-admission.json",
+    "effectiveDeadlineIntervalUtc": [
+      "2026-10-24T08:55:37Z",
+      "2026-10-24T08:57:25Z"
+    ],
+    "runtimeStatus": "ACTIVE_ADMITTED",
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z"
+  },
+  "publisherPrivilegeBlocker": {
+    "status": "ROOT_NATIVE04_8PASS_QUALIFIED",
+    "qualification": "publisher-acl393-native04-root-qualification.json",
+    "runId": "3948938e7c9b",
+    "nativeTests": 8,
+    "source393Emission": "EMITTED_STATEMENTS_EXACT; CURRENT_CONTINUOUS_NATIVE8PASS",
+    "runtime936Applied": false,
+    "latestContinuousNative": {
+      "runId": "999176baae6b",
+      "status": "PUBLISHER8PASS_COUNT_PARENT_FAILED_FINAL_HTTP_TELEMETRY_ASSERTION",
+      "tests": 9,
+      "pass": 8,
+      "fail": 1,
+      "skip": 0,
+      "resultSHA": "2a66ee2427570c63db9a1934e829c8a750d3f8e5c65316cb1f2a6117ec2844ca",
+      "resultPath": "/private/tmp/circuit-count-native-candidate-20261024-v1/native-runs/01/result.json",
+      "cleanupEmpty": true,
+      "sourceMigrationMaximum": 393,
+      "sourceMigrationCount": 322,
+      "sourceMigrationCeiling": null,
+      "failure": "The expected503 request emitted one request metric plus one canonical sev2 error-alert metric. The assertion allowed only one metric. Strict test-helper correction proposed privately; no production logging/count/ACL change or rerun allocated.",
+      "countFullAcceptance": false
+    }
+  },
+  "freshDewdropCheckpoint": {
+    "controllerCounts": {
+      "PASS": 24,
+      "PARTIAL": 6,
+      "NOT_RUN": 0
+    },
+    "controllerCountsAreIndependentAcceptance": false,
+    "primaryPurchase": "ORD-20261024-10000 / INR1140 / pending COD unpaid",
+    "browserPurchases": 1,
+    "additionalSyntheticLegacyOrders": 1,
+    "s02": "DIRECT_HUMAN_APPROVED_IDENTICAL_THREE_ROW_SETUP_COMMITTED_ONCE",
+    "s02ApprovalVerification": {
+      "path": "docs/implementation/niche-theme-programme/dewdrop-s02-human-approval-verification.json",
+      "sha256": "f8a4dd49c75f98ab775200f5934a9950f47f9fe91ea61f05a458be502f32a5c2"
+    },
+    "historyAndStaleArchive": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-history-stale-archive-completed.json",
+      "sha256": "2e8ddf9eb06bba240cef9103ce1f37721fd1dbcf0e980e54184f235cf416ad68"
+    },
+    "priceCorrection": "Wrong variant row was edited by UI controller at version23; server matched submitted data. Normal correction at27 set Pink899/Rose520. No platform price defect established or source fix needed. Preserve original wrong-row evidence.",
+    "staleCheckout": "ONE actual409 CHECKOUT_PRODUCT_CHANGED; no order/inventory/reservation/ledger effect; checkout_sessions and ONEcheckout.started outbox event changed, so not all22-table invariant.",
+    "baselineRecovery": "NORMAL_UI_RECOVERY_NINE_CHECKS_PASS_CURRENT36_TWO_PINK1120_CONSUMED_STOCK_PRESERVED",
+    "remaining": "M05 proper corrected runtime UI retest; three unavailable/incomplete branch proofs. Independent26PASS/1FAIL/3BLOCKED is latest finite audit.",
+    "recordedAt": "2026-10-24T04:37:50.890244+00:00",
+    "runId": "936e5f577646",
+    "all30Accepted": false,
+    "baselineRecoveryEvidence": "../theme-editor-2026-10-23/evidence/stable936-R01-baseline-recovery-completed.json",
+    "fontRetake": {
+      "admission": {
+        "path": "editor-font-axis-runtime-admission-02.json",
+        "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+      },
+      "actualRetake": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-font-retake-02-result.json",
+        "sha256": "2e813586664fc730cc9b2d1b4019f89f8a80fc2a92ca3d3b3051ba5087577505"
+      },
+      "rootVisualInspection": "Viewed actual editor/public JPEGs. Editor iframe shows serif heading + product image; public heading serif. Normal section-selection bridge reported actual. Cross-origin computed iframe family unavailable; different effective viewport widths; no all-font/responsive pixel parity claim.",
+      "sourceChanged": false,
+      "oldBlockedFailurePreserved": true,
+      "status": "SCOPED_CONFIG_RETAKE_PASS"
+    },
+    "independentReviewerTotals": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3
+    },
+    "audit": "../niche-themes-2026-10-23/dewdrop/remaining-controls-final-audit-936e5f577646.json"
+  },
+  "retiredF607Lifecycle": {
+    "recordedAt": "2026-10-24T01:00:57.207003+00:00",
+    "status": "F607_RETIRED_ALL_BROWSER_NETWORK_DATA_LEASES_CLOSED",
+    "receipt": "editor-f607-timeout-cleanup-receipt.json",
+    "oldIds": "HISTORY_ONLY_DATABASE_REMOVED",
+    "pinkBaseline": "NOT_RESTORED",
+    "nextFixture": "STABLE392_RETRY02_STARTING_NOT_YET_ADMITTED",
+    "freshCandidateRecord": "freshStable392Editor"
+  },
+  "supplementalFontAxisCurrent": {
+    "status": "ROOT_READY_ACTUAL_FONT_IMAGE_BRIDGE_RETAKE_SCOPED_PASS",
+    "admission": {
+      "path": "editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+    },
+    "runId": "936e5f577646",
+    "sourceFiles": 17245,
+    "sourceChanged": false,
+    "parentPid": 43138,
+    "merchantPid": 43246,
+    "commercePid": 44329,
+    "session": 93153
+  },
+  "freshPantryCheckpoint": {
+    "status": "INDEPENDENT9PASS_P00_P08_P09FAIL_P10_P12_NOT_RUN",
+    "orderCreated": false,
+    "preservedCart": "6284 /Lentilsq2/360 /accepted17",
+    "heldCheckoutTab": 53,
+    "sourceDiagnosis": "Actual session19e90 ispayment_intent/COD/unconfirmed withno failure. COD form restartscontact; canonical planner rejectsbackwards transition. ExactfailingHTTPstepunobserved; notpreGateway orfailedterminal claim.",
+    "diagnostic": "pantry-checkout-state-readonly-936.json",
+    "failureAudit": "../niche-themes-2026-10-23/pantry/fresh936-p09-normal-checkout-failure-audit.json",
+    "retryBudget": "TWO_NORMAL_ATTEMPTS_DONE_STOPPED_NO_NEW_CART_OR_SESSION_WORKAROUND"
+  },
+  "habitatFreshNonorderAllocation": {
+    "status": "NAMED_NORMAL_SETUP_AND_NONORDER_ALLOCATION",
+    "matrix": "../niche-themes-2026-10-23/habitat/installed-lifecycle-matrix.md",
+    "scope": "HI01-HI13 andHQ01-HQ09 only. NoHI14cart,HI15purchase,HI16postorderedit ornewlegacysetup.",
+    "setup": "Normal existingdesk current8 expansion fromoldA48in/CCommon-size preservingbothUUIDs;newB/D only, exactfrozenfourrowfacts;A4/C3-to0/newB3/newD2 intentional pre-purchasesyntheticsetup. TwoexactnormalCreateprobes/actualcollections. No API/SQLseed/newprimarydesk/fixture.",
+    "desk": "7070e083-276f-461d-8b17-c441561fae40",
+    "oldVariantA": "8ca6dfcb-bf81-4e61-9109-01565c483872",
+    "oldVariantC": "45027d62-4770-4819-bd4b-783e36187692",
+    "pantryConserved": true
+  },
+  "historicalAllocationBeforeCompletionResume": {
+    "recordedAt": "2026-10-24T07:31:46.158801+00:00",
+    "editorSoleController": true,
+    "runId": "936e5f577646",
+    "current": "Kindred allocated G01-G08 nonorder subset/G19 checkpoint; no cart, checkout or identity changes. Marginalia finite nonorder audit complete9PASS/7NOT_RUN.",
+    "dewdrop": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3,
+      "wholeThemeAccepted": false,
+      "audit": "../niche-themes-2026-10-23/dewdrop/remaining-controls-final-audit-936e5f577646.json",
+      "currentM05RuntimePreFix": true
+    },
+    "habitat": {
+      "PASS": 21,
+      "PARTIAL": 1,
+      "NOT_RUN": 4,
+      "fullTableInvariant": "19 of22 exact; only declared inventory_adjustments/inventory_levels/outbox setup changes",
+      "audit": "../niche-themes-2026-10-23/habitat/run936-final-addenda-audit.json",
+      "cartAndPurchaseQueued": true
+    },
+    "pantry": {
+      "PASS": 9,
+      "FAIL": 1,
+      "NOT_RUN": 3,
+      "orderCreated": false,
+      "preservedCart": "6284 / Lentils q2 / INR360 / accepted17",
+      "heldCheckoutTab": 53,
+      "sourceDiagnosis": "Session payment_intent/COD/unconfirmed. Browser re-enters contact; current planner rejects backwards step. Exact failed HTTP step was unobserved.",
+      "retryBudget": "Two normal attempts done; no further retry/cart/session workaround before qualified runtime."
+    },
+    "sourceWork": {
+      "Threadline": "Six exact catalog394 candidates materialized, not canonical emitted. Attempt2af stopped after failed runtime inventory preflight; no qualification. Root verified owned cleanup empty/source1089 exact; private runtime.mjs+declaration inventory correction underway. Checkout source/native is next slot.",
+      "Circuit": "Count02 Root qualified:1TAP/all8mandatory stages,37proofs/current1076/322 migration SHAs verified; current936 still pre-fix and M05 UI retest pending.",
+      "MadeYours": "Private03 corrected native COD-row/product-content oracle is complete and Root reviewed (earlier02 intentionally preserved). All1071/11 before images verified; finishing two unused-import cleanup and touched-file lint before exact Main apply grant. Two owned suites7new+15existing remain unrun.",
+      "Trailmark": "Controller finite nonorder3PASS/2PARTIAL/7unallocated;34publicGET+34UI and12recovery checks. Owner read-only audit requested; no full-lifecycle credit.",
+      "Root": "Dependency classifier6PASS/fullvalidator0 and Marketplace dark-toggle validator5 independentPASS/fullDS0 source admitted; no runtime changes."
+    },
+    "jointNative": {
+      "runId": "999176baae6b",
+      "status": "PUBLISHER8PASS_COUNT_PARENT_FAILED_FINAL_HTTP_TELEMETRY_ASSERTION",
+      "tests": 9,
+      "pass": 8,
+      "fail": 1,
+      "skip": 0,
+      "resultSHA": "2a66ee2427570c63db9a1934e829c8a750d3f8e5c65316cb1f2a6117ec2844ca",
+      "resultPath": "/private/tmp/circuit-count-native-candidate-20261024-v1/native-runs/01/result.json",
+      "cleanupEmpty": true,
+      "sourceMigrationMaximum": 393,
+      "sourceMigrationCount": 322,
+      "sourceMigrationCeiling": null,
+      "failure": "The expected503 request emitted one request metric plus one canonical sev2 error-alert metric. The assertion allowed only one metric. Strict test-helper correction proposed privately; no production logging/count/ACL change or rerun allocated.",
+      "countFullAcceptance": false
+    },
+    "allTenAccepted": false,
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "originalBuyerAndCheckout": "50494/50497 unchanged; supplemental clients58090/58091 active.",
+    "circuit": {
+      "independentCounts": {
+        "PASS": 10,
+        "PARTIAL": 5,
+        "NOT_RUN": 10
+      },
+      "controllerOriginalCounts": {
+        "PASS": 11,
+        "PARTIAL": 4,
+        "NOT_RUN": 10
+      },
+      "audit": "../niche-themes-2026-10-23/habitat/circuit-run936-independent-audit.json",
+      "auditSHA": "d171cabc9d6b8f1dbb453ce51b66e9e626ea62efa689918ab1a76a4525e70bdc",
+      "CL13": "Known-empty/unbound denial observed. Unbound operand was an order UUID, not a positively bound real foreign collection; whole case partial. No security defect inferred.",
+      "correctedClassification": "../theme-editor-2026-10-23/evidence/stable936-circuit-finite-nonorder-classification-addendum.json",
+      "discovery": {
+        "GET": 18,
+        "PASS": 18
+      },
+      "B00": {
+        "checks": 7,
+        "pass": 7
+      },
+      "fullTableInvariant": "19/22 exact; declared inventory setup and outbox changes only; carts/checkouts/two orders exact."
+    },
+    "nextNonorder": {
+      "marginalia": {
+        "status": "CONDITIONAL_EDITOR_GRANT_AFTER_TRAILMARK_CLEAN_CHECKPOINT",
+        "packet": "../niche-themes-2026-10-23/marginalia/stable936-nonorder-editor-packet.md",
+        "sha256": "fb71b940d3967974999714c836ffa067a7537b354899a43fb0ccc70a867fea1f",
+        "noCartOrPurchase": true
+      },
+      "kindred": {
+        "status": "EDITOR_CONDITIONAL_TRANSITION_REACHED_ACTIVE_NONORDER",
+        "KQA01": "OPEN P2/source-artifact human freeze unchanged"
+      }
+    },
+    "sourceReview": "collection-count-native/http-alert-v2-root-source-review.json",
+    "marginalia": {
+      "independentCounts": {
+        "PASS": 9,
+        "NOT_RUN": 7
+      },
+      "scope": "OOS purchase/no-effect clause and six cart/purchase/history/edit cases remain unallocated.",
+      "lineage": {
+        "path": "marginalia-installed-package-lineage-root-readonly-936.json",
+        "sha256": "b8080c6e1e83018278daa600cc37b72cd94f8ce9bf84a045523fa89ad20f1a22"
+      },
+      "actualPublicGETs": 32,
+      "actualBothRouteUIObservations": 32,
+      "B00": "Completed after one acknowledged recovery retake; original timing/early captures preserved.",
+      "conservation": "20/22 exact; only declared new OOS inventory level and outbox changed. Cart/checkout/orders/history exact."
+    },
+    "trailmark": {
+      "controllerCounts": {
+        "PASS": 3,
+        "PARTIAL": 2,
+        "NOT_RUN": 7
+      },
+      "independentAudit": "pending",
+      "scope": "L00/M01/M02/P01/P02 only; seven cart/purchase/history stages unallocated",
+      "publicGETs": 34,
+      "UIAgreements": 34,
+      "nativeRecoveryChecks": 12,
+      "conservation": "19/22 exact; declared new-product inventory setup/outbox changes only.",
+      "receipt": "../theme-editor-2026-10-23/evidence/stable936-trailmark-finite-nonorder-boundary.json"
+    },
+    "countQualification": {
+      "path": "collection-count-native/native-runs/02/root-qualification.json",
+      "sha256": "b99237b975a1fc7cf82ba81b6e508af7751f086d80dcef784e5563afcbfe7d1a",
+      "runId": "5d023114b98b",
+      "nativeCountQualified": true,
+      "M05UIRetested": false
+    },
+    "catalog394Interruption": {
+      "path": "release-playfield201/catalog394-qualification/native-runs/01/root-interruption-review.json",
+      "sha256": "e799f314d95cfcd7d3339972b3430224cbcafd091f509a08568f160b60478fe9",
+      "runId": "2af9d642a95f",
+      "qualified": false,
+      "canonical394Emitted": false,
+      "cleanupEmptyIndependentlyVerified": true,
+      "freezeReleased": true
+    }
+  },
+  "historicalBrowserBeforeCompletionResume": {
+    "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "surface": "IAB",
+    "status": "EDITOR_DEWDROP_3_CALLS_THEN_HABITAT_NORMAL_NONORDER",
+    "scope": "Dewdrop ONE native cross-product cart rejection + TWO exact canonical nonempty-variant API save/replay calls, then Habitat normal HI02 setup/HI01-13/HQ01-09 NONORDER slice."
+  },
+  "historicalHeavyBeforeCompletionResume": {
+    "owner": "ROOT",
+    "maximumConcurrentBuilds": 1,
+    "status": "BOTH_SUPPLEMENTAL_CLIENTS_READY_ROOT_HEADER_ADMITTED",
+    "runId": "936e5f577646",
+    "sourceReceipt": "editor-stable392-02-source-gate-admission.json"
+  },
+  "historicalSnapshotBeforeCompletionResume": {
+    "status": "QUALIFIED393_EPOCH_CLOSED_TWO_DISJOINT_SOURCE_WRITERS_ACTIVE_NO_NATIVE_SNAPSHOT_YET",
+    "owners": [
+      "Threadline393pair+regressionclassification",
+      "Circuitexactcount7+3apply"
+    ],
+    "next": "Bothreportsourcebatchstable, Rootverifynewclosure, runfocusedcurrent393nativebatch. Checkoutfixstaysprivate."
+  },
+  "projectPause": {
+    "status": "PAUSED_BY_DIRECT_HUMAN_REQUEST",
+    "recordedAt": "2026-10-24 10:16:18 UTC",
+    "receipt": "docs/implementation/niche-theme-programme/project-pause-current.json",
+    "executionAllowed": false,
+    "supersedesAllPriorAllocations": true,
+    "resumeRequires": "Explicit later human instruction",
+    "supersededForNamedTwelveOnly": "completion-2026-10-24/HUMAN_RESUME_20261025.json"
+  },
+  "projectResume": {
+    "status": "LATEST_HUMAN_TWELVE_RESUMPTION_AFTER_PASSED_SHARED_GATE",
+    "recordedAt": "2026-10-24T19:50:01.620384+00:00",
+    "authority": "completion-2026-10-24/HUMAN_RESUME_20261025.json",
+    "readiness": "completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+    "oldGrantsNotRevived": true,
+    "automationsRemainPaused": true
+  },
+  "allocationBeforeResume02": {
+    "recordedAt": "2026-10-24T09:31:53.409954+00:00",
+    "status": "COMPLETION_MAIN_HEADING_SUCCESSORS_INTEGRATED_EDITOR_FOLLOWUPS_AND_CHECKOUT_PRIVATE_ACTIVE",
+    "authorityReceipt": "docs/implementation/niche-theme-programme/completion-shared-allocation-20261024-01.json",
+    "editorSoleController": true,
+    "activeBrowserLease": null,
+    "activeSharedSourceLease": "completion-editor-block-actions-20261024-01",
+    "nativeRunOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "nativeStatus": "CHECKOUT_PRIVATE_PACKAGING_PREFLIGHT; NO_RUN_STARTED",
+    "current": "Editor six-path block action source repair delivered after human-evidence recheck; checkout private native lane remains exclusively independent reviewer.",
+    "allTenAccepted": false,
+    "catalog394Inventory": "Root actual resolve-only checker PASS1092 inputs/13JS edges; no new native attempt or canonical394 emission",
+    "nativeQueue": [
+      {
+        "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+        "scope": "checkout08 affected7 after private test-oracle correction",
+        "status": "REQUESTING_REVIEWER_RESERVED_NOT_CURRENTLY_RUNNING_OWNER_REPORT",
+        "sessionId": 49961
+      },
+      {
+        "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+        "scope": "catalog394 source diagnosis only",
+        "status": "NO_RETRY_GRANT; PRESERVE_NATIVE02_FAILURE"
+      }
+    ],
+    "headingSuccessors": {
+      "Circuit": "PRIVATE2.0.1_SOURCE_REVIEW_ACCEPTED_MAIN_INTEGRATION_PENDING",
+      "Pantry": "PRIVATE2.0.1_VERSIONED_WRAPPER_AND_ORDER_HEADING_SLICE_DELIVERED",
+      "Trailmark": "PRIVATE2.0.1_VERSIONED_WRAPPER_AND_ORDER_HEADING_SLICE_DELIVERED",
+      "Threadline": "PRIVATE_CORRECTION_TESTS_IN_PROGRESS_BY_NEW_OWNER"
+    },
+    "noDuplicateHeavyRunBeforeRelease": true,
+    "checkoutNative06": {
+      "runId": "34adae829d85",
+      "result": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native06-run01/runner.json",
+      "sha256": "e99d85b0879cc61d49cd5aab04ea9804b69606030a51134d70b6ab64b427aa05",
+      "tests": 22,
+      "retainedBuyerProviderCases": {
+        "PASS": 15,
+        "FAIL": 0
+      },
+      "newRecoveryCases": {
+        "PASS": 0,
+        "FAIL": 7,
+        "stage": "Canonical fixture-label setup refused44-character labels; limit24; checkout business behavior not exercised",
+        "ownerCorrection": "MadeYours new immutable07 fixture labels only; all11production overlays/harness assertions retained"
+      },
+      "cleanupEmpty": true,
+      "reaped": [],
+      "checkoutQualified": false,
+      "nextLaneOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+      "nextBatch": "Affected7 only after sealed07/reviewer admission; unchanged15 not duplicated",
+      "currentlyRunning": false
+    },
+    "nativeLaneTransfer": {
+      "from": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+      "to": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "scope": "One catalogue394 qualification only, while fixture07 packages",
+      "status": "RELEASED_TO_REQUESTING_REVIEWER_AFTER_TERMINAL_RESULT_AND_RUNNER_CLEANUP",
+      "grant": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/execution-grant.json",
+      "noConcurrentCheckout07": true,
+      "sessionId": 84195,
+      "separatePreflightExitCode": 0,
+      "startedAt": "2026-10-24T09:23:21.740623+00:00",
+      "releasedAt": "2026-10-24T09:25:39.003555+00:00",
+      "result": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/root-result-review.json"
+    },
+    "catalog394Native02": {
+      "schemaVersion": 1,
+      "recordedAt": "2026-10-24T09:25:39.003555+00:00",
+      "status": "FAILED_STOPPED_NO_RETRY_NO_EMISSION_LANE_RELEASED",
+      "runId": "1cdc5140072f",
+      "parentAndSubtestCounts": {
+        "tests": 5,
+        "PASS": 3,
+        "FAIL": 2,
+        "skipped": 0,
+        "cancelled": 0
+      },
+      "phaseCoverage": {
+        "completed": [
+          1,
+          2,
+          3
+        ],
+        "failed": 4,
+        "notRun": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "failure": {
+        "operation": "Temporary-table shadow refusal control in production tenant publication wrapper",
+        "expected": "TenantPublicationContextError before privilege use",
+        "actual": "PostgresError permission denied for table migration_privilege_journal",
+        "location": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts:310",
+        "classification": "OBSERVED_PRIVILEGE_CONTEXT_OR_REPLAY_COMPATIBILITY_FAILURE; SOURCE_DIAGNOSIS_REQUIRED; NOT_QUALIFIED"
+      },
+      "files": [
+        {
+          "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/execution-grant.json",
+          "sha256": "b51c2d6dfb05296f2b611be6168ee459327642b64cc8790acdae3792eeee458f"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/result.json",
+          "sha256": "83e6965be24a0b96d5c2fac8df52076d9ee87718f274d717d87f9d2cc5ac8f17"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/run-receipt.json",
+          "sha256": "e7469227803ea177cff5b2a8dfe7c7fe580592c94e908b7d3738171c21600179"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/at-execution-admission.json",
+          "sha256": "a680f3f9d891c0523dbb92256b3058770b7f2be623ca24db88a97ec997fe2987"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/at-execution-source-input-closure.json",
+          "sha256": "4915164907934c91ec6662111eb7bb898f10f41890374832de79cd0e1a4e73e3"
+        }
+      ],
+      "postRunAll1092MainInputsExact": true,
+      "runnerOwnedCleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "independentDockerRead": "Initial unprivileged reads denied socket access; no false empty claim. Runner authoritative cleanup empty; separate escalated read pending.",
+      "nativeGrantedAttemptsConsumed": 1,
+      "nextNativeOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+      "release": "IMMEDIATE_EXCLUSIVE_LANE_RELEASE_TO_REQUESTING_REVIEWER_CHECKOUT07_AFFECTED7",
+      "newNativeOrCanonical394EmissionAllowed": false
+    },
+    "editorSource": {
+      "status": "CONDITIONAL_ABSENT_CHILD_CONTRACT_FOLLOWUP03_ACTIVE",
+      "receipt": "completion-editor-block-actions-root-admission-20261024.json",
+      "independent19": "PASS overlaps109; no new unique total",
+      "browser": "NOT_RUN"
+    },
+    "circuitSource": {
+      "status": "MAIN_OPT_IN201_INTEGRATED_15_SOURCE_PASS_STRICT_TYPECHECK0",
+      "receipt": "heading-successor-integrations/01-circuit/source-result.json",
+      "cataloguePersistence": "NOT_PROMOTED",
+      "frozen20Defaults": "All20before digests exact"
+    },
+    "catalog394Diagnosis": "completion-catalog394-native02-source-diagnosis-20261024.json",
+    "sourceWindow": "Editor sealed/released. Root Circuit source integration sealed. No API/engine native snapshot active in this chat; any future394 must rebind actual current admitted source.",
+    "editorDiagnosticSource": {
+      "status": "GRANTED_TWO_TEST_FIXTURE_PATHS_ONLY",
+      "receipt": "completion-editor-observation-allocation-20261024-02.json"
+    },
+    "editorChildFollowup": "completion-editor-child-contract-allocation-20261024-03.json",
+    "pantryTrailmarkSource": {
+      "status": "MAIN_OPT_IN201_INTEGRATED_27_COMBINED_SOURCE_PASS_STRICT_TYPECHECK0",
+      "receipt": "docs/implementation/niche-theme-programme/heading-successor-integrations/02-pantry-trailmark/source-result.json",
+      "catalogueOrUIAcceptance": false
+    },
+    "madeyoursCartEditPrivate": "completion-madeyours-cart-edit-private-allocation-20261024-01.json",
+    "catalog394FrozenBuilderRebind": "Only first-party-theme-catalog current source differs from original61 builder pins after admitted optional successors. Preserve original manifest/artifacts; next qualifier must explicitly bind immutable builder archive and current runtime source separately, not rewrite historical pins.",
+    "sharedOrderHeadingSource": "heading-successor-integrations/03-shared-order-heading/source-result.json",
+    "previousGoalTurnClassification": "PROGRESS: three actual Main optin successors, 27source checks, isolated native394failed diagnostic and exact followup allocations",
+    "checkout08Main": "docs/implementation/niche-theme-programme/completion-checkout-main-allocation-20261024-08.json",
+    "editorChildDescriptorAddendum": "docs/implementation/niche-theme-programme/completion-editor-child-contract-addendum-20261024-03a.json",
+    "threadlineMainLeaf": "docs/implementation/niche-theme-programme/completion-threadline-main-leaf-allocation-20261024-01.json"
+  },
+  "historicalSourceLeasesBeforeResume02": [
+    {
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "id": "completion-editor-block-actions-20261024-01",
+      "status": "SEALED_RELEASED_ROOT_SOURCE_ADMITTED",
+      "receipt": "docs/implementation/niche-theme-programme/completion-shared-allocation-20261024-01.json"
+    },
+    {
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "status": "PRIVATE_CHECKOUT_PACKAGING_ONLY; NO_MAIN_OR_NATIVE_GRANT"
+    },
+    {
+      "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+      "status": "PRIVATE_THREADLINE_COMPATIBLE_SUCCESSOR_ONLY; NO_CATALOG394_NATIVE_OR_EMISSION"
+    },
+    {
+      "owner": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "status": "PRIVATE_PANTRY_COMPATIBLE_SUCCESSOR_ONLY"
+    },
+    {
+      "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+      "status": "PRIVATE_CIRCUIT_COMPATIBLE_SUCCESSOR_ONLY; COUNT02_FROZEN"
+    },
+    {
+      "id": "completion-editor-checkout-diagnostics-20261024-02",
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "status": "GRANTED_TWO_TEST_FIXTURE_PATHS_ONLY",
+      "receipt": "docs/implementation/niche-theme-programme/completion-editor-observation-allocation-20261024-02.json"
+    },
+    {
+      "id": "completion-editor-child-contract-20261024-03",
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "status": "GRANTED_THREE_EXACT_EDITOR_HELPER_TEST_PATHS",
+      "receipt": "docs/implementation/niche-theme-programme/completion-editor-child-contract-allocation-20261024-03.json"
+    },
+    {
+      "id": "heading-successor-integration03",
+      "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "status": "SEALED_RELEASED_SHARED_OPT_IN_HELPER_SOURCE_PASS",
+      "receipt": "docs/implementation/niche-theme-programme/heading-successor-integrations/03-shared-order-heading/source-lease.json"
+    },
+    {
+      "id": "completion-editor-child-contract-03a",
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "status": "GRANTED_TWO_ADDITIONAL_EXACT_SOURCE_PATHS",
+      "receipt": "docs/implementation/niche-theme-programme/completion-editor-child-contract-addendum-20261024-03a.json"
+    },
+    {
+      "id": "completion-checkout-main08",
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "status": "GRANTED_EXACT_ELEVEN_FILE_MAIN_SOURCE_APPLY",
+      "receipt": "docs/implementation/niche-theme-programme/completion-checkout-main-allocation-20261024-08.json"
+    },
+    {
+      "id": "completion-threadline-main-v201-leaf01",
+      "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+      "status": "GRANTED_TWO_NEW_EXACT_MAIN_LEAF_TEST_PATHS",
+      "receipt": "docs/implementation/niche-theme-programme/completion-threadline-main-leaf-allocation-20261024-01.json"
+    }
+  ],
+  "projectPauseOverride": {
+    "status": "PARTIAL_RESUME_NAMED_TWELVE_OTHER_CHATS_UNCHANGED",
+    "recordedAt": "2026-10-24T19:50:01.620384+00:00",
+    "record": "project-pause-current.json",
+    "authority": "completion-2026-10-24/HUMAN_RESUME_20261025.json",
+    "preserveAllWork": true,
+    "unrelatedChatsAndAutomations": "PRIOR_PAUSE_UNCHANGED",
+    "supersededForNamedTwelveBy": "completion-2026-10-24/themes-shared-review-20261025-01/RESUME_AUTHORITY.json"
+  },
+  "historicalAllocationBeforeRuntime07Resume": {
+    "recordedAt": "2026-10-24T11:39:50.443348+00:00",
+    "status": "HUMAN_RESUMED_TWELVE_FRESH_BOUNDED_SOURCE_PREPARATION_ONLY",
+    "authorityReceipt": "docs/implementation/niche-theme-programme/completion-resume-resource-allocation-20261024-02.json",
+    "oldGrantsRevived": false,
+    "allTenAccepted": false,
+    "activeNative": null,
+    "activeHeavyBuild": null,
+    "activeBrowserLease": null,
+    "editorSoleController": true,
+    "sourceWriters": [
+      {
+        "id": "dewdrop-versioned-leaf-resume02",
+        "owner": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+        "status": "FRESH_EXACT_TWO_NEW_MAIN_LEAF_AND_TEST_PATHS_GRANTED",
+        "receipt": "docs/implementation/niche-theme-programme/completion-dewdrop-main-leaf-allocation-20261024-02.json",
+        "sourcePaths": [
+          "packages/theme-engine/src/dewdrop-theme-v201.ts",
+          "packages/theme-engine/test/dewdrop-successor.test.ts"
+        ],
+        "expiresAt": "2026-10-24T13:34:17.342832+00:00"
+      },
+      {
+        "id": "playfield-versioned-leaf-resume02",
+        "owner": "01a164ba-4751-75e1-8148-605cd263848e",
+        "status": "FRESH_EXACT_TWO_NEW_MAIN_LEAF_AND_TEST_PATHS_GRANTED",
+        "receipt": "docs/implementation/niche-theme-programme/completion-playfield-main-leaf-allocation-20261024-02.json",
+        "sourcePaths": [
+          "packages/theme-engine/src/playfield-theme-v202.ts",
+          "packages/theme-engine/test/playfield-subtitle-successor.test.ts"
+        ],
+        "expiresAt": "2026-10-24T13:34:17.342832+00:00"
+      }
+    ],
+    "rootSealedSources": [
+      "heading-successor-integrations/04-threadline-catalog/source-result.json",
+      "release-playfield201/catalog394-qualification/private04/CURRENT_SOURCE_REVIEW_READY.json"
+    ],
+    "checkoutMain08": "ADMITTED_EXACT11; source/nativeevidencereused; notbrowser/provider",
+    "editor03AndObserver02": "SEALED_SOURCE_ADMITTED; actualnestedLiquidoutputOPEN",
+    "privateCartEdit": "completion-madeyours-cart-edit-private-allocation-20261024-02.json",
+    "nestedRenderOwner": "Kindred privateimplementation; Editorindependentreview; noMainrenderergrant",
+    "centralHarnessOwner": "Circuit currentadapterrebindprivate; Marginalia firstconsumerreserved",
+    "razorpayOwner": "MadeYours protectedruntimebindingandownedHTTPSingressproposalonly; credentialauth200accepted; noprovidercalls/nosecretread/noruntimebind",
+    "nextNative": "Independentcurrent04source1155review andfreshgrant; standalonepreflightexit0thenrunnerinseparatetoolcall; original8phases/9TAP preserved",
+    "automations": "All five schedules remainPAUSED",
+    "platformGoalStatus": "paused; humanworkresumeverified; no availabletooltosetactive/no duplicategoal"
+  },
+  "historicalBrowserBeforeRuntime07Resume": {
+    "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "status": "ROOT_SHARED_CANARY_PENDING_EDITOR_HANDOFF",
+    "scope": "Currentcoherentisolatedcandidateonly;previousownedfixturesandalluserapps/drafts/data preserved"
+  },
+  "historicalLeasesBeforeRuntime07Resume": [
+    {
+      "id": "playfield-versioned-leaf-resume02",
+      "owner": "01a164ba-4751-75e1-8148-605cd263848e",
+      "status": "FRESH_EXACT_TWO_NEW_MAIN_LEAF_AND_TEST_PATHS_GRANTED",
+      "receipt": "docs/implementation/niche-theme-programme/completion-playfield-main-leaf-allocation-20261024-02.json",
+      "sourcePaths": [
+        "packages/theme-engine/src/playfield-theme-v202.ts",
+        "packages/theme-engine/test/playfield-subtitle-successor.test.ts"
+      ],
+      "expiresAt": "2026-10-24T13:34:17.342832+00:00"
+    }
+  ],
+  "currentSharedReview20261025": {
+    "recordedAt": "2026-10-25T05:48:49.743925+00:00",
+    "owner": "Themes",
+    "status": "CORRECTED_RESTORE06_PRE_TAP_FAILURE_RETAINED_NEW_PROTECTED_COPY_NO_RETRY_AUTHORITY",
+    "handoff": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/SHARED_REVIEW_HANDOFF.json",
+    "authority": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/RESUME_AUTHORITY_20261025_02.json",
+      "sha256": "8a1c3b673a538618ad31bcc18694684ad252784256604533458c2136dda489a6"
+    },
+    "latestCompactionCorrection": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/STALE_HISTORY_PAUSE_CORRECTION_20261025_03.json",
+      "sha256": "67dd4f472ea8eb5274459989808546b6753a156db50109c9f1a1d94619ebce56"
+    },
+    "browserController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "browserStatus": "Savedmaintenancefence; notprojectpause; originalruntimeunavailable",
+    "nativeStarts": 5,
+    "remainingNativeBudget04": 0,
+    "activeNativeCohorts": 0,
+    "sourceOwners": "No active source writer; candidate02 sealed, Root control metadata only. Main/candidate01/failed resources unchanged.",
+    "harnessSourceReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_HARNESS02_LAUNCHER_ROLE_SOURCE_REVIEW_04.json",
+      "sha256": "3a17e7972c25e516b8801333a73edfcb070940b6b49a0835b06587483b110c0b"
+    },
+    "original210CandidateAllocation": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RECOVERY_CANDIDATE_SOURCE_ALLOCATION_01.json",
+      "sha256": "1fe654811f054fe8b4f76843fc34c68ef5ac4d76cbb7278f1852d328ff6977ee"
+    },
+    "apparel04": "Actual0TAPELOOP infrastructurefailure/322migrations/cleanupempty;05prepnotNative",
+    "runtime": "54685absent,55109STOPorphan; originalDB/volume/archivepreserved,restoreNOTRUN",
+    "previewRevisionReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PREVIEW_SESSION_REVISION_SOURCE_REVIEW_01.json",
+      "sha256": "6c99fac17a74b05f3b20083468070d92b2360e6cdea2c14e6514d04597592fbc"
+    },
+    "circuitBootstrapReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/CIRCUIT_RUNTIME_BOOTSTRAP_SOURCE_REVIEW_04.json",
+      "sha256": "c331010c4a1a3967f0a474d7348ef5fb1cd1741ff5f0b9db3cd07673ebe46443"
+    },
+    "callback": "Actualconditional4hourapproval04 afterrecoveryhealth/freshwatchdog; NOTSTARTED",
+    "cliChecks": "Threadlinedirecthuman01a17140 narrowlyapprovedownedprocess/TSXversion/harmlesssmoke; noNative/restore",
+    "automations": "Remainpaused; no changebyThemes",
+    "fullThemeCertificatesGranted": 0,
+    "MainSourceOrActualRuntimeActionsByThemes": 0,
+    "original210CandidateSourceReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RECOVERY_CANDIDATE_SOURCE_REVIEW_01.json",
+      "sha256": "a92e274ccb9e608e6e17ddc5e4a636134014225e5f771ef4cf7381a05e0960e4"
+    },
+    "restoreMonitorReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_MONITOR_SOURCE_REVIEW_03.json",
+      "sha256": "44c2233c18f4d643b3dfbde04794feb3a707ab8d43bd956ab30e7447615626ea"
+    },
+    "restoreCommandReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_COMMAND_SOURCE_REVIEW_02.json",
+      "sha256": "89380f0f393178f54fd47f2dd397017867ac2009122f767faf67702b7dd9703a"
+    },
+    "restoreStatus": "05oneapprovedcohort consumed/terminal71/0TAP, newprotectedcopy retained. No retry. ActualdefaultpublicDROPcause confirmed byRootredactedarchive+readonlyPGreceipts.",
+    "five211CaseSourceReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/FIVE_THEME211_NATIVE_CASE_SOURCE_REVIEW_02.json",
+      "sha256": "b3f9ca5d10b40e44441b48ca0c3b59d5d5618dc7ebee7db20815cfcc71667f19"
+    },
+    "futureStageCleanupAllocation": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_STAGE_CLIENT_CLEANUP_PRIVATE_ALLOCATION_01.json",
+      "sha256": "f92cd092c626ebd169834ac45953ad82be74b70270ea67867ee8daf109338d76"
+    },
+    "remainingNativeBudget05": 0,
+    "restoreActualOutcomeReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_ACTUAL_OUTCOME_REVIEW_01.json",
+      "sha256": "fbfe9bf756590435f34e9daf091ef50e8b1997a90241833a56875f76593012c3"
+    },
+    "restoreRepairAllocation": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_RESTORE_BOOTSTRAP_DIAGNOSTICS_PRIVATE_ALLOCATION_01.json",
+      "sha256": "49799356f12369fbb5c12c343482bbe1cb3c0e958938c5bceaf803d4d88deecd"
+    },
+    "stageCleanupSourceReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_STAGE_CLIENT_CLEANUP_SOURCE_REVIEW_01.json",
+      "sha256": "c0cacfa640614f56d27ee4da652e0a15825125347facd2fd2975d9905bad9334"
+    },
+    "apparel05SourceReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/APPAREL_DEPENDENCY_LAUNCHER_SOURCE_REVIEW_05.json",
+      "sha256": "15dc3e73326d6fa99f48002a2bb5c452bc5ca36afc15cee4d26c40a3e441b7de"
+    },
+    "restoreBootstrapInitialReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_RESTORE_BOOTSTRAP_SOURCE_REVIEW_01.json",
+      "sha256": "bc0d2acf6d81fdcff3e443ae1b5c04aeb5c5582f9f1f75e210839d130fea40d5"
+    },
+    "restoreDiagnosticsContinuation": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_RESTORE_DIAGNOSTICS_POSTSEAL_CONTINUATION_02.json",
+      "sha256": "6c1cef12f344723e6d736fbf555a8e77673db1e046999e559e02cd86215a986e"
+    },
+    "restoreBootstrapFinalReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_RESTORE_BOOTSTRAP_SOURCE_REVIEW_02.json",
+      "sha256": "05c4ec1f7ec4db4c9354dcb3a817a999d0b3d95e1775c9014594b69b6dbd47d7"
+    },
+    "candidate02Allocation": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RECOVERY_CANDIDATE_SOURCE_ALLOCATION_02.json",
+      "sha256": "9559b2107caaa347fb6240a4da50ff7c53f70d371de467961ca891e83795b342"
+    },
+    "candidate02SourceReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RECOVERY_CANDIDATE_SOURCE_REVIEW_02.json",
+      "sha256": "e6803aa1f9d3a1ee60447e8f82aeb5d7e1a599b342ea2c63b4088286db5ff197"
+    },
+    "relocatedMonitor02Review": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_MONITOR_PATH_REVIEW_04.json",
+      "sha256": "d3ef666fb6ebc62f969c853505a2d6770933e9047fffab6ebca1f6b50c749728"
+    },
+    "correctedRestoreCommandReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_COMMAND_SOURCE_REVIEW_03.json",
+      "sha256": "660be8af4152e42015a812cb6726f0f2622d89fd33d4c3e5cf6b44a7a7f8f9db"
+    },
+    "correctedRestoreStatus": "63e975c7e742/71/0TAP; primaryRESTORE_FAILED +checkpointCOMPLETE_DATA_WITNESS; protectedresourcesretained. Rootreadonlydiagnosispending; all04/05/06allowancesspent.",
+    "remainingNativeBudget06": 0,
+    "restoreActualOutcome02": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_ACTUAL_OUTCOME_REVIEW_02.json",
+      "sha256": "22b280862318d1af1c775c8e8a635b72636d6c03be5517de897530491fd4ab5d"
+    }
+  },
+  "previousBrowserBeforeRootApprovalHandoff": {
+    "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "status": "RUNTIME07_SHARED_GATE_PASS_DIRECT_HANDOFF",
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "scope": "One existing isolated environment; actual theme-specific acceptance queue; root releases browser"
+  }
+}

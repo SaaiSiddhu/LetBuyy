@@ -1,0 +1,40 @@
+{
+  "databases": [
+    {
+      "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+      "userMappings": 0,
+      "schedulerSchemas": [],
+      "externalCLibraries": [
+        "$libdir/pg_trgm",
+        "$libdir/pgcrypto"
+      ],
+      "activeArchiveCommand": false,
+      "inactiveArchiveCommandIsDisabled": true
+    },
+    {
+      "database": "letbuyy_executable",
+      "userMappings": 0,
+      "schedulerSchemas": [],
+      "externalCLibraries": [],
+      "activeArchiveCommand": false,
+      "inactiveArchiveCommandIsDisabled": true
+    },
+    {
+      "database": "postgres",
+      "userMappings": 0,
+      "schedulerSchemas": [],
+      "externalCLibraries": [],
+      "activeArchiveCommand": false,
+      "inactiveArchiveCommandIsDisabled": true
+    },
+    {
+      "database": "template1",
+      "userMappings": 0,
+      "schedulerSchemas": [],
+      "externalCLibraries": [],
+      "activeArchiveCommand": false,
+      "inactiveArchiveCommandIsDisabled": true
+    }
+  ],
+  "configurationOrDataWrites": 0
+}

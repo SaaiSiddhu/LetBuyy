@@ -1,0 +1,70 @@
+{
+  "recordedAt": "2026-10-23T19:42:10.104080+00:00",
+  "runId": "f6074d90e894",
+  "scope": "Independent before/after file receipt audit of normal supplemental merchant first-axis Save/fullreload",
+  "status": "PASS_SCOPED_REPAIR_RETEST_NOT_WHOLE_HI02",
+  "sourceRuntimeAdmission": "docs/implementation/niche-theme-programme/supplemental-merchant-axis-runtime-admission.json",
+  "allChecks": {
+    "id": true,
+    "sku": true,
+    "name": true,
+    "price": true,
+    "stock": true,
+    "metadata": true,
+    "inventoryBusiness": true,
+    "orders": true,
+    "cartDigest": true,
+    "sameVariantUUIDs": true,
+    "variantFactsCommercialScopedExact": true,
+    "widthValuesExact": true,
+    "finishNaturalSaved": true,
+    "opaqueVersion8to16": true
+  },
+  "oldVariantIds": [
+    "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+    "30e7bb70-6ef0-4175-83f0-16368a3e9fda"
+  ],
+  "version": {
+    "before": 8,
+    "after": 16,
+    "contract": "Opaque final token, not+1"
+  },
+  "optionRowIdentity": "Width option-row UUID changed; values and durable variant IDs retained. No option-row ID stability claim.",
+  "inventoryScope": "Whitelisted inventoryBusiness rows exactlyequal, including available4/3/product8 and reserved0. Null quantity/committed fields retained as observed, not interpreted as complete inventory table coverage.",
+  "fullFourVariantCohortAuthored": false,
+  "caseTotalsUnchanged": true,
+  "cartRecoveryStillOpen": true,
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-before-readback.json",
+      "sha256": "8a99c646076c82294b751c5866ea9445b0af34673f59637c87f1848c9afd2101"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-first-axis-saved-readback.json",
+      "sha256": "a3d1208ba832d587309c6a49bdb6ace1f40adfc3e3d2d5a9b4accaf1ef20cee4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-controlled-axis-positive.json",
+      "sha256": "601edfdc33fa6cfa44f0b52eefcffcf183bb887ba919466705630152a22a86ba"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-controlled-first-natural-reloaded.ax.txt",
+      "sha256": "8f92e77032715fa84c4d58ef71cf6675d123bc814035a78e864fb34312eb8d34"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-controlled-first-natural-reloaded.jpg",
+      "sha256": "da2981ee64d337d0c15d31654ba427a79fd389c6502b2c6d6358590ae56c38ff"
+    }
+  ],
+  "actualTupleAndInventoryAddendum": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-tuple-values-readback.json",
+    "sha256": "c3af615dd900e24fcd417f06f11db26f04012cde48376adceee55faacf4489b0",
+    "persistedOptionTuplesExact": true,
+    "actualVariantInventoryQty": [
+      4,
+      3
+    ],
+    "productVersion": 16,
+    "scope": "Two original rows afterfirstaxis; full4variantcohort not yet accepted"
+  }
+}

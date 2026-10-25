@@ -1,0 +1,11 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/execution-preparation/public-readback.test.ts"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.599
+}

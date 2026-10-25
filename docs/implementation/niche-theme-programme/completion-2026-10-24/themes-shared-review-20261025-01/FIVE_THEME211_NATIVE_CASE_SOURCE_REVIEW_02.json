@@ -1,0 +1,62 @@
+{
+  "recordedAt": "2026-10-25T04:14:23.739168+00:00",
+  "status": "ACCEPT_SEALED_FIVE211_NATIVE_CASE02_SOURCE_AND_FINITE_PLAN_NOT_RESOURCE_OR_THEME_ACCEPTANCE",
+  "handoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-five-theme211-native-source-20261025-02/HANDOFF.json",
+    "sha256": "1b57d61f1f2b1d6779b8789e54b10f48361f9cd94e1df59d1635023e9205a4f6"
+  },
+  "seal": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-five-theme211-native-source-20261025-02/SEALED_ARTIFACTS.json",
+    "sha256": "37d71a31c0003d9dda22a3f240a2b1ad14a215f21eec7931d037ab4890a213d4"
+  },
+  "physicalAudit": {
+    "artifacts": 40,
+    "sourceFiles": 1086,
+    "vendorPins": 7943,
+    "tools": 7,
+    "links": 178,
+    "SQL": 8,
+    "launcher": {
+      "path": "/private/tmp/letbuyy-five-theme211-native-source-20261025-02/node_modules/.bin/tsx",
+      "isSymlink": true,
+      "realPath": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cli.mjs",
+      "bytes": 120402,
+      "sha256": "293360f3bf5826200d31375aea1267ccdad675d2a9cd1ad832e00b9f16509a7a",
+      "executable": true
+    },
+    "issues": [],
+    "reviewerCorrection": "Initial16 mode mismatches were helper using stat instead of sealed lstat semantics; actualfiles unchanged. No Native/resource action."
+  },
+  "semantics": {
+    "scope": "Fiveold210+fivenew211isolatedsynthetic installs/drafts/rootchildren/publishes; fivecanonicalRPCseedorders andmerchantGET setuponly. No buyerordercreation/provider/apparelproducerprovenance ororiginal26 UI credit.",
+    "admission": "Builtin-only actualRootadmission exactshape/expiry600s/maxattempt1/effectbudget/sourceprotocol/preflight/source+SQLpins checked beforefirstparty/Worker imports. Actualadmissionabsent. No resource/start authority fromsourcepacket.",
+    "sql": "FrozenfourheadingandSensepairedSQLbodies combinedoneoutertransaction, reverseDOWN. Existingfourimmutablepayloads referenced byteexact, no append-onlycaptureUPDATE/triggerdisable.",
+    "conservation": "Full publicr/p/m/Srowcounts/hashes, foreign-table refusal, nonsecretsecurity/profile exact; alloldcapture identities andinstalledwork retained throughUP/replay/DOWN/replay/reUP. Same-clusterphysicalcatalogueIDs appropriatehere; source02logicalrestoreprofile is differentpurpose.",
+    "refusals": "84preparedtransactional refusals including68nestedjournalfield directions. Everyattempt checksfullrowandsecurityrollback againstpopulatedbaseline. Noactualexecutedrefusalcredit.",
+    "postDownHttp": "TenrequestIDs/traces/actors/statuses, exact log+metric expectedaddedrows andparent/allleafmirrors; every preexistingoperational row preserved and allother tables exact. SubsequentSQLbaseline uses settled afterHTTPwitness.",
+    "rendering": "Retainedactualinstalledbundles with explicit canonicalLiquidorderDTO savedescapedscalar/missinghistoryfixtures. Sense210doesnotgetnew211factsfeatureassertion. No currentproductfallback; notnormalpersistedcheckoutprovenance.",
+    "resultPlan": "ActualoneTAPparent+twentyphase/readbackartifacts, rawproofhash/runidentity/order, exact322migrationname/prefix/SHA/max393/noceiling, inputpostrunconservation, no stragglers and verifiedownedcleanup mandatory. Externalwholeparent600s monitor stillneeded; internal--timeout alone insufficient."
+  },
+  "reusedOwnerEvidence": {
+    "purePredicates": 23,
+    "closureNegative": 3,
+    "inventoryNegative": 10,
+    "sourceMetadataPreflightExit": 0,
+    "currentMutableTypeDiagnostics": 0,
+    "retainedExternalTypeDiagnostics": 5,
+    "fullProjectGreen": false,
+    "oldFive211Source": "28+17retained notrerun",
+    "runtimeOrResourceExecution": 0
+  },
+  "futureAdmissionConditions": [
+    "SeparateRootresourcepreflight andseparateactualhumanNativebudget after3of3approval04spent; neveran implicitfourthrun.",
+    "BeforeanyfutureDockeroperation, actualsame .bin/tsx ancestors/stat/lstat/realpath/X_OK and actualnormalCLIversion/harmlesssmoke mustqualify underexactcurrentpermission; metadataalone no launchabilityPASS. Currentfile isvalid120402B pinnedCLI293360...symlink, no selfloop observed.",
+    "Pinactualsource+vendor+tool/system/dyldcachebuild andfullscriptmanifest atlaunch. No alternateloader/reinstall/fallback orunreviewedsourceupdate.",
+    "Retainfailure/cleanup andcopy allactualtwentyrawproofartifacts todurablethemeevidence. No extraattempt/widened600s whenphaseunreached.",
+    "Original210recovery independent; do notstage/activate211orproducerwrites intoRootminimaloriginal210candidate."
+  ],
+  "reviewerMetadataCorrection": "Firstphysicalhelper incorrectly used stat mode forsymlinkinventory(lstat semantics), reported16modeonlymismatches. Correctedsame-readhelper proves0actualsource/vendor/toolissues; noNative/sourcefailure/reseal/rerun.",
+  "MainNativeDatabaseDockerWorkerRunnerBuildBrowserProviderPrivateStateArchiveKeyActionsByThemes": 0,
+  "actualNative": "NOT_RUN_NOT_GRANTED",
+  "fullThemeCertificates": 0
+}

@@ -1,0 +1,118 @@
+{
+  "runId": "63e975c7e742",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-2168-mvnel3nx-67d337"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 0,
+  "assertionsPassed": 0,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 5.9,
+  "suiteSeconds": 4.8,
+  "cleanup": {
+    "failures": [
+      "remaining letbuyy-exec-2168-mvnel3nx-67d337",
+      "remaining letbuyy-exec-63e975c7e742-1-net",
+      "remaining letbuyy-exec-63e975c7e742-1-data"
+    ],
+    "remaining": {
+      "containers": [
+        "letbuyy-exec-2168-mvnel3nx-67d337"
+      ],
+      "networks": [
+        "letbuyy-exec-63e975c7e742-1-net"
+      ],
+      "volumes": [
+        "letbuyy-exec-63e975c7e742-1-data"
+      ]
+    }
+  },
+  "results": [
+    {
+      "name": "theme-completion-razorpay-browser.manual.ts",
+      "path": "tests/owned-db/theme-completion-razorpay-browser.manual.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-2168-mvnel3nx-67d337",
+      "code": 71,
+      "timedOut": false,
+      "hasSummary": false,
+      "tests": 0,
+      "pass": 0,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 4.8,
+      "firstFailure": "restore: RESTORE_FAILED",
+      "failures": [
+        "restore: RESTORE_FAILED",
+        "checkpoint: COMPLETE_DATA_WITNESS"
+      ],
+      "skips": [],
+      "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+      "templateSeconds": 0,
+      "provisionSeconds": 0,
+      "rest": null,
+      "ownership": "not verified",
+      "cleanup": {
+        "rest": null,
+        "database": false
+      },
+      "execution": {
+        "restore": "ATTEMPTED_NOT_VERIFIED",
+        "rest": "NOT_STARTED",
+        "ownership": "NOT_VERIFIED",
+        "suite": "NOT_ATTEMPTED",
+        "checkpoint": "FAILED"
+      },
+      "primaryFailure": {
+        "phase": "restore",
+        "code": "RESTORE_FAILED"
+      },
+      "checkpointFailure": {
+        "phase": "checkpoint",
+        "code": "COMPLETE_DATA_WITNESS"
+      }
+    }
+  ],
+  "status": "PRESERVED_RESOURCES_RETAINED_NO_VERIFIED_EXIT_ARCHIVE",
+  "terminalCode": 71,
+  "requestedSuites": [
+    "tests/owned-db/theme-completion-razorpay-browser.manual.ts"
+  ],
+  "notExecutedSuites": [
+    "tests/owned-db/theme-completion-razorpay-browser.manual.ts"
+  ],
+  "infrastructureFailure": null,
+  "preservedFailures": [
+    {
+      "phase": "restore",
+      "code": "RESTORE_FAILED"
+    },
+    {
+      "phase": "checkpoint",
+      "code": "COMPLETE_DATA_WITNESS"
+    }
+  ]
+}

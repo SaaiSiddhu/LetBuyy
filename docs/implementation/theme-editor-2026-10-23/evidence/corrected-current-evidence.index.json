@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-24T01:43:05.851705+00:00",
+  "currentHabitatLedger": "corrected-habitat-browser-diagnostics-final-finite26.json",
+  "actualInstalledSchemaBinding": "corrected-first-three-actual-installed-bindings.json",
+  "orderAndPreeditCart": "corrected-habitat-COD-and-preedit-cart-checkpoint.json",
+  "conflictOutcome401Not409": "corrected-habitat-COD-same-key-conflict-result.json",
+  "currentCircuitCycle": "corrected-circuit-editor-cycle.json",
+  "currentPantryLedger": "corrected-pantry-browser-diagnostics-after-lifecycle.json",
+  "noFurtherIndex0Replay": true,
+  "stockIntentLive": "corrected-habitat-HI16-live-checkpoint.json",
+  "pantryExactRetry": "corrected-pantry-P09-exact-confirm-retry.json",
+  "circuitActualProducts": "corrected-circuit-current-bindings.json",
+  "runtimeState": "STOPPED_PENDING_ROOT_LIFECYCLE_DISPOSITION",
+  "baselineRestoration": "Pending: last native new7ba cart empty; original387 A1 retained. No two-Pink restoration claim.",
+  "futureFailedObservationSource": "../failed-observation/source-release.json",
+  "sourceState": "CONDITIONAL_FROZEN_ROOT_REVIEW_PENDING_SHARED_GATE",
+  "persistentMarketplaceCompletion": "marketplace-persistent-completion.json",
+  "nextStableCopyAudit": "stable392-02-independent-copy-audit.json",
+  "nextStableLineageAudit": "stable392-02-lineage-addendum.json",
+  "nextRuntime": "NOT_YET_GRANTED",
+  "nextCohort": "Dewdrop full30 with genuinelynewbindings",
+  "observerTypeQualification": "Root reports isolated stable392-02 Gateway noEmit0; current Main updater gate remains separate/open"
+}

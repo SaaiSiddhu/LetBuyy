@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test, { before } from 'node:test';
+import test, { before, after } from 'node:test';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
@@ -14,6 +14,7 @@ let predecessor354Refused = false, defaults354Refused = false, concurrent354Veri
 const sql354 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/354_atomic_theme_release_rollback${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
 const sql366 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/366_theme_publication_visibility${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
 const sql376 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/376_atomic_theme_instance_switch${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
+const sql384 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/384_theme_editor_template_keys${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
 const themeFunctionSignatures = [
     'public.theme_draft_actor_site_v1(uuid,uuid,uuid)',
     'public.read_owned_theme_draft_v1(uuid,uuid,text,text,uuid)',
@@ -49,6 +50,9 @@ function catalogScriptWhenQuiescent(sql: string) {
 before(async () => {
     // Historical retirement controls must run against their exact reviewed
     // predecessor, not weaken its body guard to accept a later forward repair.
+    //384 replaces the exact344 draft body. Retire the later repair first;
+    // historical retirement guards must still reject unknown implementations.
+    owned.script(sql384('rollback'));
     owned.script(sql376('rollback'));
     owned.script(sql366('rollback'));
     const signature = 'public.rollback_owned_theme_release_v1(uuid,uuid,text,uuid,uuid,text,boolean,text,uuid,text)';
@@ -87,6 +91,7 @@ before(async () => {
     assert.deepEqual(rollbackConservationSnapshot(), prior, 'clean354 retirement leaves the publisher/private344ACL/schema/data untouched');
     clean354Retirement = true;
 });
+after(() => { owned.script(sql384('migrations')); });
 let sequence = 0;
 const slug = 'letbuyy-core';
 async function fixture() {

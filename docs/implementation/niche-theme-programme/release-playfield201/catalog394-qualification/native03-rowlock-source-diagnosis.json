@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-24T11:52:36.522845+00:00",
+  "nativeEvidence": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/03/root-result-review.json",
+  "observed": "phase4shadowguardexpectedTenantPublicationContextError receivesPostgresError42501 theme_package_versions",
+  "sourceTrace": {
+    "production": "services/api-gateway/src/lib/tenant-transaction.ts",
+    "selectedReadLine": 98,
+    "selectedLocks": "FOR SHARE OF i,v,p,t",
+    "priorReadLine": 103,
+    "priorLocks": "FOR SHARE OF r,s",
+    "stagedPinTrigger": "Baselineonlyupdate_updated_at on theme_instances; no capturelocktrigger found",
+    "sourceInference": "Selectedqueryunderapp_tenant requestsrowlockonread-onlyglobalcapturetablev; PostgreSQL requiresUPDATE privilege forFORSHARE. Priorquerysimilarlylockstheme_releasesr. Nativeerrorstronglyconsistentwithselectedread, but no exactdenyingstatementdiagnostic recorded; notclaimedfullylocalized."
+  },
+  "primaryDocumentation": "https://www.postgresql.org/docs/16/ddl-priv.html",
+  "securityBoundary": "Do notgrantglobalUPDATE/alterimmutablecaptureACL solelyforrowlock. Preservecanonicalservice_roleelevationguard/actor/GUC/profile checks. Any fix must preservecanonicaltransactionrace constraints and directEXECUTEdenial.",
+  "candidateFixToReview": "Keepownedsite/instance rowlocks, leaveimmutableglobalcapture/priorrelease readSELECT-only where correctness followsappend-only captureandlockedsite pointer; or useexistingbounded canonical trustedRPC locks. No sourcechange ornewnativegrant yet.",
+  "next": "Exacttwo-pathsource/testallocation, restrictiveSQLpermission model and existingnativeCAS/isolation/rollback afterreview; preservefailed03",
+  "notQualified": true
+}

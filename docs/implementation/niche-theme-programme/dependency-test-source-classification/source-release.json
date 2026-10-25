@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-24T05:52:42.018175+00:00",
+  "status": "FIXED_DEV_SOURCE_CLASSIFICATION_NO_PACKAGE_OR_RUNTIME_CHANGE",
+  "problem": "Declared TypeScriptdevDependency inCommerce wasignoredforco-locatedtest.ts/test.tsx becauseclassifierrecognizedtestdirectoriesbutnotstandardfilenames.",
+  "change": "Oneexactanchoredtest/specsourceextensioncheck;production,undeclareddependencyandconditionalaliaschecksremainactive.",
+  "files": [
+    {
+      "path": "scripts/validators/dependency-manifest-validator.mjs",
+      "sha256": "af77a995bf79dc361a3e021108f3bf357f53c85f01b5c629db7d1cc4b9b824bb"
+    },
+    {
+      "path": "tests/governance/dependency-manifest-dev-sources.test.mjs",
+      "sha256": "62057364ad21aeb0f47cf3a886f7c691a0396c7c4f241577e47caa61f7b4a6f0"
+    }
+  ],
+  "actualChecks": {
+    "red": {
+      "pass": 4,
+      "fail": 2,
+      "loaderFailure": false
+    },
+    "green": {
+      "pass": 6,
+      "fail": 0,
+      "skip": 0
+    },
+    "fullDependencyValidatorExit": 0,
+    "nodeSyntaxChecks": 0
+  },
+  "testMethod": "ExecuteactualwholevalidatorsourceafterremovingimportswithTypeScriptAST; supplyminimalin-memoryworkspace/reportinputs. Nodebuiltin/filesystemdependenciesarenotrunagainstuserdata; no copieddecisionfunctionorproductionexception.",
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/dependency-test-source-classification/red.tap",
+      "sha256": "0ab036e89cf58757dedef1ddea4c89293ca80c5fdbce1eef29094933f6f51d50"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/dependency-test-source-classification/green.tap",
+      "sha256": "e79bac83094eb9b1286102b60e6037958ad52aee849956a7146e4d241a1231c2"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/dependency-test-source-classification/validator.log",
+      "sha256": "6acec28334fba7b749d6b50bd41d27edf99f2243c80e52b961b3debda61ebced"
+    }
+  ],
+  "packageManifestsOrLockChanged": false,
+  "runtimeOrDataChanged": false
+}

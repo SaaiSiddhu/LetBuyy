@@ -1,0 +1,701 @@
+{
+  "recordedAtUtc": "2026-10-24T03:26:40.003521+00:00",
+  "scope": "READ_ONLY_EXACT_STABLE936_SOURCE_ONLY",
+  "sourceRoot": "/private/tmp/theme-editor-stable392-20261024-02",
+  "sourceChanged": false,
+  "browserNetworkTestsBuildsDataOrRuntimeActions": false,
+  "liveCauseProven": false,
+  "files": [
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "bytes": 36245,
+      "sha256": "4669d10383c4d6bb388e36a0c8b13d19fe5de037a74e8e86cc0630bbd688fbc7",
+      "excerpts": [
+        {
+          "line": 4,
+          "text": "import '../store/[subdomain]/liquid-theme.css';"
+        },
+        {
+          "line": 32,
+          "text": "const FONT_MAP: Record<string, string> = Object.fromEntries([\"Inter\", \"Outfit\", \"Poppins\", \"Lora\", \"Space Grotesk\", \"Playfair Display\", \"Nunito\", \"Open Sans\", \"DM Sans\", \"Montserrat\"].map(family => [family, fontFamilyWithFallback(family)]));"
+        },
+        {
+          "line": 293,
+          "text": "    const fontCss = FONT_MAP[themeSettings.fontFamily] || FONT_MAP.Inter;"
+        },
+        {
+          "line": 294,
+          "text": "    const headingFontCss = FONT_MAP[themeSettings.headingFontFamily] || fontCss;"
+        },
+        {
+          "line": 295,
+          "text": "    const radius = cssRadius(themeSettings.borderRadius);"
+        },
+        {
+          "line": 296,
+          "text": ""
+        },
+        {
+          "line": 297,
+          "text": "    return `"
+        },
+        {
+          "line": 298,
+          "text": "        :root {"
+        },
+        {
+          "line": 299,
+          "text": "          --primary: ${primaryColor};"
+        },
+        {
+          "line": 300,
+          "text": "          --secondary: ${secondaryColor};"
+        },
+        {
+          "line": 301,
+          "text": "          --accent: ${accentColor};"
+        },
+        {
+          "line": 302,
+          "text": "          --background: ${backgroundColor};"
+        },
+        {
+          "line": 303,
+          "text": "          --text: ${textColor};"
+        },
+        {
+          "line": 304,
+          "text": "          --foreground: ${textColor};"
+        },
+        {
+          "line": 305,
+          "text": "          --radius: ${radius}px;"
+        },
+        {
+          "line": 306,
+          "text": "          --font-main: ${fontCss}, system-ui, sans-serif;"
+        },
+        {
+          "line": 307,
+          "text": "          --font-heading: ${headingFontCss}, system-ui, sans-serif;"
+        },
+        {
+          "line": 629,
+          "text": "    return ("
+        },
+        {
+          "line": 630,
+          "text": "        <>"
+        },
+        {
+          "line": 631,
+          "text": "            <style>{buildThemeCss(previewStore.templateConfig.themeSettings)}</style>"
+        },
+        {
+          "line": 632,
+          "text": "            {buildGoogleFontsHref([previewStore.templateConfig.themeSettings.fontFamily, previewStore.templateConfig.themeSettings.headingFontFamily]) ? <link rel=\"stylesheet\" href={buildGoogleFontsHref([previewStore.templateConfig.themeSettings.fontFamily, previewStore.templateConfig.themeSettings.headingFontFamily])!} /> : null}"
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/layout.tsx",
+      "bytes": 15061,
+      "sha256": "6c1da1775b1b763e93f709ec8f11f45683cd19f3ef71cca0e9abf0e363b6076a",
+      "excerpts": [
+        {
+          "line": 18,
+          "text": "import { buildGoogleFontsHref, fontFamilyWithFallback } from '@letbuyy/theme-engine';"
+        },
+        {
+          "line": 19,
+          "text": "import './liquid-theme.css';"
+        },
+        {
+          "line": 20,
+          "text": ""
+        },
+        {
+          "line": 21,
+          "text": "export const revalidate = 60;"
+        },
+        {
+          "line": 22,
+          "text": ""
+        },
+        {
+          "line": 23,
+          "text": "// ============= THEME FONT MAPPING ============="
+        },
+        {
+          "line": 24,
+          "text": "// D7: extended with the four missing experience font families."
+        },
+        {
+          "line": 25,
+          "text": "const FONT_MAP: Record<string, string> = Object.fromEntries(['Inter', 'Outfit', 'Poppins', 'Lora', 'Space Grotesk', 'Playfair Display', 'Nunito', 'Open Sans', 'DM Sans', 'Montserrat', 'Cormorant Garamond', 'Libre Baskerville', 'Source Sans Pro', 'Lato'].map(family => [family, fontFamilyWithFallback(family)]));"
+        },
+        {
+          "line": 137,
+          "text": "    const fontCss = FONT_MAP[ts.fontFamily] || FONT_MAP['Inter'];"
+        },
+        {
+          "line": 138,
+          "text": "    const headingFontCss = FONT_MAP[ts.headingFontFamily] || fontCss;"
+        },
+        {
+          "line": 139,
+          "text": ""
+        },
+        {
+          "line": 140,
+          "text": "    // D7: build Google Fonts href for the active experience fonts."
+        },
+        {
+          "line": 141,
+          "text": "    // buildGoogleFontsHref returns null when all fonts are system fonts (already loaded locally)."
+        },
+        {
+          "line": 142,
+          "text": "    // preconnect links are emitted only when the href is non-null to avoid unnecessary DNS lookups."
+        },
+        {
+          "line": 143,
+          "text": "    const googleFontsHref = buildGoogleFontsHref("
+        },
+        {
+          "line": 144,
+          "text": "        // Pass both font families; buildGoogleFontsHref deduplicates and filters to known Google Fonts only."
+        },
+        {
+          "line": 145,
+          "text": "        [ts.fontFamily, ts.headingFontFamily].filter((f): f is string => typeof f === 'string' && f.length > 0),"
+        },
+        {
+          "line": 208,
+          "text": "        h1, h2, h3, h4, h5, h6 {"
+        },
+        {
+          "line": 209,
+          "text": "            font-family: var(--font-heading);"
+        },
+        {
+          "line": 210,
+          "text": "            font-weight: 600;"
+        },
+        {
+          "line": 211,
+          "text": "            letter-spacing: -0.02em;"
+        },
+        {
+          "line": 212,
+          "text": "        }"
+        },
+        {
+          "line": 213,
+          "text": "        "
+        },
+        {
+          "line": 214,
+          "text": "        .font-display {"
+        },
+        {
+          "line": 215,
+          "text": "            font-family: var(--font-heading) !important;"
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "bytes": 54434,
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+      "excerpts": [
+        {
+          "line": 25,
+          "text": "[data-theme-renderer=\"liquid\"] h1 { font-family: var(--font-heading); font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.05; letter-spacing: -.02em; margin: 0 0 1rem; }"
+        },
+        {
+          "line": 26,
+          "text": "[data-theme-renderer=\"liquid\"] h2 { font-family: var(--font-heading); font-size: clamp(1.5rem, 3vw, 2.25rem); line-height: 1.15; letter-spacing: -.01em; margin: 0 0 .5rem; }"
+        },
+        {
+          "line": 27,
+          "text": "[data-theme-renderer=\"liquid\"] h3 { font-family: var(--font-heading); font-size: 1.15rem; margin: 0 0 .35rem; }"
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/app/globals.css",
+      "bytes": 20821,
+      "sha256": "68376df68faf1d3868681603cf89bee0aa94835a390e677f79fcf488093d2581",
+      "excerpts": [
+        {
+          "line": 19,
+          "text": ":root {"
+        },
+        {
+          "line": 20,
+          "text": "  --font-inter: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;"
+        },
+        {
+          "line": 21,
+          "text": "  --font-outfit: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;"
+        },
+        {
+          "line": 50,
+          "text": "  --font-display: var(--font-outfit);"
+        },
+        {
+          "line": 51,
+          "text": "  --font-body: var(--font-inter);"
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "bytes": 38514,
+      "sha256": "c7c4e98ddebf6a9c707d77e3f66cab975f894edab36e6f65c7ab58604bda2ef7",
+      "excerpts": [
+        {
+          "line": 118,
+          "text": "            {headStyleText ? ("
+        },
+        {
+          "line": 119,
+          "text": "                <style data-theme-renderer=\"liquid\" precedence=\"lb-liquid-theme\" href=\"lb-liquid-theme-head-assets\">"
+        },
+        {
+          "line": 120,
+          "text": "                    {headStyleText}"
+        },
+        {
+          "line": 121,
+          "text": "                </style>"
+        },
+        {
+          "line": 122,
+          "text": "            ) : null}"
+        },
+        {
+          "line": 123,
+          "text": "            <div"
+        },
+        {
+          "line": 124,
+          "text": "                data-theme-renderer=\"liquid\""
+        },
+        {
+          "line": 125,
+          "text": "                data-editor-mode={editorMode ? 'true' : 'false'}"
+        },
+        {
+          "line": 126,
+          "text": "                dangerouslySetInnerHTML={{ __html: html }}"
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "bytes": 2510,
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765",
+      "excerpts": [
+        {
+          "line": 18,
+          "text": "): { html: string; headStyleText: string } {"
+        },
+        {
+          "line": 19,
+          "text": "    // Full-Liquid page: header + body + footer are ALL rendered by the Liquid engine (each fragment is"
+        },
+        {
+          "line": 20,
+          "text": "    // sanitized per-section in theme-renderer.ts), so nothing in the storefront chrome is React."
+        },
+        {
+          "line": 21,
+          "text": "    // layout.tsx drops its React header/footer when rendererEngine === 'liquid'. We concatenate the"
+        },
+        {
+          "line": 22,
+          "text": "    // sanitized fragments (not the full <!doctype> layout document, which can't nest inside a <div>)."
+        },
+        {
+          "line": 23,
+          "text": "    //"
+        },
+        {
+          "line": 24,
+          "text": "    // The theme's own :root token block + base stylesheet (headStyleText) is NOT part of that"
+        },
+        {
+          "line": 25,
+          "text": "    // concatenation: it belongs in <head>, and a nested layout/page component cannot render"
+        },
+        {
+          "line": 26,
+          "text": "    // <html>/<head> directly. headStyleText is already sanitized (theme-renderer.ts's"
+        },
+        {
+          "line": 27,
+          "text": "    // sanitizeLiquidHeadStyleText, the same allowHeadMetadata DOMPurify pass layoutHtml's own"
+        },
+        {
+          "line": 28,
+          "text": "    // wholeDocument sanitization uses) plain CSS TEXT \u2014 the caller renders it as a real <style>"
+        },
+        {
+          "line": 29,
+          "text": "    // element anywhere in the tree; Next.js/React hoist <style> elements into <head> regardless of"
+        },
+        {
+          "line": 30,
+          "text": "    // nesting depth, so this reaches the document head without emitting a nested document."
+        },
+        {
+          "line": 31,
+          "text": "    const { header, contentForLayout, footer, headStyleText } = liquid;"
+        },
+        {
+          "line": 32,
+          "text": "    return { html: `${header || ''}${controls.beforeContentHtml || ''}${contentForLayout}${controls.afterContentHtml || ''}${footer || ''}`, headStyleText: headStyleText || '' };"
+        }
+      ]
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "bytes": 107646,
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "excerpts": [
+        {
+          "line": 544,
+          "text": "  ['bodyFontFamily', '--font-body', 'Inter, system-ui, sans-serif'],"
+        },
+        {
+          "line": 545,
+          "text": "  ['headingFontFamily', '--font-display', 'Inter, system-ui, sans-serif'],"
+        },
+        {
+          "line": 615,
+          "text": "export function buildLiquidThemeHeadAssets("
+        },
+        {
+          "line": 616,
+          "text": "  bundle: LiquidThemePackageBundle,"
+        },
+        {
+          "line": 617,
+          "text": "  rawCustomCss?: string,"
+        },
+        {
+          "line": 618,
+          "text": "): string {"
+        },
+        {
+          "line": 619,
+          "text": "  const baseStyle = `<style data-theme-renderer=\"liquid\">@layer ${LIQUID_THEME_BASE_CSS_LAYER_NAME}{${buildLiquidRootTokenBlock(bundle)}${LIQUID_THEME_BASE_CSS}}</style>`;"
+        },
+        {
+          "line": 620,
+          "text": "  if (!rawCustomCss || rawCustomCss.trim() === '') {"
+        },
+        {
+          "line": 1025,
+          "text": "    const liquid: LiquidRenderedTheme = {"
+        },
+        {
+          "line": 1026,
+          "text": "      templateKey,"
+        },
+        {
+          "line": 1027,
+          "text": "      layoutHtml,"
+        },
+        {
+          "line": 1028,
+          "text": "      contentForLayout,"
+        },
+        {
+          "line": 1029,
+          "text": "      sections: renderedSections,"
+        },
+        {
+          "line": 1030,
+          "text": "      header: headerHtml,"
+        },
+        {
+          "line": 1031,
+          "text": "      footer: footerHtml,"
+        },
+        {
+          "line": 1032,
+          "text": "      headStyleText: await sanitizeLiquidHeadStyleText(layoutHtml, true),"
+        },
+        {
+          "line": 1033,
+          "text": "    };"
+        }
+      ]
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "bytes": 4723,
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+      "excerpts": [
+        {
+          "line": 30,
+          "text": "export const EXPERIENCE_FONT_REGISTRY: Readonly<Record<string, ExperienceFontSpec>> = Object.freeze({"
+        },
+        {
+          "line": 31,
+          "text": "    Inter: { family: 'Inter', googleFamily: 'Inter:wght@400;500;600;700;800', fallback: 'system-ui, -apple-system, sans-serif' },"
+        },
+        {
+          "line": 32,
+          "text": "    'Playfair Display': { family: 'Playfair Display', googleFamily: 'Playfair+Display:wght@400;500;600;700', fallback: 'Georgia, \"Times New Roman\", serif' },"
+        },
+        {
+          "line": 33,
+          "text": "    'Cormorant Garamond': { family: 'Cormorant Garamond', googleFamily: 'Cormorant+Garamond:wght@400;500;600;700', fallback: 'Georgia, \"Times New Roman\", serif' },"
+        },
+        {
+          "line": 34,
+          "text": "    'Libre Baskerville': { family: 'Libre Baskerville', googleFamily: 'Libre+Baskerville:wght@400;700', fallback: 'Georgia, \"Times New Roman\", serif' },"
+        },
+        {
+          "line": 35,
+          "text": "    'Source Sans Pro': { family: 'Source Sans Pro', googleFamily: 'Source+Sans+Pro:wght@400;600;700', fallback: 'system-ui, -apple-system, sans-serif' },"
+        },
+        {
+          "line": 36,
+          "text": "    'Source Sans 3': { family: 'Source Sans 3', googleFamily: 'Source+Sans+3:wght@400;600;700', fallback: 'system-ui, -apple-system, sans-serif' },"
+        },
+        {
+          "line": 37,
+          "text": "    Lato: { family: 'Lato', googleFamily: 'Lato:wght@400;700', fallback: 'system-ui, -apple-system, sans-serif' },"
+        },
+        {
+          "line": 38,
+          "text": "});"
+        },
+        {
+          "line": 39,
+          "text": ""
+        },
+        {
+          "line": 40,
+          "text": "export function getExperienceFontSpec(family: string): ExperienceFontSpec | undefined {"
+        },
+        {
+          "line": 41,
+          "text": "    return EXPERIENCE_FONT_REGISTRY[family];"
+        },
+        {
+          "line": 42,
+          "text": "}"
+        },
+        {
+          "line": 43,
+          "text": ""
+        },
+        {
+          "line": 44,
+          "text": "/** A full CSS font-family value (family + fallback stack) for the given family. */"
+        },
+        {
+          "line": 45,
+          "text": "export function fontFamilyWithFallback(family: string): string {"
+        },
+        {
+          "line": 46,
+          "text": "    const spec = EXPERIENCE_FONT_REGISTRY[family];"
+        },
+        {
+          "line": 47,
+          "text": "    const fallback = spec ? spec.fallback : 'system-ui, -apple-system, sans-serif';"
+        },
+        {
+          "line": 48,
+          "text": "    return `\"${family}\", ${fallback}`;"
+        }
+      ]
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "bytes": 16639,
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+      "excerpts": [
+        {
+          "line": 27,
+          "text": "    Object.assign(bundle.config.settings_data.current, {"
+        },
+        {
+          "line": 28,
+          "text": "        primaryColor: '#3F5E51', secondaryColor: '#596754', accentColor: '#005FCC',"
+        },
+        {
+          "line": 29,
+          "text": "        backgroundColor: '#FAF8F4', textColor: '#293229', surfaceColor: '#EDE9E1',"
+        },
+        {
+          "line": 30,
+          "text": "        bodyFontFamily: 'Lato', headingFontFamily: 'Cormorant Garamond', borderRadius: 8,"
+        },
+        {
+          "line": 31,
+          "text": "    });"
+        },
+        {
+          "line": 32,
+          "text": "    // The Liquid role map uses bodyFontFamily; inherited Core's fontFamily must not shadow it."
+        },
+        {
+          "line": 33,
+          "text": "    delete bundle.config.settings_data.current.fontFamily;"
+        },
+        {
+          "line": 34,
+          "text": "    bundle.sections['hero-banner'] = section('hero-banner', 'Care introduction', [text('eyebrow', 'Eyebrow', 'CARE, ON YOUR TERMS'), text('heading', 'Heading', 'A little care. A daily ritual.'), text('subheading', 'Description', 'Find your next everyday essential by use. Read the ingredients, directions and named shades before choosing.'), text('ctaText', 'Button label', 'Explore your routine'), { ...url('ctaLink', 'Button destination'), default: '/products' }, image('image', 'Original care photograph'), text('imageAlt', 'Photograph description'), { id: 'imageFocus', type: 'select', label: 'Photograph focal point', default: 'center', options: ['left', 'center', 'right'] }], `<section class=\"dd-theme dd-hero dd-focus-{{ section.settings.imageFocus }}{% if section.settings.image == blank %} dd-hero-empty{% endif %}\" data-section-id=\"{{ section.id }}\"><div class=\"dd-hero-copy\"><span class=\"dd-eyebrow\">{{ section.settings.eyebrow }}</span><h1>{{ section.settings.heading }}</h1><p>{{ section.settings.subheading }}</p>{% if section.settings.ctaText != blank and section.settings.ctaLink != blank %}<a class=\"dd-button\" href=\"{{ section.settings.ctaLink | store_url }}\">{{ section.settings.ctaText }} \u2192</a>{% endif %}</div>{% if section.settings.image != blank %}<div class=\"dd-hero-media\"><img src=\"{{ section.settings.image | image_url }}\" alt=\"{{ section.settings.imageAlt | default: section.settings.heading }}\" fetchpriority=\"high\" decoding=\"async\"></div>{% endif %}</section>`);"
+        },
+        {
+          "line": 72,
+          "text": "    const style = `<style data-dewdrop=\"2\">${DEWDROP_CSS}</style>`;"
+        },
+        {
+          "line": 73,
+          "text": "    if (!bundle.layout.theme.source.includes('{{ content_for_header | raw }}'))"
+        },
+        {
+          "line": 74,
+          "text": "        throw new Error('Dewdrop base layout is missing the canonical header outlet.');"
+        },
+        {
+          "line": 75,
+          "text": "    bundle.layout.theme.source = bundle.layout.theme.source.replace('{{ content_for_header | raw }}', `{{ content_for_header | raw }}\\n${style}`);"
+        },
+        {
+          "line": 76,
+          "text": "    return LiquidThemePackageBundleSchema.parse(bundle);"
+        }
+      ]
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "bytes": 13200,
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+      "excerpts": [
+        {
+          "line": 3,
+          "text": "@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:500;font-display:swap;src:url('/theme-assets/dewdrop/v2/cormorant-garamond-500.ttf') format('truetype')}"
+        },
+        {
+          "line": 4,
+          "text": "@font-face{font-family:Lato;font-style:normal;font-weight:400;font-display:swap;src:url('/theme-assets/dewdrop/v2/lato-400.ttf') format('truetype')}"
+        },
+        {
+          "line": 5,
+          "text": "@font-face{font-family:Lato;font-style:normal;font-weight:700;font-display:swap;src:url('/theme-assets/dewdrop/v2/lato-700.ttf') format('truetype')}"
+        },
+        {
+          "line": 7,
+          "text": ".dd-theme *{box-sizing:border-box}.dd-theme [hidden]{display:none!important}.dd-theme img{display:block;max-width:100%}.dd-theme a{color:inherit}.dd-theme :where(h1,h2,h3){font-family:var(--font-display,Georgia,serif);font-weight:500;line-height:1.1;letter-spacing:-.02em;overflow-wrap:anywhere}.dd-theme h1{font-size:clamp(2.4rem,4.8vw,4.5rem)}.dd-theme h2{font-size:clamp(1.8rem,3vw,2.5rem)}.dd-theme h3{font-size:1.8rem}.dd-theme p{color:var(--dd-muted);overflow-wrap:anywhere}.dd-theme :where(a,button,input,select,summary):focus-visible{outline:2px solid var(--dd-focus);outline-offset:4px}.dd-wrap{width:min(1280px,calc(100% - 112px));margin-inline:auto}.dd-section{padding-block:50px}.dd-eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;font-weight:700}.dd-button{display:inline-flex;justify-content:center;align-items:center;min-height:50px;padding:13px 24px;border:1px solid var(--primary);border-radius:6px;background:var(--primary);color:var(--on-primary,#fff)!important;font:inherit;font-weight:700;text-decoration:none}.dd-link{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline;text-underline-offset:5px}.dd-heading{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:28px}.dd-heading h2{margin:8px 0}.dd-empty{padding:35px 0}.dd-missing{font-size:.85rem}.dd-placeholder{display:grid;place-items:center;min-height:150px;height:100%;padding:20px;text-align:center;background:var(--dd-soft);color:var(--dd-muted);font-size:.85rem}"
+        },
+        {
+          "line": 12,
+          "text": "@media(max-width:1100px){.dd-wrap{width:calc(100% - 64px)}.dd-hero-copy{padding:45px 32px}.dd-hero{grid-template-columns:45% 55%}.dd-shelf{grid-template-columns:170px minmax(0,1fr);gap:28px}.dd-shelf-products{grid-template-columns:1fr}.dd-card{grid-template-columns:140px minmax(0,1fr)}.dd-theme .lb-product-detail__layout{gap:35px}.dd-education-copy{padding:35px}}"
+        },
+        {
+          "line": 13,
+          "text": "@media(max-width:900px){.dd-routine{grid-template-columns:1fr}.dd-routine-item{border-inline-end:0;border-bottom:1px solid var(--dd-line);padding:22px 0}.dd-hero-media img{min-height:515px}.dd-featured{gap:20px}.dd-featured .dd-card-heading{display:block}.dd-theme .lb-header__inner{width:calc(100% - 64px)}.dd-theme .lb-product-detail{width:calc(100% - 64px)}.dd-theme .lb-product-detail__variant-values{flex-direction:column}.dd-theme .lb-product-detail__variant-values button{min-height:65px;width:100%}}"
+        },
+        {
+          "line": 14,
+          "text": "@media(max-width:640px){.dd-wrap{width:calc(100% - 40px)}.dd-section{padding-block:32px}.dd-heading{display:block}.dd-hero{grid-template-columns:1fr}.dd-hero-copy{padding:38px 24px}.dd-hero-copy h1{font-size:3.2rem}.dd-hero-media img{min-height:0;height:345px}.dd-shelf{grid-template-columns:1fr;gap:20px;padding-block:27px}.dd-shelf-label{align-items:center}.dd-card{grid-template-columns:115px minmax(0,1fr);gap:18px}.dd-card-heading{display:block}.dd-card-heading h3 a{display:inline-flex;align-items:center;min-height:44px}.dd-card-heading h3{font-size:1.6rem}.dd-card-heading>span{display:block;margin-top:8px}.dd-card-copy p{font-size:.8rem}.dd-featured{grid-template-columns:1fr}.dd-featured .dd-card{display:grid}.dd-education{grid-template-columns:1fr}.dd-education>img{height:330px}.dd-education-copy{padding:30px 24px}.dd-services{grid-template-columns:1fr}.dd-services article{border-inline-end:0;border-bottom:1px solid var(--dd-line);padding-bottom:20px}.dd-filters{gap:13px}.dd-filters label{width:100%}.dd-filters :where(input,select){width:100%}.dd-theme .lb-product-detail{width:calc(100% - 40px)}.dd-theme .lb-product-detail__layout{grid-template-columns:1fr;gap:30px}.dd-theme .lb-header__inner{width:calc(100% - 32px)}.dd-theme .lb-header__inner{flex-wrap:wrap;gap:8px}.dd-theme .lb-header__brand{text-decoration:none;font-size:2rem;flex:1 0 6ch;min-width:0;max-width:calc(100% - 52px);overflow-wrap:anywhere}.dd-theme .lb-header__actions{margin-inline-start:auto;flex-wrap:wrap;max-width:100%;gap:8px}.dd-theme .lb-header__cart{font-size:.85rem}.dd-pagination{flex-wrap:wrap}.dd-theme :where(.lb-cart,.lb-customer-account,.lb-customer-orders,.lb-customer-addresses,.lb-customer-order-detail){width:calc(100% - 32px)}}"
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/dewdrop/v2/cormorant-garamond-500.ttf",
+      "bytes": 290496,
+      "sha256": "1724047c8988ca5155bff667bc48fa52e97d57aabc6b42eebbf986f21a4be20b"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/dewdrop/v2/lato-400.ttf",
+      "bytes": 72312,
+      "sha256": "f43f1c7780d69792278f04b136c934a0298fc66f2e974bac13dd2e53adc52bde"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/dewdrop/v2/lato-700.ttf",
+      "bytes": 70576,
+      "sha256": "02e8f4be57ddc47cb7882c41b60216b6085b1ceaf717514be2b88fa15396238d"
+    },
+    {
+      "path": "apps/commerce/web/src/app/layout.tsx",
+      "bytes": 1519,
+      "sha256": "1756fc5c17f61d7c842a834a0883220c2b3214a1fa16e96217a47fd9b26e8a19",
+      "excerpts": [
+        {
+          "line": 7,
+          "text": "const letbuyySans = localFont({"
+        },
+        {
+          "line": 8,
+          "text": "  src: \"../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2\","
+        },
+        {
+          "line": 9,
+          "text": "  variable: \"--font-letbuyy-sans\","
+        },
+        {
+          "line": 10,
+          "text": "  display: \"swap\","
+        },
+        {
+          "line": 11,
+          "text": "  weight: \"100 900\","
+        },
+        {
+          "line": 12,
+          "text": "});"
+        },
+        {
+          "line": 13,
+          "text": ""
+        },
+        {
+          "line": 14,
+          "text": "const letbuyyDisplay = localFont({"
+        },
+        {
+          "line": 15,
+          "text": "  src: \"../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2\","
+        },
+        {
+          "line": 16,
+          "text": "  variable: \"--font-letbuyy-display\","
+        },
+        {
+          "line": 17,
+          "text": "  display: \"swap\","
+        },
+        {
+          "line": 18,
+          "text": "  preload: false,"
+        },
+        {
+          "line": 19,
+          "text": "  weight: \"100 900\","
+        }
+      ]
+    }
+  ],
+  "correction": {
+    "recordedAtUtc": "2026-10-24T03:28:39.766381+00:00",
+    "previewImportsPublicLiquidStylesheet": true,
+    "exactPath": "apps/commerce/web/src/app/preview/preview-content.tsx",
+    "line": 4,
+    "withdrawnInference": "Preview stylesheet omission and differing selector availability; new token aliases required for this h1 difference",
+    "remainingStaticAsymmetry": "Preview10-family map omits Cormorant/Lato vs public14-family map; shared heading selector consumes differently computed font-heading",
+    "liveCauseProven": false,
+    "matchedWidthParityProven": false,
+    "newProbesOrSourceEdits": false
+  }
+}

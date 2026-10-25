@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-23T15:10:45.710209+00:00",
+  "humanRequest": "Check with Editor on merchant-save origin fix and Pantry handoff; continue all13 including P12 when ready; shared sources frozen.",
+  "classification": "DIRECT_EDITOR_CURRENT_RUNTIME_CONFIRMATION_NOT_PANTRY_EXECUTION",
+  "editorConfirmation": {
+    "sourceChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "currentCandidate": "final02",
+    "runId": "9cd50e893016",
+    "merchantSaveFixed": false,
+    "merchantSaveReverified": false,
+    "currentRuntimeFailureMustBePreserved": true,
+    "pantryScopeAllocated": false,
+    "queue": "Pantry13 next after Dewdrop diagnostic30, via Themes and same Editor UI controller",
+    "handoff": "Editor will supply actual readiness/bindings when current slice ends; no new runtime/source pull",
+    "p12OrderingConfirmed": "Accepted additional active250g cart before P11 later300g edit, then stale rejection/history"
+  },
+  "namedRepairOwnership": {
+    "assignedBy": "Themes",
+    "owner": "Playfield",
+    "soleScope": [
+      "apps/merchant/web/src/lib/api/request-origin.ts",
+      "Focused strict same-origin/forged proxy security regressions"
+    ],
+    "currentRuntimeAcceptance": "Repair source tests alone cannot be credited as current candidate fix."
+  },
+  "frozenCandidateSource": {
+    "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+    "sha256": "c288af9f88b5919f09c28391625801ee0c1331544085e01a60ad9252e4934631",
+    "line": 23,
+    "staticResponseCode": "FORBIDDEN_ORIGIN",
+    "staticResponseStatus": 403,
+    "scope": "Code identifies branch; no captured actual mutation HTTP status claimed by Pantry."
+  },
+  "rootDiagnosisReported": "NextURL normalizes fresh admin*.localhost while existing guard special-cases literal IP only; owner must bind exact trusted origin/Host/port, without wildcard/bypass/Forwarded trust.",
+  "separateOwnerDiagnosticProgress": {
+    "owner": "Editor Dewdrop slice",
+    "reportedCounts": {
+      "PASS": 3,
+      "FAIL": 1,
+      "PARTIAL": 4,
+      "BLOCKED": 2,
+      "NOT_RUN": 20
+    },
+    "final": false,
+    "pantryProof": false
+  },
+  "pantryCasesExecuted": 0,
+  "sharedSourceEditsByPantry": false
+}

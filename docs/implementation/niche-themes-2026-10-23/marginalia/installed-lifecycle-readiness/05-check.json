@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-23T14:38:31.852632+00:00",
+  "classification": "NATIVE_GREEN_SHARED_FIXTURE_BUILD_IN_PROGRESS_NOT_ALLOCATED",
+  "previousCheck": "installed-lifecycle-readiness/04-check.json",
+  "qualification": {
+    "green": true,
+    "rootAdmission": {
+      "path": "docs/implementation/niche-theme-programme/native389390-final-admission.json",
+      "sha256": "c4a309bc230dbe80cd785733ff94d1203d9ed94696946a9486d64ea0957b3a6f"
+    },
+    "accepted389PairHashesStillExact": true
+  },
+  "sharedFixture": {
+    "ready": false,
+    "fixtureRecord": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-lifecycle.json",
+    "fixtureRecordSha256": "fa646a67caf9e18385abb919e3d419728030855d4cecabc64baf86d434dfe044",
+    "fixture": null,
+    "browserAccepted": false,
+    "allocatedToMarginalia": false,
+    "schedule": "docs/implementation/niche-theme-programme/capture-schedule.json",
+    "scheduleSha256": "183d6f47ee378fc85e691b6a547cc0ddff758bfaaa25462e5c53ee13eaa9a4cc",
+    "browserOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "buildOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "ownerReportedProgress": {
+      "productReadbacksPassed": 14,
+      "collectionCreateMembershipReloadsPassed": 13,
+      "identity": "built and ready",
+      "merchantAndCommerce": "next in sequential production build"
+    },
+    "progressIsOwnerReportNotInstalledAcceptance": true,
+    "privateFixtureStateRead": false
+  },
+  "installedCases": {
+    "required": 16,
+    "allStatus": "NOT_RUN",
+    "matrixSha256": "f65557129858ac0906fd6f7dfd78fc00c6124e30fbd2a52187cb82b8913bed82",
+    "runtimeBindingsAssigned": false,
+    "evidence": null
+  },
+  "continuation": {
+    "automationId": "marginalia-installed-lifecycle-follow-up",
+    "status": "ACTIVE",
+    "intervalMinutes": 10,
+    "canExecuteInstalledCases": false,
+    "notificationRequired": false,
+    "reason": "Runtime startup still in progress with no shared browser/product lease; no action for user."
+  },
+  "sideEffects": {
+    "resourcesStarted": false,
+    "sharedResourcesClaimed": false,
+    "sourceEdited": false,
+    "fixtureEdited": false,
+    "crossChatMessageSent": false
+  }
+}

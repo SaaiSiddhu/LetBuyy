@@ -1,0 +1,355 @@
+{
+  "body": {
+    "background": "rgb(252, 252, 252)",
+    "color": "rgba(2, 9, 18, 0.75)",
+    "font": "\"Anonymous Pro\", monospace",
+    "fontSize": "16.8px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Drinks",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Anonymous Pro\", monospace",
+      "height": 20.140625,
+      "line": "20.15px",
+      "size": "13.65px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 294.203125,
+      "x": 1050.3515625,
+      "y": -10.1953125
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 62.59375,
+      "line": "62.6px",
+      "size": "50px",
+      "tag": "H1",
+      "text": "Recipes",
+      "weight": "500",
+      "width": 1335,
+      "x": 52.5,
+      "y": 159.09375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 37.5546875,
+      "line": "37.56px",
+      "size": "30px",
+      "tag": "H3",
+      "text": "Grapefruit Kombucha Float",
+      "weight": "500",
+      "width": 655.5,
+      "x": 52.5,
+      "y": 582.875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 37.5546875,
+      "line": "37.56px",
+      "size": "30px",
+      "tag": "H3",
+      "text": "Apple Cinnamon Toast",
+      "weight": "500",
+      "width": 655.5,
+      "x": 732,
+      "y": 582.875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 37.5546875,
+      "line": "37.56px",
+      "size": "30px",
+      "tag": "H3",
+      "text": "Strawberry Lemonade + Yogurt Popsicles",
+      "weight": "500",
+      "width": 655.5,
+      "x": 52.5,
+      "y": 1095.2421875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 37.5546875,
+      "line": "37.56px",
+      "size": "30px",
+      "tag": "H3",
+      "text": "How to Frosé at Home",
+      "weight": "500",
+      "width": 655.5,
+      "x": 732,
+      "y": 1095.2421875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 28.1640625,
+      "line": "28.17px",
+      "size": "22.5px",
+      "tag": "H2",
+      "text": "Quick links",
+      "weight": "500",
+      "width": 429,
+      "x": 52.5,
+      "y": 1359.421875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 28.1640625,
+      "line": "28.17px",
+      "size": "22.5px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "500",
+      "width": 429,
+      "x": 505.5,
+      "y": 1359.421875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 28.1640625,
+      "line": "28.17px",
+      "size": "22.5px",
+      "tag": "H2",
+      "text": "We send delicious emails.",
+      "weight": "500",
+      "width": 667.5,
+      "x": 52.5,
+      "y": 1582.9296875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/all-drinks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/cold-pressed-juices"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/boosters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/kombuchas"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/plant-milks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/shakes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/lemonades"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-taste-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-taste-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Grapefruit Kombucha Float",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes/grapefruit-kombucha-float"
+    },
+    {
+      "text": "Apple Cinnamon Toast",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes/apple-cinnamon-toast"
+    },
+    {
+      "text": "Strawberry Lemonade + Yogurt Popsicles",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes/strawberry-lemonade-yogurt-popsicles"
+    },
+    {
+      "text": "How to Frosé at Home",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes/how-to-frose-at-home"
+    },
+    {
+      "text": "Drinks",
+      "url": "https://theme-taste-demo.myshopify.com/collections/all-drinks"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-taste-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-taste-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "theme-taste-demo",
+      "url": "https://theme-taste-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715886829590__main",
+      "rect": {
+        "height": 1120.328125,
+        "width": 1440,
+        "x": 0,
+        "y": 159.09375
+      },
+      "tag": "SECTION",
+      "text": "Recipes\nGrapefruit Kombucha Float\n\nThis tangy, sparkly, nostalgic treat tastes like a creamsicle, and takes all of two minutes to make. \n\nApple Cinnamon Toast\n\nThis is a challava g"
+    }
+  ],
+  "title": "Recipes – theme-taste-demo",
+  "url": "https://theme-taste-demo.myshopify.com/blogs/recipes",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [],
+  "images": [
+    {
+      "alt": "A light pink drink with froth on top, garnished with green sprigs. ",
+      "complete": true,
+      "naturalWidth": 649,
+      "rect": {
+        "height": 322.34375,
+        "width": 655.5
+      }
+    },
+    {
+      "alt": "A top-down view of a slice of toast piled with apples, yogurt, and pomegranate seeds.",
+      "complete": true,
+      "naturalWidth": 649,
+      "rect": {
+        "height": 322.34375,
+        "width": 655.5
+      }
+    },
+    {
+      "alt": "A bottle of strawberry lemonade lying among popsicles, strawberry slices, and lemon slices",
+      "complete": true,
+      "naturalWidth": 649,
+      "rect": {
+        "height": 322.34375,
+        "width": 655.5
+      }
+    },
+    {
+      "alt": "A slushy red drink garnished with mint leaves ",
+      "complete": true,
+      "naturalWidth": 649,
+      "rect": {
+        "height": 322.34375,
+        "width": 655.5
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nWelcome to our store\n\nDrinks\nBundles\nRecipes\nAbout\nCart\nRecipes\nGrapefruit Kombucha Float\n\nThis tangy, sparkly, nostalgic treat tastes like a creamsicle, and takes all of two minutes to make. \n\nApple Cinnamon Toast\n\nThis is a challava good breakfast or snack to welcome fall and the jewel of the season: apples.\n\nStrawberry Lemonade + Yogurt Popsicles\n\nStrawberry and coconut? This is way more than a summer fling–this is a duo that was simply meant to be. \n\nHow to Frosé at Home\n\nFrom the very first sip, we knew that we wanted to share this melony magic with as many friends as we could.\n\nQuick links\nDrinks\nBundles\nRecipes\nAbout\nOur mission\n\nWe offer sustainable access to delicious plant-based nutrition.\n\nWe send delicious emails.\nEmail\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\n© 2026, theme-taste-demo Powered by Shopify"
+}

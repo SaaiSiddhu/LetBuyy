@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-23T09:04:31.585874+00:00",
+  "status": "source pinned; PostgreSQL rerun queued, not acceptance",
+  "files": [
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a181fc35cb97ce58d2be93ebbd40fe299f95333640c54548284955c20be18e99"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-registry-version.test.ts",
+      "sha256": "59d4c17c697dc045510c5d2ecc90bcd0698f7466c4ee1db8f007959bedf34250"
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "sha256": "7d2f1a5db4c59d38ece76bdf0719afbb1f8b7b741b9b065fad79c1386f990dee"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-private-version.test.ts",
+      "sha256": "ea8e941b0b27ac1b40ca4909ac8b51cfe639156c86498c05932235c202e4df13"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install-receipt.ts",
+      "sha256": "278368a657420943e69bd955649e962ae88327736ce8abf1ae12cde69d905d71"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+      "sha256": "467f471fb1ae5b1ca0dafa267bb83e6084b3e1f90a85e42a2e2ca381e17aaee0"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-install-version.postgres.test.ts",
+      "sha256": "a6b3b6b7155f24fc2871b94965c7aab5fca301492cf91b11aca45105ef4a7357"
+    }
+  ]
+}

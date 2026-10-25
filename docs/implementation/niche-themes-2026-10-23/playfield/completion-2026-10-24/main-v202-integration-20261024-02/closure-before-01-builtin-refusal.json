@@ -1,0 +1,1347 @@
+{
+  "recordedAt": "2026-10-24T11:50:12.623Z",
+  "classification": "RESOLVED_LITERAL_RUNTIME_CLOSURE_PLUS_TYPECHECK_AND_FIXTURE_ENVELOPE_NOT_NATIVE_OR_BROWSER",
+  "node": "v22.23.3",
+  "nodeConditions": [
+    "react-server",
+    "default"
+  ],
+  "loader": "tsx via --import",
+  "typescript": "5.9.3",
+  "entries": [
+    "packages/theme-engine/src/playfield-theme-v202.ts",
+    "packages/theme-engine/test/playfield-subtitle-successor.test.ts"
+  ],
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/installed-fixture-preparation/toys-fixture-proposal.json",
+      "sha256": "8515ce354b0cd56d07ac13134e6bece343a2cb5f9b522e4004518ee2c115767d",
+      "bytes": 4235
+    },
+    {
+      "path": "package.json",
+      "sha256": "bf8f6c15bce8a79297946b76b20995b40a6810d7da2791163b7abbd1f0203d1d",
+      "bytes": 19437
+    },
+    {
+      "path": "packages/shared-types/src/app-platform.ts",
+      "sha256": "c4fb04c2a5b51aae411c9278afad83066e97e409ee0a6a0d1e14ade1950c3e53",
+      "bytes": 89140
+    },
+    {
+      "path": "packages/shared-types/src/brand.ts",
+      "sha256": "690f5c841fea49f10e058c2d650e339beff58b05d2f2be7185668c1b0ebcdde9",
+      "bytes": 9487
+    },
+    {
+      "path": "packages/shared-types/src/buyer-assistant.ts",
+      "sha256": "5f65872b44703247cad136ebaf6f1d3c107f97bb159e917c9fc89f6b9fabe60c",
+      "bytes": 1057
+    },
+    {
+      "path": "packages/shared-types/src/console-overview.ts",
+      "sha256": "f8edd75ee0520169beefa38d5f89e5ef3d745054c2530ef483a14fb37abb1ec8",
+      "bytes": 1192
+    },
+    {
+      "path": "packages/shared-types/src/contact.ts",
+      "sha256": "8e3f27a3987be33e1b149a42e6c16d482137a46fe019e27200fd2a78d0d038d6",
+      "bytes": 28865
+    },
+    {
+      "path": "packages/shared-types/src/foundation-execution-contracts.ts",
+      "sha256": "b10e8da5e57532fee919e3b2253354f0d8932e75e64e2b8c6cccd9e4229a9cd2",
+      "bytes": 11177
+    },
+    {
+      "path": "packages/shared-types/src/gst-amounts.ts",
+      "sha256": "1635f9e37fbc0fe39510b9c07d5dc9d1de0babc08f84d7646618ee6b4b993273",
+      "bytes": 826
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "sha256": "5066e39b4fd20c9ae55b4de93118a41dcd29b4fa3025fed2398226066d3ac1ba",
+      "bytes": 222575
+    },
+    {
+      "path": "packages/shared-types/src/reel-review.ts",
+      "sha256": "840cf11c9c6a6cb6c0f17f4e9d4cca6c09b8303d855f65b87921807998a0d6e6",
+      "bytes": 4400
+    },
+    {
+      "path": "packages/shared-types/src/reel-upload.ts",
+      "sha256": "aa18d3d3d514f1512568cd033ba2ac85ebb4aa70365c562fb4775ebc9ecadb3f",
+      "bytes": 2215
+    },
+    {
+      "path": "packages/shared-types/src/status-presentation.ts",
+      "sha256": "26de8b043e2cc7f19554f9d5f2165bc0212db199cb56cb52e5ce1f875aef0136",
+      "bytes": 25098
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "sha256": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763",
+      "bytes": 1076
+    },
+    {
+      "path": "packages/theme-engine/src/ai-accessibility.ts",
+      "sha256": "b3bd3cdf32f0060c6f683cd8b0e181a738f72dba2372e209ee44e40a370daaa5",
+      "bytes": 15889
+    },
+    {
+      "path": "packages/theme-engine/src/ai-color-system.ts",
+      "sha256": "00998c3d696b59f5dd7d3f12df15b57d0132929a72cc2774fafad6481489d81f",
+      "bytes": 11309
+    },
+    {
+      "path": "packages/theme-engine/src/ai-intent-parser.ts",
+      "sha256": "056e07ef9b9ffec32b6f10a28f6db48581b2b8ee0ff604a8f1a5fae97f9b19b7",
+      "bytes": 22914
+    },
+    {
+      "path": "packages/theme-engine/src/ai-layout.ts",
+      "sha256": "585a53ab5cfc99a34f1137f5877acbc8be418824e5b3a28fb11b78d972217747",
+      "bytes": 5795
+    },
+    {
+      "path": "packages/theme-engine/src/ai-optimizer.ts",
+      "sha256": "335b041aa174eeb280ab648c0813aa7b098eb6af608e7bd95f021bd3ea888bdf",
+      "bytes": 12618
+    },
+    {
+      "path": "packages/theme-engine/src/ai-personalization.ts",
+      "sha256": "55905619b2fe0d4bd3f972e785de53d00f542c1a886dc40f418c35387787339b",
+      "bytes": 12198
+    },
+    {
+      "path": "packages/theme-engine/src/ai-theme-generator.ts",
+      "sha256": "0d48c1920b7035456f0d0a064368f67dbf5c27d1dca2a0b90912069e651c6d68",
+      "bytes": 9639
+    },
+    {
+      "path": "packages/theme-engine/src/ai-typography.ts",
+      "sha256": "13a318f2e0ce76904bb3eb12deff2d05dc5bc894cd9ae1c8db25061411e9003e",
+      "bytes": 6860
+    },
+    {
+      "path": "packages/theme-engine/src/app-block-model.ts",
+      "sha256": "11d98cf696bb9e635348233b10c685295f4ea6f2c4e263fa3a7fc3f47290866d",
+      "bytes": 13194
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+      "bytes": 11244
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+      "bytes": 4571
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-styles.ts",
+      "sha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2",
+      "bytes": 12444
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "sha256": "ec2d68c29434e96404496cec44b10c2c293364cbfa98da113d2efa6f21c7c9be",
+      "bytes": 2285
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+      "bytes": 21755
+    },
+    {
+      "path": "packages/theme-engine/src/custom-css-sanitizer.ts",
+      "sha256": "2a958ce9b14aea26277a79b8024dcd359dd84836785543abf435e48ad20f321c",
+      "bytes": 18893
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+      "bytes": 7091
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+      "bytes": 13200
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme-v201.ts",
+      "sha256": "3b276b6513f0860092a8f2bdf03217c9f8d8a1fa27de9d7318e886d3bb8ea10c",
+      "bytes": 3500
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+      "bytes": 16639
+    },
+    {
+      "path": "packages/theme-engine/src/dynamic-source-binding.ts",
+      "sha256": "28b23de56c2069bb02f73ddb444b8d8c266f66714e45a820d3a738060771e421",
+      "bytes": 11052
+    },
+    {
+      "path": "packages/theme-engine/src/editor-bridge-protocol.ts",
+      "sha256": "7cff1ccbb9725ece155a9d1c08c9fee7706c3f8dc9ea27a860f9a23bd3c8ca66",
+      "bytes": 6819
+    },
+    {
+      "path": "packages/theme-engine/src/execution-runtime.ts",
+      "sha256": "9fee29e7031948e9a27640c2bbb9a78de00207965fd2da1c9ca1f0b3afef168e",
+      "bytes": 15651
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4",
+      "bytes": 35703
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68",
+      "bytes": 32111
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+      "bytes": 4723
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3",
+      "bytes": 6029
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-discovery.ts",
+      "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+      "bytes": 7951
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-styles.ts",
+      "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+      "bytes": 14223
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+      "bytes": 26571
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5",
+      "bytes": 47874
+    },
+    {
+      "path": "packages/theme-engine/src/industry-experience-map.ts",
+      "sha256": "e647df5605fc6bac525c6104a0f60e67cfc6b6f0ba6ea6db323e1e795fc404b3",
+      "bytes": 6012
+    },
+    {
+      "path": "packages/theme-engine/src/jsdom-runtime.d.ts",
+      "sha256": "5a45588b3aadc8ddbd324a645220217a823326811ba5d8ea5bcbf11baefd59aa",
+      "bytes": 373
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+      "bytes": 6014
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+      "bytes": 11883
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+      "bytes": 18062
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+      "bytes": 5290
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e",
+      "bytes": 11904
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+      "bytes": 18882
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-discovery.ts",
+      "sha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3",
+      "bytes": 7498
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d",
+      "bytes": 14583
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+      "bytes": 19248
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+      "bytes": 4160
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+      "bytes": 4344
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278",
+      "bytes": 11713
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "sha256": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22",
+      "bytes": 4207
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+      "bytes": 18388
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+      "bytes": 6937
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243",
+      "bytes": 14097
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+      "bytes": 5882
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "sha256": "25aaec88541f8c46521596c1c01c3903018750e7057d1038a8ba13a773256bb1",
+      "bytes": 6420
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+      "bytes": 18284
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+      "bytes": 23771
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+      "bytes": 17463
+    },
+    {
+      "path": "packages/theme-engine/src/section-schema-migrations.ts",
+      "sha256": "e28f3f3e3835aa5fa0d0c6418ff9e773f0a077c7ed46c0d001749f2d93e87523",
+      "bytes": 2950
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94",
+      "bytes": 5415
+    },
+    {
+      "path": "packages/theme-engine/src/server-dom-runtime.ts",
+      "sha256": "309b16baf1fb3b51c45358f6569e1b02277a403d16728023a7ff57fad1d01184",
+      "bytes": 359
+    },
+    {
+      "path": "packages/theme-engine/src/settings-schema-canonical.ts",
+      "sha256": "ed5f84c47a5beebf26385d11b67f7068aadfcc09ba40f0f5e0fa693f564b8f86",
+      "bytes": 4105
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+      "bytes": 27675
+    },
+    {
+      "path": "packages/theme-engine/src/theme-ai-sdk.ts",
+      "sha256": "36d3be49894dfffd8a484e69b23ad782963f3c5b027385705603bc3f3cf06afb",
+      "bytes": 40411
+    },
+    {
+      "path": "packages/theme-engine/src/theme-analytics.ts",
+      "sha256": "62aa70aafea1e7413a9ff71fdae81a3242fa77aa8c89082dc1b7d18170af1442",
+      "bytes": 9793
+    },
+    {
+      "path": "packages/theme-engine/src/theme-artifact-exporter.ts",
+      "sha256": "a1e0728346eecc15c39d80a3b26b1209f2b3406b97171dbd2ea8215eb7fb41a1",
+      "bytes": 5417
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "bytes": 5963
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "bytes": 213170
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document-migrations.ts",
+      "sha256": "1e402455eae328a2d57d87ec6d440fd17e29a9329016953033056ad3ade8e573",
+      "bytes": 5999
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "bytes": 37055
+    },
+    {
+      "path": "packages/theme-engine/src/theme-governance.ts",
+      "sha256": "3f1eb0be28d36a16f058d7623f396a9224e4ae7be787e906f9ec3880f03b0004",
+      "bytes": 14730
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install-receipt.ts",
+      "sha256": "278368a657420943e69bd955649e962ae88327736ce8abf1ae12cde69d905d71",
+      "bytes": 3998
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install.ts",
+      "sha256": "28fb25bebc530a2aa27624060b96c31a2ec631ea30dfe13233806bfcf3c9112d",
+      "bytes": 6927
+    },
+    {
+      "path": "packages/theme-engine/src/theme-library-schemas.ts",
+      "sha256": "7839ac1a705e0c6132b6e79a13d0984de12d24bd437ba10035b1de692d6087af",
+      "bytes": 2268
+    },
+    {
+      "path": "packages/theme-engine/src/theme-linter.ts",
+      "sha256": "e79f69b0435203c1bafd19730f7641f03a47e9ee4474dd10372a40b4087027e9",
+      "bytes": 5815
+    },
+    {
+      "path": "packages/theme-engine/src/theme-locale.ts",
+      "sha256": "11e94cc5be985504989cb805b28a0017e14966b61460f5d7922a9aaac0d584e9",
+      "bytes": 14485
+    },
+    {
+      "path": "packages/theme-engine/src/theme-marketplace-contract.ts",
+      "sha256": "65dd0aca7f44aca7fbb38d90a9810db525fc371d7ea27ce2e5046742b200478f",
+      "bytes": 15320
+    },
+    {
+      "path": "packages/theme-engine/src/theme-packager.ts",
+      "sha256": "0347bc39a986e673ad0ee90ab10dd884eb4ed195535da5aa01aeb52d58c01601",
+      "bytes": 1958
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "bytes": 26801
+    },
+    {
+      "path": "packages/theme-engine/src/theme-publish.ts",
+      "sha256": "763c73ba074ec2a5654d5a7a2c7a4ab5faac6281c5e321f7f525aa0eb4472be8",
+      "bytes": 4786
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+      "bytes": 33011
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "bytes": 107646
+    },
+    {
+      "path": "packages/theme-engine/src/theme-safe-update.ts",
+      "sha256": "10a4b866dbe3167e879d9af43fd61b8c3d751d605ca181e5b2c65adfaa39f539",
+      "bytes": 35210
+    },
+    {
+      "path": "packages/theme-engine/src/theme-sdk.ts",
+      "sha256": "e1f39b4262a24f046b914b752e522160c79f811a0a37523e6e136eb677bb7786",
+      "bytes": 6879
+    },
+    {
+      "path": "packages/theme-engine/src/theme-settings.ts",
+      "sha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00",
+      "bytes": 843
+    },
+    {
+      "path": "packages/theme-engine/src/theme-upgrade.ts",
+      "sha256": "82ed19d6f3004eda81be013ae49f4d6813b5109faf37aae82c698d7c35ded280",
+      "bytes": 8408
+    },
+    {
+      "path": "packages/theme-engine/src/theme-version.ts",
+      "sha256": "69042dfc322608cfa34a7f3a370defabe0e10978b2881aa7988e3aad7598f84e",
+      "bytes": 5403
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+      "bytes": 2599
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+      "bytes": 10278
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "sha256": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7",
+      "bytes": 4749
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "bytes": 15830
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+      "bytes": 4940
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-styles.ts",
+      "sha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0",
+      "bytes": 13200
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme-v201.ts",
+      "sha256": "9b70794b7bd71f8d0e83bc63e2eba0da46a888491985198fa52e0c157536c763",
+      "bytes": 2962
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+      "bytes": 21627
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "sha256": "bcc649f36647c82e8dfd1c69bb695dce1ef7afe1e17b0840d48fbeffd8074401",
+      "bytes": 19098
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-v201.test.ts",
+      "sha256": "5253b640529109e96ce4c04c76085f79160f77be90bff06be992e7198ed20eae",
+      "bytes": 6414
+    },
+    {
+      "path": "packages/theme-engine/tsconfig.json",
+      "sha256": "b30cef2ee0b76c4b1440cff2e093fb26efffa772818fe26f4474379b3504c8fd",
+      "bytes": 643
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    },
+    {
+      "path": "tsconfig.base.json",
+      "sha256": "1a1640179345ac9e1555694e316ccc44489e0a6c6866ba40fc55970c0b042b39",
+      "bytes": 294
+    }
+  ],
+  "runtimeWorkspaceFiles": [
+    "packages/theme-engine/src/app-block-model.ts",
+    "packages/theme-engine/src/built-in-section-schemas.ts",
+    "packages/theme-engine/src/circuit-discovery.ts",
+    "packages/theme-engine/src/circuit-styles.ts",
+    "packages/theme-engine/src/circuit-theme-v201.ts",
+    "packages/theme-engine/src/circuit-theme.ts",
+    "packages/theme-engine/src/custom-css-sanitizer.ts",
+    "packages/theme-engine/src/dewdrop-discovery.ts",
+    "packages/theme-engine/src/dewdrop-styles.ts",
+    "packages/theme-engine/src/dewdrop-theme-v201.ts",
+    "packages/theme-engine/src/dewdrop-theme.ts",
+    "packages/theme-engine/src/dynamic-source-binding.ts",
+    "packages/theme-engine/src/execution-runtime.ts",
+    "packages/theme-engine/src/experience-apply.ts",
+    "packages/theme-engine/src/experience-compositions.ts",
+    "packages/theme-engine/src/experience-fonts.ts",
+    "packages/theme-engine/src/first-party-theme-catalog.ts",
+    "packages/theme-engine/src/habitat-discovery.ts",
+    "packages/theme-engine/src/habitat-styles.ts",
+    "packages/theme-engine/src/habitat-theme.ts",
+    "packages/theme-engine/src/kindred-discovery.ts",
+    "packages/theme-engine/src/kindred-styles.ts",
+    "packages/theme-engine/src/kindred-theme.ts",
+    "packages/theme-engine/src/madeyours-discovery.ts",
+    "packages/theme-engine/src/madeyours-styles.ts",
+    "packages/theme-engine/src/madeyours-theme.ts",
+    "packages/theme-engine/src/marginalia-discovery.ts",
+    "packages/theme-engine/src/marginalia-styles.ts",
+    "packages/theme-engine/src/marginalia-theme.ts",
+    "packages/theme-engine/src/niche-order-presentation.ts",
+    "packages/theme-engine/src/pantry-discovery.ts",
+    "packages/theme-engine/src/pantry-styles.ts",
+    "packages/theme-engine/src/pantry-theme-v201.ts",
+    "packages/theme-engine/src/pantry-theme.ts",
+    "packages/theme-engine/src/playfield-discovery.ts",
+    "packages/theme-engine/src/playfield-styles.ts",
+    "packages/theme-engine/src/playfield-theme-v201.ts",
+    "packages/theme-engine/src/playfield-theme-v202.ts",
+    "packages/theme-engine/src/playfield-theme.ts",
+    "packages/theme-engine/src/schema-field-extensions.ts",
+    "packages/theme-engine/src/section-type-map.ts",
+    "packages/theme-engine/src/server-dom-runtime.ts",
+    "packages/theme-engine/src/template-registry.ts",
+    "packages/theme-engine/src/theme-bundle-core.ts",
+    "packages/theme-engine/src/theme-bundle.ts",
+    "packages/theme-engine/src/theme-document.ts",
+    "packages/theme-engine/src/theme-locale.ts",
+    "packages/theme-engine/src/theme-presets.ts",
+    "packages/theme-engine/src/theme-registry.ts",
+    "packages/theme-engine/src/theme-renderer.ts",
+    "packages/theme-engine/src/theme-settings.ts",
+    "packages/theme-engine/src/threadline-discovery.ts",
+    "packages/theme-engine/src/threadline-styles.ts",
+    "packages/theme-engine/src/threadline-theme-v201.ts",
+    "packages/theme-engine/src/threadline-theme.ts",
+    "packages/theme-engine/src/trailmark-discovery.ts",
+    "packages/theme-engine/src/trailmark-styles.ts",
+    "packages/theme-engine/src/trailmark-theme-v201.ts",
+    "packages/theme-engine/src/trailmark-theme.ts",
+    "packages/theme-engine/test/playfield-subtitle-successor.test.ts"
+  ],
+  "edges": [
+    {
+      "from": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "specifier": "./theme-bundle-core",
+      "to": "packages/theme-engine/src/theme-bundle-core.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "specifier": "./playfield-theme",
+      "to": "packages/theme-engine/src/playfield-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "specifier": "./playfield-theme-v201",
+      "to": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "specifier": "./niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/theme-bundle-core",
+      "to": "packages/theme-engine/src/theme-bundle-core.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/playfield-theme",
+      "to": "packages/theme-engine/src/playfield-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/playfield-theme-v201",
+      "to": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/playfield-theme-v202",
+      "to": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/first-party-theme-catalog",
+      "to": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/theme-document",
+      "to": "packages/theme-engine/src/theme-document.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/theme-renderer",
+      "to": "packages/theme-engine/src/theme-renderer.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/theme-settings",
+      "to": "packages/theme-engine/src/theme-settings.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "../src/server-dom-runtime",
+      "to": "packages/theme-engine/src/server-dom-runtime.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-bundle.ts",
+      "specifier": "./schema-field-extensions",
+      "to": "packages/theme-engine/src/schema-field-extensions.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-bundle.ts",
+      "specifier": "./theme-presets",
+      "to": "packages/theme-engine/src/theme-presets.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-bundle-core.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-bundle-core.ts",
+      "specifier": "./theme-presets",
+      "to": "packages/theme-engine/src/theme-presets.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme.ts",
+      "specifier": "./playfield-discovery",
+      "to": "packages/theme-engine/src/playfield-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme.ts",
+      "specifier": "./playfield-styles",
+      "to": "packages/theme-engine/src/playfield-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "specifier": "./playfield-theme",
+      "to": "packages/theme-engine/src/playfield-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/niche-order-presentation.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./theme-presets",
+      "to": "packages/theme-engine/src/theme-presets.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./theme-bundle-core",
+      "to": "packages/theme-engine/src/theme-bundle-core.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./threadline-theme",
+      "to": "packages/theme-engine/src/threadline-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./threadline-theme-v201",
+      "to": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./playfield-theme",
+      "to": "packages/theme-engine/src/playfield-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./playfield-theme-v201",
+      "to": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./circuit-theme",
+      "to": "packages/theme-engine/src/circuit-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./circuit-theme-v201",
+      "to": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./pantry-theme",
+      "to": "packages/theme-engine/src/pantry-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./pantry-theme-v201",
+      "to": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./habitat-theme",
+      "to": "packages/theme-engine/src/habitat-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./kindred-theme",
+      "to": "packages/theme-engine/src/kindred-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./madeyours-theme",
+      "to": "packages/theme-engine/src/madeyours-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./dewdrop-theme",
+      "to": "packages/theme-engine/src/dewdrop-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./dewdrop-theme-v201",
+      "to": "packages/theme-engine/src/dewdrop-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./trailmark-theme",
+      "to": "packages/theme-engine/src/trailmark-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./trailmark-theme-v201",
+      "to": "packages/theme-engine/src/trailmark-theme-v201.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./marginalia-theme",
+      "to": "packages/theme-engine/src/marginalia-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "specifier": "./niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-document.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-document.ts",
+      "specifier": "./template-registry",
+      "to": "packages/theme-engine/src/template-registry.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "@letbuyy/theme-engine/server-dom",
+      "to": "packages/theme-engine/src/server-dom-runtime.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "./execution-runtime",
+      "to": "packages/theme-engine/src/execution-runtime.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "./dynamic-source-binding",
+      "to": "packages/theme-engine/src/dynamic-source-binding.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "./app-block-model",
+      "to": "packages/theme-engine/src/app-block-model.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "./custom-css-sanitizer",
+      "to": "packages/theme-engine/src/custom-css-sanitizer.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "./theme-locale",
+      "to": "packages/theme-engine/src/theme-locale.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-renderer.ts",
+      "specifier": "./experience-fonts",
+      "to": "packages/theme-engine/src/experience-fonts.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/schema-field-extensions.ts",
+      "specifier": "./experience-fonts",
+      "to": "packages/theme-engine/src/experience-fonts.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/theme-presets.ts",
+      "specifier": "./built-in-section-schemas",
+      "to": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme.ts",
+      "specifier": "./theme-document",
+      "to": "packages/theme-engine/src/theme-document.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme.ts",
+      "specifier": "./experience-apply",
+      "to": "packages/theme-engine/src/experience-apply.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme.ts",
+      "specifier": "./threadline-discovery",
+      "to": "packages/theme-engine/src/threadline-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme.ts",
+      "specifier": "./threadline-styles",
+      "to": "packages/theme-engine/src/threadline-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "specifier": "./threadline-theme",
+      "to": "packages/theme-engine/src/threadline-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "specifier": "./niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/circuit-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/circuit-theme.ts",
+      "specifier": "./circuit-styles",
+      "to": "packages/theme-engine/src/circuit-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/circuit-theme.ts",
+      "specifier": "./circuit-discovery",
+      "to": "packages/theme-engine/src/circuit-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "specifier": "./circuit-theme",
+      "to": "packages/theme-engine/src/circuit-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "specifier": "./niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/pantry-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/pantry-theme.ts",
+      "specifier": "./pantry-styles",
+      "to": "packages/theme-engine/src/pantry-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/pantry-theme.ts",
+      "specifier": "./pantry-discovery",
+      "to": "packages/theme-engine/src/pantry-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "specifier": "./pantry-theme",
+      "to": "packages/theme-engine/src/pantry-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "specifier": "./niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/habitat-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/habitat-theme.ts",
+      "specifier": "./theme-document",
+      "to": "packages/theme-engine/src/theme-document.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/habitat-theme.ts",
+      "specifier": "./habitat-discovery",
+      "to": "packages/theme-engine/src/habitat-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/habitat-theme.ts",
+      "specifier": "./habitat-styles",
+      "to": "packages/theme-engine/src/habitat-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/kindred-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/kindred-theme.ts",
+      "specifier": "./kindred-discovery",
+      "to": "packages/theme-engine/src/kindred-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/kindred-theme.ts",
+      "specifier": "./kindred-styles",
+      "to": "packages/theme-engine/src/kindred-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/madeyours-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/madeyours-theme.ts",
+      "specifier": "./madeyours-discovery",
+      "to": "packages/theme-engine/src/madeyours-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/madeyours-theme.ts",
+      "specifier": "./madeyours-styles",
+      "to": "packages/theme-engine/src/madeyours-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/dewdrop-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/dewdrop-theme.ts",
+      "specifier": "./dewdrop-styles",
+      "to": "packages/theme-engine/src/dewdrop-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/dewdrop-theme.ts",
+      "specifier": "./dewdrop-discovery",
+      "to": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/dewdrop-theme-v201.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/dewdrop-theme-v201.ts",
+      "specifier": "./dewdrop-theme",
+      "to": "packages/theme-engine/src/dewdrop-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/dewdrop-theme-v201.ts",
+      "specifier": "./niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/trailmark-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/trailmark-theme.ts",
+      "specifier": "./trailmark-discovery",
+      "to": "packages/theme-engine/src/trailmark-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/trailmark-theme.ts",
+      "specifier": "./trailmark-styles",
+      "to": "packages/theme-engine/src/trailmark-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/trailmark-theme-v201.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/trailmark-theme-v201.ts",
+      "specifier": "./trailmark-theme",
+      "to": "packages/theme-engine/src/trailmark-theme.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/trailmark-theme-v201.ts",
+      "specifier": "./niche-order-presentation",
+      "to": "packages/theme-engine/src/niche-order-presentation.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/marginalia-theme.ts",
+      "specifier": "./theme-bundle",
+      "to": "packages/theme-engine/src/theme-bundle.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/marginalia-theme.ts",
+      "specifier": "./theme-document",
+      "to": "packages/theme-engine/src/theme-document.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/marginalia-theme.ts",
+      "specifier": "./marginalia-discovery",
+      "to": "packages/theme-engine/src/marginalia-discovery.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/marginalia-theme.ts",
+      "specifier": "./marginalia-styles",
+      "to": "packages/theme-engine/src/marginalia-styles.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-fonts.ts",
+      "specifier": "./theme-presets",
+      "to": "packages/theme-engine/src/theme-presets.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "specifier": "./theme-registry",
+      "to": "packages/theme-engine/src/theme-registry.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-apply.ts",
+      "specifier": "./built-in-section-schemas",
+      "to": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-apply.ts",
+      "specifier": "./theme-document",
+      "to": "packages/theme-engine/src/theme-document.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-apply.ts",
+      "specifier": "./theme-presets",
+      "to": "packages/theme-engine/src/theme-presets.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-apply.ts",
+      "specifier": "./section-type-map",
+      "to": "packages/theme-engine/src/section-type-map.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-apply.ts",
+      "specifier": "./experience-compositions",
+      "to": "packages/theme-engine/src/experience-compositions.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/section-type-map.ts",
+      "specifier": "./built-in-section-schemas",
+      "to": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-compositions.ts",
+      "specifier": "./built-in-section-schemas",
+      "to": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-compositions.ts",
+      "specifier": "./section-type-map",
+      "to": "packages/theme-engine/src/section-type-map.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "from": "packages/theme-engine/src/experience-compositions.ts",
+      "specifier": "./theme-presets",
+      "to": "packages/theme-engine/src/theme-presets.ts",
+      "mechanism": "node-createRequire-with-tsx"
+    }
+  ],
+  "externalDependencies": [
+    {
+      "specifier": "zod",
+      "resolved": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/zod@4.3.6/node_modules/zod/index.cjs",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "specifier": "liquidjs",
+      "resolved": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/liquidjs@10.27.0/node_modules/liquidjs/dist/liquid.node.js",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "specifier": "dompurify",
+      "resolved": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/dompurify@3.4.9/node_modules/dompurify/dist/purify.cjs.js",
+      "mechanism": "node-createRequire-with-tsx"
+    },
+    {
+      "specifier": "jsdom",
+      "resolved": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jsdom@29.1.1/node_modules/jsdom/lib/api.js",
+      "mechanism": "node-createRequire-with-tsx"
+    }
+  ],
+  "unresolved": [
+    {
+      "from": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "specifier": "node:test"
+    }
+  ],
+  "dynamicNonliteralImportsClaimed": false,
+  "noEmit": true,
+  "qualificationMeaning": "Runtime edges resolved, not proof that every conditional module executed. External dependency versions locked by pnpm-lock.yaml; node_modules are dependency resolution metadata, not source authority."
+}

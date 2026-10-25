@@ -1,0 +1,125 @@
+{
+  "recordedAt": "2026-10-24T07:23:55.779417+00:00",
+  "classification": "FRESH936_NINE_PASS_NONORDER_COMPLETE_NO_ACTIVE_MG_LEASE",
+  "historicalReservation": "installed-lifecycle-readiness/slot-reservation.json",
+  "historicalRunId": "f6074d90e894",
+  "historicalQueuePosition": 9,
+  "carryForwardRequested": false,
+  "freshFixtureGrant": {
+    "scope": "HISTORICAL_COMPLETED_NONORDER_ONLY",
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "endedAt": "2026-10-24T07:15:45.245697Z",
+    "full16": false,
+    "thisChatLiveGrant": false
+  },
+  "freshFixtureBindings": {
+    "product.books": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+    "books.en_hardback": "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+    "books.hi_paperback": "ec05efc6-dce5-4948-ae3e-a1c173542cc9",
+    "books.en_paperback_oos": "9e4fbca8-6bef-4a03-b9d4-274f524575ad",
+    "product.stationery": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+    "collection.books_and_paper": "d5609b77-743c-45b5-b435-814f2ca95058",
+    "cart.book": null,
+    "cart.stationery": null,
+    "order.id": null,
+    "order.book": null,
+    "order.stationery": null
+  },
+  "browserDataActorUntilNewGrant": "NONE_ALLOCATED_TO_MARGINALIA_AFTER_FINITE_NONORDER_BOUNDARY",
+  "entryGates": [
+    "Root qualification/admission for actual latest source and genuinely fresh owned runtime, no recreated expired run.",
+    "Real normal merchant/buyer authentication and trusted hosted local checkout binding; no credentials/storage transfer.",
+    "Current acknowledged canonical product/variant/collection/cart bindings; old9cd/f607 IDs unusable as live bindings.",
+    "Preceding queued work complete or explicit safe-boundary resequencing; no unilateral queue jump.",
+    "Actual normal UI canonical cart baseline/rebaseline acknowledged on new fixture, noting old Pink restoration was interrupted.",
+    "Fresh named Marginalia16 grant to sole Editor controller, exact matrix and cleanup scope acknowledged."
+  ],
+  "cases": {
+    "PASS": 9,
+    "FAIL": 0,
+    "NOT_RUN": 7
+  },
+  "runtimeAdmission": {
+    "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+    "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+  },
+  "freshRuntime": {
+    "runId": "936e5f577646",
+    "candidate": "/private/tmp/theme-editor-stable392-20261024-02",
+    "origins": {
+      "identity": "http://accounts.threadline-936e5f577646.localhost:50492",
+      "merchant": "http://admin.threadline-936e5f577646.localhost:50493",
+      "commerce": "http://syn-threadline-ui-6815276b.localhost:50494",
+      "checkout": "https://checkout.localhost:50497",
+      "api": "http://127.0.0.1:50498"
+    },
+    "site": {
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "locationId": "d1829143-baea-4ca4-b08b-a6f1d4f97de9",
+      "subdomain": "syn-threadline-ui-6815276b"
+    }
+  },
+  "queuePosition": 9,
+  "reservationConfirmed": true,
+  "activeLease": false,
+  "fixedStartTime": null,
+  "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+  "rootHandoff": "installed-lifecycle-readiness/34-fresh936-runtime-handoff.json",
+  "full16EntryGatesRemain": true,
+  "purchaseScopeGranted": false,
+  "latestActualReview": {
+    "recordedAt": "2026-10-24T07:23:55.779417+00:00",
+    "classification": "ACTUAL_NINE_PASS_SEVEN_NOT_RUN_NONORDER_LINEAGE_CLOSED_PURCHASE_HELD",
+    "runId": "936e5f577646",
+    "counts": {
+      "PASS": 9,
+      "FAIL": 0,
+      "NOT_RUN": 7
+    },
+    "results": "stable936-installed-lifecycle.results.json",
+    "latestReview": "installed-lifecycle-readiness/48-MG-INSTALL-lineage-actual-review.json",
+    "nativeReview": "installed-lifecycle-readiness/46-native-discovery-controls-review.json",
+    "bindings": {
+      "product.books": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+      "books.en_hardback": "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+      "books.hi_paperback": "ec05efc6-dce5-4948-ae3e-a1c173542cc9",
+      "books.en_paperback_oos": "9e4fbca8-6bef-4a03-b9d4-274f524575ad",
+      "product.stationery": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+      "collection.books_and_paper": "d5609b77-743c-45b5-b435-814f2ca95058",
+      "cart.book": null,
+      "cart.stationery": null,
+      "order.id": null,
+      "order.book": null,
+      "order.stationery": null
+    },
+    "finiteBoundary": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-finite-nonorder-boundary.json at07:15:45UTC",
+    "activeMGLease": false,
+    "passed": [
+      "MG-ID-01",
+      "MG-INSTALL-01",
+      "MG-BK-EN-01",
+      "MG-BK-HI-01",
+      "MG-PAPER-01",
+      "MG-RULING-01",
+      "MG-AUTHOR-01",
+      "MG-QUERY-01",
+      "MG-CLEAR-01"
+    ],
+    "notRun": [
+      "MG-BK-OOS-01",
+      "MG-CART-01",
+      "MG-CART-RELOAD-01",
+      "MG-COD-01",
+      "MG-HIST-BASELINE-01",
+      "MG-LATE-EDIT-01",
+      "MG-HIST-AFTER-EDIT-01"
+    ],
+    "B00": "PASS wholeMG-INSTALL: normal installed B00 behavior in45/47 plus actual instance/package/version/catalog FK join/full stored manifest equality against admitted immutable artifact verified offline in48.",
+    "conservation": "Twenty of22 protected tables exact initial→final; inventory_levels differs only approved newOOS0 row already reviewed; outbox differs. After booksetup onlyoutbox differs. Cart/checkout/orders/orderitems/reservations/inventorybusiness exact; both old order projections exact.",
+    "remaining": "MG-BK-OOS purchase-attempt/no-effect clause and6cart/COD/history/lateredit cases NOT_RUN. Await shared checkout recovery correction/admission/normal retest and fresh named purchase allocation. No liveMG lease.",
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "actionsHere": "Offline receipt review/documentation only; no live/runtime/build/database/API/browser/source/test actions.",
+    "lineageRootReceipt": "docs/implementation/niche-theme-programme/marginalia-installed-package-lineage-root-readonly-936.json"
+  },
+  "installLineageVerified": true
+}

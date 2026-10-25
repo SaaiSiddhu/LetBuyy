@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-10-23T08:05:17.109Z",
+  "entry": "actual registerLiquidHydrationIslands",
+  "method": "Actual app mapper → explicit v2 LiquidRenderer → canonical assembly → real registered picker/controller in JSDOM; no extracted class or substitute controller.",
+  "tests": 5,
+  "sourceHashes": {
+    "packages/theme-engine/src/marginalia-theme.ts": "e4727391eaff1997e2c3647b895de403b227aa52222549a11b48324b4617d7c8",
+    "packages/theme-engine/src/marginalia-styles.ts": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d",
+    "packages/theme-engine/src/marginalia-discovery.ts": "0def54888df6d296258317401223467e7d60f02dd3d6734bf092eebb7bd3edc6",
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513",
+    "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts": "dde42a5fa7ee6a578b636e9be533c8e2bb92cd708c60daf58cf0e88eebfa15cf",
+    "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts": "d91217543a463ba70ff8ec294f18cd27bb688a8f62e23f06edc9349997e13aca",
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "03548b1907c4d0a27ef88c693f293affaa83b64c565fc591718b72715ce5c89e"
+  },
+  "sourcesStableThroughoutRun": true,
+  "results": [
+    {
+      "case": "actual edition",
+      "id": "7b669c70-7200-4000-8000-000000000001",
+      "label": "English paperback",
+      "language": "English",
+      "format": "paperback",
+      "edition": "First edition",
+      "dimensions": "140 × 216 mm",
+      "price": 480,
+      "unavailable": false,
+      "displayedFacts": {
+        "Authors": "Mira Sen",
+        "Language": "English",
+        "Format": "paperback",
+        "Edition": "First edition",
+        "Dimensions": "140 × 216 mm"
+      },
+      "purchaseDisabled": false
+    },
+    {
+      "case": "actual edition",
+      "id": "7b669c70-7200-4000-8000-000000000002",
+      "label": "English illustrated hardback",
+      "language": "English",
+      "format": "hardback",
+      "edition": "Illustrated edition",
+      "dimensions": "156 × 234 mm",
+      "price": 780,
+      "unavailable": false,
+      "displayedFacts": {
+        "Authors": "Mira Sen",
+        "Language": "English",
+        "Format": "hardback",
+        "Edition": "Illustrated edition",
+        "Dimensions": "156 × 234 mm"
+      },
+      "purchaseDisabled": false
+    },
+    {
+      "case": "actual edition",
+      "id": "7b669c70-7200-4000-8000-000000000003",
+      "label": "Hindi paperback",
+      "language": "Hindi",
+      "format": "paperback",
+      "edition": "Hindi edition",
+      "dimensions": "140 × 216 mm",
+      "price": 460,
+      "unavailable": true,
+      "displayedFacts": {
+        "Authors": "Mira Sen",
+        "Language": "Hindi",
+        "Format": "paperback",
+        "Edition": "Hindi edition",
+        "Dimensions": "140 × 216 mm"
+      },
+      "purchaseDisabled": true
+    },
+    {
+      "case": "partial/unknown/reset",
+      "exactPickerEvents": true,
+      "staleMeasurementsAbsent": true,
+      "hindiAndSpacedOptionNames": true
+    },
+    {
+      "case": "missing dimensions and inert text",
+      "staleMeasurementsAbsent": true,
+      "privateMetadataAbsent": true
+    },
+    {
+      "case": "scoping and reconnect",
+      "cycles": 2,
+      "sameLabelsDifferentUuidMeasurements": true,
+      "comparisonFallbackRestored": true
+    }
+  ],
+  "targetedCapturedSsrSemanticsPreserved": true,
+  "liveFetchCalls": 0,
+  "browserLaunched": false,
+  "pixelMeasurementsPassed": false,
+  "browserAcceptance": "Prepared behavior/measurement cases; real browser focus/layout/glyph acceptance for the new shared hook awaits coordinator resource allocation.",
+  "historicalCapturedHashesModified": false,
+  "finalSharedRelease": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/selected-variant-source-release.json",
+    "sha256": "f7953aeb204dfc7b5ecd3a0237d832bb69c6f32e00f40f81d92e9c876e1f7a30",
+    "matched": true,
+    "testsPassed": 5,
+    "testsFailed": 0
+  },
+  "initialCheckpointArchive": "selected-edition-checkpoints/initial-54/"
+}

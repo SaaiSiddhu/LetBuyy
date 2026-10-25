@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-23T17:17:39.226730+00:00",
+  "status": 200,
+  "proof": {
+    "packageVersion": "2.0.0",
+    "releaseId": "f79dc4e5-1253-4fce-9f9d-a42561165a11",
+    "sourceDraftVersion": 7,
+    "releaseSha256": "be1609745ae75caa643586a4568d13bb61af42bef31acb885d9b64e96713c664",
+    "orders": 0,
+    "installed": 5,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  }
+}

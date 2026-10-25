@@ -1,0 +1,3896 @@
+{
+  "researchDate": "2026-10-22",
+  "themes": [
+    {
+      "theme": "fabric",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/fabric/presets/fabric",
+      "demo": "https://theme-fabric-demo.myshopify.com/",
+      "home": "https://theme-fabric-demo.myshopify.com/",
+      "collection": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-black?variant=44434707710005",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-fabric-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "fabric-home-desktop.jpg",
+          "measurement": "fabric-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-fabric-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-home-mobile.jpg",
+          "measurement": "fabric-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "fabric-collection-desktop.jpg",
+          "measurement": "fabric-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-collection-mobile.jpg",
+          "measurement": "fabric-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-black?variant=44434707710005",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "fabric-product-desktop.jpg",
+          "measurement": "fabric-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-black?variant=44434707710005",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-product-mobile.jpg",
+          "measurement": "fabric-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-fabric-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-mobile-menu.jpg",
+          "measurement": "fabric-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-black?variant=44434707710005",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-cart-mobile.jpg",
+          "measurement": "fabric-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-fabric-demo.myshopify.com/pages/fit-guide",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "fabric-editorial-desktop.jpg",
+          "measurement": "fabric-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-black?variant=44434707742773",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-variant-selected-mobile.jpg",
+          "measurement": "fabric-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "empty-search-mobile",
+          "url": "https://theme-fabric-demo.myshopify.com/search?q=zzresearchnomatch2026&options%5Bprefix%5D=last",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-empty-search-mobile.jpg",
+          "measurement": "fabric-empty-search-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "filter-drawer-mobile",
+          "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "fabric-filter-drawer-mobile.jpg",
+          "measurement": "fabric-filter-drawer-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "fabric",
+        "status": "opened",
+        "entry": "Fit guide",
+        "url": "https://theme-fabric-demo.myshopify.com/pages/fit-guide"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "controls observed; Fabric empty search exercised and filter drawer opened; color application unconfirmed",
+      "variantProbes": [
+        {
+          "theme": "fabric",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "fabric",
+          "probe": "variant",
+          "selected": "XS",
+          "result": "checked through visible radio"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "dwell",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/dwell/presets/dwell",
+      "demo": "https://theme-dwell-demo.myshopify.com/",
+      "home": "https://theme-dwell-demo.myshopify.com/",
+      "collection": "https://theme-dwell-demo.myshopify.com/collections/sale",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-dwell-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dwell-home-desktop.jpg",
+          "measurement": "dwell-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-dwell-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dwell-home-mobile.jpg",
+          "measurement": "dwell-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-dwell-demo.myshopify.com/collections/sale",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dwell-collection-desktop.jpg",
+          "measurement": "dwell-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-dwell-demo.myshopify.com/collections/sale",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dwell-collection-mobile.jpg",
+          "measurement": "dwell-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dwell-product-desktop.jpg",
+          "measurement": "dwell-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dwell-product-mobile.jpg",
+          "measurement": "dwell-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-dwell-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dwell-mobile-menu.jpg",
+          "measurement": "dwell-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dwell-cart-mobile.jpg",
+          "measurement": "dwell-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-dwell-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dwell-editorial-desktop.jpg",
+          "measurement": "dwell-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977237950653",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dwell-variant-selected-mobile.jpg",
+          "measurement": "dwell-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "dwell",
+        "status": "opened",
+        "entry": "About us",
+        "url": "https://theme-dwell-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "dwell",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "dwell",
+          "probe": "variant",
+          "selected": "Antique White",
+          "result": "checked through visible radio"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "savor",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/savor/presets/savor",
+      "demo": "https://savor-theme-demo.myshopify.com/",
+      "home": "https://savor-theme-demo.myshopify.com/",
+      "collection": "https://savor-theme-demo.myshopify.com/collections/all-products",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://savor-theme-demo.myshopify.com/products/sweet-pineapple?variant=43258130333747",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://savor-theme-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "savor-home-desktop.jpg",
+          "measurement": "savor-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://savor-theme-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "savor-home-mobile.jpg",
+          "measurement": "savor-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://savor-theme-demo.myshopify.com/collections/all-products",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "savor-collection-desktop.jpg",
+          "measurement": "savor-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://savor-theme-demo.myshopify.com/collections/all-products",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "savor-collection-mobile.jpg",
+          "measurement": "savor-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://savor-theme-demo.myshopify.com/products/sweet-pineapple?variant=43258130333747",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "savor-product-desktop.jpg",
+          "measurement": "savor-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://savor-theme-demo.myshopify.com/products/sweet-pineapple?variant=43258130333747",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "savor-product-mobile.jpg",
+          "measurement": "savor-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://savor-theme-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "savor-mobile-menu.jpg",
+          "measurement": "savor-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://savor-theme-demo.myshopify.com/products/sweet-pineapple?variant=43258130333747",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "savor-cart-mobile.jpg",
+          "measurement": "savor-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://savor-theme-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "savor-editorial-desktop.jpg",
+          "measurement": "savor-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://savor-theme-demo.myshopify.com/products/sweet-pineapple?variant=43258130366515",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "savor-variant-selected-mobile.jpg",
+          "measurement": "savor-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "savor",
+        "status": "opened",
+        "entry": "ABOUT",
+        "url": "https://savor-theme-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "savor",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "savor",
+          "probe": "variant",
+          "selected": "2 Bottles",
+          "result": "checked through visible radio"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "ride",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/ride/presets/ride",
+      "demo": "https://theme-ride-demo.myshopify.com/",
+      "home": "https://theme-ride-demo.myshopify.com/",
+      "collection": "https://theme-ride-demo.myshopify.com/collections/fins",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-ride-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ride-home-desktop.jpg",
+          "measurement": "ride-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-ride-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ride-home-mobile.jpg",
+          "measurement": "ride-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-ride-demo.myshopify.com/collections/fins",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ride-collection-desktop.jpg",
+          "measurement": "ride-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-ride-demo.myshopify.com/collections/fins",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ride-collection-mobile.jpg",
+          "measurement": "ride-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ride-product-desktop.jpg",
+          "measurement": "ride-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ride-product-mobile.jpg",
+          "measurement": "ride-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-ride-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ride-mobile-menu.jpg",
+          "measurement": "ride-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-ride-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ride-cart-mobile.jpg",
+          "measurement": "ride-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ride-editorial-desktop.jpg",
+          "measurement": "ride-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected",
+          "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins?variant=42136673747112",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ride-variant-selected.jpg",
+          "measurement": "ride-variant-selected.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "ride",
+        "status": "opened",
+        "entry": "",
+        "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "ride",
+          "probe": "variant selection",
+          "load": "load completed",
+          "requested": "SMALL",
+          "selected": [
+            {
+              "label": "SMALL",
+              "value": "SMALL"
+            }
+          ],
+          "result": "selection activated; selected values captured"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "atelier",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/atelier/presets/atelier",
+      "demo": "https://theme-atelier-demo.myshopify.com/",
+      "home": "https://theme-atelier-demo.myshopify.com/",
+      "collection": "https://theme-atelier-demo.myshopify.com/collections/whats-new",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-atelier-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "atelier-home-desktop.jpg",
+          "measurement": "atelier-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-atelier-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "atelier-home-mobile.jpg",
+          "measurement": "atelier-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "atelier-collection-desktop.jpg",
+          "measurement": "atelier-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "atelier-collection-mobile.jpg",
+          "measurement": "atelier-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "atelier-product-desktop.jpg",
+          "measurement": "atelier-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "atelier-product-mobile.jpg",
+          "measurement": "atelier-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-atelier-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "atelier-mobile-menu.jpg",
+          "measurement": "atelier-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "atelier-cart-mobile.jpg",
+          "measurement": "atelier-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-atelier-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "atelier-editorial-desktop.jpg",
+          "measurement": "atelier-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "atelier",
+        "status": "opened",
+        "entry": "ABOUT US",
+        "url": "https://theme-atelier-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "atelier",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "origin",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/origin/presets/origin",
+      "demo": "https://theme-origin-demo.myshopify.com/",
+      "home": "https://theme-origin-demo.myshopify.com/",
+      "collection": "https://theme-origin-demo.myshopify.com/collections/all",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-origin-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "origin-home-desktop.jpg",
+          "measurement": "origin-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-origin-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "origin-home-mobile.jpg",
+          "measurement": "origin-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-origin-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "origin-collection-desktop.jpg",
+          "measurement": "origin-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-origin-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "origin-collection-mobile.jpg",
+          "measurement": "origin-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "origin-product-desktop.jpg",
+          "measurement": "origin-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "origin-product-mobile.jpg",
+          "measurement": "origin-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "origin-cart-mobile.jpg",
+          "measurement": "origin-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-origin-demo.myshopify.com/blogs/news/only-for-the-brave",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "origin-editorial-desktop.jpg",
+          "measurement": "origin-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected",
+          "url": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy?variant=50708788477974",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "origin-variant-selected.jpg",
+          "measurement": "origin-variant-selected.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "origin",
+        "status": "opened",
+        "entry": "Only for the brave",
+        "url": "https://theme-origin-demo.myshopify.com/blogs/news/only-for-the-brave"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "origin",
+          "probe": "variant selection",
+          "load": "load completed",
+          "requested": "Gray",
+          "selected": [
+            {
+              "label": "Gray",
+              "value": "Gray"
+            },
+            {
+              "label": "",
+              "value": "Gray"
+            }
+          ],
+          "result": "selection activated; selected values captured"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "colorblock",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/colorblock/presets/colorblock",
+      "demo": "https://theme-colorblock-demo.myshopify.com/",
+      "home": "https://theme-colorblock-demo.myshopify.com/",
+      "collection": "https://theme-colorblock-demo.myshopify.com/collections/spring-lookbook",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-colorblock-demo.myshopify.com/products/purple-patchwork-cardi",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-colorblock-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "colorblock-home-desktop.jpg",
+          "measurement": "colorblock-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-colorblock-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "colorblock-home-mobile.jpg",
+          "measurement": "colorblock-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-colorblock-demo.myshopify.com/collections/spring-lookbook",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "colorblock-collection-desktop.jpg",
+          "measurement": "colorblock-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-colorblock-demo.myshopify.com/collections/spring-lookbook",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "colorblock-collection-mobile.jpg",
+          "measurement": "colorblock-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-colorblock-demo.myshopify.com/products/purple-patchwork-cardi",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "colorblock-product-desktop.jpg",
+          "measurement": "colorblock-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-colorblock-demo.myshopify.com/products/purple-patchwork-cardi",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "colorblock-product-mobile.jpg",
+          "measurement": "colorblock-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-colorblock-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "colorblock-mobile-menu.jpg",
+          "measurement": "colorblock-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-colorblock-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "colorblock-cart-mobile.jpg",
+          "measurement": "colorblock-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-colorblock-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "colorblock-editorial-desktop.jpg",
+          "measurement": "colorblock-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://theme-colorblock-demo.myshopify.com/products/purple-patchwork-cardi?variant=42044032516118",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "colorblock-variant-selected-mobile.jpg",
+          "measurement": "colorblock-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "colorblock",
+        "status": "opened",
+        "entry": "About",
+        "url": "https://theme-colorblock-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "colorblock",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "colorblock",
+          "result": "native Size select changed",
+          "selected": "M"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "sense",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/sense/presets/sense",
+      "demo": "https://theme-sense-demo.myshopify.com/",
+      "home": "https://theme-sense-demo.myshopify.com/",
+      "collection": "https://theme-sense-demo.myshopify.com/collections/skin",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-sense-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "sense-home-desktop.jpg",
+          "measurement": "sense-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-sense-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "sense-home-mobile.jpg",
+          "measurement": "sense-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-sense-demo.myshopify.com/collections/skin",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "sense-collection-desktop.jpg",
+          "measurement": "sense-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-sense-demo.myshopify.com/collections/skin",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "sense-collection-mobile.jpg",
+          "measurement": "sense-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "sense-product-desktop.jpg",
+          "measurement": "sense-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "sense-product-mobile.jpg",
+          "measurement": "sense-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-sense-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "sense-mobile-menu.jpg",
+          "measurement": "sense-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-sense-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "sense-cart-mobile.jpg",
+          "measurement": "sense-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-sense-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "sense-editorial-desktop.jpg",
+          "measurement": "sense-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected",
+          "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing?variant=40492606161104",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "sense-variant-selected.jpg",
+          "measurement": "sense-variant-selected.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "sense",
+        "status": "opened",
+        "entry": "About Us",
+        "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "sense",
+          "probe": "variant selection",
+          "load": "load completed",
+          "requested": "Mask + applicator",
+          "selected": [
+            {
+              "label": "Mask + applicator",
+              "value": "Mask + applicator"
+            }
+          ],
+          "result": "selection activated; selected values captured"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "pitch",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/pitch/presets/pitch",
+      "demo": "https://theme-pitch-demo.myshopify.com/",
+      "home": "https://theme-pitch-demo.myshopify.com/",
+      "collection": "https://theme-pitch-demo.myshopify.com/collections/skincare",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-pitch-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "pitch-home-desktop.jpg",
+          "measurement": "pitch-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-pitch-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "pitch-home-mobile.jpg",
+          "measurement": "pitch-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-pitch-demo.myshopify.com/collections/skincare",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "pitch-collection-desktop.jpg",
+          "measurement": "pitch-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-pitch-demo.myshopify.com/collections/skincare",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "pitch-collection-mobile.jpg",
+          "measurement": "pitch-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "pitch-product-desktop.jpg",
+          "measurement": "pitch-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "pitch-product-mobile.jpg",
+          "measurement": "pitch-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-pitch-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "pitch-mobile-menu.jpg",
+          "measurement": "pitch-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "pitch-cart-mobile.jpg",
+          "measurement": "pitch-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-pitch-demo.myshopify.com/pages/contact",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "pitch-editorial-desktop.jpg",
+          "measurement": "pitch-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "pitch",
+        "status": "opened",
+        "entry": "Sign up for our newsletter",
+        "url": "https://theme-pitch-demo.myshopify.com/pages/contact"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "pitch",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "taste",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/taste/presets/taste",
+      "demo": "https://theme-taste-demo.myshopify.com/",
+      "home": "https://theme-taste-demo.myshopify.com/",
+      "collection": "https://theme-taste-demo.myshopify.com/collections/bundles",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-taste-demo.myshopify.com/products/green-bundle-1",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-taste-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "taste-home-desktop.jpg",
+          "measurement": "taste-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-taste-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "taste-home-mobile.jpg",
+          "measurement": "taste-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-taste-demo.myshopify.com/collections/bundles",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "taste-collection-desktop.jpg",
+          "measurement": "taste-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-taste-demo.myshopify.com/collections/bundles",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "taste-collection-mobile.jpg",
+          "measurement": "taste-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "taste-product-desktop.jpg",
+          "measurement": "taste-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "taste-product-mobile.jpg",
+          "measurement": "taste-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-taste-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "taste-mobile-menu.jpg",
+          "measurement": "taste-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-taste-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "taste-cart-mobile.jpg",
+          "measurement": "taste-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-taste-demo.myshopify.com/blogs/recipes",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "taste-editorial-desktop.jpg",
+          "measurement": "taste-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "taste",
+        "status": "opened",
+        "entry": "Recipes",
+        "url": "https://theme-taste-demo.myshopify.com/blogs/recipes"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "taste",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "refresh",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/refresh/presets/refresh",
+      "demo": "https://theme-refresh-demo.myshopify.com/",
+      "home": "https://theme-refresh-demo.myshopify.com/",
+      "collection": "https://theme-refresh-demo.myshopify.com/collections/hair",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-refresh-demo.myshopify.com/products/shampoo-2",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-refresh-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "refresh-home-desktop.jpg",
+          "measurement": "refresh-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-refresh-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "refresh-home-mobile.jpg",
+          "measurement": "refresh-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-refresh-demo.myshopify.com/collections/hair",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "refresh-collection-desktop.jpg",
+          "measurement": "refresh-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-refresh-demo.myshopify.com/collections/hair",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "refresh-collection-mobile.jpg",
+          "measurement": "refresh-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-refresh-demo.myshopify.com/products/shampoo-2",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "refresh-product-desktop.jpg",
+          "measurement": "refresh-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-refresh-demo.myshopify.com/products/shampoo-2",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "refresh-product-mobile.jpg",
+          "measurement": "refresh-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-refresh-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "refresh-mobile-menu.jpg",
+          "measurement": "refresh-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-refresh-demo.myshopify.com/products/shampoo-2",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "refresh-cart-mobile.jpg",
+          "measurement": "refresh-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-refresh-demo.myshopify.com/blogs/news/everything-you-need-to-know-about-eye-stick-2-0",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "refresh-editorial-desktop.jpg",
+          "measurement": "refresh-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "refresh",
+        "status": "opened",
+        "entry": "Everything you need to know about Eye Stick 2.0",
+        "url": "https://theme-refresh-demo.myshopify.com/blogs/news/everything-you-need-to-know-about-eye-stick-2-0"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "refresh",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "tinker",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/tinker/presets/tinker",
+      "demo": "https://theme-tinker-demo.myshopify.com/",
+      "home": "https://theme-tinker-demo.myshopify.com/",
+      "collection": "https://theme-tinker-demo.myshopify.com/collections/objects",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-tinker-demo.myshopify.com/products/craighill-venn-puzzle-stainless-steel?variant=51204750934319",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-tinker-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "tinker-home-desktop.jpg",
+          "measurement": "tinker-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-tinker-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "tinker-home-mobile.jpg",
+          "measurement": "tinker-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-tinker-demo.myshopify.com/collections/objects",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "tinker-collection-desktop.jpg",
+          "measurement": "tinker-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-tinker-demo.myshopify.com/collections/objects",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "tinker-collection-mobile.jpg",
+          "measurement": "tinker-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-tinker-demo.myshopify.com/products/craighill-venn-puzzle-stainless-steel?variant=51204750934319",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "tinker-product-desktop.jpg",
+          "measurement": "tinker-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-tinker-demo.myshopify.com/products/craighill-venn-puzzle-stainless-steel?variant=51204750934319",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "tinker-product-mobile.jpg",
+          "measurement": "tinker-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-tinker-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "tinker-mobile-menu.jpg",
+          "measurement": "tinker-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-tinker-demo.myshopify.com/products/craighill-venn-puzzle-stainless-steel?variant=51204750934319",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "tinker-cart-mobile.jpg",
+          "measurement": "tinker-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-tinker-demo.myshopify.com/pages/our-story-2",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "tinker-editorial-desktop.jpg",
+          "measurement": "tinker-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "tinker",
+        "status": "opened",
+        "entry": "Our story",
+        "url": "https://theme-tinker-demo.myshopify.com/pages/our-story-2"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "tinker",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "ritual",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/ritual/presets/ritual",
+      "demo": "https://theme-ritual-demo.myshopify.com/",
+      "home": "https://theme-ritual-demo.myshopify.com/",
+      "collection": "https://theme-ritual-demo.myshopify.com/collections/new",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-ritual-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ritual-home-desktop.jpg",
+          "measurement": "ritual-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-ritual-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ritual-home-mobile.jpg",
+          "measurement": "ritual-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-ritual-demo.myshopify.com/collections/new",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ritual-collection-desktop.jpg",
+          "measurement": "ritual-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-ritual-demo.myshopify.com/collections/new",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ritual-collection-mobile.jpg",
+          "measurement": "ritual-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ritual-product-desktop.jpg",
+          "measurement": "ritual-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ritual-product-mobile.jpg",
+          "measurement": "ritual-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-ritual-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ritual-mobile-menu.jpg",
+          "measurement": "ritual-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ritual-cart-mobile.jpg",
+          "measurement": "ritual-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-ritual-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "ritual-editorial-desktop.jpg",
+          "measurement": "ritual-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483059389",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "ritual-variant-selected-mobile.jpg",
+          "measurement": "ritual-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "ritual",
+        "status": "opened",
+        "entry": "About us",
+        "url": "https://theme-ritual-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "ritual",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "ritual",
+          "probe": "variant",
+          "selected": "S/36",
+          "result": "checked through visible radio"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "crave",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/crave/presets/crave",
+      "demo": "https://theme-crave-demo.myshopify.com",
+      "home": "https://theme-crave-demo.myshopify.com/",
+      "collection": "https://theme-crave-demo.myshopify.com/collections/meal-starters",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-crave-demo.myshopify.com/products/chinese-mala-salad-starter-3-pack",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-crave-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "crave-home-desktop.jpg",
+          "measurement": "crave-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-crave-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "crave-home-mobile.jpg",
+          "measurement": "crave-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "crave-collection-desktop.jpg",
+          "measurement": "crave-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "crave-collection-mobile.jpg",
+          "measurement": "crave-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-crave-demo.myshopify.com/products/chinese-mala-salad-starter-3-pack",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "crave-product-desktop.jpg",
+          "measurement": "crave-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-crave-demo.myshopify.com/products/chinese-mala-salad-starter-3-pack",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "crave-product-mobile.jpg",
+          "measurement": "crave-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-crave-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "crave-mobile-menu.jpg",
+          "measurement": "crave-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-crave-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "crave-cart-mobile.jpg",
+          "measurement": "crave-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-crave-demo.myshopify.com/blogs/recipes",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "crave-editorial-desktop.jpg",
+          "measurement": "crave-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "crave",
+        "status": "opened",
+        "entry": "Recipes",
+        "url": "https://theme-crave-demo.myshopify.com/blogs/recipes"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "heritage",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/heritage/presets/heritage",
+      "demo": "https://theme-heritage-demo.myshopify.com/",
+      "home": "https://theme-heritage-demo.myshopify.com/",
+      "collection": "https://theme-heritage-demo.myshopify.com/collections/shop-mens",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-heritage-demo.myshopify.com/products/the-terry-short?variant=43667134775350",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-heritage-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "heritage-home-desktop.jpg",
+          "measurement": "heritage-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-heritage-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "heritage-home-mobile.jpg",
+          "measurement": "heritage-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-heritage-demo.myshopify.com/collections/shop-mens",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "heritage-collection-desktop.jpg",
+          "measurement": "heritage-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-heritage-demo.myshopify.com/collections/shop-mens",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "heritage-collection-mobile.jpg",
+          "measurement": "heritage-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-heritage-demo.myshopify.com/products/the-terry-short?variant=43667134775350",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "heritage-product-desktop.jpg",
+          "measurement": "heritage-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-heritage-demo.myshopify.com/products/the-terry-short?variant=43667134775350",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "heritage-product-mobile.jpg",
+          "measurement": "heritage-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-heritage-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "heritage-mobile-menu.jpg",
+          "measurement": "heritage-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-heritage-demo.myshopify.com/products/the-terry-short?variant=43667134775350",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "heritage-cart-mobile.jpg",
+          "measurement": "heritage-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-heritage-demo.myshopify.com/pages/fit-guide",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "heritage-editorial-desktop.jpg",
+          "measurement": "heritage-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://theme-heritage-demo.myshopify.com/products/the-terry-short?variant=43667134971958",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "heritage-variant-selected-mobile.jpg",
+          "measurement": "heritage-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "heritage",
+        "status": "opened",
+        "entry": "Fit guide",
+        "url": "https://theme-heritage-demo.myshopify.com/pages/fit-guide"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "heritage",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "heritage",
+          "probe": "variant",
+          "selected": "Navy",
+          "result": "checked through visible radio"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "horizon",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/horizon/presets/horizon",
+      "demo": "https://theme-horizon-demo.myshopify.com/",
+      "home": "https://theme-horizon-demo.myshopify.com/",
+      "collection": "https://theme-horizon-demo.myshopify.com/collections/all",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431134529",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-horizon-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "horizon-home-desktop.jpg",
+          "measurement": "horizon-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-horizon-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "horizon-home-mobile.jpg",
+          "measurement": "horizon-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-horizon-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "horizon-collection-desktop.jpg",
+          "measurement": "horizon-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-horizon-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "horizon-collection-mobile.jpg",
+          "measurement": "horizon-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431134529",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "horizon-product-desktop.jpg",
+          "measurement": "horizon-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431134529",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "horizon-product-mobile.jpg",
+          "measurement": "horizon-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-horizon-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "horizon-mobile-menu.jpg",
+          "measurement": "horizon-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431134529",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "horizon-cart-mobile.jpg",
+          "measurement": "horizon-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431167297",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "horizon-variant-selected-mobile.jpg",
+          "measurement": "horizon-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "horizon",
+        "status": "no relevant separate link observed"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "horizon",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "horizon",
+          "probe": "variant",
+          "selected": "S",
+          "result": "checked through visible radio"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "studio",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/studio/presets/studio",
+      "demo": "https://theme-studio-demo.myshopify.com/",
+      "home": "https://theme-studio-demo.myshopify.com/",
+      "collection": "https://theme-studio-demo.myshopify.com/collections/leia-bryans",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-studio-demo.myshopify.com/products/gift-card",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-studio-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "studio-home-desktop.jpg",
+          "measurement": "studio-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-studio-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "studio-home-mobile.jpg",
+          "measurement": "studio-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "studio-collection-desktop.jpg",
+          "measurement": "studio-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "studio-collection-mobile.jpg",
+          "measurement": "studio-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-studio-demo.myshopify.com/products/gift-card",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "studio-product-desktop.jpg",
+          "measurement": "studio-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-studio-demo.myshopify.com/products/gift-card",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "studio-product-mobile.jpg",
+          "measurement": "studio-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-studio-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "studio-mobile-menu.jpg",
+          "measurement": "studio-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-studio-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "studio-cart-mobile.jpg",
+          "measurement": "studio-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-studio-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "studio-editorial-desktop.jpg",
+          "measurement": "studio-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected",
+          "url": "https://theme-studio-demo.myshopify.com/products/gift-card?variant=42007835017384",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "studio-variant-selected.jpg",
+          "measurement": "studio-variant-selected.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "art-product-desktop",
+          "url": "https://theme-studio-demo.myshopify.com/products/seven-vessels",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "studio-art-product-desktop.jpg",
+          "measurement": "studio-art-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "art-product-mobile",
+          "url": "https://theme-studio-demo.myshopify.com/products/seven-vessels",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "studio-art-product-mobile.jpg",
+          "measurement": "studio-art-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "studio",
+        "status": "opened",
+        "entry": "Our Story",
+        "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "studio",
+          "probe": "variant selection",
+          "load": "load completed",
+          "requested": "$100",
+          "selected": [
+            {
+              "label": "$100",
+              "value": "$100"
+            }
+          ],
+          "result": "selection activated; selected values captured"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "spotlight",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/spotlight/presets/spotlight",
+      "demo": "https://theme-spotlight-demo.myshopify.com/",
+      "home": "https://theme-spotlight-demo.myshopify.com/",
+      "collection": "https://theme-spotlight-demo.myshopify.com/",
+      "collectionScope": "home is observed catalog; distinct collection entry unverified",
+      "product": "https://theme-spotlight-demo.myshopify.com/products/copy-of-ebbets-wool-c-cap-navy",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-spotlight-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "spotlight-home-desktop.jpg",
+          "measurement": "spotlight-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-spotlight-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "spotlight-home-mobile.jpg",
+          "measurement": "spotlight-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-spotlight-demo.myshopify.com/products/copy-of-ebbets-wool-c-cap-navy",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "spotlight-product-desktop.jpg",
+          "measurement": "spotlight-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-spotlight-demo.myshopify.com/products/copy-of-ebbets-wool-c-cap-navy",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "spotlight-product-mobile.jpg",
+          "measurement": "spotlight-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-spotlight-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "spotlight-cart-mobile.jpg",
+          "measurement": "spotlight-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "spotlight",
+        "status": "no relevant separate link observed"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "spotlight",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "trade",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/trade/presets/trade",
+      "demo": "https://theme-trade-demo.myshopify.com/",
+      "home": "https://theme-trade-demo.myshopify.com/",
+      "collection": "https://theme-trade-demo.myshopify.com/collections/all",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-trade-demo.myshopify.com/products/baby-washcloth",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-trade-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "trade-home-desktop.jpg",
+          "measurement": "trade-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-trade-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "trade-home-mobile.jpg",
+          "measurement": "trade-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-trade-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "trade-collection-desktop.jpg",
+          "measurement": "trade-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-trade-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "trade-collection-mobile.jpg",
+          "measurement": "trade-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-trade-demo.myshopify.com/products/baby-washcloth",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "trade-product-desktop.jpg",
+          "measurement": "trade-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-trade-demo.myshopify.com/products/baby-washcloth",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "trade-product-mobile.jpg",
+          "measurement": "trade-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-trade-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "trade-mobile-menu.jpg",
+          "measurement": "trade-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-trade-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "trade-cart-mobile.jpg",
+          "measurement": "trade-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-trade-demo.myshopify.com/pages/about-us",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "trade-editorial-desktop.jpg",
+          "measurement": "trade-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "trade",
+        "status": "opened",
+        "entry": "About us",
+        "url": "https://theme-trade-demo.myshopify.com/pages/about-us"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "trade",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "publisher",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/publisher/presets/publisher",
+      "demo": "https://theme-publisher-demo.myshopify.com/",
+      "home": "https://theme-publisher-demo.myshopify.com/",
+      "collection": "https://theme-publisher-demo.myshopify.com/collections/books",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-publisher-demo.myshopify.com/products/braulio-amado-2021",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-publisher-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "publisher-home-desktop.jpg",
+          "measurement": "publisher-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-publisher-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "publisher-home-mobile.jpg",
+          "measurement": "publisher-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-publisher-demo.myshopify.com/collections/books",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "publisher-collection-desktop.jpg",
+          "measurement": "publisher-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-publisher-demo.myshopify.com/collections/books",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "publisher-collection-mobile.jpg",
+          "measurement": "publisher-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-publisher-demo.myshopify.com/products/braulio-amado-2021",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "publisher-product-desktop.jpg",
+          "measurement": "publisher-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-publisher-demo.myshopify.com/products/braulio-amado-2021",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "publisher-product-mobile.jpg",
+          "measurement": "publisher-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-publisher-demo.myshopify.com/products/braulio-amado-2021",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "publisher-cart-mobile.jpg",
+          "measurement": "publisher-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-publisher-demo.myshopify.com/pages/about",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "publisher-editorial-desktop.jpg",
+          "measurement": "publisher-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "publisher",
+        "status": "opened",
+        "entry": "About",
+        "url": "https://theme-publisher-demo.myshopify.com/pages/about"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "publisher",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "vessel",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/vessel/presets/vessel",
+      "demo": "https://theme-vessel-demo.myshopify.com/",
+      "home": "https://theme-vessel-demo.myshopify.com/",
+      "collection": "https://theme-vessel-demo.myshopify.com/collections/all",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-vessel-demo.myshopify.com/products/20702?variant=44459957583929",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-vessel-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "vessel-home-desktop.jpg",
+          "measurement": "vessel-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-vessel-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "vessel-home-mobile.jpg",
+          "measurement": "vessel-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-vessel-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "vessel-collection-desktop.jpg",
+          "measurement": "vessel-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-vessel-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "vessel-collection-mobile.jpg",
+          "measurement": "vessel-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-vessel-demo.myshopify.com/products/20702?variant=44459957583929",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "vessel-product-desktop.jpg",
+          "measurement": "vessel-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-vessel-demo.myshopify.com/products/20702?variant=44459957583929",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "vessel-product-mobile.jpg",
+          "measurement": "vessel-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-vessel-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "vessel-mobile-menu.jpg",
+          "measurement": "vessel-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-vessel-demo.myshopify.com/products/20702?variant=44459957583929",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "vessel-cart-mobile.jpg",
+          "measurement": "vessel-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-vessel-demo.myshopify.com/pages/about-our-brand",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "vessel-editorial-desktop.jpg",
+          "measurement": "vessel-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected-mobile",
+          "url": "https://theme-vessel-demo.myshopify.com/products/20702?variant=44459957616697",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "vessel-variant-selected-mobile.jpg",
+          "measurement": "vessel-variant-selected-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "vessel",
+        "status": "opened",
+        "entry": "ABOUT OUR BRAND",
+        "url": "https://theme-vessel-demo.myshopify.com/pages/about-our-brand"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "vessel",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        },
+        {
+          "theme": "vessel",
+          "probe": "variant",
+          "selected": "Black",
+          "result": "checked through visible radio"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "craft",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/craft/presets/craft",
+      "demo": "https://theme-craft-demo.myshopify.com",
+      "home": "https://theme-craft-demo.myshopify.com/",
+      "collection": "https://theme-craft-demo.myshopify.com/collections/bundles",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-craft-demo.myshopify.com/products/ceramic-bundle",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-craft-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "craft-home-desktop.jpg",
+          "measurement": "craft-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-craft-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "craft-home-mobile.jpg",
+          "measurement": "craft-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-craft-demo.myshopify.com/collections/bundles",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "craft-collection-desktop.jpg",
+          "measurement": "craft-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-craft-demo.myshopify.com/collections/bundles",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "craft-collection-mobile.jpg",
+          "measurement": "craft-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-craft-demo.myshopify.com/products/ceramic-bundle",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "craft-product-desktop.jpg",
+          "measurement": "craft-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-craft-demo.myshopify.com/products/ceramic-bundle",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "craft-product-mobile.jpg",
+          "measurement": "craft-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-craft-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "craft-mobile-menu.jpg",
+          "measurement": "craft-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-craft-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "craft-cart-mobile.jpg",
+          "measurement": "craft-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-craft-demo.myshopify.com/blogs/magazine/sweet-savory-comfort-food-recipes",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "craft-editorial-desktop.jpg",
+          "measurement": "craft-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "craft",
+        "status": "opened",
+        "entry": "Sweet & Savory Comfort Food Recipes",
+        "url": "https://theme-craft-demo.myshopify.com/blogs/magazine/sweet-savory-comfort-food-recipes"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "craft",
+          "probe": "variant selection",
+          "load": "load completed",
+          "result": "no nonselected labeled radio found; selection not exercised"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    },
+    {
+      "theme": "dawn",
+      "date": "2026-10-22",
+      "listing": "https://themes.shopify.com/themes/dawn/presets/dawn",
+      "demo": "https://theme-dawn-demo.myshopify.com/",
+      "home": "https://theme-dawn-demo.myshopify.com/",
+      "collection": "https://theme-dawn-demo.myshopify.com/collections/all",
+      "collectionScope": "observed separate route, both devices",
+      "product": "https://theme-dawn-demo.myshopify.com/products/art-deco-cyclamen",
+      "desktopViewport": {
+        "dpr": 1,
+        "height": 1000,
+        "width": 1440
+      },
+      "mobileViewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "states": [
+        {
+          "state": "home-desktop",
+          "url": "https://theme-dawn-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dawn-home-desktop.jpg",
+          "measurement": "dawn-home-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "home-mobile",
+          "url": "https://theme-dawn-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dawn-home-mobile.jpg",
+          "measurement": "dawn-home-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-desktop",
+          "url": "https://theme-dawn-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dawn-collection-desktop.jpg",
+          "measurement": "dawn-collection-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "collection-mobile",
+          "url": "https://theme-dawn-demo.myshopify.com/collections/all",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dawn-collection-mobile.jpg",
+          "measurement": "dawn-collection-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-desktop",
+          "url": "https://theme-dawn-demo.myshopify.com/products/art-deco-cyclamen",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dawn-product-desktop.jpg",
+          "measurement": "dawn-product-desktop.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "product-mobile",
+          "url": "https://theme-dawn-demo.myshopify.com/products/art-deco-cyclamen",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dawn-product-mobile.jpg",
+          "measurement": "dawn-product-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "mobile-menu",
+          "url": "https://theme-dawn-demo.myshopify.com/",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dawn-mobile-menu.jpg",
+          "measurement": "dawn-mobile-menu.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "cart-mobile",
+          "url": "https://theme-dawn-demo.myshopify.com/cart",
+          "viewport": {
+            "dpr": 1,
+            "height": 844,
+            "width": 390
+          },
+          "screenshot": "dawn-cart-mobile.jpg",
+          "measurement": "dawn-cart-mobile.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "editorial-desktop",
+          "url": "https://theme-dawn-demo.myshopify.com/pages/about",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dawn-editorial-desktop.jpg",
+          "measurement": "dawn-editorial-desktop.json",
+          "captureKind": "full-page",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        },
+        {
+          "state": "variant-selected",
+          "url": "https://theme-dawn-demo.myshopify.com/products/art-deco-cyclamen?variant=39577010634841",
+          "viewport": {
+            "dpr": 1,
+            "height": 1000,
+            "width": 1440
+          },
+          "screenshot": "dawn-variant-selected.jpg",
+          "measurement": "dawn-variant-selected.json",
+          "captureKind": "viewport",
+          "review": "opening visual / rendered DOM; no complete workflow certification"
+        }
+      ],
+      "editorial": {
+        "theme": "dawn",
+        "status": "opened",
+        "entry": "About",
+        "url": "https://theme-dawn-demo.myshopify.com/pages/about"
+      },
+      "cart": "empty entry captured; no mutation/checkout",
+      "searchFiltering": "affordances inspected; successful filter/search journey untested",
+      "variantProbes": [
+        {
+          "theme": "dawn",
+          "probe": "variant selection",
+          "load": "load completed",
+          "requested": "Mosstone",
+          "selected": [
+            {
+              "label": "Mosstone",
+              "value": "Mosstone"
+            },
+            {
+              "label": "",
+              "value": "Mosstone"
+            }
+          ],
+          "result": "selection activated; selected values captured"
+        }
+      ],
+      "limitations": [
+        "Only inspected demo configuration and selected product",
+        "No order, checkout, non-empty cart or fulfillment",
+        "Keyboard, reduced motion, focus, hover, performance and all breakpoints incomplete"
+      ]
+    }
+  ],
+  "finalProtocol": "standalone live storefront, measured CSS viewport, DPR1",
+  "supersededAttempts": "raw browser log includes earlier iframe/transition attempts; use final per-theme named files and standalone method for comparable claims"
+}

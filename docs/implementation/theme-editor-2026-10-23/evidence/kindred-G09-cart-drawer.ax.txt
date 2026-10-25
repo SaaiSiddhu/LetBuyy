@@ -1,0 +1,24 @@
+Browser tab: 11, Title: "Kindred lifecycle gift box | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/8e02cb4f-7725-4d3c-88a5-db53a5ee9a2f".
+1 AXWebArea Kindred lifecycle gift box | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/8e02cb4f-7725-4d3c-88a5-db53a5ee9a2f
+	2 container Shopping cart
+		3 button Close cart
+		4 heading Cart, Value: 2
+			5 text Cart
+		6 text Kindred lifecycle gift box
+		7 text Gift contents
+Contents: 1 × Mug · 300 ml
+Care: Hand wash.
+
+1 × Notebook
+
+1 × Pen
+		8 text x1
+		9 button Remove Kindred lifecycle gift box
+		10 text Subtotal
+		11 text ₹1,100
+		12 text Total
+		13 text ₹1,100
+		14 link Description: View cart, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+		15 link Description: Checkout, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/checkout
+
+The focused UI element is 3 button Close cart

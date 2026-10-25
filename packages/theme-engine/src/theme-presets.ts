@@ -186,24 +186,17 @@ const FORGE = defineExperience({
 
 const SENSE = defineExperience({
   id: 'sense',
-  name: 'Sense',
-  description:
-    'Editorial fashion with bold typography and lookbook imagery. Near-black and crimson for a modern, aspirational apparel brand.',
+  name: 'Threadline',
+  description: 'Editorial apparel with silhouette discovery, garment measurements and size-aware shopping.',
   industry: 'fashion',
   grounding: 'research',
-  notes: 'Heading font Playfair Display renders system-fallback until font loading is wired.',
+  notes: 'Threadline design version 2.0.0. Existing installations retain their captured document and release.',
   tokens: {
-    primaryColor: '#1A1A2E',
-    secondaryColor: '#2D2D44',
-    accentColor: '#E63946',
-    backgroundColor: '#FFFFFF',
-    textColor: '#1A1A2E',
-    surfaceColor: '#FAFAFA',
-    fontFamily: 'Inter',
-    headingFontFamily: 'Playfair Display',
-    borderRadius: 4,
+    primaryColor: '#713F35', secondaryColor: '#65574C', accentColor: '#005FCC',
+    backgroundColor: '#FAF7F2', textColor: '#241E1A', surfaceColor: '#EFE7DC',
+    fontFamily: 'Inter', headingFontFamily: 'Playfair Display', borderRadius: 4,
   },
-  defaultSections: ['announcementBar', 'heroBanner', 'categoryGrid', 'featuredProducts', 'testimonials', 'newsletter'],
+  defaultSections: ['announcementBar', 'heroBanner', 'categoryGrid', 'productGrid', 'featuredProducts', 'aboutSection', 'trustBadges'],
 });
 
 const AURA = defineExperience({

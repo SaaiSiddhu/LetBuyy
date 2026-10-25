@@ -1,0 +1,177 @@
+{
+  "body": {
+    "background": "rgb(31, 31, 33)",
+    "color": "rgba(255, 255, 255, 0.75)",
+    "font": "Figtree, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Figtree, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 306,
+      "x": 35,
+      "y": -15.109375
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-ride-demo.myshopify.com/cart#MainContent"
+    },
+    {
+      "text": "NEW FINS HAVE LANDED 🏄 SHOP NOW",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/frontpage"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/performance-boards"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/blogs/stories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-ride-demo.myshopify.com/cart"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803227816__cart-items",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 125.390625
+      },
+      "tag": "DIV",
+      "text": ""
+    }
+  ],
+  "title": "Your Shopping Cart – theme-ride-demo",
+  "url": "https://theme-ride-demo.myshopify.com/cart",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [],
+  "images": [],
+  "bodyText": "Skip to content\n\nNEW FINS HAVE LANDED 🏄 SHOP NOW \n\nCart"
+}

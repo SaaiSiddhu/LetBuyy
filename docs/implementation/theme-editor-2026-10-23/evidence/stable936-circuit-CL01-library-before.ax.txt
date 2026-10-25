@@ -1,0 +1,285 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes".
+0 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+	1 container
+		2 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		3 button Search
+		4 button Setup assistant
+		5 button Notifications
+		6 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			7 text TH
+			8 text Threadline
+	9 container admin-nav-drawer
+		10 container
+			11 container Primary navigation
+				12 content list
+					13 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					14 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					15 container
+						16 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						17 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					18 container
+						19 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						20 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					21 container
+						22 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						23 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					24 container
+						25 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						26 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					27 container
+						28 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						29 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					30 container
+						31 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						32 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					33 container
+						34 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						35 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					36 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			37 text Sales channels
+			38 container Sales channels
+				39 content list
+					40 container
+						41 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						42 button (expanded) Description: Toggle Online Store section, Secondary Actions: Collapse
+						43 content list
+							44 link Description: Themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+							45 link Description: Store pages, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/pages
+							46 link Description: Preferences, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/preferences
+			47 text Apps
+			48 container Apps
+				49 content list
+					50 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		51 container Settings navigation
+			52 content list
+				53 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	54 container admin-page-scroll
+		55 container
+			56 heading Online Store, Value: 1
+				57 text Online Store
+			58 button Storefront visibility: Public
+			59 link Description: View store, Value: localhost:58091/store/syn-threadline-ui-6815276b
+			60 pop up button (collapsed) Description: More online store actions, Secondary Actions: Expand
+		61 container Current theme
+			62 container Current storefront
+				63 AXWebArea Threadline, URL: localhost:58091/store/syn-threadline-ui-6815276b
+					64 container
+						65 text Habitat 936 B — saved recovery draft.
+						66 link localhost:58091/store/syn-threadline-ui-6815276b
+						67 container Description: Primary, ID: lb-nav-panel-header-default
+						68 link Description: THREADLINE, Value: localhost:58091/store/syn-threadline-ui-6815276b
+						69 button (collapsed) Description: Search, Secondary Actions: Expand
+						70 link Description: Log in, Value: localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+						71 link Description: Cart ( 0 ), Value: localhost:58091/store/syn-threadline-ui-6815276b/cart
+						72 text THE CONSIDERED HOME
+						73 heading Habitat 936 B considered rooms, Value: 1
+							74 text Habitat 936 B considered rooms
+						75 text Find furniture for your space, with the dimensions and details to make it yours.
+						76 container Room collections
+							77 text START WITH A ROOM
+							78 text Collections supplied by this store will appear here.
+						79 container
+							80 text Start with the space you have.
+							81 text Room dimensions, doorways and access matter.
+						82 link Description: Explore furniture, Value: localhost:58091/store/syn-threadline-ui-6815276b/products
+						83 heading A place to pause., Value: 2
+							84 text A place to pause.
+						85 container
+							86 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+							87 heading The Everyday Cotton Dress, Value: 3
+								88 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+							89 text INR 3,990.00 Dimensions not supplied Color: Rust Size: S, M, L, XL
+							90 link Description: View dimensions & options, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+						91 container
+							92 link Description: Product photograph not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+							93 heading MadeYours lifecycle notebook, Value: 3
+								94 link Description: MadeYours lifecycle notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+							95 text INR 690.00 Dimensions not supplied Cover: Moss, Oat
+							96 link Description: View dimensions & options, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+						97 container
+							98 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+							99 heading Fixture Cloud Rinse, Value: 3
+								100 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+							101 text INR 640.00 Dimensions not supplied
+							102 link Description: View dimensions & options, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+						103 container
+							104 link Description: Product photograph not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+							105 heading Habitat width-only shelf, Value: 3
+								106 link Description: Habitat width-only shelf, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+							107 text INR 1,400.00 80 W cm
+							108 link Description: View dimensions & options, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+						109 container Product pages
+							110 text Page 1
+						111 text BEFORE YOU BRING IT HOME
+						112 heading Measure twice. Make room once., Value: 2
+							113 text Measure twice. Make room once.
+						114 text Check the furniture footprint and the route it will take to reach your room.
+						115 content list
+							116 container
+								117 heading Map your room, Value: 3
+									118 text Map your room
+								119 text Mark the supplied width and depth. Keep your own circulation space.
+							120 container
+								121 heading Follow the access path, Value: 3
+									122 text Follow the access path
+								123 text Measure doors, stair turns and lifts against package dimensions.
+							124 container
+								125 heading Check delivery conditions, Value: 3
+									126 text Check delivery conditions
+								127 text Read the merchant’s actual service terms before checkout.
+						128 heading Threadline, Value: 3
+							129 text Threadline
+						130 text Habitat 936 B footer saved
+						131 heading CONTACT, Value: 4
+							132 text CONTACT
+						133 link Description: Contact us, Value: localhost:58091/store/syn-threadline-ui-6815276b/contact
+						134 text © Threadline. All rights reserved.
+						135 link Description: Powered by LetBuyy, Value: letbuyy.com/
+			136 heading Habitat Current theme, Value: 2
+				137 text Habitat Current theme
+			138 text Version 2.0.0 · Published design
+			139 pop up button (collapsed) Description: More current theme actions, Secondary Actions: Expand
+			140 link Description: Edit theme, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-craft/editor
+		141 container Installed themes
+			142 heading My themes, Value: 2
+				143 text My themes
+			144 button Add a new blank theme
+			145 content list Installed themes
+				146 container Habitat theme
+					147 image Habitat design preview
+					148 text Habitat
+					149 text Published 24 Oct 2026
+					150 text Published
+					151 pop up button (collapsed) Description: More actions for Habitat, Secondary Actions: Expand
+					152 button Customize Habitat
+				153 container Pantry theme
+					154 image Pantry design preview
+					155 text Pantry
+					156 text Modified 24 Oct 2026
+					157 text Saved draft
+					158 pop up button (collapsed) Description: More actions for Pantry, Secondary Actions: Expand
+					159 text Saved draft
+					160 button Publish Pantry
+					161 button Customize Pantry
+				162 container Dewdrop theme
+					163 image Dewdrop design preview
+					164 text Dewdrop
+					165 text Modified 24 Oct 2026
+					166 text Saved draft
+					167 pop up button (collapsed) Description: More actions for Dewdrop, Secondary Actions: Expand
+					168 text Saved draft
+					169 button Publish Dewdrop
+					170 button Customize Dewdrop
+		171 container Discover themes
+			172 heading Discover themes, Value: 2
+				173 text Discover themes
+			174 text Threadline brings a dedicated apparel layout. Explore it alongside nine existing theme styles, all free to add.
+			175 link Description: Visit Theme Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/marketplace
+			176 button Import theme
+			177 text field (settable) Search themes
+			178 pop up button (collapsed, settable) Description: Filter themes by category, Value: All categories, Secondary Actions: Expand
+				179 menu
+					180 (selected) All categories
+					181 Fashion
+					182 Toys
+					183 Books
+					184 Personalized
+					185 Food
+					186 Sports
+					187 Gifts
+					188 Beauty
+					189 Electronics
+					190 Furniture
+			191 text 10  themes
+			192 container Threadline catalog theme
+				193 button Preview Threadline
+					194 image Threadline storefront preview
+				195 heading Threadline, Value: 3
+					196 text Threadline
+				197 text by  LetBuyy Free
+				198 text Editorial apparel with silhouette discovery, garment measurements and size-aware shopping.
+				199 text Version  2.0.0
+				200 button Add Threadline
+			201 container Playfield catalog theme
+				202 button Preview Playfield
+					203 image Playfield storefront preview
+				204 heading Playfield, Value: 3
+					205 text Playfield
+				206 text by  LetBuyy Free
+				207 text Warm and playful for pet food, accessories, and veterinary products. Sunny tangerine and leaf green — the colours of a happy pet store.
+				208 text Version  2.0.0
+				209 button Add Playfield
+			210 container Marginalia catalog theme
+				211 button Preview Marginalia
+					212 image Marginalia storefront preview
+				213 heading Marginalia, Value: 3
+					214 text Marginalia
+				215 text by  LetBuyy Free
+				216 text Calm and scholarly for bookshops, stationery, and educational content. Warm parchment tones with a slate-blue accent — for the thoughtful reader.
+				217 text Version  2.0.0
+				218 button Add Marginalia
+			219 container MadeYours catalog theme
+				220 button Preview MadeYours
+					221 image MadeYours storefront preview
+				222 heading MadeYours, Value: 3
+					223 text MadeYours
+				224 text by  LetBuyy Free
+				225 text Bold and contemporary for direct-to-consumer brands and general merchandise. Deep violet and amber — brand-forward for any product category.
+				226 text Version  2.0.0
+				227 button Add MadeYours
+			228 container Pantry catalog theme
+				229 button Preview Pantry
+					230 image Pantry storefront preview
+				231 heading Pantry, Value: 3
+					232 text Pantry
+				233 text by  LetBuyy Free
+				234 text Fresh and inviting for grocery, organic food, and daily essentials. Deep forest green with warm orange — the look of a trusted neighbourhood store.
+				235 text Version  2.0.0
+				236 link Description: Customize, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-refresh/editor
+			237 container Trailmark catalog theme
+				238 button Preview Trailmark
+					239 image Trailmark storefront preview
+				240 heading Trailmark, Value: 3
+					241 text Trailmark
+				242 text by  LetBuyy Free
+				243 text High-energy design for sports equipment, fitness gear, and outdoor brands. Performance orange and carbon black — built for movement.
+				244 text Version  2.0.0
+				245 button Add Trailmark
+			246 container Kindred catalog theme
+				247 button Preview Kindred
+					248 image Kindred storefront preview
+				249 heading Kindred, Value: 3
+					250 text Kindred
+				251 text by  LetBuyy Free
+				252 text Clean and professional for multi-category stores and general retail. Teal and lime — a versatile, safe baseline for any type of online store.
+				253 text Version  2.0.0
+				254 button Add Kindred
+			255 container Dewdrop catalog theme
+				256 button Preview Dewdrop
+					257 image Dewdrop storefront preview
+				258 heading Dewdrop, Value: 3
+					259 text Dewdrop
+				260 text by  LetBuyy Free
+				261 text Soft and luxurious for beauty, skincare, and cosmetics. Muted rose with a champagne accent — the aesthetic of a premium beauty brand.
+				262 text Version  2.0.0
+				263 link Description: Customize, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-aura/editor
+			264 container Circuit catalog theme
+				265 button Preview Circuit
+					266 image Circuit storefront preview
+				267 heading Circuit, Value: 3
+					268 text Circuit
+				269 text by  LetBuyy Free
+				270 text A precise, technical look for electronics, gadgets, and tech accessories. Deep navy authority with electric-cyan accents — built for spec-heavy products.
+				271 text Version  2.0.0
+				272 button Add Circuit
+			273 container Habitat catalog theme
+				274 button Preview Habitat
+					275 image Habitat storefront preview
+				276 heading Habitat, Value: 3
+					277 text Habitat
+				278 text by  LetBuyy Free
+				279 text Warm, artisanal aesthetics for furniture, home decor, and handcrafted goods. Rich walnut earth tones that convey quality and longevity.
+				280 text Version  2.0.0
+				281 link Description: Customize, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-craft/editor
+
+The focused UI element is 0 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes

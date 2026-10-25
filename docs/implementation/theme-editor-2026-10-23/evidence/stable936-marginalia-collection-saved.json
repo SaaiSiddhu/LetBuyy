@@ -1,0 +1,136 @@
+{
+  "recordedAt": "2026-10-24T06:59:51.120Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "phase": "saved",
+  "actual": {
+    "id": "d5609b77-743c-45b5-b435-814f2ca95058",
+    "title": "Lifecycle books",
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "productIds": [
+      "43fba2a8-bc4d-4939-917e-8430991fbd09",
+      "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+    ],
+    "membershipVersion": 5
+  },
+  "publicResponse": {
+    "status": 200,
+    "requestId": "4a0eeee4-ab69-4539-94b6-b5a4d0992d03",
+    "meta": {
+      "page": 1,
+      "per_page": 20,
+      "total": 2,
+      "total_pages": 1,
+      "has_next": false,
+      "has_prev": false
+    },
+    "discovery": {
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "sort": "display_order",
+        "collection_id": "d5609b77-743c-45b5-b435-814f2ca95058"
+      },
+      "facets": [
+        {
+          "key": "books_format",
+          "value": "hardback",
+          "label": "hardback",
+          "count": 1
+        },
+        {
+          "key": "books_format",
+          "value": "paperback",
+          "label": "paperback",
+          "count": 1
+        },
+        {
+          "key": "books_kind",
+          "value": "book",
+          "label": "book",
+          "count": 1
+        },
+        {
+          "key": "books_kind",
+          "value": "stationery",
+          "label": "stationery",
+          "count": 1
+        },
+        {
+          "key": "books_language",
+          "value": "english",
+          "label": "English",
+          "count": 1
+        },
+        {
+          "key": "books_language",
+          "value": "hindi",
+          "label": "Hindi",
+          "count": 1
+        },
+        {
+          "key": "books_ruling",
+          "value": "lined",
+          "label": "lined",
+          "count": 1
+        },
+        {
+          "key": "books_subject",
+          "value": "essays",
+          "label": "Essays",
+          "count": 1
+        },
+        {
+          "key": "category",
+          "value": "Books",
+          "label": "Books",
+          "count": 1
+        },
+        {
+          "key": "category",
+          "value": "Stationery",
+          "label": "Stationery",
+          "count": 1
+        },
+        {
+          "key": "country_of_origin",
+          "value": "india",
+          "label": "India",
+          "count": 2
+        }
+      ],
+      "matches": [
+        {
+          "product_id": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+          "price": 320,
+          "variant_ids": []
+        },
+        {
+          "product_id": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+          "price": 420,
+          "variant_ids": [
+            "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+            "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+          ]
+        }
+      ],
+      "measurement_capabilities": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "max_width_cm": {
+          "available": false
+        },
+        "max_depth_cm": {
+          "available": false
+        }
+      }
+    },
+    "productIds": [
+      "43fba2a8-bc4d-4939-917e-8430991fbd09",
+      "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+    ]
+  }
+}

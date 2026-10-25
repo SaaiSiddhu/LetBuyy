@@ -1,0 +1,537 @@
+{
+  "body": {
+    "background": "rgb(255, 250, 247)",
+    "color": "rgba(118, 30, 11, 0.74)",
+    "font": "Liter, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Decrease quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 1 of 4",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 2 of 4",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 3 of 4",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 4 of 4",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Natural ingredients",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Tested for safety",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Fragrance free",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Skincare",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Makeup",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "Liter, sans-serif",
+      "height": 16.09375,
+      "line": "16.1px",
+      "size": "14px",
+      "tag": "H3",
+      "text": "Hydrating Cream Cleanser",
+      "weight": "400",
+      "width": 178.03125,
+      "x": 77.59375,
+      "y": 913.1484375
+    },
+    {
+      "font": "Liter, sans-serif",
+      "height": 28,
+      "line": "28px",
+      "size": "28px",
+      "tag": "H1",
+      "text": "Hydrating Cream Cleanser",
+      "weight": "400",
+      "width": 358,
+      "x": 16,
+      "y": 564.7890625
+    },
+    {
+      "font": "Liter, sans-serif",
+      "height": 27.59375,
+      "line": "27.6px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Pairs well with",
+      "weight": "400",
+      "width": 147.703125,
+      "x": 16,
+      "y": 2584.0234375
+    },
+    {
+      "font": "Liter, sans-serif",
+      "height": 27.59375,
+      "line": "27.6px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Join the club",
+      "weight": "400",
+      "width": 334,
+      "x": 28,
+      "y": 2928.28125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807#MainContent"
+    },
+    {
+      "text": "Sign up for our newsletter",
+      "url": "https://theme-pitch-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/makeup"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/best-sellers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/best-sellers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/cleansers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/moisturizers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/eyes-and-lips"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/face"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Pitch",
+      "url": "https://theme-pitch-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26029916619047__main",
+      "rect": {
+        "height": 1118.0625,
+        "width": 390,
+        "x": 0,
+        "y": 104
+      },
+      "tag": "DIV",
+      "text": "Hydrating Cream Cleanser\n$12.99\n\nSOFT CLEANSE\n\nHydrating Cream Cleanser\n$12.99\nDecrease quantity\nIncrease quantity\nAdd to cart\nBuy it now\n\nThis is a demonstration store. You can pu"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26029916619047__section_dEGUdG",
+      "rect": {
+        "height": 872.3671875,
+        "width": 390,
+        "x": 0,
+        "y": 1222.0625
+      },
+      "tag": "DIV",
+      "text": "Our signature formula contains only the best ingredients, selected for max benefits to the skin.\n\nNatural ingredients\nTested for safety\nFragrance free"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26029916619047__marquee_r8WyKj",
+      "rect": {
+        "height": 69.59375,
+        "width": 390,
+        "x": 0,
+        "y": 2094.4296875
+      },
+      "tag": "DIV",
+      "text": "FRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26029916619047__section_UhNgJN",
+      "rect": {
+        "height": 400,
+        "width": 390,
+        "x": 0,
+        "y": 2164.0234375
+      },
+      "tag": "DIV",
+      "text": "The best skincare routine is the one you can stick to. This formula feels so good, staying consistent won't be a chore."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26029916619047__product_recommendations_dDfQTx",
+      "rect": {
+        "height": 322.2578125,
+        "width": 390,
+        "x": 0,
+        "y": 2564.0234375
+      },
+      "tag": "DIV",
+      "text": "Pairs well with"
+    }
+  ],
+  "title": "Hydrating Cream Cleanser – Pitch",
+  "url": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "product-information__grid product-information--media-right product-information__grid--half",
+      "columns": "subgrid [] [] [] []",
+      "display": "grid",
+      "gap": "normal",
+      "height": 1118.0625,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "resource-list resource-list--grid",
+      "columns": "173px 173px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 230.6640625,
+      "tag": "DIV",
+      "width": 358
+    }
+  ],
+  "images": [
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 120,
+      "rect": {
+        "height": 52,
+        "width": 52
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 226.3984375,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": false,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": false,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSign up for our newsletter\n\nSign up for our newsletter\nTotal items in cart: 0\nHydrating Cream Cleanser\n$12.99\n\nSOFT CLEANSE\n\nHydrating Cream Cleanser\n$12.99\nDecrease quantity\nIncrease quantity\nAdd to cart\nBuy it now\n\nThis is a demonstration store. You can purchase products like this from Versed.\n\nGet a moisturizing, nourishing cleanse without ever stripping your skin. This gentle cream cleanser removes dirt, oil, and impurities without drying out skin, leaving a complexion that feels balanced, hydrated, and refreshed. \n\nBenefits\n\nNourishing\nHydrating\nSoothing\n\nWon't clog pores\nLightweight\n\n\n1\n2\n3\n4\n\nOur signature formula contains only the best ingredients, selected for max benefits to the skin.\n\nNatural ingredients\nTested for safety\nFragrance free\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nFRESH\n\nExpert endorsed\n\nFOR SENSITIVE SKIN\n\nVitamin rich\n\nThe best skincare routine is the one you can stick to. This formula feels so good, staying consistent won't be a chore.\n\nPairs well with\nJoin the club\n\nGet new product announcements, skincare tips, and exclusive discounts.\n\nEmail\nSign up\nSkincare\nMakeup\nAbout\n© 2026 Pitch, Powered by Shopify"
+}

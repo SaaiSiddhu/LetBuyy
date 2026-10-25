@@ -1,0 +1,52 @@
+--- packages/theme-engine/src/first-party-theme-catalog.ts.accepted-parent
++++ packages/theme-engine/src/first-party-theme-catalog.ts.private-five211
+@@ -34,6 +34,7 @@
+ } as const;
+ type CatalogBuildOptions = { customizationVersion?: '2.1.0' | '2.1.1'; designVersion?: '2.0.0'; playfieldVersion?: '2.0.1' | '2.0.2'; circuitVersion?: '2.0.1'; pantryVersion?: '2.0.1'; trailmarkVersion?: '2.0.1'; threadlineVersion?: '2.0.1'; dewdropVersion?: '2.0.1' };
+ const ORDER_HEADING_211_SLUGS = new Set(['letbuyy-craft', 'letbuyy-dawn', 'letbuyy-nova', 'letbuyy-summit']);
++const FIRST_PARTY_211_SLUGS = new Set([...ORDER_HEADING_211_SLUGS, 'letbuyy-sense']);
+ // Identity is independent of catalog order and display copy. Existing Core/Urban
+ // Kicks stores and their saved experience selections are deliberately untouched.
+ const IDENTITIES: Readonly<Record<string, string>> = {
+@@ -69,16 +70,20 @@
+ export function createFirstPartyCatalogBundle(slug: string, options: CatalogBuildOptions = {}): LiquidThemePackageBundle {
+     if (options.customizationVersion === '2.1.0' || options.customizationVersion === '2.1.1') {
+         const headingSuccessor = options.customizationVersion === '2.1.1';
+-        if (headingSuccessor && !ORDER_HEADING_211_SLUGS.has(slug)) {
+-            throw new Error('Order-heading 2.1.1 is reserved for the four affected first-party themes.');
++        if (headingSuccessor && !FIRST_PARTY_211_SLUGS.has(slug)) {
++            throw new Error('First-party 2.1.1 is reserved for the five explicitly qualified themes.');
+         }
+         const base = createFirstPartyCatalogBundle(slug, { designVersion: '2.0.0',
+             playfieldVersion: '2.0.2', circuitVersion: '2.0.1', pantryVersion: '2.0.1',
+             trailmarkVersion: '2.0.1', threadlineVersion: '2.0.1', dewdropVersion: '2.0.1' });
+         // The existing helper validates the supported200 definitions before the
+         // existing child transform packages a new, explicit immutable revision.
+-        const bundle = withFirstPartyChildOutlets(headingSuccessor ? withConfiguredOrderHeading(base) : base);
+-        if (headingSuccessor) bundle.package = { ...bundle.package, version: '2.1.1', version_number: 6 };
++        let bundle = withFirstPartyChildOutlets(headingSuccessor && ORDER_HEADING_211_SLUGS.has(slug) ? withConfiguredOrderHeading(base) : base);
++        if (headingSuccessor) {
++            bundle.package = { ...bundle.package, version: '2.1.1', version_number: 6 };
++            // The accepted helper is opt-in only after explicit new Sense211 packaging.
++            if (slug === 'letbuyy-sense') bundle = withNicheOrderPresentation(bundle);
++        }
+         return LiquidThemePackageBundleSchema.parse(bundle);
+     }
+     const listing = firstPartyThemeListings(options).find(theme => theme.slug === slug);
+@@ -192,7 +197,7 @@
+ export function qualifiedFirstPartyInlineChildParents(bundle: LiquidThemePackageBundle, sectionType: string): string[] {
+     const version = bundle.package.version;
+     const headingSuccessor = version === '2.1.1' && bundle.package.version_number === 6
+-        && ORDER_HEADING_211_SLUGS.has(bundle.package.slug);
++        && FIRST_PARTY_211_SLUGS.has(bundle.package.slug);
+     if (!headingSuccessor && (version !== '2.1.0' || bundle.package.version_number !== 5)) return [];
+     if (!firstPartyThemeListings({ designVersion: '2.0.0' }).some(theme => theme.slug === bundle.package.slug)) return [];
+     const identity = `${bundle.package.slug}@${version}`;
+@@ -207,6 +212,7 @@
+     // corrected immutable heading definition binds this explicit revision;
+     // merchant template IDs/settings remain free to change normally.
+     if (headingSuccessor && !sameDefinition(bundle.sections['customer-order-detail'], reference.sections['customer-order-detail'])) return [];
++    if (headingSuccessor && bundle.package.slug === 'letbuyy-sense' && !sameDefinition(bundle.layout.theme, reference.layout.theme)) return [];
+     // Reusable parents keep their existing undefined/empty/allowlist semantics.
+     return file.schema.blocks.filter(block => !isLiquidAppBlockType(block.type) && !Object.hasOwn(bundle.blocks, block.type)).map(block => block.type);
+ }

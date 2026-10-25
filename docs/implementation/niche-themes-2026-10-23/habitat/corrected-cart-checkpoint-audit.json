@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-23T19:24:40.778189+00:00",
+  "runId": "f6074d90e894",
+  "scope": "Independent file audit; original Width-only baseline cart witness, not fully authored A-cohort acceptance",
+  "acceptedCartTwo": {
+    "quantity": 2,
+    "unitPrice": 8900,
+    "lineTotal": 17800,
+    "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+    "snapshotFingerprint": "ff28713f9f0ac74ffa4b6eac3033b59acb28e8d7b0f8e033d4533198ab9dee88",
+    "selectedOptions": [
+      {
+        "name": "Width",
+        "value": "48 in"
+      }
+    ]
+  },
+  "overstockAttempt": {
+    "backendQuantity": 4,
+    "backendLineTotal": 35600,
+    "visibleQuantityReported": 5,
+    "persistsAfterActualFullReload": true,
+    "rawReloadAXExcerpts": [
+      "16 button Decrease quantity of Habitat lifecycle desk, Width: 48 in",
+      "18 button Increase quantity of Habitat lifecycle desk, Width: 48 in",
+      "20 text Subtotal \u20b935,600 Total \u20b935,600"
+    ],
+    "HTTPStatus": "NOT_CAPTURED; no409 acceptance claimed",
+    "errorMessageReported": "Absent",
+    "sourceFixAssigned": true
+  },
+  "orders": 0,
+  "pinkBusinessBaselineExactlyRestored": true,
+  "allPreparedHI14Acceptance": false,
+  "receipts": [
+    "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-before.json",
+    "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-cart.json",
+    "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-stock.json",
+    "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-cart-reload-after-stock-denial.ax.txt",
+    "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-restored.json"
+  ]
+}

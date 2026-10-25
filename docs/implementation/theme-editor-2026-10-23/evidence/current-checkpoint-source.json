@@ -1,0 +1,182 @@
+{
+  "createdAt": "2026-10-23T08:34:53.920742+00:00",
+  "scope": "current owned/editor integration input checkpoint; includes earlier other-owner source, not full candidate manifest",
+  "files": [
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "sha256": "4669d10383c4d6bb388e36a0c8b13d19fe5de037a74e8e86cc0630bbd688fbc7"
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/storefront-preview-bridge.tsx",
+      "sha256": "73fa885a31f8db23fb127de181bb5519caf960f6f2b0e5316d0de712a9126e67"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/blog/(list)/page.tsx",
+      "sha256": "067bd6a2c8c07e37a4c72d26ee20289eaebf8c058b4ec77205d55c88b68c1964"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/content-service.ts",
+      "sha256": "11219830420cc9dc67de0adf33b4239c117e810a181b62dd0a38caaf1ab37fc5"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-preview-inspector.ts",
+      "sha256": "5b543f2f79e07e467b231a18d52305d6f4a4f9008a0260a2baa98edb00953af4"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/AICustomizationPanel.tsx",
+      "sha256": "97331ad409945a11a914f33c0c70f5e677d5bb6a489099385ce26ff02a2ec710"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/AppBlockSlotPanel.tsx",
+      "sha256": "5505e0ac9c42a6f862712f69a5b895fcf0f9e4a9ec7ecb6fb7adb09bb1f2e89d"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "sha256": "2ea8f4a5b10df83db4d12cf4821ca78700027f1edefcb6c852e0d22050eec7d9"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.tsx",
+      "sha256": "9f1f7e384214bdee7d3d8ce9956e3b849043e281d4c242c36aa6d27c1547f453"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ConflictDialog.tsx",
+      "sha256": "d1d34cb09a319a3253d9442061f8008c18a5e183fac97ad1c3330c5035f06bb1"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx",
+      "sha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/PreviewInspectorOverlay.tsx",
+      "sha256": "74ed6f7ffb728096dee927f562f25d160382b096a0cc9b790861c4ba409af54d"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "sha256": "37d71edee334719e2d44e30512eeb695d56cda86dc67b40fe5e092631c4582f4"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "sha256": "fa4e30236d9f00af2276bcc0ed7c75a6e010923035bc678770ac74288e8ea0c5"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/TemplateSwitcherPanel.tsx",
+      "sha256": "33cb4a17d37e5b88ada4920ea48b89b8c28c577eb35466816f589f8dfee50254"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ThemeUpdatePanel.tsx",
+      "sha256": "3855438357bd9aeb7c60c71cc612d97fe51332647301584026826b4c4ccd75ee"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/CheckboxControl.tsx",
+      "sha256": "3442ebada62e5c8832d6c32ed8ceb9cfa132013c8cc35f607665cb4d3d424016"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ColorBackgroundControl.tsx",
+      "sha256": "f1f30d183daa81323267e4f3d95f2b8860f6f3b09b521e3edc1cbd3e813ac7ff"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ColorSchemeControl.tsx",
+      "sha256": "b858a5db9077274a5e9388231fd3064efc11ce257dc61c0bfe7c60e5319673a4"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/CustomCssWorkspace.tsx",
+      "sha256": "d401f7777cd94547bbab8156958b6e370ce69be5e39135a1647dc58518b5b455"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/FontPickerControl.tsx",
+      "sha256": "547d0649638602b6cd8e54ca98683c5fa0e3c9a65c8fc8e1b0a2f0993c3844db"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/HtmlControl.tsx",
+      "sha256": "804310d12ac7db5611d701212404cdf5d2e42db67c7efee924ee0b1c28619b3d"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ImagePickerControl.tsx",
+      "sha256": "59d1c012220378d52c3dc5a0325d298b21cddfaba35a47a65f5525392c0a58af"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/InfoControls.tsx",
+      "sha256": "8b3469da6776a173596b7a6d916339cdf752175670fd429e119f4553f4d87c86"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/LiquidControl.tsx",
+      "sha256": "d72b3a7ffa8d9b0d9e792167fb90bb42ef08c9b68bc3fde9067c59b50db95b2e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/MediaLibrary.tsx",
+      "sha256": "0356db76a43aa2c324448be88a5c84d13c45cb2d6cabcbf323e5cd3fdac76762"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ResourcePickerControl.tsx",
+      "sha256": "92429413c57c5a9d56626d58de00e63b7e72b74d92a1556217358b588422439a"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/VideoControl.tsx",
+      "sha256": "e7849cec8de53f4015570aa8ed93ec9e603d03d862006c1b6fb80c5bc64a29f6"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/VideoUrlControl.tsx",
+      "sha256": "b0086ec553d5494fc3f53f294dc478657a4a57a27583cfdff5a375249f9e43c4"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/controls.module.css",
+      "sha256": "b0b6195781fcd0773a05c06d12f3a26f3aaaf064fa1ce21bf085f4c4138cae37"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-view-state.ts",
+      "sha256": "80d4d2b3fb4b3c61bfa30830360f393a0c0f773084176cb269997002b2366d68"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-workspace.module.css",
+      "sha256": "12f968794a707c7120b1e6010a92d53fffd9493edc716629e74324693fbc005f"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/preview-viewport.test.ts",
+      "sha256": "18fbfe4ac0852871a49623997f679dd552c9e7ef5805e46ec1cda4b76c5d5e80"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/preview-viewport.ts",
+      "sha256": "8f5f1908ccb0824511b8a98c8f88887ab3462c505e82d6542ab53a5653ff25e1"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/public-urls.ts",
+      "sha256": "2ebea3a084e4b873cb8dc7956284068efd6bd723f9a074cafe769a36594271e7"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/theme-draft-client.ts",
+      "sha256": "f65d8a3334d58eb76c05fbb30eb674cb705796d23a60e546dc9e3ea3d741e310"
+    },
+    {
+      "path": "packages/theme-engine/src/editor-bridge-protocol.ts",
+      "sha256": "7cff1ccbb9725ece155a9d1c08c9fee7706c3f8dc9ea27a860f9a23bd3c8ca66"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+      "sha256": "722a170a86cdaaabd3503f3360d810d0e59b55f58dc1cc39cfc95f399a5df177"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/storefront-blog-routes.ts",
+      "sha256": "479f3e5582982cb106e41a4b38a1da61ac2264b3b72224efe15091a555451542"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/theme-preview-content.ts",
+      "sha256": "9ce69c0a1902dac4f3dde21cc0289fea8bafe4e8256d88bb94391d1dc7c6a99a"
+    }
+  ]
+}

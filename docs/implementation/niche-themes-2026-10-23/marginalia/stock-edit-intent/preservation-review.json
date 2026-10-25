@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-10-23T20:34:02.342796+00:00",
+  "protectedFiles": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-axis.test.ts",
+      "sha256": "8932cff89ab28da0ad70b4c465a38e071577523ab8c06026ee1eca2252b658c5",
+      "bytes": 9572
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-rename.test.ts",
+      "sha256": "5b5879811f895d35f6b371159b7dbf282451b6fa2becfd31dccf2dfaa0b5df9e",
+      "bytes": 5393
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.ts",
+      "sha256": "a4833276eb2647dca6ad6ab5e9b30e0f68f235ac7188516c98aea5f8c8b4288d",
+      "bytes": 6561
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+      "sha256": "fa4501f2fb40731df8b7a91dfa2c8353e2bb14dbb22bd98b87f67bdeefab3127",
+      "bytes": 14685
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.ts",
+      "sha256": "bb737af30a311b34128fb7d0d1d2b522e73898e889830d360c4d372c6b2af5e3",
+      "bytes": 6081
+    },
+    {
+      "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+      "sha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+      "bytes": 2810
+    }
+  ],
+  "conservedFunctions": [
+    {
+      "function": "buildVariantMatrix",
+      "sha256": "5ddddffcb1ce2d67def94066080383f9193a60ade8b6dcaa9b0d0fb5b6134d69",
+      "exact": true
+    },
+    {
+      "function": "validateVariantAxisRows",
+      "sha256": "1a686d90281d471a18d962fe1c0e1a073dbcb397bbcd622b02bd2a963165c602",
+      "exact": true
+    },
+    {
+      "function": "appendVariantOptionAxis",
+      "sha256": "7f6821302e3e4765641baedd507dc5d330e5cd060d3d65adf506057a01ffbce2",
+      "exact": true
+    },
+    {
+      "function": "validateVariantLabels",
+      "sha256": "ece8479aa5b014208fa9fa7440a5ba8062914cce4abcb6cb0722bf9288ab79ce",
+      "exact": true
+    },
+    {
+      "function": "newVariantRows",
+      "sha256": "bca09118cd7cffe6b846cf572206956f5d70161c0e954f0c807dacb6c412c603",
+      "exact": true
+    },
+    {
+      "function": "appendVariantOptionValue",
+      "sha256": "9918813251c4f40645b13bf1dc3c50201053d42c819a02dd7c63e92a49524bf0",
+      "exact": true
+    },
+    {
+      "function": "renameVariantOptionValue",
+      "sha256": "ec2d72c3689182438c19c17b65d8e0f8e540f678addc7cb312cb3e99ece0dde5",
+      "exact": true
+    }
+  ],
+  "intentRecoveryDiff": "Only returned presentation draft is upgraded with review flags; immutable payload/key/signature/variantSignature validation and identity are unchanged. Covered by prior and new lost-response/remount tests.",
+  "newBaselineFieldsSentToApi": false
+}

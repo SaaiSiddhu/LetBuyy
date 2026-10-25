@@ -1,0 +1,107 @@
+[
+  {
+    "id": "01-home-top",
+    "title": "Home · search & subject index",
+    "description": "Prominent retrieval, subject rail and original editorial book feature.",
+    "source": "source/01-home-top.html",
+    "logicalRoute": "/"
+  },
+  {
+    "id": "02-home-bottom",
+    "title": "Home · reading table & paper",
+    "description": "Continuation of the same homepage, independent stationery facts, shop information and footer.",
+    "source": "source/02-home-bottom.html",
+    "logicalRoute": "/#reading-table"
+  },
+  {
+    "id": "03-collection",
+    "title": "Books · bibliographic results",
+    "description": "Subject rail, edition-aware rows, proposed facets and pagination.",
+    "source": "source/03-collection.html",
+    "logicalRoute": "/collections/essays"
+  },
+  {
+    "id": "04-product-main",
+    "title": "Product · edition & purchase",
+    "description": "Uncropped cover, named edition choices, availability and purchase context.",
+    "source": "source/04-product-main.html",
+    "logicalRoute": "/products/field-notes"
+  },
+  {
+    "id": "05-product-facts",
+    "title": "Product · reading & bibliography",
+    "description": "Original permitted text excerpt, 65-character reading column and exact edition facts; absent ISBN omitted.",
+    "source": "source/05-product-facts.html",
+    "logicalRoute": "/products/field-notes#read"
+  },
+  {
+    "id": "06-product-continuation",
+    "title": "Product · stationery & continuation",
+    "description": "Independent related products, factual notebook specifications and honest policy boundary.",
+    "source": "source/06-product-continuation.html",
+    "logicalRoute": "/products/field-notes#more"
+  },
+  {
+    "id": "07-cart",
+    "title": "Bag · editions & quantities",
+    "description": "Variant-preserving lines, arithmetic, recovery and hosted-checkout entry.",
+    "source": "source/07-cart.html",
+    "logicalRoute": "/cart"
+  },
+  {
+    "id": "08-checkout-address",
+    "title": "Checkout · address",
+    "description": "Canonical hosted checkout, missing-phone validation, disabled Continue, shipping state and complete quote.",
+    "source": "source/08-checkout-address.html",
+    "logicalRoute": "checkout.letbuyy.com/checkout#address"
+  },
+  {
+    "id": "09-checkout-review",
+    "title": "Checkout · review & retry",
+    "description": "Complete quote, eligible example payment choices, error and recoverable commitment.",
+    "source": "source/09-checkout-review.html",
+    "logicalRoute": "checkout.letbuyy.com/checkout#review"
+  },
+  {
+    "id": "10-sign-in",
+    "title": "LetBuyy · buyer sign-in",
+    "description": "LetBuyy credential authority with explicit Marginalia destination and recovery context.",
+    "source": "source/10-sign-in.html",
+    "logicalRoute": "/buyer/authorize#sign-in"
+  },
+  {
+    "id": "11-sign-up",
+    "title": "LetBuyy · create account & continue",
+    "description": "Canonical email/password registration and explicit post-creation Continue to Marginalia; separate email verification is not required here.",
+    "source": "source/11-sign-up.html",
+    "logicalRoute": "/buyer/authorize#register"
+  },
+  {
+    "id": "12-profile",
+    "title": "Account · overview & edit",
+    "description": "Supported profile editing, store-scoped order entry and default address.",
+    "source": "source/12-profile.html",
+    "logicalRoute": "/account"
+  },
+  {
+    "id": "13-orders",
+    "title": "Account · order history",
+    "description": "Store-scoped order identity, state, line context and pagination.",
+    "source": "source/13-orders.html",
+    "logicalRoute": "/account/orders"
+  },
+  {
+    "id": "14-order-detail",
+    "title": "Account · owned order detail",
+    "description": "Edition/configuration snapshot, matched arithmetic and truthful status/provider mode.",
+    "source": "source/14-order-detail.html",
+    "logicalRoute": "/account/orders/MG-1042"
+  },
+  {
+    "id": "15-addresses",
+    "title": "Account · address edit & validation",
+    "description": "Default address, add entry, field-associated validation and preserved saved data.",
+    "source": "source/15-addresses.html",
+    "logicalRoute": "/account/addresses"
+  }
+]

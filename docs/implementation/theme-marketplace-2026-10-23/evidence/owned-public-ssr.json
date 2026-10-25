@@ -1,0 +1,50 @@
+[
+  {
+    "path": "/theme-preview",
+    "status": 200,
+    "ms": 4226,
+    "h1": [
+      "Find your store’spoint of view."
+    ],
+    "hasCards": true,
+    "hasNoMatch": false,
+    "hasRetry": false,
+    "hasNextError": false
+  },
+  {
+    "path": "/theme-preview?theme=letbuyy-sense",
+    "status": 200,
+    "ms": 340,
+    "h1": [
+      "Threadline"
+    ],
+    "hasCards": false,
+    "hasNoMatch": false,
+    "hasRetry": false,
+    "hasNextError": false
+  },
+  {
+    "path": "/theme-preview?search=zznotatheme",
+    "status": 200,
+    "ms": 76,
+    "h1": [
+      "Find your store’spoint of view."
+    ],
+    "hasCards": false,
+    "hasNoMatch": true,
+    "hasRetry": false,
+    "hasNextError": false
+  },
+  {
+    "path": "/theme-preview?page=0",
+    "status": 200,
+    "ms": 48,
+    "h1": [
+      "These filters could not be applied"
+    ],
+    "hasCards": false,
+    "hasNoMatch": false,
+    "hasRetry": false,
+    "hasNextError": false
+  }
+]

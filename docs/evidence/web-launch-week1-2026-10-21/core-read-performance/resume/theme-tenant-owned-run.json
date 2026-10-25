@@ -1,0 +1,64 @@
+{
+  "runId": "b30999a8b4e4",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-24853-mvieqb2c-465956"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 0,
+  "failedSuites": 0,
+  "tests": 23,
+  "assertionsPassed": 23,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 18.1,
+  "suiteSeconds": 16.8,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "theme-tenant-isolation",
+      "path": "tests/security/theme-tenant-isolation.test.mjs",
+      "kind": "postgres",
+      "cluster": "letbuyy-exec-24853-mvieqb2c-465956",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 23,
+      "pass": 23,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 16.8,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "database": "letbuyy_exec_theme_tenant_isolation",
+      "strayProcessesStopped": false
+    }
+  ]
+}

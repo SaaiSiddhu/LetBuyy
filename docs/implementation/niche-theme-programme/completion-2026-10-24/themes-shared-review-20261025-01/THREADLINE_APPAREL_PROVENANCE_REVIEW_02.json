@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-24T23:58:07.529565+00:00",
+  "reviewer": "Themes /01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authority": "RESUME_AUTHORITY_20261025_02.json",
+  "nativeDatabaseBrowserProviderMainBuildActions": 0,
+  "fullThemeCertificate": false,
+  "status": "PRODUCTION_DELTA_ACCEPTABLE_AS_PRIVATE_PREPARATION_NATIVE_CASE_AMENDMENT_REQUIRED",
+  "handoff": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance02/HANDOFF.json",
+    "sha256": "9c9f226a258b6b1709f428c3c6c7da106ab118ce9d26e44b62e21d9cb29176da"
+  },
+  "hashVerification": "PRIVATE_PROPOSAL_HASH_REVIEW_20261025_02.json#/apparel",
+  "productionReview": [
+    "Four exact production deltas reuse canonical ApparelFactsSchema, strict saved snapshot, summary, private cart selector and existing Liquid helper. Product-only apparel; no variant namespace widening or catalogue fallback.",
+    "Both paired SQL bodies append only apparel to one product whitelist each. Exact body/md5/profile guards plus metadata conservation. Whole-cart writer unchanged. Old rows/captures/source remain byte-exact.",
+    "Saved options and garment text render through existing escaped scalar outlet only for explicit Sense211/version6. Frozen200/201/210 and old10001 remain unchanged."
+  ],
+  "retainedTests": {
+    "focusedPass": 16,
+    "new": 13,
+    "existing": 3,
+    "coreRegressionExecutions": 45,
+    "frozenSenseOverlap": 1,
+    "typeEvidence": "0 introduced; actual native NOT_RUN",
+    "countsAreNotNativeOrE2E": true
+  },
+  "findings": [
+    {
+      "id": "APPAREL-NATIVE-R01",
+      "path": "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+      "line": 121,
+      "finding": "Mixed case only captures saved order JSON; explicitly compare whole saved product_snapshot.niche with accepted cart niche_snapshot and exact product/variant/quantity/price, then prove replay and later edit conservation."
+    },
+    {
+      "id": "APPAREL-NATIVE-R02",
+      "path": "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+      "line": 46,
+      "finding": "rows() covers11 scoped business tables, not every public relation. Retain it as scoped HTTP/business witness; add full-public count/hash witness and full security/profile conservation around SQL UP/DOWN and refusals only. Settle actual Worker work before SQL boundaries; do not suppress or broadly ignore telemetry."
+    },
+    {
+      "id": "APPAREL-NATIVE-R03",
+      "path": "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+      "line": 23,
+      "finding": "The file validates a declared baseline and four file hashes but neither independently inventories actual runner migrations nor applies the four prerequisite UPs. Prepare exact admission/profile/bootstrap/source guards and apply verified fourUPs in order on fresh owned fixture before baseline profiles. Current110support is not native dependency closure."
+    }
+  ],
+  "nativeProfileLimit": "Current creator complete native profile not retained; fresh separately admitted native baseline must prove defaults, security, owner/ACL, arguments and all unchanged functions before SQL delta; never invent or sample preserved runtime07."
+}

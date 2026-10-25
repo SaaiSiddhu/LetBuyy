@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-23T14:47:28.284978+00:00",
+  "heartbeat": "2026-10-23T14:45:54.151Z",
+  "status": "SHARED_RUNTIME_OWNER_REPORTS_READY_KINDRED_LEASE_PENDING",
+  "coordinatorCursor": "07791e05-415a-455a-97a4-4cd2ae936928:339",
+  "schedule": {
+    "path": "docs/implementation/niche-theme-programme/capture-schedule.json",
+    "sha256": "cc9ef33d33770eafa0d15fd8bdc100de42028453406209f48a1b2b78e7144d56",
+    "snapshotWindow": "RELEASED_FINAL02_COPY_WORKSPACE_PROOF_ACCEPTED",
+    "fixtureOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "fixtureStatus": "ALL3_PRODUCTION_READY_OWNED_EDITOR_NORMAL_LOGIN_AND_DEWDROP_CRITICAL_PATH",
+    "runId": "9cd50e893016",
+    "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+    "browserOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "scope": "Editor normal login and Dewdrop critical path precede serialized buyer leases"
+  },
+  "kindredLease": null,
+  "runtimeBindings": null,
+  "casesRun": 0,
+  "casesNotRun": 19,
+  "kqa01": {
+    "status": "OPEN P2",
+    "privateProposal": "/private/tmp/kindred-kqa01-20261023-_u9dyb95/proposal-result.json",
+    "sha256": "31c1dddd0abc6f2b33497bd907fdb880d18da0820be42e40719c114f8966e069",
+    "patchSha256": "c3377a51013c704699a8fa549334c0b4c22b17cfeaff79bc93b6e2dae7edbf5d",
+    "applied": false,
+    "primaryCases": {
+      "baselinePass": 22,
+      "baselineFail": 2,
+      "proposedPass": 24,
+      "proposedFail": 0
+    },
+    "boundaryTextProposedPass": 16,
+    "nativeClearClicksPassed": 120,
+    "resourceRelease": "/private/tmp/kindred-kqa01-20261023-_u9dyb95/resource-release.json"
+  },
+  "frozenKindredSourcesChecked": 3,
+  "acceptedKindredArtifactHashMatches": true,
+  "resourcesStartedThisCheck": [],
+  "sourceOrArtifactEdits": false,
+  "notification": "Suppressed: runtime progress recorded but no actionable Kindred lease"
+}

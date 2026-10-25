@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-22",
+  "source_head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "suites": [
+    {"command": "pnpm --filter @letbuyy/identity-platform test", "exit_code": 0, "reported_groups": [50, 6], "failed": 0, "skipped": 0},
+    {"command": "pnpm --filter @letbuyy/merchant-web test", "exit_code": 0, "reported_groups": [204, 810], "failed": 0, "skipped": 0},
+    {"command": "pnpm --filter @letbuyy/ui test --maxWorkers=2", "exit_code": 0, "reported_test_files": 3, "reported_tests": 51, "failed": 0},
+    {"command": "local canonical API integration probe", "exit_code": 0, "passed": 10, "failed": 0, "details": "local-canonical-api-results.json"}
+  ],
+  "scope": "Command-reported results, not unique end-to-end journeys or whole-product certification",
+  "browser_failures_retained": ["unsaved product input lost on sidebar departure", "available-looking Settings Apps link reaches disabled-route 404"],
+  "not_claimed": ["production performance", "full accessibility conformance", "complete RLS red-team", "provider acceptance", "all route flows passed"]
+}

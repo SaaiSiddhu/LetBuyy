@@ -1,0 +1,231 @@
+Browser tab: 1, Title: "[store] · Products · Add product · Shopify", URL: "https://admin.shopify.com/store/[store]/products/new".
+0 AXWebArea [store] · Products · Add product · Shopify, URL: admin.shopify.com/store/[store]/products/new
+	1 container app
+		2 container AppFrame
+			137 text Add product
+			4 container AppFrameChrome
+				5 link Description: Skip to content, Value: admin.shopify.com/store/[store]/products/new#AppFrameMain
+				138 container AppFrameMain
+					139 container
+						140 container
+							141 container
+								142 link Description: Products, Value: admin.shopify.com/store/[store]/products
+							143 heading Add product, Value: 1
+								144 text Add product
+							145 container
+								146 container
+									147 text Title
+									148 text field (settable) Title, Value: Canonical UI research — discard, ID: P0-0
+								149 container
+									150 text Rich text editor
+									151 text Description
+									152 container richtexteditor_toolbar-product-description-r91g
+										153 checkbox (collapsed) Description: Formatting options, Paragraph selected, Value: 0, Secondary Actions: Expand
+											154 text Paragraph
+										155 checkbox Description: Bold, Value: 0
+										156 checkbox Description: Italic, Value: 0
+										157 checkbox Description: Underline, Value: 0
+										158 checkbox (collapsed) Description: Color, Value: 0, Secondary Actions: Expand
+										159 checkbox (collapsed) Description: Additional controls, Value: 0, ID: richtext_editor_toolbar_overflow_controls_activator-product-description-r91g, Secondary Actions: Expand
+									160 container Description: Rich Text Area, ID: product-description-r91g_ifr
+										161 AXWebArea about:srcdoc
+											162 container Description: Rich Text Area. Press ALT-0 for help., ID: tinymce, Value: 
+
+								163 text Media
+								164 container
+									165 text Drop media to upload
+									166 button Drop media to upload, ID: file-input
+									167 container
+										168 button Upload new
+										169 button Select existing
+										170 text Accepts images, videos, or 3D models
+								171 container ProductCategoryPickerAnchor
+									172 text Category
+									173 container
+										174 button Category
+										175 text Category Choose a product category
+									176 text Determines tax rates and adds metafields to improve search, filters, and cross-channel sales
+							177 container
+								178 heading Price, Value: 2
+									179 text Price
+								180 container
+									181 text Price
+									182 container
+										183 text ₹
+										184 text field (settable) Price ₹, ID: :r92b:
+								185 container Compare-at
+									186 button (collapsed) Compare-at, Secondary Actions: Expand
+										187 text Compare-at
+								188 container Unit price
+									189 button (collapsed) Unit price, Secondary Actions: Expand
+										190 text Unit price
+								191 container Charge tax
+									192 button (collapsed) Charge tax Yes, Secondary Actions: Expand
+										193 text Charge tax
+										194 text Yes
+								195 container Cost per item
+									196 button (collapsed) Cost per item, Secondary Actions: Expand
+										197 text Cost per item
+								198 button (collapsed) Secondary Actions: Expand
+							199 container
+								200 heading Inventory, Value: 2
+									201 text Inventory
+								202 text Inventory tracked
+								203 container
+									204 checkbox (settable, integer) Description: Inventory tracked, Value: 1
+									205 text Inventory tracked
+								206 container use-outside-row-actions-click-hook-container
+									207 table
+										208 row
+											209 cell
+												210 text Quantity
+											211 cell Quantity
+												212 text Quantity
+										213 row
+											214 cell
+												215 text Shop location
+											216 cell
+												217 container
+													218 text Shop location quantity available
+													219 container
+														220 stepper (settable, integer) Shop location quantity available, Value: 0, ID: :r94a:
+								221 container SKU
+									222 button (collapsed) SKU, Secondary Actions: Expand
+										223 text SKU
+								224 container Barcodes
+									225 button (collapsed) Barcodes, Secondary Actions: Expand
+										226 text Barcodes
+								227 container Sell when out of stock
+									228 button (collapsed) Sell when out of stock Off, Secondary Actions: Expand
+										229 text Sell when out of stock
+										230 text Off
+								231 button (collapsed) Secondary Actions: Expand
+							232 container
+								233 heading Shipping, Value: 2
+									234 text Shipping
+								235 text Physical product
+								236 container
+									237 checkbox (settable, integer) Description: Physical product, Value: 1
+									238 text Physical product
+								239 text Package when shipped alone
+								240 combo box (collapsed) Package when shipped alone, Value: Store default · Sample box - 22 × 13.7 × 4.2 cm, 0 kg, ID: package-selector-input, Secondary Actions: Expand
+									241 container
+										242 text Store default
+										243 text ·
+										244 text Sample box - 22 × 13.7 × 4.2 cm, 0 kg
+								245 text Packed product size
+								246 image
+								247 container Packed product size
+									248 text Length (L)
+									249 container
+										250 text L
+										251 text field (settable) Length (L) L, ID: ShippingCardDimensionLength
+									252 text Width (W)
+									253 container
+										254 text W
+										255 text field (settable) Width (W) W, ID: ShippingCardDimensionWidth
+									256 text Height (H)
+									257 container
+										258 text H
+										259 text field (settable) Height (H) H, ID: ShippingCardDimensionHeight
+									260 container
+										261 text Dimension unit
+										262 text cm
+										263 pop up button (collapsed, settable) Dimension unit, Value: cm, ID: select, Secondary Actions: Expand
+											264 menu
+												265 (selected) cm
+												266 in
+								267 text Weight
+								268 image
+								269 text Weight
+								270 container
+									271 text field (settable) Weight, Value: 0.0, ID: ShippingCardWeight
+								272 container
+									273 text Weight unit
+									274 text kg
+									275 pop up button (collapsed, settable) Weight unit, Value: kg, ID: select, Secondary Actions: Expand
+										276 menu
+											277 lb
+											278 oz
+											279 (selected) kg
+											280 g
+								281 container Country of origin
+									282 button (collapsed) Country of origin, Secondary Actions: Expand
+										283 text Country of origin
+								284 container HS Code
+									285 button (collapsed) HS Code, Secondary Actions: Expand
+										286 text HS Code
+								287 button (collapsed) Secondary Actions: Expand
+							288 container
+								289 heading Variants, Value: 2
+									290 text Variants
+								291 button Add options like size or color
+									292 text Add options like size or color
+							293 container
+								294 heading Product metafields, Value: 2
+									295 text Product metafields
+								296 button (collapsed) Description: More actions, Secondary Actions: Expand
+								297 text No metafields pinned
+								298 button Disclosures
+									299 text Disclosures
+							300 container
+								301 heading Search engine listing, Value: 2
+									302 text Search engine listing
+								303 button Edit
+								304 text [store]
+								305 text https://[store].myshopify.com › products › canonical-ui-research-discard
+								306 text Canonical UI research — discard
+							307 container
+								308 container
+									309 heading Status, Value: 2
+										310 text Status
+									311 container
+										312 button Status
+										313 text Active
+								314 container
+									315 heading Publishing, Value: 2
+										316 text Publishing
+									317 button Manage publishing
+									318 button All channels
+										319 content list
+											320 text All channels
+								321 container
+									322 heading Product organization, Value: 2
+										323 text Product organization
+									324 link Description: Learn more, Value: help.shopify.com/en/manual/products/details#product-organization
+									325 container
+										326 button Type
+										327 text None
+									328 container
+										329 button Vendor
+										330 text None
+									331 text Collections
+									332 container Collections
+										333 container Collections
+											334 button Add collections
+												335 text Add collections
+									336 container
+										337 text Tags
+										338 container Tags
+											339 container Tags
+												340 button Add tags
+													341 text Add tags
+								342 container
+									343 heading Theme templates, Value: 2
+										344 text Theme templates
+									345 container
+										346 heading Theme template, Value: 3
+											347 text Theme template
+										348 container
+											349 button Theme template
+											350 text Default product
+					351 container
+						352 text Unsaved product
+						353 text Unsaved product
+						354 button Discard
+						355 button Save
+			356 container Quick links
+				357 button (collapsed) Description: Menu, Secondary Actions: Expand
+				358 button (collapsed) Description: Sidekick, Secondary Actions: Expand
+
+The focused UI element is 148 text field (settable) Title, Value: Canonical UI research — discard, ID: P0-0

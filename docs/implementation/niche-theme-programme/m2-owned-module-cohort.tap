@@ -1,0 +1,868 @@
+TAP version 13
+# Subtest: electronics validates strict bounded merchant facts in explicit units
+ok 1 - electronics validates strict bounded merchant facts in explicit units
+  ---
+  duration_ms: 4.004334
+  type: 'test'
+  ...
+# Subtest: missing facts remain absent, not inferred from input power or connector shape
+ok 2 - missing facts remain absent, not inferred from input power or connector shape
+  ---
+  duration_ms: 0.136958
+  type: 'test'
+  ...
+# Subtest: read extracts only its own electronics namespace and never runs a namespace getter
+ok 3 - read extracts only its own electronics namespace and never runs a namespace getter
+  ---
+  duration_ms: 0.588333
+  type: 'test'
+  ...
+# Subtest: invalid values, unknown fields, oversized arrays and inconsistent watts are rejected
+ok 4 - invalid values, unknown fields, oversized arrays and inconsistent watts are rejected
+  ---
+  duration_ms: 2.130417
+  type: 'test'
+  ...
+# Subtest: a compatible device requires a specific model, reference and real source date
+ok 5 - a compatible device requires a specific model, reference and real source date
+  ---
+  duration_ms: 0.763542
+  type: 'test'
+  ...
+# Subtest: normalization preserves physical quantity and never substitutes input W for pass-through W
+ok 6 - normalization preserves physical quantity and never substitutes input W for pass-through W
+  ---
+  duration_ms: 0.182708
+  type: 'test'
+  ...
+# Subtest: beauty facts preserve same-colour named options without inventing variant identities
+ok 7 - beauty facts preserve same-colour named options without inventing variant identities
+  ---
+  duration_ms: 2.153625
+  type: 'test'
+  ...
+# Subtest: missing and explicitly absent ingredients remain missing
+ok 8 - missing and explicitly absent ingredients remain missing
+  ---
+  duration_ms: 0.123083
+  type: 'test'
+  ...
+# Subtest: beauty input rejects unknown fields, invalid samples, unbounded values and duplicate shades
+ok 9 - beauty input rejects unknown fields, invalid samples, unbounded values and duplicate shades
+  ---
+  duration_ms: 2.227542
+  type: 'test'
+  ...
+# Subtest: namespace reader never returns private metadata or inherited/getter input
+ok 10 - namespace reader never returns private metadata or inherited/getter input
+  ---
+  duration_ms: 0.39925
+  type: 'test'
+  ...
+# Subtest: Unicode and supplied text survive without an invented safety classification
+ok 11 - Unicode and supplied text survive without an invented safety classification
+  ---
+  duration_ms: 0.072375
+  type: 'test'
+  ...
+# Subtest: furniture leaf validates supplied bounded facts and preserves honest omissions
+ok 12 - furniture leaf validates supplied bounded facts and preserves honest omissions
+  ---
+  duration_ms: 2.77825
+  type: 'test'
+  ...
+# Subtest: selected variant inline facts preserve common dimensions without mutation
+ok 13 - selected variant inline facts preserve common dimensions without mutation
+  ---
+  duration_ms: 0.543625
+  type: 'test'
+  ...
+# Subtest: inline variant facts reject identity/map/private keys; UUID belongs to enclosing DTO
+ok 14 - inline variant facts reject identity/map/private keys; UUID belongs to enclosing DTO
+  ---
+  duration_ms: 0.218333
+  type: 'test'
+  ...
+# Subtest: supplied units normalize for comparisons and round furniture retains its diameter
+ok 15 - supplied units normalize for comparisons and round furniture retains its diameter
+  ---
+  duration_ms: 0.116166
+  type: 'test'
+  ...
+# Subtest: gift facts preserve bounded merchant data through the deliberate namespace
+ok 16 - gift facts preserve bounded merchant data through the deliberate namespace
+  ---
+  duration_ms: 1.787375
+  type: 'test'
+  ...
+# Subtest: unknown, incomplete and unsafe shapes never become invented gift contents
+ok 17 - unknown, incomplete and unsafe shapes never become invented gift contents
+  ---
+  duration_ms: 0.725
+  type: 'test'
+  ...
+# Subtest: facts bound counts, aggregate size, category keys, duplicate contents and media roles
+ok 18 - facts bound counts, aggregate size, category keys, duplicate contents and media roles
+  ---
+  duration_ms: 1.051375
+  type: 'test'
+  ...
+# Subtest: literal markup is merchant text, not execution; Unicode facts and quantities remain exact
+ok 19 - literal markup is merchant text, not execution; Unicode facts and quantities remain exact
+  ---
+  duration_ms: 0.087416
+  type: 'test'
+  ...
+# Subtest: public projection returns only a strict, bounded personalization namespace
+ok 20 - public projection returns only a strict, bounded personalization namespace
+  ---
+  duration_ms: 2.702583
+  type: 'test'
+  ...
+# Subtest: rejects duplicate identifiers, unbounded arrays, invalid limits and extra nested fields
+ok 21 - rejects duplicate identifiers, unbounded arrays, invalid limits and extra nested fields
+  ---
+  duration_ms: 0.73925
+  type: 'test'
+  ...
+# Subtest: revalidates against current catalog method/style/placement without accepting client price or labels
+ok 22 - revalidates against current catalog method/style/placement without accepting client price or labels
+  ---
+  duration_ms: 1.101542
+  type: 'test'
+  ...
+# Subtest: valid boundary text is echoed exactly: no trimming, case folding or punctuation substitution
+ok 23 - valid boundary text is echoed exactly: no trimming, case folding or punctuation substitution
+  ---
+  duration_ms: 0.5015
+  type: 'test'
+  ...
+# Subtest: Unicode policy is explicit and NFC changes require review rather than silent normalization
+ok 24 - Unicode policy is explicit and NFC changes require review rather than silent normalization
+  ---
+  duration_ms: 1.227458
+  type: 'test'
+  ...
+# Subtest: invalid edit retains exact draft and last valid illustration; catalog revision invalidates stale illustration
+ok 25 - invalid edit retains exact draft and last valid illustration; catalog revision invalidates stale illustration
+  ---
+  duration_ms: 0.164334
+  type: 'test'
+  ...
+# Subtest: fingerprint input is deterministic and distinguishes same SKU configurations and revisions
+ok 26 - fingerprint input is deterministic and distinguishes same SKU configurations and revisions
+  ---
+  duration_ms: 0.596
+  type: 'test'
+  ...
+# Subtest: long and malformed inputs fail before becoming accepted snapshots
+ok 27 - long and malformed inputs fail before becoming accepted snapshots
+  ---
+  duration_ms: 0.315958
+  type: 'test'
+  ...
+# Subtest: book facts preserve supplied bibliography and omit absent ISBN
+ok 28 - book facts preserve supplied bibliography and omit absent ISBN
+  ---
+  duration_ms: 1.205292
+  type: 'test'
+  ...
+# Subtest: ISBN normalizes only a valid supplied identifier
+ok 29 - ISBN normalizes only a valid supplied identifier
+  ---
+  duration_ms: 0.478541
+  type: 'test'
+  ...
+# Subtest: stationery units/counts remain factual and distinct from bibliography
+ok 30 - stationery units/counts remain factual and distinct from bibliography
+  ---
+  duration_ms: 0.434083
+  type: 'test'
+  ...
+# Subtest: strict bounds reject extra/private fields and unbounded input
+ok 31 - strict bounds reject extra/private fields and unbounded input
+  ---
+  duration_ms: 0.395541
+  type: 'test'
+  ...
+# Subtest: excerpt requires a declared permission and attribution; no guessed rights
+ok 32 - excerpt requires a declared permission and attribution; no guessed rights
+  ---
+  duration_ms: 0.177333
+  type: 'test'
+  ...
+# Subtest: reader fails closed for absent, inherited, invalid and accessor facts and excludes private metadata
+ok 33 - reader fails closed for absent, inherited, invalid and accessor facts and excludes private metadata
+  ---
+  duration_ms: 0.561333
+  type: 'test'
+  ...
+# Subtest: inline canonical variant facts distinguish editions without a second ID map
+ok 34 - inline canonical variant facts distinguish editions without a second ID map
+  ---
+  duration_ms: 0.500375
+  type: 'test'
+  ...
+# Subtest: unknown facts remain absent and text is not silently rewritten as a claim
+ok 35 - unknown facts remain absent and text is not silently rewritten as a claim
+  ---
+  duration_ms: 0.052334
+  type: 'test'
+  ...
+# Subtest: food facts keep absent ingredients/allergens explicitly unknown and exclude unrelated metadata
+ok 36 - food facts keep absent ingredients/allergens explicitly unknown and exclude unrelated metadata
+  ---
+  duration_ms: 1.964917
+  type: 'test'
+  ...
+# Subtest: allergen supplied statement needs bounded source and never infers an allergen-free claim
+ok 37 - allergen supplied statement needs bounded source and never infers an allergen-free claim
+  ---
+  duration_ms: 0.685792
+  type: 'test'
+  ...
+# Subtest: unknown keys, oversized facts and invalid net contents fail closed
+ok 38 - unknown keys, oversized facts and invalid net contents fail closed
+  ---
+  duration_ms: 0.531958
+  type: 'test'
+  ...
+# Subtest: inline variant quantity can be validated before a durable variant UUID is allocated
+ok 39 - inline variant quantity can be validated before a durable variant UUID is allocated
+  ---
+  duration_ms: 0.098
+  type: 'test'
+  ...
+# Subtest: authoritative paise and explicit contents derive comparable unit value with integer rounding
+ok 40 - authoritative paise and explicit contents derive comparable unit value with integer rounding
+  ---
+  duration_ms: 0.155875
+  type: 'test'
+  ...
+# Subtest: two 250g sellable packs retain count and 500g contents without mixing mass and volume
+ok 41 - two 250g sellable packs retain count and 500g contents without mixing mass and volume
+  ---
+  duration_ms: 0.092458
+  type: 'test'
+  ...
+# Subtest: variant facts are a bounded inline payload without duplicate variant identity or destructive defaults
+ok 42 - variant facts are a bounded inline payload without duplicate variant identity or destructive defaults
+  ---
+  duration_ms: 2.497
+  type: 'test'
+  ...
+# Subtest: the public metadata reader ignores inherited properties and does not execute an accessor
+ok 43 - the public metadata reader ignores inherited properties and does not execute an accessor
+  ---
+  duration_ms: 0.103833
+  type: 'test'
+  ...
+# Subtest: additional dimensions identify the measured part and remain bounded
+ok 44 - additional dimensions identify the measured part and remain bounded
+  ---
+  duration_ms: 0.875375
+  type: 'test'
+  ...
+# Subtest: selected editions inherit explicitly, replace whole contents and clear facts without leaking a prior edition
+ok 45 - selected editions inherit explicitly, replace whole contents and clear facts without leaking a prior edition
+  ---
+  duration_ms: 1.020209
+  type: 'test'
+  ...
+# Subtest: toy facts preserve merchant values and project only the toys namespace
+ok 46 - toy facts preserve merchant values and project only the toys namespace
+  ---
+  duration_ms: 0.203709
+  type: 'test'
+  ...
+# Subtest: unknown and invalid historic facts stay unknown
+ok 47 - unknown and invalid historic facts stay unknown
+  ---
+  duration_ms: 0.138333
+  type: 'test'
+  ...
+# Subtest: facts reject unbounded, nonfinite, duplicate and unsupported input
+ok 48 - facts reject unbounded, nonfinite, duplicate and unsupported input
+  ---
+  duration_ms: 0.555459
+  type: 'test'
+  ...
+# Subtest: plain merchant text is data; renderer must escape it rather than asserting safety
+ok 49 - plain merchant text is data; renderer must escape it rather than asserting safety
+  ---
+  duration_ms: 0.116542
+  type: 'test'
+  ...
+# Subtest: sports namespace returns only bounded merchant-authored facts
+ok 50 - sports namespace returns only bounded merchant-authored facts
+  ---
+  duration_ms: 1.613792
+  type: 'test'
+  ...
+# Subtest: missing, malformed, extra, unsafe-scope and unbounded fields fail closed
+ok 51 - missing, malformed, extra, unsafe-scope and unbounded fields fail closed
+  ---
+  duration_ms: 0.887791
+  type: 'test'
+  ...
+# Subtest: unknown compatibility stays absent or explicitly unconfirmed; supplied claims need reference
+ok 52 - unknown compatibility stays absent or explicitly unconfirmed; supplied claims need reference
+  ---
+  duration_ms: 0.605334
+  type: 'test'
+  ...
+# Subtest: canonical inline variant facts carry no duplicate identity or correlation map
+ok 53 - canonical inline variant facts carry no duplicate identity or correlation map
+  ---
+  duration_ms: 0.388708
+  type: 'test'
+  ...
+# Subtest: selected canonical variant overrides common measurements without changing common facts
+ok 54 - selected canonical variant overrides common measurements without changing common facts
+  ---
+  duration_ms: 0.166083
+  type: 'test'
+  ...
+# Subtest: reader does not execute metadata getters or inherit another object's sports namespace
+ok 55 - reader does not execute metadata getters or inherit another object's sports namespace
+  ---
+  duration_ms: 0.041875
+  type: 'test'
+  ...
+# Subtest: Circuit is a pure versioned forge package with retained canonical routes and old-v1 bytes
+ok 56 - Circuit is a pure versioned forge package with retained canonical routes and old-v1 bytes
+  ---
+  duration_ms: 31.57625
+  type: 'test'
+  ...
+# Subtest: real Liquid renders distinct retrieval/card/PDP structures and actual identity without invented claims
+ok 57 - real Liquid renders distinct retrieval/card/PDP structures and actual identity without invented claims
+  ---
+  duration_ms: 277.532833
+  type: 'test'
+  ...
+# Subtest: missing technical facts/media and empty catalog are honest and render usable navigation
+ok 58 - missing technical facts/media and empty catalog are honest and render usable navigation
+  ---
+  duration_ms: 88.760667
+  type: 'test'
+  ...
+# Subtest: only explicitly server-enabled facets render, with actual values and provided page URLs
+ok 59 - only explicitly server-enabled facets render, with actual values and provided page URLs
+  ---
+  duration_ms: 34.876625
+  type: 'test'
+  ...
+# Subtest: native filter and sort submissions preserve the query and selections while resetting pagination
+ok 60 - native filter and sort submissions preserve the query and selections while resetting pagination
+  ---
+  duration_ms: 95.568458
+  type: 'test'
+  ...
+# Subtest: collection cards use validated shallow summaries and distinguish cable capacity from output
+ok 61 - collection cards use validated shallow summaries and distinguish cable capacity from output
+  ---
+  duration_ms: 40.632625
+  type: 'test'
+  ...
+# Subtest: merchant strings and asset URLs pass canonical escaping, not executable content
+ok 62 - merchant strings and asset URLs pass canonical escaping, not executable content
+  ---
+  duration_ms: 77.5955
+  type: 'test'
+  ...
+# Subtest: editor settings and selected resources roundtrip and change actual render, including cleared optional media
+ok 63 - editor settings and selected resources roundtrip and change actual render, including cleared optional media
+  ---
+  duration_ms: 106.505791
+  type: 'test'
+  ...
+# Subtest: pure versioned factory preserves its v1 input and canonical non-commerce journeys
+ok 64 - pure versioned factory preserves its v1 input and canonical non-commerce journeys
+  ---
+  duration_ms: 30.442167
+  type: 'test'
+  ...
+# Subtest: real Liquid home and collection render routine rows with actual product URL, price and quantity
+ok 65 - real Liquid home and collection render routine rows with actual product URL, price and quantity
+  ---
+  duration_ms: 170.200584
+  type: 'test'
+  ...
+# Subtest: same-colour shades retain two named buttons, codes and separate canonical variant identities
+ok 66 - same-colour shades retain two named buttons, codes and separate canonical variant identities
+  ---
+  duration_ms: 49.657791
+  type: 'test'
+  ...
+# Subtest: missing facts, photograph and unknown routine stay explicit and no product disappears
+ok 67 - missing facts, photograph and unknown routine stay explicit and no product disappears
+  ---
+  duration_ms: 68.68675
+  type: 'test'
+  ...
+# Subtest: merchant facts, shade names and product titles remain escaped at the real render boundary
+ok 68 - merchant facts, shade names and product titles remain escaped at the real render boundary
+  ---
+  duration_ms: 43.613167
+  type: 'test'
+  ...
+# Subtest: discovery round-trips query selections and server pagination without invented totals
+ok 69 - discovery round-trips query selections and server pagination without invented totals
+  ---
+  duration_ms: 38.157083
+  type: 'test'
+  ...
+# Subtest: empty catalogs and unconfigured merchant claims stay honest
+ok 70 - empty catalogs and unconfigured merchant claims stay honest
+  ---
+  duration_ms: 65.357166
+  type: 'test'
+  ...
+# Subtest: merchant settings, blocks and selected collection survive document roundtrip and change output
+ok 71 - merchant settings, blocks and selected collection survive document roundtrip and change output
+  ---
+  duration_ms: 85.37475
+  type: 'test'
+  ...
+# Subtest: responsive style reflows routine rows and shades while retaining focus and reduced motion
+ok 72 - responsive style reflows routine rows and shades while retaining focus and reduced motion
+  ---
+  duration_ms: 9.48225
+  type: 'test'
+  ...
+# Subtest: pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+ok 73 - pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+  ---
+  duration_ms: 31.302875
+  type: 'test'
+  ...
+# Subtest: actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+ok 74 - actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+  ---
+  duration_ms: 522.896667
+  type: 'test'
+  ...
+# Subtest: PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+ok 75 - PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+  ---
+  duration_ms: 49.13125
+  type: 'test'
+  ...
+# Subtest: missing facts/media never become invented sizes/materials/delivery promises
+ok 76 - missing facts/media never become invented sizes/materials/delivery promises
+  ---
+  duration_ms: 38.898875
+  type: 'test'
+  ...
+# Subtest: merchant content/resource settings survive document roundtrip and change actual output
+ok 77 - merchant content/resource settings survive document roundtrip and change actual output
+  ---
+  duration_ms: 103.585125
+  type: 'test'
+  ...
+# Subtest: furniture filters require real server capability and preserve supported search/query values
+ok 78 - furniture filters require real server capability and preserve supported search/query values
+  ---
+  duration_ms: 69.251
+  type: 'test'
+  ...
+# Subtest: related furniture requires explicit canonical section products and never invents bundles
+ok 79 - related furniture requires explicit canonical section products and never invents bundles
+  ---
+  duration_ms: 87.247708
+  type: 'test'
+  ...
+# Subtest: scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+ok 80 - scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+  ---
+  duration_ms: 8.415625
+  type: 'test'
+  ...
+# Subtest: nested variant facts require a bounded display projection; renderer depth cap stays intact
+ok 81 - nested variant facts require a bounded display projection; renderer depth cap stays intact
+  ---
+  duration_ms: 74.327417
+  type: 'test'
+  ...
+# Subtest: room context is an explicit merchant media choice, never inferred from a second photo
+ok 82 - room context is an explicit merchant media choice, never inferred from a second photo
+  ---
+  duration_ms: 71.176833
+  type: 'test'
+  ...
+# Subtest: declared product display projection renders supplied measures without inventing missing raw material
+ok 83 - declared product display projection renders supplied measures without inventing missing raw material
+  ---
+  duration_ms: 34.674
+  type: 'test'
+  ...
+# Subtest: pure versioned Kindred factory preserves Core input, stable identity and all retained routes
+ok 84 - pure versioned Kindred factory preserves Core input, stable identity and all retained routes
+  ---
+  duration_ms: 25.207375
+  type: 'test'
+  ...
+# Subtest: real Liquid output carries gift identity/facts, contents and canonical variant/cart controls
+ok 85 - real Liquid output carries gift identity/facts, contents and canonical variant/cart controls
+  ---
+  duration_ms: 524.203542
+  type: 'test'
+  ...
+# Subtest: clearing budget preserves occasion, recipient and search, and never carries the old page
+ok 86 - clearing budget preserves occasion, recipient and search, and never carries the old page
+  ---
+  duration_ms: 38.513583
+  type: 'test'
+  ...
+# Subtest: missing query capability offers real basic search, not operational fake facets
+ok 87 - missing query capability offers real basic search, not operational fake facets
+  ---
+  duration_ms: 66.272792
+  type: 'test'
+  ...
+# Subtest: missing/empty facts and media stay unknown, and empty catalogs have honest recovery
+ok 88 - missing/empty facts and media stay unknown, and empty catalogs have honest recovery
+  ---
+  duration_ms: 98.48975
+  type: 'test'
+  ...
+# Subtest: merchant product/fact/query content is escaped; no executable output or manufactured claims
+ok 89 - merchant product/fact/query content is escaped; no executable output or manufactured claims
+  ---
+  duration_ms: 65.928
+  type: 'test'
+  ...
+# Subtest: actual editor settings/resource choices change output and survive the document spine
+ok 90 - actual editor settings/resource choices change output and survive the document spine
+  ---
+  duration_ms: 89.864125
+  type: 'test'
+  ...
+# Subtest: responsive scoped rules reflow product/gallery/finder and respect reduced motion
+ok 91 - responsive scoped rules reflow product/gallery/finder and respect reduced motion
+  ---
+  duration_ms: 7.754666
+  type: 'test'
+  ...
+# Subtest: pure v2 factory preserves Core and every canonical template, with stable catalog identity
+ok 92 - pure v2 factory preserves Core and every canonical template, with stable catalog identity
+  ---
+  duration_ms: 25.856417
+  type: 'test'
+  ...
+# Subtest: actual Liquid rendering gives a distinct workspace and real catalog identity
+ok 93 - actual Liquid rendering gives a distinct workspace and real catalog identity
+  ---
+  duration_ms: 118.738709
+  type: 'test'
+  ...
+# Subtest: personalized PDP keeps canonical gallery/variant/cart controls and visible specification/review hooks
+ok 94 - personalized PDP keeps canonical gallery/variant/cart controls and visible specification/review hooks
+  ---
+  duration_ms: 58.620583
+  type: 'test'
+  ...
+# Subtest: missing product facts produce honest copy without an invented configurator or delivery promise
+ok 95 - missing product facts produce honest copy without an invented configurator or delivery promise
+  ---
+  duration_ms: 65.374959
+  type: 'test'
+  ...
+# Subtest: untrusted product and merchant text is escaped; no Liquid evaluation or executable markup
+ok 96 - untrusted product and merchant text is escaped; no Liquid evaluation or executable markup
+  ---
+  duration_ms: 35.090917
+  type: 'test'
+  ...
+# Subtest: validated pre-serialized facts survive actual attribute sanitization exactly once, including hostile labels
+ok 97 - validated pre-serialized facts survive actual attribute sanitization exactly once, including hostile labels
+  ---
+  duration_ms: 47.417375
+  type: 'test'
+  ...
+# Subtest: editor settings, ordered blocks, media and product limits survive roundtrip and change output
+ok 98 - editor settings, ordered blocks, media and product limits survive roundtrip and change output
+  ---
+  duration_ms: 62.443125
+  type: 'test'
+  ...
+# Subtest: semantic settings change real rendered tokens and fonts without global theme CSS
+ok 99 - semantic settings change real rendered tokens and fonts without global theme CSS
+  ---
+  duration_ms: 30.964792
+  type: 'test'
+  ...
+# Subtest: collection GET filters use canonical names and preserve the current sort
+ok 100 - collection GET filters use canonical names and preserve the current sort
+  ---
+  duration_ms: 31.882708
+  type: 'test'
+  ...
+# Subtest: packaging is deterministic and owned sections introduce no linter errors or undeclared controls
+ok 101 - packaging is deterministic and owned sections introduce no linter errors or undeclared controls
+  ---
+  duration_ms: 14.218541
+  type: 'test'
+  ...
+# Subtest: retained cart/account/content source keeps canonical islands and scoped styling
+ok 102 - retained cart/account/content source keeps canonical islands and scoped styling
+  ---
+  duration_ms: 5.789084
+  type: 'test'
+  ...
+# Subtest: pure v2 factory preserves v1 input and canonical template set, with a distinct home structure
+ok 103 - pure v2 factory preserves v1 input and canonical template set, with a distinct home structure
+  ---
+  duration_ms: 33.093708
+  type: 'test'
+  ...
+# Subtest: actual Liquid rendering carries original product identity, edition facts and scoped styles
+ok 104 - actual Liquid rendering carries original product identity, edition facts and scoped styles
+  ---
+  duration_ms: 258.635167
+  type: 'test'
+  ...
+# Subtest: collection bibliography and stationery dimensions survive the unchanged depth-four sandbox
+ok 105 - collection bibliography and stationery dimensions survive the unchanged depth-four sandbox
+  ---
+  duration_ms: 48.457667
+  type: 'test'
+  ...
+# Subtest: persisted variant UUIDs keep different dimensions attached to the matching edition
+ok 106 - persisted variant UUIDs keep different dimensions attached to the matching edition
+  ---
+  duration_ms: 53.834458
+  type: 'test'
+  ...
+# Subtest: merchant text, media, subject blocks and product resource changes affect Liquid output
+ok 107 - merchant text, media, subject blocks and product resource changes affect Liquid output
+  ---
+  duration_ms: 62.9945
+  type: 'test'
+  ...
+# Subtest: XSS payloads remain escaped text in bibliography, excerpt, links and edition attributes
+ok 108 - XSS payloads remain escaped text in bibliography, excerpt, links and edition attributes
+  ---
+  duration_ms: 45.00625
+  type: 'test'
+  ...
+# Subtest: missing facts and unlicensed excerpts never invent ISBN, dimensions, reviews or reading rights
+ok 109 - missing facts and unlicensed excerpts never invent ISBN, dimensions, reviews or reading rights
+  ---
+  duration_ms: 106.8755
+  type: 'test'
+  ...
+# Subtest: stationery is not relabelled as a book; dimensions and pages/sheets stay distinct
+ok 110 - stationery is not relabelled as a book; dimensions and pages/sheets stay distinct
+  ---
+  duration_ms: 36.183875
+  type: 'test'
+  ...
+# Subtest: discovery facets require a server capability and preserve filters/pagination without a second query engine
+ok 111 - discovery facets require a server capability and preserve filters/pagination without a second query engine
+  ---
+  duration_ms: 99.487416
+  type: 'test'
+  ...
+# Subtest: long English/Hindi strings remain intact and responsive rules contain narrow covers and wrapping
+ok 112 - long English/Hindi strings remain intact and responsive rules contain narrow covers and wrapping
+  ---
+  duration_ms: 63.809958
+  type: 'test'
+  ...
+# Subtest: pure Pantry factory preserves v1 input and stable identity while creating a distinct complete package
+ok 113 - pure Pantry factory preserves v1 input and stable identity while creating a distinct complete package
+  ---
+  duration_ms: 26.145292
+  type: 'test'
+  ...
+# Subtest: real Liquid home and collection render product identity as grocery shelf rows, not an unrelated demo
+ok 114 - real Liquid home and collection render product identity as grocery shelf rows, not an unrelated demo
+  ---
+  duration_ms: 150.248292
+  type: 'test'
+  ...
+# Subtest: food facts and unknown allergens precede canonical selection/purchase islands with explicit contents
+ok 115 - food facts and unknown allergens precede canonical selection/purchase islands with explicit contents
+  ---
+  duration_ms: 33.746834
+  type: 'test'
+  ...
+# Subtest: absent food facts stay unknown; no shipping weight or descriptive label is inferred as net contents
+ok 116 - absent food facts stay unknown; no shipping weight or descriptive label is inferred as net contents
+  ---
+  duration_ms: 34.451041
+  type: 'test'
+  ...
+# Subtest: merchant food facts and resource text cannot inject executable markup
+ok 117 - merchant food facts and resource text cannot inject executable markup
+  ---
+  duration_ms: 40.897458
+  type: 'test'
+  ...
+# Subtest: explicit projected variant food scalars survive depth4 and remain bound to each actual option
+ok 118 - explicit projected variant food scalars survive depth4 and remain bound to each actual option
+  ---
+  duration_ms: 35.876792
+  type: 'test'
+  ...
+# Subtest: unsupported food facets are absent; server-supplied facets and clear-one URL are rendered exactly
+ok 119 - unsupported food facets are absent; server-supplied facets and clear-one URL are rendered exactly
+  ---
+  duration_ms: 57.454
+  type: 'test'
+  ...
+# Subtest: empty catalog is honest and pagination preserves server URLs without invented counts
+ok 120 - empty catalog is honest and pagination preserves server URLs without invented counts
+  ---
+  duration_ms: 50.543625
+  type: 'test'
+  ...
+# Subtest: merchant settings, note blocks and resource selections change real rendered output after document roundtrip
+ok 121 - merchant settings, note blocks and resource selections change real rendered output after document roundtrip
+  ---
+  duration_ms: 59.709833
+  type: 'test'
+  ...
+# Subtest: responsive presentation is scoped, reflows task zones and retains canonical cart/account behavior
+ok 122 - responsive presentation is scoped, reflows task zones and retains canonical cart/account behavior
+  ---
+  duration_ms: 8.748083
+  type: 'test'
+  ...
+# Subtest: hero media/focal controls survive sanitization and clearing media removes the image
+ok 123 - hero media/focal controls survive sanitization and clearing media removes the image
+  ---
+  duration_ms: 62.757917
+  type: 'test'
+  ...
+# Subtest: variant missing food facts stays unknown and never inherits the product pack or unit value
+ok 124 - variant missing food facts stays unknown and never inherits the product pack or unit value
+  ---
+  duration_ms: 39.949042
+  type: 'test'
+  ...
+# Subtest: Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+ok 125 - Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+  ---
+  duration_ms: 25.100583
+  type: 'test'
+  ...
+# Subtest: retained editable inline blocks expose the preview attribute hook on their existing root
+ok 126 - retained editable inline blocks expose the preview attribute hook on their existing root
+  ---
+  duration_ms: 8.166417
+  type: 'test'
+  ...
+# Subtest: actual Liquid home, collection and product render real merchandise and scoped styles
+ok 127 - actual Liquid home, collection and product render real merchandise and scoped styles
+  ---
+  duration_ms: 202.82875
+  type: 'test'
+  ...
+# Subtest: contents and measured dimensions are exact, escaped and present before purchase
+ok 128 - contents and measured dimensions are exact, escaped and present before purchase
+  ---
+  duration_ms: 38.190292
+  type: 'test'
+  ...
+# Subtest: missing media, age, contents, dimensions and warnings remain visibly unknown
+ok 129 - missing media, age, contents, dimensions and warnings remain visibly unknown
+  ---
+  duration_ms: 63.815834
+  type: 'test'
+  ...
+# Subtest: age and interest selectors preserve both choices and each clear action removes one
+ok 130 - age and interest selectors preserve both choices and each clear action removes one
+  ---
+  duration_ms: 67.62375
+  type: 'test'
+  ...
+# Subtest: query attributes and merchant warning text cannot introduce active markup
+ok 131 - query attributes and merchant warning text cannot introduce active markup
+  ---
+  duration_ms: 81.713583
+  type: 'test'
+  ...
+# Subtest: editor mutation changes the rendered campaign and clearing media removes the image
+ok 132 - editor mutation changes the rendered campaign and clearing media removes the image
+  ---
+  duration_ms: 66.16125
+  type: 'test'
+  ...
+# Subtest: empty collections expose recovery and do not fabricate products or counts
+ok 133 - empty collections expose recovery and do not fabricate products or counts
+  ---
+  duration_ms: 27.765959
+  type: 'test'
+  ...
+# Subtest: a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+ok 134 - a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+  ---
+  duration_ms: 60.234167
+  type: 'test'
+  ...
+# Subtest: versioned factory is pure, retains stable ride identity and preserves v1/template functions
+ok 135 - versioned factory is pure, retains stable ride identity and preserves v1/template functions
+  ---
+  duration_ms: 27.323625
+  type: 'test'
+  ...
+# Subtest: real Liquid index and collection render actual identity and measured equipment cards
+ok 136 - real Liquid index and collection render actual identity and measured equipment cards
+  ---
+  duration_ms: 171.373958
+  type: 'test'
+  ...
+# Subtest: canonical variant/cart/gallery islands survive; variant facts are labelled by their own identity
+ok 137 - canonical variant/cart/gallery islands survive; variant facts are labelled by their own identity
+  ---
+  duration_ms: 38.622416
+  type: 'test'
+  ...
+# Subtest: clothing switches to apparel measurements; equipment never receives garment size headings
+ok 138 - clothing switches to apparel measurements; equipment never receives garment size headings
+  ---
+  duration_ms: 72.472875
+  type: 'test'
+  ...
+# Subtest: missing media/facts and empty catalog remain useful without invented stock or compatibility
+ok 139 - missing media/facts and empty catalog remain useful without invented stock or compatibility
+  ---
+  duration_ms: 56.516542
+  type: 'test'
+  ...
+# Subtest: equipment facets stay absent until the canonical server explicitly supplies capability/options
+ok 140 - equipment facets stay absent until the canonical server explicitly supplies capability/options
+  ---
+  duration_ms: 56.291542
+  type: 'test'
+  ...
+# Subtest: merchant settings save/readback changes actual rendered content and media
+ok 141 - merchant settings save/readback changes actual rendered content and media
+  ---
+  duration_ms: 57.247417
+  type: 'test'
+  ...
+# Subtest: portable CSS parses with scoped rules and valid narrow-grid declarations
+ok 142 - portable CSS parses with scoped rules and valid narrow-grid declarations
+  ---
+  duration_ms: 32.784208
+  type: 'test'
+  ...
+# Subtest: reapplying the factory does not duplicate schemas/styles on its own versioned package
+ok 143 - reapplying the factory does not duplicate schemas/styles on its own versioned package
+  ---
+  duration_ms: 6.801708
+  type: 'test'
+  ...
+1..143
+# tests 143
+# suites 0
+# pass 143
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6707.676

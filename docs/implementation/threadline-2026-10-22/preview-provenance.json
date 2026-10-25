@@ -1,0 +1,26 @@
+{
+  "theme": "letbuyy-sense",
+  "packageVersion": "2.0.0",
+  "packageSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+  "source": "Actual current Liquid catalog preview; synthetic merchandise; CUA full-page screenshot; utility preview controls cropped from thumbnail",
+  "outerViewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "iframeViewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "sourceDimensions": {
+    "width": 1274,
+    "height": 1062
+  },
+  "crop": {
+    "left": 16,
+    "top": 261,
+    "width": 1242,
+    "height": 780
+  },
+  "thumbnailSha256": "e7c4df735a07dbde53701aa23880a22d72b9ef3e2868dfe0f0bf3e8600794f53",
+  "thumbnailBytes": 45126
+}

@@ -1,0 +1,16 @@
+--- docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts	2026-10-23 22:09:08
++++ services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts	2026-10-23 22:10:48
+@@ -216,7 +216,12 @@
+     ids.variant = product(a, 'Variant accessory', { electronics: { ...hub, model: 'VARIANT-COMMON' } }, 2000);
+     owned.psql(`INSERT INTO product_options(product_id,name,position,values)VALUES(${q(ids.variant)},'Size',0,'["M","L","S"]');`);
+     variants.m = variant(ids.variant, 'M', 1900, 3); variants.l = variant(ids.variant, 'L', 700, 0);
+-    variants.s = variant(ids.variant, 'S', 1300, 2, { electronics: { kind: 'hub', model: 'UNSUPPORTED-VARIANT-MODEL' } });
++    variants.s = variant(ids.variant, 'S', 1300, 2);
++    const beforeUnsupportedVariant = businessRows();
++    const unsupportedVariantError = owned.psqlExpectError(`UPDATE public.product_variants SET metadata=${json({ electronics: { kind: 'hub', model: 'UNSUPPORTED-VARIANT-MODEL' } })} WHERE id=${q(variants.s)};`);
++    proof('unsupported-variant-persistence-denial', { constraint: 'product_variants_metadata_envelope', error: unsupportedVariantError, beforeBusinessRows: JSON.parse(beforeUnsupportedVariant), classification: 'Persistence denial, not a stored legacy override read proof' });
++    assert.match(unsupportedVariantError, /product_variants_metadata_envelope/);
++    assert.equal(businessRows(), beforeUnsupportedVariant);
+     ids.onlySold = product(a, 'Only sold variant accessory', { electronics: { kind: 'other', model: 'RELATIONAL-UNAVAILABLE', connectors: [{ kind: 'displayport', role: 'video', count: 1 }] } }, 2000, 999);
+     owned.psql(`INSERT INTO product_options(product_id,name,position,values)VALUES(${q(ids.onlySold)},'Size',0,'["M"]');`);
+     variants.onlySold = variant(ids.onlySold, 'M', 100, 0);

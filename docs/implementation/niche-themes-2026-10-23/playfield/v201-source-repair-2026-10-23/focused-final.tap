@@ -1,0 +1,280 @@
+TAP version 13
+# Subtest: structured public carrier uses canonical whole-group resolution, explicit clears and exact owned UUIDs
+ok 1 - structured public carrier uses canonical whole-group resolution, explicit clears and exact owned UUIDs
+  ---
+  duration_ms: 28.395125
+  type: 'test'
+  ...
+# Subtest: real 2.0.1 Liquid SSR does not show common facts as an unselected edition; old 2.0.0 remains reproducible
+ok 2 - real 2.0.1 Liquid SSR does not show common facts as an unselected edition; old 2.0.0 remains reproducible
+  ---
+  duration_ms: 548.66225
+  type: 'test'
+  ...
+# Subtest: actual mapper → Liquid → native picker updates every declared consumer Inherited → Unknown → Paper → Inherited
+ok 3 - actual mapper → Liquid → native picker updates every declared consumer Inherited → Unknown → Paper → Inherited
+  ---
+  duration_ms: 231.265917
+  type: 'test'
+  ...
+# Subtest: explicit materials empty and replacement partial contents never resurrect inherited Wood or completeness
+ok 4 - explicit materials empty and replacement partial contents never resurrect inherited Wood or completeness
+  ---
+  duration_ms: 104.83725
+  type: 'test'
+  ...
+# Subtest: unavailable, nonexistent and incomplete native selections remove prior facts and retain Add authority
+ok 5 - unavailable, nonexistent and incomplete native selections remove prior facts and retain Add authority
+  ---
+  duration_ms: 105.35625
+  type: 'test'
+  ...
+# Subtest: product-only actual Add island initializes validated common facts; setting off creates no presentation or generic fallback
+ok 6 - product-only actual Add island initializes validated common facts; setting off creates no presentation or generic fallback
+  ---
+  duration_ms: 172.825584
+  type: 'test'
+  ...
+# Subtest: declared targets scope by actual product/section, dispose restores original nodes and reconnect renders once
+ok 7 - declared targets scope by actual product/section, dispose restores original nodes and reconnect renders once
+  ---
+  duration_ms: 181.636125
+  type: 'test'
+  ...
+# Subtest: warning attribution, content labels and materials remain inert text through actual Liquid and hydration
+ok 8 - warning attribution, content labels and materials remain inert text through actual Liquid and hydration
+  ---
+  duration_ms: 71.2515
+  type: 'test'
+  ...
+# Subtest: structured facts reject private/invalid/accessor/sparse data and preserve valid picker IDs when unavailable
+ok 9 - structured facts reject private/invalid/accessor/sparse data and preserve valid picker IDs when unavailable
+  ---
+  duration_ms: 3.061792
+  type: 'test'
+  ...
+# Subtest: a foreign UUID or foreign presentation root cannot acquire another product selection
+ok 10 - a foreign UUID or foreign presentation root cannot acquire another product selection
+  ---
+  duration_ms: 4.475917
+  type: 'test'
+  ...
+# Subtest: unknown product-only SSR and hydrated facts retain honest absence without an empty warning claim
+ok 11 - unknown product-only SSR and hydrated facts retain honest absence without an empty warning claim
+  ---
+  duration_ms: 73.12625
+  type: 'test'
+  ...
+# Subtest: existing flat facts keep their reservation; combined structured+flat per-row/aggregate budgets do not increase
+ok 12 - existing flat facts keep their reservation; combined structured+flat per-row/aggregate budgets do not increase
+  ---
+  duration_ms: 24.669541
+  type: 'test'
+  ...
+# Subtest: actual application mapper preserves all nine derived namespaces through collection depth4
+ok 13 - actual application mapper preserves all nine derived namespaces through collection depth4
+  ---
+  duration_ms: 347.533833
+  type: 'test'
+  ...
+# Subtest: actual PDP keeps exact inert personalization JSON and UUID-specific variant display facts
+ok 14 - actual PDP keeps exact inert personalization JSON and UUID-specific variant display facts
+  ---
+  duration_ms: 181.379458
+  type: 'test'
+  ...
+# Subtest: anonymous Liquid variant projection cannot copy arbitrary metadata, supplier cost or SKU
+ok 15 - anonymous Liquid variant projection cannot copy arbitrary metadata, supplier cost or SKU
+  ---
+  duration_ms: 8.846625
+  type: 'test'
+  ...
+# Subtest: two actual mapper→Liquid→native picker product sections scope food facts/counts by durable UUID with spaces/Hindi labels
+ok 16 - two actual mapper→Liquid→native picker product sections scope food facts/counts by durable UUID with spaces/Hindi labels
+  ---
+  duration_ms: 692.048542
+  type: 'test'
+  ...
+# Subtest: missing, nonexistent, incomplete and unavailable selections cannot retain prior pack facts; fallback comparison remains
+ok 17 - missing, nonexistent, incomplete and unavailable selections cannot retain prior pack facts; fallback comparison remains
+  ---
+  duration_ms: 113.126916
+  type: 'test'
+  ...
+# Subtest: unvarianted contents initialize per-pack/unit value and quantity context without a fabricated variant
+ok 18 - unvarianted contents initialize per-pack/unit value and quantity context without a fabricated variant
+  ---
+  duration_ms: 78.248333
+  type: 'test'
+  ...
+# Subtest: selected furniture/sports/toy/book measurements retain resolved whole-group overrides and hostile text stays inert
+ok 19 - selected furniture/sports/toy/book measurements retain resolved whole-group overrides and hostile text stays inert
+  ---
+  duration_ms: 114.179166
+  type: 'test'
+  ...
+# Subtest: actual Habitat hook restores common facts for incomplete/unknown options and shows exact unavailable finish facts
+ok 20 - actual Habitat hook restores common facts for incomplete/unknown options and shows exact unavailable finish facts
+  ---
+  duration_ms: 148.964834
+  type: 'test'
+  ...
+# Subtest: disconnect restores no-JS fallback and removes listeners; reconnect initializes retained selected UUID once
+ok 21 - disconnect restores no-JS fallback and removes listeners; reconnect initializes retained selected UUID once
+  ---
+  duration_ms: 159.067292
+  type: 'test'
+  ...
+# Subtest: fact carrier is inert, strict and bounded; invalid facts never discard a valid picker UUID/options
+ok 22 - fact carrier is inert, strict and bounded; invalid facts never discard a valid picker UUID/options
+  ---
+  duration_ms: 0.457167
+  type: 'test'
+  ...
+# Subtest: mapper bounds aggregate display facts and excludes all private variant fields
+ok 23 - mapper bounds aggregate display facts and excludes all private variant fields
+  ---
+  duration_ms: 16.880333
+  type: 'test'
+  ...
+# Subtest: bounded option carrier preserves spaces, Unicode and prototype-like labels as inert own data
+ok 24 - bounded option carrier preserves spaces, Unicode and prototype-like labels as inert own data
+  ---
+  duration_ms: 1.312042
+  type: 'test'
+  ...
+# Subtest: malformed, oversized or accessor options fail closed; valid legacy carriers retain compatibility
+ok 25 - malformed, oversized or accessor options fail closed; valid legacy carriers retain compatibility
+  ---
+  duration_ms: 1.451125
+  type: 'test'
+  ...
+# Subtest: actual Liquid depth/key scrub retains option labels and the real picker resolves availability
+ok 26 - actual Liquid depth/key scrub retains option labels and the real picker resolves availability
+  ---
+  duration_ms: 617.936125
+  type: 'test'
+  ...
+# Subtest: all nine v2 packages require explicit distribution version and retain stable catalog identities
+ok 27 - all nine v2 packages require explicit distribution version and retain stable catalog identities
+  ---
+  duration_ms: 210.892125
+  type: 'test'
+  ...
+# Subtest: Threadline keeps the same bundle and unknown catalog slugs fail closed
+ok 28 - Threadline keeps the same bundle and unknown catalog slugs fail closed
+  ---
+  duration_ms: 43.820166
+  type: 'test'
+  ...
+# Subtest: the distribution builder includes historical order facts only in the nine explicit v2 packages
+ok 29 - the distribution builder includes historical order facts only in the nine explicit v2 packages
+  ---
+  duration_ms: 238.339959
+  type: 'test'
+  ...
+# Subtest: all twenty previous default/v2 builder outputs remain byte-identical
+ok 30 - all twenty previous default/v2 builder outputs remain byte-identical
+  ---
+  duration_ms: 266.002625
+  type: 'test'
+  ...
+# Subtest: 2.0.1 requires both explicit niche-v2 and Playfield opt-in; the other nine listings/builders are unchanged
+ok 31 - 2.0.1 requires both explicit niche-v2 and Playfield opt-in; the other nine listings/builders are unchanged
+  ---
+  duration_ms: 478.593083
+  type: 'test'
+  ...
+# Subtest: append-only factory changes only package version and declared PDP contract; original input/styles/routes remain unchanged
+ok 32 - append-only factory changes only package version and declared PDP contract; original input/styles/routes remain unchanged
+  ---
+  duration_ms: 24.128834
+  type: 'test'
+  ...
+# Subtest: Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+ok 33 - Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+  ---
+  duration_ms: 60.447
+  type: 'test'
+  ...
+# Subtest: fresh inherited buyer templates contain only supported replacement settings and survive JSON-wire documents
+ok 34 - fresh inherited buyer templates contain only supported replacement settings and survive JSON-wire documents
+  ---
+  duration_ms: 611.086958
+  type: 'test'
+  ...
+# Subtest: retained editable inline blocks expose the preview attribute hook on their existing root
+ok 35 - retained editable inline blocks expose the preview attribute hook on their existing root
+  ---
+  duration_ms: 30.663875
+  type: 'test'
+  ...
+# Subtest: actual inline FAQ roots expose stable block identity only in editor preview
+ok 36 - actual inline FAQ roots expose stable block identity only in editor preview
+  ---
+  duration_ms: 184.017042
+  type: 'test'
+  ...
+# Subtest: actual Liquid home, collection and product render real merchandise and scoped styles
+ok 37 - actual Liquid home, collection and product render real merchandise and scoped styles
+  ---
+  duration_ms: 372.27775
+  type: 'test'
+  ...
+# Subtest: an unconfigured announcement has no empty focusable link
+ok 38 - an unconfigured announcement has no empty focusable link
+  ---
+  duration_ms: 205.828958
+  type: 'test'
+  ...
+# Subtest: contents and measured dimensions are exact, escaped and present before purchase
+ok 39 - contents and measured dimensions are exact, escaped and present before purchase
+  ---
+  duration_ms: 87.539458
+  type: 'test'
+  ...
+# Subtest: missing media, age, contents, dimensions and warnings remain visibly unknown
+ok 40 - missing media, age, contents, dimensions and warnings remain visibly unknown
+  ---
+  duration_ms: 141.837958
+  type: 'test'
+  ...
+# Subtest: age and interest selectors preserve both choices and each clear action removes one
+ok 41 - age and interest selectors preserve both choices and each clear action removes one
+  ---
+  duration_ms: 136.649875
+  type: 'test'
+  ...
+# Subtest: query attributes and merchant warning text cannot introduce active markup
+ok 42 - query attributes and merchant warning text cannot introduce active markup
+  ---
+  duration_ms: 127.228875
+  type: 'test'
+  ...
+# Subtest: editor mutation changes the rendered campaign and clearing media removes the image
+ok 43 - editor mutation changes the rendered campaign and clearing media removes the image
+  ---
+  duration_ms: 118.947584
+  type: 'test'
+  ...
+# Subtest: empty collections expose recovery and do not fabricate products or counts
+ok 44 - empty collections expose recovery and do not fabricate products or counts
+  ---
+  duration_ms: 49.18575
+  type: 'test'
+  ...
+# Subtest: a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+ok 45 - a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+  ---
+  duration_ms: 113.492667
+  type: 'test'
+  ...
+1..45
+# tests 45
+# suites 0
+# pass 45
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4300.551458

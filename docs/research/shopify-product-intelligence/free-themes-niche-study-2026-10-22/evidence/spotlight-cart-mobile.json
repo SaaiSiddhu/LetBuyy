@@ -1,0 +1,183 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(18, 18, 18, 0.75)",
+    "font": "Inter, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada (CAD $)",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Inter, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": -103.984375
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 39,
+      "line": "39px",
+      "size": "30px",
+      "tag": "H1",
+      "text": "Your cart is empty",
+      "weight": "400",
+      "width": 360,
+      "x": 15,
+      "y": 168.515625
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 41.59375,
+      "line": "20.8px",
+      "size": "16px",
+      "tag": "H2",
+      "text": "A brand that strives to inspire and push creative culture forward.",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 443.28125
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 166.3671875,
+      "x": 111.8125,
+      "y": 845.875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-spotlight-demo.myshopify.com/cart#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-spotlight-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-spotlight-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-spotlight-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Continue shopping",
+      "url": "https://theme-spotlight-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "theme-spotlight-demo",
+      "url": "https://theme-spotlight-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15939470000184__cart-items",
+      "rect": {
+        "height": 191,
+        "width": 390,
+        "x": 0,
+        "y": 93.515625
+      },
+      "tag": "DIV",
+      "text": "Your cart is empty\nContinue shopping"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15939470000184__cart-footer",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 284.515625
+      },
+      "tag": "DIV",
+      "text": ""
+    }
+  ],
+  "title": "Your Shopping Cart – theme-spotlight-demo",
+  "url": "https://theme-spotlight-demo.myshopify.com/cart",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [],
+  "images": [],
+  "bodyText": "Skip to content\nCart\nYour cart is empty\nContinue shopping\nA brand that strives to inspire and push creative culture forward.\n\nWe approach our work with the mentality that every product made is a learning experience to improve our craft. We are practitioners and purveyors of creative culture and are inspired by its various forms from art, design, fashion, music, film, food, and more.\n\nFacebook\nInstagram\nYouTube\nTikTok\nTwitter\nCountry/region\nCanada (CAD $)\nPayment methods\n© 2026, theme-spotlight-demo Powered by Shopify"
+}

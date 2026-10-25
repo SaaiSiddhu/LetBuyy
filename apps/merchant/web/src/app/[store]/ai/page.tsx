@@ -1,6 +1,7 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import type { AIUsageRecord } from '@letbuyy/shared-types'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -28,21 +29,9 @@ import { Button, Table,
 } from '@letbuyy/ui'
 import { formatIndiaDayMonthTime as formatDate } from '@letbuyy/ui/formatting'
 
-interface AiUsage {
-    id: string
-    feature: string
-    input_tokens: number
-    output_tokens: number
-    credits_used: number
-    created_at: string
-}
-
-interface AiUsageRow {
-    id: string
-    feature: string
+type AiUsageRow = Pick<AIUsageRecord, 'id' | 'feature' | 'credits_used'> & {
     tokens: number
-    credits_used: number
-    created_at: string
+    created_at: string | null
 }
 
 interface Credits {
@@ -113,7 +102,7 @@ export default function AiStudioPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
     const [credits, setCredits] = useState<Credits>({ total: 0, used: 0, remaining: 0 })
-    const [usage, setUsage] = useState<AiUsage[]>([])
+    const [usage, setUsage] = useState<AIUsageRecord[]>([])
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -134,11 +123,13 @@ export default function AiStudioPage() {
 
             const creditData = payload?.data?.credits
             if (creditData) {
-                const total = Number(creditData.total_credits ?? creditData.plan_credits ?? creditData.balance ?? 0)
-                const used = Number(creditData.used_credits ?? creditData.total_used ?? 0)
-                setCredits({ total, used, remaining: Math.max(0, total - used) })
+                const total = Number(creditData.plan_credits ?? 0) + Number(creditData.bonus_credits ?? 0) + Number(creditData.total_purchased ?? 0)
+                const used = Number(creditData.total_used)
+                const remaining = Number(creditData.balance)
+                if (![total, used, remaining].every(Number.isFinite)) throw new Error('AI credit information is unavailable')
+                setCredits({ total, used, remaining })
             } else {
-                setCredits({ total: 0, used: 0, remaining: 0 })
+                throw new Error('AI credit information is unavailable')
             }
             setUsage(Array.isArray(payload?.data?.usage) ? payload.data.usage : [])
         } catch (error) {
@@ -166,9 +157,9 @@ export default function AiStudioPage() {
         () => usage.map((item) => ({
             id: item.id,
             feature: item.feature,
-            tokens: item.input_tokens + item.output_tokens,
+            tokens: Number(item.tokens_input ?? 0) + Number(item.tokens_output ?? 0),
             credits_used: item.credits_used,
-            created_at: item.created_at,
+            created_at: item.created_at || null,
         })),
         [usage],
     )
@@ -201,7 +192,7 @@ export default function AiStudioPage() {
             header: 'Date',
             render: (row) => (
                 <span className="text-[var(--lb-color-text-subdued)]">
-                    {formatDate(row.created_at || new Date().toISOString())}
+                    {row.created_at ? formatDate(row.created_at) : '—'}
                 </span>
             ),
         },
@@ -210,7 +201,8 @@ export default function AiStudioPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="settings"
+                    recipe="index"
                     title="AI Studio"
                     description="Monitor AI credits and the tools available to speed up merchant content work."
                     breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}
@@ -231,7 +223,8 @@ export default function AiStudioPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="settings"
+                recipe="index"
                 title="AI Studio"
                 description="Monitor AI credits and the tools available to speed up merchant content work."
                 breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}
@@ -270,7 +263,7 @@ export default function AiStudioPage() {
                 <MetricCard
                     label="Recent generations"
                     value={usage.length.toLocaleString('en-IN')}
-                    delta="Last 100 AI usage events"
+                    delta="Latest 20 AI usage events"
                     deltaTone="neutral"
                 />
             </div>

@@ -1,0 +1,82 @@
+{
+  "method": "WCAG sRGB relative luminance, opaque pairs only; not page conformance",
+  "pairs": [
+    {
+      "label": "Live login heading",
+      "foreground": "#303030",
+      "background": "#FFFFFF",
+      "ratio": 13.19811185826915,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Live login secondary text",
+      "foreground": "#616161",
+      "background": "#FFFFFF",
+      "ratio": 6.193286162073998,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Live login link",
+      "foreground": "#005BD3",
+      "background": "#FFFFFF",
+      "ratio": 6.109865988696781,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Live login focus ring on focused field",
+      "foreground": "#005BD3",
+      "background": "#F3F3F3",
+      "ratio": 5.506265655550024,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Live login action label",
+      "foreground": "#FAFCFC",
+      "background": "#0B1314",
+      "ratio": 18.25054495891836,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Live signup label",
+      "foreground": "#545D5E",
+      "background": "#FFFFFF",
+      "ratio": 6.764735379811309,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Live signup subtitle",
+      "foreground": "#BFC7C8",
+      "background": "#0A1314",
+      "ratio": 10.947094993200016,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Archive success text on success surface",
+      "foreground": "#014B40",
+      "background": "#CDFED4",
+      "ratio": 8.99397348204662,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Archive critical text on critical surface",
+      "foreground": "#8E0B21",
+      "background": "#FEE8EB",
+      "ratio": 8.088536804181322,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Archive warning text on warning surface",
+      "foreground": "#5E4200",
+      "background": "#FFF1E3",
+      "ratio": 8.399760351629547,
+      "normalTextThresholdMet": true
+    },
+    {
+      "label": "Archive subdued border on white",
+      "foreground": "#E3E3E3",
+      "background": "#FFFFFF",
+      "ratio": 1.283381443065256,
+      "normalTextThresholdMet": false
+    }
+  ]
+}

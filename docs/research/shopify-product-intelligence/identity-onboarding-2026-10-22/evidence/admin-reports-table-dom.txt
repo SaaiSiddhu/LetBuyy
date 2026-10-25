@@ -1,0 +1,1023 @@
+- status
+- status: Reports
+- link "Skip to content":
+  - /url: "#AppFrameMain"
+  - strong:
+    - generic: Skip to content
+- generic "Navigation":
+  - img "Shopify"
+  - button "Collapse navigation" [expanded]:
+  - button "Search":
+    - generic: Search
+    - generic: ⌘K
+  - navigation:
+    - list:
+      - link "Home":
+        - /url: /store/[test-store]
+        - generic: Home
+      - link "Orders":
+        - /url: /store/[test-store]/orders
+        - generic: Orders
+      - link "Products":
+        - /url: /store/[test-store]/products
+        - generic: Products
+      - link "Customers":
+        - /url: /store/[test-store]/customers
+        - generic: Customers
+      - link "Growth":
+        - /url: /store/[test-store]/growth
+        - generic: Growth
+      - link "Discounts":
+        - /url: /store/[test-store]/discounts
+        - generic: Discounts
+      - link "Content":
+        - /url: /store/[test-store]/content/metaobjects
+        - generic: Content
+      - link "Markets":
+        - /url: /store/[test-store]/markets
+        - generic: Markets
+      - link "Analytics" [expanded]:
+        - /url: /store/[test-store]/analytics
+        - generic: Analytics
+      - list:
+        - link "Reports" [active]:
+          - /url: /store/[test-store]/analytics/reports
+          - generic: Reports
+        - link "Live View":
+          - /url: /store/[test-store]/analytics/live
+          - generic: Live View
+    - list:
+      - button "Sales channels":
+        - generic: Sales channels
+      - list:
+        - button "Online Store":
+          - list:
+            - link "Online Store":
+              - /url: /store/[test-store]/themes?[query omitted]
+              - generic: Online Store
+        - button "Agentic":
+          - list:
+            - link "Agentic":
+              - /url: /store/[test-store]/apps/agentic?[query omitted]
+              - generic: Agentic
+      - status
+      - button "Apps":
+        - generic: Apps
+      - button "Add":
+        - text: Add
+    - list:
+      - link "Settings":
+        - /url: /store/[test-store]/settings
+        - generic: Settings
+      - button "[test identity]":
+        - img "[test identity]":
+          - generic: MS4
+        - paragraph: [test identity]
+      - generic: View Dev Dashboard
+      - button "Alerts Feed - 0 unread alerts":
+      - generic: Mark all as read
+      - generic: Alerts about your store and account will show here
+    - link "Trial ends in 2 days Subscribe for ₹20":
+      - /url: /store/[test-store]/subscribe/checkout
+      - generic: Trial ends in 2 days
+      - generic: Subscribe for ₹20
+- main:
+  - heading "Reports" [level=1]
+  - link "New exploration":
+    - /url: /store/[test-store]/analytics/reports/explore
+    - generic: New exploration
+  - generic: Search reports
+  - textbox "Search reports"
+  - button "Sort options":
+  - button "Created by":
+    - generic: Created by
+  - button "Category":
+    - generic: Category
+  - table:
+    - rowgroup:
+      - row "Name Category Last viewed Created by Pinned":
+        - columnheader "Name":
+          - button "Name":
+            - generic: Name
+        - columnheader "Category":
+          - button "Category":
+            - generic: Category
+        - columnheader "Last viewed":
+          - button "Last viewed":
+            - generic: Last viewed
+        - columnheader "Created by":
+          - button "Created by":
+            - generic: Created by
+        - columnheader "Pinned":
+          - generic: Pinned
+    - rowgroup:
+      - row "Sessions by location Acquisition Shopify":
+        - cell "Sessions by location":
+          - link "Sessions by location":
+            - /url: /store/[test-store]/analytics/reports/sessions_by_location
+            - generic: Sessions by location
+        - cell "Acquisition":
+          - generic: Acquisition
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Sessions by location report":
+      - row "Sessions by referrer Acquisition Shopify":
+        - cell "Sessions by referrer":
+          - link "Sessions by referrer":
+            - /url: /store/[test-store]/analytics/reports/sessions_by_referrer
+            - generic: Sessions by referrer
+        - cell "Acquisition":
+          - generic: Acquisition
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Sessions by referrer report":
+      - row "Sessions by social referrer Acquisition Shopify":
+        - cell "Sessions by social referrer":
+          - link "Sessions by social referrer":
+            - /url: /store/[test-store]/analytics/reports/sessions_by_social_source
+            - generic: Sessions by social referrer
+        - cell "Acquisition":
+          - generic: Acquisition
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Sessions by social referrer report":
+      - row "Sessions over time Acquisition Shopify":
+        - cell "Sessions over time":
+          - link "Sessions over time":
+            - /url: /store/[test-store]/analytics/reports/sessions_over_time
+            - generic: Sessions over time
+        - cell "Acquisition":
+          - generic: Acquisition
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Sessions over time report":
+      - row "Visitors over time Acquisition Shopify":
+        - cell "Visitors over time":
+          - link "Visitors over time":
+            - /url: /store/[test-store]/analytics/reports/visitors_over_time
+            - generic: Visitors over time
+        - cell "Acquisition":
+          - generic: Acquisition
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Visitors over time report":
+      - row "Visitors right now Acquisition Shopify":
+        - cell "Visitors right now":
+          - link "Visitors right now":
+            - /url: /store/[test-store]/analytics/reports/visitors_right_now
+            - generic: Visitors right now
+        - cell "Acquisition":
+          - generic: Acquisition
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Visitors right now report":
+      - row "Bounce rate over time Behavior Shopify":
+        - cell "Bounce rate over time":
+          - link "Bounce rate over time":
+            - /url: /store/[test-store]/analytics/reports/bounce_rate_over_time
+            - generic: Bounce rate over time
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Bounce rate over time report":
+      - row "Checkout conversion rate over time Behavior Shopify":
+        - cell "Checkout conversion rate over time":
+          - link "Checkout conversion rate over time":
+            - /url: /store/[test-store]/analytics/reports/checkout_conversion_rate_over_time
+            - generic: Checkout conversion rate over time
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Checkout conversion rate over time report":
+      - row "Conversion rate breakdown Behavior Shopify":
+        - cell "Conversion rate breakdown":
+          - link "Conversion rate breakdown":
+            - /url: /store/[test-store]/analytics/reports/conversion_rate_breakdown
+            - generic: Conversion rate breakdown
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Conversion rate breakdown report":
+      - row "Conversion rate over time Behavior Shopify":
+        - cell "Conversion rate over time":
+          - link "Conversion rate over time":
+            - /url: /store/[test-store]/analytics/reports/conversion_rate_over_time
+            - generic: Conversion rate over time
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Conversion rate over time report":
+      - row "Customer behavior Behavior Shopify":
+        - cell "Customer behavior":
+          - link "Customer behavior":
+            - /url: /store/[test-store]/analytics/reports/customer_behavior
+            - generic: Customer behavior
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Customer behavior report":
+      - row "Product recommendation conversions over time Behavior Shopify":
+        - cell "Product recommendation conversions over time":
+          - link "Product recommendation conversions over time":
+            - /url: /store/[test-store]/analytics/reports/product_recommendation_conversions_over_time
+            - generic: Product recommendation conversions over time
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Product recommendation conversions over time report":
+      - row "Product recommendations with low engagement Behavior Shopify":
+        - cell "Product recommendations with low engagement":
+          - link "Product recommendations with low engagement":
+            - /url: /store/[test-store]/analytics/reports/product_recommendations_low_engagement
+            - generic: Product recommendations with low engagement
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Product recommendations with low engagement report":
+      - row "Search conversions over time Behavior Shopify":
+        - cell "Search conversions over time":
+          - link "Search conversions over time":
+            - /url: /store/[test-store]/analytics/reports/search_conversions_over_time
+            - generic: Search conversions over time
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Search conversions over time report":
+      - row "Searches by search query Behavior Shopify":
+        - cell "Searches by search query":
+          - link "Searches by search query":
+            - /url: /store/[test-store]/analytics/reports/searches_by_search_query
+            - generic: Searches by search query
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Searches by search query report":
+      - row "Searches with no clicks Behavior Shopify":
+        - cell "Searches with no clicks":
+          - link "Searches with no clicks":
+            - /url: /store/[test-store]/analytics/reports/searches_with_no_clicks
+            - generic: Searches with no clicks
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Searches with no clicks report":
+      - row "Searches with no results Behavior Shopify":
+        - cell "Searches with no results":
+          - link "Searches with no results":
+            - /url: /store/[test-store]/analytics/reports/searches_with_no_results
+            - generic: Searches with no results
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Searches with no results report":
+      - row "Sessions by device type Behavior Shopify":
+        - cell "Sessions by device type":
+          - link "Sessions by device type":
+            - /url: /store/[test-store]/analytics/reports/sessions_by_device_type
+            - generic: Sessions by device type
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Sessions by device type report":
+      - row "Sessions by landing page Behavior Shopify":
+        - cell "Sessions by landing page":
+          - link "Sessions by landing page":
+            - /url: /store/[test-store]/analytics/reports/sessions_by_landing_page
+            - generic: Sessions by landing page
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Sessions by landing page report":
+      - row "Shop Campaign ROAS Behavior Shopify":
+        - cell "Shop Campaign ROAS":
+          - link "Shop Campaign ROAS":
+            - /url: /store/[test-store]/analytics/reports/shop_campaign_roas
+            - generic: Shop Campaign ROAS
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Shop Campaign ROAS report":
+      - row "Storefront agent assisted sessions Behavior Shopify":
+        - cell "Storefront agent assisted sessions":
+          - link "Storefront agent assisted sessions":
+            - /url: /store/[test-store]/analytics/reports/consumer_agent_assisted_sessions
+            - generic: Storefront agent assisted sessions
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Storefront agent assisted sessions report":
+      - row "Storefront agent conversations and feedback Behavior Shopify":
+        - cell "Storefront agent conversations and feedback":
+          - link "Storefront agent conversations and feedback":
+            - /url: /store/[test-store]/analytics/reports/consumer_agent_messages
+            - generic: Storefront agent conversations and feedback
+        - cell "Behavior":
+          - generic: Behavior
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Storefront agent conversations and feedback report":
+      - row "Customer cohort analysis Customers Shopify":
+        - cell "Customer cohort analysis":
+          - link "Customer cohort analysis":
+            - /url: /store/[test-store]/analytics/reports/customer_cohort_analysis
+            - generic: Customer cohort analysis
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Customer cohort analysis report":
+      - row "Customers by location Customers Shopify":
+        - cell "Customers by location":
+          - link "Customers by location":
+            - /url: /store/[test-store]/analytics/reports/customers_by_location
+            - generic: Customers by location
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Customers by location report":
+      - row "New customer sales over time Customers Shopify":
+        - cell "New customer sales over time":
+          - link "New customer sales over time":
+            - /url: /store/[test-store]/analytics/reports/new_customer_sales_over_time
+            - generic: New customer sales over time
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin New customer sales over time report":
+      - row "New customers over time Customers Shopify":
+        - cell "New customers over time":
+          - link "New customers over time":
+            - /url: /store/[test-store]/analytics/reports/new_customers_over_time
+            - generic: New customers over time
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin New customers over time report":
+      - row "New vs returning customers Customers Shopify":
+        - cell "New vs returning customers":
+          - link "New vs returning customers":
+            - /url: /store/[test-store]/analytics/reports/new_vs_returning_customers
+            - generic: New vs returning customers
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin New vs returning customers report":
+      - row "One-time customers Customers Shopify":
+        - cell "One-time customers":
+          - link "One-time customers":
+            - /url: /store/[test-store]/analytics/reports/one_time_customers
+            - generic: One-time customers
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin One-time customers report":
+      - row "Predicted spend tiers Customers Shopify":
+        - cell "Predicted spend tiers":
+          - link "Predicted spend tiers":
+            - /url: /store/[test-store]/analytics/reports/predicted_spend_tiers
+            - generic: Predicted spend tiers
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Predicted spend tiers report":
+      - row "Returning customer rate over time Customers Shopify":
+        - cell "Returning customer rate over time":
+          - link "Returning customer rate over time":
+            - /url: /store/[test-store]/analytics/reports/returning_customer_rate_over_time
+            - generic: Returning customer rate over time
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Returning customer rate over time report":
+      - row "Returning customers Customers Shopify":
+        - cell "Returning customers":
+          - link "Returning customers":
+            - /url: /store/[test-store]/analytics/reports/returning_customers
+            - generic: Returning customers
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Returning customers report":
+      - row "RFM customer analysis Customers Shopify":
+        - cell "RFM customer analysis":
+          - link "RFM customer analysis":
+            - /url: /store/[test-store]/analytics/reports/rfm_customer_analysis
+            - generic: RFM customer analysis
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin RFM customer analysis report":
+      - row "RFM customer list Customers Shopify":
+        - cell "RFM customer list":
+          - link "RFM customer list":
+            - /url: /store/[test-store]/analytics/reports/rfm_customer_list
+            - generic: RFM customer list
+        - cell "Customers":
+          - generic: Customers
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin RFM customer list report":
+      - row "Chargeback rate Finances Shopify":
+        - cell "Chargeback rate":
+          - link "Chargeback rate":
+            - /url: /store/[test-store]/analytics/reports/chargeback_rate
+            - generic: Chargeback rate
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Chargeback rate report":
+      - row "Cost of goods sold by order Finances Shopify":
+        - cell "Cost of goods sold by order":
+          - link "Cost of goods sold by order":
+            - /url: /store/[test-store]/analytics/reports/cost_of_goods_sold_by_order
+            - generic: Cost of goods sold by order
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Cost of goods sold by order report":
+      - row "Discounts by order Finances Shopify":
+        - cell "Discounts by order":
+          - link "Discounts by order":
+            - /url: /store/[test-store]/analytics/reports/discounts_by_order
+            - generic: Discounts by order
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Discounts by order report":
+      - row "Finance summary Finances Shopify":
+        - cell "Finance summary":
+          - link "Finance summary":
+            - /url: /store/[test-store]/analytics/reports/finance_summary
+            - generic: Finance summary
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Finance summary report":
+      - row "Gross payments from Shopify Payments Finances Shopify":
+        - cell "Gross payments from Shopify Payments":
+          - link "Gross payments from Shopify Payments":
+            - /url: /store/[test-store]/analytics/reports/payments_received
+            - generic: Gross payments from Shopify Payments
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Gross payments from Shopify Payments report":
+      - row "Gross profit breakdown Finances Shopify":
+        - cell "Gross profit breakdown":
+          - link "Gross profit breakdown":
+            - /url: /store/[test-store]/analytics/reports/gross_profit_breakdown
+            - generic: Gross profit breakdown
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Gross profit breakdown report":
+      - row "Gross profit by order Finances Shopify":
+        - cell "Gross profit by order":
+          - link "Gross profit by order":
+            - /url: /store/[test-store]/analytics/reports/gross_profit_by_order
+            - generic: Gross profit by order
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Gross profit by order report":
+      - row "Gross sales by order Finances Shopify":
+        - cell "Gross sales by order":
+          - link "Gross sales by order":
+            - /url: /store/[test-store]/analytics/reports/gross_sales_by_order
+            - generic: Gross sales by order
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Gross sales by order report":
+      - row "Managed Markets taxes Finances Shopify":
+        - cell "Managed Markets taxes":
+          - link "Managed Markets taxes":
+            - /url: /store/[test-store]/analytics/reports/managed_markets_taxes
+            - generic: Managed Markets taxes
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Managed Markets taxes report":
+      - row "Net payments by gateway Finances Shopify":
+        - cell "Net payments by gateway":
+          - link "Net payments by gateway":
+            - /url: /store/[test-store]/analytics/reports/payments_by_gateway
+            - generic: Net payments by gateway
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Net payments by gateway report":
+      - row "Net payments by method Finances Shopify":
+        - cell "Net payments by method":
+          - link "Net payments by method":
+            - /url: /store/[test-store]/analytics/reports/payments_by_method
+            - generic: Net payments by method
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Net payments by method report":
+      - row "Net payments by order Finances Shopify":
+        - cell "Net payments by order":
+          - link "Net payments by order":
+            - /url: /store/[test-store]/analytics/reports/payments_by_order
+            - generic: Net payments by order
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Net payments by order report":
+      - row "Net payments over time Finances Shopify":
+        - cell "Net payments over time":
+          - link "Net payments over time":
+            - /url: /store/[test-store]/analytics/reports/payments_over_time
+            - generic: Net payments over time
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Net payments over time report":
+      - row "Net sales by order Finances Shopify":
+        - cell "Net sales by order":
+          - link "Net sales by order":
+            - /url: /store/[test-store]/analytics/reports/net_sales_by_order
+            - generic: Net sales by order
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Net sales by order report":
+      - row "Net sales from gift cards Finances Shopify":
+        - cell "Net sales from gift cards":
+          - link "Net sales from gift cards":
+            - /url: /store/[test-store]/analytics/reports/net_sales_from_gift_cards
+            - generic: Net sales from gift cards
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Net sales from gift cards report":
+      - row "Net sales with cost by order Finances Shopify":
+        - cell "Net sales with cost by order":
+          - link "Net sales with cost by order":
+            - /url: /store/[test-store]/analytics/reports/net_sales_with_cost_by_order
+            - generic: Net sales with cost by order
+        - cell "Finances":
+          - generic: Finances
+        - cell
+        - cell "Shopify":
+          - img "Shopify"
+          - text: Shopify
+        - cell:
+          - button "Pin Net sales with cost by order report":
+  - navigation "Pagination":
+    - button "Previous" [disabled]:
+    - button "Next":
+    - generic: 1-50
+  - paragraph:
+    - text: Learn more about the
+    - link "new reporting experience":
+      - /url: https://help.shopify.com/manual/reports-and-analytics/shopify-reports/new-analytics/new-reports
+      - generic: new reporting experience
+  - status
+- status
+- region "Sidekick":
+  - status
+  - paragraph
+  - button "Close" [disabled]:
+  - generic: Work with Sidekick
+  - textbox "Work with Sidekick"
+  - button "Add files and more":
+  - button "Voice":
+  - button "Open Sidekick":
+- generic: General shortcuts
+- generic: Adding items to your store
+- generic: Navigating your admin panel
+- generic: Navigating settings
+- separator "Resize sidebar"
+- complementary "Sidekick"
+- status
+- alert
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report
+- generic: Cancel
+- generic: Save
+- generic: Cancel
+- generic: Delete
+- generic: View marketing report

@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-24T05:48:48.432048+00:00",
+  "status": "ADDITIONAL_PREEXISTING_ONE_SHOT_QUALIFIER_IN_CURRENT_DEFAULT_CI_REQUIRES_CLASSIFICATION",
+  "path": "services/api-gateway/src/__tests__/owned-db/playfield201-promotion.postgres.test.ts",
+  "sha256": "aa26dd41b09cbbb188b413b385acf80ad6e21f4e23bbdf789ebff68a8bc42782",
+  "evidence": "Actual test-suite-catalog discovers all *.test.ts. Gateway lane inventory omits this file. Its source requires closed ROOT_PLAYFIELD201_NATIVE_SOURCE_ADMITTED_FOR_ONE_DEFAULT_LATEST392_CANDIDATE393 admission and frozen1079 source pins; after393 emission and Circuit changes it cannot be a permanent current-latest suite.",
+  "ourPublisherStatus": "Current publisher permanent suite registered; manual qualifier excluded. Shared qualified proof reused, hardened393 entry, unchanged security coverage. Source/pure/type checks in progress. No native or closure seal.",
+  "recommendedBoundedResolution": "Preserve exact aa26 source bytes in immutable qualification evidence and reclassify its historical one-shot entry as .manual.ts; retain existing ordinary theme-install/version/lifecycle suites as current regressions. No394 proposal/emission or historical five-file edits. Needs Root scope confirmation because original aa26 source was specifically frozen.",
+  "oldFileChanged": false,
+  "observedGovernanceResult": {
+    "tests": 14,
+    "pass": 12,
+    "fail": 2,
+    "failures": [
+      "lane inventory has unregistered playfield201-promotion.postgres.test.ts",
+      "same Playfield one-shot hard-coded catalog ID violates ordinary synthetic-only lane rule"
+    ],
+    "file": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/gateway-db-lane.tap"
+  }
+}

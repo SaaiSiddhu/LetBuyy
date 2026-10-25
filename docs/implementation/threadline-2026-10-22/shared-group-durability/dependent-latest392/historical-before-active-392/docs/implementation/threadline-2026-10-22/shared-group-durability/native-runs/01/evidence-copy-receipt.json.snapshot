@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-23T16:15:46.495362+00:00",
+  "runId": "0a9c7010222a",
+  "proofs": [
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/entry.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/entry.json",
+        "sha256": "f6fca8b7438fdc66027d7ecc59e73f447ea489a2483d623a27b054484401b5c1",
+        "bytes": 42498
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/baseline-real-worker-defect.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/baseline-real-worker-defect.json",
+        "sha256": "923f5fc33680e1dc7bbe06a998099c5e89fe8c555ad42e4b826c973b3272cbbe",
+        "bytes": 235
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/profile-current-proposed.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/profile-current-proposed.json",
+        "sha256": "dc93267053a46dcb42605440ac62cffb42daa048f8f1ebaad4b7033d9acd1ce7",
+        "bytes": 40634
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-aura.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-aura.json",
+        "sha256": "9f94004a44bf0941af3355dda11e18b3a58d6a5997157705e43595ae51ebf734",
+        "bytes": 2261
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-bloom.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-bloom.json",
+        "sha256": "481fccb29153cdbbc485decaf79f7831dfd952fbbd8e878a0fffe3576f83d504",
+        "bytes": 2270
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-craft.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-craft.json",
+        "sha256": "d8222fccad3ec6be0e6ca636e91c3a2fffa1d4474b448eae673006286002f7a0",
+        "bytes": 2269
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-dawn.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-dawn.json",
+        "sha256": "b57393c356d45d03391d1642b95396d145e00f58f3a6b26605ecad89b1f639aa",
+        "bytes": 2256
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-forge.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-forge.json",
+        "sha256": "f385f588b70368645f32196c18a8ffd7d9c08198687a72419b275dca67fbe455",
+        "bytes": 2268
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-nova.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-nova.json",
+        "sha256": "1dc4f81b653aadae7e1418ed16c253e096f21a31407dfb63a4b94d4e3b8e1adb",
+        "bytes": 2254
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-refresh.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-refresh.json",
+        "sha256": "90813077f8fdfbc1bcfb9ae023b4cfba04fbf8df11f43c061bf9af0872a6601a",
+        "bytes": 2286
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-ride.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-ride.json",
+        "sha256": "cccf7954aca42b29175a2cb489a4bef3dc8e3f3ec5cc0a977fc959cd10a51382",
+        "bytes": 2254
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-summit.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-summit.json",
+        "sha256": "d93c8ff6ac2aee933b0337ed8c9896453b59ad1433ff36fefe55fd8017bba85e",
+        "bytes": 2284
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/letbuyy-sense.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-sense.json",
+        "sha256": "85e84d7d0628d7e7d637800158619f7c99c9ee8bca94f7c3f08b64c4cd6ab7d9",
+        "bytes": 2303
+      }
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-shared391-0a9c7010222a-4KANfa/qualified-restoration.json",
+      "copied": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/qualified-restoration.json",
+        "sha256": "677c84d5e28fa275fdc1bceb15da7f33442e5d8f1be2d2ba6420f7e9b3bbc220",
+        "bytes": 925
+      }
+    }
+  ]
+}

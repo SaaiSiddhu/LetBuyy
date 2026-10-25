@@ -1,0 +1,450 @@
+==============================================================================
+LetBuyy governance gate — lane=gate
+repository root       : /Volumes/Projects/LetBuyy
+validator directory   : scripts/validators
+discovered on disk    : 121 .mjs modules
+  executable validators: 115
+  library modules      : 5 (app-api-route-inventory.mjs, governance-common.mjs, phase-b-common.mjs, secret-scan-core.mjs, storefront-domain-policy.mjs)
+  hook-only modules    : 1 (frozen-path-override-gate.mjs)
+declared in lanes     : 115 (gate 114, report 1)
+selected for this run : 114
+per-validator timeout : 240000ms
+==============================================================================
+Foundation anti-fabrication gate passed (2604 active source files scanned; 0 temporary entries tracked).
+[  1/114] PASS           foundation-antifabrication-gate.mjs (436ms)
+Tenant isolation validator passed (317 tenant tables registered; 0 direct service-role bypasses found).
+[  2/114] PASS           tenant-isolation-validator.mjs (1819ms)
+Production safety validator passed (rate limiting, registrar, shared-env preflight, skips, and domain defaults checked).
+[  3/114] PASS           production-safety-validator.mjs (57ms)
+Session security validator passed (internal secret isolation, replay JTI, session rotation, MFA, perimeter, and skips checked).
+[  4/114] PASS           session-security-validator.mjs (318ms)
+Operational lifecycle validator passed (19 SDLC lifecycle files, 2 environments, and rollout contracts checked).
+[  5/114] PASS           operational-lifecycle-validator.mjs (61ms)
+── Design-system governance ──
+HARD invariants: OK
+Ratchet metrics: {"appCssRawHex":142,"appCssNakedRgbHsl":786,"tailwindPaletteClasses":525,"appLocalLbTokenRedefs":275,"rawPxFontSize":592,"rawPxSpacing":1556,"tsxInlineStyles":666,"tsxRawHex":0,"tsxArbitraryRadius":387,"tsxArbitraryShadow":9,"localWorkspaceImplementations":0}
+Improvements since baseline: appCssRawHex: 156 → 142; appCssNakedRgbHsl: 821 → 786; tailwindPaletteClasses: 535 → 525; appLocalLbTokenRedefs: 339 → 275; rawPxFontSize: 612 → 592; rawPxSpacing: 1581 → 1556; tsxInlineStyles: 673 → 666; tsxRawHex: 5 → 0; tsxArbitraryRadius: 388 → 387
+
+✔ Design-system governance passed.
+[  6/114] PASS           validate-design-system.mjs (413ms)
+Mobile tokens are in sync with the DTCG source.
+[  7/114] PASS           mobile-token-validator.mjs (100ms)
+Theme governance validator passed (25 built-in section schemas, WARN mode, Liquid default OFF, fallback placeholder, schema migration runner).
+[  8/114] PASS           theme-governance-validator.mjs (54ms)
+Beta readiness validator passed (mobile Turnstile, checkout capture, sandbox COD/WhatsApp, OIDC honesty, runtime alerting, deploy exclusions, D11 package deletion, and recorded capability gaps checked).
+[  9/114] PASS           beta-readiness-validator.mjs (59ms)
+Architecture validator passed (10374 tracked files scanned).
+[ 10/114] PASS           architecture-validator.mjs (376ms)
+Runtime validator passed (11 canonical runtime roots checked).
+[ 11/114] PASS           runtime-validator.mjs (93ms)
+Reference isolation validator passed (2 donors, 9997 files outside reference/ checked for dependency edges).
+[ 12/114] PASS           reference-isolation-validator.mjs (1943ms)
+Runtime manifest validator passed (11 active runtime manifests checked).
+[ 13/114] PASS           runtime-manifest-validator.mjs (176ms)
+Runtime topology validator passed (11 canonical runtime roots and 8 topology edges checked).
+[ 14/114] PASS           runtime-topology-validator.mjs (57ms)
+Topology drift validator passed (18 topology roots checked for queue and rollback drift).
+[ 15/114] PASS           topology-drift-validator.mjs (52ms)
+Package ownership validator passed (80 manifests scanned).
+[ 16/114] PASS           package-ownership-validator.mjs (93ms)
+Import validator passed (4686 source files scanned).
+[ 17/114] PASS           import-validator.mjs (443ms)
+Dependency manifest validator passed (59 package manifests and source imports checked).
+[ 18/114] PASS           dependency-manifest-validator.mjs (276ms)
+Dependency manifest validator passed (59 package manifests and source imports checked).
+[ 19/114] PASS           undeclared-import-validator.mjs (275ms)
+Dependency graph validator passed (35 governed roots and 108 internal dependency edges checked).
+[ 20/114] PASS           dependency-graph-validator.mjs (616ms)
+Circular import validator passed (35 governed roots checked for circular imports).
+[ 21/114] PASS           circular-import-validator.mjs (345ms)
+Cycle budget validator passed: 2/3 file-level cycle components.
+[ 22/114] PASS           cycle-budget-validator.mjs (875ms)
+Package export validator passed (59 manifests and package import subpaths checked).
+[ 23/114] PASS           package-export-validator.mjs (341ms)
+Provider isolation validator passed (11600 workspace files scanned for provider isolation).
+[ 24/114] PASS           provider-isolation-validator.mjs (298ms)
+Supply-chain validator passed (governed workflows, scripts, deployment manifests, and docs checked for npm/npx leakage).
+[ 25/114] PASS           supply-chain-validator.mjs (148ms)
+TypeScript governance validator passed (40 package manifests checked for TS governance).
+[ 26/114] PASS           typescript-governance-validator.mjs (85ms)
+Cloudflare topology validator passed (20 Cloudflare resource names checked).
+[ 27/114] PASS           cloudflare-topology-validator.mjs (51ms)
+Cloudflare environment validator passed (3 Cloudflare Worker configs checked).
+[ 28/114] PASS           wrangler-env-validator.mjs (53ms)
+Cloudflare environment validator passed (3 Cloudflare Worker configs checked).
+[ 29/114] PASS           cloudflare-environment-validator.mjs (52ms)
+Cloudflare binding validator passed (4 Worker binding ownership manifests checked).
+[ 30/114] PASS           cloudflare-binding-validator.mjs (54ms)
+Environment isolation validator passed (Environment lifecycle and Cloudflare non-production isolation gates checked).
+[ 31/114] PASS           env-isolation-validator.mjs (52ms)
+Environment honesty validator passed (2616 active source files checked for environment honesty).
+[ 32/114] PASS           environment-honesty-validator.mjs (141ms)
+Cookie realm validator passed (274 storefront source files checked for host-only cookie realm).
+[ 33/114] PASS           cookie-realm-validator.mjs (65ms)
+Reserved subdomain single-source validator passed (reserved storefront labels and host parsing are single-sourced in @letbuyy/tenant-core).
+[ 34/114] PASS           reserved-subdomain-single-source-validator.mjs (51ms)
+Storefront access gate validator passed (storefront access gate proxy is present, shared, host-only, and API-backed).
+[ 35/114] PASS           storefront-access-gate-validator.mjs (62ms)
+Custom domain target validator passed (custom-domain target is LetBuyy-owned, env-driven, and source-clean).
+[ 36/114] PASS           custom-domain-target-validator.mjs (94ms)
+Merchant domains settings validator passed (merchant custom-domain settings are gateway-backed and include domain management controls).
+[ 37/114] PASS           merchant-domains-settings-validator.mjs (52ms)
+Storefront SEO access validator passed (storefront robots, sitemap, metadata, and redirects honor access state).
+[ 38/114] PASS           storefront-seo-access-validator.mjs (50ms)
+Platform domain literal validator passed (functional platform domain literals checked).
+[ 39/114] PASS           platform-domain-literal-validator.mjs (227ms)
+Route ownership validator passed.
+[ 40/114] PASS           route-ownership-validator.mjs (550ms)
+Legacy site type validator passed (legacy portfolio/resume acquisition is default-off and documented).
+[ 41/114] PASS           legacy-site-type-validator.mjs (86ms)
+App utils service-role edge validator passed (retired @letbuyy/utils is not app-reachable and no service-role helper is exposed through app package graphs).
+[ 42/114] PASS           app-utils-service-role-edge-validator.mjs (170ms)
+Migration safety validator passed (Supabase migration history checked for destructive replay hazards).
+[ 43/114] PASS           migration-safety-validator.mjs (263ms)
+Sequential migration validator passed (Migration sequence checked: no untracked files, no duplicate prefixes, no gaps after baseline).
+[ 44/114] PASS           sequential-migration-validator.mjs (142ms)
+Deployment safety validator passed (Deployment wrappers, rollback wrapper, release promotion, CI deployment gates, and staging gate checked).
+[ 45/114] PASS           deployment-safety-validator.mjs (84ms)
+Secret topology validator passed (Secret topology: per-caller secrets, keyring provisioning, console session isolation checked).
+[ 46/114] PASS           secret-topology-validator.mjs (52ms)
+Domain boundary validator passed (11 domain packages, 14 active schema facades, 3 archived schema facades, and 226 app API route ownership records checked).
+[ 47/114] PASS           domain-boundary-validator.mjs (132ms)
+Single-writer ownership validator passed (1304 source files checked for Single-Writer table ownership).
+[ 48/114] PASS           single-writer-ownership-validator.mjs (180ms)
+Fail-closed internal routes validator passed (16 internal route files checked).
+[ 49/114] PASS           fail-closed-internal-routes-validator.mjs (59ms)
+Source ledger residue validator passed (CODEX ledger residue checked).
+[ 50/114] PASS           source-ledger-residue-validator.mjs (152ms)
+Foundation SQL policy residue validator passed (classified 175 SQL true-policy residues).
+[ 51/114] PASS           foundation-sql-policy-residue-validator.mjs (95ms)
+Dead residue validator passed (orphaned env names and empty route residue checked).
+[ 52/114] PASS           dead-residue-validator.mjs (52ms)
+Repository intelligence validator passed (AGENTS_V2 promotion and generator retirement checked).
+[ 53/114] PASS           repository-intelligence-validator.mjs (56ms)
+Mobile topology honesty validator passed (3 reserved mobile roots checked).
+[ 54/114] PASS           mobile-topology-honesty-validator.mjs (87ms)
+Android identity validator passed (Android applicationId/namespace, duplicate build scripts, retired-identity reuse, and keystore tracking checked).
+[ 55/114] PASS           android-identity-validator.mjs (118ms)
+Route line-count validator passed (144 api-gateway route files checked at <=1500 lines).
+[ 56/114] PASS           route-line-count-validator.mjs (61ms)
+Single-source crypto validator passed (api-gateway route crypto helpers are single-sourced through services/api-gateway/src/lib/crypto.ts).
+[ 57/114] PASS           single-source-crypto-validator.mjs (88ms)
+CMS slugify validator passed (merchant CMS slug generation is single-sourced through @letbuyy/cms-core).
+[ 58/114] PASS           cms-slugify-validator.mjs (91ms)
+INR currency format validator passed (INR display currency formatting is single-sourced through @letbuyy/ui/formatting).
+[ 59/114] PASS           inr-currency-format-validator.mjs (109ms)
+Date format validator passed (date display formatting is single-sourced through @letbuyy/ui/formatting).
+[ 60/114] PASS           date-format-validator.mjs (108ms)
+Marketplace single-source validator passed (marketplace logger and unavailable UI implementations are single-sourced through @letbuyy/ui).
+[ 61/114] PASS           marketplace-single-source-validator.mjs (52ms)
+API client runtime base validator passed (app API base URL and API-client path helpers are single-sourced through @letbuyy/api-client).
+[ 62/114] PASS           api-client-runtime-base-validator.mjs (52ms)
+Marketing dead twin validator passed (marketing-site dead twin components are archived outside active source).
+[ 63/114] PASS           marketing-dead-twin-validator.mjs (51ms)
+Theme editor dead shell validator passed (theme-editor dead shell modules are archived outside active source).
+[ 64/114] PASS           theme-editor-dead-shell-validator.mjs (93ms)
+TypeScript dead source validator passed (verified TypeScript dead-source files are archived outside active source).
+[ 65/114] PASS           typescript-dead-source-validator.mjs (158ms)
+Dart dead source validator passed (verified Dart dead-source files are archived outside active source).
+[ 66/114] PASS           dart-dead-source-validator.mjs (92ms)
+Settings apps dead twin validator passed (orphaned AppsSettingsContent twin is archived outside runtime source).
+[ 67/114] PASS           settings-apps-dead-twin-validator.mjs (103ms)
+Raw error message validator passed (32 files with raw error.message responses checked).
+[ 68/114] PASS           raw-error-message-validator.mjs (74ms)
+Dev auth bypass validator passed (identity and console dev auth bypasses checked).
+[ 69/114] PASS           dev-auth-bypass-validator.mjs (51ms)
+No no-op test script validator passed (12 deployable workspace test scripts checked).
+[ 70/114] PASS           no-noop-test-script-validator.mjs (52ms)
+Environment validator passed (10374 tracked files scanned, 90 reviewed exceptions).
+[ 71/114] PASS           environment-validator.mjs (2406ms)
+Generated artifact validator passed (10374 tracked files scanned).
+[ 72/114] PASS           generated-artifact-validator.mjs (93ms)
+generated-artifact cleanup: removed apps/commerce/web/.next
+generated-artifact cleanup: removed apps/commerce/web/node_modules
+generated-artifact cleanup: removed apps/frozen/app-store/node_modules
+generated-artifact cleanup: removed apps/frozen/developer-portal/node_modules
+generated-artifact cleanup: removed apps/frozen/operations-portal/node_modules
+generated-artifact cleanup: removed apps/frozen/theme-store/node_modules
+generated-artifact cleanup: removed apps/internal/console/.next
+generated-artifact cleanup: removed apps/internal/console/node_modules
+generated-artifact cleanup: removed apps/marketing/web/.next
+generated-artifact cleanup: removed apps/marketing/web/node_modules
+generated-artifact cleanup: removed apps/merchant/web/.next
+generated-artifact cleanup: removed apps/merchant/web/node_modules
+generated-artifact cleanup: removed apps/platform/identity/.next
+generated-artifact cleanup: removed apps/platform/identity/node_modules
+generated-artifact cleanup: removed packages/audit-core/node_modules
+generated-artifact cleanup: removed packages/auth-core/node_modules
+generated-artifact cleanup: removed packages/billing-core/node_modules
+generated-artifact cleanup: removed packages/checkout-core/node_modules
+generated-artifact cleanup: removed packages/cms-core/node_modules
+generated-artifact cleanup: removed packages/commerce-core/node_modules
+generated-artifact cleanup: removed packages/event-core/node_modules
+generated-artifact cleanup: removed packages/identity-core/node_modules
+generated-artifact cleanup: removed packages/infrastructure/node_modules
+generated-artifact cleanup: removed packages/lcis-adapters/node_modules
+generated-artifact cleanup: removed packages/lcis-business/node_modules
+generated-artifact cleanup: removed packages/lcis-cli/node_modules
+generated-artifact cleanup: removed packages/lcis-core/node_modules
+generated-artifact cleanup: removed packages/lcis-decision/node_modules
+generated-artifact cleanup: removed packages/lcis-engineering/node_modules
+generated-artifact cleanup: removed packages/lcis-execution/node_modules
+generated-artifact cleanup: removed packages/lcis-governance/node_modules
+generated-artifact cleanup: removed packages/lcis-live/node_modules
+generated-artifact cleanup: removed packages/lcis-mcp/node_modules
+generated-artifact cleanup: removed packages/lcis-operations/node_modules
+generated-artifact cleanup: removed packages/lcis-orchestration/node_modules
+generated-artifact cleanup: removed packages/lcis-performance/node_modules
+generated-artifact cleanup: removed packages/lcis-pr-check/node_modules
+generated-artifact cleanup: removed packages/lcis-quality/node_modules
+generated-artifact cleanup: removed packages/lcis-rootcause/node_modules
+generated-artifact cleanup: removed packages/lcis-security/node_modules
+generated-artifact cleanup: removed packages/lcis-tracking/node_modules
+generated-artifact cleanup: removed packages/lcis-twin/node_modules
+generated-artifact cleanup: removed packages/notification-core/node_modules
+generated-artifact cleanup: removed packages/organization-core/node_modules
+generated-artifact cleanup: removed packages/payments/node_modules
+generated-artifact cleanup: removed packages/permission-core/node_modules
+generated-artifact cleanup: removed packages/session-core/node_modules
+generated-artifact cleanup: removed packages/shared-types/node_modules
+generated-artifact cleanup: removed packages/tenant-core/node_modules
+generated-artifact cleanup: removed packages/theme-engine/node_modules
+generated-artifact cleanup: removed packages/token-core/node_modules
+generated-artifact cleanup: removed packages/typescript/api-client/node_modules
+generated-artifact cleanup: removed packages/typescript/api-types/node_modules
+generated-artifact cleanup: removed packages/typescript/ui/node_modules
+generated-artifact cleanup: removed services/api-gateway/node_modules
+generated-artifact cleanup: removed services/lcis-api/node_modules
+generated-artifact cleanup: removed services/mobile-bff/node_modules
+generated-artifact cleanup: removed services/queue-workers/node_modules
+generated-artifact cleanup: removed services/webhook-service/node_modules
+generated-artifact cleanup: 59 directory(ies) removed, 0 refused, 0 error(s)
+Stale artifact validator passed (1109 untracked non-ignored files and 10217 workspace files scanned).
+[ 73/114] PASS           stale-artifact-validator.mjs (218ms)
+Tooling governance validator passed (14 canonical tooling directories checked).
+[ 74/114] PASS           tooling-governance-validator.mjs (54ms)
+CI simulation validator passed (CI workflows and release promotion plan checked for mandatory enterprise gates).
+[ 75/114] PASS           ci-simulation-validator.mjs (51ms)
+Workflow trigger coverage validator passed (16 workflows parsed; 5 gated branches and 8 deploy lanes checked).
+[ 76/114] PASS           workflow-trigger-coverage-validator.mjs (59ms)
+Committed secret placeholder validator passed (no plaintext *_SECRET/*_TOKEN/*_PRIVATE_KEY in committed wrangler.toml).
+[ 77/114] PASS           committed-secret-placeholder-validator.mjs (113ms)
+D1 governance validator passed (D1 database, migration, and materialization governance checked).
+[ 78/114] PASS           d1-governance-validator.mjs (54ms)
+Deployment lineage validator passed (3 deployment wrappers and 3 rollback lineages checked).
+[ 79/114] PASS           deployment-lineage-validator.mjs (52ms)
+Durable Object validator passed (Durable Object namespace, class, and migration governance checked).
+[ 80/114] PASS           durable-object-validator.mjs (51ms)
+Manifest lineage validator passed (9 manifest lineage entries checked).
+[ 81/114] PASS           manifest-lineage-validator.mjs (61ms)
+Production readiness validator passed (69 Phase 4 files, 11 manifests, and production topology checked).
+[ 82/114] PASS           production-readiness-validator.mjs (64ms)
+Provider evidence validator passed (Provider evidence contract checked for production).
+[ 83/114] PASS           provider-evidence-validator.mjs (51ms)
+Queue topology validator passed (Queue topology and runtime provider queue governance checked).
+[ 84/114] PASS           queue-topology-validator.mjs (53ms)
+Rollback integrity validator passed (3 rollback manifests checked).
+[ 85/114] PASS           rollback-integrity-validator.mjs (53ms)
+Test coverage governance validator passed (21 required enterprise test proof files checked).
+[ 86/114] PASS           test-coverage-governance-validator.mjs (54ms)
+Workspace lifecycle validator passed (57 workspace manifests, 16 workflows, pnpm lifecycle, tracked artifacts, and Turbo tasks checked).
+[ 87/114] PASS           workspace-lifecycle-validator.mjs (87ms)
+Commission bps zero validator passed (commission_bps remains zero in active defaults).
+[ 88/114] PASS           commission-bps-zero-validator.mjs (221ms)
+Pricing catalog validator passed (pricing catalog matrix checked across 310 migrations).
+[ 89/114] PASS           pricing-catalog-validator.mjs (116ms)
+Canonical ledger only validator passed (canonical money mutation ratchet checked).
+[ 90/114] PASS           canonical-ledger-only-validator.mjs (272ms)
+No self-custody rail validator passed (self-custody payout rail defaults and purge seam checked).
+[ 91/114] PASS           no-self-custody-rail-validator.mjs (344ms)
+Payment rail allowlist validator passed (no non-canonical payment rail is reachable from routes (apps, api-gateway, webhook-service, queue-workers, mobile-bff), schema enums (apps, checkout-core, shared-types, api-gateway schemas), or hand-written provider typing/comparisons (apps, api-gateway execution/routes/lib, webhook-service, queue-workers, mobile-bff, checkout-core, shared-types) -- excluding the documented ART-16 frozen seam, Billing-domain files/constructs, and historical-read-path exemptions).
+[ 92/114] PASS           payment-rail-allowlist-validator.mjs (238ms)
+Step-up crypto validator passed (step-up crypto ratchet checked).
+[ 93/114] PASS           stepup-crypto-validator.mjs (285ms)
+Identity sole issuer validator passed (identity issuer ratchet and drain seam checked).
+[ 94/114] PASS           identity-sole-issuer-validator.mjs (240ms)
+No blanket service-role validator passed (service-role boundary checked).
+[ 95/114] PASS           no-blanket-service-role-validator.mjs (166ms)
+No public USING true validator passed (public USING true policies checked).
+[ 96/114] PASS           no-public-using-true-validator.mjs (132ms)
+RLS FORCE coverage validator passed (RLS FORCE coverage ratchet checked).
+[ 97/114] PASS           rls-force-coverage-validator.mjs (70ms)
+Provider mode badge validator passed (provider-mode honesty surfaces checked).
+[ 98/114] PASS           provider-mode-badge-validator.mjs (184ms)
+One system per domain validator passed (canonical domain authority checked).
+[ 99/114] PASS           one-system-per-domain-validator.mjs (156ms)
+No rejected package imports validator passed (rejected package imports and deleted roots checked).
+[100/114] PASS           no-rejected-package-imports-validator.mjs (238ms)
+No reserved service activation validator passed (reserved runtime activation checked).
+[101/114] PASS           no-reserved-service-activation-validator.mjs (757ms)
+No new React sections validator passed (20 frozen React sections checked).
+[102/114] PASS           no-new-react-sections-validator.mjs (53ms)
+Token source single validator passed (token authority ratchet checked).
+[103/114] PASS           token-source-single-validator.mjs (167ms)
+Shell single validator passed (shell authority ratchet checked).
+[104/114] PASS           shell-single-validator.mjs (164ms)
+Meta no-theater validator passed (governance gate, active identity doc, and marketplace frozen-seam fragments checked).
+[105/114] PASS           meta-no-theater-validator.mjs (55ms)
+Phase C forced decisions validator passed (ops survivor, missing legacy rows, and roadmap dependency fixes checked).
+[106/114] PASS           phase-c-forced-decisions-validator.mjs (53ms)
+branch chain not measurable on letbuyy/theme-release-performance-resume: local refs main/staging/develop are missing (shallow clone?) — the enforce mode covers the deploy-time pair
+Branch lag guard validator passed (workflow wiring and the fast-forward chain checked).
+[107/114] PASS           branch-lag-guard-validator.mjs (82ms)
+Branch dispositions validator declared advisories (non-blocking by declaration):
+- environment chain not measurable here (missing local refs: staging, main) — expected in a shallow CI clone
+##governance-advisory## Branch dispositions validator: environment chain not measurable here (missing local refs: staging, main) — expected in a shallow CI clone
+- ACTIVE row letbuyy/themes-shopify-complete: branch not present locally (claimed in another clone?)
+##governance-advisory## Branch dispositions validator: ACTIVE row letbuyy/themes-shopify-complete: branch not present locally (claimed in another clone?)
+- ACTIVE row letbuyy/week1-storefront-access: branch not present locally (claimed in another clone?)
+##governance-advisory## Branch dispositions validator: ACTIVE row letbuyy/week1-storefront-access: branch not present locally (claimed in another clone?)
+- ACTIVE row letbuyy/merchant-performance: branch not present locally (claimed in another clone?)
+##governance-advisory## Branch dispositions validator: ACTIVE row letbuyy/merchant-performance: branch not present locally (claimed in another clone?)
+- Local branch without a ledger row: codex/local-marketplace-installation (add a row before building on it)
+##governance-advisory## Branch dispositions validator: Local branch without a ledger row: codex/local-marketplace-installation (add a row before building on it)
+Branch dispositions validator passed (202 rows, 2 promotions, chain not measurable).
+[108/114] PASS           branch-dispositions-validator.mjs (4259ms)
+Deploy matrix topology validator passed (9 production deploy targets and staging/Vercel frozen exclusions checked).
+[109/114] PASS           deploy-matrix-topology-validator.mjs (52ms)
+Topology JSON anti-fabrication validator passed (reserved/frozen production topology statuses checked).
+[110/114] PASS           topology-json-antifabrication-validator.mjs (53ms)
+No scan-generated AGENTS validator passed (active AGENTS and generated documentation are hand-authored or archived).
+[111/114] PASS           no-scan-generated-agents-validator.mjs (87ms)
+Prompt perimeter validator passed (canonical prompt registry, deleted hazards, and archive quarantine checked).
+[112/114] PASS           prompt-perimeter-validator.mjs (90ms)
+Whole-repo end-state validator passed (root budget, phase ledger, human seams, topology, and final gate wiring checked).
+[113/114] PASS           whole-repo-end-state-validator.mjs (56ms)
+Web V1 scope perimeter validator passed (50 capabilities registered; 28 ratcheted, 3 delegated; 32 known pre-existing activations held flat; 0 new activations).
+[114/114] PASS           web-v1-scope-perimeter-validator.mjs (484ms)
+
+==============================================================================
+GOVERNANCE GATE LANE MATRIX
+==============================================================================
+status         exit  ms       validator
+PASS              0      436  foundation-antifabrication-gate.mjs
+PASS              0     1819  tenant-isolation-validator.mjs
+PASS              0       57  production-safety-validator.mjs
+PASS              0      318  session-security-validator.mjs
+PASS              0       61  operational-lifecycle-validator.mjs
+PASS              0      413  validate-design-system.mjs
+PASS              0      100  mobile-token-validator.mjs
+PASS              0       54  theme-governance-validator.mjs
+PASS              0       59  beta-readiness-validator.mjs
+PASS              0      376  architecture-validator.mjs
+PASS              0       93  runtime-validator.mjs
+PASS              0     1943  reference-isolation-validator.mjs
+PASS              0      176  runtime-manifest-validator.mjs
+PASS              0       57  runtime-topology-validator.mjs
+PASS              0       52  topology-drift-validator.mjs
+PASS              0       93  package-ownership-validator.mjs
+PASS              0      443  import-validator.mjs
+PASS              0      276  dependency-manifest-validator.mjs
+PASS              0      275  undeclared-import-validator.mjs
+PASS              0      616  dependency-graph-validator.mjs
+PASS              0      345  circular-import-validator.mjs
+PASS              0      875  cycle-budget-validator.mjs
+PASS              0      341  package-export-validator.mjs
+PASS              0      298  provider-isolation-validator.mjs
+PASS              0      148  supply-chain-validator.mjs
+PASS              0       85  typescript-governance-validator.mjs
+PASS              0       51  cloudflare-topology-validator.mjs
+PASS              0       53  wrangler-env-validator.mjs
+PASS              0       52  cloudflare-environment-validator.mjs
+PASS              0       54  cloudflare-binding-validator.mjs
+PASS              0       52  env-isolation-validator.mjs
+PASS              0      141  environment-honesty-validator.mjs
+PASS              0       65  cookie-realm-validator.mjs
+PASS              0       51  reserved-subdomain-single-source-validator.mjs
+PASS              0       62  storefront-access-gate-validator.mjs
+PASS              0       94  custom-domain-target-validator.mjs
+PASS              0       52  merchant-domains-settings-validator.mjs
+PASS              0       50  storefront-seo-access-validator.mjs
+PASS              0      227  platform-domain-literal-validator.mjs
+PASS              0      550  route-ownership-validator.mjs
+PASS              0       86  legacy-site-type-validator.mjs
+PASS              0      170  app-utils-service-role-edge-validator.mjs
+PASS              0      263  migration-safety-validator.mjs
+PASS              0      142  sequential-migration-validator.mjs
+PASS              0       84  deployment-safety-validator.mjs
+PASS              0       52  secret-topology-validator.mjs
+PASS              0      132  domain-boundary-validator.mjs
+PASS              0      180  single-writer-ownership-validator.mjs
+PASS              0       59  fail-closed-internal-routes-validator.mjs
+PASS              0      152  source-ledger-residue-validator.mjs
+PASS              0       95  foundation-sql-policy-residue-validator.mjs
+PASS              0       52  dead-residue-validator.mjs
+PASS              0       56  repository-intelligence-validator.mjs
+PASS              0       87  mobile-topology-honesty-validator.mjs
+PASS              0      118  android-identity-validator.mjs
+PASS              0       61  route-line-count-validator.mjs
+PASS              0       88  single-source-crypto-validator.mjs
+PASS              0       91  cms-slugify-validator.mjs
+PASS              0      109  inr-currency-format-validator.mjs
+PASS              0      108  date-format-validator.mjs
+PASS              0       52  marketplace-single-source-validator.mjs
+PASS              0       52  api-client-runtime-base-validator.mjs
+PASS              0       51  marketing-dead-twin-validator.mjs
+PASS              0       93  theme-editor-dead-shell-validator.mjs
+PASS              0      158  typescript-dead-source-validator.mjs
+PASS              0       92  dart-dead-source-validator.mjs
+PASS              0      103  settings-apps-dead-twin-validator.mjs
+PASS              0       74  raw-error-message-validator.mjs
+PASS              0       51  dev-auth-bypass-validator.mjs
+PASS              0       52  no-noop-test-script-validator.mjs
+PASS              0     2406  environment-validator.mjs
+PASS              0       93  generated-artifact-validator.mjs
+PASS              0      218  stale-artifact-validator.mjs
+PASS              0       54  tooling-governance-validator.mjs
+PASS              0       51  ci-simulation-validator.mjs
+PASS              0       59  workflow-trigger-coverage-validator.mjs
+PASS              0      113  committed-secret-placeholder-validator.mjs
+PASS              0       54  d1-governance-validator.mjs
+PASS              0       52  deployment-lineage-validator.mjs
+PASS              0       51  durable-object-validator.mjs
+PASS              0       61  manifest-lineage-validator.mjs
+PASS              0       64  production-readiness-validator.mjs
+PASS              0       51  provider-evidence-validator.mjs
+PASS              0       53  queue-topology-validator.mjs
+PASS              0       53  rollback-integrity-validator.mjs
+PASS              0       54  test-coverage-governance-validator.mjs
+PASS              0       87  workspace-lifecycle-validator.mjs
+PASS              0      221  commission-bps-zero-validator.mjs
+PASS              0      116  pricing-catalog-validator.mjs
+PASS              0      272  canonical-ledger-only-validator.mjs
+PASS              0      344  no-self-custody-rail-validator.mjs
+PASS              0      238  payment-rail-allowlist-validator.mjs
+PASS              0      285  stepup-crypto-validator.mjs
+PASS              0      240  identity-sole-issuer-validator.mjs
+PASS              0      166  no-blanket-service-role-validator.mjs
+PASS              0      132  no-public-using-true-validator.mjs
+PASS              0       70  rls-force-coverage-validator.mjs
+PASS              0      184  provider-mode-badge-validator.mjs
+PASS              0      156  one-system-per-domain-validator.mjs
+PASS              0      238  no-rejected-package-imports-validator.mjs
+PASS              0      757  no-reserved-service-activation-validator.mjs
+PASS              0       53  no-new-react-sections-validator.mjs
+PASS              0      167  token-source-single-validator.mjs
+PASS              0      164  shell-single-validator.mjs
+PASS              0       55  meta-no-theater-validator.mjs
+PASS              0       53  phase-c-forced-decisions-validator.mjs
+PASS              0       82  branch-lag-guard-validator.mjs
+PASS              0     4259  branch-dispositions-validator.mjs
+PASS              0       52  deploy-matrix-topology-validator.mjs
+PASS              0       53  topology-json-antifabrication-validator.mjs
+PASS              0       87  no-scan-generated-agents-validator.mjs
+PASS              0       90  prompt-perimeter-validator.mjs
+PASS              0       56  whole-repo-end-state-validator.mjs
+PASS              0      484  web-v1-scope-perimeter-validator.mjs
+
+NOT_APPLICABLE (1):
+  foundation-stepup-report-validator.mjs — not part of the --lane=gate selection
+
+DECLARED ADVISORIES (5) — non-blocking BY DECLARATION, not by accident:
+  branch-dispositions-validator.mjs: Branch dispositions validator: environment chain not measurable here (missing local refs: staging, main) — expected in a shallow CI clone
+  branch-dispositions-validator.mjs: Branch dispositions validator: ACTIVE row letbuyy/themes-shopify-complete: branch not present locally (claimed in another clone?)
+  branch-dispositions-validator.mjs: Branch dispositions validator: ACTIVE row letbuyy/week1-storefront-access: branch not present locally (claimed in another clone?)
+  branch-dispositions-validator.mjs: Branch dispositions validator: ACTIVE row letbuyy/merchant-performance: branch not present locally (claimed in another clone?)
+  branch-dispositions-validator.mjs: Branch dispositions validator: Local branch without a ledger row: codex/local-marketplace-installation (add a row before building on it)
+
+TOTALS: PASS=114 FAIL=0 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1
+
+Governance gate lane passed (114 validators executed and passed; 115 discovered on disk).

@@ -1,0 +1,166 @@
+{
+  "id": "section-faq-accordion",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "faq-accordion",
+    "group": "template",
+    "firstId": "section-a8173659-06f8-487f-9dac-64c0d3e09a4b",
+    "finalId": "section-f04883a0-e4a3-4e4e-8441-2d11b853b84a",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "faq-accordion",
+          "settings": {
+            "title": "Source fixture title",
+            "allowMultipleOpen": false
+          },
+          "blocks": {
+            "block-521e7e2b-6ab0-45ce-9c98-59e16628dd71": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-1db37af5-4326-4571-a47f-c74f942f915f": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-521e7e2b-6ab0-45ce-9c98-59e16628dd71",
+            "block-1db37af5-4326-4571-a47f-c74f942f915f"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "faq-accordion",
+          "settings": {
+            "title": "Source fixture title",
+            "allowMultipleOpen": false
+          },
+          "blocks": {
+            "block-1db37af5-4326-4571-a47f-c74f942f915f": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-521e7e2b-6ab0-45ce-9c98-59e16628dd71": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-1db37af5-4326-4571-a47f-c74f942f915f",
+            "block-521e7e2b-6ab0-45ce-9c98-59e16628dd71"
+          ],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "faq-accordion",
+          "settings": {
+            "title": "Source fixture title",
+            "allowMultipleOpen": false
+          },
+          "blocks": {
+            "block-1db37af5-4326-4571-a47f-c74f942f915f": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-521e7e2b-6ab0-45ce-9c98-59e16628dd71": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-1db37af5-4326-4571-a47f-c74f942f915f",
+            "block-521e7e2b-6ab0-45ce-9c98-59e16628dd71"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "faq-accordion",
+          "settings": {
+            "title": "Source fixture title",
+            "allowMultipleOpen": false
+          },
+          "blocks": {
+            "block-b7a795da-ba04-42b9-89f9-bda744c7fa91": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-da812be0-d245-4f0a-95b5-155e1876b548": {
+              "type": "faq-item",
+              "settings": {
+                "question": "Source fixture question",
+                "answer": "Source fixture answer"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-b7a795da-ba04-42b9-89f9-bda744c7fa91",
+            "block-da812be0-d245-4f0a-95b5-155e1876b548"
+          ],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

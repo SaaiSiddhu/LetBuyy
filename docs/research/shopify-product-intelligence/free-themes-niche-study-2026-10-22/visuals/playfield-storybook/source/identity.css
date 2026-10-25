@@ -1,0 +1,33 @@
+@font-face{font-family:Geist;src:url('../assets/geist-sans-latin.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+/* Visual-reference projection of current identity admin/light semantic tokens.
+   Source: identity globals.css aliases + tokens.ts adminSurfaceIdentity.light.
+   Loaded only by scenes 10/11. Shared storefront source/export bytes stay intact. */
+.identity-page{font-family:Geist,ui-sans-serif,system-ui,sans-serif;--identity-primary:#2c2642;--identity-secondary:#523f97;--identity-bg:#f6f7f9;--identity-surface:#fff;--identity-text:#111827;--identity-muted:#6b7280;--identity-border:#e5e7eb;--identity-input-border:#8f88a9;--identity-focus:#6c54c4;--identity-soft:color-mix(in srgb,#2c2642 5%,white);background:var(--identity-bg);color:var(--identity-text)}
+.identity-top,.identity-footer{border-color:var(--identity-border)}
+.identity-top>span,.identity-footer,.identity-card>p,.identity-links,.identity-links p,.identity-aside>p,.identity-card .micro{color:var(--identity-muted)}
+.identity-card{background:var(--identity-surface);border-color:var(--identity-border)}
+.identity-card h1,.identity-continue h2{color:var(--identity-text)}
+.identity-card .destination,.identity-card .text-link,.identity-continue .text-link{color:var(--identity-secondary)}
+.identity-card .field>input{border-color:var(--identity-input-border);color:var(--identity-text)}
+.identity-card .button,.identity-continue .button{background:var(--identity-primary);border-color:var(--identity-primary);color:#fff}
+.identity-continue .button.secondary{background:var(--identity-soft);color:var(--identity-text);border-color:color-mix(in srgb,#2c2642 22%,white)}
+.identity-card .notice{background:var(--identity-soft)}
+.identity-card .notice p{color:var(--identity-muted)}
+.identity-card :focus-visible,.identity-continue :focus-visible{outline-color:var(--identity-focus)}
+.identity-aside .mini-pattern>span{background:var(--identity-border);color:var(--identity-primary)}
+.identity-aside .mini-pattern>span:nth-child(2),.identity-aside .mini-pattern>span:nth-child(3){background:var(--identity-soft);color:var(--identity-secondary)}
+.identity-step{display:block;font-size:11px;font-weight:600;letter-spacing:.025em;color:var(--identity-secondary);margin:19px 0 0}
+.identity-error{display:flex;gap:10px;align-items:start;background:#fff4f2;border:1px solid #d6a19a;border-radius:7px;padding:13px;color:#b42318;font-size:12px;margin-top:18px}
+.identity-error p{color:#b42318;font-size:12px;margin:0}.identity-error svg{width:17px;height:17px}
+.bot-check-note{border:1px dashed var(--identity-input-border);border-radius:7px;padding:14px;margin-top:20px;background:var(--identity-bg)}
+.bot-check-note strong{font-size:11px;color:var(--identity-text)}.bot-check-note p{font-size:11px;color:var(--identity-muted);margin:7px 0 0}
+.identity-card .identity-legal{font-size:11px;line-height:1.6;margin-top:17px;margin-bottom:0}
+.identity-register .identity-main{gap:44px;align-items:start;grid-template-columns:1.1fr 1fr}
+.identity-register .identity-card h1{font-size:33px;line-height:1.15}
+.identity-continue{background:var(--identity-surface);border:1px solid var(--identity-border);border-radius:16px;padding:32px}
+.identity-continue .identity-step{margin-top:0;font-size:11px}.identity-continue h2{font-size:29px;line-height:1.15;margin:20px 0 16px}
+.identity-continue>p{color:var(--identity-muted);font-size:14px;line-height:1.65;margin:14px 0;overflow-wrap:anywhere}
+.identity-continue .button{font-size:13px;margin-top:16px}.identity-continue .button.secondary{margin-top:12px}
+.identity-continue>.micro{font-size:11px;margin-top:20px}
+@media(max-width:900px){.identity-register .identity-main{gap:26px;grid-template-columns:1.15fr 1fr}.identity-continue{padding:25px}.identity-continue h2{font-size:27px}.identity-register .identity-card h1{font-size:30px}}
+@media(max-width:600px){.identity-register .identity-main{display:flex;flex-direction:column;gap:22px}.identity-register .identity-aside{display:block;width:100%}.identity-continue{padding:26px 23px;border-radius:12px}.identity-continue h2{font-size:29px}.identity-register .identity-card h1{font-size:31px}.identity-step{font-size:10px}.bot-check-note{padding:13px}.identity-card .identity-legal{font-size:10px}}

@@ -1,0 +1,20 @@
+{
+  "id": "PF-META-001",
+  "owner": "Themes shared metadata allocator",
+  "status": "PRIVATE_CORRECTION_INPUT_READY_NO_MAIN_OR_DB_GRANT",
+  "sourceCause": "firstPartyThemeListings uses experience.description; Bloom legacy preset is pet-specific. Accepted210 promotion updates themes.name/category/version but omits themes.description.",
+  "currentBundleDescriptionAlreadyCorrect": "An activity-first toy storefront for adults choosing by age, interest, contents and measured product facts.",
+  "requestedCorrection": "Use existing canonical versioned/catalogue metadata owner to reconcile only the current Playfield listing description to its already accepted package description. Keep legacy Bloom/default and frozen200/201/210 captures, package checksums, saved instances, UUIDs and all history unchanged. Bind actual supported metadata command/CAS and exact lease before Main or DB writes; do not invent an endpoint, DTO or migration number.",
+  "sourceLocations": [
+    "packages/theme-engine/src/theme-presets.ts:312",
+    "packages/theme-engine/src/first-party-theme-catalog.ts:60",
+    "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/customization210.up.proposal.sql"
+  ],
+  "acceptance": [
+    "Actual current catalog API/UI description is toys/activity-specific",
+    "Immutable capture/payload/source snapshots remain byte-identical",
+    "Old default/200/201 and unrelated catalogue rows unchanged",
+    "Normal version-conflict/replay/private/public permissions preserved"
+  ],
+  "runtimeWritesHere": 0
+}

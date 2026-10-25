@@ -9,12 +9,14 @@ import {
     Lock,
     Loader2,
     Modal,
+    Select,
     ShieldCheck,
 } from '@letbuyy/ui';
 import { formatScopeLabel } from '@/lib/marketplace-display';
 import { recordMarketplaceEvent } from '@/lib/telemetry';
 import { formatInrCurrency } from '@letbuyy/ui/formatting';
-import type { AppPricingPlan } from '@letbuyy/shared-types';
+import type { AppPricingPlan, StoreSummary } from '@letbuyy/shared-types';
+import { getAccountsUrl } from '@/lib/site-url';
 
 interface AppInstallConsentPanelProps {
     appId: string;
@@ -22,6 +24,8 @@ interface AppInstallConsentPanelProps {
     priceLabel: string;
     priceDetail: string;
     scopes: string[];
+    stores: StoreSummary[];
+    storeStatus: 'ready' | 'signed-out' | 'unavailable';
     pricingPlans?: AppPricingPlan[];
     launchUrl?: string | null;
     privacyUrl?: string | null;
@@ -75,6 +79,8 @@ function AppInstallConsentPanelInner({
     priceLabel,
     priceDetail,
     scopes,
+    stores,
+    storeStatus,
     pricingPlans = [],
     launchUrl,
     privacyUrl,
@@ -87,6 +93,7 @@ function AppInstallConsentPanelInner({
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [installationId, setInstallationId] = useState<string | null>(null);
+    const [selectedStoreId, setSelectedStoreId] = useState(stores.length === 1 ? stores[0].id : '');
     const [selectedPlanId, setSelectedPlanId] = useState<string | null>(initialPlan?.id || null);
     const embedUrl: string | null = null;
     const launchRef = useRef<HTMLDivElement>(null);
@@ -111,6 +118,7 @@ function AppInstallConsentPanelInner({
     }, [canLaunch, mode]);
 
     const installApp = async () => {
+        if (!selectedStoreId) { setError('Choose the store where this app will be installed.'); return; }
         setMode('installing');
         setError(null);
         setNotice(null);
@@ -122,9 +130,9 @@ function AppInstallConsentPanelInner({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'oauth_install',
+                    store_id: selectedStoreId,
                     scopes,
                     pricing_plan_id: selectedPlan?.id || undefined,
-                    redirect_uri: launchUrl || undefined,
                 }),
             });
             const payload = await response.json().catch(() => null) as InstallResponse | null;
@@ -200,7 +208,7 @@ function AppInstallConsentPanelInner({
                         <span>{notice}</span>
                     </div>
                 )}
-                <a className="app-install-secondary-link" href="/my-apps">
+                <a className="app-install-secondary-link" href={`/my-apps?store_id=${encodeURIComponent(selectedStoreId)}`}>
                     Manage installed apps
                 </a>
             </div>
@@ -209,6 +217,19 @@ function AppInstallConsentPanelInner({
 
     return (
         <div className="app-install-panel">
+            {storeStatus === 'signed-out' ? (
+                <a className="app-install-primary-button" href={`${getAccountsUrl()}/lookup`}>Sign in to install</a>
+            ) : storeStatus === 'unavailable' ? (
+                <p role="alert">Your stores could not be loaded. Reload this page to retry.</p>
+            ) : stores.length === 0 ? (
+                <p>Create a store before installing an app.</p>
+            ) : (
+                <div className="app-install-plan-option">
+                    <label htmlFor={`app-store-${appId}`}>Install to store</label>
+                    <Select unstyled id={`app-store-${appId}`} value={selectedStoreId} onChange={event => setSelectedStoreId(event.target.value)}
+                        placeholder="Choose a store" options={stores.map(store => ({ value: store.id, label: store.store_name || store.name || store.subdomain }))} />
+                </div>
+            )}
             <div className="app-install-price">
                 <span>{installPriceLabel}</span>
                 <p>{installPriceDetail}</p>
@@ -245,6 +266,7 @@ function AppInstallConsentPanelInner({
                 unstyled
                 className="app-install-primary-button"
                 type="button"
+                disabled={storeStatus !== 'ready' || !selectedStoreId}
                 onClick={() => {
                     recordMarketplaceEvent('install_consent_opened', { appId });
                     setConsentOpen(true);
@@ -292,7 +314,7 @@ function AppInstallConsentPanelInner({
                     </div>
                     <div className="marketplace-banner marketplace-banner--info">
                         <strong>Target store</strong>
-                        <span>The app will be installed to the store attached to your signed-in merchant session.</span>
+                        <span>{stores.find(store => store.id === selectedStoreId)?.store_name || stores.find(store => store.id === selectedStoreId)?.name || 'Choose a store before installing.'}</span>
                     </div>
                     <div className="marketplace-banner marketplace-banner--info">
                         <strong>{installPriceLabel}</strong>

@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-25 01:53:20 UTC",
+  "userAuthority": "Direct user answer: Allow Root coordination",
+  "root": {
+    "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "sent": true,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"threadId\":\"01a16ce5-e5ba-7191-ab2c-a1b76947d2b5\"}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  "editor": {
+    "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "sent": true,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"threadId\":\"01a166eb-66bb-7042-bb47-2aaafef26f53\"}"
+        }
+      ],
+      "isError": false
+    },
+    "actualReply": {
+      "id": "msg_03448ff2d659021e016add60f5f1e08191a2bb6090df222cc7",
+      "turnId": "01a170c2-6fce-7cf2-89e4-3100398a9d73",
+      "phase": "final_answer",
+      "text": "MadeYours’ native results are retained separately from browser certification. Its original MY00–MY22 cases remain open pending a qualified fixture, trusted HTTPS and the position 7 browser slot. The fence and product/stock constraints remain in force."
+    }
+  },
+  "handoff": "NATIVE_RED_REVIEW_HANDOFF01.json",
+  "nativeRedStopped": true,
+  "greenStarted": false,
+  "originalCasesClosed": 0,
+  "originalCasesStatus": "MY00–MY22 remain open pending qualified fixture, trusted HTTPS and position 7 browser slot; actual Editor reply retained."
+}

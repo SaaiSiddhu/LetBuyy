@@ -182,7 +182,8 @@ export default function GalleryPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Gallery"
                     description="Manage media assets used across products, content, and storefront sections."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Gallery' }]}
@@ -198,7 +199,8 @@ export default function GalleryPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Gallery"
                 description="Manage media assets used across products, content, and storefront sections."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Gallery' }]}

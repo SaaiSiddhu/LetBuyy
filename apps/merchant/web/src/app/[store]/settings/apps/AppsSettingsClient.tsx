@@ -136,6 +136,7 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
 
     return (
         <SettingsPane
+                navigationKey="apps"
             store={store}
             title="Apps and sales channels"
             description="Review installed apps and sales channel access for this store."

@@ -1,0 +1,52 @@
+{
+  "recordedAt": "2026-10-23T16:10:54.209812+00:00",
+  "status": "ROOT_DRAFT_REVIEWED_SOURCE_CHECKS_GREEN_NATIVE_ADMISSION_PENDING_391",
+  "migration": 392,
+  "defect": "CIRCUIT-SEARCH-MODEL-001",
+  "release": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/preparation-release.json",
+    "sha256": "4a78a7c69b3d616e685ac656a46e0e9caa3e63a9e937f3a8f5480f1be526978c"
+  },
+  "drafts": [
+    {
+      "path": "392_electronics_search.up.draft.sql",
+      "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171"
+    },
+    {
+      "path": "392_electronics_search.down.draft.sql",
+      "sha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e"
+    }
+  ],
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "sha256": "c75705b8d13c909286930140462530f11fcbe9192815e2ada9949151acdff407",
+    "topLevelTests": 8,
+    "executed": false,
+    "rootInventoryRegistrationRequired": true
+  },
+  "independentChecks": {
+    "path": "docs/implementation/niche-theme-programme/m2-circuit-search392-final-source-independent.tap",
+    "sha256": "4b0d4419b1b7f7d184df29f2ef89a01a10f644669c344e2ca45ccfbf811b09b7",
+    "pass": 6,
+    "fail": 0,
+    "skip": 0,
+    "invalidConnectorFixtures": 11
+  },
+  "review": [
+    "Only validated supplied electronics model/connector kinds added to existing text expression; original fields and all witness/filter/sort/pagination/wire semantics preserved",
+    "Unknown/malformed/unsupported variant electronics cannot become search authority; no generic JSON search, title rewrite, clientfilter or separateindex",
+    "PairedDOWN restores exact390 browse body; strict raw catalogs/ACL/grantor/defaultAST/provider fences remain",
+    "DefaultLATEST392 must strictly DOWN392/run fullqualifiedbaseline/UP392; dependent391/promotion owners retain full ordered phases"
+  ],
+  "requiredBeforeNative": [
+    "Actual391qualified and exactpairedsourceemitted",
+    "Root392admission pins emitted391/body/source",
+    "Oneexplicitownednativelease after391cleanup",
+    "No current9cdSQL/browser mutation"
+  ],
+  "notGranted": [
+    "392nativeexecution",
+    "Active392emission",
+    "AnyUIcasePASS"
+  ]
+}

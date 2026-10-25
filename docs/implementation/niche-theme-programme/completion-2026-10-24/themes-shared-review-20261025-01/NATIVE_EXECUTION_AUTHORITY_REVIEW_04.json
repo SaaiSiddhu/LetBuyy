@@ -1,0 +1,40 @@
+{
+  "recordedAt": "2026-10-25T01:32:51.736227+00:00",
+  "status": "VERIFIED_ACTUAL_DIRECT_HUMAN_APPROVAL_EXACT_THREE_COHORT_SCOPE",
+  "liveThreadRead": {
+    "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "turnId": "01a17074-8168-7071-ba03-901ccfeb71a8",
+    "userMessageId": "01a170ae-72b8-74c2-8ebf-6229db7c5866",
+    "questionItemId": "call_b14a82b3ba774dfcb586e7fc46c514fd/0",
+    "question": "Approve reviewed capture-fix preflights and capture/apparel database tests with managed permissions, TSX local IPC and at most three serialized isolated Docker/PostgreSQL10minute cohorts; preserve existing runtime07/data/keys/publiccallback, no realpayments/externalmessages",
+    "answer": "Approve these bounded isolated tests"
+  },
+  "receipt": "../NATIVE_EXECUTION_HUMAN_APPROVAL_20261025_04.json",
+  "approvalResolves": "Specific missing elevated-execution authorization, not a source/runtime/browser/provider permission expansion",
+  "preflightActivation": {
+    "path": "HOSTED_CAPTURE_NATIVE_PREFLIGHT_ACTIVATION_03.json",
+    "sha256": "979a14bf0434f7d455d3a02bd9b29d554cbcb73320005121af11eca129acc0a5"
+  },
+  "commands": {
+    "path": "HOSTED_CAPTURE_PREFLIGHT_APPROVED_COMMANDS_03.json",
+    "sha256": "f43c337c0be56504c3d6b759bcc8587aa62941cc505f2a895eb4f8eb8592ad87"
+  },
+  "nativeMaximum": {
+    "captureRed": 1,
+    "captureGreen": 1,
+    "apparelFinal04": 1,
+    "secondsEach": 600,
+    "jobs": 1,
+    "maxAttemptsEach": 1,
+    "noReap": true,
+    "freshOwnedOnly": true,
+    "currentNativeStarts": 0
+  },
+  "mandatorySequence": "Both exact actual terminal0/PASS standalone preflights and independent review, separate precise native RED activation, actual causal RED/witness/cleanup review, then GREEN activation, actual expected all-pass/witness/cleanup review, then apparel04 exact separate grant",
+  "notApproved": [
+    "Restore/heading/Circuit native resources",
+    "Original07 resource adoption, mutation, SIGCONT or restoration",
+    "Main/currentcandidate source edits, newloader, sourceweakenings or third capture retry",
+    "Publiccallback/realprovider/externalnotifications"
+  ]
+}

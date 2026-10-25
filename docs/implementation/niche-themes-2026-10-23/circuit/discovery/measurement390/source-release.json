@@ -1,0 +1,46 @@
+{
+  "status": "CANONICAL_SOURCE_CONTRACT_RELEASED_SQL_AND_FRONTEND_PENDING",
+  "metadataKey": "measurement_capabilities",
+  "schemaExport": "StorefrontDiscoveryMeasurementCapabilitiesSchema",
+  "typeExport": "StorefrontDiscoveryMeasurementCapabilities",
+  "publicExport": "Existing commerce-core barrel export* already exposes both; shared barrel unchanged",
+  "contract": {
+    "wholeObject": "optional; absent386 means unsupported; null rejected",
+    "equipment_length": {
+      "requiredMembers": [
+        "available",
+        "allowed_units"
+      ],
+      "available": "strict boolean",
+      "allowed_units": "existing canonical length_unit values, at most4, unique and ordered mm/cm/m/in; ordered subsets accepted",
+      "invariants": "available iff allowed_units is nonempty"
+    },
+    "max_width_cm": {
+      "requiredMembers": [
+        "available"
+      ],
+      "available": "strict boolean"
+    },
+    "max_depth_cm": {
+      "requiredMembers": [
+        "available"
+      ],
+      "available": "strict boolean"
+    },
+    "unknownKeys": "rejected at every object level"
+  },
+  "validation": {
+    "focusedTests": 14,
+    "skipped": 0,
+    "coreNoEmit": "pass",
+    "gatewayNoEmit": "pass",
+    "queryJsonSchema": "byte-identical before/after390 metadata extension"
+  },
+  "sourceHashes": {
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "packages/commerce-core/test/storefront-discovery.test.ts": "21e36c3e88b80400907d492ea449ebcdd0d49d4390d9dbcd12de454ea9cb0f63",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "services/api-gateway/src/__tests__/storefront-discovery.test.ts": "fe138aed7ca8e8b924b569366c9d187d702b131e904e6e1fb3429418bd514b82"
+  },
+  "scope": "Strict canonical response admission/propagation only. No SQL, frontend, SDK, barrel, query interpreter, runtime or DB/build/browser change."
+}

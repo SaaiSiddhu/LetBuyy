@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T20:39:05.763503+00:00",
+  "classification": "ACTUAL_DEWDROP_TEST_FINANCIAL_AND_BOTH_IMMEDIATE_HISTORY_READBACKS_PASS_WITH_OPEN_METADATA_FINDING",
+  "runId": "49ada80bc494",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "orderNumber": "ORD-20261024-10003",
+  "orderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+  "providerOrderId": "order_TrsW9LtFDH9nrZ",
+  "paymentId": "pay_TrsWOjFmQm62M0",
+  "quantity": 1,
+  "goodsINR": 560,
+  "shippingINR": 20,
+  "totalINR": 580,
+  "currency": "INR",
+  "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+  "variantId": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+  "variantIdentityScope": "Actual baseline public read; browser selectedPinkClay/PC02. Exact purchasedorderline andproviderjoin pending.",
+  "browserConfirmation": true,
+  "actualBuyerOrderDetail": true,
+  "visibleBuyerOrderState": "confirmed",
+  "buyerCartAfterPurchase": 0,
+  "buyerFacts": [
+    "Shade name: Pink Clay",
+    "पैक आकार: एक इकाई",
+    "routine_stage colour",
+    "Lip tint",
+    "6 ml",
+    "PC02",
+    "#a36a65",
+    "Common tint v1: fixture oil and wax; see named shade ingredients.",
+    "Pink Clay v1: fixture oil, CI 77492.",
+    "Fixture directions v1: use as supplied.",
+    "Fixture warning v1: external use only."
+  ],
+  "merchantReadback": "ACTUAL_CONFIRMED_PAID_RAZORPAY_ORDER_AND_EXPANDED_SAVED_BEAUTY_DETAILS",
+  "actualProviderAndLocalCorrelation": "FINANCIAL_CORRELATION_PASS_WITH_OPEN_SESSION_METADATA_DISCREPANCY",
+  "signedProcessedCallbacks": "payment.authorized and payment.captured signatureValid/processed, both canonicalHTTP200, amount58000INRminor",
+  "singleBalancedCaptureAndStockDelta": {
+    "captureCount": 1,
+    "debitMinor": 58000,
+    "creditMinor": 58000,
+    "entries": 2,
+    "variantAvailableBefore": 4,
+    "variantAvailableAfter": 3,
+    "saleCommittedEvents": 1,
+    "quantityDelta": -1
+  },
+  "fullThemeCertification": false,
+  "retainedOriginalCOD": "Originalq2/1120+20=1140 stays separate; Testq1/580 does not replace it.",
+  "browserEvidence": [
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-demo-bank.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-demo-bank.ax-60497899b8d0.txt",
+      "sha256": "60497899b8d075a364c24f7f9a82cce144dad3e7af526582f621dee85137509a",
+      "bytes": 238,
+      "evidenceClass": "CONTROLLER_BROWSER_AX"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-demo-bank.png",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-demo-bank-211d87098b3e.png",
+      "sha256": "211d87098b3e8cbc2a64509f25c07bb6b4b62c2c6ed68530689aa857e8c82b64",
+      "bytes": 18022,
+      "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-order-confirmed.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-order-confirmed.ax-73b4d000251a.txt",
+      "sha256": "73b4d000251abbaeb0c95affa2d2fd9df42401cfdec89dabbf30fc336b202836",
+      "bytes": 711,
+      "evidenceClass": "CONTROLLER_BROWSER_AX"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-order-confirmed.png",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-order-confirmed-2ed30a23afb5.png",
+      "sha256": "2ed30a23afb582769bf6c37c64219d65a367ff9c66817075d4735c1690ebcecc",
+      "bytes": 33712,
+      "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-beauty-details.ax-c0e9f27f8d68.txt",
+      "sha256": "c0e9f27f8d681777b08cefe53507be1b7e9c8a92756e71d15deb91146ea8f8a8",
+      "bytes": 1636,
+      "evidenceClass": "CONTROLLER_BROWSER_AX"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.png",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-beauty-details-c4964c278348.png",
+      "sha256": "c4964c278348ef31dc36b566a8e4913005f5b1e54b868cf9c37ac2ff5d274a1c",
+      "bytes": 64625,
+      "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-merchant-beauty-details.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-merchant-beauty-details.ax-f265c0f0c35a.txt",
+      "sha256": "f265c0f0c35aa93fb7427afae8d954d56de5501b8690bdd21e30e4edcadfd4c2",
+      "bytes": 5407,
+      "evidenceClass": "CONTROLLER_BROWSER_AX"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-merchant-beauty-details.png",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-merchant-beauty-details-32809c48875d.png",
+      "sha256": "32809c48875de4aeaa3aff4f730b7bf9cfae2905b9bd6d1d5b40f449447ba77c",
+      "bytes": 85587,
+      "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-fullreload-details.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-fullreload-details.ax-c0e9f27f8d68.txt",
+      "sha256": "c0e9f27f8d681777b08cefe53507be1b7e9c8a92756e71d15deb91146ea8f8a8",
+      "bytes": 1636,
+      "evidenceClass": "CONTROLLER_BROWSER_AX"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-fullreload-details.png",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-fullreload-details-c4964c278348.png",
+      "sha256": "c4964c278348ef31dc36b566a8e4913005f5b1e54b868cf9c37ac2ff5d274a1c",
+      "bytes": 64625,
+      "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-after-stock.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-after-stock-d8124f6fec57.json",
+      "sha256": "d8124f6fec570278507bbc01567a54c6e5282404d1d2f23fc00a3b4358b81317",
+      "bytes": 984,
+      "evidenceClass": "READ_ONLY_PUBLIC_API_AFTER_BASELINE"
+    }
+  ],
+  "failureEvidence": "runtime07/BROWSER_OBSERVATIONS.json recoverableIncidents DD-R07-UI-001",
+  "all30Complete": false,
+  "RAZORPAY_TEST_VERIFIED": false,
+  "FULL_THEME_CERTIFIED": false,
+  "actualBuyerFullReloadReadback": true,
+  "snapshotSha256": "0d5c1d2b5ba1582e79857644a4553df4bcc69eb558729ba7947801c4f56097fb",
+  "cartId": "cc88aa3d-818f-46b4-843b-ac4ff32fdec9",
+  "hostedCheckoutSessionId": "1c63b862-cd1b-495f-8cc4-2b51045ba48a",
+  "orderThemeLineage": {
+    "themeReleaseId": null,
+    "themeInstanceId": null,
+    "finding": "Both null in canonical order; installed package/release lineage still requires explicit independent reconciliation, not inference from order number or theme assets."
+  },
+  "openMetadataFinding": {
+    "storedCapturePostedToLedger": false,
+    "actualCanonicalCaptureCount": 1,
+    "matchesCanonicalLedger": false,
+    "findingId": "R07-HOSTED-CAPTURE-FLAG-01"
+  },
+  "paymentsTableRows": 0,
+  "correlationEvidence": {
+    "source": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json",
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/DEWDROP_ORDER_10003_READONLY_CORRELATION-07a68425321f.json",
+    "sha256": "07a68425321fbcd62a20a9d139009f9e5c3574721ae31ba3ee09dd5b3b1f0c01",
+    "bytes": 17044,
+    "evidenceClass": "ALLOCATED_READ_ONLY_CANONICAL_DB_AND_REDACTED_HMAC_CORRELATION"
+  },
+  "review": {
+    "status": "PENDING_THEMES_INDEPENDENT_REVIEW",
+    "financialReader": "Editor",
+    "browserController": "Coordinator"
+  },
+  "financialCorrelationEvidence": {
+    "source": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json",
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/DEWDROP_ORDER_10003_READONLY_CORRELATION-07a68425321f.json",
+    "sha256": "07a68425321fbcd62a20a9d139009f9e5c3574721ae31ba3ee09dd5b3b1f0c01",
+    "bytes": 17044,
+    "evidenceClass": "ALLOCATED_READ_ONLY_CANONICAL_DB_AND_REDACTED_HMAC_CORRELATION"
+  },
+  "scopedPurchaseResult": "PASS_WITH_OPEN_SHARED_SESSION_METADATA_FINDING"
+}

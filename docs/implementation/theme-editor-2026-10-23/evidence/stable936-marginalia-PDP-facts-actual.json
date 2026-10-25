@@ -1,0 +1,175 @@
+{
+  "runId": "936e5f577646",
+  "cartActions": 0,
+  "editions": [
+    {
+      "edition": "English hardback",
+      "actual": {
+        "addDisabled": false,
+        "attributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+          ],
+          [
+            "data-selection-state",
+            "selected"
+          ]
+        ],
+        "editions": [
+          {
+            "text": "Option\nLanguage\nEnglish\nFormat\nhardback\nEdition\nIllustrated second printing\nPages\n192\nDimensions\n156 × 234 mm",
+            "variantId": "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+          },
+          {
+            "text": "Option\nLanguage\nHindi\nFormat\npaperback\nEdition\nFirst printing\nPages\n160\nDimensions\n140 × 216 mm",
+            "variantId": "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+          },
+          {
+            "text": "Option\nLanguage\nEnglish\nFormat\npaperback\nEdition\nThird printing\nPages\n176\nDimensions\n148 × 210 mm\n\nCurrently unavailable",
+            "variantId": "9e4fbca8-6bef-4a03-b9d4-274f524575ad"
+          }
+        ],
+        "selected": "English hardback.\n\nEdition facts\nAuthors\nMira Sen\nLanguage\nEnglish\nFormat\nhardback\nEdition\nIllustrated second printing\nDimensions\n156 × 234 mm",
+        "selectedOptions": [
+          {
+            "name": "Edition",
+            "value": "English hardback"
+          }
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "edition": "Hindi paperback",
+      "actual": {
+        "addDisabled": false,
+        "attributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+          ],
+          [
+            "data-selection-state",
+            "selected"
+          ]
+        ],
+        "editions": [
+          {
+            "text": "Option\nLanguage\nEnglish\nFormat\nhardback\nEdition\nIllustrated second printing\nPages\n192\nDimensions\n156 × 234 mm",
+            "variantId": "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+          },
+          {
+            "text": "Option\nLanguage\nHindi\nFormat\npaperback\nEdition\nFirst printing\nPages\n160\nDimensions\n140 × 216 mm",
+            "variantId": "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+          },
+          {
+            "text": "Option\nLanguage\nEnglish\nFormat\npaperback\nEdition\nThird printing\nPages\n176\nDimensions\n148 × 210 mm\n\nCurrently unavailable",
+            "variantId": "9e4fbca8-6bef-4a03-b9d4-274f524575ad"
+          }
+        ],
+        "selected": "Hindi paperback.\n\nEdition facts\nAuthors\nसिंथेटिक लेखक\nLanguage\nHindi\nFormat\npaperback\nEdition\nFirst printing\nDimensions\n140 × 216 mm",
+        "selectedOptions": [
+          {
+            "name": "Edition",
+            "value": "Hindi paperback"
+          }
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "edition": "English paperback unavailable",
+      "actual": {
+        "addDisabled": true,
+        "attributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "9e4fbca8-6bef-4a03-b9d4-274f524575ad"
+          ],
+          [
+            "data-selection-state",
+            "unavailable"
+          ]
+        ],
+        "editions": [
+          {
+            "text": "Option\nLanguage\nEnglish\nFormat\nhardback\nEdition\nIllustrated second printing\nPages\n192\nDimensions\n156 × 234 mm",
+            "variantId": "760cb43c-ecfc-490f-8cee-080bfdcd6281"
+          },
+          {
+            "text": "Option\nLanguage\nHindi\nFormat\npaperback\nEdition\nFirst printing\nPages\n160\nDimensions\n140 × 216 mm",
+            "variantId": "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+          },
+          {
+            "text": "Option\nLanguage\nEnglish\nFormat\npaperback\nEdition\nThird printing\nPages\n176\nDimensions\n148 × 210 mm\n\nCurrently unavailable",
+            "variantId": "9e4fbca8-6bef-4a03-b9d4-274f524575ad"
+          }
+        ],
+        "selected": "English paperback unavailable — unavailable. Purchase is unavailable for this option.\n\nEdition facts\nAuthors\nDev Rao\nLanguage\nEnglish\nFormat\npaperback\nEdition\nThird printing\nDimensions\n148 × 210 mm",
+        "selectedOptions": [
+          {
+            "name": "Edition",
+            "value": "English paperback unavailable"
+          }
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    }
+  ],
+  "paper": {
+    "images": [
+      {
+        "alt": "Marginalia lifecycle lined notebook",
+        "src": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/marginalia/v2/notebook.webp"
+      }
+    ],
+    "text": "Threadline\nSearch\nLog in\nCart\n(\n0\n)\nHome\nShop\nMarginalia lifecycle lined notebook\nMarginalia lifecycle lined notebook\nINR 320.00\nQuantity\nAdd to cart\nBuy now\nPaper and materials\nPaper weight\n100 gsm\nDimensions\n148 × 210 mm\nPages\n96\nSheets\n48\nRuling\nlined\nBinding\nThread sewn\nMaterials\nPaper pages with a synthetic olive cover.\nIncluded\nOne lined notebook\nDescription\nWrite a review\n★\n★\n★\n★\n★\n\nSubmit review\nThreadline\nCONTACT\nContact us\n\n© Threadline. All rights reserved.\n\nPowered by LetBuyy",
+    "url": "http://syn-threadline-ui-6815276b.localhost:58091/product/43fba2a8-bc4d-4939-917e-8430991fbd09"
+  }
+}

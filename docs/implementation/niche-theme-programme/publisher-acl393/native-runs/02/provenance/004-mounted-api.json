@@ -1,0 +1,36 @@
+{
+  "runId": "bf6e2bc62ce7",
+  "name": "mounted-api",
+  "sequence": 4,
+  "suiteSha256": "ae513731224bfe171786efd8283965734b200e8323f59c4a4bec07d9b0d94a0d",
+  "value": {
+    "path": "/v1/themes/letbuyy-sense/install",
+    "method": "POST",
+    "status": 201,
+    "response": {
+      "success": true,
+      "data": {
+        "theme": {
+          "id": "7b669c70-0000-4000-8000-000000000002",
+          "name": "Threadline",
+          "slug": "letbuyy-sense",
+          "version": "2.0.0"
+        },
+        "installation": {
+          "id": "59faa667-9e64-44ea-97c3-8147635eae25",
+          "store_id": "6328f331-3536-4912-91a7-d16f632e133c",
+          "theme_id": "7b669c70-0000-4000-8000-000000000002",
+          "is_active": false,
+          "updated_at": "2026-10-24T04:21:21.450636+00:00",
+          "installed_at": "2026-10-24T04:21:21.450636+00:00",
+          "config_overrides": {}
+        },
+        "theme_package_id": "8ade56f3-679f-446e-b653-23e0916135ab",
+        "already_installed": false,
+        "installed_version": "2.0.0",
+        "theme_instance_id": "8d65d420-e81a-46e6-82d7-2e27e1d00f75",
+        "theme_package_version_id": "4f9196a8-8a10-4b6b-8b7b-dac4f58c85dc"
+      }
+    }
+  }
+}

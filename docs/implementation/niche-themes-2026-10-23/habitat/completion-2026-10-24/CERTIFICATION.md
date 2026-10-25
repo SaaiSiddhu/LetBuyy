@@ -1,0 +1,20 @@
+# Habitat completion certification
+
+**NOT ISSUED.** The current original matrix has **0 PASS / 0 FAIL / 2 PARTIAL / 24 NOT_RUN**. HI-01 binding and HI-04 save/reload/publication/preview recovery have dated partial evidence. All nine current query cases remain NOT_RUN. The complete per-case accounting is in the [current 26-case report](runtime07-20261025/ORIGINAL26_STATUS_20261025_03.md).
+
+Habitat 2.0.0 stays frozen: all 11 owned source fingerprints still match. Themes accepted the sealed private02 source corrections. The separately sealed source03 dependency/tool inventory and preflight packet is awaiting review. Its 31 pure/source checks pass; the 61 unchanged earlier source checks were retained without rerun. All 29 sealed artifacts match. Native qualification is NOT_RUN and Main integration is NOT_APPLIED. The focused type program has no mutable-file or new diagnostics, with five unchanged unrelated/context diagnostics remaining. This is not a full-project green typecheck. [Sealed amendment](private-heading211-20261025-02/HANDOFF.json).
+
+Editor reclaimed the existing browser tabs and received the complete original matrix and fixture/history constraints. The preserving integration and runtime rebind plan remains under Root review; this does not grant Habitat a browser or runtime lease. The public callback receiver is expired.
+
+The separate desk Test purchase ORD-20261024-10004 for ₹8,920 has verified buyer/merchant saved facts, signed callbacks and exactly one balanced canonical capture. Its capture-posted flag remains inconsistent; remaining negative/recovery/final review gates are open. It does not satisfy the original four-variant/COD quantity-two matrix. [Financial evidence](runtime07-20261025/CURRENT_TEST_FINANCIAL_OWNER_REVIEW.json).
+
+LOCAL_E2E_VERIFIED=false; RAZORPAY_TEST_VERIFIED=false (PARTIAL); REVIEW_ACCEPTED=PENDING; FULL_THEME_CERTIFIED=false; PRODUCTION_DEPLOYED=NOT_REQUESTED. Historical run936 remains 21 PASS / 1 PARTIAL / 4 NOT_RUN, separate from the current run. No source check or another theme's execution is credited as Habitat runtime acceptance.
+
+Source03 terminal source-only preflight exited0; ten inventory refusal checks passed. Its 7,936 file pins cover 99 packages, actual Node/tsx/tool contents and non-system linked libraries. The native resource preflight and all native phases remain NOT_RUN. [Source03 handoff](private-heading211-native-source-20261025-03/HANDOFF.json). Root has corrected the runner status to ALIVE and is preparing a source-only full-state preservation/restore plan; no Habitat cutover/admission is inferred.
+
+The bounded Editor field/nested-child cycle now has12 atomic controller observations and18 pinned UI artifacts; owner review marks7additional inventory requirements PARTIAL, with incomplete raw identity/preview/full-lifecycle clauses. Original26 remains0PASS/0FAIL/2PARTIAL/24NOT_RUN; expanded339 is11PARTIAL/328NOT_RUN.
+
+Themes accepted the exact additive five211 source proposal (28focused+17pureSQL source checks). The new native-case/source-preflight packet is sealed and awaiting review;23source predicates/3closure refusals/10inventory refusals pass, with0new-case type errors and5unchanged unrelated diagnostics. No actual native/G1/resource/runtime acceptance. The original processes are preservation-stopped after final backup and the browser is fenced. [Latest26-case evidence](runtime07-20261025/ORIGINAL26_STATUS_20261025_03.md).
+
+
+Latest source acceptance: Themes accepted the exact sealed five211 native-case preparation, with no resource or theme acceptance. All sealed source/payload roots remain unchanged. No automatic preflight or extra run is allowed: approval04 three cohorts are spent; a fresh explicit human Native budget and Root's exact admission/actual same-CLI bootstrap qualification are prerequisites. Root minimal original210 recovery remains independent and excludes unactivated211/producer writes. Original26 stays2PARTIAL/24NOT_RUN; all9HQ remainNOT_RUN. [Source acceptance](runtime07-20261025/NATIVE_CASE_SOURCE_ACCEPTANCE_20261025_02.json).

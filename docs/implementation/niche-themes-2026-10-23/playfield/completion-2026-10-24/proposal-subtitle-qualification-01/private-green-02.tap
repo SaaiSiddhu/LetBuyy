@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: declared related-products description renders once after its own heading
+ok 1 - declared related-products description renders once after its own heading
+  ---
+  duration_ms: 341.46475
+  type: 'test'
+  ...
+# Subtest: empty and omitted descriptions add no empty paragraph before the grid
+ok 2 - empty and omitted descriptions add no empty paragraph before the grid
+  ---
+  duration_ms: 56.763083
+  type: 'test'
+  ...
+# Subtest: merchant markup remains inert while Tamil and Hindi text survives the canonical renderer
+ok 3 - merchant markup remains inert while Tamil and Hindi text survives the canonical renderer
+  ---
+  duration_ms: 25.0985
+  type: 'test'
+  ...
+# Subtest: an empty product set does not create a phantom related description or heading
+ok 4 - an empty product set does not create a phantom related description or heading
+  ---
+  duration_ms: 23.096583
+  type: 'test'
+  ...
+# Subtest: a sibling grid retains its own description and does not consume the related value
+ok 5 - a sibling grid retains its own description and does not consume the related value
+  ---
+  duration_ms: 25.109459
+  type: 'test'
+  ...
+# Subtest: proposal changes exactly related source; settings, PDP facts, layout, routes and input remain identical
+ok 6 - proposal changes exactly related source; settings, PDP facts, layout, routes and input remain identical
+  ---
+  duration_ms: 6.679333
+  type: 'test'
+  ...
+# Subtest: frozen 2.0.0 factory and accepted current 2.0.1 source bytes have not been changed
+ok 7 - frozen 2.0.0 factory and accepted current 2.0.1 source bytes have not been changed
+  ---
+  duration_ms: 4.488875
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 656.136417

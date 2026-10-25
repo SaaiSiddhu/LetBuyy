@@ -1,0 +1,17 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "native-normalization",
+  "value": {
+    "manufacturer": "MÜLLER",
+    "value": "MÜLLER",
+    "normalized": "müller",
+    "frontendKey": "müller",
+    "matchedId": "ae78812b-637f-47a9-b031-f038590812eb",
+    "facet": {
+      "key": "electronics_manufacturer",
+      "value": "müller",
+      "label": "MÜLLER",
+      "count": 1
+    }
+  }
+}

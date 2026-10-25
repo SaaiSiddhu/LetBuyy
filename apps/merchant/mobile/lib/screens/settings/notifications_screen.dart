@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 
 import '../../services/notification_settings_service.dart';
+import '../../services/push_service.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
@@ -274,6 +275,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: _inboxList(),
           ),
           const SizedBox(height: 12),
+          ListTile(
+            leading: const Icon(Icons.phonelink_ring_outlined),
+            title: const Text('This device'),
+            subtitle: Text(switch (context.watch<PushService?>()?.registrationState) {
+              PushRegistrationState.registered => 'Device token registered. Delivery also requires an active push provider.',
+              PushRegistrationState.registering => 'Registering this device for push alerts…',
+              PushRegistrationState.permissionDenied => 'Android notification permission is off. Enable it in Settings, then retry.',
+              PushRegistrationState.failed => 'Device registration failed. Retry when connected.',
+              _ => 'Push delivery is not configured on this device. Inbox alerts are available.',
+            }),
+            trailing: context.watch<PushService?>()?.registrationState != PushRegistrationState.registered
+                ? TextButton(onPressed: () => context.read<PushService>().registerCurrentDeviceToken(), child: const Text('Retry device'))
+                : null,
+          ),
           _section(
             title: 'Channels',
             child: Column(

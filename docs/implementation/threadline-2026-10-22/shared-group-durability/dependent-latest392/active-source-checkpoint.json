@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-23T16:54:46.706612+00:00",
+  "status": "ACTIVE_TWO_CONSUMER_SOURCE_LEASE_APPLIED_FOCUSED_VALIDATION_PENDING",
+  "archiveManifestPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/archive-manifest.json",
+  "archiveVerifiedBeforeEdits": true,
+  "root392NativeReceipt": {
+    "path": "docs/implementation/niche-theme-programme/circuit-search392-native-admission.json",
+    "sha256": "1238543d37f951a0402f05ee94e7dca85284e3dc6bfb149073da387de95673cc"
+  },
+  "root392Qualification": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-qualification.json",
+    "sha256": "b44f4d9ad37798dcdca3c31ad30dfeb93bebbf60fd0c843274da18945d342aa2"
+  },
+  "sources": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+      "historicalSha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+      "sha256": "cab467f13d4a381aecffb23ad7b63789e8608a501429a3ea7aee9c55ee2fd72a",
+      "bytes": 43309,
+      "reviewedProposalSha256": "36378d078724fbf9ac3977b2a63c4dd111689808cd7b1e72fdc7cabac1cfdb3c",
+      "diff": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/theme-shared-groups.postgres.test.ts.active.diff",
+        "sha256": "8ee1ea08fc4f6654f6b53ff18d74e993619ba3f0abeb679cd89a4eeca5958a7c"
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+      "historicalSha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+      "sha256": "7a4477a1255529c7cc9eaaef41f2bf36700022976fbeb4172c9ca6125eddd64e",
+      "bytes": 52083,
+      "reviewedProposalSha256": "3e054c10e72363d9dc2a24ab64d8d773a509b7db5bd107aa551bf68b904089ea",
+      "diff": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/niche-theme-promotion.postgres.test.ts.active.diff",
+        "sha256": "4326e9907ff0ba241429d6cf341dafe055bc1e9663fa0f0368a53b81856d03f1"
+      }
+    }
+  ],
+  "originalAdmissionsAndRootReceiptsUnchanged": true,
+  "nativeStarted": false,
+  "dbStarted": false,
+  "active392Emitted": false
+}

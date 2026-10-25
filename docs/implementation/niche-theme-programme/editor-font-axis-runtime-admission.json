@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-10-24T04:07:19.648309+00:00",
+  "status": "ROOT_PROPER_FONT_AXIS_MERCHANT_COMMERCE_CLIENTS_ADMITTED_NORMAL_UI_NEXT",
+  "runId": "936e5f577646",
+  "candidate": "/private/tmp/theme-editor-font-axis-20261024-01",
+  "sourceProof": {
+    "path": "/private/tmp/theme-editor-font-axis-20261024-01/font-axis-source-proof.json",
+    "sha256": "4da3248de49a0c828f6e1daeaacb35d5c361bf11dc1f3d90bb34eea5c48979a0"
+  },
+  "sourceFilesRehashedAfterBothBuilds": 17245,
+  "changed": [],
+  "parentPid": 26856,
+  "execSession": 76037,
+  "clients": [
+    {
+      "kind": "merchant-next-production",
+      "origin": "http://admin.threadline-936e5f577646.localhost:58090",
+      "supervisorPid": 26954,
+      "startup": {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/editor-font-axis-merchant-next-production-startup.json",
+        "sha256": "bd40278b346d8c992cdf3e0197cc550d45cf526ae5ee421604516dd83f6b413c"
+      },
+      "httpStatus": 307
+    },
+    {
+      "kind": "commerce-next-production",
+      "origin": "http://syn-threadline-ui-6815276b.localhost:58091",
+      "supervisorPid": 27146,
+      "startup": {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/editor-font-axis-commerce-next-production-startup.json",
+        "sha256": "4f108aa02dbcf2b6395c844abe10b75f307cf29a3660575d0e2df8425c87d6c6"
+      },
+      "httpStatus": 200
+    }
+  ],
+  "verifiedProcesses": [
+    "26856 66975 Sat Oct 24 04:03:10 2026     node --import tsx /private/tmp/letbuyy-start-font-axis-936.mjs",
+    "26954 26856 Sat Oct 24 04:03:19 2026     /opt/homebrew/Cellar/node@22/22.23.3_2/bin/node /private/tmp/theme-editor-font-axis-20261024-01/scripts/governance/owned-client-launcher.mjs merchant-next-production 26856 /private/tmp/theme-editor-font-axis-20261024-01 58090",
+    "27146 26856 Sat Oct 24 04:04:04 2026     /opt/homebrew/Cellar/node@22/22.23.3_2/bin/node /private/tmp/theme-editor-font-axis-20261024-01/scripts/governance/owned-client-launcher.mjs commerce-next-production 26856 /private/tmp/theme-editor-font-axis-20261024-01 58091"
+  ],
+  "guardVerified": true,
+  "originalIssuer": "http://accounts.threadline-936e5f577646.localhost:50492",
+  "originalGateway": "http://127.0.0.1:50498",
+  "originalBuyerCommerce": "http://syn-threadline-ui-6815276b.localhost:50494",
+  "originalCheckout": "https://checkout.localhost:50497",
+  "oldRuntimeStoppedOrPatched": false,
+  "databaseMutationFromCopyOrBuild": false,
+  "privateSigningKeyReadOrCopied": false,
+  "soleController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "allocation": "Normal newmerchant auth +actual O03 axisname/value rename/factrebind/save/fullreload preservingUUIDs/inventory/order; newEditorpreview fontretake. Keeporiginalbuyer/cart/checkoutcontext unchanged forstaleconfirm/history.",
+  "lifecycle": "Original guarded936 fixture effectiveexpiry08:55:37\u201308:57:25UTC, safe cutoff08:50UTC unchanged. Own supplementalclientsstop throughparentfinish/ownedwatchdogs, no timeout extension.",
+  "limits": [
+    "NewportSSO notyetverified; use normal owner sign-in ifneeded, nevercookie/token/storage injection.",
+    "No crossportcartcontinuity; held6284 remains exclusively onoriginal50494/50497.",
+    "Gatewaystillstable392; countfix/publisher393/movingMain updater excluded.",
+    "Source20 isolated passes are subsetof59unique sourcechecks, notadditionalcoverage.",
+    "SourceSans3 publicmap coverage remainsunclaimed; noallfontparityuntilactualretake."
+  ]
+}

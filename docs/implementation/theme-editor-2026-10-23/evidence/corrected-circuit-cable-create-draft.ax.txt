@@ -1,0 +1,345 @@
+Browser tab: 37, Title: "LetBuyy Admin", URL: "http://admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/new".
+0 AXWebArea LetBuyy Admin, URL: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/new
+	1 container
+		2 link Description: LetBuyy dashboard, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/dashboard
+		3 button Search
+		4 button Setup assistant
+		5 button Notifications
+		6 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			7 text TH
+			8 text Threadline
+	9 container admin-nav-drawer
+		10 container
+			11 container Primary navigation
+				12 content list
+					13 link Description: Home, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/dashboard
+					14 link Description: Orders, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/orders
+					15 container
+						16 link Description: Products, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products
+						17 button (expanded) Description: Toggle Products section, Secondary Actions: Collapse
+						18 content list
+							19 link Description: Add product, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/new
+							20 link Description: Collections, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/collections
+							21 link Description: Smart collections, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/smart-collections
+							22 link Description: Categories, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/categories
+							23 link Description: Export and import, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/export
+					24 container
+						25 link Description: Inventory, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/inventory
+						26 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					27 container
+						28 link Description: Purchasing, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/purchase-orders
+						29 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					30 container
+						31 link Description: Customers, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/customers
+						32 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					33 container
+						34 link Description: Money, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/settings/billing
+						35 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					36 container
+						37 link Description: Marketing, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/coupons
+						38 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					39 container
+						40 link Description: Content, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/pages
+						41 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					42 link Description: Analytics, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/analytics
+			43 text Sales channels
+			44 container Sales channels
+				45 content list
+					46 container
+						47 link Description: Online Store, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/online-store
+						48 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			49 text Apps
+			50 container Apps
+				51 content list
+					52 link Description: Add, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/apps
+		53 container Settings navigation
+			54 content list
+				55 link Description: Settings, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/settings
+	56 container admin-page-scroll
+		185 heading Add product, Value: 1
+			186 text Add product
+		62 container
+			63 heading Details, Value: 2
+				64 text Details
+			65 text Name and describe the product as shoppers will see it. Title
+			66 text field (settable) Title, Value: Circuit lifecycle one metre cable
+			67 text Description
+			68 text entry area (settable) Description, Value: Synthetic owned Circuit supplemental acceptance fixture only.
+		69 container
+			70 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				71 text Apparel fit, fabric and care (optional)
+			72 container Product-specific facts
+				73 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				74 text Product facts category
+				75 pop up button (collapsed, settable) Product facts category, Value: Electronics, Secondary Actions: Expand
+					76 menu
+						77 (disabled) Choose product information to edit
+						78 Toys and activities
+						79 (selected) Electronics
+						80 Food and pantry
+						81 Furniture
+						82 Ready-made gifts
+						83 Text personalization
+						84 Beauty and care
+						85 Sports equipment
+						86 Books and stationery
+				191 container Electronics specifications (optional)
+					192 text Electronics specifications (optional)
+					193 text Supply product facts from a reliable product reference. Leave unknown values empty. A matching connector alone does not establish device compatibility.
+					194 text Manufacturer
+					195 text field (settable) Manufacturer, Value: Synthetic Lab
+					196 text Exact product model
+					197 text field (settable) Exact product model, Value: Synthetic L100
+					198 text Product kind
+					199 pop up button (collapsed, settable) Product kind, Value: Cable, Secondary Actions: Expand
+						200 menu
+							201 Not supplied
+							202 Hub
+							203 Adapter
+							204 Charger
+							205 (selected) Cable
+							206 Audio
+							207 Device
+							208 Other
+					209 container Power, data and length
+						210 text Power, data and length
+						211 text Enter watts (W), megabits per second (Mb/s) and millimetres (mm). For example, 5 Gb/s is 5000 Mb/s and 1 m is 1000 mm. Power input, output, cable capacity and laptop pass-through are separate facts.
+						212 text Power input maximum (W)
+						213 text field (settable) Power input maximum (W)
+						214 text Power output maximum (W)
+						215 text field (settable) Power output maximum (W)
+						216 text Cable power capacity maximum (W)
+						217 text field (settable) Cable power capacity maximum (W), Value: 100
+						218 text Laptop pass-through maximum (W)
+						219 text field (settable) Laptop pass-through maximum (W)
+						220 text Data transfer maximum (Mb/s)
+						221 text field (settable) Data transfer maximum (Mb/s), Value: 480
+						222 text Cable length (mm)
+						223 text field (settable) Cable length (mm), Value: 1000
+					224 container Connector roles
+						225 text Connector roles
+						226 text Count each connector kind and role once. Keep the host connection separate from the accessory ports.
+						273 container Connector 1
+							274 container
+								275 text Connector  1
+							276 text Connector 1 kind
+							277 pop up button (collapsed, settable) Connector 1 kind, Value: USB-C, Secondary Actions: Expand
+								278 menu
+									279 Choose connector
+									280 (selected) USB-C
+									281 USB-A
+									282 HDMI
+									283 DisplayPort
+									284 SD
+									285 microSD
+									286 3.5 mm audio
+									287 AC plug
+									288 Other
+							290 text Connector 1 role
+							291 pop up button (collapsed, settable) Connector 1 role, Value: Host connection, Secondary Actions: Expand
+								292 menu
+									293 Choose role
+									294 (selected) Host connection
+									295 Power input
+									296 Power output
+									297 Data
+									298 Video
+									299 Card reader
+									300 Audio
+							302 text Connector 1 count
+							303 text field (settable) Connector 1 count, Value: 1
+							305 button Remove connector 1
+								306 text Remove connector 
+								307 text 1
+						329 container Connector 2
+							330 container
+								331 text Connector  2
+							332 text Connector 2 kind
+							333 pop up button (collapsed, settable) Connector 2 kind, Value: USB-C, Secondary Actions: Expand
+								334 menu
+									335 Choose connector
+									336 (selected) USB-C
+									337 USB-A
+									338 HDMI
+									339 DisplayPort
+									340 SD
+									341 microSD
+									342 3.5 mm audio
+									343 AC plug
+									344 Other
+							346 text Connector 2 role
+							347 pop up button (collapsed, settable) Connector 2 role, Value: Data, Secondary Actions: Expand
+								348 menu
+									349 Choose role
+									350 Host connection
+									351 Power input
+									352 Power output
+									353 (selected) Data
+									354 Video
+									355 Card reader
+									356 Audio
+							358 text Connector 2 count
+							359 text field (settable) Connector 2 count, Value: 1
+							361 button Remove connector 2
+								362 text Remove connector 
+								363 text 2
+						227 button Add connector
+					228 container Video output maximum
+						229 text Video output maximum
+						230 text Supply all three values only when video output is documented. Do not infer video support from USB-C.
+						231 text Video width (px)
+						232 text field (settable) Video width (px)
+						233 text Video height (px)
+						234 text field (settable) Video height (px)
+						235 text Video refresh rate (Hz)
+						236 text field (settable) Video refresh rate (Hz)
+						237 button (disabled) Clear video specification
+					238 container Product dimensions
+						239 text Product dimensions
+						240 text Product length (mm)
+						241 text field (settable) Product length (mm)
+						242 text Product width (mm)
+						243 text field (settable) Product width (mm)
+						244 text Product height (mm)
+						245 text field (settable) Product height (mm)
+						246 button (disabled) Clear product dimensions
+					247 container Host requirements
+						248 text Host requirements
+						249 button Add host requirement
+					250 container Box contents
+						251 text Box contents
+						317 container Included item 1
+							318 container
+								319 text Included item  1
+							320 text Included item 1 label
+							321 text field (settable) Included item 1 label, Value: Cable
+							323 text Included item 1 quantity
+							324 text field (settable) Included item 1 quantity, Value: 1
+							326 button Remove included item 1
+								327 text Remove included item 
+								328 text 1
+						252 button Add included item
+					253 container Product fact-sheet source
+						254 text Product fact-sheet source
+						255 text A product fact sheet does not establish compatibility with an unnamed device.
+						256 text Product fact-sheet reference
+						257 text field (settable) Product fact-sheet reference
+						258 text Product fact-sheet source date
+						259 date field (settable) Product fact-sheet source date
+							260 container
+								261 stepper
+								262 stepper
+								263 stepper
+							264 pop up button Show date picker Show date picker
+						265 button (disabled) Clear product fact-sheet source
+					266 container Specific-device references
+						267 text Specific-device references
+						268 text Without a referenced exact device model, compatibility stays unconfirmed. These are merchant references, not platform certification. Do not use “all devices”.
+						269 button Add device reference
+					270 text Electronics notes
+					271 text entry area (settable) Electronics notes
+					272 button Clear all electronics facts
+			87 heading Media, Value: 2
+				88 text Media
+			89 text Upload images that help shoppers inspect the product.
+			90 heading No product media yet, Value: 3
+				91 text No product media yet
+			92 text Upload product images so shoppers can inspect materials, colors, and details before buying.
+			93 button Upload media
+		94 container
+			95 heading Category, Value: 2
+				96 text Category
+			97 text Add category metadata for tax, discovery, and reporting. Category
+			98 text field (settable) Category, Value: Accessories
+			99 text Determines tax rates and adds product metadata.
+		100 container
+			101 heading Pricing, Value: 2
+				102 text Pricing
+			103 text Set the customer-facing price and internal product cost. Price
+			104 stepper (settable, integer) Price, Value: 400
+			105 text Compare-at price
+			106 stepper (settable) Compare-at price
+			107 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			108 text Cost per item
+			109 stepper (settable) Cost per item
+			110 text Customers will not see this.
+		111 container
+			112 heading Inventory, Value: 2
+				113 text Inventory
+			114 text Track SKU, barcode, and sell-through behavior.
+			115 checkbox (settable, integer) Description: Track quantity, Value: 1
+			116 text Quantity
+			117 stepper (settable, integer) Quantity, Value: 5
+			118 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			119 text SKU (Stock Keeping Unit)
+			120 text field (settable) SKU (Stock Keeping Unit)
+			121 text Barcode (ISBN, UPC, GTIN)
+			122 text field (settable) Barcode (ISBN, UPC, GTIN)
+		123 container
+			124 heading Shipping, Value: 2
+				125 text Shipping
+			126 text Collect fulfillment and customs information for physical products.
+			127 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			128 text Weight
+			129 stepper (settable) Weight
+			130 text Unit
+			131 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				132 menu
+					133 (selected) kg
+					134 g
+					135 lb
+					136 oz
+			137 text Importer details (for imported products)
+			138 text entry area (settable) Importer details (for imported products)
+			139 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			140 text field (settable) Country/Region of origin, Value: India
+			141 text HS (Harmonized System) code
+			142 text field (settable) HS (Harmonized System) code
+		143 container
+			144 heading Variants, Value: 2
+				145 text Variants
+			146 text Add options like size, color, or material.
+			147 button Add option
+		148 container
+			149 heading Search engine listing, Value: 2
+				150 text Search engine listing
+			151 text Control how this product may appear in search results. syn-threadline-ui-33be9d94 .letbuyy.com/products/ circuit-lifecycle-one-metre-cable Circuit lifecycle one metre cable Synthetic owned Circuit supplemental acceptance fixture only. Page title
+			152 text field (settable) Page title
+			153 text 0 of 70 characters used Meta description
+			154 text entry area (settable) Meta description
+			155 text 0 of 160 characters used URL handle
+			156 text field (settable) URL handle, Value: circuit-lifecycle-one-metre-cable
+		157 container
+			158 container
+				159 heading Status, Value: 2
+					160 text Status
+				161 text Product status
+				162 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					163 menu
+						164 (selected) Active
+						165 Draft
+				166 text Visible on storefront
+			167 container
+				168 heading Publishing, Value: 2
+					169 text Publishing
+				170 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			171 container
+				172 heading Product organization, Value: 2
+					173 text Product organization
+				174 text Use consistent metadata to keep catalog management fast. Product type
+				175 text field (settable) Product type
+				176 text Vendor
+				177 text field (settable) Vendor
+				178 text Tags
+				179 text field (settable) Tags
+				180 text Separate tags with commas.
+			181 container
+				182 heading Catalog readiness, Value: 2
+					183 text Catalog readiness
+				184 text Save product details, media, pricing, and inventory from one guided form.
+		187 container
+			188 text Unsaved changes
+			189 button Discard
+			190 button Create product
+
+The focused UI element is 359 text field (settable) Connector 2 count, Value: 1

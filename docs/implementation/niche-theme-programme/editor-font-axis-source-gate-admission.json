@@ -1,0 +1,51 @@
+{
+  "recordedAt": "2026-10-24T04:02:02.339780+00:00",
+  "status": "ROOT_COMBINED_FONT_AXIS_SOURCE_GATES_ADMITTED_PROPER_CLIENT_BUILD_NEXT",
+  "candidate": "/private/tmp/theme-editor-font-axis-20261024-01",
+  "proof": {
+    "path": "/private/tmp/theme-editor-font-axis-20261024-01/font-axis-source-proof.json",
+    "sha256": "4da3248de49a0c828f6e1daeaacb35d5c361bf11dc1f3d90bb34eea5c48979a0"
+  },
+  "sourceFilesRehashed": 17245,
+  "deltaFiles": 6,
+  "productionDeltaFiles": 3,
+  "newTestFiles": 2,
+  "existingMountedTestAppended": 1,
+  "independentUnitChecks": 20,
+  "coverageNote": "Isolated rerun of new font8+axis12 only, a subset of previously admitted59uniquechecks; not20additionalnewcoverage.",
+  "isolatedMerchantNoEmit": 0,
+  "isolatedCommerceNoEmit": 0,
+  "logs": [
+    {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/gates/font-axis-pure.tap",
+      "sha256": "e14c2cd6ca9798b79b7797b1d1c4b2c7315070e0afed41764e3dcdde1c29da2f",
+      "pass": 16,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/gates/axis-mounted.tap",
+      "sha256": "5643825be772dff01eaf1bb20983d133b3d6cb1192d02c6aab3384b07f60e752",
+      "pass": 4,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/gates/merchant-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0
+    },
+    {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/gates/commerce-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0
+    }
+  ],
+  "runtimeStarted": false,
+  "databaseMutation": false,
+  "current936OriginalSourceChanged": false,
+  "movingMainUpdaterCountAnd393Excluded": true,
+  "next": "Proper one newMerchant/newCommerce clientpair viaexistingownedhelper/current936 announcements, originalissuer/Gateway/hostedcheckout/Buyer/cart untouched; onlysoleEditor getsnewmerchant/preview UI grant afterstartup."
+}

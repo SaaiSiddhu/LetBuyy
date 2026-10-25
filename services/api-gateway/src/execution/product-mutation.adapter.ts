@@ -1,4 +1,4 @@
-import { planProductMutation } from '@letbuyy/commerce-core';
+import { planProductCreate, planProductMutation, type CreateProductCommand } from '@letbuyy/commerce-core';
 import type { Env } from '../index';
 import { AppError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
 import { withTenantTx, TenantTransactionUnavailableError } from '../lib/tenant-transaction';
@@ -6,6 +6,19 @@ import { withTenantTx, TenantTransactionUnavailableError } from '../lib/tenant-t
 // The plan is already JSON text. Describe it as text on the wire so postgres.js
 // does not apply its jsonb serializer to the string a second time.
 export const APPLY_PRODUCT_EDIT_SQL = 'SELECT public.apply_product_edit_v1($1::uuid,$2::uuid,$3::uuid,$4::integer,$5::uuid,$6::text::jsonb) AS product';
+
+// Static columns only. Table defaults create the UUID/revision/timestamps; no
+// client-generated variant ID or REST child write participates in creation.
+export const INSERT_PRODUCT_SQL = `INSERT INTO public.products (
+    store_id,site_id,name,slug,description,price,compare_price,cost_per_item,images,category,product_type,vendor,
+    stock,track_inventory,status,sku,barcode,sell_when_oos,is_physical,weight,weight_unit,country_of_origin,
+    importer_details,hs_code,hsn_code,url_handle,seo_title,seo_description,charge_tax,is_active,is_featured,
+    tags,metadata,variants,display_order,created_by,updated_by
+) SELECT p.store_id,p.store_id,p.name,p.slug,p.description,p.price,p.compare_price,p.cost_per_item,p.images,p.category,p.product_type,p.vendor,
+    0,p.track_inventory,p.status,p.sku,p.barcode,p.sell_when_oos,p.is_physical,p.weight,p.weight_unit,p.country_of_origin,
+    p.importer_details,p.hs_code,p.hsn_code,p.url_handle,p.seo_title,p.seo_description,p.charge_tax,p.is_active,p.is_featured,
+    p.tags,p.metadata,'[]'::jsonb,p.display_order,$2::uuid,$2::uuid
+FROM jsonb_populate_record(NULL::public.products,$1::text::jsonb) p RETURNING id,version`;
 
 function mutationError(error: unknown): never {
     if (error instanceof TenantTransactionUnavailableError) {
@@ -20,6 +33,12 @@ function mutationError(error: unknown): never {
     }
     if (message.includes('PRODUCT_EDIT_KEY_CONFLICT')) {
         throw new AppError('This save key belongs to a different edit. Recover the original save before starting another.', 409, 'PRODUCT_EDIT_KEY_CONFLICT');
+    }
+    if (/PRODUCT_PERSONALIZATION_REVISION_(REQUIRED|DECREASED)/.test(message)) {
+        throw new AppError('Personalization choices changed. Advance the personalization revision and review your draft before saving.', 409, 'PERSONALIZATION_REVISION_CONFLICT');
+    }
+    if (message.includes('PRODUCT_PERSONALIZATION_INVALID')) {
+        throw new ValidationError('Supply valid personalization facts with a positive revision, or explicitly remove them.');
     }
     if (message.includes('PRODUCT_EDIT_VARIANT_REMOVAL')) {
         throw new AppError('A removed variant still has stock or history. Keep that variant and adjust its availability instead.', 409, 'PRODUCT_VARIANT_IN_USE');
@@ -66,4 +85,30 @@ export function executeProductMutation(
     return productTransaction(env, storeId, actorId, requestId,
         APPLY_PRODUCT_EDIT_SQL,
         [storeId, productId, actorId, plan.expectedVersion, plan.idempotencyKey, JSON.stringify(plan.mutation)]);
+}
+
+/** The existing create boundary and edit writer share one real tenant transaction. */
+export async function executeProductCreate(env: Env | undefined, input: CreateProductCommand, actorId: string) {
+    let plan;
+    try { plan = planProductCreate(input); }
+    catch { throw new ValidationError('Some product or variant details are invalid. Review your draft and retry.'); }
+    const requestId = crypto.randomUUID();
+    try {
+        if (!env) throw new TenantTransactionUnavailableError();
+        return await withTenantTx(env, { siteId: input.store_id, requestId }, async sql => {
+            await sql.unsafe('SELECT set_config($1,$2,true)', ['app.actor_id', actorId]);
+            // The existing guarded edit entry checks live actor membership before
+            // any transaction can commit, including this parent INSERT.
+            const inserted = await sql.unsafe(INSERT_PRODUCT_SQL, [JSON.stringify(plan.productInsert), actorId]);
+            const productId = inserted[0]?.id;
+            const version = inserted[0]?.version;
+            if (typeof productId !== 'string' || typeof version !== 'number') throw new NotFoundError('Product not found');
+            const mutation = { fields: {}, product_options: plan.productOptions, variants: plan.productVariants, stock: plan.initialStock };
+            const rows = await sql.unsafe(APPLY_PRODUCT_EDIT_SQL,
+                [input.store_id, productId, actorId, version, requestId, JSON.stringify(mutation)]);
+            const product = rows[0]?.product;
+            if (!product || typeof product !== 'object' || Array.isArray(product)) throw new NotFoundError('Product not found');
+            return product as Record<string, unknown>;
+        });
+    } catch (error) { return mutationError(error); }
 }

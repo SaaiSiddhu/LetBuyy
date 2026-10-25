@@ -76,14 +76,18 @@ test('theme marketplace install surface calls the gateway through the typed clie
   assert.doesNotMatch(service, /@supabase\//);
 
   assert.match(installPage, /async function installThemeAction\(formData: FormData\)/);
-  assert.match(installPage, /ThemeService\.getUserStores\(\)/);
-  assert.match(installPage, /ThemeService\.installTheme\(slug, storeId, \{/);
-  assert.match(installPage, /name="preset"/);
+  assert.match(installPage, /ThemeService\.getUserStores\(true\)/);
+  assert.match(installPage, /ThemeService\.installTheme\(slug, storeId, \{ version: intent\.data\.expected_version/);
+  assert.doesNotMatch(installPage, /name="preset"|marketplace_install: true/);
   assert.match(installPage, /name="store_id"/);
-  assert.match(installPage, /\/dashboard\/installations\?installed=/);
+  assert.match(service, /confirmThemeInstallReceipt\(wire, selected\)/);
+  assert.match(service, /confirmThemeInstallLibraryReadback\(await api\.themes\.listSiteLibrary\(storeId\), confirmed\.receipt\)/);
+  assert.match(installPage, /theme_instance_id: receipt\.theme_instance_id/);
+  assert.match(installPage, /theme_package_version_id: receipt\.theme_package_version_id/);
+  assert.match(installPage, /redirect\(editorHref\)/);
   assert.doesNotMatch(installPage, /@supabase\//);
 
-  assert.match(detailPage, /const addHref = isFree \? `\/install\?theme=\$\{encodeURIComponent\(theme\.slug\)\}` : `\/checkout\?theme=\$\{encodeURIComponent\(theme\.slug\)\}`/);
+  assert.match(detailPage, /const addHref = isFree \? `\/install\?theme=\$\{encodeURIComponent\(theme\.slug\)\}&version=\$\{encodeURIComponent\(theme\.version\)\}` : `\/checkout\?theme=\$\{encodeURIComponent\(theme\.slug\)\}`/);
   assert.match(detailPage, /href: addHref/);
   assert.match(detailPage, /href=\{addHref\}/);
   assert.match(checkoutSuccess, /`\/install\?theme=\$\{themeSlug\}`/);
@@ -170,6 +174,9 @@ test('marketplace rollback preserves the reviewed current-release precondition a
   const compiled=ts.transpileModule(read(THEME_SERVICE),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
   runInNewContext(compiled,{module,exports:module.exports,require:name=>{
     if(name==='server-only')return {};
+    // This narrow rollback proof never invokes acquisition; those real schema
+    // and readback contracts have separate executable installation tests.
+    if(name==='@letbuyy/shared-types'||name==='@letbuyy/theme-engine')return {};
     if(name==='@/lib/api/client')return {createThemeMarketplaceApiClient:async()=>({themes:{rollbackRelease:async(...args)=>{calls.push(args);return {accepted:true};}}})};
     throw Error(`Unexpected rollback dependency: ${name}`);
   }});

@@ -1,0 +1,39 @@
+{
+  "stylesheet": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Lato:wght@400;700&display=swap",
+  "fonts": [
+    {
+      "family": "Cormorant Garamond",
+      "weight": "500",
+      "source": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_s06GnM.ttf",
+      "file": "cormorant-garamond-500.ttf",
+      "bytes": 290496
+    },
+    {
+      "family": "Cormorant Garamond",
+      "weight": "600",
+      "source": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_iE9GnM.ttf",
+      "file": "cormorant-garamond-600.ttf",
+      "bytes": 290392
+    },
+    {
+      "family": "Lato",
+      "weight": "400",
+      "source": "https://fonts.gstatic.com/s/lato/v25/S6uyw4BMUTPHvxk.ttf",
+      "file": "lato-400.ttf",
+      "bytes": 72312
+    },
+    {
+      "family": "Lato",
+      "weight": "700",
+      "source": "https://fonts.gstatic.com/s/lato/v25/S6u9w4BMUTPHh6UVew8.ttf",
+      "file": "lato-700.ttf",
+      "bytes": 70576
+    }
+  ],
+  "canonicalIdentityFont": {
+    "family": "Geist",
+    "source": "packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+    "file": "geist-sans-latin.woff2",
+    "role": "Current identity admin/light baseline"
+  }
+}

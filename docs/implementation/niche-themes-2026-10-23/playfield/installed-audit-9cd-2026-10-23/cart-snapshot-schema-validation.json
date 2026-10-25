@@ -1,0 +1,15 @@
+{
+  "classification": "SAVED_CART_SCHEMA_VALIDATION_NOT_ORDER_ACCEPTANCE",
+  "sourceSha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582",
+  "inputSha256": "fd4f063a7c7805ebde020c8dc1a7a6c4e6028372a7cf18bdd6d0a2a37c4642bc",
+  "results": [
+    {
+      "variantId": "39b713a7-44a5-4327-ae9f-40d45c76bc2d",
+      "schemaValid": true
+    },
+    {
+      "variantId": "d21309b4-c4a0-4eca-a591-c5a3f01d138f",
+      "schemaValid": true
+    }
+  ]
+}

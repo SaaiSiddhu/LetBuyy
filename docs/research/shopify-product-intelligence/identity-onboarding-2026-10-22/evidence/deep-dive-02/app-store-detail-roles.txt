@@ -1,0 +1,40 @@
+    - searchbox "Search apps, guides, and more"
+    - button "Browse apps":
+    - button "Your store":
+  - heading "Judge.me Product Reviews App" [level=1]
+  - button:
+  - button "Install"
+  - heading "Featured images gallery" [level=2]
+    - button "+ 3 more"
+  - heading "Sell more with unlimited product reviews, UGC, star ratings, Google reviews and testimonials" [level=2]
+  - button "Show features"
+  - button "Show features"
+  - heading "Pricing" [level=2]
+  - heading "Free" [level=3]:
+  - heading "$15/month" [level=3]:
+  - heading "Reviews (48,884)" [level=2]
+  - button "Write a review"
+  - heading "What merchants think" [level=5]:
+    - button:
+  - button "Feedback":
+  - button "Copy link to review":
+  - button "Copy link to review":
+  - button "Copy link to review":
+  - heading "Support" [level=2]
+  - heading "Resources" [level=3]
+  - heading "Developer" [level=3]
+  - heading "Featured in" [level=2]
+    - heading "Guide" [level=5]
+    - heading "Discover apps to grow your Spanish business" [level=3]
+    - heading "Guide" [level=5]
+    - heading "Create an impactful order status page with apps." [level=3]
+    - heading "Guide" [level=5]
+    - heading "Make it easy for shoppers to manage things—all within one centralized place." [level=3]
+  - heading "More apps like this" [level=2]
+  - button "REVIEWS.io Product Reviews App 4.7 out of 5 stars 772 total reviews • Free plan available Collect product reviews, star ratings, testimonials, UGC + Q&A":
+  - button "Proviews ‑ Product Reviews Q&A 4.7 out of 5 stars 105 total reviews • Free plan available Boost customer trust with product reviews, FAQs and UGC.":
+  - heading "App categories" [level=6]
+  - heading "Top categories" [level=6]
+  - heading "Resources" [level=6]
+  - heading "Shopify" [level=6]
+  - combobox "Change your language":

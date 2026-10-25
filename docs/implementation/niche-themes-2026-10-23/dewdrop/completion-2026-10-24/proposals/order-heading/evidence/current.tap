@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: custom Heading is visible while immutable order number and saved niche facts remain present
+not ok 1 - custom Heading is visible while immutable order number and saved niche facts remain present
+  ---
+  duration_ms: 98.517292
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/order-heading/order-heading.test.ts:2:3836'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'Order #ORD-SOURCE-UNIT'
+    - 'My receipt #ORD-SOURCE-UNIT'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'My receipt #ORD-SOURCE-UNIT'
+  actual: 'Order #ORD-SOURCE-UNIT'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/order-heading/order-heading.test.ts:24:48)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: default Heading preserves original Order label and saved order number
+ok 2 - default Heading preserves original Order label and saved order number
+  ---
+  duration_ms: 30.571959
+  type: 'test'
+  ...
+# Subtest: blank Heading safely falls back to original Order label
+ok 3 - blank Heading safely falls back to original Order label
+  ---
+  duration_ms: 26.059041
+  type: 'test'
+  ...
+# Subtest: hostile Heading is inert text with immutable number and no attack nodes
+not ok 4 - hostile Heading is inert text with immutable number and no attack nodes
+  ---
+  duration_ms: 26.907833
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/order-heading/order-heading.test.ts:2:4668'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'Order #ORD-SOURCE-UNIT'
+    - '<img src=x onerror="fixtureAttack()"><script>fixtureAttack()</script> #ORD-SOURCE-UNIT'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '<img src=x onerror="fixtureAttack()"><script>fixtureAttack()</script> #ORD-SOURCE-UNIT'
+  actual: 'Order #ORD-SOURCE-UNIT'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/order-heading/order-heading.test.ts:33:129)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: missing and unavailable buyer branches do not disclose the order or saved facts
+ok 5 - missing and unavailable buyer branches do not disclose the order or saved facts
+  ---
+  duration_ms: 47.705292
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 3
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 882.707042

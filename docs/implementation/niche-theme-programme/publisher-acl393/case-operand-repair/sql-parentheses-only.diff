@@ -1,0 +1,50 @@
+--- docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.up.candidate.sql
++++ docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/393_publisher_tenant_execute.up.candidate.sql
+@@ -111,7 +111,7 @@
+   RAISE EXCEPTION 'ACL393 refuses unknown shared dependencies';END IF;
+  SELECT count(*) INTO old_tenant_dependencies FROM jsonb_array_elements(old_shared) x
+   WHERE x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid;
+- IF old_tenant_dependencies<>CASE WHEN tenant_direct THEN 1 ELSE 0 END
++ IF old_tenant_dependencies<>(CASE WHEN tenant_direct THEN 1 ELSE 0 END)
+   OR (SELECT count(*) FROM jsonb_array_elements(old_shared) x WHERE x->>'deptype'='a' AND (x->>'refobjid')::oid='service_role'::regrole::oid)<>1 THEN
+   RAISE EXCEPTION 'ACL393 refuses unknown ACL dependency cardinality';END IF;
+  SELECT coalesce(jsonb_agg(to_jsonb(a) ORDER BY to_jsonb(a)::text),'[]') INTO old_acl_without_tenant
+@@ -134,11 +134,11 @@
+   OR old_dependencies IS DISTINCT FROM new_dependencies OR old_acl_without_tenant IS DISTINCT FROM new_acl_without_tenant
+   OR (SELECT coalesce(jsonb_agg(x ORDER BY x::text),'[]') FROM jsonb_array_elements(old_shared) x WHERE NOT(x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid))
+    IS DISTINCT FROM (SELECT coalesce(jsonb_agg(x ORDER BY x::text),'[]') FROM jsonb_array_elements(new_shared) x WHERE NOT(x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid))
+-  OR new_tenant_dependencies<>CASE WHEN wanted THEN 1 ELSE 0 END
++  OR new_tenant_dependencies<>(CASE WHEN wanted THEN 1 ELSE 0 END)
+   OR EXISTS(SELECT 1 FROM jsonb_array_elements(new_shared) x WHERE x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid AND ((x->>'objsubid')::integer<>0 OR (x->>'refclassid')::oid<>'pg_catalog.pg_authid'::regclass))
+   OR pg_catalog.has_function_privilege('app_tenant',new_row.oid,'EXECUTE') IS DISTINCT FROM wanted
+   OR EXISTS(SELECT 1 FROM pg_catalog.aclexplode(new_row.proacl) a WHERE a.grantee='app_tenant'::regrole::oid AND(a.grantor<>new_row.proowner OR a.privilege_type<>'EXECUTE' OR a.is_grantable))
+-  OR (SELECT count(*) FROM pg_catalog.aclexplode(new_row.proacl) a WHERE a.grantee='app_tenant'::regrole::oid)<>CASE WHEN wanted THEN 1 ELSE 0 END
++  OR (SELECT count(*) FROM pg_catalog.aclexplode(new_row.proacl) a WHERE a.grantee='app_tenant'::regrole::oid)<>(CASE WHEN wanted THEN 1 ELSE 0 END)
+   OR NOT pg_catalog.has_function_privilege('service_role',new_row.oid,'EXECUTE')
+   OR pg_catalog.has_function_privilege('anon',new_row.oid,'EXECUTE') OR pg_catalog.has_function_privilege('authenticated',new_row.oid,'EXECUTE')
+   OR pg_catalog.has_function_privilege('authenticator',new_row.oid,'EXECUTE') THEN
+--- docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.down.candidate.sql
++++ docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/393_publisher_tenant_execute.down.candidate.sql
+@@ -112,7 +112,7 @@
+   RAISE EXCEPTION 'ACL393 refuses unknown shared dependencies';END IF;
+  SELECT count(*) INTO old_tenant_dependencies FROM jsonb_array_elements(old_shared) x
+   WHERE x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid;
+- IF old_tenant_dependencies<>CASE WHEN tenant_direct THEN 1 ELSE 0 END
++ IF old_tenant_dependencies<>(CASE WHEN tenant_direct THEN 1 ELSE 0 END)
+   OR (SELECT count(*) FROM jsonb_array_elements(old_shared) x WHERE x->>'deptype'='a' AND (x->>'refobjid')::oid='service_role'::regrole::oid)<>1 THEN
+   RAISE EXCEPTION 'ACL393 refuses unknown ACL dependency cardinality';END IF;
+  SELECT coalesce(jsonb_agg(to_jsonb(a) ORDER BY to_jsonb(a)::text),'[]') INTO old_acl_without_tenant
+@@ -135,11 +135,11 @@
+   OR old_dependencies IS DISTINCT FROM new_dependencies OR old_acl_without_tenant IS DISTINCT FROM new_acl_without_tenant
+   OR (SELECT coalesce(jsonb_agg(x ORDER BY x::text),'[]') FROM jsonb_array_elements(old_shared) x WHERE NOT(x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid))
+    IS DISTINCT FROM (SELECT coalesce(jsonb_agg(x ORDER BY x::text),'[]') FROM jsonb_array_elements(new_shared) x WHERE NOT(x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid))
+-  OR new_tenant_dependencies<>CASE WHEN wanted THEN 1 ELSE 0 END
++  OR new_tenant_dependencies<>(CASE WHEN wanted THEN 1 ELSE 0 END)
+   OR EXISTS(SELECT 1 FROM jsonb_array_elements(new_shared) x WHERE x->>'deptype'='a' AND (x->>'refobjid')::oid='app_tenant'::regrole::oid AND ((x->>'objsubid')::integer<>0 OR (x->>'refclassid')::oid<>'pg_catalog.pg_authid'::regclass))
+   OR pg_catalog.has_function_privilege('app_tenant',new_row.oid,'EXECUTE') IS DISTINCT FROM wanted
+   OR EXISTS(SELECT 1 FROM pg_catalog.aclexplode(new_row.proacl) a WHERE a.grantee='app_tenant'::regrole::oid AND(a.grantor<>new_row.proowner OR a.privilege_type<>'EXECUTE' OR a.is_grantable))
+-  OR (SELECT count(*) FROM pg_catalog.aclexplode(new_row.proacl) a WHERE a.grantee='app_tenant'::regrole::oid)<>CASE WHEN wanted THEN 1 ELSE 0 END
++  OR (SELECT count(*) FROM pg_catalog.aclexplode(new_row.proacl) a WHERE a.grantee='app_tenant'::regrole::oid)<>(CASE WHEN wanted THEN 1 ELSE 0 END)
+   OR NOT pg_catalog.has_function_privilege('service_role',new_row.oid,'EXECUTE')
+   OR pg_catalog.has_function_privilege('anon',new_row.oid,'EXECUTE') OR pg_catalog.has_function_privilege('authenticated',new_row.oid,'EXECUTE')
+   OR pg_catalog.has_function_privilege('authenticator',new_row.oid,'EXECUTE') THEN

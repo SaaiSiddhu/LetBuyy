@@ -1,0 +1,453 @@
+{
+  "classification": "OBSERVED_RESOLVE_HOOK_REQUIRE_CACHE_AND_EXPLICIT_BOOTSTRAP_INPUTS",
+  "pid": 21283,
+  "exitCode": 1,
+  "node": "v22.23.3",
+  "execArgv": [
+    "--import",
+    "./docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/capture-runtime.mjs",
+    "--import",
+    "tsx",
+    "--test-name-pattern=^REGRESSION_"
+  ],
+  "files": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/capture-runtime.mjs",
+      "sha256": "10ba2c2c93b1c9b7b02cfd51df1287562bad123cfa98adadb53af0eb9892df7b",
+      "bytes": 2045
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/successor.test.ts",
+      "sha256": "e3a8cd78576823e536355290db01d4f2d2403b3877e5e07ba2e1ee5e033ec5a8",
+      "bytes": 14498
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild/lib/main.js",
+      "sha256": "0d1241812c443111d39475dfc66836003e9ef8b87e54d990dd67df29d20010e1",
+      "bytes": 88706
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.cjs",
+      "sha256": "e0fa469d35b49f98b80f49519c01c771b3f5373a2a4596ecb804a9c6e7bab8d1",
+      "bytes": 23817
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.mjs",
+      "sha256": "7cdce9683d453d72d8c2d3b4434a645525fb10b621cfb76b4009cd078d8c343d",
+      "bytes": 23805
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/resolve-pkg-maps@1.0.0/node_modules/resolve-pkg-maps/dist/index.cjs",
+      "sha256": "dc0ffaba25e180745bb1ce1622be094bbc97d07dc275c52413eb546580d9ff49",
+      "bytes": 2150
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/resolve-pkg-maps@1.0.0/node_modules/resolve-pkg-maps/dist/index.mjs",
+      "sha256": "5472eb24afa47c614e7edaccb0ccb4c6259f897d875c27057ee00b7c2cdc3672",
+      "bytes": 2080
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "sha256": "a6d966dff90f93d5a9cb22206d9a37f05eb3f66f004a07424bd96aebfeda9acf",
+      "bytes": 484
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-BQVF1NaW.mjs",
+      "sha256": "334ad3dbfaf820eeb08dd2fa40750c8316e6f8a61311bdf99defd3c361fbece4",
+      "bytes": 500
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-D6NvIMSC.cjs",
+      "sha256": "af10790d58385f62c205140c3f7c25dae26638c2961fa24eb958f888d8995a40",
+      "bytes": 549
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "sha256": "9fab711543eb155d50fb147f8984e104db348a73b74daee4e3974bec109aa381",
+      "bytes": 7014
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs",
+      "sha256": "307483caa22c2406677b4bd513bf602b4de3986f3e23eac7724e99c0d7ddc8d6",
+      "bytes": 368
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BoR10qr8.cjs",
+      "sha256": "70a7fd0d550d1df1336946c504b36dcf97658a7c3328e02a69834ae0c4bfee91",
+      "bytes": 435
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-7AaEi15b.mjs",
+      "sha256": "47851348bc3bbc11413edd4bf44758b7a85e28419847583231d74a182b044e22",
+      "bytes": 52247
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-BWFBUo6r.cjs",
+      "sha256": "fe29b97b254312970fceb8995a519abc8751f26972c221281959a7d77858a464",
+      "bytes": 1181
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gbaejti9.mjs",
+      "sha256": "76febbe946957c96066d1d59293c4a26fc874c05876394cf4c178e4f4d0b6ba8",
+      "bytes": 1058
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gckBtVBf.cjs",
+      "sha256": "49ad679be79684c7706ad7ca495f0afa7bfa361b354eb77e6389cf19df91c524",
+      "bytes": 52353
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/lexer-DQCqS3nf.mjs",
+      "sha256": "6b77bebaee2dd7741177e287a78ef4329d9ef91f6939d09cfcf0029b3859f883",
+      "bytes": 13456
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/lexer-DgIbo0BU.cjs",
+      "sha256": "9b92935847bf0f6daade96b21c8271139ed8b48ef3fa59647af0ef1d36770db0",
+      "bytes": 13507
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "sha256": "0b1c5b86192772fe9257710e739959cee5947c11ae1f93b61abfaa9b80c6def1",
+      "bytes": 729
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/node-features-_8ZFwP_x.mjs",
+      "sha256": "dbf95f05cce9b129a9a89f33f43b7804ab641aa8b256e7cf64ad9f92b880cecc",
+      "bytes": 526
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-B7jrtLTO.mjs",
+      "sha256": "10184ddf4354bab38743d80a5844796f26ffc4589d2820781da90c6a67507aaf",
+      "bytes": 1472
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs",
+      "sha256": "7c7d2d4f757a1a35610b483e0348aee2eb1140968631f4b2105c4b4ad9ffbf0a",
+      "bytes": 7496
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs",
+      "sha256": "7f0e410a859fadcc75a452160e69c860543f5e13e2321b934c0bc4e3d14c01f6",
+      "bytes": 8003
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/require-DQxpCAr4.mjs",
+      "sha256": "dc1b6944ffaa8f4d70e5007116b9aeac77c1cdf80a62526763eab34a123fa902",
+      "bytes": 465
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-B83uKxJF.cjs",
+      "sha256": "da189099aba4a7aff1e0ca337cd71410a0f96abc66298403db041cb812cbd24c",
+      "bytes": 166
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-CwHp0_NW.mjs",
+      "sha256": "e0771b7d9b216d438ff2ade7494a7a3ac6202c66cb752f2cd99bffb3d78226fe",
+      "bytes": 151
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/package.json",
+      "sha256": "bf8f6c15bce8a79297946b76b20995b40a6810d7da2791163b7abbd1f0203d1d",
+      "bytes": 19437
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    },
+    {
+      "path": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+      "sha256": "37c7004c9b9edfc14c5a31190d3c26e5a3fe669309b9e40f3f8dcb39ed31cca4",
+      "bytes": 67024
+    }
+  ],
+  "resolutionEdges": [
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/",
+      "specifier": "tsx",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./get-pipe-path-BHW2eJdv.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./esm/index.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./temporary-directory-CwHp0_NW.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-CwHp0_NW.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./node-features-_8ZFwP_x.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/node-features-_8ZFwP_x.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./register-B7jrtLTO.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-B7jrtLTO.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./register-CFH5oNdT.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "get-tsconfig",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./index-7AaEi15b.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-7AaEi15b.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "esbuild",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild/lib/main.js"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./client-BQVF1NaW.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-BQVF1NaW.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./index-gbaejti9.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gbaejti9.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/loader.mjs",
+      "specifier": "./require-DQxpCAr4.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/require-DQxpCAr4.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs",
+      "specifier": "./temporary-directory-CwHp0_NW.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-CwHp0_NW.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../node-features-_8ZFwP_x.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/node-features-_8ZFwP_x.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../register-B7jrtLTO.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-B7jrtLTO.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../get-pipe-path-BHW2eJdv.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "get-tsconfig",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../register-CFH5oNdT.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "esbuild",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild/lib/main.js"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../index-7AaEi15b.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-7AaEi15b.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../client-BQVF1NaW.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-BQVF1NaW.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../require-DQxpCAr4.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/require-DQxpCAr4.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../temporary-directory-CwHp0_NW.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-CwHp0_NW.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/esm/index.mjs",
+      "specifier": "../index-gbaejti9.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gbaejti9.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-B7jrtLTO.mjs",
+      "specifier": "./register-CFH5oNdT.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs",
+      "specifier": "./get-pipe-path-BHW2eJdv.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs",
+      "specifier": "get-tsconfig",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs",
+      "specifier": "./index-7AaEi15b.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-7AaEi15b.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs",
+      "specifier": "./client-BQVF1NaW.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-BQVF1NaW.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs",
+      "specifier": "./index-gbaejti9.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gbaejti9.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.mjs",
+      "specifier": "resolve-pkg-maps",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/resolve-pkg-maps@1.0.0/node_modules/resolve-pkg-maps/dist/index.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-7AaEi15b.mjs",
+      "specifier": "esbuild",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild/lib/main.js"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-7AaEi15b.mjs",
+      "specifier": "./temporary-directory-CwHp0_NW.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-CwHp0_NW.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-BQVF1NaW.mjs",
+      "specifier": "./get-pipe-path-BHW2eJdv.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/require-DQxpCAr4.mjs",
+      "specifier": "./get-pipe-path-BHW2eJdv.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/require-DQxpCAr4.mjs",
+      "specifier": "./register-CFH5oNdT.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-CFH5oNdT.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-7AaEi15b.mjs",
+      "specifier": "./lexer-DQCqS3nf.mjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/lexer-DQCqS3nf.mjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BHW2eJdv.mjs",
+      "specifier": "./cjs/index.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "../register-D46fvsV_.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs",
+      "specifier": "./get-pipe-path-BoR10qr8.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BoR10qr8.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BoR10qr8.cjs",
+      "specifier": "./temporary-directory-B83uKxJF.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-B83uKxJF.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs",
+      "specifier": "get-tsconfig",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.cjs",
+      "specifier": "resolve-pkg-maps",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/resolve-pkg-maps@1.0.0/node_modules/resolve-pkg-maps/dist/index.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs",
+      "specifier": "./index-gckBtVBf.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gckBtVBf.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gckBtVBf.cjs",
+      "specifier": "esbuild",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild/lib/main.js"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs",
+      "specifier": "./client-D6NvIMSC.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-D6NvIMSC.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs",
+      "specifier": "./index-BWFBUo6r.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-BWFBUo6r.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "../get-pipe-path-BoR10qr8.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/get-pipe-path-BoR10qr8.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "../temporary-directory-B83uKxJF.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/temporary-directory-B83uKxJF.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "get-tsconfig",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig/dist/index.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "../index-gckBtVBf.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gckBtVBf.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "esbuild",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild/lib/main.js"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "../client-D6NvIMSC.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/client-D6NvIMSC.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cjs/index.cjs",
+      "specifier": "../index-BWFBUo6r.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-BWFBUo6r.cjs"
+    },
+    {
+      "parent": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/index-gckBtVBf.cjs",
+      "specifier": "./lexer-DgIbo0BU.cjs",
+      "resolved": "file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/lexer-DgIbo0BU.cjs"
+    },
+    {
+      "parent": null,
+      "specifier": "file:///Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/successor.test.ts",
+      "resolved": "file:///Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/private-successor-01/successor.test.ts"
+    }
+  ],
+  "limits": "Runtime resolution/source inputs, not browser/native/DB/provider evidence. Preloader entry, Node binary, package and lockfile included explicitly."
+}

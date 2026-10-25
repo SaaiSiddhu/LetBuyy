@@ -1,0 +1,11 @@
+{
+  "key": "collection",
+  "bundleSHA256": "4dfaf6d5a3ef197e1a4f962d0cf273bea70471982a94bf876ac2ef4ce61312f9",
+  "status": "rendered",
+  "warnings": [],
+  "htmlSHA256": "1aa6b8849db51ccc4ece2b937e8e60a3dda6d882de4411f7cabd7ca2d4aa8859",
+  "headerSHA256": "6d98e1f659482b7886336732ae5dcb5969fee5198182771b02bdc7e297638812",
+  "footerSHA256": "cb53e6e9f17e552f2fe3981614681e9ec40e16b5483e89cad6fd0eda21371e10",
+  "styleSHA256": "fe75592d6067e745af76a0c36b8cfc80179eb47c82d82ecd8348f8f56599cc39",
+  "syntheticOnly": true
+}

@@ -102,7 +102,7 @@ before(async()=>{
     await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
     restTap=tapRest(owned.restUrl,async(call,forward)=>{
         if(failAssignedReads&&call.method==='GET'&&call.resource==='collection_products'){failedAssignedReads++;return restJson(503,{code:'XX000',message:'syn_private_membership_fault'});}
-        if(failProductReads&&call.method==='GET'&&call.resource==='products'){
+        if(failProductReads&&((call.method==='GET'&&call.resource==='products')||(call.method==='POST'&&call.resource==='rpc/browse_storefront_products_v1'))){
             failedProductReads++;
             return restJson(503,{code:'XX000',message:'relation "syn_private_preview_fault" does not exist',details:'synthetic-private-detail'});
         }

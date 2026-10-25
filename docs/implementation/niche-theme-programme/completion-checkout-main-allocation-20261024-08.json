@@ -1,0 +1,93 @@
+{
+  "recordedAt": "2026-10-24T09:49:43.593551+00:00",
+  "id": "completion-checkout-main08",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "GRANTED_EXACT_ELEVEN_FILE_MAIN_SOURCE_APPLY",
+  "files": [
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "beforeSHA256": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da",
+      "afterSHA256": "2822a721bafd176241deaf274db2fdb0ab40fb687e738842f9ddd80912391560",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/packages/checkout-core/src/index.ts"
+    },
+    {
+      "path": "services/api-gateway/src/lib/hosted-checkout-session.ts",
+      "beforeSHA256": null,
+      "afterSHA256": "23d489f61d762497c1ecdbf445691c140fa698947161b17426c11bf2b1ae753b",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/services/api-gateway/src/lib/hosted-checkout-session.ts"
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "beforeSHA256": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a",
+      "afterSHA256": "d4600bb711dff02d00e3b77587a0b5d2e9c2020f22dcf065ad673171859aad9c",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/services/api-gateway/src/routes/checkout.ts"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "beforeSHA256": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588",
+      "afterSHA256": "18a17fc31b1f328bd52413885d264d7bc2f23728c3f2e5c75f074776765a533a",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/services/api-gateway/src/routes/storefront/cart-routes.ts"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts",
+      "beforeSHA256": null,
+      "afterSHA256": "2fcef3f55fb935c56b3c646ef54769a220136c447e171c649f393bd647793e10",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+      "beforeSHA256": "2c03e5a030eb890a63ba248d56f7447305565858a49f3b0ee1e67b53fee18baa",
+      "afterSHA256": "4f32a47ef71ae9e51a4df644c957d6f1d53bffd217352546f7c57772abe6573b",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/checkout/step-idempotency.ts",
+      "beforeSHA256": null,
+      "afterSHA256": "a59c32b2f1244f3c0cdbb41fe598faaf917b69cadc8ee9cea2d60b2b95c4db1f",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/apps/commerce/web/src/lib/checkout/step-idempotency.ts"
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "beforeSHA256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c",
+      "afterSHA256": "f2ef023361a35610902db6e8671e9a115091c33c725357166a675dfacc7281cc",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/apps/commerce/web/src/app/checkout-origin/checkout/page.tsx"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "beforeSHA256": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b",
+      "afterSHA256": "e56399bb248c3657dfc967f16eb1858481405d24e0e1dee32c91380b80273c08",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/orders/route.ts",
+      "beforeSHA256": "040cdf78aee2ece526d8d5aa5f531e6da6b0ae423171142ab37d4e920c31d939",
+      "afterSHA256": "719835143f45442016954365974cad3e41393248fb98e1568893258c57d4a698",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/apps/commerce/web/src/app/api/orders/route.ts"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "beforeSHA256": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c",
+      "afterSHA256": "58ee3790dc74b7e9d283a3a05abed2e3b7ed62bdd923c04351ded0664766cfd1",
+      "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08/apps/commerce/web/src/app/api/checkout/route.test.ts"
+    }
+  ],
+  "independentAcceptance": "completion-2026-10-24/checkout-native08-run01/INDEPENDENT_REVIEW.json",
+  "nativeEvidence": {
+    "new7": "ba87c354b15f7PASS0FAIL0SKIP/emptyownedcleanup",
+    "retained15": "34adae829d85existing15PASSunchangedproductionlineage",
+    "totalDistinct": 22,
+    "actualBrowserOrRazorpayTest": false
+  },
+  "scope": "Copy exact08ten production/Next-test overlay files plus new native entry once, with immediate Mainbefore recheck. No cart-edit proposal changes. Preserve all sealed candidates/old failures/user files.",
+  "verification": "Actual Main Next/BFF/source/guard tests, relevant touched type/lint. Existing15native proof reused; no duplicate native run. Record per-file after hashes, commands/results/source roots and honest existing diagnostics.",
+  "expiresAt": "2026-10-24T10:49:43.593551+00:00",
+  "ends": "First sealed Mainsource handoff or expiry; any before mismatch stops affected edit",
+  "notGranted": [
+    "Existing DB/draft/session/browser/app mutation or restart",
+    "Native/heavy build/provider operation",
+    "Cart-edit implementation merge or extra file/SQL writes",
+    "Rewritinghistorical failures/weakeningcanonicalguard assertions"
+  ],
+  "privateCartEdit": "Separate private-only eightpath grant remains; rebase its proposal explicitly on admitted checkout08bytes, never absorb its changes into this exact apply."
+}

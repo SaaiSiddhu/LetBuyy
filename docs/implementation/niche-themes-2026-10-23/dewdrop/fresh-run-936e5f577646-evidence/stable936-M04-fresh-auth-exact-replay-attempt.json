@@ -1,0 +1,148 @@
+{
+  "runId": "936e5f577646",
+  "maximumCalls": 1,
+  "commandSha256": "24b357be7e069ed4dd75984c3f8b5866ab3ee8da19043bf96b2b9dcbae8d7019",
+  "expectedVersion": 36,
+  "changedSinceFirst": [
+    "idempotency_keys",
+    "outbox_events"
+  ],
+  "interveningDeclaredOperation": "Normal Habitat install/Apublication already authorized; onlyoutboxdiffered. Immediate27scopebefore/after proves this single replay.",
+  "before": [
+    {
+      "count": 0,
+      "table": "ad_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 4,
+      "table": "carts",
+      "sha256": "9649e41d0afe836aeaabbf8b0440d494ff32a830d223f45201aec3552e29c194"
+    },
+    {
+      "count": 3,
+      "table": "checkout_sessions",
+      "sha256": "8046f12ea814bd0536139a4507a1b8dc439d0db9fc5ab072af8a97ef63d43dbd"
+    },
+    {
+      "count": 0,
+      "table": "gift_card_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 75,
+      "table": "idempotency_keys",
+      "sha256": "73a54305e317d9b4454480568ad342b7d44d8b710113203daaa3ee4ca243c9d3"
+    },
+    {
+      "count": 40,
+      "table": "inventory_adjustments",
+      "sha256": "42cbdddcae7f1a531d4a75a5369d0936ed61b92b5ca2668b866e67e661abcccb"
+    },
+    {
+      "count": 1,
+      "table": "inventory_events",
+      "sha256": "0500ab44cc84e43d942d79ed0ef2318188f5e76019871089dfe5bb9536114ecb"
+    },
+    {
+      "count": 45,
+      "table": "inventory_levels",
+      "sha256": "a4e114978a3fb6cdb3416562be600278fd893b7e00a32d597253f04a1fa89420"
+    },
+    {
+      "count": 1,
+      "table": "inventory_reservations",
+      "sha256": "cf6113a00983a4eef6e33c34f15887b8fd6416eca62e407bc43ffca1fe2cba0c"
+    },
+    {
+      "count": 0,
+      "table": "ledger_accounts",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "loyalty_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_batches",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_traversal",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_site_reconciliations",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 2,
+      "table": "order_items",
+      "sha256": "2bb2c78e6bbc03e39d4ca14d0f4fad860cc74f3ca30892989a6a2e2a61bf8700"
+    },
+    {
+      "count": 2,
+      "table": "orders",
+      "sha256": "bcd82404e64e15593eb04637dcc41bffe42a00bc2f6b0c557844ae83780bb013"
+    },
+    {
+      "count": 160,
+      "table": "outbox_events",
+      "sha256": "f36989711fa7b7dbc0f4fbab65b6cea7034e8787d5ad23ea210dc2f243eeba84"
+    },
+    {
+      "count": 0,
+      "table": "partner_payout_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "payout_statement_source_ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 34,
+      "table": "product_edit_receipts",
+      "sha256": "d0cad222fb4789037da56b0e1c606b24b46e0025f22b81a4c40a14f007bf8234"
+    },
+    {
+      "count": 14,
+      "table": "product_options",
+      "sha256": "e7a98be5456a439e67086228abea10deaf74aa980eda9bb5512366afe29a54d9"
+    },
+    {
+      "count": 29,
+      "table": "product_variants",
+      "sha256": "79e2ea0088c56560fb684f2ab45da58af486456d6125eb00053983f4ba92b793"
+    },
+    {
+      "count": 19,
+      "table": "products",
+      "sha256": "4428baccb99faa73ca287c471e49f78a61165c03b37297e492641dfe3b325e24"
+    },
+    {
+      "count": 0,
+      "table": "store_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "wallet_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

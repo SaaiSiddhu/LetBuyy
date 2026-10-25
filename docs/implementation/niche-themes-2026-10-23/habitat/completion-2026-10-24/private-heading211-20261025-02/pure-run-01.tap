@@ -1,0 +1,196 @@
+TAP version 13
+# Subtest: every deterministic DOWN field is independently mapped and emitted in both SQL guards
+ok 1 - every deterministic DOWN field is independently mapped and emitted in both SQL guards
+  ---
+  duration_ms: 11.999084
+  type: 'test'
+  ...
+# Subtest: valid full prior metadata/config including unknown preserved settings stays accepted
+ok 2 - valid full prior metadata/config including unknown preserved settings stays accepted
+  ---
+  duration_ms: 3.304208
+  type: 'test'
+  ...
+# Subtest: saved prior name corruption is refused while immutable payload/current source stay exact
+ok 3 - saved prior name corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.531208
+  type: 'test'
+  ...
+# Subtest: saved prior category corruption is refused while immutable payload/current source stay exact
+ok 4 - saved prior category corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.46375
+  type: 'test'
+  ...
+# Subtest: saved prior version corruption is refused while immutable payload/current source stay exact
+ok 5 - saved prior version corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.458458
+  type: 'test'
+  ...
+# Subtest: saved prior default_template corruption is refused while immutable payload/current source stay exact
+ok 6 - saved prior default_template corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.442667
+  type: 'test'
+  ...
+# Subtest: saved prior section_schemas corruption is refused while immutable payload/current source stay exact
+ok 7 - saved prior section_schemas corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.758916
+  type: 'test'
+  ...
+# Subtest: saved prior block_schemas corruption is refused while immutable payload/current source stay exact
+ok 8 - saved prior block_schemas corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.902541
+  type: 'test'
+  ...
+# Subtest: saved prior settings_schema corruption is refused while immutable payload/current source stay exact
+ok 9 - saved prior settings_schema corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.91525
+  type: 'test'
+  ...
+# Subtest: saved prior renderer_manifest corruption is refused while immutable payload/current source stay exact
+ok 10 - saved prior renderer_manifest corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.947125
+  type: 'test'
+  ...
+# Subtest: saved prior schema_version corruption is refused while immutable payload/current source stay exact
+ok 11 - saved prior schema_version corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 1.665166
+  type: 'test'
+  ...
+# Subtest: saved prior renderer_version corruption is refused while immutable payload/current source stay exact
+ok 12 - saved prior renderer_version corruption is refused while immutable payload/current source stay exact
+  ---
+  duration_ms: 0.723042
+  type: 'test'
+  ...
+# Subtest: missing/extra prior fields, extra journal fields and wrong prior type refuse
+ok 13 - missing/extra prior fields, extra journal fields and wrong prior type refuse
+  ---
+  duration_ms: 1.629875
+  type: 'test'
+  ...
+# Subtest: nested prior config tampering and post-promotion config drift both refuse
+ok 14 - nested prior config tampering and post-promotion config drift both refuse
+  ---
+  duration_ms: 1.368709
+  type: 'test'
+  ...
+# Subtest: nested previous document tampering refuses before jsonb_populate_record restoration
+ok 15 - nested previous document tampering refuses before jsonb_populate_record restoration
+  ---
+  duration_ms: 0.435292
+  type: 'test'
+  ...
+# Subtest: native source prepares every nested field refusal for both replay and DOWN without immutable row mutation
+ok 16 - native source prepares every nested field refusal for both replay and DOWN without immutable row mutation
+  ---
+  duration_ms: 0.191458
+  type: 'test'
+  ...
+# Subtest: actual native telemetry reconciler accepts four exact appends and preserves pre-existing rows/mirrors
+ok 17 - actual native telemetry reconciler accepts four exact appends and preserves pre-existing rows/mirrors
+  ---
+  duration_ms: 5.140167
+  type: 'test'
+  ...
+# Subtest: telemetry refuses mutated old operational row
+ok 18 - telemetry refuses mutated old operational row
+  ---
+  duration_ms: 1.351291
+  type: 'test'
+  ...
+# Subtest: telemetry refuses removed old operational row
+ok 19 - telemetry refuses removed old operational row
+  ---
+  duration_ms: 0.3325
+  type: 'test'
+  ...
+# Subtest: telemetry refuses unattributed extra row
+ok 20 - telemetry refuses unattributed extra row
+  ---
+  duration_ms: 0.205042
+  type: 'test'
+  ...
+# Subtest: telemetry refuses wrong request
+ok 21 - telemetry refuses wrong request
+  ---
+  duration_ms: 0.586708
+  type: 'test'
+  ...
+# Subtest: telemetry refuses wrong trace
+ok 22 - telemetry refuses wrong trace
+  ---
+  duration_ms: 0.220708
+  type: 'test'
+  ...
+# Subtest: telemetry refuses wrong actor
+ok 23 - telemetry refuses wrong actor
+  ---
+  duration_ms: 0.230875
+  type: 'test'
+  ...
+# Subtest: telemetry refuses wrong site
+ok 24 - telemetry refuses wrong site
+  ---
+  duration_ms: 0.31725
+  type: 'test'
+  ...
+# Subtest: telemetry refuses wrong route dimension
+ok 25 - telemetry refuses wrong route dimension
+  ---
+  duration_ms: 0.2095
+  type: 'test'
+  ...
+# Subtest: telemetry refuses wrong sample metadata
+ok 26 - telemetry refuses wrong sample metadata
+  ---
+  duration_ms: 0.2455
+  type: 'test'
+  ...
+# Subtest: telemetry refuses negative latency
+ok 27 - telemetry refuses negative latency
+  ---
+  duration_ms: 0.230666
+  type: 'test'
+  ...
+# Subtest: telemetry refuses parent mirror mismatch
+ok 28 - telemetry refuses parent mirror mismatch
+  ---
+  duration_ms: 0.227333
+  type: 'test'
+  ...
+# Subtest: telemetry refuses leaf mirror mismatch
+ok 29 - telemetry refuses leaf mirror mismatch
+  ---
+  duration_ms: 0.287333
+  type: 'test'
+  ...
+# Subtest: telemetry refuses extra unsupported field
+ok 30 - telemetry refuses extra unsupported field
+  ---
+  duration_ms: 0.1675
+  type: 'test'
+  ...
+# Subtest: telemetry refuses duplicate request attribution
+ok 31 - telemetry refuses duplicate request attribution
+  ---
+  duration_ms: 0.101416
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 527.527459

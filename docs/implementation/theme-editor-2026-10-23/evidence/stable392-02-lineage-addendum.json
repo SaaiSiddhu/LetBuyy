@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-24T01:41:24.867013+00:00",
+  "scope": "Read-only independent pinned-parent source lineage and actual migration file names; no runtime/gate credit",
+  "parentProofShaExact": true,
+  "parentFiles": 17243,
+  "currentFiles": 17243,
+  "actualChangedFromParent": [
+    "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+    "apps/commerce/web/src/app/api/checkout/route.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+    "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+    "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts"
+  ],
+  "declaredDeltas": [
+    "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+    "apps/commerce/web/src/app/api/checkout/route.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+    "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+    "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts"
+  ],
+  "added": [],
+  "removed": [],
+  "unexpectedChanges": [],
+  "actualMigrationFiles": 321,
+  "actualMaxMigration": 392
+}

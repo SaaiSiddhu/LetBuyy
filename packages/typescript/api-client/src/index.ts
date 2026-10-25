@@ -1,4 +1,7 @@
+import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
+import {CollectionListPageSchema} from '@letbuyy/shared-types';
 export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
+import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, type PersonalizationReviewContext, type StorefrontDiscoveryQueryInput, type StorefrontDiscoveryMetadata } from '@letbuyy/shared-types';
 import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import { createReelReviewSdk } from './reels';
@@ -241,8 +244,12 @@ export interface LetbuyyApiClientOptions {
   token?: string | null;
   storeId?: string | null;
   headers?: HeadersInit;
+  /** Fresh request credentials, evaluated independently for every transport call. */
+  getHeaders?: () => HeadersInit | Promise<HeadersInit>;
   fetch?: typeof fetch;
 }
+
+type LetbuyyRequestCachePolicy = 'no-store';
 
 export interface LetbuyyRequestOptions {
   method?: HttpMethod;
@@ -256,6 +263,7 @@ export interface LetbuyyRequestOptions {
   versioned?: boolean;
   /** Preserve UTF-8 export bytes while retaining normal HTTP/error validation. */
   responseType?: 'json' | 'text';
+  cache?: LetbuyyRequestCachePolicy;
 }
 
 /** Allocate once per logical support action and retain across retry attempts. Sign identity afresh. */
@@ -579,6 +587,7 @@ export interface DomainDeleteResult {
 
 export interface AppInstallationListQuery extends Pick<StoreScopedQuery, 'store_id'> {}
 export interface AppExtensionRegistrationUpdateInput extends JsonRecord {
+  store_id?: string;
   status: 'enabled' | 'disabled';
 }
 export interface AppStoreListQuery extends ListQuery {
@@ -2535,6 +2544,7 @@ export interface SupplierMetricsRow extends JsonRecord {
 }
 
 export interface SupplierMetricsResult extends JsonRecord {
+  meta?: GatewayPaginationMeta;
   suppliers: SupplierMetricsRow[];
   schema_missing?: boolean;
 }
@@ -2548,6 +2558,7 @@ export interface WarehouseMetricsRow extends JsonRecord {
 }
 
 export interface WarehouseMetricsResult extends JsonRecord {
+  meta?: GatewayPaginationMeta;
   warehouses: WarehouseMetricsRow[];
   schema_missing?: boolean | string;
 }
@@ -2868,12 +2879,7 @@ export type ThemeDeveloperListingResult = JsonRecord & {
   asset_scan_status: string;
 };
 
-export interface StorefrontProductQuery extends ListQuery {
-  category?: string;
-  collection?: string;
-  tag?: string;
-  country_of_origin?: string;
-}
+export type StorefrontProductQuery = StorefrontDiscoveryQueryInput;
 
 export type StorefrontStorePayload = Store & JsonRecord & {
   current_theme_release?: ThemeRelease | null;
@@ -2920,6 +2926,20 @@ export type StorefrontContentPayload = JsonRecord & {
 
 export type StorefrontBlogPostPayload = BlogPost & JsonRecord;
 
+/** Private editor read; the server verifies the token, site and saved draft. */
+export type ThemePreviewContentQuery = {
+  resource: 'page' | 'article' | 'blog';
+  resource_id?: string;
+  page?: number;
+  limit?: number;
+};
+export type ThemePreviewContentPayload = {
+  resource: 'page' | 'article' | 'blog';
+  content: StorefrontContentPayload | null;
+  articles: StorefrontBlogPostPayload[];
+  pagination: { page: number; limit: number; has_more: boolean; total?: number; total_pages?: number };
+};
+
 export type StorefrontCollectionSummary = {
   id: string;
   title: string;
@@ -2943,6 +2963,7 @@ export type StorefrontCollectionPayload = {
   };
   products: Product[];
   total: number;
+  discovery?: StorefrontDiscoveryMetadata;
 };
 
 export type StorefrontLookupResult = JsonRecord & {
@@ -3400,13 +3421,19 @@ export type DisableTwoFactorInput = {
 export type ThemeInstallInput = {
   store_id: string;
   config_overrides?: JsonRecord;
+  expected_version?: string;
+  expected_package_id?: string;
+  expected_package_version_id?: string;
 };
 export type ThemeInstallResult = {
   installation: JsonRecord;
-  theme: Pick<Theme, 'id' | 'slug' | 'name'>;
+  theme: Pick<Theme, 'id' | 'slug' | 'name'> & { version?: string };
   release?: JsonRecord;
   already_installed?: boolean;
   theme_instance_id?: string;
+  installed_version?: string;
+  theme_package_id?: string;
+  theme_package_version_id?: string;
 };
 export type ThemePurchaseOrderInput = {
   currency?: 'INR';
@@ -3933,6 +3960,7 @@ export class LetbuyyApiClient {
   private readonly defaultToken: string | null;
   private readonly defaultStoreId: string | null;
   private readonly defaultHeaders: HeadersInit | undefined;
+  private readonly getHeaders: LetbuyyApiClientOptions['getHeaders'];
 
   constructor(options: LetbuyyApiClientOptions) {
     if (!options.baseUrl.trim()) {
@@ -3950,6 +3978,7 @@ export class LetbuyyApiClient {
     this.defaultToken = options.token ?? null;
     this.defaultStoreId = options.storeId ?? null;
     this.defaultHeaders = options.headers;
+    this.getHeaders = options.getHeaders;
   }
 
   readonly graphql: LetbuyyGraphQLSdk = createLetbuyyGraphQLSdk(this);
@@ -4925,8 +4954,13 @@ export class LetbuyyApiClient {
     lookupBarcode: (query: ProductBarcodeLookupQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<ProductBarcodeLookupResult>('/products/barcode/lookup', { ...options, query }),
     collections: {
-      list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
-        this.requestData<Collection[]>('/products/collections', { ...options, query }),
+      list: async (input: CollectionListQueryInput, options?: LetbuyyRequestOptions) => {
+        const query = CollectionListQuerySchema.parse(input);
+        const result = CollectionListPageSchema.parse(await this.request<unknown>('/products/collections', { ...options, query }));
+        if(result.meta.page!==query.page||result.meta.per_page!==query.limit||result.data.some(row=>row.store_id!==query.store_id))
+          throw new Error('Collection list context could not be confirmed.');
+        return result;
+      },
       create: (input: CreateCollectionInput, options?: LetbuyyRequestOptions) =>
         this.requestData<Collection>('/products/collections', { ...options, method: 'POST', body: input }),
       update: (id: string, input: UpdateCollectionInput, options?: LetbuyyRequestOptions) =>
@@ -5540,6 +5574,17 @@ export class LetbuyyApiClient {
   };
 
   readonly storefront = {
+    personalizationReview: async (subdomain: string, productId: string, variantId: string | null, options?: LetbuyyRequestOptions): Promise<PersonalizationReviewContext> => {
+      if (variantId !== null && typeof variantId !== 'string') throw new Error('Supply an explicit variant UUID or null for personalization review.');
+      const query = PersonalizationReviewQuerySchema.parse(variantId === null ? {} : { variant_id: variantId });
+      const headers = new Headers(options?.headers);
+      headers.set('Cache-Control', 'no-store');
+      const context = PersonalizationReviewContextSchema.parse(await this.requestData<unknown>(`/storefront/${encodePathSegment(subdomain)}/products/${encodePathSegment(productId)}/personalization-review`, {
+        ...options, method: 'GET', body: undefined, query, headers, cache: 'no-store',
+      }));
+      if (context.product_id !== productId.toLowerCase() || context.variant_id !== (variantId?.toLowerCase() ?? null)) throw new Error('Personalization review identity does not match the requested product and variant.');
+      return context;
+    },
     lookup: (query: { q?: string; host?: string; subdomain?: string }, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontLookupResult>('/storefront/lookup', { ...options, query }),
     directory: (options?: LetbuyyRequestOptions) =>
@@ -5557,20 +5602,26 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontStoreStatusPayload>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
     themePreview: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token } }),
+    themePreviewContent: (subdomain: string, token: string, query: ThemePreviewContentQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePreviewContentPayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { ...query, token } }),
     themePreviewCollections: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionSummary[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token, resource: 'collections' } }),
+    themePreviewCollection: (subdomain: string, token: string, collectionId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionSummary>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token, resource: 'collections', collection_id: collectionId } }),
     browsePreviewCollections: (subdomain: string, token: string, cursor: StorefrontCollectionCursorQuery = {}, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionPage>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { after: cursor.after, before: cursor.before, token, resource: 'collections', browse: '1' } }),
+    themePreviewProductPage: (subdomain: string, token: string, query: StorefrontProductQuery = {}, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { ...query, token, resource: 'products', pagination: '1' } }, true),
     themePreviewProducts: (subdomain: string, token: string, productIds?: string[], options?: LetbuyyRequestOptions) =>
       this.requestData<Product[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, {
-        ...options, query: { token, resource: 'products', ...(productIds ? { ids: productIds.join(',') } : {}) },
+        ...options, query: { ...options?.query, token, resource: 'products', ...(productIds ? { ids: productIds.join(',') } : {}) },
       }),
     navigation: (subdomain: string, location: string, options?: LetbuyyRequestOptions) =>
       this.requestData<NavigationResponse>(`/storefront/${encodePathSegment(subdomain)}/navigation`, { ...options, query: { location } }),
     listProducts: (subdomain: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/products`, { ...options, query }),
+      this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/products`, { ...options, query }, true),
     listProductsByStoreId: (storeId: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<Product>(`/storefront/store/${encodePathSegment(storeId)}/products`, { ...options, query }),
+      this.requestPaginated<Product>(`/storefront/store/${encodePathSegment(storeId)}/products`, { ...options, query }, true),
     getProduct: (subdomain: string, slug: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>(`/storefront/${encodePathSegment(subdomain)}/products/${encodePathSegment(slug)}`, options),
     productsByIds: (subdomain: string, productIds: string[], options?: LetbuyyRequestOptions) =>
@@ -5657,6 +5708,7 @@ export class LetbuyyApiClient {
       token: options.token ?? this.defaultToken,
       storeId: options.storeId ?? this.defaultStoreId,
       headers: options.headers ?? this.defaultHeaders,
+      getHeaders: options.getHeaders ?? this.getHeaders,
       fetch: options.fetch ?? this.fetchImpl,
     });
   }
@@ -5670,8 +5722,10 @@ export class LetbuyyApiClient {
     return unwrapData<T>(body, 200, null);
   }
 
-  async requestPaginated<T>(path: string, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>> {
-    const body = await this.request<GatewayResponse<T[]>>(path, options);
+  requestPaginated<T>(path: string, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>>;
+  requestPaginated<T>(path: string, options: LetbuyyRequestOptions | undefined, includeDiscovery: true): Promise<PaginatedResponse<T> & { discovery?: StorefrontDiscoveryMetadata }>;
+  async requestPaginated<T>(path: string, options?: LetbuyyRequestOptions, includeDiscovery = false): Promise<PaginatedResponse<T> & { discovery?: StorefrontDiscoveryMetadata }> {
+    const body = await this.request<GatewayResponse<T[]> & { discovery?: StorefrontDiscoveryMetadata }>(path, options);
     const data = unwrapData<T[]>(body, 200, null);
     const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
 
@@ -5683,17 +5737,19 @@ export class LetbuyyApiClient {
       has_more: Boolean(meta.has_next),
       next_cursor: typeof meta.next_cursor === 'string' ? meta.next_cursor : null,
       total_is_exact: Boolean(meta.total_is_exact),
+      ...(includeDiscovery && body.discovery && isRecord(body.discovery) ? { discovery: body.discovery } : {}),
     };
   }
 
   async request<T>(path: string, options: LetbuyyRequestOptions = {}): Promise<T> {
     const requestOptions = withAutomaticIdempotency(path, options);
     const url = this.buildUrl(path, requestOptions);
-    const headers = this.buildHeaders(requestOptions);
+    const headers = await this.buildHeaders(requestOptions);
     const init: RequestInit = {
       method: requestOptions.method ?? 'GET',
       headers,
       signal: requestOptions.signal,
+      ...(requestOptions.cache ? { cache: requestOptions.cache } : {}),
     };
 
     if (requestOptions.body !== undefined) {
@@ -5721,8 +5777,9 @@ export class LetbuyyApiClient {
     return (rawText === undefined ? body : rawText) as T;
   }
 
-  private buildHeaders(options: LetbuyyRequestOptions): Headers {
+  private async buildHeaders(options: LetbuyyRequestOptions): Promise<Headers> {
     const headers = new Headers(this.defaultHeaders);
+    if (this.getHeaders) copyHeaders(headers, await this.getHeaders());
     copyHeaders(headers, options.headers);
 
     const token = options.token ?? this.defaultToken;

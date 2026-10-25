@@ -1,0 +1,161 @@
+{
+  "reviewedAt": "2026-10-23T20:59:46.990454+00:00",
+  "status": "PASS_SHARED_ACTUAL_MERCHANT_STOCK_OMISSION_AND_OLD_ORDER_HISTORY_COMPONENTS_ONLY",
+  "rootAdmission": {
+    "path": "docs/implementation/niche-theme-programme/merchant-stock-intent-live-component-admission.json",
+    "sha256": "d758723980828d72ba9e15c9c263684524770ac4c2f70383d633d7f133953cb4",
+    "bytes": 4440
+  },
+  "rootEvidencePointersVerified": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-hi16-before-readback.json",
+      "sha256": "ddd71c36ca9a117b787a220d77327d0ff5304c69e512626eece7a8d617943928",
+      "bytes": 7600
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-hi16-after-readback.json",
+      "sha256": "11dc7db0f020cb07c59490a1b217b279e6b47ba5b4b1578775a9ee693ef08a50",
+      "bytes": 7551
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-canonical-edit-receipt.json",
+      "sha256": "46727764948b7169cfd06c910d434fa17bcd69bae18ad9f604eb2472bd043e31",
+      "bytes": 4762
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-order-before-edit-readback.json",
+      "sha256": "cb7b279bc38e183548ae2ed19ccbdf99403157d4bb25a2fe1d7b73d3d6f76529",
+      "bytes": 2598
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-order-after-stale-confirm-readback.json",
+      "sha256": "8101cbecfbde18a86f151c482ab5da626e69347d95f25f23a9c5128d58d3be8b",
+      "bytes": 2606
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-old-order-buyer-after-edit.ax.txt",
+      "sha256": "e3420073d07da328a170693c82dca87101e0d2a83017c464bd2163f78e8a034a",
+      "bytes": 2372
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-old-order-merchant-after-edit.ax.txt",
+      "sha256": "1443e59d3098c5ad1ebd4151eaa9c6c5460bbc64cf18514df44741b653012380",
+      "bytes": 6383
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-stale-COD-confirm-rejected.ax.txt",
+      "sha256": "dacc3f9eef5b3e560a173a33c004ccd230580a566c7e1440e5424357e7392186",
+      "bytes": 1958
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-new-client-before-edit.ax.txt",
+      "sha256": "5d40f9f6052dcea8be8647d40cdfccc092ed07d805ac90c7c6b1f6435f9b07e0",
+      "bytes": 13116
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-later-edit-reloaded.ax.txt",
+      "sha256": "250d1b96a17aa609464cefad597a2b10d19c4053aba5a35b90367c3e84baa2c2",
+      "bytes": 13132
+    }
+  ],
+  "additionalEvidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-live-checkpoint.json",
+      "sha256": "d0e491f311310e24e03ef986fc762b62f57db65392a1219680d3ca2238b22b8a",
+      "bytes": 1856
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-hi16-after-stale-confirm-readback.json",
+      "sha256": "9feeed4bda2afd27ada53dd00d61006d7776fabbd66edefdc1adc28525b11952",
+      "bytes": 7565
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-order-after-edit-readback.json",
+      "sha256": "a29d462fa62da54d67eeb095229fedc02845c70aea8e3cb7e5d321bff46100a9",
+      "bytes": 2597
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-cart-5.json",
+      "sha256": "655f38f0f4fe078a6078b3428a0e52b2c0676279a25205a75457aea246d483e8",
+      "bytes": 2567
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-cart-6.json",
+      "sha256": "0d1974bfd89413b4ba6b38bc9cfc87c752013338208a7a7e1c47fab3e18c3c58",
+      "bytes": 2567
+    }
+  ],
+  "actualSourceEpoch": "c0bfcfa9dc6055989c3c3c1f79c8fdb4dcc4d2f69e8e958d64625336e67b3403",
+  "method": "One offline audit of saved canonical mutation, guarded before/after/final readbacks and normal UI full-reload/expanded-history AX. No source tests/DB/API/browser/runtime/OS operations.",
+  "actualSave": {
+    "origin": "http://admin.threadline-f6074d90e894.localhost:49943",
+    "acknowledgedSaves": 1,
+    "expectedVersion": 31,
+    "returnedVersion": 34,
+    "versionArithmeticInferred": false,
+    "proofIsPersistedCanonicalMutationNotRawHttp": true,
+    "topLevelStockAbsent": true,
+    "fieldsStockAbsent": true,
+    "allFourExistingVariantStocksAbsent": true,
+    "canonicalVariantUuidsOptionsAndStockExact": true,
+    "inventoryBusinessExact": true,
+    "parentStock": 8,
+    "purchasedVariantAvailable": 2,
+    "purchasedVariantReserved": 0,
+    "unaffectedVariantFactsAndPricesExact": true,
+    "genuinelyAbsentApparelStayedAbsent": true,
+    "actualChangedLivePrice": {
+      "before": 8900,
+      "after": 9900
+    },
+    "cartDigestAcrossEditExact": true
+  },
+  "historicalOrder": {
+    "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+    "lineId": "b80fabaf-67a0-4a6c-9bfc-a87b73748729",
+    "quantity": 2,
+    "originalUnitPriceINR": 8900,
+    "originalLineTotalINR": 17800,
+    "orderTotalINR": 17820,
+    "paymentMethod": "cod",
+    "buyerAndMerchantOriginalFactsVisible": true,
+    "originalOptionsFactsAndPricesPreservedAfterCatalogueChanges": true,
+    "fullOrderAndSnapshotHashesExactAcrossAllThreeReadbacks": true,
+    "buyerUnitPriceSeparatelyVisible": false,
+    "buyerDisplaysLineTotal": true,
+    "merchantDisplaysUnitPrice": true,
+    "buyerIdColumn": null,
+    "buyerOwnershipNotInferredFromNullColumn": true
+  },
+  "staleControl": {
+    "oneNormalCodConfirmation": "SAVED_UI_GENERIC_REJECTION",
+    "ordersRemain": 1,
+    "oldOrderAndInventoryStillExact": true,
+    "acceptedCartWhitelistedProjectionExact": true,
+    "wholeCartDigestAcrossCheckoutExact": false,
+    "httpStatus": "NOT_CAPTURED",
+    "backendCode": "NOT_CAPTURED",
+    "exact409OrStaleCauseInferred": false,
+    "wholeGuardContractAccepted": false,
+    "noRetryPerformedHere": true
+  },
+  "remaining": [
+    "Editor completes separate actual cart-recovery retest and earlier queued slices.",
+    "No completeHI16/all26 or anyMG16 credit from this component audit.",
+    "Marginalia queue9 still requires Trailmark completion, canonical cart restoration/rebaseline/current owned bindings and fresh named grant."
+  ],
+  "marginalia": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16,
+    "allRuntimeBindings": null,
+    "activeLease": false
+  },
+  "sideEffects": {
+    "sourceEdits": 0,
+    "testsRun": 0,
+    "databaseOrApiWrites": 0,
+    "browserOrRuntimeControls": 0,
+    "privateStateKeysRead": 0
+  }
+}

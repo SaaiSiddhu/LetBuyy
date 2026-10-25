@@ -1,0 +1,82 @@
+{
+  "id": "section-product-grid",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "product-grid",
+    "group": "template",
+    "firstId": "section-cefe2fd6-9204-4f86-838f-8fce9c6f4700",
+    "finalId": "section-48d437a9-6470-4740-bca0-630344979518",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "product-grid",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

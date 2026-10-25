@@ -1,0 +1,243 @@
+{
+  "recordedAt": "2026-10-23T16:33:31.487235+00:00",
+  "classification": "FINITE_ACTUAL_FIRST_PASS_NOT_FINAL_ACCEPTANCE",
+  "runId": "9cd50e893016",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+  "sourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+  "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "currentPublishedTheme": "Habitat2.0.0",
+  "browserAccepted": false,
+  "theme": "Habitat 2.0.0",
+  "matrix": "docs/implementation/niche-themes-2026-10-23/habitat/installed-lifecycle-matrix.md",
+  "cases": [
+    {
+      "id": "HI-01",
+      "status": "PARTIAL",
+      "observations": [
+        "Normal merchant session, actual Habitat2.0 install3 and serving release/candidate/site binding established. Current buyer order ownership not exercised."
+      ]
+    },
+    {
+      "id": "HI-02",
+      "status": "PARTIAL",
+      "observations": [
+        "Read existing primary furniture IDc44adb98-ed66-4ac4-a51e-3c1cc7f4d62d in normal UI: Width48in/Commonsize only, noFinish; common120x60x75cm/package130x65x20cm/Wood/Natural/careWipedry. Proposed four-variant cohort/probes not created after actual HI03 save rejection."
+      ]
+    },
+    {
+      "id": "HI-03",
+      "status": "FAIL",
+      "observations": [
+        "Actual normal common Care edit Wipe dry. UI save checkpoint. then Save product rejects This change must originate from this merchant app; draft retained/frozen. No successful valid save, incomplete-measurement negative or variant expansion claimed.",
+        "Independent canonical public GET200 after failed save retains original care Wipe dry., exact two existing variants/stocks4 and3/base8. Public DTO exposes no version; version-unchanged not claimed."
+      ]
+    },
+    {
+      "id": "HI-04",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual template HeadingA savev2/fullreload, normal PublishA, HeadingB/PublishB, normal reviewed rollbackA, retaineddraftB/fullreload/reapplyB all pass with exactsnapshotA/B/public markers. Existing parent preview remains blocked; responsive viewport0x0 unaccepted."
+      ]
+    },
+    {
+      "id": "HI-05",
+      "status": "NOT_RUN",
+      "observations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ]
+    },
+    {
+      "id": "HI-06",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual original Width-only unselectedPDP shows common120x60x75cm/package130x65x20cm and disabledAdd. No Finish axis exists, so planned incompleteFinish/unmatchedtwoaxis cases not run."
+      ]
+    },
+    {
+      "id": "HI-07",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual existing48in variant58d8de66-2f33-4595-9433-c7ef9909b751 carrierselected, assembled48Win,package50Wx25Din,Addenabled. This is originalwidth-onlybaseline, not plannedfull A48x30x29.5in cohort; no plannedA pass."
+      ]
+    },
+    {
+      "id": "HI-08",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual baseline48in->CommonSize switches currentwholegroups to120x60x75cm/package130x65x20cm with ownfacts. PlannedMetalB/Black/Dfourvariantsequence unavailable after HI03 setup failure."
+      ]
+    },
+    {
+      "id": "HI-09",
+      "status": "NOT_RUN",
+      "observations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ]
+    },
+    {
+      "id": "HI-10",
+      "status": "NOT_RUN",
+      "observations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ]
+    },
+    {
+      "id": "HI-11",
+      "status": "NOT_RUN",
+      "observations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ]
+    },
+    {
+      "id": "HI-12",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual original48in baseline has distinctassembled48Win/package50Wx25Din with no inheritedcmdepth/height; commonreference separately labeledcommon/not-to-scale. PlannedfullAandHQ05comparison notrun."
+      ]
+    },
+    {
+      "id": "HI-13",
+      "status": "NOT_RUN",
+      "observations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ]
+    },
+    {
+      "id": "HI-14",
+      "status": "NOT_RUN",
+      "observations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ]
+    },
+    {
+      "id": "HI-15",
+      "status": "NOT_RUN",
+      "observations": [
+        "Habitat is now installed/published; required expanded A cohort and accepted primary Habitat cart are absent, broader cart/COD human authorization pending, and actual common hostedTLS block remains. Habitat checkout not attempted."
+      ]
+    },
+    {
+      "id": "HI-16",
+      "status": "NOT_RUN",
+      "observations": [
+        "Actual new Habitat order absent, so later edit/history comparison deferred and original product retained."
+      ]
+    },
+    {
+      "id": "HI-17",
+      "status": "NOT_RUN",
+      "observations": [
+        "No assigned legacy malformed-snapshot historical record; no history fixture manufactured."
+      ]
+    },
+    {
+      "id": "HQ-01",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-02",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-03",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-04",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-05",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-06",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-07",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-08",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    },
+    {
+      "id": "HQ-09",
+      "status": "NOT_RUN",
+      "observations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ]
+    }
+  ],
+  "evidence": [
+    "habitat-merchant-initial.ax.txt",
+    "habitat-merchant-origin-failure.ax.txt",
+    "habitat-merchant-origin-banner.jpg",
+    "../../niche-themes-2026-10-23/habitat/installed-product-save-rejection-readback.json",
+    "habitat-heading-A-reload.ax.txt",
+    "habitat-publication-A-proof.json",
+    "habitat-public-A-readback.json",
+    "habitat-publication-B-proof.json",
+    "habitat-public-B-readback.json",
+    "habitat-restore-A-proof.json",
+    "habitat-restored-A-public-readback.json",
+    "habitat-draft-B-preserved.ax.txt",
+    "habitat-reapply-B-proof.json",
+    "habitat-baseline-unselected-PDP.ax.txt",
+    "habitat-baseline-48in-PDP.json",
+    "habitat-baseline-common-size.ax.txt",
+    "installed-bindings-first-three.json"
+  ],
+  "counts": {
+    "NOT_RUN": 18,
+    "PARTIAL": 7,
+    "FAIL": 1
+  },
+  "notClaimed": [
+    "expanded four-variant Finish/OOS cohort or probes created",
+    "full Habitat buyer/cart/order acceptance",
+    "working editor preview or responsive acceptance",
+    "all26 cases complete"
+  ],
+  "actualInstalledBinding": {
+    "slug": "letbuyy-craft",
+    "status": "active",
+    "version": "2.0.0",
+    "packageId": "fcce393b-10c4-4bde-a552-4f304a3c6f14",
+    "instanceId": "f043270c-8b2f-4a3f-a865-234956e22173",
+    "draftRevision": 9,
+    "currentDraftId": "2a6c848a-7f45-42ef-9b7b-30315b6c2647",
+    "activeReleaseId": "b5bcba43-2bcb-48cc-bba4-7b4c11bb6a03",
+    "catalogChecksum": null,
+    "packageVersionId": "eb37fa9d-73a0-4912-a77d-16e03c22b265",
+    "installedBundleVersion": "2.0.0",
+    "installedConfigSqlSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06",
+    "capturedPackageManifestSqlSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384"
+  }
+}

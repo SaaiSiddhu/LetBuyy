@@ -1,0 +1,834 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1324,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg5-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "656px 656px"
+      }
+    ],
+    "headings": [
+      "What do you need to connect?"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1324
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2174,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg5-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "product-grid",
+        "columns": "358px"
+      }
+    ],
+    "headings": [
+      "What do you need to connect?"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2174
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "03-collection",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1621,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg5-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/ch65-charger.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cl100-cable.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "collection-layout",
+        "columns": "220px 1080px"
+      },
+      {
+        "class": "product-grid",
+        "columns": "258px 258px 258px 258px"
+      }
+    ],
+    "headings": [
+      "USB-C accessories"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1621
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "03-collection",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2526,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg5-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/ch65-charger.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cl100-cable.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "collection-layout",
+        "columns": "358px"
+      },
+      {
+        "class": "product-grid",
+        "columns": "358px"
+      }
+    ],
+    "headings": [
+      "USB-C accessories"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2526
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1370,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "pdp-grid",
+        "columns": "718.594px 561.406px"
+      }
+    ],
+    "headings": [
+      "CG-7 USB-C hub"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1370
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2254,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "pdp-grid",
+        "columns": "358px"
+      }
+    ],
+    "headings": [
+      "CG-7 USB-C hub"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2254
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1106,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cl100-cable.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cl100-cable.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap checkout-grid review",
+        "columns": "752.375px 511.625px"
+      }
+    ],
+    "headings": [
+      "Review before you pay."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1106
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1671,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cl100-cable.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cg7-hub.png",
+        "naturalWidth": 1254,
+        "complete": true
+      },
+      {
+        "source": "../assets/cl100-cable.png",
+        "naturalWidth": 1254,
+        "complete": true
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap checkout-grid review",
+        "columns": "358px"
+      }
+    ],
+    "headings": [
+      "Review before you pay."
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1671
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "11-create-account",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1401,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "complete": true
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1401
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "11-create-account",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1413,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "complete": true
+      }
+    ],
+    "gridColumns": [],
+    "headings": [
+      "Create your LetBuyy account"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 1413
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1573,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "columns": "220px 1068px"
+      },
+      {
+        "class": "form-grid",
+        "columns": "248.094px 248.109px"
+      }
+    ],
+    "headings": [
+      "Your Circuit account"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 1440,
+      "height": 1573
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2610,
+    "fonts": {
+      "family": "Inter, Arial, \"Noto Sans Devanagari\", sans-serif",
+      "status": "loaded",
+      "inter400": true,
+      "inter600": true,
+      "loadedFaces": [
+        {
+          "family": "Inter",
+          "weight": "400"
+        },
+        {
+          "family": "Inter",
+          "weight": "600"
+        },
+        {
+          "family": "Inter",
+          "weight": "700"
+        },
+        {
+          "family": "Inter",
+          "weight": "800"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [],
+    "gridColumns": [
+      {
+        "class": "account-layout",
+        "columns": "358px"
+      },
+      {
+        "class": "form-grid",
+        "columns": "312px"
+      }
+    ],
+    "headings": [
+      "Your Circuit account"
+    ],
+    "overflowElements": [],
+    "screenshot": {
+      "width": 390,
+      "height": 2610
+    },
+    "pageErrors": [],
+    "captureMethod": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  }
+]

@@ -1,0 +1,107 @@
+{
+  "recordedAt": "2026-10-24 12:13:17 UTC",
+  "classification": "FRESH_KINDRED_ALLOCATION_REQUEST_DELIVERED_CONTROLLER_RECORDED_BROWSER_EXECUTION_PENDING",
+  "humanInstruction": "Message Themes for a fresh Kindred allocation, then have Editor recover G08 and finish the remaining cases. Keep source/artifacts frozen and KQA-01 open, and report evidence and actual cleanup.",
+  "coordinator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "requestsSentThisTurn": 3,
+  "controllerAcknowledgement": "Editor reports original Kindred browser case request recorded; browser lane can proceed when shared fixture is admitted.",
+  "freshKindredGrant": null,
+  "freshKindredRuntimeBindings": null,
+  "newKindredBrowserCasesExecuted": 0,
+  "old936Reusable": false,
+  "original19FullCaseTotals": {
+    "PASS": 3,
+    "FAIL": 1,
+    "NOT_RUN": 15
+  },
+  "requiredRemaining": {
+    "partial": [
+      "G01",
+      "G02",
+      "G04",
+      "G06",
+      "G19"
+    ],
+    "failedRecovery": [
+      "G08"
+    ],
+    "unrun": [
+      "G09",
+      "G10",
+      "G11",
+      "G12",
+      "G13",
+      "G14",
+      "G15",
+      "G16",
+      "G17",
+      "G18"
+    ]
+  },
+  "upstreamAdmission": {
+    "runId": "45eec3e980e6",
+    "observed": "Native05 phase4 real update-preview/confirmed-update cohort expectedHTTP200 but observedHTTP500 INTERNAL_ERROR. No current fresh browser fixture grant located.",
+    "preciseInternalCause": "Not inferred; allocator diagnosis pending",
+    "permission": "No Kindred source/artifact repair or gate bypass authorized",
+    "coordinatorDispositionRequest": "Asked whether an already-qualified frozen candidate can be admitted without source/package changes or whether an exact prerequisite blocks allocation; answer pending."
+  },
+  "independentSourceReview": {
+    "PASS": 92,
+    "FAIL": 0,
+    "networkAttempts": 0,
+    "scope": "Private source/library review only; not G08 recovery, installed acceptance, current Main application or browser purchase. Not additive with historical58/50."
+  },
+  "cleanup": {
+    "kindredPersistentResourcesStarted": [],
+    "kindredRunningJobs": [],
+    "kindredResourcesClosed": [],
+    "kindredLeaseAcquired": false,
+    "kindredLeaseReturned": false,
+    "reason": "No Kindred resource or browser/runtime lease acquired during coordination",
+    "native05RunnerReceipt": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      },
+      "scope": "Upstream native qualification resources only; does not certify run936/shared Editor teardown."
+    },
+    "sharedRuntimeDatabaseBrowserState": "Untouched and retained; no independent liveness probe or teardown; old936 cleanup remains unproved.",
+    "privateSourceEvidence": "Retained; no proposal applied"
+  },
+  "sourceAndAcceptedArtifactsFrozen": true,
+  "KQA01": "OPEN P2; exact768px long-brand failure and screenshots preserved",
+  "schedulesChanged": false,
+  "evidence": {
+    "request": "docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/FRESH_ALLOCATION_REQUEST_20261024_02.json",
+    "originalAudit": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+    "latestUpstreamResult": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/result.json",
+    "upstreamLog": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/logs/playfield201-catalog394-qualification.manual.ts.log",
+    "independentSourceReview": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/editor-child-render-review02/RESULT.json"
+  },
+  "snapshots": [
+    {
+      "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "cursor": "4a88ad91-a502-40c5-8554-f10ec1e43e00:38",
+      "status": {
+        "type": "active",
+        "activeFlags": []
+      },
+      "latestMessage": "The revised permission model passes with tenant access limited to its own site and instance. The next native run will record the effective catalogue privileges and the shadow-test stage reached. Separately, Editor’s independent child-render review passed 92 checks, and the shared harness needs no adapter rewrite."
+    },
+    {
+      "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "cursor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:27",
+      "status": {
+        "type": "active",
+        "activeFlags": []
+      },
+      "latestMessage": "The independent review passed 92 checks. It confirmed visible children in all 11 Kindred parent contexts, unchanged default HTML for all 23 templates, safe escaping, and no network attempts. It also reproduced the editor gap: 10 inline parents can render children in the candidate but still cannot add them through the current editor. No browser case has been promoted."
+    }
+  ],
+  "continuation": "Allocator must admit a real coherent frozen candidate/fixture and serialized lease; Editor then recovers current signed preview normally, completes outstanding original19 clauses and saves actual case/protected-state/lease-release/cleanup receipts for independent Kindred audit.",
+  "wholeTaskComplete": false,
+  "certificationIssued": false
+}

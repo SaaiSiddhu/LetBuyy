@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-24T05:22:53.860541+00:00",
+  "runId": "936e5f577646",
+  "case": "M04",
+  "actualReplay": {
+    "status": 401,
+    "requestId": "3aba90ac-ad91-4b3e-b1bb-d4ea90953fe7",
+    "responseSha256": "222f5d9077cbf9122770d0591c1337a2ef64f4d5933be7290ca29fee3239599d",
+    "errorCode": "UNAUTHORIZED",
+    "safeMessage": "Missing or invalid authorization header"
+  },
+  "budget": "TwoallocatedPATCHcallsconsumed;no retry",
+  "currentTintVersion": 37,
+  "businessAndPostFirstScopesExact": true,
+  "noPantryCartOrderInventoryChange": true
+}

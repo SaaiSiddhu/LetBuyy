@@ -1,0 +1,10 @@
+{
+  "classification": "PRE_EXECUTION_PROBE_DEPENDENCY_RESOLUTION_FAILURE_NOT_PRODUCT_RESULT",
+  "command": "node --import tsx docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/source-render-probe.mjs",
+  "exitCode": 1,
+  "observed": "ERR_MODULE_NOT_FOUND: Cannot find package jsdom imported from the evidence-folder script",
+  "casesExecuted": 0,
+  "correction": "Resolve the existing declared theme-engine jsdom test dependency through createRequire at its actual package manifest; no install, dependency change or source change.",
+  "mainSourceWrites": 0,
+  "browserOrNativeCredit": 0
+}

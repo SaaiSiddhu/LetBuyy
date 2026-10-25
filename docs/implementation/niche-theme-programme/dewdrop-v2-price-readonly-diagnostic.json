@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-24T04:21:38.744674+00:00",
+  "status": "ACTUAL_GUARDED_READ_ONLY_VARIANT_PRICE_REACCEPTANCE_DIAGNOSTIC_NO_REPAIR",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "actual": {
+    "cart": {
+      "id": "6284ebe8-98d4-41db-9272-292417bd41e5",
+      "price": null,
+      "status": "active",
+      "quantity": null,
+      "unit_price": null,
+      "fingerprint": null,
+      "productVersion": null,
+      "fact_acceptance_version": 1
+    },
+    "orders": 2,
+    "variant": {
+      "id": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+      "price": 899.0,
+      "option1": "New Clay name",
+      "option2": "\u090f\u0915 \u0907\u0915\u093e\u0908",
+      "pricing_mode": null,
+      "pricing_type": null,
+      "price_override": null,
+      "price_adjustment": null
+    },
+    "productId": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+    "parentPrice": 999.0,
+    "productVersion": 27
+  },
+  "scope": "One readonlySELECTactualproduct/variant/pricingalias/activecart; no rawprivatefacts/capabilities/contacts, no mutation.",
+  "cause": "UNQUALIFIED_PENDING_WRITER_AND_READER_SOURCE_TRACES",
+  "cartWritesAndCheckout": "PAUSED_DIAGNOSTIC_STATE_PRESERVED"
+}

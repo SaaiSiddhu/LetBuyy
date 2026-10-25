@@ -1,0 +1,508 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T20:16:59.558576+00:00",
+  "classification": "KINDRED_FINITE_RUNTIME07_BROWSER_QUEUE_REQUEST_NOT_EXECUTION_OR_SOURCE_LEASE",
+  "owner": "01a164ba-d306-7953-9745-b375f5cf21c9",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "queue": {
+    "file": "docs/implementation/niche-theme-programme/capture-schedule.json",
+    "entryKey": "kindred",
+    "proposedPosition": 8,
+    "priorityRequest": "Batch intended gift Test purchase before existing HTTPS expiry; do not displace an actively admitted slice",
+    "resourceGrant": false
+  },
+  "humanResume": {
+    "actualChat": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "actualTurn": "01a16f3d-1540-7a83-ac8c-bd4b9197e08c",
+    "actualUserMessage": "01a16f3d-1550-7092-b91e-f4786c38abe8",
+    "text": "Brooo continue the cart-edit browser test, close the remaining shared blockers, then resume all 10 themes and shared owners on this one stable environment. Finish Razorpay Test Mode certification and preserve all apps, drafts and data.",
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025.json",
+      "sha256": "e7cc69390865d45e4d5623555c39a6c0d3c1e931a143866aee1822f15f033d4b"
+    },
+    "verifiedBy": "read_thread actual userMessage; no new human resume question",
+    "platformGoalObserved": "paused; preserve unfinished objective, no replacement goal or unsupported active update"
+  },
+  "runtime": {
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runnerPid": 54685,
+    "origins": {
+      "identityOrigin": "http://accounts.threadline-49ada80bc494.localhost:64593",
+      "merchantOrigin": "http://admin.threadline-49ada80bc494.localhost:64594",
+      "commerceOrigin": "http://syn-threadline-ui-ae3f0477.localhost:64595",
+      "checkoutOrigin": "https://checkout.localhost:64597",
+      "apiOrigin": "http://127.0.0.1:64598"
+    },
+    "site": {
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+      "subdomain": "syn-threadline-ui-ae3f0477",
+      "tag": "threadline-ui"
+    },
+    "status": "PASS_FOR_CONTROLLED_THEME_EXECUTION",
+    "identity": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNTIME_READY_REDACTED.json",
+      "sha256": "135ec6e3129b2eb1fe8e4e0364f785586ab527be780ce376bc0a113e27875bf3"
+    },
+    "gate": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+      "sha256": "4ade007d9b12f9694f73c540bc331c404f7474c01a0934885d38cb8895c66ffb"
+    },
+    "sourceAdmission": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/source-runtime-admission.json",
+      "sha256": "60a841b2282aa75b9244586203b784ba7f90c46c7ab11ea0e921c16318ea3071"
+    },
+    "package": {
+      "slug": "letbuyy-summit",
+      "expectedVersion": "2.1.0",
+      "actualPackageVersionId": null,
+      "actualInstalledManifestHash": null,
+      "requirement": "Controller binds actual catalogue/install/draft/release hashes; old200hash must not be used as210hash."
+    },
+    "publicReceiverExpiresAt": "2026-10-24T22:20:00Z",
+    "publicReceiverExpiresIST": "2026-10-25 03:50 IST",
+    "expiryRule": "Use earliest of actual controller lease, runner death and publicreceiver expiry for payment. No exposure extension or restart."
+  },
+  "intendedProduct": {
+    "source": {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/runtime07-slice01/PUBLIC_GIFT_BINDING_PREPARATION.json",
+      "sha256": "d7cf29ee18d08589c55571186bcd8340a9c5a00993f1ed2f537b97b4ef354e0e"
+    },
+    "readOnlyPublicApiOnly": true,
+    "product": {
+      "id": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+      "name": "Kindred lifecycle gift box",
+      "slug": "syn-editor-gifts-49ada80bc494",
+      "price": 1100,
+      "stock": 8,
+      "product_options": [],
+      "images": [
+        "http://syn-threadline-ui-ae3f0477.localhost:64595/theme-assets/kindred/v2/little-pause-open.webp",
+        "http://syn-threadline-ui-ae3f0477.localhost:64595/theme-assets/kindred/v2/little-pause-closed.webp"
+      ],
+      "is_active": true,
+      "variants": [],
+      "metadata": {
+        "gifts": {
+          "schemaVersion": 1,
+          "contents": [
+            {
+              "label": "Mug",
+              "quantity": 1,
+              "detail": "300 ml",
+              "care": "Hand wash."
+            },
+            {
+              "label": "Notebook",
+              "quantity": 1
+            },
+            {
+              "label": "Pen",
+              "quantity": 1
+            }
+          ],
+          "mediaRoles": {
+            "openBox": 0,
+            "closedBox": 1
+          }
+        }
+      },
+      "publicFieldNames": [
+        "category",
+        "compare_price",
+        "country_of_origin",
+        "created_at",
+        "description",
+        "id",
+        "images",
+        "importer_details",
+        "is_active",
+        "is_featured",
+        "metadata",
+        "name",
+        "price",
+        "price_observed_at",
+        "prior_lowest_price_30d",
+        "prior_price_coverage_complete",
+        "product_options",
+        "product_type",
+        "product_variants",
+        "seo_description",
+        "seo_title",
+        "slug",
+        "stock",
+        "store_id",
+        "tags",
+        "track_inventory",
+        "updated_at",
+        "variants"
+      ]
+    },
+    "normalUiRecheckRequired": true,
+    "productVersion": null,
+    "collectionId": null,
+    "shippingRateId": null,
+    "buyerId": null,
+    "cartId": null,
+    "orderId": null,
+    "missingBindingRule": "Bind all null IDs from actual current canonical acknowledgements/normal UI; never invent or copy old/private fixture IDs."
+  },
+  "giftContract": {
+    "source": "candidate/packages/commerce-core/src/kindred-facts.ts",
+    "kind": "Ready-made gift set facts",
+    "contents": "Mug×1/300ml/Handwash.;Notebook×1;Pen×1",
+    "currentOptions": [],
+    "currentVariants": [],
+    "personalizationPresent": false,
+    "message": "GiftFactsSchema strictly excludes message; no gift note/packaging/variant inferred. If a separate current canonical personalization configuration is later explicitly allocated, test it under its real contract and IDs, not gifts.message."
+  },
+  "finitePaymentFirstSlice": {
+    "caseIds": [
+      "G01",
+      "G02",
+      "G07",
+      "G09",
+      "G11",
+      "KID-01",
+      "KID-02",
+      "KBUY-01",
+      "KBUY-03",
+      "KRP-01",
+      "KRP-02",
+      "G14",
+      "KHIST-01"
+    ],
+    "order": [
+      "Acquire explicit Kindred controller slice and before-state/protected-state baseline; bind actual current210install/source identity",
+      "Normal install/editor save/reload/preview/publish as needed; do not reapply old private200 child/heading helper",
+      "Open intended gift through normal current storefront navigation, prove facts/media/no artificial choices; record actual current price/stock",
+      "Normal new buyer flow preferred; existing-buyer SSO may support time-bounded primary payment only with signup still visibly open",
+      "Normal add quantity1, server acknowledgement and full cart reload; quote/address/shipping through hosted checkout",
+      "Actual Razorpay TEST UI and provider-created popup; use explicit demo-bank Success only; never invent popup URL/fake callback/session",
+      "Parent OrderConfirmed, buyer and merchant actual paid/confirmed order views, actual captured provider/HMAC callback and balanced canonical effects",
+      "Capture original gift fact/image/totals histories before any G15catalogue edit; release/checkpoint for next owner"
+    ],
+    "expectedQuoteOracle": {
+      "quantity": 1,
+      "unitINR": 1100,
+      "subtotalINR": 1100,
+      "shippingINR": 20,
+      "taxINR": 0,
+      "discountINR": 0,
+      "totalINR": 1120,
+      "authority": "Current server quote; reconcile differences rather than forcing client totals"
+    },
+    "expectedEffects": "Exactly1new intended KindredTestorder/capture, matching INR/order/tenant bindings, actual callbacks processed200, one balanced capture transaction and cart retirement. Merchant total is prior count+1, not globally1. Observe legitimate stock/reservation effect; never refill. No other theme purchase substitutes.",
+    "effectBudgetRequest": {
+      "primaryTestOrders": 1,
+      "giftQuantity": 1,
+      "newRealMoneyCharges": 0,
+      "syntheticCallbacks": 0,
+      "normalCodOrders": "Separate later G12/KCOD-01 budget1; not consumed by Test purchase",
+      "sameKeyReplay": "Only existing admitted original-intent control with actual accepted key; no extra primary purchase"
+    },
+    "httpEvidence": "Use supported bounded observer/canonical owned readback for actual status/code/requestId; DOM text alone is not HTTP proof. No raw HAR/headers/cookies/tokens/secret values."
+  },
+  "subsequentOriginalAndExpandedCases": [
+    {
+      "id": "G01",
+      "title": "Bind the single shared fixture",
+      "originalExpectation": "Use editor profile and the existing prepareThemeEditorQaStore hook; retain gifts product/collection IDs and shipping-rate ID from actual receipts. Do not run a second seed harness.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "PARTIAL",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Bind current actual site/product/collection/shipping/theme instance/release and source/runtime identities. Old936IDs/tokens/lease are unusable; collection/rate/version/buyer/order bindings must come from current acknowledgements.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G02",
+      "title": "Install and publish Kindred v2",
+      "originalExpectation": "Use actual merchant theme UI; record admitted package/release/hash, draft version, save/publish receipt and reload. Installation must not seed catalog content.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "PARTIAL",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Normal install/save/full reload/private preview/publish/public readback on explicitly admitted2.1.0. Label current210 versus retained200 separately; do not claim retroactive200package provenance or silently waive its missing collector join. A/B/rollback/reapply and no-seed effects remain required.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G03",
+      "title": "Edit the existing gifts product",
+      "originalExpectation": "Use normal merchant product page to add birthday/thank-you and friend/colleague to the existing gifts metadata, preserve three contents rows and images, save and reload with actual version/idempotency.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "PASS",
+      "historicalDiagnostic": "PASS",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Normal product editor adds occasion birthday/thank-you and recipient friend/colleague keys where actual controls support them. Preserve supplied contents/media/price/current stock/UUID. Record actual version transitions, not old3→5.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G04",
+      "title": "Invalid media-role recovery",
+      "originalExpectation": "Attempt an out-of-range role and a duplicated role through available merchant controls/API negative control; no durable mutation. Record actual validation stage/status.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "PARTIAL",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Duplicate role and out-of-range role negative with available normal controls or separately labelled canonicalAPI control; exact validation/code/stage and no durable unrelated mutation.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G05",
+      "title": "Unknown-facts recovery",
+      "originalExpectation": "On the same product, temporarily omit contents and role bindings; no made-up contents, fulfillment or imagery. Restore actual saved base facts before purchase.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "PASS",
+      "historicalDiagnostic": "PASS",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Contents/roles-only clear, saved reload and actual unknown-statePDP, then exact supported restore. Preserve discovery keys/media/price/current stock; no synthetic contents inferred.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G06",
+      "title": "Collection and search discovery",
+      "originalExpectation": "Use actual admitted options and counts; occasion/recipient/budget/sort combinations on both routes, independent clear URLs, repeated unrelated connector preservation, true empty response and recovery. No fabricated option/count; source-only static QA is separate.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "PARTIAL",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Actual collection/search occasion/recipient/budget/sort, counts/IDs/empty recovery/independent clears/unrelated connector preservation and required pagination/clear branches. Do not fabricate controls/options or copy API controls into browser proof.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G07",
+      "title": "PDP and supplied media",
+      "originalExpectation": "Confirm Mug 300 ml/Hand wash., Notebook, Pen; open/closed images from explicit roles. Base fixture has no product options or variants, so no wrapping selector or variant identity may be invented.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "PASS",
+      "historicalDiagnostic": "PASS",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "PDP shows the real three gift contents and both actual supplied role images loaded. No variant/message picker for the current product. Gallery loading/keyboard/media selection need actual evidence.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G08",
+      "title": "Keyboard and responsive browsing",
+      "originalExpectation": "Capture actual installed 320/768/1440 layouts and focus/activation, including hydrated header/menu behavior; record outstanding long-brand header defect independently.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "FAIL",
+      "historicalDiagnostic": "FAIL",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Recover normal signed preview through current session/revision/origin, then actual320/768/1440 keyboard/focus/responsive checks. Reproduce exact long brand separately. Expiredpreview404 is not by itself a tablet layout diagnosis; successful refresh is only a sub-result.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G09",
+      "title": "Server cart and reload",
+      "originalExpectation": "Add one existing gifts product, await canonical server response, reload same owned buyer/store cart: quantity 1, unit price 1100 INR, selected options empty, approved immutable gift facts and saved primary image.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Normal intended gift add and server acknowledgement, quantity1/unit1100/empty selected options/facts and accepted primary image, then owned-cart full reload. Read current price/stock before action.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G10",
+      "title": "Client authority negative",
+      "originalExpectation": "Attempt unsupported price/snapshot fields and allowed display-property spoof separately; record actual contract response and unchanged server price/contents/image. Do not assert a status that was not observed.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Unsupported client price/snapshot fields and allowed display-property spoof separately via existing admitted canonical negative controls; exact response and unchanged server-authoritative gift facts/image/price. Not a browser-purchase substitute.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G11",
+      "title": "Buyer identity",
+      "originalExpectation": "Register/sign in through real identity UI, reload account, carry the actual store-scoped session into checkout; do not inject a minted session or copy public-demo identity.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Normal NEW synthetic buyer signup/verification/signin/consent/callback/store entry and reload. Existing fixture SSO is labelled separately and cannot pass new signup. If deadline batching uses existing-buyer normal login for Test purchase, retain G11/KID-01 NOT_RUN/PARTIAL until new signup is actually done.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G12",
+      "title": "Hosted COD checkout",
+      "originalExpectation": "Through actual hosted checkout choose Bengaluru Karnataka 560001 and the shared flat 20 INR rate, confirm COD. Expected server subtotal 1100, shipping 20, discount 0, tax 0, total 1120 INR; reconcile if server differs. COD pending must not appear paid.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Separate actual hosted COD purchase, Bengaluru/Karnataka560001, actual flat shipping20; expected1100+20=1120 only if current server agrees. COD remains pending, never paid. Razorpay order does not substitute for original COD case.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G13",
+      "title": "Idempotent retry",
+      "originalExpectation": "Repeat the same accepted order command with its same actual idempotency key using the existing harness/control; exactly the same order, no duplicate line/reservation/link. Not a second UI purchase claim.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "One same-original-intent/key canonical replay of the actual accepted COD order, exactly same order/no extra line/reservation/link/ledger effect. Keep API replay labelled and separate from a second UI purchase and from Test-provider replay.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G14",
+      "title": "Initial saved readback",
+      "originalExpectation": "Record buyer account/order UI, merchant order UI and actual Liquid order detail from the accepted saved order. Facts, quantity, monetary totals and primary image match accepted order; raw/private product snapshot absent.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Before any catalogue edit, buyer account order, merchant order and Liquid order-detail readbacks for accepted COD and separately Test order; same original300ml/care/contents/image/totals, no private raw snapshot leakage.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G15",
+      "title": "Merchant mutation after purchase",
+      "originalExpectation": "On the same product change Mug detail to 250 ml and reorder/remove the supplied images through normal save. Keep actual receipts. Current catalog changes; saved order keeps original 300 ml/care/contents and accepted primary image.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "After purchase/history baseline, edit SAME productUUID Mug300ml→250ml and reorder supplied images using normal canonical save; remap open/closed roles to their actual corresponding URIs. Omit untouched stock; preserve variantUUIDs/options and legitimate consumed inventory.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G16",
+      "title": "Historical readback after mutation",
+      "originalExpectation": "Reload all three saved readbacks. Exact old snapshot/primary image remains; unavailable historical facts stay unavailable and never fall back to current catalog.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Reload all three saved order views; old300ml/care/contents/accepted primary image remain exact after current catalogue changes. No fallback to new catalogue facts.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G17",
+      "title": "Stale cart review",
+      "originalExpectation": "Keep a separate accepted cart before G15; later checkout must follow actual CART_FACTS_CHANGED/review contract, with no second unintended order/reservation.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Separate actual accepted held gift cart before G15; one stale checkout review/actual CART_FACTS_CHANGED contract with no unintended new order/reservation. Never use old Pantry/936cart. Reacceptance/new purchase requires separate effect budget.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G18",
+      "title": "Tenant and buyer isolation",
+      "originalExpectation": "Use owner-allocated Buyer B/foreign-site controls; refuse foreign cart token/order IDs and verify no private facts or raw snapshot leakage. Positive own-order control first.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "NOT_RUN",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Actual allocated BuyerB/foreign site controls, positive own-order/cart first, denial of foreign actual IDs/token use without private facts/raw snapshot leakage. No invented UUIDs/actors or injected sessions.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    },
+    {
+      "id": "G19",
+      "title": "Conflict and resource recovery",
+      "originalExpectation": "Exercise a stale merchant version without overwriting latest edit, then verify cleanup only for allocated run resources and publish a lease-release receipt.",
+      "historicalRun": "936e5f577646",
+      "historicalFullCaseOutcome": "NOT_RUN",
+      "historicalDiagnostic": "PARTIAL",
+      "currentRuntimeStatus": "NOT_RUN",
+      "currentRuntimeRequirement": "Normal stale merchant-version conflict without overwrite; restore only intentionally changed allowed scope, preserve orders/stock/snapshots and actual current publication. Close only allocated Kindred contexts/processes, return actual slicelease, list retained shared resources; do not stop the shared runner.",
+      "versionApplicability": "Current execution is explicitly2.1.0; original200data/evidence stays immutable. Source-equivalent behavior reuse needs reviewer acceptance; version-specific clauses are separately retained."
+    }
+  ],
+  "kqaAndPreviewSlice": {
+    "ids": [
+      "G08",
+      "KBRAND-01",
+      "KPREVIEW-01",
+      "KQUAL-01",
+      "KQUAL-02"
+    ],
+    "longBrand": "Kindred उपहार और Thoughtfully Selected Everyday Celebrations",
+    "historicalFault": "Old Tablet820error1136306685 maps to preview-session404; retain original failure and do not infer tablet CSS failure from404 alone.",
+    "currentRequired": [
+      "Normal signed current preview/session/revision/origin and real response",
+      "Actual measured320/768/1440 original branch, plus remaining declared quality widths/zoom/languages",
+      "Exact long brand via actual current Header.storeName control if declared; retain normalMenu IDs/settings",
+      "Observe inline baseline and existing centered layout through normal canonical Header.layout if actual210manifest exposes it; Save/fullreload/preview/publish/public evidence; record each setting-specific result",
+      "Same long brand, actual768, full labels and each native menu/focus/activation; no CSS/DOM/viewport spoof, no shortened brand or fabricated button",
+      "Restore only intentionally changed allowed settings and exact IDs; no source/candidate mutation"
+    ],
+    "configurationSourceEvidence": {
+      "historicalSchema": "CAPABILITY_INVENTORY.json header.settings has storeName/layout:inline|centered; actual210manifest must be checked",
+      "currentCss": "candidate/apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css:78 centered brand/full-width nav atmin48em; source support is not rendered proof"
+    },
+    "kqaDisposition": "OPEN P2 retained per direct human instruction in this chat. Current210setting mitigation/nonreproduction is separately evidenced; no formal closure or retrospective200pass is inferred. Source correction requires fresh exact allocator lease and independent acceptance.",
+    "noMutation": "Sealed Runtime07 and all frozen200source/artifacts/snapshots remain unchanged; no old privateKQA/heading/child patch applied"
+  },
+  "sharedEvidenceReuse": {
+    "configuredCart": {
+      "executionRun": "63c55b066db3",
+      "actualOperations": 13,
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime06/BROWSER_SMOKE.json",
+        "sha256": "2e6c04cb16cb0835a1356b28c02254c24483f3673cef3a7f9ffe3f3921e62ad2"
+      },
+      "applicability": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/EVIDENCE_APPLICABILITY.json",
+        "sha256": "bb2698b3487ffd563c163440e8797a71972752db663897477141954132bf99f2"
+      },
+      "limits": "Only exact-source shared variant/text writer/reload/remove/readd behavior. Gift-specific intended facts/cart/current selected variant/payment/history still required."
+    },
+    "sharedProviderSmoke": {
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/REAL_PROVIDER_UI_PAYMENT_PASS.json",
+        "sha256": "8c69fbf61c438481fd6f56a088bf9e87866f17d597591c5c763426339b3880a3"
+      },
+      "executionRun": "49ada80bc494",
+      "limits": "MadeYours presentation/Circuitproduct INR1220order is shared smoke only; never count as Kindred payment or copy its order IDs into Kindred results."
+    },
+    "nativeSecurityAndBackend": "Gate lists exact native runs; preserve those actual run labels and show unchanged applicability. Native proof does not close browser/store-specific rows."
+  },
+  "preservationAndCleanup": [
+    "No providerkey/secret/private credential file read by Kindred",
+    "No second runtime/native/build/migration, no sealedcandidate/Mainsource/shareddata edit by Kindred",
+    "No old fixtures/tokens/9001/Marketplace9015/9022/user cookies/drafts/orders touched",
+    "Every noninventory catalogue edit omits stock, preserves real product/variantUUIDs and old snapshots",
+    "At slice end close only actually allocated Kindred tabs/contexts/processes, restore allowed setting scope, return actual controller lease with receipt",
+    "Keep shared runner/DB/publicreceiver and other owners resources under their owners; do not teardown them for Kindred",
+    "Record exact before/after cart/order/stock/reservation/ledger/outbox effects and retained shared resources; no cleanup inferred from a source pass"
+  ],
+  "originalCountsRetained": {
+    "PASS": 3,
+    "FAIL": 1,
+    "NOT_RUN": 15
+  },
+  "allNewCurrentRows": "NOT_RUN; this is a queue request, not an outcome",
+  "fullScopeReferences": {
+    "coverage": {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+      "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+    },
+    "runbook": {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/RUNBOOK.md",
+      "sha256": "2a696bd3c9eced510a4092a62efab2716b481ec105a014e6f2dab47fcd88319c"
+    },
+    "childAddendum": {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CHILD_COVERAGE_ADDENDUM_02.json",
+      "sha256": "5a0c48555d62191ff0b29cf887192780ef91bf6137d4b7ea8cea79864d8f687c"
+    },
+    "original19Plan": {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/installed-gifts-lifecycle.plan.json",
+      "sha256": "700a60f8a97b0a0336860bc3b2c4262c2c3cd9749fa287c9b8c5af65c600c9ae"
+    }
+  },
+  "sourceWriterGrant": null,
+  "outgoingChatMessages": 0,
+  "localE2EVerified": false,
+  "razorpayTestVerified": false,
+  "reviewAccepted": false,
+  "fullThemeCertified": false,
+  "productionDeployed": "NOT_REQUESTED"
+}

@@ -17,10 +17,11 @@
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
+import { CircleAlert } from 'lucide-react'
 import { useState, useId } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-import { Input, MaterialIcon } from '@letbuyy/ui'
+import { Input } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 interface ColorBackgroundControlProps {
@@ -116,7 +117,7 @@ export function ColorBackgroundControl({ field, value, onChange }: ColorBackgrou
 
             {error ? (
                 <p id={`${id}-error`} className={styles.fieldError} role="alert">
-                    <MaterialIcon name="error" size={12} aria-hidden />
+                    <CircleAlert size={12} aria-hidden />
                     {' '}{error}
                 </p>
             ) : null}

@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-25T00:30:24.902819+00:00",
+  "sourceReview": "SEALED02_DELIVERED_THEMES",
+  "editorQueue": "ORIGINAL26_AND_APPLICABILITY_DELIVERED_EDITOR",
+  "dispatchBothSuccessful": true,
+  "directAuthorization": "Human explicitly authorized messaging Themes and Editor in this Habitat chat; newest verified project resume02 supersedes prior pause",
+  "privateGrantEnded": true,
+  "original26": {
+    "PASS": 0,
+    "FAIL": 0,
+    "PARTIAL": 2,
+    "NOT_RUN": 24
+  },
+  "frozenOwnedFilesExact": 11,
+  "sealed02FilesExact": 29,
+  "statusReport": "runtime07-20261025/ORIGINAL26_STATUS_20261025_03.json",
+  "newRuntimeOrBrowserLeaseGrantedToHabitat": false,
+  "sourceNativeDbBuildBrowserProviderActionsByHabitat": 0,
+  "FULL_THEME_CERTIFIED": false
+}

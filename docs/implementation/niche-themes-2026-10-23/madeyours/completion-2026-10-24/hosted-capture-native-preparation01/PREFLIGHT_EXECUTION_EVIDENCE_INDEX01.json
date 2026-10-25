@@ -1,0 +1,23 @@
+{
+  "classification": "ACTUAL_STANDALONE_CLI_ATTEMPT_STOPPED_BEFORE_SCRIPT_ENTRY",
+  "redExitCode": 1,
+  "greenExitCode": null,
+  "greenStatus": "NOT_RUN_STOP_RULE",
+  "redGuardCounters": "NOT_INITIALIZED",
+  "nativeStarts": 0,
+  "files": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/PREFLIGHT_EXECUTION_REPORT01.json",
+      "sha256": "727fb623ba8ff02c5b3ab83543e28c806ed0d21c28691775a0492a7d8f863af5"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/preflight-red-terminal01.log",
+      "sha256": "b1f7f4ddb0392b9ab0e2d2c65be3d1c948a56309a5797db24b88401191158971"
+    }
+  ],
+  "expectedModulePreflightResults": {
+    "red": "ABSENT_NO_HASH",
+    "green": "ABSENT_NO_HASH"
+  },
+  "next": "Themes reviews this exact refusal; no retry/alternate loader/escalation or native under consumed single-attempt scope."
+}

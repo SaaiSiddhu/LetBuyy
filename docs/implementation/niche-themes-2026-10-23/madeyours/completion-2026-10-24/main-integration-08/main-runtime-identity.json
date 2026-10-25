@@ -1,0 +1,15 @@
+{
+  "classification": "ACTUAL_MAIN_DEFAULT_NODE_TSX_WORKSPACE_EXPORT_IDENTITY_SOURCE_ONLY",
+  "checkoutCore": {
+    "path": "/Volumes/Projects/LetBuyy/packages/checkout-core/src/index.ts",
+    "sha256": "2822a721bafd176241deaf274db2fdb0ab40fb687e738842f9ddd80912391560",
+    "buyerBindingType": "function"
+  },
+  "sessionHelper": {
+    "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/hosted-checkout-session.ts",
+    "sha256": "23d489f61d762497c1ecdbf445691c140fa698947161b17426c11bf2b1ae753b"
+  },
+  "databaseStarted": false,
+  "browser": false,
+  "providerCalls": 0
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:34:03.662230+00:00",
+  "id": "completion-editor-checkout-diagnostics-20261024-02",
+  "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "GRANTED_TWO_TEST_FIXTURE_PATHS_ONLY",
+  "files": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "beforeSHA256": "c37c7779822b50d533496a7ad4aa6fb14f1d5422894b90adb27fa98589ad6a11"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "beforeSHA256": "6ae2734f24f0e54e272bf63fe4f512fe98266e3b8fcc4d9d3f388b2961680256"
+    }
+  ],
+  "purpose": "Extend existing redacted failed-request observation to actual canonical checkout contact/delivery/payment-intent POST steps and safe CHECKOUT_STATE_CONFLICT code. Preserve exact same-site/cart binding, finite strict schema/size/query/selector guards and no raw request/response/header/cookie/capability output.",
+  "acceptance": [
+    "Every added step records finite metadata only after positive same-site/cart binding",
+    "Malformed/oversized/foreign/duplicate/unknown-step and unknown-code controls",
+    "No PII, body/header/URL/token retention in diagnostics",
+    "Existing successful COD replay byte identity, bounds and mutation controls remain unchanged",
+    "Focused no-DB source tests/type/lint; no native/build/provider/browser/runtime action"
+  ],
+  "expiresAt": "2026-10-24T10:34:03.662230+00:00",
+  "expiryRule": "First sealed source handoff or expiry, whichever first; compare exact bases immediately before edits.",
+  "notGranted": [
+    "Any production checkout/cart semantics change",
+    "New diagnostic endpoint/replay capability or broader selectors",
+    "DB/browser/native/heavy-build action",
+    "Old936 action or server restart"
+  ],
+  "nativeLane": "Requesting reviewer owns next checkout08 affected7; no competing native run",
+  "previousEditorSource": "Six-file block repair remains sealed/root-source-admitted",
+  "cleanupOwner": "Editor; preserve source/evidence, no runtime resource created"
+}

@@ -1,0 +1,141 @@
+{
+  "recordedAt": "2026-10-24T06:56:46.779Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "evidenceClass": "Actual persisted canonical mutation from normal merchant Save; not raw HTTP capture",
+  "productId": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+  "originalVariantIds": [
+    "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+    "ec05efc6-dce5-4948-ae3e-a1c173542cc9"
+  ],
+  "actual": [
+    {
+      "idempotencyKey": "6e37b539-604a-4e9b-97ef-5b144a0dbb92",
+      "expectedVersion": 8,
+      "returnedVersion": 15,
+      "operation": "product.update.v1",
+      "createdAt": "2026-10-24T06:55:29.019565+00:00",
+      "mutationSqlTextToNodeJsonSha256": "896e3afaeeabfe67ab34723a85fae74591af1a532fca96b06821f94cfc780b19",
+      "topLevelStockOmitted": true,
+      "fieldsStockOmitted": true,
+      "existingVariantsStockOmitted": true,
+      "newVariants": [
+        {
+          "title": "English paperback unavailable",
+          "price": 450,
+          "stock": 0,
+          "options": {
+            "Edition": "English paperback unavailable"
+          },
+          "books": {
+            "kind": "book",
+            "pages": 176,
+            "format": "paperback",
+            "authors": [
+              "Dev Rao"
+            ],
+            "edition": "Third printing",
+            "language": "English",
+            "dimensions_mm": {
+              "width": 148,
+              "height": 210
+            }
+          }
+        }
+      ],
+      "sameOriginalVariantIds": true,
+      "variants": [
+        {
+          "id": "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+          "title": "English hardback",
+          "price": 590,
+          "options": {
+            "Edition": "English hardback"
+          },
+          "metadata": {
+            "books": {
+              "kind": "book",
+              "pages": 192,
+              "format": "hardback",
+              "authors": [
+                "Mira Sen"
+              ],
+              "edition": "Illustrated second printing",
+              "language": "English",
+              "dimensions_mm": {
+                "width": 156,
+                "height": 234
+              }
+            }
+          }
+        },
+        {
+          "id": "ec05efc6-dce5-4948-ae3e-a1c173542cc9",
+          "title": "Hindi paperback",
+          "price": 420,
+          "options": {
+            "Edition": "Hindi paperback"
+          },
+          "metadata": {
+            "books": {
+              "kind": "book",
+              "pages": 160,
+              "format": "paperback",
+              "authors": [
+                "सिंथेटिक लेखक"
+              ],
+              "edition": "First printing",
+              "language": "Hindi",
+              "dimensions_mm": {
+                "width": 140,
+                "height": 216
+              }
+            }
+          }
+        },
+        {
+          "title": "English paperback unavailable",
+          "price": 450,
+          "options": {
+            "Edition": "English paperback unavailable"
+          },
+          "metadata": {
+            "books": {
+              "kind": "book",
+              "pages": 176,
+              "format": "paperback",
+              "authors": [
+                "Dev Rao"
+              ],
+              "edition": "Third printing",
+              "language": "English",
+              "dimensions_mm": {
+                "width": 148,
+                "height": 210
+              }
+            }
+          }
+        }
+      ],
+      "options": [
+        {
+          "name": "Edition",
+          "values": [
+            "English hardback",
+            "Hindi paperback",
+            "English paperback unavailable"
+          ],
+          "position": 0
+        }
+      ],
+      "books": {
+        "kind": "book",
+        "subjects": [
+          "Essays"
+        ]
+      },
+      "privateSiblingDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  ]
+}

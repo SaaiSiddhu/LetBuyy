@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-25T01:54:58.218125+00:00",
+  "status": "ACCEPT_SAFER_ADDITIVE_FIXTURE_STRATEGY_NOT_CURRENT_EXECUTION",
+  "owner": "01a164bb-0749-7073-aef0-295ae3f64541",
+  "proposal": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/marginalia/completion-2026-10-24/ADDITIVE_FIXTURE_ALTERNATIVE_01.json",
+  "proposalSha256": "1f47553bbc5d2a79f30ffd10b5f7ec494ce875a76cb392369c5b435bdd042d65",
+  "purpose": "Satisfy original logical book/stationery/variant/cart/history requirements while leaving all existing catalogue facts and stock intact. This replaces the rejected clearing action, not a retry of it.",
+  "futureFiniteBudget": {
+    "newProducts": 2,
+    "bookVariants": 3,
+    "optionAxes": 1,
+    "optionValues": 3,
+    "newCollections": 1,
+    "newMemberships": 2,
+    "newSitesOrAccountsOrMediaUploads": 0,
+    "existingCatalogueFactStockWrites": 0,
+    "existingDraftOrReleaseContentWritesInProductSetupSlice": 0,
+    "directSqlApiMutationSubstitutes": 0,
+    "payments": "Existing maximum one intended Razorpay Test order plus one distinct COD order, no extra purchase for evidence"
+  },
+  "acceptanceDisposition": {
+    "logicalCases": "No hard-coded old UUID required; adopt acknowledged fresh IDs once and preserve those IDs through reload, cart/order and later edits to those new records only. Preserve all original field, query, price, quantity, security and immutable-history requirements.",
+    "literalSetupClauses": "MG-ID-01 helper/14th-slot/original-count and MG-INSTALL-01 no-second-fixture/frozen-version setup clauses remain explicitly OPEN; no historical row relabel or frozen matrix edit.",
+    "publication": "Do not invent a draft fork/clone mechanism. Source proposal branch/publication budget is not admitted. First product setup has zero existing draft/release content writes; normal supported theme activation/resource-binding steps need actual saved-state/readback and a precise separate finite UI slice. Other independent product cases must not wait on a nonexistent new branch system.",
+    "counts": "Record actual before baseline and deltas P+2,V+3,C+1,M+2; use server-scoped exact two-product collection for2/1/1 oracles. No client hiding of existing records or unverified global count."
+  },
+  "executionConditions": [
+    "Only after preserved runtime07 recovery, normal actor/ownership and source/version/profile qualification",
+    "Editor sole browser executor with exact future record token, acknowledged IDs, finite expiry and mutation ledger",
+    "Normal canonical merchant create/variant/collection controls only; stop at ambiguous acknowledgement, no replacing fixtures to hide failures",
+    "Normal automatic execution review must permit this distinct additive action; no bypass of rejected existing-fact clearing"
+  ],
+  "supersededProposal": "shared-runtime07/MARGINALIA_SYNTHETIC_REFINEMENT_PROPOSAL.json remains historical/unapplied; no need to seek existing-fact-clearing approval for the chosen additive strategy",
+  "currentUiDbProviderMutations": 0,
+  "casePassesAdded": 0,
+  "fullThemeCertified": false
+}

@@ -1,0 +1,18 @@
+{
+  "classification": "REQUIRED_GOVERNANCE_CHECK_INCOMPLETE_NOT_APPLICATION_ACCEPTANCE",
+  "command": "node scripts/validate-governance.mjs",
+  "exitCode": 130,
+  "status": "INTERRUPTED_BY_OWNING_AGENT_AFTER_SCOPE_AND_FAILURE_OBSERVED",
+  "selectedValidators": 114,
+  "completedThroughObservedOrdinal": 37,
+  "observedFailure": {
+    "ordinal": 20,
+    "validator": "dependency-graph-validator.mjs",
+    "messageFragment": "packages/typescript/api-client -> packages/commerce-core (packages/typescript/api-client/package.json declares @letbuyy/commerce-core)",
+    "scope": "Unrelated shared package dependency classification; no fix or baseline acceptance inferred."
+  },
+  "sourceBuildDatabaseOrBrowserStarted": false,
+  "validationGatePassClaimed": false,
+  "retryPlanned": false,
+  "reason": "AGENT-R16 requests governance validation; full gate exceeded this bounded documentation work. Own foreground command interrupted; retain observed failure and no broad retry."
+}

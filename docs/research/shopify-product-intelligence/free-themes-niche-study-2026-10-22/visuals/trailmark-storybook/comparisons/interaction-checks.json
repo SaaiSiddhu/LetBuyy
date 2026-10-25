@@ -1,0 +1,34 @@
+[
+  {
+    "check": "Mobile menu Escape closes and returns focus",
+    "passed": true
+  },
+  {
+    "check": "Complete summary precedes payment action at390",
+    "passed": true
+  },
+  {
+    "check": "Complete summary precedes payment action at834",
+    "passed": true
+  },
+  {
+    "check": "Profile sign-in email is read-only",
+    "passed": true
+  },
+  {
+    "check": "Owned order rows have no cart Remove or quantity controls",
+    "passed": true
+  },
+  {
+    "check": "Reduced motion uses auto scrolling",
+    "passed": true
+  },
+  {
+    "check": "04-product-main320px retained capture",
+    "passed": true
+  },
+  {
+    "check": "08-checkout-address320px retained capture",
+    "passed": true
+  }
+]

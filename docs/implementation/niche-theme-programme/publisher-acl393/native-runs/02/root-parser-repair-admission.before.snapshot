@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-24T04:19:43.155253+00:00",
+  "status": "ROOT_ACL393_OWN_ROW_PARSER_REPAIR_ADMITTED_RENEW_ONE_FRESH_NATIVE",
+  "sourceHandoff": {
+    "recordedAt": "2026-10-24T04:14:46.696263+00:00",
+    "status": "ACL393_TINY_OWN_ROW_PARSER_REPAIR_SOURCE_READY_PENDING_ROOT_REVIEW_NO_NATIVE_RETRY",
+    "release": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/own-row-parser-repair/source-release.json",
+      "sha256": "cd51fe1713e4fa8939dce6addb5873758691a707fcab1363faae31cfb5a0a4b1",
+      "bytes": 9957
+    },
+    "handoff": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/own-row-parser-repair/SOURCE-RELEASE.md",
+      "sha256": "197a4df009c5059b54c2a4a20a26ceaa55cb694a9a720c1fb12822c5ff10b6ed",
+      "bytes": 3132
+    },
+    "suite": {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+      "sha256": "ae513731224bfe171786efd8283965734b200e8323f59c4a4bec07d9b0d94a0d",
+      "bytes": 24945
+    },
+    "closure": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+      "sha256": "97eb85f25d95449f1d9bc4e159c379aba37080566e58420447d25cbc9594ae08",
+      "bytes": 559493
+    },
+    "manifest": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/manifest.json",
+      "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f",
+      "bytes": 3954
+    },
+    "sourceChecksPass": 12,
+    "nativeSemanticExit": 0,
+    "newNativeLintErrors": 0,
+    "closedOldAdmissionRetained": true,
+    "newAdmissionOrNativeRetry": false,
+    "393Emitted": false
+  },
+  "closureInputsRehashed": 1072,
+  "sourceChecks": 12,
+  "nativeSemanticNoEmit": 0,
+  "review": "Typed explicitJSON marker preserves exact own-row==1 actualrole/GUC control, rejectszero/malformed/duplicate; no transactional command-tag authority. Allphase2\u20137bytes exact; bothSQL andmanifest unchanged. Originalpureadmission obligations retained, oldclosedgrant cannot qualify newbytes.",
+  "previousAttempt": "d487018486d2 stopped before393 on harnesscountparser;321migrations/schema200/install201/editor200/fullprofiles retained, cleanupempty. Not393behaviorfailure orpass.",
+  "lease": "One fresh officialgateway-db/defaultLATEST392/noceiling/jobs1/no-reap/prepared2/600s withrequire_escalated. Stoponactualfailure;no automaticrepair/retry/emission.",
+  "currentFixturesUntouched": true,
+  "countCapabilitySourceFreeze": "No1072closurefileedits until thisnewnative closes; Circuitproposal only."
+}

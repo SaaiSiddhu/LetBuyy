@@ -1,0 +1,889 @@
+--- a/scripts/governance/owned-database-provision.mjs
++++ b/scripts/governance/owned-database-provision.mjs
+@@ -15,11 +15,220 @@
+ // CREATE DATABASE ... TEMPLATE copies the catalogs and data but not `ALTER DATABASE ... SET` settings, so the
+ // bootstrap's search_path (which puts `extensions` on it, as Supabase does) is re-applied to every clone.
+ 
+-import { readFileSync, readdirSync } from 'node:fs';
++import { readFileSync, readdirSync, openSync, closeSync, fstatSync, lstatSync, realpathSync, constants, mkdirSync, writeFileSync, writeSync } from 'node:fs';
+ import { createHash } from 'node:crypto';
+-import { join } from 'node:path';
++import { spawn } from 'node:child_process';
++import { join, dirname, resolve, isAbsolute } from 'node:path';
+ import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
+-import { RUN_ID_PATTERN, dockerAsync } from './executable-pg-fixture.mjs';
++import { RUN_ID_PATTERN, dockerAsync, inspectContainer, DEFAULT_IMAGE, DEFAULT_REST_IMAGE, FIXTURE_LABEL, OWNER_PID_LABEL, RUN_ID_LABEL, ROLE_LABEL } from './executable-pg-fixture.mjs';
++
++export const PRESERVED_THEME_SUITE = 'tests/owned-db/theme-completion-razorpay-browser.manual.ts';
++export const PRESERVED_RUNTIME07 = Object.freeze({ fixtureId:'49ada80bc494', siteId:'02049de4-41c3-4b10-b5b2-a60a6b5e82bf', locationId:'6e4baabc-b0c7-46ce-8be0-98395d9ef30c', subdomain:'syn-threadline-ui-ae3f0477',
++    cookieDomain:'threadline-49ada80bc494.localhost', identityOrigin:'http://accounts.threadline-49ada80bc494.localhost:64593', merchantOrigin:'http://admin.threadline-49ada80bc494.localhost:64594',
++    commerceOrigin:'http://syn-threadline-ui-ae3f0477.localhost:64595', checkoutOrigin:'https://checkout.localhost:64597', apiOrigin:'http://127.0.0.1:64598', receiverOrigin:'http://127.0.0.1:65314',
++    ports:Object.freeze({identity:64593,merchant:64594,commerce:64595,checkout:64597,api:64598,receiver:65314}) });
++const archiveRoots = ['/private/tmp/letbuyy-runtime07-backups','/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07'];
++const digest = bytes => createHash('sha256').update(bytes).digest('hex');
++const check = (value, code) => { if (!value) throw new Error(`preserved fixture refused [${code}]`); };
++const hash = value => typeof value==='string' && /^[a-f0-9]{64}$/.test(value);
++const uuid = value => typeof value==='string' && /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value);
++const same = (a,b) => JSON.stringify(a)===JSON.stringify(b);
++const plain = value => value && typeof value==='object' && !Array.isArray(value) && Object.getPrototypeOf(value)===Object.prototype;
++const exact = (value, keys, code) => check(plain(value)&&Object.keys(value).length===keys.length&&keys.every(k=>Object.hasOwn(value,k)),code);
++export function parsePreservedJson(bytes) { try{return JSON.parse(bytes.toString('utf8'));}catch{throw new Error('preserved fixture refused [PRIVATE_JSON]');} }
++
++/** No-follow, descriptor-bound private bytes. Generic helper is tested using synthetic temporary files only. */
++export function readPreservedPrivateFile(path, { maxBytes=262144, expectedSha256, uid=process.getuid(), privateParent=true }={}) {
++    check(typeof path==='string'&&isAbsolute(path)&&!path.includes('\0')&&realpathSync(dirname(path))===dirname(path),'PRIVATE_PATH');
++    const parent=lstatSync(dirname(path)); check(parent.isDirectory()&&!parent.isSymbolicLink()&&parent.uid===uid&&(!privateParent||(parent.mode&0o777)===0o700),'PRIVATE_PARENT');
++    const fd=openSync(path,constants.O_RDONLY|constants.O_NOFOLLOW);
++    try {
++        const before=fstatSync(fd);check(before.isFile()&&before.uid===uid&&(before.mode&0o777)===0o600&&before.nlink===1&&before.size>0&&before.size<=maxBytes,'PRIVATE_FILE');
++        const bytes=readFileSync(fd),after=fstatSync(fd),named=lstatSync(path);
++        check(before.dev===after.dev&&before.ino===after.ino&&before.size===after.size&&before.mtimeMs===after.mtimeMs&&!named.isSymbolicLink()&&named.ino===after.ino&&named.dev===after.dev,'PRIVATE_CHANGED');
++        if(expectedSha256!==undefined)check(hash(expectedSha256)&&digest(bytes)===expectedSha256,'PRIVATE_DIGEST');
++        return bytes;
++    } finally { closeSync(fd); }
++}
++
++/** Pure fixed QA scope. This is tooling metadata, not another identity or business-data authority. */
++export function validatePreservedCapsule(c, expected) {
++    exact(c,['version','kind','expiresAt','source','sourceBundle','archive','fence','application','origins','roles','witness','qa','tls','provider'],'CAPSULE_FIELDS');
++    check(c.version===1&&c.kind==='preserved-runtime07'&&Date.parse(c.expiresAt)>expected.now,'CAPSULE_EXPIRY');
++    check(expected.suitePath===PRESERVED_THEME_SUITE&&expected.noReap===true&&expected.jobs===1,'ENTRY_SCOPE');
++    exact(c.source,['resourceRunId','runnerPid','container','database','volume','postgresImage','restImage','imageId','roleProfileSha256'],'SOURCE_FIELDS');
++    check(c.source.resourceRunId===PRESERVED_RUNTIME07.fixtureId&&c.source.runnerPid===54685&&c.source.container==='letbuyy-exec-54685-mvmssydy-fe81e9'&&c.source.database==='letbuyy_exec_theme_completion_razorpay_browser_manual_ts'&&c.source.volume==='letbuyy-exec-49ada80bc494-1-data','SOURCE_BINDING');
++    check(c.source.postgresImage===DEFAULT_IMAGE&&c.source.restImage===DEFAULT_REST_IMAGE&&/^sha256:[a-f0-9]{64}$/.test(c.source.imageId),'IMAGE_BINDING');
++    exact(c.sourceBundle,['root','manifestPath','manifestSha256'],'SOURCE_BUNDLE');
++    check(c.sourceBundle.root===expected.repoRoot&&c.sourceBundle.root.startsWith('/private/tmp/letbuyy-')&&hash(c.sourceBundle.manifestSha256)&&typeof c.sourceBundle.manifestPath==='string'&&resolve(c.sourceBundle.manifestPath).startsWith(c.sourceBundle.root+'/'),'SOURCE_ROOT');
++    exact(c.archive,['path','bytes','sha256','format'],'ARCHIVE_FIELDS');
++    check(c.archive.format==='custom'&&hash(c.archive.sha256)&&Number.isSafeInteger(c.archive.bytes)&&c.archive.bytes>5&&c.archive.bytes<=512*1024*1024&&archiveRoots.some(root=>dirname(c.archive.path)===root)&&/^[A-Za-z0-9._-]+\.dump$/.test(c.archive.path.split('/').at(-1)),'ARCHIVE_BINDING');
++    exact(c.fence,['final','editorReturned','leaseId','snapshotAt','lastAcceptedAt','receiptPath','receiptSha256','witnessSha256'],'FENCE_FIELDS');
++    check(c.fence.final===true&&c.fence.editorReturned===true&&typeof c.fence.leaseId==='string'&&c.fence.leaseId.length>=12&&Date.parse(c.fence.lastAcceptedAt)<=Date.parse(c.fence.snapshotAt)&&Date.parse(c.fence.snapshotAt)<=expected.now&&hash(c.fence.receiptSha256)&&hash(c.fence.witnessSha256),'FINAL_FENCE_REQUIRED');
++    exact(c.application,['fixtureId','site','ownerId','email','password','products','collections','editorCatalog'],'APPLICATION_FIELDS');
++    check(c.application.fixtureId===PRESERVED_RUNTIME07.fixtureId&&plain(c.application.site)&&c.application.site.siteId===PRESERVED_RUNTIME07.siteId&&c.application.site.subdomain===PRESERVED_RUNTIME07.subdomain&&c.application.site.locationId===PRESERVED_RUNTIME07.locationId&&c.application.site.tag==='threadline-ui'&&uuid(c.application.ownerId),'SITE_BINDING');
++    check(/^syn-threadline-[a-f0-9-]+@example\.invalid$/.test(c.application.email)&&typeof c.application.password==='string'&&c.application.password.length>=12,'PERSISTENT_ACCOUNT');
++    for(const ids of [c.application.products,c.application.collections])check(Array.isArray(ids)&&ids.length>0&&ids.length<=1000&&ids.every(uuid)&&new Set(ids).size===ids.length,'ENTITY_IDS');
++    check(same(c.origins,{identityOrigin:PRESERVED_RUNTIME07.identityOrigin,merchantOrigin:PRESERVED_RUNTIME07.merchantOrigin,commerceOrigin:PRESERVED_RUNTIME07.commerceOrigin,checkoutOrigin:PRESERVED_RUNTIME07.checkoutOrigin,apiOrigin:PRESERVED_RUNTIME07.apiOrigin,receiverOrigin:PRESERVED_RUNTIME07.receiverOrigin,cookieDomain:PRESERVED_RUNTIME07.cookieDomain,ports:PRESERVED_RUNTIME07.ports}),'ORIGIN_PORT_SCOPE');
++    exact(c.roles,['definitions','memberships'],'ROLE_FIELDS');check(Array.isArray(c.roles.definitions)&&Array.isArray(c.roles.memberships)&&c.roles.definitions.length<=200&&c.roles.memberships.length<=400,'ROLE_LIMIT');
++    check(hash(c.source.roleProfileSha256)&&digest(JSON.stringify(c.roles))===c.source.roleProfileSha256,'ROLE_PROFILE');
++    const names=new Set();
++    for(const r of c.roles.definitions){exact(r,['name','login','superuser','inherit','createRole','createDb','replication','bypassRls','connectionLimit','passwordHash','validUntil','settings'],'ROLE_DEFINITION');check(/^[a-z_][a-z0-9_]{0,62}$/.test(r.name)&&!names.has(r.name),'ROLE_NAME');names.add(r.name);for(const k of ['login','superuser','inherit','createRole','createDb','replication','bypassRls'])check(typeof r[k]==='boolean','ROLE_ATTRIBUTE');check(!r.superuser||['postgres','supabase_admin'].includes(r.name),'ROLE_SUPERUSER');check(Number.isSafeInteger(r.connectionLimit)&&r.connectionLimit>=-1&&Array.isArray(r.settings),'ROLE_ATTRIBUTE');check(r.passwordHash===null||/^md5[a-f0-9]{32}$/.test(r.passwordHash)||/^SCRAM-SHA-256\$[A-Za-z0-9+/=$:.-]{20,512}$/.test(r.passwordHash),'ROLE_PASSWORD_FORMAT');check(r.validUntil===null||typeof r.validUntil==='string'&&(Number.isFinite(Date.parse(r.validUntil))||['infinity','-infinity'].includes(r.validUntil)),'ROLE_VALID_UNTIL');for(const setting of r.settings)check(/^(search_path|statement_timeout|lock_timeout|idle_in_transaction_session_timeout|TimeZone)=.{1,300}$/.test(setting),'ROLE_SETTING');}
++    check(['postgres','anon','authenticated','service_role','authenticator','app_tenant','supabase_admin'].every(name=>names.has(name)),'CANONICAL_ROLES_REQUIRED');
++    for(const m of c.roles.memberships){exact(m,['role','member','grantor','admin','inherit','set'],'MEMBERSHIP');check(names.has(m.role)&&names.has(m.member)&&names.has(m.grantor)&&['admin','inherit','set'].every(k=>typeof m[k]==='boolean'),'MEMBERSHIP');}
++    exact(c.witness,['path','sha256','dataSha256','profileSha256','sequenceSha256','acceptedOrderIds'],'WITNESS_FIELDS');check(['sha256','dataSha256','profileSha256','sequenceSha256'].every(k=>hash(c.witness[k]))&&c.witness.sha256===c.fence.witnessSha256&&Array.isArray(c.witness.acceptedOrderIds)&&c.witness.acceptedOrderIds.length>=7&&c.witness.acceptedOrderIds.every(uuid)&&new Set(c.witness.acceptedOrderIds).size===c.witness.acceptedOrderIds.length,'WITNESS_REQUIRED');
++    exact(c.qa,['mode','oldSessionsPreserved','allowIssuerAndCookieRefresh','allowCheckoutRefresh','pendingIntentsReconciled','pendingIntentWitnessSha256','retainedBinding'],'QA_FIELDS');
++    check(['retained','refresh'].includes(c.qa.mode)&&typeof c.qa.oldSessionsPreserved==='boolean','QA_MODE');
++    if(c.qa.mode==='refresh')check(c.qa.oldSessionsPreserved===false&&c.qa.allowIssuerAndCookieRefresh===true&&c.qa.allowCheckoutRefresh===true&&c.qa.pendingIntentsReconciled===true&&hash(c.qa.pendingIntentWitnessSha256),'EXPLICIT_QA_REFRESH');
++    else check(plain(c.qa.retainedBinding)&&hash(c.qa.retainedBinding.sha256)&&typeof c.qa.retainedBinding.path==='string'&&archiveRoots.some(root=>dirname(c.qa.retainedBinding.path)===root),'RETAINED_BINDING_REQUIRED');
++    for(const [value,keys]of [[c.tls,['certPath','certSha256','keyPath','keySha256']],[c.provider,['csvPath','csvSha256','webhookSecretPath','webhookSecretSha256']]]){exact(value,keys,'PRIVATE_REFERENCE_FIELDS');for(const key of keys)check(key.endsWith('Sha256')?hash(value[key]):typeof value[key]==='string'&&isAbsolute(value[key]),'PRIVATE_REFERENCE');}
++    return c;
++}
++
++export function loadPreservedCapsule(path, sha256, expected, { readPrivate=readPreservedPrivateFile }={}) {
++    check(hash(sha256)&&archiveRoots.some(root=>dirname(path)===root),'CAPSULE_PATH');
++    const c=validatePreservedCapsule(parsePreservedJson(readPrivate(path,{expectedSha256:sha256})),expected);
++    check(realpathSync(c.sourceBundle.manifestPath).startsWith(realpathSync(expected.repoRoot)+'/'),'SOURCE_MANIFEST_PATH');
++    const sourceBytes=readFileSync(c.sourceBundle.manifestPath);check(digest(sourceBytes)===c.sourceBundle.manifestSha256,'SOURCE_MANIFEST_DIGEST');
++    const source=parsePreservedJson(sourceBytes);check(Array.isArray(source.files)&&source.files.length>0,'SOURCE_MANIFEST_FORMAT');
++    for(const file of source.files){check(typeof file.path==='string'&&!isAbsolute(file.path)&&!file.path.split('/').includes('..')&&!file.path.includes('node_modules')&&!file.path.split('/').some(p=>p.includes('.env')||p.includes('.dev.vars'))&&hash(file.sha256),'SOURCE_FILE_PATH');const absolute=resolve(expected.repoRoot,file.path);check(realpathSync(absolute).startsWith(realpathSync(expected.repoRoot)+'/')&&digest(readFileSync(absolute))===file.sha256,'SOURCE_FILE_DIGEST');}
++    for(const path of [c.fence.receiptPath,c.witness.path,c.tls.certPath,c.tls.keyPath,c.provider.csvPath,c.provider.webhookSecretPath])check(typeof path==='string'&&archiveRoots.some(root=>dirname(path)===root),'PRIVATE_REFERENCE_SCOPE');
++    const fence=parsePreservedJson(readPrivate(c.fence.receiptPath,{expectedSha256:c.fence.receiptSha256}));
++    check(fence.status==='FINAL_EDITOR_WRITE_FENCE'&&fence.leaseId===c.fence.leaseId&&fence.latestAcceptedAt===c.fence.lastAcceptedAt&&fence.archiveSha256===c.archive.sha256&&fence.witnessSha256===c.witness.sha256&&fence.applicationFixtureId===c.application.fixtureId&&fence.noLaterAcceptedWork===true&&fence.databaseWriteFenceConfirmed===true&&fence.providerCallbacksSettled===true,'STALE_FENCE');
++    const witnessBytes=readPrivate(c.witness.path,{expectedSha256:c.witness.sha256});const witness=parsePreservedJson(witnessBytes);
++    check(witness.dataSha256===c.witness.dataSha256&&witness.profileSha256===c.witness.profileSha256&&witness.sequenceSha256===c.witness.sequenceSha256&&same(witness.acceptedOrderIds,c.witness.acceptedOrderIds),'WITNESS_BINDING');
++    if(c.qa.mode==='refresh')check(witness.pendingIntentsReconciled===true&&witness.pendingIntentWitnessSha256===c.qa.pendingIntentWitnessSha256,'PENDING_INTENT_WITNESS');
++    const archive=readPrivate(c.archive.path,{maxBytes:512*1024*1024,expectedSha256:c.archive.sha256});check(archive.length===c.archive.bytes&&archive.subarray(0,5).toString()==='PGDMP','ARCHIVE_FORMAT');
++    return Object.freeze({capsule:c,capsuleSha256:sha256,archive});
++}
++
++export function validatePreservedTarget(cluster, database, saved, inspected, runnerPid=process.pid) {
++    const c=saved.capsule;check(RUN_ID_PATTERN.test(cluster.runId)&&cluster.runId!==c.source.resourceRunId&&cluster.containerStarted&&cluster.networkCreated&&cluster.volumeCreated&&cluster.name!==c.source.container&&cluster.volume!==c.source.volume&&database==='letbuyy_exec_theme_completion_razorpay_browser_manual_ts','NEW_EMPTY_TARGET_ONLY');
++    const labels=inspected?.Config?.Labels;check(inspected?.State?.Running===true&&inspected.Config.Image===c.source.postgresImage&&inspected.Image===c.source.imageId&&labels?.[FIXTURE_LABEL]==='1'&&labels[RUN_ID_LABEL]===cluster.runId&&labels[OWNER_PID_LABEL]===String(runnerPid)&&labels[ROLE_LABEL]==='postgres','TARGET_OWNERSHIP');
++    check(!inspected.HostConfig?.Privileged&&inspected.HostConfig?.NetworkMode!=='host'&&!inspected.HostConfig?.Binds?.length&&!Object.keys(inspected.NetworkSettings?.Ports??{}).some(k=>inspected.NetworkSettings.Ports[k]?.length)&&same(Object.keys(inspected.NetworkSettings?.Networks??{}),[cluster.network]),'TARGET_NETWORK');
++    check(inspected.Mounts?.length===1&&inspected.Mounts[0].Type==='volume'&&inspected.Mounts[0].Name===cluster.volume&&inspected.Mounts[0].Destination==='/var/lib/postgresql/data','TARGET_VOLUME');
++}
++
++const identifier = value => `"${value.replaceAll('"','""')}"`;
++const literal = value => `'${value.replaceAll("'","''")}'`;
++export function preservedRoleSql(saved, restPassword) {
++    check(/^[a-f0-9]{32,}$/.test(restPassword),'REST_PASSWORD');const statements=[];
++    for(const r of saved.capsule.roles.definitions){if(r.name.startsWith('pg_'))continue;const name=identifier(r.name);statements.push(`DO $role$ BEGIN IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname=${literal(r.name)})THEN CREATE ROLE ${name};END IF;END $role$;`);
++        const flags=[['LOGIN',r.login],['SUPERUSER',r.superuser],['INHERIT',r.inherit],['CREATEROLE',r.createRole],['CREATEDB',r.createDb],['REPLICATION',r.replication],['BYPASSRLS',r.bypassRls]].map(([name,yes])=>yes?name:'NO'+name).join(' ');
++        statements.push(`ALTER ROLE ${name} ${flags} CONNECTION LIMIT ${r.connectionLimit}${r.name==='authenticator'?` PASSWORD ${literal(restPassword)}`:r.passwordHash?` PASSWORD ${literal(r.passwordHash)}`:' PASSWORD NULL'}${r.validUntil?` VALID UNTIL ${literal(r.validUntil)}`:''};`);
++        for(const setting of r.settings){const at=setting.indexOf('=');statements.push(`ALTER ROLE ${name} SET ${identifier(setting.slice(0,at))} TO ${literal(setting.slice(at+1))};`);}}
++    for(const m of saved.capsule.roles.memberships)statements.push(`GRANT ${identifier(m.role)} TO ${identifier(m.member)} WITH ADMIN ${m.admin?'TRUE':'FALSE'}, INHERIT ${m.inherit?'TRUE':'FALSE'}, SET ${m.set?'TRUE':'FALSE'} GRANTED BY ${identifier(m.grantor)};`);
++    return statements.join('\n');
++}
++
++/** Only called by the ordinary fresh-owned runner after explicit fixed-suite admission. No adoption or bootstrap replay. */
++export async function createPreservedSuiteDatabase(cluster,database,runId,saved) {
++    check(runId===cluster.runId,'RESOURCE_RUN');validatePreservedTarget(cluster,database,saved,inspectContainer(cluster.name));
++    await preservedQuery(cluster,'postgres',`CREATE DATABASE ${identifier(database)} TEMPLATE template0;`,'creating new preserved database');cluster.preservedDatabaseCreated=database;cluster.preservedSafetyRequired=true;
++    const empty=await preservedQuery(cluster,database,`SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname<>'information_schema';`,'verifying empty restore target');check(empty.trim()==='0','TARGET_NOT_EMPTY');
++    await preservedQuery(cluster,'postgres',preservedRoleSql(saved,cluster.restPassword),'restoring admitted role definitions');
++    await preservedQuery(cluster,database,'DROP SCHEMA IF EXISTS public;','removing only empty default schema');
++    validatePreservedTarget(cluster,database,saved,inspectContainer(cluster.name));
++    const restored=await dockerAsync(['exec','-i',cluster.name,'pg_restore','-U','postgres','-d',database,'--exit-on-error','--single-transaction'],{input:saved.archive,allowFailure:true});check(restored.status===0,'RESTORE_FAILED');
++    await preservedQuery(cluster,'postgres',`ALTER DATABASE ${identifier(database)} SET search_path=public,extensions;ALTER DATABASE ${identifier(database)} SET letbuyy.fixture_run_id=${literal(runId)};`,'binding new tool marker');
++    const witness=await measurePreservedDatabase(sql=>preservedQuery(cluster,database,sql,'verifying restored protected state'));
++    check(witness.dataSha256===saved.capsule.witness.dataSha256&&witness.profileSha256===saved.capsule.witness.profileSha256&&witness.sequenceSha256===saved.capsule.witness.sequenceSha256&&same(witness.acceptedOrderIds,saved.capsule.witness.acceptedOrderIds),'RESTORE_PARITY_FAILED');
++    cluster.migrationEvidence={classification:'RESTORED_SOURCE_PROFILE',throughMigration:null,applied:[],archiveSha256:saved.capsule.archive.sha256,originalApplicationFixtureId:saved.capsule.application.fixtureId,newResourceRunId:runId};
++    return cluster.migrationEvidence;
++}
++
++async function preservedQuery(cluster,database,sql,what) {
++    const result=await dockerAsync(['exec','-i',cluster.name,'psql','-U','postgres','-d',database,'-v','ON_ERROR_STOP=1','-q','-A','-t'],{input:sql,allowFailure:true});
++    check(result.status===0,'PROTECTED_QUERY_FAILED');return result.stdout;
++}
++
++/** Same deterministic witness is captured at final fence and on the fresh clone. No row/secret values leave SQL. */
++export async function measurePreservedDatabase(query) {
++    const list=parsePreservedJson(Buffer.from(await query(`SELECT coalesce(jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'kind',c.relkind) ORDER BY n.nspname,c.relname),'[]') FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture') AND c.relkind IN('r','p','m','S','f');`)));
++    check(Array.isArray(list)&&list.length>100&&list.every(r=>r.kind!=='f'),'COMPLETE_DATA_WITNESS');
++    const statements=list.map(r=>`SELECT jsonb_build_object('relation',${literal(r.schema+'.'+r.name)},'count',count(*),'digest',encode(sha256(convert_to(coalesce(string_agg(encode(sha256(convert_to(to_jsonb(t)::text,'UTF8')),'hex'),'' ORDER BY encode(sha256(convert_to(to_jsonb(t)::text,'UTF8')),'hex')),''),'UTF8')),'hex')) value FROM ${identifier(r.schema)}.${identifier(r.name)} t`);
++    const data=await query(`SELECT coalesce(jsonb_agg(value ORDER BY value->>'relation'),'[]') FROM (${statements.filter((_,i)=>list[i].kind!=='S').join(' UNION ALL ')}) all_rows;`);
++    const sequences=list.filter(r=>r.kind==='S').map(r=>`SELECT jsonb_build_object('sequence',${literal(r.schema+'.'+r.name)},'value',to_jsonb(s)) value FROM ${identifier(r.schema)}.${identifier(r.name)} s`);
++    const sequence=sequences.length?await query(`SELECT jsonb_agg(value ORDER BY value->>'sequence') FROM (${sequences.join(' UNION ALL ')}) all_sequences;`):'[]';
++    const largeObjects=await query(`SELECT coalesce(jsonb_agg(jsonb_build_object('oid',m.oid,'owner',pg_get_userbyid(m.lomowner),'acl',m.lomacl::text,'pages',(SELECT encode(sha256(convert_to(coalesce(string_agg(p.pageno::text||encode(sha256(p.data),'hex'),'' ORDER BY p.pageno),''),'UTF8')),'hex') FROM pg_largeobject p WHERE p.loid=m.oid)) ORDER BY m.oid),'[]') FROM pg_largeobject_metadata m;`);
++    const profile=await query(`SELECT jsonb_build_object(
++      'schemas',(SELECT jsonb_agg(jsonb_build_object('name',nspname,'owner',pg_get_userbyid(nspowner),'acl',nspacl::text) ORDER BY nspname) FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname NOT IN('information_schema','letbuyy_fixture')),
++      'views',(SELECT jsonb_agg(jsonb_build_object('name',n.nspname||'.'||c.relname,'definition',pg_get_viewdef(c.oid,true)) ORDER BY n.nspname,c.relname) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN('v','m') AND n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture')),
++      'types',(SELECT jsonb_agg(jsonb_build_object('name',n.nspname||'.'||t.typname,'kind',t.typtype,'owner',pg_get_userbyid(t.typowner),'acl',t.typacl::text,'base',format_type(t.typbasetype,t.typtypmod),'notnull',t.typnotnull,'default',t.typdefault,'enum',(SELECT jsonb_agg(enumlabel ORDER BY enumsortorder) FROM pg_enum WHERE enumtypid=t.oid)) ORDER BY n.nspname,t.typname) FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture')),
++      'extensions',(SELECT jsonb_agg(jsonb_build_object('name',extname,'version',extversion,'schema',extnamespace::regnamespace::text,'owner',pg_get_userbyid(extowner)) ORDER BY extname) FROM pg_extension),
++      'database',(SELECT jsonb_build_object('owner',pg_get_userbyid(datdba),'encoding',pg_encoding_to_char(encoding),'collation',datcollate,'ctype',datctype,'acl',datacl::text) FROM pg_database WHERE datname=current_database()),
++      'functions',(SELECT jsonb_agg(jsonb_build_object('name',n.nspname||'.'||p.proname,'args',pg_get_function_identity_arguments(p.oid),'definition',pg_get_functiondef(p.oid),'owner',pg_get_userbyid(p.proowner),'acl',p.proacl::text) ORDER BY n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture') AND p.prokind IN('f','p','w')),
++      'relations',(SELECT jsonb_agg(jsonb_build_object('name',n.nspname||'.'||c.relname,'kind',c.relkind,'owner',pg_get_userbyid(c.relowner),'acl',c.relacl::text,'rls',c.relrowsecurity,'force',c.relforcerowsecurity,'options',c.reloptions,'columns',(SELECT jsonb_agg(jsonb_build_object('name',a.attname,'type',format_type(a.atttypid,a.atttypmod),'notnull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'acl',a.attacl::text,'default',pg_get_expr(d.adbin,d.adrelid)) ORDER BY a.attnum) FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum WHERE a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped)) ORDER BY n.nspname,c.relname) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture')),
++      'constraints',(SELECT jsonb_agg(jsonb_build_object('relation',c.conrelid::regclass::text,'name',c.conname,'definition',pg_get_constraintdef(c.oid)) ORDER BY c.conrelid::regclass::text,c.conname) FROM pg_constraint c JOIN pg_namespace n ON n.oid=c.connamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture')),
++      'triggers',(SELECT jsonb_agg(jsonb_build_object('relation',t.tgrelid::regclass::text,'name',t.tgname,'enabled',t.tgenabled,'definition',pg_get_triggerdef(t.oid)) ORDER BY t.tgrelid::regclass::text,t.tgname) FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture')),
++      'policies',(SELECT jsonb_agg(jsonb_build_object('relation',p.polrelid::regclass::text,'name',p.polname,'command',p.polcmd,'permissive',p.polpermissive,'roles',(SELECT jsonb_agg(CASE WHEN r=0 THEN 'PUBLIC' ELSE pg_get_userbyid(r) END ORDER BY CASE WHEN r=0 THEN 'PUBLIC' ELSE pg_get_userbyid(r) END) FROM unnest(p.polroles)r),'using',pg_get_expr(p.polqual,p.polrelid),'check',pg_get_expr(p.polwithcheck,p.polrelid)) ORDER BY p.polrelid::regclass::text,p.polname) FROM pg_policy p),
++      'indexes',(SELECT jsonb_agg(pg_get_indexdef(i.indexrelid) ORDER BY i.indexrelid::regclass::text) FROM pg_index i JOIN pg_class c ON c.oid=i.indrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN('information_schema','letbuyy_fixture')),
++      'roles',(SELECT jsonb_agg(jsonb_build_object('name',rolname,'super',rolsuper,'login',rolcanlogin,'inherit',rolinherit,'createrole',rolcreaterole,'createdb',rolcreatedb,'replication',rolreplication,'bypass',rolbypassrls,'limit',rolconnlimit,'validUntil',rolvaliduntil,'settings',rolconfig,'passwordHash',CASE WHEN rolname='authenticator' THEN 'NEW_TOOL_TRANSPORT' ELSE encode(sha256(convert_to(coalesce(rolpassword,''),'UTF8')),'hex') END) ORDER BY rolname) FROM pg_authid),
++      'memberships',(SELECT jsonb_agg(jsonb_build_object('role',pg_get_userbyid(roleid),'member',pg_get_userbyid(member),'grantor',pg_get_userbyid(grantor),'admin',admin_option,'inherit',inherit_option,'set',set_option) ORDER BY pg_get_userbyid(roleid),pg_get_userbyid(member),pg_get_userbyid(grantor)) FROM pg_auth_members),
++      'defaults',(SELECT jsonb_agg(jsonb_build_object('role',pg_get_userbyid(defaclrole),'schema',CASE WHEN defaclnamespace=0 THEN '' ELSE defaclnamespace::regnamespace::text END,'type',defaclobjtype,'acl',defaclacl::text) ORDER BY pg_get_userbyid(defaclrole),defaclnamespace::regnamespace::text,defaclobjtype) FROM pg_default_acl));`);
++    const ids=parsePreservedJson(Buffer.from(await query(`SELECT coalesce(jsonb_agg(id::text ORDER BY id),'[]') FROM public.orders WHERE store_id='${PRESERVED_RUNTIME07.siteId}';`)));
++    return {dataSha256:digest(data.trim()+'\n'+largeObjects.trim()),profileSha256:digest(profile.trim()),sequenceSha256:digest(sequence.trim()),acceptedOrderIds:ids};
++}
++
++/** Cluster-global roles are outside pg_dump; raw password hashes stay in private files only. */
++export async function capturePreservedRoleProfile(query) {
++    return parsePreservedJson(Buffer.from(await query(`SELECT jsonb_build_object(
++      'definitions',(SELECT jsonb_agg(jsonb_build_object('name',rolname,'login',rolcanlogin,'superuser',rolsuper,'inherit',rolinherit,'createRole',rolcreaterole,'createDb',rolcreatedb,'replication',rolreplication,'bypassRls',rolbypassrls,'connectionLimit',rolconnlimit,'passwordHash',rolpassword,'validUntil',rolvaliduntil,'settings',coalesce(to_jsonb(rolconfig),'[]')) ORDER BY rolname) FROM pg_authid),
++      'memberships',(SELECT coalesce(jsonb_agg(jsonb_build_object('role',pg_get_userbyid(roleid),'member',pg_get_userbyid(member),'grantor',pg_get_userbyid(grantor),'admin',admin_option,'inherit',inherit_option,'set',set_option) ORDER BY pg_get_userbyid(roleid),pg_get_userbyid(member),pg_get_userbyid(grantor)),'[]') FROM pg_auth_members));`)));
++}
++
++const checkpointPromises=new WeakMap();
++/** Stop-time safety archive before any restored database/volume cleanup; never an automatic new restore admission. */
++export function checkpointPreservedDatabase(cluster,database,saved) {
++    if(checkpointPromises.has(cluster))return checkpointPromises.get(cluster);
++    const promise=(async()=>{
++        validatePreservedTarget(cluster,database,saved,inspectContainer(cluster.name));
++        const directory=archiveRoots[1];const stat=lstatSync(directory);check(stat.isDirectory()&&!stat.isSymbolicLink()&&stat.uid===process.getuid()&&(stat.mode&0o777)===0o700,'CHECKPOINT_DIRECTORY');
++        const roles=await capturePreservedRoleProfile(sql=>preservedQuery(cluster,database,sql,'checkpoint roles'));
++        const before=await measurePreservedDatabase(sql=>preservedQuery(cluster,database,sql,'checkpoint pre-witness'));
++        const path=join(directory,`preserved-${cluster.runId}-exit.dump`),fd=openSync(path,constants.O_CREAT|constants.O_EXCL|constants.O_WRONLY|constants.O_NOFOLLOW,0o600);let bytes=0;
++        try {
++            const code=await new Promise((done,reject)=>{const child=spawn('docker',['exec',cluster.name,'pg_dump','-U','postgres','-Fc',database],{stdio:['ignore','pipe','pipe']});let failure;const timer=setTimeout(()=>{failure=new Error('preserved fixture refused [CHECKPOINT_TIMEOUT]');child.kill('SIGKILL');},120000);child.stdout.on('data',chunk=>{try{bytes+=chunk.length;check(bytes<=512*1024*1024,'CHECKPOINT_LIMIT');let offset=0;while(offset<chunk.length)offset+=writeSync(fd,chunk,offset,chunk.length-offset);}catch(error){failure=error;child.kill('SIGKILL');}});child.stderr.resume();child.once('error',reject);child.once('close',status=>{clearTimeout(timer);if(failure)reject(failure);else done(status);});});check(code===0,'CHECKPOINT_FAILED');
++        }finally{closeSync(fd);}
++        const archive=readPreservedPrivateFile(path,{maxBytes:512*1024*1024});check(archive.subarray(0,5).toString()==='PGDMP','CHECKPOINT_FORMAT');
++        const validated=await dockerAsync(['exec','-i',cluster.name,'pg_restore','--file=/dev/null'],{input:archive,allowFailure:true});check(validated.status===0,'CHECKPOINT_FULL_READ');
++        const witness=await measurePreservedDatabase(sql=>preservedQuery(cluster,database,sql,'checkpoint witness'));
++        check(same(before,witness),'CHECKPOINT_WRITES_NOT_FENCED');
++        const rolesPath=path+'.roles.json',rolesBytes=Buffer.from(JSON.stringify(roles));writeFileSync(rolesPath,rolesBytes,{flag:'wx',mode:0o600});readPreservedPrivateFile(rolesPath,{expectedSha256:digest(rolesBytes)});
++        const receipt={rolesPath,rolesSha256:digest(rolesBytes),status:'EXIT_SAFETY_ARCHIVE_FULL_READ_NOT_NEW_RESTORE_ADMISSION',resourceRunId:cluster.runId,applicationFixtureId:saved.capsule.application.fixtureId,path,bytes:archive.length,sha256:digest(archive),witness,sourceCapsuleSha256:saved.capsuleSha256};writeFileSync(path+'.json',JSON.stringify(receipt),{flag:'wx',mode:0o600});cluster.preservedSafeToCleanup=true;return receipt;
++    })();checkpointPromises.set(cluster,promise);return promise;
++}
++
++/** New private binding file only, never an old state-file overwrite or a claim that refreshed QA sessions survive. */
++export function writePreservedBinding(runId,value) {
++    check(RUN_ID_PATTERN.test(runId)&&plain(value),'BINDING_SCOPE');validatePreservedBinding(value,{runId,capsuleSha256:value.capsuleSha256});const directory=`/private/tmp/letbuyy-preserved-runtime07-${runId}`;
++    try{mkdirSync(directory,{mode:0o700});}catch(error){if(error.code!=='EEXIST')throw error;}
++    const stat=lstatSync(directory);check(stat.isDirectory()&&!stat.isSymbolicLink()&&stat.uid===process.getuid()&&(stat.mode&0o777)===0o700,'BINDING_DIRECTORY');
++    const path=join(directory,'bindings.json');const bytes=Buffer.from(JSON.stringify(value));writeFileSync(path,bytes,{flag:'wx',mode:0o600});return{path,sha256:digest(bytes)};
++}
++
++export function validatePreservedBinding(value,{runId,capsuleSha256,retained=false}) {
++    exact(value,['version','kind','resourceRunId','applicationFixtureId','issuer','cookieDomain','capsuleSha256','identityPrivateJwk','publicJwks','cookieSecret','checkoutSigningSecret','oldSessionsPreserved'],'BINDING_FIELDS');
++    check(value.version===1&&value.kind==='preserved-runtime07-bindings'&&RUN_ID_PATTERN.test(value.resourceRunId)&&value.applicationFixtureId===PRESERVED_RUNTIME07.fixtureId&&value.issuer===PRESERVED_RUNTIME07.identityOrigin&&value.cookieDomain===PRESERVED_RUNTIME07.cookieDomain&&hash(value.capsuleSha256),'BINDING_SCOPE');
++    if(!retained)check(value.resourceRunId===runId&&value.capsuleSha256===capsuleSha256&&value.oldSessionsPreserved===false,'BINDING_RUN');
++    const key=value.identityPrivateJwk;check(plain(key)&&key.kty==='EC'&&key.crv==='P-256'&&key.alg==='ES256'&&['d','x','y'].every(k=>/^[A-Za-z0-9_-]{40,90}$/.test(key[k]||''))&&/^[A-Za-z0-9_-]{1,100}$/.test(key.kid||''),'BINDING_KEY');
++    check(typeof value.publicJwks==='string'&&value.publicJwks.length<=4096,'BINDING_PUBLIC_KEY');
++    const publicSet=parsePreservedJson(Buffer.from(value.publicJwks));check(Array.isArray(publicSet.keys)&&publicSet.keys.length===1&&!Object.hasOwn(publicSet.keys[0],'d')&&['x','y','kid','kty','crv'].every(k=>publicSet.keys[0][k]===key[k]),'BINDING_PUBLIC_KEY');
++    check([value.cookieSecret,value.checkoutSigningSecret].every(v=>typeof v==='string'&&v.length>=48&&v.length<=256),'BINDING_SECRET');return value;
++}
++export function readPreservedBinding(saved,runId) {
++    const retained=saved.capsule.qa.mode==='retained';const reference=retained?saved.capsule.qa.retainedBinding:{path:`/private/tmp/letbuyy-preserved-runtime07-${runId}/bindings.json`};
++    try {const bytes=readPreservedPrivateFile(reference.path,{expectedSha256:reference.sha256});return {value:validatePreservedBinding(parsePreservedJson(bytes),{runId,capsuleSha256:saved.capsuleSha256,retained}),path:reference.path,sha256:digest(bytes)};}
++    catch(error){if(!retained&&error.code==='ENOENT')return null;throw error;}
++}
++export function preservedCutoverPermitPath(runId) {check(RUN_ID_PATTERN.test(runId),'RESOURCE_RUN');return `/private/tmp/letbuyy-preserved-runtime07-${runId}/cutover.json`;}
++export function validatePreservedCutoverPermit(permit,saved,runId,binding,stages,now=Date.now()) {
++    exact(permit,['version','status','resourceRunId','applicationFixtureId','siteId','capsuleSha256','archiveSha256','sourceManifestSha256','fenceReceiptSha256','witnessSha256','bindingSha256','stages','oldListenersRetired','noLaterAcceptedWork','expiresAt'],'CUTOVER_FIELDS');const c=saved.capsule;
++    check(permit.version===1&&permit.status==='ROOT_APPROVED_PRESERVED_RUNTIME07_CUTOVER'&&permit.resourceRunId===runId&&permit.applicationFixtureId===c.application.fixtureId&&permit.siteId===c.application.site.siteId&&permit.capsuleSha256===saved.capsuleSha256&&permit.archiveSha256===c.archive.sha256&&permit.sourceManifestSha256===c.sourceBundle.manifestSha256&&permit.fenceReceiptSha256===c.fence.receiptSha256&&permit.witnessSha256===c.witness.sha256&&permit.bindingSha256===binding.sha256&&same(permit.stages,stages)&&permit.oldListenersRetired===true&&permit.noLaterAcceptedWork===true&&Date.parse(permit.expiresAt)>now&&Date.parse(permit.expiresAt)<=now+10*60_000,'CUTOVER_BINDING');return permit;
++}
++export function writePreservedProgress(runId,phase,value) {
++    check(RUN_ID_PATTERN.test(runId)&&['staged','serving'].includes(phase)&&plain(value),'PROGRESS_SCOPE');const directory=`/private/tmp/letbuyy-preserved-runtime07-${runId}`;const stat=lstatSync(directory);check(stat.isDirectory()&&!stat.isSymbolicLink()&&stat.uid===process.getuid()&&(stat.mode&0o777)===0o700,'PROGRESS_DIRECTORY');writeFileSync(join(directory,phase+'.json'),JSON.stringify({version:1,resourceRunId:runId,...value}),{mode:0o600,flag:'wx'});
++}
+ 
+ export const GATEWAY_TEMPLATE_DATABASE = 'letbuyy_tpl_gateway';
+ 
+--- a/scripts/governance/run-executable-suites.mjs
++++ b/scripts/governance/run-executable-suites.mjs
+@@ -78,7 +78,7 @@
+     uniqueContainerName,
+     waitUntilAccepting,
+ } from './executable-pg-fixture.mjs';
+-import { buildGatewayTemplate, createSuiteDatabase, dropSuiteDatabase, parseMigrationCeiling } from './owned-database-provision.mjs';
++import { buildGatewayTemplate, createSuiteDatabase, dropSuiteDatabase, parseMigrationCeiling, loadPreservedCapsule, createPreservedSuiteDatabase, checkpointPreservedDatabase, PRESERVED_THEME_SUITE } from './owned-database-provision.mjs';
+ import { OWNED_FIXTURE_ENV, verifyOwnedFixture } from './owned-fixture-guard.mjs';
+ import { ownedDatabaseNameFor } from './owned-database-name.mjs';
+ import { startRestProxy } from './owned-rest-proxy.mjs';
+@@ -163,6 +163,7 @@
+ const cleanupOutcomes = [];
+ let restCounter = 0;
+ let shuttingDown = false;
++let preservedFixture = null;
+ // Whether `docker info` answers. Without a daemon the only docker is the sandbox shim (see startCluster's `plain`).
+ let realDaemon = true;
+ 
+@@ -189,16 +190,25 @@
+     if (keepContainer) return;
+     // Only what this run demonstrably created is removed: each flag is set after its own create call succeeded.
+     for (const cluster of clusters) {
++        if (cluster.preservedSafetyRequired && !cluster.preservedSafeToCleanup) continue;
+         if (cluster.containerStarted) cleanupOutcomes.push(removeContainer(cluster.name));
+         if (cluster.networkCreated) cleanupOutcomes.push(removeNetwork(cluster.network));
+         if (cluster.volumeCreated) cleanupOutcomes.push(removeVolume(cluster.volume));
+     }
+ }
+ 
+-function shutdown(signal) {
++async function shutdown(signal) {
+     if (shuttingDown) return;
+     shuttingDown = true;
+     for (const child of running) killGroup(child, 'SIGKILL');
++    if(preservedFixture){
++    const until=Date.now()+5000;
++    while([...running].some(groupAlive)&&Date.now()<until)await new Promise(done=>setTimeout(done,50));
++    for(const cluster of clusters)if(cluster.preservedSafetyRequired&&!cluster.preservedSafeToCleanup){
++        try{if([...running].some(groupAlive))throw new Error('child process group still alive');await checkpointPreservedDatabase(cluster,cluster.preservedDatabaseCreated,preservedFixture);}
++        catch{warn('preserved runtime safety checkpoint failed; keep labelled resources, do not reap until an independently verified backup exists');}
++    }
++    }
+     for (const name of activeRest) removeContainer(name);
+     for (const proxy of activeProxies) proxy.close();
+     removeClusters();
+@@ -244,7 +254,7 @@
+ 
+ // A database suite is given its own endpoints and nothing else. Whatever the caller's shell carries that could name
+ // another database - a Supabase url or key, a connection string, libpq settings, an earlier run's variables - is dropped.
+-const INHERITED_DATABASE_SETTINGS = /^(SUPABASE_|DATABASE_URL$|POSTGRES_|PG(HOST|PORT|USER|PASSWORD|DATABASE|SERVICE|SSLMODE|OPTIONS)$|INTERNAL_API_SECRET$|LETBUYY_(LOCAL_SUPABASE|EXECUTABLE_PG_CONTAINER|EXECUTABLE_PG_DATABASE|EXECUTABLE_RUN_ID|EXECUTABLE_RUNNER_PID|OWNED_))/;
++const INHERITED_DATABASE_SETTINGS = /^(LETBUYY_PRESERVED_|SUPABASE_|DATABASE_URL$|POSTGRES_|PG(HOST|PORT|USER|PASSWORD|DATABASE|SERVICE|SSLMODE|OPTIONS)$|INTERNAL_API_SECRET$|LETBUYY_(LOCAL_SUPABASE|EXECUTABLE_PG_CONTAINER|EXECUTABLE_PG_DATABASE|EXECUTABLE_RUN_ID|EXECUTABLE_RUNNER_PID|OWNED_))/;
+ function gatewayEnv(fixtureEnv) {
+     const env = baseEnv();
+     for (const key of Object.keys(env)) if (INHERITED_DATABASE_SETTINGS.test(key)) delete env[key];
+@@ -356,6 +366,13 @@
+     let restStarted = false;
+     let result;
+     try {
++        const provisionStarted = Date.now();
++        if (preservedFixture) {
++            record.restoration = await createPreservedSuiteDatabase(cluster, database, runId, preservedFixture);
++            record.migrations = cluster.migrationEvidence;
++            record.templateSeconds = 0;
++            databaseCreated = true;
++        } else {
+         // The template is built once per cluster; a second suite on the cluster waits on the same promise.
+         const templateStarted = Date.now();
+         cluster.template ??= buildGatewayTemplate(cluster, { repoRoot, restPassword: cluster.restPassword, throughMigration });
+@@ -363,9 +380,10 @@
+         record.migrations = cluster.migrationEvidence;
+         record.templateSeconds = seconds(templateStarted);
+ 
+-        const provisionStarted = Date.now();
+         await createSuiteDatabase(cluster, database, runId);
+         databaseCreated = true;
++
++        }
+ 
+         const jwtSecret = randomBytes(32).toString('hex');
+         const issuedAt = Math.floor(Date.now() / 1000);
+@@ -392,6 +410,7 @@
+             [OWNED_FIXTURE_ENV.restUpstreamPort]: String(upstreamPort),
+             [OWNED_FIXTURE_ENV.restServiceKey]: serviceKey,
+             LETBUYY_OWNED_SQL_PASSWORD: cluster.restPassword,
++            ...(preservedFixture ? { LETBUYY_PRESERVED_FIXTURE_CAPSULE: value('--preserved-capsule', ''), LETBUYY_PRESERVED_FIXTURE_CAPSULE_SHA256: value('--preserved-capsule-sha256', ''), LETBUYY_PRESERVED_FIXTURE_ACTIVE: '1', LETBUYY_PRESERVED_FIXTURE_PHASE: value('--preserved-phase','') } : {}),
+         };
+         // The runner holds itself to the rule it imposes: nothing starts until ownership is proven.
+         await verifyOwnedFixture(fixtureEnv);
+@@ -420,7 +439,11 @@
+             activeRest.delete(restName);
+             cleanupOutcomes.push({ kind: 'container', name: restName, removed: record.cleanup.rest });
+         }
+-        if (databaseCreated) record.cleanup.database = await dropSuiteDatabase(cluster, database);
++        if(preservedFixture&&cluster.preservedSafetyRequired){
++            try{record.checkpoint=await checkpointPreservedDatabase(cluster,database,preservedFixture);}
++            catch{record.cleanup.database=false;result.code=71;result.failures.push('Preserved runtime checkpoint failed: retain labelled resources; no reap permitted before verified backup');}
++        }
++        if ((databaseCreated||cluster.preservedDatabaseCreated)&&(!cluster.preservedSafetyRequired||cluster.preservedSafeToCleanup)) record.cleanup.database = await dropSuiteDatabase(cluster, database);
+     }
+     result.seconds = seconds(started);
+     Object.assign(result, record);
+@@ -468,6 +491,8 @@
+ }
+ 
+ async function main() {
++    const wantsPreserved=['--preserved-capsule','--preserved-capsule-sha256','--preserved-phase'].some(flag);
++    if(wantsPreserved&&(flag('--reap-only')||flag('--list')))throw new Error('preserved input cannot be combined with reaping or listing');
+     const reapRunIds = parseReapRunIds(args);
+     if (value('--prepared-transactions', undefined) !== undefined && value('--prepared-transactions', undefined) !== '2') throw new Error('--prepared-transactions must be exactly 2');
+     const reapMinAgeSeconds = Number(value('--reap-min-age', '120'));
+@@ -483,6 +508,12 @@
+         return 0;
+     }
+     if (suites.length === 0) throw new Error('no suites selected');
++    if (flag('--preserved-capsule') || flag('--preserved-capsule-sha256') || flag('--preserved-phase')) {
++        if (values('--preserved-phase').length!==1 || !['rehearsal','serve'].includes(value('--preserved-phase','')) || value('--preserved-phase','')==='rehearsal'&&value('--timeout','')!=='600' || values('--preserved-capsule').length!==1 || values('--preserved-capsule-sha256').length!==1 || suites.length!==1 || suites[0].path!==PRESERVED_THEME_SUITE || suites[0].kind!=='gateway-db'
++            || requestedJobs!==1 || !flag('--no-reap') || flag('--keep-container') || throughMigration!==undefined || flag('--list') || flag('--suite-dir') || flag('--filter') || flag('--gateway-db')) throw new Error('preserved restore requires its one explicit manual suite, jobs1/no-reap and no migration ceiling or broad selector');
++        preservedFixture=loadPreservedCapsule(value('--preserved-capsule',''),value('--preserved-capsule-sha256',''),{repoRoot:resolve(repoRoot),suitePath:suites[0].path,jobs:1,noReap:true,now:Date.now()});
++    }
++
+     if (!OWNED_CLUSTER_NAME.test(containerBase)) {
+         // Refused with no docker command at all: not even an inspect of a container this runner did not name.
+         throw new Error(`refusing --container ${containerBase}: a cluster name must be one this runner allocates (letbuyy-exec-...); the Supabase development stack and every other container are never used`);
+@@ -556,9 +587,14 @@
+     const leftover = keepContainer ? [] : [...remaining.containers, ...remaining.networks, ...remaining.volumes];
+     const cleanupFailures = [...cleanupOutcomes.filter((outcome) => !outcome.removed).map((outcome) => `${outcome.kind} ${outcome.name}`), ...leftover.map((name) => `remaining ${name}`)];
+     if (cleanupFailures.length > 0) {
+-        warn(`cleanup incomplete; these resources carry run id ${runId} and can be removed with \`node scripts/governance/run-executable-suites.mjs --reap-only\` once this process has exited: ${[...new Set(cleanupFailures)].join(', ')}`);
+-    }
+-
++        if(preservedFixture&&clusters.some(c=>c.preservedSafetyRequired&&!c.preservedSafeToCleanup))warn('Preserved runtime resources retained because no verified exit archive exists. Do not reap: obtain an independently verified full backup first.');
++        else warn(`cleanup incomplete; these resources carry run id ${runId} and can be removed with \`node scripts/governance/run-executable-suites.mjs --reap-only\` once this process has exited: ${[...new Set(cleanupFailures)].join(', ')}`);
++    }
++
++    if(preservedFixture&&clusters.some(c=>c.preservedSafetyRequired&&!c.preservedSafeToCleanup)){
++        if(asJson)process.stdout.write(JSON.stringify({runId,status:'PRESERVED_RESOURCES_RETAINED_NO_VERIFIED_EXIT_ARCHIVE',cleanupFailures})+'\n');
++        return 71;
++    }
+     if (infrastructureError) {
+         warn(infrastructureError.message);
+         if (asJson) process.stdout.write(JSON.stringify({ runId, infrastructureError: infrastructureError.message, cleanupFailures }) + '\n');
+--- a/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts
++++ b/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts
+@@ -5,13 +5,42 @@
+ import { createServer, request as forwardHttp, type Server } from 'node:http';
+ import { createServer as createHttpsServer } from 'node:https';
+ import { writeFileSync, createWriteStream, readFileSync, existsSync, openSync, closeSync, writeSync, ftruncateSync } from 'node:fs';
+-import { exportJWK } from 'jose';
++import { exportJWK, importJWK, type JWK } from 'jose';
++import { createRequire } from 'node:module';
+ import { validateSubdomainFormat } from '@letbuyy/tenant-core';
+ import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET } from './gateway-harness';
+ import { createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess, type OwnedDatabase } from './owned-db-support';
+ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+ import { hashMerchantPassword } from '../../lib/merchant-password';
+ import { ThemeEditorFixtureObservation, EDITOR_CONFIRM_REPLAY_PATH } from './theme-editor-fixture-observation';
++
++type PreservedBinding = { identityPrivateJwk: JWK; publicJwks: string; cookieSecret: string; checkoutSigningSecret: string };
++export type PreservedSaved = { capsuleSha256: string; capsule: { application: { fixtureId: string; site: ReturnType<typeof newSyntheticTenant>; ownerId: string; email: string; password: string; products: string[]; collections: string[]; editorCatalog: Awaited<ReturnType<(typeof import('./threadline-qa-fixture'))['prepareThemeEditorQaStore']>> }; sourceBundle: { manifestPath: string; manifestSha256: string }; qa: { mode: 'retained'|'refresh' }; provider: { csvPath:string;csvSha256:string;webhookSecretPath:string;webhookSecretSha256:string }; witness:{dataSha256:string;profileSha256:string;sequenceSha256:string;acceptedOrderIds:string[]}; tls: { keyPath: string; keySha256: string; certPath: string; certSha256: string }; origins: { identityOrigin: string; merchantOrigin: string; commerceOrigin: string; checkoutOrigin: string; apiOrigin: string; ports: { identity: number; merchant: number; commerce: number; checkout: number; api: number;receiver:number } }; expiresAt: string } };
++type PreservedTools = { loadPreservedCapsule(path:string,hash:string,expected:Record<string,unknown>):PreservedSaved; readPreservedBinding(saved:PreservedSaved,runId:string):{value:PreservedBinding;path:string;sha256:string}|null; writePreservedBinding(runId:string,value:Record<string,unknown>):{path:string;sha256:string}; readPreservedPrivateFile(path:string,options?:Record<string,unknown>):Buffer; parsePreservedJson(bytes:Buffer):unknown; preservedCutoverPermitPath(runId:string):string; validatePreservedCutoverPermit(value:unknown,saved:PreservedSaved,runId:string,binding:unknown,stages:unknown):unknown; writePreservedProgress(runId:string,phase:string,value:Record<string,unknown>):void };
++function preservedTools():PreservedTools { return createRequire(import.meta.url)('../../../../../scripts/governance/owned-database-provision.mjs') as PreservedTools; }
++export function preservedServingInput(): {tools:PreservedTools;saved:PreservedSaved}|undefined {
++  if(process.env.LETBUYY_PRESERVED_FIXTURE_ACTIVE!=='1') { if(process.env.LETBUYY_PRESERVED_FIXTURE_CAPSULE)throw new Error('Unadmitted preserved fixture input');return undefined; }
++  const path=process.env.LETBUYY_PRESERVED_FIXTURE_CAPSULE,hash=process.env.LETBUYY_PRESERVED_FIXTURE_CAPSULE_SHA256;assert(path&&hash);
++  const tools=preservedTools();return {tools,saved:tools.loadPreservedCapsule(path,hash,{repoRoot:process.cwd(),suitePath:'tests/owned-db/theme-completion-razorpay-browser.manual.ts',jobs:1,noReap:true,now:Date.now()})};
++}
++async function stagePreservedClients(owned:OwnedDatabase,specs:Array<{kind:string;port:number;env:Record<string,string|undefined>}>,input:{tools:PreservedTools;saved:PreservedSaved},binding:{path:string;sha256:string},signal?:AbortSignal) {
++  const stages:Record<string,{path:string;sha256:string}>={};
++  for(const spec of specs){signal?.throwIfAborted();assert(spec.kind.endsWith('-production'),'Preserved serving requires staged production clients');
++    const child=startOwnedClientRuntime(owned,spec.kind as 'identity-next-production',{port:spec.port,env:{...spec.env,LETBUYY_OWNED_NEXT_STAGE_ONLY:'1',LETBUYY_OWNED_NEXT_SOURCE_MANIFEST:input.saved.capsule.sourceBundle.manifestPath,LETBUYY_OWNED_NEXT_SOURCE_SHA256:input.saved.capsule.sourceBundle.manifestSha256,LETBUYY_OWNED_NEXT_CAPSULE_SHA256:input.saved.capsuleSha256}});
++    const logPath=`/private/tmp/threadline-${owned.runId}-${spec.kind}-stage.log`,fd=openSync(logPath,'wx',0o600),log=createWriteStream(logPath,{fd,autoClose:true});child.stdout.pipe(log,{end:false});child.stderr.pipe(log,{end:false});
++    try { const code=await new Promise<number|null>((done,reject)=>{child.once('error',reject);child.once('close',done);});assert.equal(code,0,'Owned staged build failed; original listeners must remain untouched'); }
++    finally { log.end();await stopOwnedClientRuntime(child); }
++    const path=`/private/tmp/letbuyy-preserved-runtime07-${owned.runId}/builds/${spec.kind}/manifest.json`,bytes=input.tools.readPreservedPrivateFile(path,{maxBytes:32*1024*1024});stages[spec.kind]={path,sha256:createHash('sha256').update(bytes).digest('hex')};
++  }
++  input.tools.writePreservedProgress(owned.runId,'staged',{applicationFixtureId:input.saved.capsule.application.fixtureId,capsuleSha256:input.saved.capsuleSha256,bindingSha256:binding.sha256,stages,oldListenersTouched:false});
++  const path=input.tools.preservedCutoverPermitPath(owned.runId);
++  while(!existsSync(path)){signal?.throwIfAborted();assert(Date.now()<Date.parse(input.saved.capsule.expiresAt),'Preserved staging permit expired; no listener was retired by this fixture');await new Promise(done=>setTimeout(done,250));}
++  const permit=input.tools.parsePreservedJson(input.tools.readPreservedPrivateFile(path));input.tools.validatePreservedCutoverPermit(permit,input.saved,owned.runId,binding,stages);
++  // Revalidate immutable source/archive/final fence before opening the fixed original ports.
++  preservedServingInput();
++  input.tools.writePreservedProgress(owned.runId,'serving',{phase:'LISTENER_ATTEMPT',capsuleSha256:input.saved.capsuleSha256,applicationFixtureId:input.saved.capsule.application.fixtureId});
++  return stages;
++}
+ 
+ function fixtureRunId(runId: string) {
+   if (runId.length !== 12 || !/^[a-f0-9]{12}$/.test(runId)) throw new Error('Threadline fixture requires its verified run id');
+@@ -87,6 +116,7 @@
+ 
+ export async function holdThreadlineBrowserFixture(owned: OwnedDatabase, pooledEnv: Record<string, unknown>, options: { signal?: AbortSignal } = {}) {
+   options.signal?.throwIfAborted();
++  const preserved=preservedServingInput();
+   const profile = threadlineFixtureProfile({ editorHold: process.env.LETBUYY_THEME_EDITOR_BROWSER_HOLD, threadlineQa: process.env.LETBUYY_THREADLINE_QA });
+   const marketplacePort = threadlineFixtureMarketplacePort(profile, process.env.LETBUYY_THREADLINE_MARKETPLACE_PORT);
+   const tlsMode=process.env.LETBUYY_MANUAL_CHECKOUT_TLS_MODE;
+@@ -94,6 +124,7 @@
+   const qaMode = profile === 'threadline-qa';
+   const fixturePaths = threadlineFixturePaths(owned.runId);
+   const statePath = process.env.LETBUYY_THREADLINE_STATE_PATH || fixturePaths.statePath;
++  if(preserved&&statePath!==fixturePaths.statePath)throw new Error('Preserved serving never replaces an old state path');
+   if (!/^\/private\/tmp\/threadline-[a-z0-9-]+(?:-state)?\.json$/.test(statePath)) throw new Error('Threadline state must use its private temporary-file namespace');
+   if (existsSync(statePath)) throw new Error('Threadline fixture refuses to replace an existing private state file');
+   const mailpitOrigin = process.env.LETBUYY_THREADLINE_MAILPIT_ORIGIN;
+@@ -131,8 +162,11 @@
+     }
+     return originalFetch(input, init);
+   };
+-  const site = newSyntheticTenant('threadline-ui'); seedSyntheticTenant(owned.psql, site, { gst: true, taxRates: true });
+-  const owner = randomUUID(), password = `Synthetic-${randomUUID()}!`, email = `syn-threadline-${owner}@example.invalid`;
++  let site:ReturnType<typeof newSyntheticTenant>,owner:string,password:string,email:string,products:string[],collections:string[];
++  if(preserved){({site,ownerId:owner,password,email,products,collections}=preserved.saved.capsule.application);}
++  else {
++  site = newSyntheticTenant('threadline-ui'); seedSyntheticTenant(owned.psql, site, { gst: true, taxRates: true });
++  owner = randomUUID(); password = `Synthetic-${randomUUID()}!`; email = `syn-threadline-${owner}@example.invalid`;
+   const quote = (value: unknown) => JSON.stringify(value).replaceAll("'", "''");
+   owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name,password_hash) VALUES('${owner}','${email}',true,'Synthetic Threadline Owner','${await hashMerchantPassword(password)}'); UPDATE sites SET custom_user_id='${owner}',name='Threadline',store_name='Threadline',theme_id='letbuyy-core',published=false,status='draft' WHERE id='${site.siteId}';`);
+   // Explicit Editor-only test entitlement; no provider payment or paid-upgrade claim.
+@@ -147,7 +181,7 @@
+   }
+   const names = ['The Everyday Linen Shirt', 'Tailored Straight Trouser', 'The Everyday Cotton Dress'];
+   const photos = ['linen-shirt','trousers','cotton-dress'], colors = ['Oat','Ink','Rust'], prices = [2490,3290,3990];
+-  const products: string[] = [], collections: string[] = [];
++  products=[];collections=[];
+   for (let i=0;i<3;i++) {
+     const product = randomUUID(), collection = randomUUID(); products.push(product); collections.push(collection);
+     const media = `/theme-assets/threadline/v2/${photos[i]}.webp`;
+@@ -158,19 +192,26 @@
+       owned.psql(`INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,option1,option2) VALUES('${variant}','${product}','${colors[i]} / ${size}','SYN-${variant}',${prices[i]},${stock},'${colors[i]}','${size}'); SELECT set_inventory_level_available('${product}','${variant}','${site.locationId}',${stock},'${owner}');`);
+     }
+   }
+-  const [identityPort,merchantPort,commercePort] = await Promise.all([freePort(),freePort(),freePort()]);
+-  const origins = threadlineFixtureOrigins({ runId: owned.runId, subdomain: site.subdomain, identityPort, merchantPort, commercePort, marketplacePort });
++  }
++  const [identityPort,merchantPort,commercePort] = preserved?[preserved.saved.capsule.origins.ports.identity,preserved.saved.capsule.origins.ports.merchant,preserved.saved.capsule.origins.ports.commerce]:await Promise.all([freePort(),freePort(),freePort()]);
++  const origins = threadlineFixtureOrigins({ runId: preserved?.saved.capsule.application.fixtureId||owned.runId, subdomain: site.subdomain, identityPort, merchantPort, commercePort, marketplacePort });
+   const { identityOrigin, merchantOrigin, commerceOrigin } = origins;
+-  const certificate=createOwnedCheckoutTlsCertificate(owned,tlsMode==='manual-os-trusted'?'manual-os-trusted':'native-ephemeral');
++  const certificate=preserved?{key:preserved.tools.readPreservedPrivateFile(preserved.saved.capsule.tls.keyPath,{expectedSha256:preserved.saved.capsule.tls.keySha256}),cert:preserved.tools.readPreservedPrivateFile(preserved.saved.capsule.tls.certPath,{expectedSha256:preserved.saved.capsule.tls.certSha256})}:createOwnedCheckoutTlsCertificate(owned,tlsMode==='manual-os-trusted'?'manual-os-trusted':'native-ephemeral');
+   const checkoutTls=createHttpsServer({key:certificate.key,cert:certificate.cert},(req,res)=>{
+     const host=`checkout.localhost:${(checkoutTls.address() as {port:number}).port}`;
+     if(req.headers.host!==host){res.writeHead(421);res.end();return;}
+     const upstream=forwardHttp({hostname:'127.0.0.1',port:commercePort,path:req.url,method:req.method,headers:{...req.headers,host,'x-forwarded-host':host,'x-forwarded-proto':'https'}},reply=>{res.writeHead(reply.statusCode||502,reply.headers);reply.pipe(res);});
+     upstream.on('error',()=>{if(!res.headersSent)res.writeHead(502);res.end();});req.pipe(upstream);
+   });
+-  await new Promise<void>(done=>checkoutTls.listen(0,'127.0.0.1',done));
+-  const checkoutOrigin=`https://checkout.localhost:${(checkoutTls.address() as {port:number}).port}`;
+-  const keys=await newIdentityKeys(), signingSecret=randomUUID()+randomUUID(), finishNonce=randomUUID();
++  if(!preserved)await new Promise<void>(done=>checkoutTls.listen(0,'127.0.0.1',done));
++  const checkoutOrigin=preserved?.saved.capsule.origins.checkoutOrigin||`https://checkout.localhost:${(checkoutTls.address() as {port:number}).port}`;
++  let binding=preserved?preserved.tools.readPreservedBinding(preserved.saved,owned.runId):null;
++  const freshKeys=binding?null:await newIdentityKeys();
++  const privateKey=binding?await importJWK(binding.value.identityPrivateJwk,'ES256'):freshKeys!.privateKey;assert(!(privateKey instanceof Uint8Array));
++  const keys=binding?{privateKey,kid:binding.value.identityPrivateJwk.kid!,jwks:binding.value.publicJwks}:freshKeys!;
++  const signingSecret=binding?.value.checkoutSigningSecret||randomUUID()+randomUUID(),accountsCookieSecret=binding?.value.cookieSecret||randomUUID()+randomUUID(),finishNonce=randomUUID();
++  if(preserved&&!binding){assert.equal(preserved.saved.capsule.qa.mode,'refresh');const privateJwk={...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid};const value={version:1,kind:'preserved-runtime07-bindings',resourceRunId:owned.runId,applicationFixtureId:preserved.saved.capsule.application.fixtureId,issuer:identityOrigin,cookieDomain:origins.platformCookieDomain,capsuleSha256:preserved.saved.capsuleSha256,identityPrivateJwk:privateJwk,publicJwks:keys.jwks,cookieSecret:accountsCookieSecret,checkoutSigningSecret:signingSecret,oldSessionsPreserved:false};binding={value,...preserved.tools.writePreservedBinding(owned.runId,value)};}
++
+   const gateway=new Gateway(gatewayEnv(owned,keys,{...pooledEnv,ENVIRONMENT:'local',RESEND_API_KEY:'synthetic-threadline-email-capture',LETBUYY_IDENTITY_ISSUER:origins.identityEnvironment.LETBUYY_IDENTITY_ISSUER,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',CHECKOUT_ORIGIN:checkoutOrigin,CHECKOUT_SIGNING_SECRET:signingSecret}));
+   const qaInput = { owned, gateway, site, owner, email, products, collections, keys, identityOrigin };
+   const editorObservation = profile === 'editor' ? new ThemeEditorFixtureObservation({ profile, siteId: site.siteId, nonce: finishNonce, owned, gateway }) : undefined;
+@@ -193,7 +234,7 @@
+         res.writeHead(result?.status || 404, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(result?.body || {})); return;
+       }
+       if(req.url==='/__threadline_finish'&&req.method==='POST'&&req.headers['x-fixture-control']===finishNonce){res.writeHead(204);res.end();finish();return;}
+-      if(req.url==='/__threadline_refresh_catalog'&&req.method==='POST'&&req.headers['x-fixture-control']===finishNonce){owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/382_threadline_catalog_v2.sql',import.meta.url),'utf8'));res.writeHead(204);res.end();return;}
++      if(req.url==='/__threadline_refresh_catalog'&&req.method==='POST'&&req.headers['x-fixture-control']===finishNonce){if(preserved){res.writeHead(403);res.end('{}');return;}owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/382_threadline_catalog_v2.sql',import.meta.url),'utf8'));res.writeHead(204);res.end();return;}
+       if(req.url==='/__threadline_proof'&&req.headers['x-fixture-control']===finishNonce&&(!editorObservation||req.method==='GET')){
+         const release=JSON.parse(owned.psql(`SELECT coalesce((SELECT jsonb_build_object('id',r.id,'sourceDraftVersion',r.source_draft_version,'snapshot',r.template_snapshot) FROM sites s JOIN theme_releases r ON r.id=s.current_theme_release_id WHERE s.id='${site.siteId}'),'null'::jsonb);`));
+         const proof={packageVersion:release?.snapshot?.liquidBundle?.package?.version||null,releaseId:release?.id||null,sourceDraftVersion:release?.sourceDraftVersion||null,releaseSha256:release?createHash('sha256').update(JSON.stringify(release.snapshot)).digest('hex'):null,orders:Number(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${site.siteId}';`)),installed:Number(owned.psql(`SELECT count(*) FROM theme_instances WHERE store_id='${site.siteId}';`))};
+@@ -207,12 +248,12 @@
+       res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(result.text);
+     } catch {res.writeHead(500);res.end('{}');}
+   });
+-  await new Promise<void>(done=>bridge.listen(0,'127.0.0.1',done));
+-  const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`,clients:OwnedClientProcess[]=[];
++  if(!preserved)await new Promise<void>(done=>bridge.listen(0,'127.0.0.1',done));
++  const apiOrigin=preserved?.saved.capsule.origins.apiOrigin||`http://127.0.0.1:${(bridge.address() as {port:number}).port}`,clients:OwnedClientProcess[]=[];
+   const common={INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_INTERNAL_API_SECRET:INTERNAL_SECRET,...origins.sharedEnvironment,LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'};
+   const mode=process.env.LETBUYY_THREADLINE_PRODUCTION_BROWSER==='1'?'-next-production':'-next';
+   try {
+-    const editorCatalog = profile === 'editor' ? await (await import('./threadline-qa-fixture')).prepareThemeEditorQaStore({ ...qaInput, commerceOrigin }) : undefined;
++    const editorCatalog = preserved?preserved.saved.capsule.application.editorCatalog:profile === 'editor' ? await (await import('./threadline-qa-fixture')).prepareThemeEditorQaStore({ ...qaInput, commerceOrigin }) : undefined;
+     if (editorCatalog && editorObservation) {
+       const selected = editorCatalog.products.cloudRinse.id;
+       const positive = await editorObservation.control({ method: 'GET', path: `/__threadline_proof?product_id=${selected}`, nonce: finishNonce, body: '' });
+@@ -220,17 +261,22 @@
+       const denied = await editorObservation.control({ method: 'GET', path: `/__threadline_proof?product_id=${randomUUID()}`, nonce: finishNonce, body: '' });
+       assert.equal(denied?.status, 404, 'Unknown/foreign proof selectors must remain denied');
+     }
+-    if (qaMode) await (await import('./threadline-qa-fixture')).prepareThreadlineQaStore(qaInput);
++    if (!preserved&&qaMode) await (await import('./threadline-qa-fixture')).prepareThreadlineQaStore(qaInput);
+     const specs=[
+-      {kind:`identity${mode}` as 'identity-next',port:identityPort,health:identityOrigin+'/login',env:{...common,...origins.identityEnvironment,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),ACCOUNTS_COOKIE_SECRET:randomUUID()+randomUUID(),NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}},
++      {kind:`identity${mode}` as 'identity-next',port:identityPort,health:identityOrigin+'/login',env:{...common,...origins.identityEnvironment,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),ACCOUNTS_COOKIE_SECRET:accountsCookieSecret,NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}},
+       {kind:`merchant${mode}` as 'merchant-next',port:merchantPort,health:merchantOrigin,env:{...common,LETBUYY_API_BASE_URL:apiOrigin+'/v1',NEXT_PUBLIC_STOREFRONT_URL:`http://localhost:${commercePort}`}},
+       {kind:`commerce${mode}` as 'commerce-next',port:commercePort,health:commerceOrigin+'/api/buyer-auth/session',env:{...common,LETBUYY_API_BASE_URL:apiOrigin+'/v1',LETBUYY_API_URL:apiOrigin+'/v1',NEXT_PUBLIC_API_BASE_URL:apiOrigin+'/v1',NEXT_PUBLIC_API_URL:apiOrigin+'/v1',NEXT_PUBLIC_STOREFRONT_URL:commerceOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',CHECKOUT_ORIGIN:checkoutOrigin,CHECKOUT_SIGNING_SECRET:signingSecret}},
+     ];
++    let staged:Record<string,{path:string;sha256:string}>|undefined;
++    if(preserved){assert(binding);staged=await stagePreservedClients(owned,specs,preserved,binding,options.signal);
++      await new Promise<void>((done,reject)=>{bridge.once('error',reject);bridge.listen(preserved.saved.capsule.origins.ports.api,'127.0.0.1',()=>{bridge.off('error',reject);done();});});
++      await new Promise<void>((done,reject)=>{checkoutTls.once('error',reject);checkoutTls.listen(preserved.saved.capsule.origins.ports.checkout,'127.0.0.1',()=>{checkoutTls.off('error',reject);done();});});
++    }
+     for(const spec of specs){
+       const logPath = threadlineFixtureLogPath(owned.runId,spec.kind);
+       const logFd = openSync(logPath,'wx',0o600);
+       let client: OwnedClientProcess;
+-      try { client=startOwnedClientRuntime(owned,spec.kind,{port:spec.port,env:spec.env}); }
++      try { client=startOwnedClientRuntime(owned,spec.kind,{port:spec.port,env:{...spec.env,...(preserved&&staged?{LETBUYY_OWNED_NEXT_SOURCE_MANIFEST:preserved.saved.capsule.sourceBundle.manifestPath,LETBUYY_OWNED_NEXT_SOURCE_SHA256:preserved.saved.capsule.sourceBundle.manifestSha256,LETBUYY_OWNED_NEXT_CAPSULE_SHA256:preserved.saved.capsuleSha256,LETBUYY_OWNED_NEXT_PREBUILT_MANIFEST:staged[spec.kind].path,LETBUYY_OWNED_NEXT_PREBUILT_SHA256:staged[spec.kind].sha256}:{})}}); }
+       catch (error) { closeSync(logFd); throw error; }
+       clients.push(client);
+       const log=createWriteStream(logPath,{fd:logFd,autoClose:true});client.stdout.pipe(log,{end:false});client.stderr.pipe(log,{end:false});client.once('close',()=>log.end());
+@@ -239,16 +285,16 @@
+     }
+     let buyer: Awaited<ReturnType<(typeof import('./threadline-qa-fixture'))['prepareThreadlineQaBuyer']>> | undefined;
+     let qaSetupFailure: string | undefined;
+-    try { buyer = qaMode ? await (await import('./threadline-qa-fixture')).prepareThreadlineQaBuyer(qaInput) : undefined; }
++    try { buyer = !preserved&&qaMode ? await (await import('./threadline-qa-fixture')).prepareThreadlineQaBuyer(qaInput) : undefined; }
+     catch (error) {
+       qaSetupFailure = error instanceof Error ? error.message.slice(0, 240) : 'QA account setup did not complete';
+       console.info('THREADLINE_QA_SETUP_FAILED: independent storefront checks remain available; no signup/order setup success claimed.');
+     }
+-    const state={runId:owned.runId,identityOrigin,merchantOrigin,commerceOrigin,checkoutOrigin,apiOrigin,email,password,site,products,collections,finishNonce,platformCookieDomain:origins.platformCookieDomain,artifacts:{statePath,capturedMailPath:fixturePaths.capturedMailPath,logs:specs.map(spec=>threadlineFixtureLogPath(owned.runId,spec.kind))},...(editorObservation?{editorObservation:{proofPath:'/__threadline_proof',replayPath:EDITOR_CONFIRM_REPLAY_PATH}}:{}),...(editorCatalog?{editorCatalog}:{}),...(buyer?{buyer}:{}),...(qaSetupFailure?{qaSetupFailure}:{})};
++    const state={runId:owned.runId,...(preserved?{applicationFixtureId:preserved.saved.capsule.application.fixtureId,restored:true,qaSessionContinuity:preserved.saved.capsule.qa.mode==='retained'?'retained-key-capsule;normalSSOretest-required':'explicitQArefresh;oldcookies-and-handoffURLs-invalid;normalSSOrelogin-required'}:{}),identityOrigin,merchantOrigin,commerceOrigin,checkoutOrigin,apiOrigin,email,password,site,products,collections,finishNonce,platformCookieDomain:origins.platformCookieDomain,artifacts:{statePath,capturedMailPath:fixturePaths.capturedMailPath,logs:specs.map(spec=>threadlineFixtureLogPath(owned.runId,spec.kind))},...(editorObservation?{editorObservation:{proofPath:'/__threadline_proof',replayPath:EDITOR_CONFIRM_REPLAY_PATH}}:{}),...(editorCatalog?{editorCatalog}:{}),...(buyer?{buyer}:{}),...(qaSetupFailure?{qaSetupFailure}:{})};
+     writeFileSync(statePath,JSON.stringify(state),{mode:0o600,flag:'wx'});
+     console.info('THREADLINE_BROWSER_READY: private state file written; manual CUA acceptance remains pending.');
+     let timer:ReturnType<typeof setTimeout>;
+-    await Promise.race([finished,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error('manual browser acceptance fixture expired')),6*60*60_000);})]).finally(()=>clearTimeout(timer));
++    await Promise.race([finished,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error('manual browser acceptance fixture expired')),preserved?Math.max(1,Date.parse(preserved.saved.capsule.expiresAt)-Date.now()):6*60*60_000);})]).finally(()=>clearTimeout(timer));
+     if (qaSetupFailure) throw new Error(`QA fixture setup remained unconfirmed: ${qaSetupFailure}`);
+   } finally {
+     try { await Promise.allSettled(clients.map(client=>stopOwnedClientRuntime(client)));await close(bridge);await close(checkoutTls);await gateway.settle(); }
+--- a/scripts/governance/owned-next-production.mjs
++++ b/scripts/governance/owned-next-production.mjs
+@@ -1,34 +1,97 @@
+ #!/usr/bin/env node
+-// Build and serve a fixed real Commerce/Identity app under its owned supervisor.
+-// Both children inherit that supervisor's process group, so shutdown covers the
+-// build workers and the server. No arbitrary command, project or environment loader.
+-import { spawn } from 'node:child_process';
++// Fixed owned Next build/start, with private source-bound staging. No caller command/cwd/env loader.
++import { spawn, spawnSync } from 'node:child_process';
+ import { fileURLToPath } from 'node:url';
+-import { join, resolve } from 'node:path';
++import { join, resolve, dirname, relative, isAbsolute } from 'node:path';
++import { lstatSync, realpathSync, readdirSync, readFileSync, writeFileSync, mkdirSync, openSync, closeSync, fstatSync, constants } from 'node:fs';
++import { createHash } from 'node:crypto';
+ import { verifyOwnedFixture } from './owned-fixture-guard.mjs';
++import { validateOwnedNextDirectoryReceipt } from './owned-next-directory.mjs';
++import { readPreservedPrivateFile } from './owned-database-provision.mjs';
+ 
+-const apps = [
+-    { root: fileURLToPath(new URL('../../apps/commerce/web', import.meta.url)), kind: 'commerce-next-production' },
+-    { root: fileURLToPath(new URL('../../apps/platform/identity', import.meta.url)), kind: 'identity-next-production' },
+-    { root: fileURLToPath(new URL('../../apps/merchant/web', import.meta.url)), kind: 'merchant-next-production' },
+-];
+-const app = apps.find(candidate => resolve(candidate.root) === resolve(process.cwd()));
+-const port = Number(process.argv[2]);
+-if (process.env.LETBUYY_OWNED_CLIENT_RUNTIME !== '1' || process.env.NODE_ENV !== 'production'
+-    || !app
+-    || !Number.isInteger(port) || port < 1024 || port > 65535
+-    || !(new RegExp(`^\\.next-session-runtime-\\d+-${app.kind}$`)).test(process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR || '')) {
+-    throw new Error('production client requires its fixed owned supervisor binding');
++const roots=Object.freeze({'commerce-next-production':'apps/commerce/web','identity-next-production':'apps/platform/identity','merchant-next-production':'apps/merchant/web'});
++const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
++const requireThat=(yes,code)=>{if(!yes)throw new Error(`owned prebuilt refused [${code}]`);};
++const hash=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
++const modeKeys=new Set(['LETBUYY_OWNED_NEXT_STAGE_ONLY','LETBUYY_OWNED_NEXT_PREBUILT_MANIFEST','LETBUYY_OWNED_NEXT_PREBUILT_SHA256','LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR']);
++export function preservedBuildEnvironmentDigest(env) {
++    requireThat(env&&Object.values(env).every(value=>typeof value==='string'),'ENV_SHAPE');
++    return sha(JSON.stringify(Object.fromEntries(Object.entries(env).filter(([key])=>!modeKeys.has(key)).sort(([a],[b])=>a.localeCompare(b)))));
+ }
+-await verifyOwnedFixture();
+-const next = join(app.root, 'node_modules/next/dist/bin/next');
+-const run = args => new Promise((done, reject) => {
+-    const child = spawn(process.execPath, [next, ...args], { cwd: app.root, env: process.env, stdio: 'inherit' });
+-    child.once('error', reject);
+-    child.once('exit', (code, signal) => done(code ?? (signal ? 1 : 0)));
+-});
+-const built = await run(['build', '--webpack']);
+-if (built !== 0) process.exit(built);
+-// Verify ownership again after a potentially long build, before opening a listener.
+-await verifyOwnedFixture();
+-process.exit(await run(['start', '--hostname', 'localhost', '-p', String(port)]));
++export function ownedProductionCommand(root,kind,port,phase) {
++    requireThat(Object.hasOwn(roots,kind)&&Number.isInteger(port)&&port>=1024&&port<=65535&&['build','start'].includes(phase),'FIXED_COMMAND');
++    return {command:process.execPath,cwd:join(root,roots[kind]),args:[join(root,roots[kind],'node_modules/next/dist/bin/next'),...(phase==='build'?['build','--webpack']:['start','--hostname','localhost','-p',String(port)])]};
++}
++export function validatePrebuiltClaim({root,kind,runId,supervisorPid,parentPid,distName}) {
++    requireThat(Object.hasOwn(roots,kind)&&realpathSync(root)===root&&distName===`.next-session-runtime-${supervisorPid}-${kind}`,'DIST_BINDING');
++    const app=join(root,roots[kind]);requireThat(realpathSync(app)===app,'APP_SYMLINK');
++    const directory=join(app,distName),marker=directory+'.owner.json';
++    const receipt=JSON.parse(readPreservedPrivateFile(marker,{privateParent:false}).toString('utf8'));
++    validateOwnedNextDirectoryReceipt(receipt,{root,kind,runId,supervisorPid,parentPid});
++    const stat=lstatSync(directory);requireThat(stat.isDirectory()&&!stat.isSymbolicLink()&&stat.uid===process.getuid()&&(stat.mode&0o777)===0o700,'DIST_OWNERSHIP');
++    return {directory,receipt};
++}
++export function verifyPrebuiltSource(root,path,expected) {
++    requireThat(hash(expected)&&typeof path==='string'&&path.startsWith(root+'/')&&realpathSync(path)===path,'SOURCE_PATH');
++    const stat=lstatSync(path);requireThat(stat.isFile()&&stat.uid===process.getuid()&&(stat.mode&0o022)===0&&stat.size<=8*1024*1024,'SOURCE_FILE');
++    const bytes=readFileSync(path);requireThat(sha(bytes)===expected,'SOURCE_DIGEST');let manifest;try{manifest=JSON.parse(bytes);}catch{throw new Error('owned prebuilt refused [SOURCE_JSON]');}
++    requireThat(Array.isArray(manifest.files)&&manifest.files.length>0,'SOURCE_MANIFEST');
++    for(const file of manifest.files){requireThat(typeof file.path==='string'&&!isAbsolute(file.path)&&!file.path.split('/').includes('..')&&!file.path.split('/').some(part=>part.includes('.env')||part.includes('.dev.vars')||part==='.letbuyy-private')&&hash(file.sha256),'SOURCE_MEMBER');const path=join(root,file.path);requireThat(realpathSync(path).startsWith(root+'/')&&sha(readFileSync(path))===file.sha256,'SOURCE_MEMBER_DIGEST');}
++}
++export function inventoryPrebuiltDirectory(directory) {
++    const files=[];let bytes=0;
++    const scan=(path)=>{for(const entry of readdirSync(path,{withFileTypes:true})){const file=join(path,entry.name),stat=lstatSync(file);requireThat(!stat.isSymbolicLink(),'BUILD_SYMLINK');if(stat.isDirectory())scan(file);else{requireThat(stat.isFile()&&stat.nlink===1&&(stat.mode&0o6000)===0,'BUILD_FILE');const buffer=readFileSync(file);bytes+=buffer.length;requireThat(bytes<=2*1024*1024*1024&&files.length<100000,'BUILD_LIMIT');files.push({path:relative(directory,file),bytes:buffer.length,sha256:sha(buffer),mode:stat.mode&0o777});}}};
++    const stat=lstatSync(directory);requireThat(stat.isDirectory()&&!stat.isSymbolicLink()&&realpathSync(directory)===directory,'BUILD_DIRECTORY');scan(directory);files.sort((a,b)=>a.path.localeCompare(b.path));
++    requireThat(files.some(file=>file.path==='BUILD_ID'&&file.bytes>0)&&files.some(file=>file.path==='required-server-files.json'),'BUILD_NOT_COMPLETE');return files;
++}
++const stageRoot=(runId,kind)=>{requireThat(/^[a-f0-9]{12}$/.test(runId)&&Object.hasOwn(roots,kind),'STAGE_SCOPE');return `/private/tmp/letbuyy-preserved-runtime07-${runId}/builds/${kind}`;};
++const secureDirectory=path=>{try{mkdirSync(path,{mode:0o700});}catch(error){if(error.code!=='EEXIST')throw error;}const stat=lstatSync(path);requireThat(stat.isDirectory()&&!stat.isSymbolicLink()&&stat.uid===process.getuid()&&(stat.mode&0o777)===0o700,'STAGE_DIRECTORY');};
++function copyFiles(source,target,files) {
++    for(const file of files){requireThat(typeof file.path==='string'&&!isAbsolute(file.path)&&!file.path.split('/').includes('..')&&hash(file.sha256),'BUILD_MEMBER_PATH');const from=join(source,file.path),to=join(target,file.path);let parent=target;for(const part of file.path.split('/').slice(0,-1)){parent=join(parent,part);secureDirectory(parent);requireThat(realpathSync(parent).startsWith(target+'/'),'TARGET_ESCAPE');}
++        const fd=openSync(from,constants.O_RDONLY|constants.O_NOFOLLOW);let bytes;try{const stat=fstatSync(fd);requireThat(stat.isFile()&&stat.size===file.bytes&&stat.nlink===1,'BUILD_CHANGED');bytes=readFileSync(fd);}finally{closeSync(fd);}requireThat(sha(bytes)===file.sha256,'BUILD_CHANGED');writeFileSync(to,bytes,{flag:constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,mode:file.mode});}
++}
++function boundClaim({root,kind,runId,claim}) {
++    requireThat(claim?.receipt&&claim.receipt.root===root&&claim.receipt.kind===kind&&claim.receipt.runId===runId,'CLAIM_BINDING');
++    const checked=validatePrebuiltClaim({root,kind,runId,supervisorPid:claim.receipt.supervisorPid,parentPid:claim.receipt.parentPid,distName:`.next-session-runtime-${claim.receipt.supervisorPid}-${kind}`});
++    requireThat(checked.directory===claim.directory&&checked.receipt.token===claim.receipt.token,'CLAIM_CHANGED');return checked;
++}
++export function stageOwnedPrebuilt({root,kind,runId,sourceManifestSha256,capsuleSha256,envDigest,claim}) {
++    boundClaim({root,kind,runId,claim});
++    requireThat([sourceManifestSha256,capsuleSha256,envDigest].every(hash),'BUILD_BINDINGS');
++    const directory=stageRoot(runId,kind);secureDirectory(dirname(dirname(directory)));secureDirectory(dirname(directory));
++    mkdirSync(directory,{mode:0o700});const payload=join(directory,'payload');mkdirSync(payload,{mode:0o700});
++    const files=inventoryPrebuiltDirectory(claim.directory);copyFiles(claim.directory,payload,files);
++    requireThat(JSON.stringify(inventoryPrebuiltDirectory(payload))===JSON.stringify(files),'STAGE_COPY_PARITY');
++    const manifest={version:1,kind,runId,root,applicationFixtureId:'49ada80bc494',sourceManifestSha256,capsuleSha256,envDigest,files};
++    const bytes=Buffer.from(JSON.stringify(manifest));const path=join(directory,'manifest.json');writeFileSync(path,bytes,{mode:0o600,flag:'wx'});return {path,sha256:sha(bytes)};
++}
++export function populateOwnedPrebuilt({root,kind,runId,sourceManifestSha256,capsuleSha256,envDigest,claim,path,sha256}) {
++    boundClaim({root,kind,runId,claim});
++    requireThat(path===join(stageRoot(runId,kind),'manifest.json')&&hash(sha256),'MANIFEST_SCOPE');
++    const bytes=readPreservedPrivateFile(path,{maxBytes:32*1024*1024,expectedSha256:sha256});let manifest;try{manifest=JSON.parse(bytes);}catch{throw new Error('owned prebuilt refused [MANIFEST_JSON]');}
++    requireThat(manifest.version===1&&manifest.root===root&&manifest.kind===kind&&manifest.runId===runId&&manifest.applicationFixtureId==='49ada80bc494'&&manifest.sourceManifestSha256===sourceManifestSha256&&manifest.capsuleSha256===capsuleSha256&&manifest.envDigest===envDigest,'MANIFEST_BINDING');
++    requireThat(readdirSync(claim.directory).length===0,'TARGET_NOT_EMPTY');
++    const payload=join(dirname(path),'payload');requireThat(JSON.stringify(inventoryPrebuiltDirectory(payload))===JSON.stringify(manifest.files),'MANIFEST_FILES');
++    copyFiles(payload,claim.directory,manifest.files);requireThat(JSON.stringify(inventoryPrebuiltDirectory(claim.directory))===JSON.stringify(manifest.files),'RESTAGED_PARITY');
++    return manifest;
++}
++
++async function main() {
++    const root=resolve(fileURLToPath(new URL('../..',import.meta.url)));const app=Object.entries(roots).find(([,path])=>resolve(join(root,path))===resolve(process.cwd()));const port=Number(process.argv[2]);
++    if(process.env.LETBUYY_OWNED_CLIENT_RUNTIME!=='1'||process.env.NODE_ENV!=='production'||!app||!Number.isInteger(port)||port<1024||port>65535||!(new RegExp(`^\\.next-session-runtime-\\d+-${app[0]}$`)).test(process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR||''))throw new Error('production client requires its fixed owned supervisor binding');
++    const fixture=await verifyOwnedFixture();const kind=app[0];
++    const run=args=>new Promise((done,reject)=>{const child=spawn(process.execPath,[join(root,roots[kind],'node_modules/next/dist/bin/next'),...args],{cwd:join(root,roots[kind]),env:process.env,stdio:'inherit'});child.once('error',reject);child.once('exit',(code,signal)=>done(code??(signal?1:0)));});
++    const stage=process.env.LETBUYY_OWNED_NEXT_STAGE_ONLY,prebuilt=process.env.LETBUYY_OWNED_NEXT_PREBUILT_MANIFEST;
++    if(stage!==undefined&&stage!=='1'||stage&&prebuilt)throw new Error('owned prebuilt refused [MODE]');
++    if(stage||prebuilt){
++        const parentPid=Number(spawnSync('ps',['-p',String(process.ppid),'-o','ppid='],{encoding:'utf8',timeout:5000}).stdout?.trim());
++        const claim=validatePrebuiltClaim({root,kind,runId:fixture.runId,supervisorPid:process.ppid,parentPid,distName:process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR});
++        const sourceManifestSha256=process.env.LETBUYY_OWNED_NEXT_SOURCE_SHA256,capsuleSha256=process.env.LETBUYY_OWNED_NEXT_CAPSULE_SHA256;
++        verifyPrebuiltSource(root,process.env.LETBUYY_OWNED_NEXT_SOURCE_MANIFEST,sourceManifestSha256);
++        const input={root,kind,runId:fixture.runId,claim,sourceManifestSha256,capsuleSha256,envDigest:preservedBuildEnvironmentDigest(process.env)};
++        if(stage){const code=await run(['build','--webpack']);if(code!==0)process.exit(code);await verifyOwnedFixture();verifyPrebuiltSource(root,process.env.LETBUYY_OWNED_NEXT_SOURCE_MANIFEST,sourceManifestSha256);const receipt=stageOwnedPrebuilt(input);console.info('OWNED_PREBUILT_STAGE_READY',JSON.stringify({kind,...receipt}));return;}
++        populateOwnedPrebuilt({...input,path:prebuilt,sha256:process.env.LETBUYY_OWNED_NEXT_PREBUILT_SHA256});await verifyOwnedFixture();process.exit(await run(['start','--hostname','localhost','-p',String(port)]));
++    }
++    const built=await run(['build','--webpack']);if(built!==0)process.exit(built);await verifyOwnedFixture();process.exit(await run(['start','--hostname','localhost','-p',String(port)]));
++}
++if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))await main();
+--- a/tests/owned-db/theme-completion-razorpay-browser.manual.ts
++++ b/tests/owned-db/theme-completion-razorpay-browser.manual.ts
+@@ -8,7 +8,7 @@
+ import webhookWorker from '../../services/webhook-service/src/index';
+ import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
+ import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+-import { holdThreadlineBrowserFixture, threadlineFixturePaths } from '../../services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture';
++import { holdThreadlineBrowserFixture, threadlineFixturePaths, preservedServingInput } from '../../services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture';
+ import { INTERNAL_SECRET } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+ import { parseRazorpayTestCsv, mapOwnedGatewayServiceUrl } from './theme-completion-provider-config.mjs';
+ 
+@@ -18,8 +18,13 @@
+ let proxy: OwnedPooledSqlProxy | undefined;
+ after(async () => { await closePooledSqlClients(); await proxy?.stop(); });
+ 
+-test('manual all-theme fixture binds real Test Mode credentials and canonical webhook receiver', async () => {
+-    const file = process.env.LETBUYY_MANUAL_RAZORPAY_TEST_CSV;
++test('manual all-theme fixture binds real Test Mode credentials and canonical webhook receiver', async t => {
++    const preserved=preservedServingInput();
++    if(preserved&&process.env.LETBUYY_PRESERVED_FIXTURE_PHASE==='rehearsal'){
++        await (await import('../../services/api-gateway/src/__tests__/owned-db/preserved-theme-runtime-restore-qualification.manual')).qualifyPreservedRuntimeRestore(t,owned,preserved.saved);return;
++    }
++    if(preserved)assert.equal(process.env.LETBUYY_PRESERVED_FIXTURE_PHASE,'serve');
++    const file = preserved?.saved.capsule.provider.csvPath|| process.env.LETBUYY_MANUAL_RAZORPAY_TEST_CSV;
+     assert(file && file.startsWith('/') && !file.includes('\0'), 'An explicit authorized Test CSV path is required');
+     const fd = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+     let text: string;
+@@ -27,11 +32,12 @@
+         const stat = fstatSync(fd);
+         assert(stat.isFile() && stat.size <= 16384 && stat.uid === process.getuid?.(), 'Test CSV must be a bounded owned regular file');
+         text = readFileSync(fd, 'utf8');
++        if(preserved){assert.equal(stat.mode&0o777,0o600);assert.equal(createHash('sha256').update(Buffer.from(text)).digest('hex'),preserved.saved.capsule.provider.csvSha256);preserved.tools.readPreservedPrivateFile(file,{expectedSha256:preserved.saved.capsule.provider.csvSha256});}
+     } finally { closeSync(fd); }
+     const credentials = parseRazorpayTestCsv(text);
+     // These are exact previously qualified proposals on a new owned fixture.
+     // No migration is emitted or applied to any ambient database.
+-    if (process.env.LETBUYY_THEME_COMPLETION_SHARED_PROPOSALS === '1') {
++    if (!preserved&&process.env.LETBUYY_THEME_COMPLETION_SHARED_PROPOSALS === '1') {
+         const admission = JSON.parse(readFileSync('docs/implementation/niche-theme-programme/completion-2026-10-24/SHARED_RUNTIME_ADMISSION.json', 'utf8')) as { status: string; upProposals: Array<{ path: string; sha256: string }> };
+         assert.equal(admission.status, 'ROOT_QUALIFIED_SHARED_PROPOSALS_FOR_OWNED_BROWSER_FIXTURE');
+         assert.equal(admission.upProposals.length, 4);
+@@ -46,16 +52,17 @@
+     const bindings = { ...proxy.env(), RAZORPAY_KEY_ID: credentials.keyId, RAZORPAY_KEY_SECRET: credentials.keySecret };
+     assert(!Object.hasOwn(bindings, 'HOSTED_RAZORPAY_TEST_ADAPTER'));
+     const statePath = threadlineFixturePaths(owned.runId).statePath;
+-    let secret = randomBytes(32).toString('hex');
+-    const secretFile = process.env.LETBUYY_MANUAL_RAZORPAY_WEBHOOK_SECRET_FILE;
++    let secret = preserved?'':randomBytes(32).toString('hex');
++    const secretFile = preserved?.saved.capsule.provider.webhookSecretPath||process.env.LETBUYY_MANUAL_RAZORPAY_WEBHOOK_SECRET_FILE;
+     if (secretFile !== undefined) {
+-        assert(secretFile.startsWith('/private/tmp/') && !secretFile.includes('\0'), 'An explicit private owned webhook-secret file is required');
++        assert((preserved||secretFile.startsWith('/private/tmp/')) && !secretFile.includes('\0'), 'An explicit private owned webhook-secret file is required');
+         const secretFd = openSync(secretFile, constants.O_RDONLY | constants.O_NOFOLLOW);
+         try {
+             const stat = fstatSync(secretFd);
+             assert(stat.isFile() && stat.uid === process.getuid?.() && (stat.mode & 0o777) === 0o600 && stat.size <= 256, 'Webhook secret must be a bounded0600 owned regular file');
+             const value = readFileSync(secretFd, 'utf8').trim();
+             assert(/^[a-f0-9]{64}$/.test(value), 'Expected the existing owned fixture webhook secret');
++            if(preserved)preserved.tools.readPreservedPrivateFile(secretFile,{expectedSha256:preserved.saved.capsule.provider.webhookSecretSha256});
+             secret = value;
+         } finally { closeSync(secretFd); }
+     }
+@@ -124,7 +131,7 @@
+                 res.end(Buffer.from(await response.arrayBuffer()));
+             } catch { if (!res.headersSent) res.writeHead(503); res.end(); }
+         });
+-        await new Promise<void>(done => receiver.listen(0, '127.0.0.1', done));
++        await new Promise<void>((done,reject) => {receiver.once('error',reject);receiver.listen(preserved?.saved.capsule.origins.ports.receiver||0, '127.0.0.1',()=>{receiver.off('error',reject);done();});});
+         const address = receiver.address(); assert(address && typeof address !== 'string');
+         const callback = `http://127.0.0.1:${address.port}/razorpay`;
+         writeFileSync(privatePath, JSON.stringify({ runId: owned.runId, webhookSecret: secret, localReceiver: callback,
+--- /dev/null
++++ b/tests/governance/owned-preserved-runtime.test.mjs
+@@ -0,0 +1,61 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {mkdtempSync,mkdirSync,writeFileSync,chmodSync,symlinkSync,linkSync,rmSync,readFileSync} from 'node:fs';
++import {createHash} from 'node:crypto';
++import {join} from 'node:path';
++import {readPreservedPrivateFile,validatePreservedCapsule,validatePreservedTarget,preservedRoleSql,parsePreservedJson,validatePreservedCutoverPermit,PRESERVED_RUNTIME07 as f,PRESERVED_THEME_SUITE} from '../../scripts/governance/owned-database-provision.mjs';
++import {FIXTURE_LABEL,OWNER_PID_LABEL,RUN_ID_LABEL,ROLE_LABEL,DEFAULT_IMAGE,DEFAULT_REST_IMAGE} from '../../scripts/governance/executable-pg-fixture.mjs';
++const sha=x=>createHash('sha256').update(x).digest('hex'),h='a'.repeat(64),id='11111111-1111-1111-1111-111111111111';
++const now=Date.parse('2026-10-25T01:00:00Z');
++const expected={repoRoot:'/private/tmp/letbuyy-synthetic-source',now,suitePath:PRESERVED_THEME_SUITE,jobs:1,noReap:true};
++function fixture(){
++ const roles={definitions:['postgres','anon','authenticated','service_role','authenticator','app_tenant','supabase_admin'].map(name=>({name,login:name==='postgres'||name==='authenticator',superuser:name==='postgres',inherit:true,createRole:false,createDb:false,replication:false,bypassRls:name==='service_role',connectionLimit:-1,passwordHash:null,validUntil:null,settings:[]})),memberships:[]};
++ return {version:1,kind:'preserved-runtime07',expiresAt:'2026-10-25T02:00:00Z',source:{resourceRunId:f.fixtureId,runnerPid:54685,container:'letbuyy-exec-54685-mvmssydy-fe81e9',database:'letbuyy_exec_theme_completion_razorpay_browser_manual_ts',volume:'letbuyy-exec-49ada80bc494-1-data',postgresImage:DEFAULT_IMAGE,restImage:DEFAULT_REST_IMAGE,imageId:'sha256:'+h,roleProfileSha256:sha(JSON.stringify(roles))},sourceBundle:{root:expected.repoRoot,manifestPath:expected.repoRoot+'/source.json',manifestSha256:h},archive:{path:'/private/tmp/letbuyy-runtime07-backups/fake.dump',bytes:9,sha256:h,format:'custom'},fence:{final:true,editorReturned:true,leaseId:'synthetic-lease',snapshotAt:'2026-10-25T00:59:00Z',lastAcceptedAt:'2026-10-25T00:58:00Z',receiptPath:'/private/tmp/letbuyy-runtime07-backups/fake-fence.json',receiptSha256:h,witnessSha256:h},application:{fixtureId:f.fixtureId,site:{siteId:f.siteId,subdomain:f.subdomain,locationId:f.locationId,tag:'threadline-ui'},ownerId:id,email:'syn-threadline-11111111@example.invalid',password:'SYNTHETIC_ONLY_NO_REAL_SECRET',products:[id],collections:[id],editorCatalog:{}},origins:{identityOrigin:f.identityOrigin,merchantOrigin:f.merchantOrigin,commerceOrigin:f.commerceOrigin,checkoutOrigin:f.checkoutOrigin,apiOrigin:f.apiOrigin,receiverOrigin:f.receiverOrigin,cookieDomain:f.cookieDomain,ports:{...f.ports}},roles,witness:{path:'/private/tmp/letbuyy-runtime07-backups/fake-witness.json',sha256:h,dataSha256:h,profileSha256:h,sequenceSha256:h,acceptedOrderIds:Array.from({length:7},(_,i)=>'11111111-1111-1111-1111-'+String(i+1).padStart(12,'0'))},qa:{mode:'refresh',oldSessionsPreserved:false,allowIssuerAndCookieRefresh:true,allowCheckoutRefresh:true,pendingIntentsReconciled:true,pendingIntentWitnessSha256:h,retainedBinding:null},tls:{certPath:'/private/tmp/letbuyy-runtime07-backups/fake-cert',certSha256:h,keyPath:'/private/tmp/letbuyy-runtime07-backups/fake-key',keySha256:h},provider:{csvPath:'/private/tmp/letbuyy-runtime07-backups/fake-csv',csvSha256:h,webhookSecretPath:'/private/tmp/letbuyy-runtime07-backups/fake-hmac',webhookSecretSha256:h}};
++}
++test('fixed application scope accepts only an explicit unexpired source capsule',()=>{
++ assert.equal(validatePreservedCapsule(fixture(),expected).application.fixtureId,f.fixtureId);
++ const mutants=[c=>c.extra=true,c=>c.expiresAt='2026-10-25T00:00:00Z',c=>c.source.resourceRunId='000000000001',c=>c.source.runnerPid=1,c=>c.source.volume='foreign',c=>c.source.imageId='latest',c=>c.sourceBundle.root='/tmp/foreign',c=>c.archive.path='/tmp/foreign.dump',c=>c.fence.final=false,c=>c.fence.editorReturned=false,c=>c.application.fixtureId='000000000001',c=>c.application.site.siteId=id,c=>c.origins.ports.identity=9001,c=>c.origins.identityOrigin='https://foreign.invalid',c=>c.roles.definitions[0].name='foreign',c=>c.witness.dataSha256='',c=>c.qa.oldSessionsPreserved=true,c=>c.qa.pendingIntentsReconciled=false,c=>c.qa.allowCheckoutRefresh=false,c=>c.tls.keySha256='bad'];
++ for(const mutate of mutants){const c=fixture();mutate(c);assert.throws(()=>validatePreservedCapsule(c,expected));}
++ for(const scope of [{jobs:2},{noReap:false},{suitePath:'another.test.ts'}])assert.throws(()=>validatePreservedCapsule(fixture(),{...expected,...scope}));
++});
++test('descriptor-bound private bytes refuse tampering, permissions, UID, symlink and hardlink',()=>{
++ const root=mkdtempSync('/private/tmp/threadline-synthetic-private-');chmodSync(root,0o700);
++ try{const path=join(root,'fake.json'),data=Buffer.from('{"synthetic":true}');writeFileSync(path,data,{mode:0o600});assert.deepEqual(readPreservedPrivateFile(path,{expectedSha256:sha(data)}),data);
++ assert.throws(()=>readPreservedPrivateFile(path,{expectedSha256:h}));assert.throws(()=>readPreservedPrivateFile(path,{uid:process.getuid()+1}));assert.throws(()=>readPreservedPrivateFile(path,{maxBytes:1}));
++ chmodSync(path,0o644);assert.throws(()=>readPreservedPrivateFile(path));chmodSync(path,0o600);symlinkSync(path,join(root,'symlink'));assert.throws(()=>readPreservedPrivateFile(join(root,'symlink')));linkSync(path,join(root,'hard'));assert.throws(()=>readPreservedPrivateFile(path));rmSync(join(root,'hard'));chmodSync(root,0o755);assert.throws(()=>readPreservedPrivateFile(path));
++ }finally{rmSync(root,{recursive:true,force:true});}
++ assert.throws(()=>parsePreservedJson(Buffer.from('secret SYNTHETIC malformed')),{message:'preserved fixture refused [PRIVATE_JSON]'});
++});
++test('restore target is a newly allocated owned network and volume, never the source',()=>{
++ const saved={capsule:fixture()},cluster={runId:'000000000001',containerStarted:true,networkCreated:true,volumeCreated:true,name:'new-owned',volume:'new-volume',network:'new-network'};
++ const inspect={State:{Running:true},Image:'sha256:'+h,Config:{Image:DEFAULT_IMAGE,Labels:{[FIXTURE_LABEL]:'1',[RUN_ID_LABEL]:cluster.runId,[OWNER_PID_LABEL]:'123',[ROLE_LABEL]:'postgres'}},HostConfig:{},NetworkSettings:{Ports:{},Networks:{'new-network':{}}},Mounts:[{Type:'volume',Name:'new-volume',Destination:'/var/lib/postgresql/data'}]};
++ const verify=(c=cluster,i=inspect)=>validatePreservedTarget(c,saved.capsule.source.database,saved,i,123);verify();
++ for(const c of [{...cluster,runId:f.fixtureId},{...cluster,volume:saved.capsule.source.volume},{...cluster,networkCreated:false}])assert.throws(()=>verify(c));
++ for(const mutate of [i=>i.Config.Labels[OWNER_PID_LABEL]='456',i=>i.HostConfig.Privileged=true,i=>i.HostConfig.Binds=['/host:/data'],i=>i.NetworkSettings.Ports={'5432/tcp':[{}]},i=>i.Mounts[0].Name='foreign']){const i=structuredClone(inspect);mutate(i);assert.throws(()=>verify(cluster,i));}
++ const sql=preservedRoleSql(saved,'a'.repeat(64));assert(sql.includes('PASSWORD NULL'));assert(!sql.includes('DROP ROLE'));assert.throws(()=>preservedRoleSql(saved,"x';DROP DATABASE postgres;"));
++});
++test('cutover binds all staged hashes and a short explicit Root permit',()=>{
++ const saved={capsule:fixture(),capsuleSha256:h},binding={sha256:h},stages={identity:{path:'fake',sha256:h}},runId='000000000001';
++ const permit={version:1,status:'ROOT_APPROVED_PRESERVED_RUNTIME07_CUTOVER',resourceRunId:runId,applicationFixtureId:f.fixtureId,siteId:f.siteId,capsuleSha256:h,archiveSha256:h,sourceManifestSha256:h,fenceReceiptSha256:h,witnessSha256:h,bindingSha256:h,stages,oldListenersRetired:true,noLaterAcceptedWork:true,expiresAt:'2026-10-25T01:05:00Z'};
++ validatePreservedCutoverPermit(permit,saved,runId,binding,stages,now);
++ for(const patch of [{oldListenersRetired:false},{noLaterAcceptedWork:false},{bindingSha256:'b'.repeat(64)},{expiresAt:'2026-10-25T02:00:00Z'},{stages:{}}])assert.throws(()=>validatePreservedCutoverPermit({...permit,...patch},saved,runId,binding,stages,now));
++});
++test('source contracts keep the ordinary guard intact and remove seeding from restore branch',()=>{
++ const runner=readFileSync(new URL('../../scripts/governance/run-executable-suites.mjs',import.meta.url),'utf8');assert(runner.includes('checkpointPreservedDatabase'));assert(runner.includes("['rehearsal','serve']"));assert(runner.includes('!cluster.preservedSafeToCleanup'));
++ const manual=readFileSync(new URL('../owned-db/theme-completion-razorpay-browser.manual.ts',import.meta.url),'utf8');assert(manual.indexOf("PHASE==='rehearsal'")<manual.indexOf('const file ='));assert(manual.includes('if (!preserved&&process.env.LETBUYY_THEME_COMPLETION_SHARED_PROPOSALS'));
++});
++
++test('capsule loader binds synthetic source, final fence, full archive bytes and pending-intent proof',async()=>{
++ const {loadPreservedCapsule}=await import('../../scripts/governance/owned-database-provision.mjs');
++ const root=mkdtempSync('/private/tmp/letbuyy-synthetic-capsule-');chmodSync(root,0o700);
++ try{
++  const c=fixture(),scope={...expected,repoRoot:root};c.sourceBundle.root=root;c.sourceBundle.manifestPath=join(root,'manifest.json');writeFileSync(join(root,'source.mjs'),'// synthetic only',{mode:0o600});const manifest=Buffer.from(JSON.stringify({files:[{path:'source.mjs',sha256:sha('// synthetic only')}]}));writeFileSync(c.sourceBundle.manifestPath,manifest,{mode:0o600});c.sourceBundle.manifestSha256=sha(manifest);
++  const archive=Buffer.from('PGDMPfake');c.archive.bytes=archive.length;c.archive.sha256=sha(archive);
++  const witness={dataSha256:h,profileSha256:h,sequenceSha256:h,acceptedOrderIds:c.witness.acceptedOrderIds,pendingIntentsReconciled:true,pendingIntentWitnessSha256:h},witnessBytes=Buffer.from(JSON.stringify(witness));c.witness.sha256=sha(witnessBytes);c.fence.witnessSha256=c.witness.sha256;
++  const fence={status:'FINAL_EDITOR_WRITE_FENCE',leaseId:c.fence.leaseId,latestAcceptedAt:c.fence.lastAcceptedAt,archiveSha256:c.archive.sha256,witnessSha256:c.witness.sha256,applicationFixtureId:f.fixtureId,noLaterAcceptedWork:true,databaseWriteFenceConfirmed:true,providerCallbacksSettled:true};
++  const paths=new Map([[c.archive.path,archive],[c.witness.path,witnessBytes]]),capsulePath='/private/tmp/letbuyy-runtime07-backups/fake-capsule.json';
++  const readPrivate=(path,options={})=>{const bytes=paths.get(path);assert(bytes,'test never reads a real private file');if(options.expectedSha256)assert.equal(sha(bytes),options.expectedSha256);return bytes;};
++  function load(){const fenceBytes=Buffer.from(JSON.stringify(fence));paths.set(c.fence.receiptPath,fenceBytes);c.fence.receiptSha256=sha(fenceBytes);const capsuleBytes=Buffer.from(JSON.stringify(c));paths.set(capsulePath,capsuleBytes);return loadPreservedCapsule(capsulePath,sha(capsuleBytes),scope,{readPrivate});}
++  assert.equal(load().archive.toString(),'PGDMPfake');fence.noLaterAcceptedWork=false;assert.throws(load);fence.noLaterAcceptedWork=true;paths.set(c.archive.path,Buffer.from('PGDMPevil'));assert.throws(load);paths.set(c.archive.path,archive);writeFileSync(join(root,'source.mjs'),'changed');assert.throws(load);
++ }finally{rmSync(root,{recursive:true,force:true});}
++});
+--- /dev/null
++++ b/tests/governance/owned-prebuilt-client.test.mjs
+@@ -0,0 +1,33 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {mkdtempSync,mkdirSync,writeFileSync,chmodSync,symlinkSync,rmSync,readFileSync} from 'node:fs';
++import {join} from 'node:path';
++import {createHash} from 'node:crypto';
++import {ownedProductionCommand,preservedBuildEnvironmentDigest,validatePrebuiltClaim,verifyPrebuiltSource,inventoryPrebuiltDirectory,stageOwnedPrebuilt,populateOwnedPrebuilt} from '../../scripts/governance/owned-next-production.mjs';
++const h='a'.repeat(64),sha=x=>createHash('sha256').update(x).digest('hex');
++function scratch(){const root=mkdtempSync('/private/tmp/threadline-synthetic-build-');chmodSync(root,0o700);return root;}
++function claim(root,pid=123,runId='000000000009'){const kind='identity-next-production',supervisorPid=pid,parentPid=122;const app=join(root,'apps/platform/identity');mkdirSync(app,{recursive:true,mode:0o700});const distName=`.next-session-runtime-${pid}-${kind}`,directory=join(app,distName);mkdirSync(directory,{mode:0o700});writeFileSync(directory+'.owner.json',JSON.stringify({version:1,root,kind,runId,supervisorPid,parentPid,token:'1'.repeat(64)}),{mode:0o600});return {root,kind,runId,supervisorPid,parentPid,distName,directory};}
++test('commands are fixed and full environment binds all non-mode values',()=>{
++ const cmd=ownedProductionCommand('/private/tmp/fake','identity-next-production',64593,'start');assert.equal(cmd.args.at(-1),'64593');assert(!cmd.args.includes('build'));
++ for(const args of [['evil',64593,'start'],['identity-next-production',900,'start'],['identity-next-production',64593,'shell']])assert.throws(()=>ownedProductionCommand('/private/tmp/fake',...args));
++ const env={NODE_ENV:'production',KEY:'SYNTHETIC_VALUE'};assert.equal(preservedBuildEnvironmentDigest(env),preservedBuildEnvironmentDigest({...env,LETBUYY_OWNED_NEXT_STAGE_ONLY:'1',LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR:'another-owned-pid'}));assert.notEqual(preservedBuildEnvironmentDigest(env),preservedBuildEnvironmentDigest({...env,KEY:'CHANGED'}));assert.throws(()=>preservedBuildEnvironmentDigest({KEY:undefined}));
++});
++test('only a matching PID-owned empty target may receive a verified stage',()=>{
++ const root=scratch();let stageDir,ownsStageDir=false;
++ try{const runId='0'+process.pid.toString(16).padStart(11,'0');const c=claim(root,123,runId),checked=validatePrebuiltClaim(c);assert.equal(checked.directory,c.directory);assert.throws(()=>validatePrebuiltClaim({...c,runId:'000000000001'}));assert.throws(()=>validatePrebuiltClaim({...c,supervisorPid:124}));
++ writeFileSync(join(c.directory,'BUILD_ID'),'synthetic-build',{mode:0o600});writeFileSync(join(c.directory,'required-server-files.json'),'{}',{mode:0o600});mkdirSync(join(c.directory,'server'),{mode:0o700});writeFileSync(join(c.directory,'server/app.js'),'synthetic-code',{mode:0o600});
++ const binding={root,kind:c.kind,runId,sourceManifestSha256:h,capsuleSha256:h,envDigest:h,claim:checked};
++ stageDir=`/private/tmp/letbuyy-preserved-runtime07-${runId}`;
++ // Unique test PID-derived scope. Never remove a pre-existing private binding directory.
++ mkdirSync(stageDir,{mode:0o700});ownsStageDir=true;
++ const stage=stageOwnedPrebuilt(binding);const second=claim(root,125,runId),target=validatePrebuiltClaim(second);
++ assert.throws(()=>populateOwnedPrebuilt({...binding,claim:target,path:stage.path,sha256:'b'.repeat(64)}));assert.throws(()=>populateOwnedPrebuilt({...binding,claim:target,path:stage.path,sha256:stage.sha256,envDigest:'b'.repeat(64)}));
++ populateOwnedPrebuilt({...binding,claim:target,path:stage.path,sha256:stage.sha256});assert.equal(readFileSync(join(target.directory,'server/app.js'),'utf8'),'synthetic-code');assert.throws(()=>populateOwnedPrebuilt({...binding,claim:target,path:stage.path,sha256:stage.sha256}));
++ const third=claim(root,126,runId);writeFileSync(join(stageDir,'builds',c.kind,'payload/BUILD_ID'),'changed',{mode:0o600});assert.throws(()=>populateOwnedPrebuilt({...binding,claim:validatePrebuiltClaim(third),path:stage.path,sha256:stage.sha256}));
++ }finally{rmSync(root,{recursive:true,force:true});if(ownsStageDir)rmSync(stageDir,{recursive:true,force:true});}
++});
++test('build inventory and source manifest reject symlinks and changed bytes',()=>{
++ const root=scratch();try{const build=join(root,'build');mkdirSync(build,{mode:0o700});writeFileSync(join(build,'BUILD_ID'),'id',{mode:0o600});assert.throws(()=>inventoryPrebuiltDirectory(build));writeFileSync(join(build,'required-server-files.json'),'{}',{mode:0o600});assert.equal(inventoryPrebuiltDirectory(build).length,2);symlinkSync(join(build,'BUILD_ID'),join(build,'link'));assert.throws(()=>inventoryPrebuiltDirectory(build));
++ const file=join(root,'source.js');writeFileSync(file,'synthetic',{mode:0o600});const manifest=Buffer.from(JSON.stringify({files:[{path:'source.js',sha256:sha('synthetic')}]})),path=join(root,'manifest.json');writeFileSync(path,manifest,{mode:0o600});verifyPrebuiltSource(root,path,sha(manifest));assert.throws(()=>verifyPrebuiltSource(root,path,h));writeFileSync(file,'changed');assert.throws(()=>verifyPrebuiltSource(root,path,sha(manifest)));writeFileSync(path,JSON.stringify({files:[{path:'../escape',sha256:h}]}));assert.throws(()=>verifyPrebuiltSource(root,path,sha(readFileSync(path))));
++ }finally{rmSync(root,{recursive:true,force:true});}
++});
+--- /dev/null
++++ b/services/api-gateway/src/__tests__/owned-db/preserved-theme-runtime-restore-qualification.manual.ts
+@@ -0,0 +1,29 @@
++// CASE SOURCE ONLY. Called exclusively by the admitted existing manual entry in
++// rehearsal mode; never auto-discovered, never seeds or starts apps/providers.
++import assert from 'node:assert/strict';
++import type { TestContext } from 'node:test';
++import { createRequire } from 'node:module';
++import type { OwnedDatabase } from './owned-db-support';
++import type { PreservedSaved } from './threadline-browser-fixture';
++
++type Witness={dataSha256:string;profileSha256:string;sequenceSha256:string;acceptedOrderIds:string[]};
++export async function qualifyPreservedRuntimeRestore(t:TestContext,owned:OwnedDatabase,saved:PreservedSaved) {
++  const tools=createRequire(import.meta.url)('../../../../../scripts/governance/owned-database-provision.mjs') as {measurePreservedDatabase(query:(sql:string)=>Promise<string>):Promise<Witness>};
++  await t.test('fresh resource marker and retained original application identity',()=>{
++    assert.notEqual(owned.runId,saved.capsule.application.fixtureId);
++    assert.equal(owned.psql('SELECT current_setting(\'letbuyy.fixture_run_id\');').trim(),owned.runId);
++    assert.equal(owned.psql(`SELECT count(*) FROM public.sites WHERE id='${saved.capsule.application.site.siteId}' AND subdomain='${saved.capsule.application.site.subdomain}';`).trim(),'1');
++  });
++  await t.test('positive populated state, every original accepted order retained',()=>{
++    assert(saved.capsule.witness.acceptedOrderIds.length>=7);
++    const ids=JSON.parse(owned.psql(`SELECT jsonb_agg(id::text ORDER BY id) FROM public.orders WHERE store_id='${saved.capsule.application.site.siteId}';`)) as string[];
++    assert.deepEqual(ids,saved.capsule.witness.acceptedOrderIds);
++    assert(Number(owned.psql('SELECT count(*) FROM public.theme_instances;'))>=10,'All installed theme instances must survive');
++  });
++  await t.test('full row, sequence, owner, ACL, function and RLS conservation',async()=>{
++    const actual=await tools.measurePreservedDatabase(async sql=>owned.scriptLarge(sql));
++    for(const key of ['dataSha256','profileSha256','sequenceSha256','acceptedOrderIds'] as const)assert.deepEqual(actual[key],saved.capsule.witness[key]);
++  });
++  // No browser/SSO/TLS/prebuilt/provider claim is made by this DB-only rehearsal.
++  // Those require a separate staged-build and controlled-cutover admission.
++}

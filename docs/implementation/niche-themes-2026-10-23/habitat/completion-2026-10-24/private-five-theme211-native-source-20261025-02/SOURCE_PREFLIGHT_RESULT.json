@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-25T01:55:33.326140+00:00",
+  "classification": "ACTUAL_TERMINAL0_SOURCE_METADATA_PREFLIGHT_NOT_RESOURCE_ADMISSION",
+  "sourcePreflightExit": 0,
+  "sourcePreflight": {
+    "status": "SOURCE_PREFLIGHT_PASS_RESOURCES_NOT_CHECKED",
+    "inventorySha256": "10e264514e156c99359d0cd4c28f5f6cafa0ccc2725696755643ccc9d336c76d",
+    "files": 7943,
+    "packages": 99,
+    "workspaceLinks": 178,
+    "toolDylibEdges": 76,
+    "negativeInventoryControls": [
+      "missingVendor",
+      "corruptTool",
+      "missingNodeDylib",
+      "foreignWorkspaceLink",
+      "missingExportEdge",
+      "changedPackage",
+      "missingWorkspace",
+      "changedMigrationOrder",
+      "excludedDependency",
+      "absentHostBinary"
+    ],
+    "migrations": {
+      "count": 322,
+      "maximum": 393,
+      "ceiling": null,
+      "orderedSha256": "cc775ccb284bef5dd61a1fd0e9c1b4a79656ec8181bdf6fef1e77d6d9b190092"
+    },
+    "nativeAdmissionAbsent": true,
+    "applicationModulesEvaluated": false,
+    "childProcesses": 0,
+    "nativeExecuted": false,
+    "resourcesChecked": false
+  },
+  "sourceClosureVerificationExit": 0,
+  "sourceClosureNegativeControls": 3,
+  "pureAdmissionAtomicityRefusalMatrixTelemetryPredicates": {
+    "PASS": 23,
+    "FAIL": 0,
+    "skipped": 0,
+    "raw": "source-control-final.tap"
+  },
+  "resourceAndParentVerifierPlans": "Syntax-only exit0; neither executed",
+  "nativeWorkerRunnerModuleOrResourcesExecuted": false,
+  "actualNativeAdmissionCreated": false
+}

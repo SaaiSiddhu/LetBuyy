@@ -1,0 +1,8 @@
+{
+  "recordedAt": "2026-10-25T00:41:20.403846+00:00",
+  "status": "SUPERSEDED_BY_RUNNER_LIVENESS_CORRECTION_AND_ROOT_FRESH_OWNED_RESTORE_DIRECTION",
+  "currentPlan": "CONTROLLED_INTEGRATION_PLAN_20261025_02.json",
+  "currentMinimalPaths": "PRESERVED_RESTORE_MINIMAL_PATH_REVIEW_02.json",
+  "originalHistory": "CONTROLLED_INTEGRATION_PLAN_20261025_01.before-runner-correction.json",
+  "doNotActOnOriginalOwnerTransferOrDeadRunnerClaims": true
+}

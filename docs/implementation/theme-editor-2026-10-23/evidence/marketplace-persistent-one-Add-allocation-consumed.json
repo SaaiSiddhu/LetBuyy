@@ -1,0 +1,14 @@
+{
+  "localId": "ed52fedf85eb",
+  "sourceEpoch": "8c89302c8b1991d8bde035d9debe099f8460d24255a794c51a4157daec4f2082",
+  "previewRendered": true,
+  "normalNewDomainSignIn": true,
+  "actualReturn": {
+    "origin": "http://themes.letbuyy-local.localhost:9015",
+    "path": "/install",
+    "theme": "letbuyy-sense",
+    "version": "2.0.0"
+  },
+  "installPostsAttempted": 1,
+  "installAttemptRecordedBeforeClick": "2026-10-24T01:26:16.065Z"
+}

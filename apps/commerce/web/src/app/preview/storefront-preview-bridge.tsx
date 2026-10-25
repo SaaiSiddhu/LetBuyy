@@ -10,6 +10,11 @@ import {
     EDITOR_LEGACY_VIEWPORT_MESSAGE,
     EDITOR_READY_MESSAGE,
     INSPECTOR_SECTION_SCROLLED_TO,
+    editorPreviewContextMatches,
+    readEditorPreviewSelection,
+    type EditorPreviewContext,
+    type EditorPreviewIdentityIndex,
+    type EditorPreviewSelection,
 } from '@letbuyy/theme-engine/editor-bridge-protocol';
 
 // Alias to local names for readability within this file; the shared module is the source of truth.
@@ -27,6 +32,8 @@ type StorefrontPreviewBridgeProps = {
     initialViewport: PreviewViewport;
     sectionIds: string[];
     sectionTypes?: Record<string, string>;
+    identities: EditorPreviewIdentityIndex;
+    context: EditorPreviewContext | null;
 };
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -71,14 +78,16 @@ function applyViewport(viewport: PreviewViewport) {
     document.documentElement.dataset.letbuyyPreviewViewport = viewport;
 }
 
-function selectSection(sectionId: string, shouldScroll: boolean) {
+function selectSection(selection: EditorPreviewSelection, context: EditorPreviewContext, shouldScroll: boolean) {
+    const { sectionId, blockId } = selection;
     // Re-post SELECTED_MESSAGE same-window so EditorPreviewSectionFrame listeners pick it up.
     // Target is window.location.origin — strictly same-window, never cross-origin.
-    window.postMessage({ type: SELECTED_MESSAGE, sectionId }, window.location.origin);
+    window.postMessage({ type: SELECTED_MESSAGE, ...selection, context }, window.location.origin);
 
     if (!shouldScroll) return;
 
-    const target = document.querySelector<HTMLElement>(`[data-letbuyy-editor-section-id="${CSS.escape(sectionId)}"]`);
+    const section = document.querySelector<HTMLElement>(`[data-letbuyy-editor-section-id="${CSS.escape(sectionId)}"]`);
+    const target = blockId ? section?.querySelector<HTMLElement>(`[data-block-id="${CSS.escape(blockId)}"]`) : section;
     target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     // Dispatch same-window flash trigger after scheduling the scroll.
@@ -92,25 +101,27 @@ function selectSection(sectionId: string, shouldScroll: boolean) {
 export default function StorefrontPreviewBridge({
     initialViewport,
     sectionIds,
-    sectionTypes,
+    identities,
+    context,
 }: StorefrontPreviewBridgeProps) {
-    useEffect(() => bindLiquidPreviewInspector(document, getEditorOrigin(), sectionTypes || {}), [sectionTypes]);
+    useEffect(() => context ? bindLiquidPreviewInspector(document, getEditorOrigin(), identities, context) : undefined, [identities, context]);
     useEffect(() => {
         applyViewport(initialViewport);
         // READY_MESSAGE: only send when the editor origin is known.
         // Suppressed (never '*') when NEXT_PUBLIC_ADMIN_URL is absent to avoid broadcasting
         // sectionIds (theme layout metadata) to arbitrary embedders.
         const editorOriginForReady = getEditorOrigin();
-        if (editorOriginForReady) {
+        if (editorOriginForReady && context) {
             window.parent?.postMessage({
                 type: READY_MESSAGE,
                 viewport: initialViewport,
                 sectionIds,
+                context,
             }, editorOriginForReady);
         } else if (process.env.NODE_ENV !== 'production') {
             console.warn('[StorefrontPreviewBridge] NEXT_PUBLIC_ADMIN_URL not configured — READY_MESSAGE suppressed');
         }
-    }, [initialViewport, sectionIds]);
+    }, [initialViewport, sectionIds, context]);
 
     useEffect(() => {
         function handleMessage(event: MessageEvent) {
@@ -120,10 +131,11 @@ export default function StorefrontPreviewBridge({
             // Fail-closed: when editorOrigin is empty (NEXT_PUBLIC_ADMIN_URL absent and referrer
             // missing) ALL messages are rejected — we must not let an unknown embedder drive
             // preview scroll or selection via this handler.
-            if (!editorOrigin || event.origin !== editorOrigin) return;
+            if (!editorOrigin || event.origin !== editorOrigin || event.source !== window.parent) return;
 
             const data = asRecord(event.data);
             const type = data.type;
+            if (!context || !editorPreviewContextMatches(data.context, context)) return;
 
             // Translate ONLY external editor messages (legacy + scroll). SELECTED_MESSAGE must never
             // match here: selectSection() below re-posts SELECTED_MESSAGE to this same window, so
@@ -133,15 +145,13 @@ export default function StorefrontPreviewBridge({
             // event.origin is window.location.origin (≠ editorOrigin), so the origin guard above
             // already prevents it from entering here.
             if (type === LEGACY_SELECTION_MESSAGE || type === SCROLL_MESSAGE) {
-                const sectionId = typeof data.sectionId === 'string'
-                    ? data.sectionId
-                    : typeof data.selectedSectionId === 'string' ? data.selectedSectionId : '';
+                const selection = readEditorPreviewSelection(data, identities);
 
-                if (sectionId) {
+                if (selection) {
                     // Only SCROLL_MESSAGE triggers a scroll + flash — LEGACY_SELECTION_MESSAGE
                     // selects (syncs outline) but does not scroll again, preventing the
                     // double-scroll jank when the editor posts all three messages at once.
-                    selectSection(sectionId, type === SCROLL_MESSAGE);
+                    selectSection(selection, context, type === SCROLL_MESSAGE);
                 }
                 return;
             }
@@ -154,7 +164,7 @@ export default function StorefrontPreviewBridge({
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, []);
+    }, [context, identities]);
 
     return null;
 }

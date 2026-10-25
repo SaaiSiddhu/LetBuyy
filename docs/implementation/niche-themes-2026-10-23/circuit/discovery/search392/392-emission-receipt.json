@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-23T17:02:55.783654+00:00",
+  "status": "EXACT_NATIVE_QUALIFIED392_PAIR_SOURCE_EMITTED_FOR_FULL_DEFAULT_LATEST_QUALIFICATION",
+  "rootNativeAdmission": {
+    "path": "docs/implementation/niche-theme-programme/circuit-search392-native-admission.json",
+    "sha256": "1238543d37f951a0402f05ee94e7dca85284e3dc6bfb149073da387de95673cc"
+  },
+  "rootDependentSourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/dependent-latest392-source-admission.json",
+    "sha256": "4fdfb6dc10abeae875afcf2b13541df60b4582d1d0e98e9c02f0fbcd3f446afe"
+  },
+  "files": [
+    {
+      "path": "database/supabase/migrations/392_storefront_electronics_search.sql",
+      "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+      "bytes": 27178,
+      "sourceDraft": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.up.draft.sql"
+    },
+    {
+      "path": "database/supabase/rollback/392_storefront_electronics_search.rollback.sql",
+      "sha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+      "bytes": 26513,
+      "sourceDraft": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.down.draft.sql"
+    }
+  ],
+  "current9cdApplied": false,
+  "hostedApplied": false,
+  "next": "OnefreshdefaultLATEST392ALL3existingfullsuites/jobs1/no-reap;no currentUIacceptancebeforetestandcorrectedcandidate"
+}

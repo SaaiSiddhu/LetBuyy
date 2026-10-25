@@ -1,0 +1,168 @@
+{
+  "recordedAt": "2026-10-24T20:54:40.381363+00:00",
+  "classification": "INDEPENDENT_OWNER_REVIEW_OF_ROOT_ACTUAL_UI_READONLY_NOT_BROWSER_EXECUTION",
+  "runId": "49ada80bc494",
+  "package": "letbuyy-craft@2.1.0",
+  "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "controllerRecord": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/LIVE_BROWSER_QUEUE.json",
+  "scopeAdoption": "Root explicitly adopted current synthetic site02049de4-41c3-4b10-b5b2-a60a6b5e82bf for a separate current Habitat Test journey; not936 and not automatically the original four-variant fixture.",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "productId": "e8ee40b0-e684-405d-9af9-d50b0152f8f7",
+  "currentVariants": [
+    {
+      "id": "fa4d891e-5b31-4bd6-ba8a-88ea3a889b84",
+      "title": "48 in",
+      "price": 8900,
+      "inventory_qty": 4,
+      "stock": 4,
+      "option1": "48 in",
+      "option2": null,
+      "metadata": {
+        "furniture": {
+          "assembled": {
+            "unit": "in",
+            "width": 48
+          },
+          "package": {
+            "unit": "in",
+            "width": 50,
+            "depth": 25
+          }
+        }
+      }
+    },
+    {
+      "id": "b0d64409-18df-478f-8c72-75a82bc7121b",
+      "title": "Common size",
+      "price": 8900,
+      "inventory_qty": 3,
+      "stock": 3,
+      "option1": "Common size",
+      "option2": null,
+      "metadata": {
+        "furniture": {}
+      }
+    }
+  ],
+  "observed": {
+    "savedFullReloadAnnouncement": "Habitat Runtime07 A — considered rooms",
+    "publishedPublicAnnouncementSame": true,
+    "privatePreviewFirstAttempt": "FAIL_LOADING_DRAFT_PRESERVED",
+    "normalRetry": "PASS_IFRAME_CONTENT_VISIBLE_IN_RETAINED_AX",
+    "currentSelectedVariant": "fa4d891e-5b31-4bd6-ba8a-88ea3a889b84",
+    "selectedOptions": {
+      "Width": "48 in"
+    },
+    "selectedFacts": "Assembled48W in only, package50W×25D in with no height; inherited Wood/Natural/Wipe dry; Assembly not recorded. Current Width48in is not original full A48×30×29.5in.",
+    "cartQuantity": 1,
+    "cartSubtotalINR": 8900,
+    "quoteObservedINR": {
+      "subtotal": 8900,
+      "shipping": 20,
+      "total": 8920
+    },
+    "providerBankUi": "PASS_actual_Test_Success_to_OrderConfirmed",
+    "actualOrderNumber": "ORD-20261024-10004",
+    "buyerAndMerchantExpandedSavedFurniture": "PASS",
+    "actualStockConsumption": {
+      "selectedBefore": 4,
+      "selectedAfter": 3,
+      "otherVariantBefore": 3,
+      "otherVariantAfter": 3,
+      "parentLegacyUnchanged": 8
+    }
+  },
+  "currentPaymentCase": {
+    "id": "HAB-RZP-DESK-01",
+    "status": "PARTIAL_POSITIVE_PURCHASE_FINANCIAL_WEBHOOK_PASS_CAPTURE_FLAG_OPEN",
+    "applicableTo": [
+      "HAB-C-RAZORPAY-BROWSER",
+      "HAB-C-RAZORPAY-VERIFY",
+      "HAB-C-RAZORPAY-WEBHOOK"
+    ],
+    "rationale": "An intended furniture product/actual selected variant purchased on published Habitat210 can satisfy the separate per-theme actual Test requirement despite a different original query fixture, once actual order/payment/mode/amount/currency/HMAC/ledger/buyer/merchant/history receipts pass.",
+    "notApplicableTo": [
+      "HI-02 original full recipe",
+      "HI-06 through HI-13 exact four-variant/probe clauses",
+      "HQ-01 through HQ-09",
+      "HI-14 quantity2/full-A snapshot/overstock",
+      "HI-15 new CODqty2/retry",
+      "HI-16 exact original-COD snapshot after later edit",
+      "HI-17 genuine absent/malformed historical control"
+    ],
+    "requiredOutstanding": [
+      "Canonical owner disposition and affected retest for R07-HOSTED-CAPTURE-FLAG-01",
+      "Required negative/recovery/final independent acceptance",
+      "Original four-variant/COD/query/history requirements remain separate"
+    ],
+    "noCasePromotionFromBankUiOrOtherThemePayment": true,
+    "ownerProvisionalId": "HAB-R07-RAZORPAY-CURRENT-DESK-01",
+    "ownerReview": "runtime07-20261025/CURRENT_TEST_FINANCIAL_OWNER_REVIEW.json",
+    "actualOrderNumber": "ORD-20261024-10004"
+  },
+  "original26Assessment": {
+    "HI-01": {
+      "status": "PARTIAL",
+      "closedSubclauses": [
+        "Current runtime/site adoption, selected Habitat and saved/public announcement observed"
+      ],
+      "outstanding": [
+        "Complete actual package/instance/release/source and normal actor/buyer ownership binding receipt; original200/current210 labels remain distinct"
+      ]
+    },
+    "HI-04": {
+      "status": "PARTIAL",
+      "closedSubclauses": [
+        "A announcement saved/full reload and public publication observed",
+        "First preview failure preserved, normal Retry actual iframe content observed"
+      ],
+      "outstanding": [
+        "PublishB/restoreA/draftB/reapply and all original seven-check isolation/recovery assertions"
+      ]
+    },
+    "remaining24": "NOT_RUN against original requirements; current two-variant PDP/cart/bank observations are separate additional proof, not original A/B/C/D acceptance."
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-editor-save-reload.ax.txt",
+      "sha256": "666cbb36137e8faca0e75117e70ec851e0a8ac5e7f6c2fd2b5ab9af4109aa3f8"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-publication-preview-state.ax.txt",
+      "sha256": "b7bddc6b5341e0371c4cbe432086a88454da170ebad5b6326111a05a09c1194c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-preview-after-normal-retry.ax.txt",
+      "sha256": "aeea5a7c5e4abea740c2e280b8a80b84adf3398710a847f586ac8f6223f5f7cd"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-published-home.ax.txt",
+      "sha256": "1a204264812850d115d76563da3dec9bc76a85b363b7808095431e66a7a7e8cf"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-48in-selected.ax.txt",
+      "sha256": "628dd40e62da31380b7994976a875da9de623a7dfc1039cb0288c0b58a985775"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-cart-restored.ax.txt",
+      "sha256": "d8c951e9dcc5b660c335a5e48ecf70b90969e6db0e739d044f7456eb4a967c6f"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-checkout-quote.ax.txt",
+      "sha256": "6f3ae7a0b8ec17f2523dd9744ad2326ff2fcad2d19e89e73e23166a33ecb9558"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-before-stock.json",
+      "sha256": "987e03a5a7dafe9fab2994606d66fcd2131159a1dc68acaa9b1648b5badbafff"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/habitat-demo-bank.ax.txt",
+      "sha256": "60497899b8d075a364c24f7f9a82cce144dad3e7af526582f621dee85137509a"
+    }
+  ],
+  "sharedCaptureFlagDiscrepancy": "Root reported an open discrepancy after Dewdrop. Record current Habitat observations independently; no automatic pass/fail transfer.",
+  "immutableHistoryRule": "Capture actual current Test order baseline BEFORE changing this product into the original recipe. That order retains its real Width-only/partial facts, never retroactively receives original A facts. Later new original COD has its own full-A baseline.",
+  "ownerSourceActions": "Sealed private211 only; no Main/runtime/browser/DB/provider operation by Habitat.",
+  "FULL_THEME_CERTIFIED": false,
+  "updatedAt": "2026-10-24T21:03:31.839869+00:00"
+}

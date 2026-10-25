@@ -1,0 +1,10 @@
+{
+  "runId": "fff117a317a5",
+  "name": "public-direct-denial",
+  "sequence": 14,
+  "suiteSha256": "e9586487f94eabf5438e8fe8a3be28d153be2ee8ef2a54f65d133dd678b8bc24",
+  "value": {
+    "role": "anon",
+    "error": "ERROR:  42501: permission denied for function publish_theme_release\nLOCATION:  aclcheck_error, aclchk.c:2812"
+  }
+}

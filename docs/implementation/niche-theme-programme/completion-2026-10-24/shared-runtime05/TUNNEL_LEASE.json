@@ -1,0 +1,11 @@
+{
+  "runId": "7773182e24de",
+  "runnerPid": 29384,
+  "connectorPid": 78034,
+  "receiver": "http://127.0.0.1:61247/razorpay",
+  "expiresAt": "2026-10-24T22:20:00+00:00",
+  "deadlineBasis": "Existing22:20UTCcutoffunchanged;newownedrunnerdeathstopsearlier",
+  "reboundAt": "2026-10-24T18:41:45.886683+00:00",
+  "watchdogPid": 30959,
+  "previousWatchdogStopped": 77336
+}

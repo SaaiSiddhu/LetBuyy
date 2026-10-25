@@ -1,0 +1,3086 @@
+{
+  "scope": "Actual explicit v2 catalog factory and dispatcher → actual app section binder → public ProductModel mapper → LiquidRenderer → canonical app assembly + unchanged storefront CSS. Static presentation evidence, without Next routing, hydration, API query, identity, DB or purchase/lifecycle claims.",
+  "fixtureContext": "Only document margin/input-font reset, approved local fonts and existing app-layout CSS variable context. No repair stylesheet. Baseline gift capability remains absent; configured finder/filter scenes are explicitly presentation-only.",
+  "sources": [
+    {
+      "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "ebc8218b0ec3b1b32ddb6f8764281ed130bfacad8a9e4218c90c356f181950ea"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "2f762197e1cdfa0a4c05fbaf8dd4e5ead946140824640ff79748b2943bdf546f"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "90bc326720b962d3a43ccd6625dcb153ab1507eecbc3151ec65698774b40eb1c"
+    },
+    {
+      "file": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "04591b02ec3673af603d16169e137d305ce0879d73670e5f9af7491a3ed974a3"
+    },
+    {
+      "file": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "88e4189bf1703a938c9cabac6e2f5ba7bc78ddeeeafc2b45b780579becb08e14"
+    },
+    {
+      "file": "packages/commerce-core/src/kindred-facts.ts",
+      "sha256": "f227bfe56432182fffce4ccfda347785d28568f4bdd787e96ea82dd18ade58f4"
+    },
+    {
+      "file": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/kindred-demo.ts",
+      "sha256": "0fb68034c5779b2a629650c865341298fbbe413341e4acf77ae68232be22603f"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "b63a3792eef6704d8345314194050eff540df27b4084047f303688acd50fc58e"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "920d531b0cb08d715dddca750bd19d6046144f2e78259fdd9ebf05cfb97cc475"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "aba78518bcfdabb949c142bb62f1982c377413d376d601287c8324ed2b5d56f0"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765"
+    }
+  ],
+  "generatedAt": "2026-10-23T06:13:21.893Z",
+  "results": [
+    {
+      "scene": "home",
+      "device": "desktop",
+      "presentationOnlyCapability": false,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-desktop.png"
+    },
+    {
+      "scene": "collection",
+      "device": "desktop",
+      "presentationOnlyCapability": false,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-desktop.png"
+    },
+    {
+      "scene": "product",
+      "device": "desktop",
+      "presentationOnlyCapability": false,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/little-pause-open.webp"
+        },
+        {
+          "caption": "Closed box · Confirm the selected packaging option.",
+          "source": "/theme-assets/kindred/v2/little-pause-closed.webp"
+        }
+      ],
+      "screenshot": "screenshots/product-desktop.png"
+    },
+    {
+      "scene": "desk-product",
+      "device": "desktop",
+      "presentationOnlyCapability": false,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Desk Companion set",
+      "giftContents": [
+        "1 × Terracotta linen notebookA5",
+        "1 × Brass ballpoint penBlack ink",
+        "1 × Cotton zip pouchOff-white"
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/desk-companion.webp"
+        }
+      ],
+      "screenshot": "screenshots/desk-product-desktop.png"
+    },
+    {
+      "scene": "missing-product",
+      "device": "desktop",
+      "presentationOnlyCapability": false,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Gift set details not supplied",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/missing-product-desktop.png"
+    },
+    {
+      "scene": "invalid-media",
+      "device": "desktop",
+      "presentationOnlyCapability": false,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [],
+      "screenshot": "screenshots/invalid-media-desktop.png"
+    },
+    {
+      "scene": "empty-collection",
+      "device": "desktop",
+      "presentationOnlyCapability": false,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/empty-collection-desktop.png"
+    },
+    {
+      "scene": "home-finder-presentation",
+      "device": "desktop",
+      "presentationOnlyCapability": true,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-finder-presentation-desktop.png"
+    },
+    {
+      "scene": "collection-filters-presentation",
+      "device": "desktop",
+      "presentationOnlyCapability": true,
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-filters-presentation-desktop.png"
+    },
+    {
+      "scene": "home",
+      "device": "tablet",
+      "presentationOnlyCapability": false,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-tablet.png"
+    },
+    {
+      "scene": "collection",
+      "device": "tablet",
+      "presentationOnlyCapability": false,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-tablet.png"
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "presentationOnlyCapability": false,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/little-pause-open.webp"
+        },
+        {
+          "caption": "Closed box · Confirm the selected packaging option.",
+          "source": "/theme-assets/kindred/v2/little-pause-closed.webp"
+        }
+      ],
+      "screenshot": "screenshots/product-tablet.png"
+    },
+    {
+      "scene": "desk-product",
+      "device": "tablet",
+      "presentationOnlyCapability": false,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Desk Companion set",
+      "giftContents": [
+        "1 × Terracotta linen notebookA5",
+        "1 × Brass ballpoint penBlack ink",
+        "1 × Cotton zip pouchOff-white"
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/desk-companion.webp"
+        }
+      ],
+      "screenshot": "screenshots/desk-product-tablet.png"
+    },
+    {
+      "scene": "missing-product",
+      "device": "tablet",
+      "presentationOnlyCapability": false,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Gift set details not supplied",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/missing-product-tablet.png"
+    },
+    {
+      "scene": "invalid-media",
+      "device": "tablet",
+      "presentationOnlyCapability": false,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [],
+      "screenshot": "screenshots/invalid-media-tablet.png"
+    },
+    {
+      "scene": "empty-collection",
+      "device": "tablet",
+      "presentationOnlyCapability": false,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/empty-collection-tablet.png"
+    },
+    {
+      "scene": "home-finder-presentation",
+      "device": "tablet",
+      "presentationOnlyCapability": true,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-finder-presentation-tablet.png"
+    },
+    {
+      "scene": "collection-filters-presentation",
+      "device": "tablet",
+      "presentationOnlyCapability": true,
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-filters-presentation-tablet.png"
+    },
+    {
+      "scene": "home",
+      "device": "mobile",
+      "presentationOnlyCapability": false,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-mobile.png"
+    },
+    {
+      "scene": "collection",
+      "device": "mobile",
+      "presentationOnlyCapability": false,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-mobile.png"
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "presentationOnlyCapability": false,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/little-pause-open.webp"
+        },
+        {
+          "caption": "Closed box · Confirm the selected packaging option.",
+          "source": "/theme-assets/kindred/v2/little-pause-closed.webp"
+        }
+      ],
+      "screenshot": "screenshots/product-mobile.png"
+    },
+    {
+      "scene": "desk-product",
+      "device": "mobile",
+      "presentationOnlyCapability": false,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Desk Companion set",
+      "giftContents": [
+        "1 × Terracotta linen notebookA5",
+        "1 × Brass ballpoint penBlack ink",
+        "1 × Cotton zip pouchOff-white"
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/desk-companion.webp"
+        }
+      ],
+      "screenshot": "screenshots/desk-product-mobile.png"
+    },
+    {
+      "scene": "missing-product",
+      "device": "mobile",
+      "presentationOnlyCapability": false,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Gift set details not supplied",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/missing-product-mobile.png"
+    },
+    {
+      "scene": "invalid-media",
+      "device": "mobile",
+      "presentationOnlyCapability": false,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [],
+      "screenshot": "screenshots/invalid-media-mobile.png"
+    },
+    {
+      "scene": "empty-collection",
+      "device": "mobile",
+      "presentationOnlyCapability": false,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/empty-collection-mobile.png"
+    },
+    {
+      "scene": "home-finder-presentation",
+      "device": "mobile",
+      "presentationOnlyCapability": true,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-finder-presentation-mobile.png"
+    },
+    {
+      "scene": "collection-filters-presentation",
+      "device": "mobile",
+      "presentationOnlyCapability": true,
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-filters-presentation-mobile.png"
+    },
+    {
+      "scene": "home",
+      "device": "narrow",
+      "presentationOnlyCapability": false,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-narrow.png"
+    },
+    {
+      "scene": "collection",
+      "device": "narrow",
+      "presentationOnlyCapability": false,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-narrow.png"
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "presentationOnlyCapability": false,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/little-pause-open.webp"
+        },
+        {
+          "caption": "Closed box · Confirm the selected packaging option.",
+          "source": "/theme-assets/kindred/v2/little-pause-closed.webp"
+        }
+      ],
+      "screenshot": "screenshots/product-narrow.png"
+    },
+    {
+      "scene": "desk-product",
+      "device": "narrow",
+      "presentationOnlyCapability": false,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Desk Companion set",
+      "giftContents": [
+        "1 × Terracotta linen notebookA5",
+        "1 × Brass ballpoint penBlack ink",
+        "1 × Cotton zip pouchOff-white"
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/desk-companion.webp"
+        }
+      ],
+      "screenshot": "screenshots/desk-product-narrow.png"
+    },
+    {
+      "scene": "missing-product",
+      "device": "narrow",
+      "presentationOnlyCapability": false,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Gift set details not supplied",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/missing-product-narrow.png"
+    },
+    {
+      "scene": "invalid-media",
+      "device": "narrow",
+      "presentationOnlyCapability": false,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [],
+      "screenshot": "screenshots/invalid-media-narrow.png"
+    },
+    {
+      "scene": "empty-collection",
+      "device": "narrow",
+      "presentationOnlyCapability": false,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/empty-collection-narrow.png"
+    },
+    {
+      "scene": "home-finder-presentation",
+      "device": "narrow",
+      "presentationOnlyCapability": true,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-finder-presentation-narrow.png"
+    },
+    {
+      "scene": "collection-filters-presentation",
+      "device": "narrow",
+      "presentationOnlyCapability": true,
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-filters-presentation-narrow.png"
+    }
+  ],
+  "stress": [
+    {
+      "scene": "home-finder-presentation",
+      "kind": "text200",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-finder-presentation-text200.png"
+    },
+    {
+      "scene": "collection-filters-presentation",
+      "kind": "text200",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Ready-made gifts",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/collection-filters-presentation-text200.png"
+    },
+    {
+      "scene": "product",
+      "kind": "text200",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "Little Pause set",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/little-pause-open.webp"
+        },
+        {
+          "caption": "Closed box · Confirm the selected packaging option.",
+          "source": "/theme-assets/kindred/v2/little-pause-closed.webp"
+        }
+      ],
+      "screenshot": "screenshots/product-text200.png"
+    },
+    {
+      "scene": "product",
+      "kind": "long-hindi",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-facts p",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "आपके प्रियजन के लिए तैयार उपहार — हर वस्तु, पैकेजिंग और देखभाल की पूरी जानकारी ध्यान से पढ़ें",
+      "giftContents": [
+        "1 × Speckled ceramic mugIvory · 300 mlHand wash.",
+        "1 × Sage linen notebookA5 · 96 lined pages",
+        "1 × Brass ballpoint penBlack inkRefill type not supplied."
+      ],
+      "mediaViews": [
+        {
+          "caption": "Open box · Check the supplied contents list.",
+          "source": "/theme-assets/kindred/v2/little-pause-open.webp"
+        },
+        {
+          "caption": "Closed box · Confirm the selected packaging option.",
+          "source": "/theme-assets/kindred/v2/little-pause-closed.webp"
+        }
+      ],
+      "screenshot": "screenshots/product-long-hindi.png"
+    },
+    {
+      "scene": "home",
+      "kind": "long-store-name",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-long-store-name.png"
+    },
+    {
+      "scene": "home",
+      "kind": "mobile-menu-state",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-header__nav-links>a",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-mobile-menu-state.png",
+      "stateOnly": "Forced presentation state; no hydration interaction claim"
+    },
+    {
+      "scene": "home",
+      "kind": "search-state",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "fonts": {
+        "status": "loaded",
+        "body": "Lato, Arial, sans-serif",
+        "heading": "\"Playfair Display\", Georgia, serif",
+        "lato": true,
+        "latoBold": true,
+        "playfair": true,
+        "loaded": [
+          "Lato 400",
+          "Lato 700",
+          "Playfair Display 400",
+          "Playfair Display 600"
+        ]
+      },
+      "brokenImages": [],
+      "contrast": [
+        {
+          "selector": ".kr-intro h1",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 3
+        },
+        {
+          "selector": ".kr-button",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(102, 46, 66)",
+          "ratio": 10.322333764442467,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".kr-card-meta",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-predictive-search input",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer h3",
+          "foreground": "rgb(52, 44, 44)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 13.115419007305402,
+          "minimum": 4.5
+        },
+        {
+          "selector": ".lb-footer__bottom",
+          "foreground": "color(srgb 0.402941 0.37451 0.368627)",
+          "background": "rgb(255, 250, 244)",
+          "ratio": 5.930711522837282,
+          "minimum": 4.5
+        }
+      ],
+      "smallControls": [],
+      "overflow": [],
+      "textOverflow": [],
+      "hiddenPainted": [],
+      "h1": "A good gift starts with them.",
+      "giftContents": [],
+      "mediaViews": [],
+      "screenshot": "screenshots/home-search-state.png",
+      "stateOnly": "Forced presentation state; no hydration interaction claim"
+    }
+  ],
+  "keyboard": {
+    "closedNavTabs": [
+      {
+        "label": "",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Menu",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Kindred",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Search",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Log in",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Cart (0)",
+        "inClosedPanel": false
+      },
+      {
+        "label": "",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Search products →",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Browse every gift →",
+        "inClosedPanel": false
+      },
+      {
+        "label": "All collections →",
+        "inClosedPanel": false
+      },
+      {
+        "label": "1Birthday →Another year, a little joy.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "2Thank you →For the things they do.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "3Housewarming →Make a place feel theirs.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "4Just because →No occasion needed.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "3 included itemsINR 1,790.00Little Pause set",
+        "inClosedPanel": false
+      },
+      {
+        "label": "See what’s inside →",
+        "inClosedPanel": false
+      },
+      {
+        "label": "3 included itemsINR 1,290.00Desk Companion set",
+        "inClosedPanel": false
+      },
+      {
+        "label": "See what’s inside →",
+        "inClosedPanel": false
+      }
+    ],
+    "closedNavSkipped": true,
+    "closedPanel": {
+      "visibility": "hidden",
+      "left": 390,
+      "right": 780
+    },
+    "variantFocus": {
+      "active": true,
+      "outline": "solid",
+      "outlineWidth": "2px"
+    },
+    "nativeDisclosure": true,
+    "scope": "Actual native controls/island markup only. No custom-element hydration or purchase claim."
+  },
+  "pageErrors": [],
+  "status": "pass",
+  "failures": []
+}

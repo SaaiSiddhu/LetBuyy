@@ -1,0 +1,95 @@
+Browser tab: 11, Title: "Circuit lifecycle hub | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/169ce9c6-d30a-4abf-b1e0-58a771ab88bd".
+1 AXWebArea Circuit lifecycle hub | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/169ce9c6-d30a-4abf-b1e0-58a771ab88bd
+	2 container
+		3 text Know the model. Check the connection.
+		4 container
+			5 button (collapsed) Description: Menu, Secondary Actions: Expand
+			6 link Description: Threadline, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+			10 link Description: Log in, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/customers/login
+			11 link Description: Cart ( 2 ), Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+		12 container
+			13 container Breadcrumb
+				14 link Description: Home /, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917
+				15 link Description: Shop /, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/products
+				16 text Circuit lifecycle hub
+			17 heading Circuit lifecycle hub, Value: 1
+				18 text Circuit lifecycle hub
+			19 text INR 1,200.00
+			20 heading Device compatibility, Value: 2
+				21 text Device compatibility
+			22 text Unconfirmed.
+			23 text  Check your exact device model and host requirements before choosing. A connector match alone does not establish compatibility.
+			24 link Description: Read specifications and requirements, Value: syn-threadline-ui-d11a8917.localhost:57226/product/169ce9c6-d30a-4abf-b1e0-58a771ab88bd#circuit-specifications
+			25 text Quantity
+			26 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-forge-detail-product
+			27 button Add to cart
+			28 container Add Circuit lifecycle hub to wishlist
+				29 checkbox Description: Connect store account to use wishlist, Value: 0
+			30 button (collapsed) Description, Secondary Actions: Expand
+				31 text Description
+			32 container Description: Electronics specifications, ID: circuit-specifications
+				33 heading Know the model. Read the limits., Value: 2
+					34 text Know the model. Read the limits.
+				35 table Merchant-stated specifications · normalized units
+					36 text Merchant-stated specifications · normalized units
+					37 row
+						38 cell
+							39 text Manufacturer
+						40 cell
+							41 text Synthetic Lab
+					42 row
+						43 cell
+							44 text Model
+						45 cell
+							46 text Synthetic H1
+					47 row
+						48 cell
+							49 text Power input maximum
+						50 cell
+							51 text 65 W
+					52 row
+						53 cell
+							54 text Power output maximum
+						55 cell
+							56 text 45 W
+					57 row
+						58 cell
+							59 text Laptop pass-through maximum
+						60 cell
+							61 text 60 W
+					62 row
+						63 cell
+							64 text power-input
+						65 cell
+							66 text 1 × usb-c
+					67 row
+						68 cell
+							69 text power-output
+						70 cell
+							71 text 2 × usb-c
+					72 row
+						73 cell
+							74 text data
+						75 cell
+							76 text 1 × usb-a
+				77 text Power input and laptop pass-through are different measurements. Missing values are not inferred from another field. Maxima are merchant statements, not guaranteed simultaneous output.
+				78 heading Host requirements, Value: 3
+					79 text Host requirements
+				80 text Host requirements not supplied.
+				81 heading What is included, Value: 3
+					82 text What is included
+				83 content list
+					84 text 1 × Hub
+		85 container
+			86 heading Threadline, Value: 3
+				87 text Threadline
+			88 heading CONTACT, Value: 4
+				89 text CONTACT
+			90 link Description: Contact us, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/contact
+			91 text © Threadline. All rights reserved.
+			92 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Circuit lifecycle hub | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/169ce9c6-d30a-4abf-b1e0-58a771ab88bd

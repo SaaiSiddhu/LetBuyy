@@ -1,0 +1,81 @@
+Browser tab: 54, Title: "Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/".
+1 AXWebArea Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/
+	2 container
+		3 text Pantry 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 text THE EVERYDAY PANTRY
+		11 heading Pantry 936 B everyday staples, Value: 1
+			12 text Pantry 936 B everyday staples
+		13 text Find your shelf, read the details, choose your pack.
+		14 link Description: Explore pantry shelves, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+		15 heading Find your shelf, Value: 2
+			16 text Find your shelf
+		17 container Pantry shelves
+			18 link Description: Care, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/d2005c42-10c1-4bf4-af35-5fcf33be5af9
+			19 link Description: Cleanse, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/2deb16a5-cac9-4df9-b8a6-635d25fbaae2
+			20 link Description: Colour, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/310a7230-7390-4b87-ba67-08c38f35b838
+			21 link Description: Easy, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/32db8972-ce49-4b69-8c08-6f65d4de20b5
+		22 heading A little everyday order., Value: 2
+			23 text A little everyday order.
+		24 container
+			25 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-6815276b.localhost:50494/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+			26 heading The Everyday Cotton Dress, Value: 3
+				27 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-6815276b.localhost:50494/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+			28 text Choose a pack to check its net quantity INR 3,990.00
+			29 link Description: Choose pack, Value: syn-threadline-ui-6815276b.localhost:50494/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+		30 container
+			31 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+			32 heading MadeYours lifecycle notebook, Value: 3
+				33 link Description: MadeYours lifecycle notebook, Value: syn-threadline-ui-6815276b.localhost:50494/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+			34 text Choose a pack to check its net quantity INR 690.00
+			35 link Description: Choose pack, Value: syn-threadline-ui-6815276b.localhost:50494/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+		36 container
+			37 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+			38 heading Fixture Cloud Rinse, Value: 3
+				39 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+			40 text Net quantity not supplied INR 640.00
+			41 link Description: Choose pack, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+		42 container
+			43 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:50494/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			44 heading Marginalia lifecycle lined notebook, Value: 3
+				45 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:50494/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			46 text Net quantity not supplied INR 320.00
+			47 link Description: Choose pack, Value: syn-threadline-ui-6815276b.localhost:50494/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+		48 container
+			49 link Description: The Everyday Linen Shirt, Value: syn-threadline-ui-6815276b.localhost:50494/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+			50 heading The Everyday Linen Shirt, Value: 3
+				51 link Description: The Everyday Linen Shirt, Value: syn-threadline-ui-6815276b.localhost:50494/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+			52 text Choose a pack to check its net quantity INR 2,490.00
+			53 link Description: Choose pack, Value: syn-threadline-ui-6815276b.localhost:50494/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+		54 container
+			55 link Description: Kindred lifecycle gift box, Value: syn-threadline-ui-6815276b.localhost:50494/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+			56 heading Kindred lifecycle gift box, Value: 3
+				57 link Description: Kindred lifecycle gift box, Value: syn-threadline-ui-6815276b.localhost:50494/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+			58 text Net quantity not supplied INR 1,100.00
+			59 link Description: Choose pack, Value: syn-threadline-ui-6815276b.localhost:50494/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+		60 container Product pages
+			61 text Page 1
+		62 heading Choose the right pack, Value: 3
+			63 text Choose the right pack
+		64 text Pack count and total net quantity stay distinct.
+		65 heading Read the supplied details, Value: 3
+			66 text Read the supplied details
+		67 text Supplied ingredients and known information, clearly stated.
+		68 heading Shipping for your address, Value: 3
+			69 text Shipping for your address
+		70 text Available rates are shown for your address at checkout.
+		71 heading Threadline, Value: 3
+			72 text Threadline
+		73 text Pantry 936 B footer saved
+		74 heading CONTACT, Value: 4
+			75 text CONTACT
+		76 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		77 text © Threadline. All rights reserved.
+		78 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/

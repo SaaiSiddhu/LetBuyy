@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-25T04:28:19.933876+00:00",
+  "kind": "ORIGINAL210_ONE_FRESH_PRESERVED_REHEARSAL",
+  "status": "CONCRETE_PROPOSAL02_SOURCE_ACCEPTED_AWAIT_MONITOR_COMMAND_REVIEW_AND_HUMAN_EXECUTION_APPROVAL",
+  "cwd": "/private/tmp/letbuyy-original210-recovery-20261025-01",
+  "executable": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+  "argv": [
+    "/private/tmp/letbuyy-original210-recovery-20261025-01/scripts/governance/run-executable-suites.mjs",
+    "--suite",
+    "tests/owned-db/theme-completion-razorpay-browser.manual.ts",
+    "--kind",
+    "gateway-db",
+    "--jobs",
+    "1",
+    "--no-reap",
+    "--prepared-transactions",
+    "2",
+    "--timeout",
+    "600",
+    "--preserved-phase",
+    "rehearsal",
+    "--preserved-capsule",
+    "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-capsule-final01.json",
+    "--preserved-capsule-sha256",
+    "282e544c0b1617a29aa80ec96b2a385d11fa6f5f0573e81d2a8d77a1ba10eff0",
+    "--run-receipt",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/future-restore-rehearsal01/run-receipt.json",
+    "--json-out",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/future-restore-rehearsal01/result.json",
+    "--log-dir",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/future-restore-rehearsal01/logs",
+    "--json"
+  ],
+  "outputDirectory": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/future-restore-rehearsal01",
+  "maxAttempts": 1,
+  "wholeParentBudgetSeconds": 600,
+  "softStopSeconds": 555,
+  "actualSelectedCliPreflightPass": true,
+  "cliPreflight": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/SELECTED_CLI_PREFLIGHT01.json",
+    "sha256": "517ac35f7da1de081299b5180861028430c6cbdec4a251d5aaa24d51629d4e1b"
+  },
+  "finalSourceIndependentlyReviewed": true,
+  "sourceHandoff": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/HANDOFF.json",
+    "sha256": "ae3a328d4b214cf52cbce4d67e34880bc3e9324684499f865c92025e450595c5"
+  },
+  "monitor": {
+    "path": "/private/tmp/letbuyy-original210-restore-monitor01.py",
+    "sha256": "aa57db99ee887c913069cfe514b7988cce91a870ff6e0ab60acb8e1a42a2b571",
+    "sourceReview": "PENDING_NEW_FIXED_ENV_MONITOR_REVIEW",
+    "sourceReviewSha256": null
+  },
+  "resources": "ONE fresh protected PostgreSQL container/network/namedvolume plus owned PostgREST sidecar and canonical runner REST proxy bound only to127.0.0.1 on newly allocated ports. No original container/volume adoption or schema/data writes. Verified archive restoration, no322migration replay/reseed/newUP. Onecohort, no actualbuyer app origins.",
+  "expected": "Six subtests plus wrapper, zero skip/cancel/TODO, canonicalflatresult, exact data/profile/sequence/order parity, durable verified exitarchive/privateglobals/fsync; only newresources cleanup after safety checkpoint. Failure leavesprotectedresources, no implicit retry.",
+  "notGranted": "No actualexecution/newresource/restore/clientbuild/stage/serve/cutover/oldlistenerretirement/browser/provider/publiccallback/newQAkeygen permission. Priorapproval04 threecohort budget is consumed.",
+  "existingHumanAuthority": "Full10themecompletion/resume supports preparation; specific additional onecohort execution permission is required before this proposal becomes executable.",
+  "sourceReview": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RECOVERY_CANDIDATE_SOURCE_REVIEW_01.json",
+    "sha256": "a92e274ccb9e608e6e17ddc5e4a636134014225e5f771ef4cf7381a05e0960e4"
+  },
+  "fixedManualEntryOptIns": {
+    "LETBUYY_THEME_COMPLETION_RAZORPAY_HOLD": "1",
+    "LETBUYY_THEME_EDITOR_BROWSER_HOLD": "1"
+  }
+}

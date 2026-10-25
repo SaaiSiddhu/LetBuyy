@@ -1,0 +1,1 @@
+Private proposal only: parenthesize the CASE price expression inside PL/pgSQL IF comparison, preserving its price oracle. Native03 preserved exact parser error context.

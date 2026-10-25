@@ -1,0 +1,787 @@
+{
+  "body": {
+    "background": "rgb(242, 239, 221)",
+    "color": "rgba(61, 8, 27, 0.75)",
+    "font": "Archivo, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Availability",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Price",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "18.00",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Featured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to ",
+      "tag": "SELECT",
+      "type": "select-one"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada (CAD $)",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Archivo, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 280,
+      "x": 949,
+      "y": -18.3984375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 52,
+      "line": "52px",
+      "size": "40px",
+      "tag": "H1",
+      "text": "Collection:\nMeal starters",
+      "weight": "400",
+      "width": 1100,
+      "x": 170,
+      "y": 150.8984375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 93.5859375,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "A meal starter is a pantry shortcut, with all the sauces, aromatics, and seasonings you need. Just bring your own protein + veg to the party",
+      "weight": "400",
+      "width": 733.3671875,
+      "x": 170,
+      "y": 227.8984375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "Filter:",
+      "weight": "400",
+      "width": 38.296875,
+      "x": 170,
+      "y": 415.484375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "Sort by:",
+      "weight": "400",
+      "width": 51.3046875,
+      "x": 951.2265625,
+      "y": 415.484375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "7 products",
+      "weight": "400",
+      "width": 71.46875,
+      "x": 1198.53125,
+      "y": 415.484375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Mala Salad Starter 3-pack",
+      "weight": "400",
+      "width": 266,
+      "x": 170,
+      "y": 788.140625
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Lemongrass BBQ Starter 3-Pack",
+      "weight": "400",
+      "width": 266,
+      "x": 448,
+      "y": 788.234375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Yuzu Misoyaki Starter 3-Pack",
+      "weight": "400",
+      "width": 266,
+      "x": 726,
+      "y": 788.234375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Sisig Starter 3-Pack",
+      "weight": "400",
+      "width": 266,
+      "x": 1004,
+      "y": 788.234375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Larb Starter 3-Pack",
+      "weight": "400",
+      "width": 266,
+      "x": 170,
+      "y": 1185.28125
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Spicy Bulgogi Starter 3-Pack",
+      "weight": "400",
+      "width": 266,
+      "x": 448,
+      "y": 1185.28125
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Thai Krapow Starter 4-Pack",
+      "weight": "400",
+      "width": 266,
+      "x": 726,
+      "y": 1185.28125
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 52,
+      "line": "52px",
+      "size": "40px",
+      "tag": "H2",
+      "text": "Spice up your inbox",
+      "weight": "400",
+      "width": 916,
+      "x": 262,
+      "y": 1360.578125
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Recipes to get you fired up 🌶",
+      "weight": "400",
+      "width": 352.6328125,
+      "x": 170,
+      "y": 1648.375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 62.390625,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Krapow Shrimp Rice Paper Wraps",
+      "weight": "400",
+      "width": 358.6640625,
+      "x": 170,
+      "y": 1944.21875
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Veggie Rice Paper Dumplings",
+      "weight": "400",
+      "width": 358.671875,
+      "x": 540.6640625,
+      "y": 1944.2265625
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Ground Meat Krapow",
+      "weight": "400",
+      "width": 358.6640625,
+      "x": 911.3359375,
+      "y": 1944.21875
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Hungry for more?",
+      "weight": "400",
+      "width": 213.0859375,
+      "x": 170,
+      "y": 2256.3984375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H3",
+      "text": "Combo packs",
+      "weight": "400",
+      "width": 544,
+      "x": 170,
+      "y": 2878.59375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H3",
+      "text": "Other goodies",
+      "weight": "400",
+      "width": 544,
+      "x": 726,
+      "y": 2878.59375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Quick links",
+      "weight": "400",
+      "width": 358.671875,
+      "x": 540.6640625,
+      "y": 3046.9921875
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "400",
+      "width": 358.6640625,
+      "x": 911.3359375,
+      "y": 3046.9921875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 162.1796875,
+      "x": 180,
+      "y": 3397.671875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/combo-packs"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/other-goodies"
+    },
+    {
+      "text": "Meet us",
+      "url": "https://theme-crave-demo.myshopify.com/pages/meet-us"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-crave-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-crave-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters"
+    },
+    {
+      "text": "Mala Salad Starter 3-pack",
+      "url": "https://theme-crave-demo.myshopify.com/products/chinese-mala-salad-starter-3-pack"
+    },
+    {
+      "text": "Lemongrass BBQ Starter 3-Pack",
+      "url": "https://theme-crave-demo.myshopify.com/products/viet-lemongrass-bbq-starter-pack"
+    },
+    {
+      "text": "Yuzu Misoyaki Starter 3-Pack",
+      "url": "https://theme-crave-demo.myshopify.com/products/japanese-yuzu-misoyaki-starter-3-pack"
+    },
+    {
+      "text": "Sisig Starter 3-Pack",
+      "url": "https://theme-crave-demo.myshopify.com/products/filipino-sisig-starter-pack"
+    },
+    {
+      "text": "Larb Starter 3-Pack",
+      "url": "https://theme-crave-demo.myshopify.com/products/thai-larb-starter-pack"
+    },
+    {
+      "text": "Spicy Bulgogi Starter 3-Pack",
+      "url": "https://theme-crave-demo.myshopify.com/products/korean-spicy-bulgogi-starter-3-pack"
+    },
+    {
+      "text": "Thai Krapow Starter 4-Pack",
+      "url": "https://theme-crave-demo.myshopify.com/products/pepper-teigens-thai-krapow"
+    },
+    {
+      "text": "Krapow Shrimp Rice Paper Wraps",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/krapow-shrimp-rice-paper-wraps"
+    },
+    {
+      "text": "Veggie Rice Paper Dumplings",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/veggie-rice-paper-dumplings-recipe"
+    },
+    {
+      "text": "Ground Meat Krapow",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/ground-meat-krapow-recipe"
+    },
+    {
+      "text": "Combo packs",
+      "url": "https://theme-crave-demo.myshopify.com/collections/combo-packs"
+    },
+    {
+      "text": "Other goodies",
+      "url": "https://theme-crave-demo.myshopify.com/collections/other-goodies"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-crave-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Meet us",
+      "url": "https://theme-crave-demo.myshopify.com/pages/meet-us"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-crave-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-crave-demo",
+      "url": "https://theme-crave-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17357908181226__banner",
+      "rect": {
+        "height": 215.5859375,
+        "width": 1440,
+        "x": 0,
+        "y": 125.8984375
+      },
+      "tag": "DIV",
+      "text": "Collection:\nMeal starters\nA meal starter is a pantry shortcut, with all the sauces, aromatics, and seasonings you need. Just bring your own protein + veg to the party!"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17357908181226__product-grid",
+      "rect": {
+        "height": 849.09375,
+        "width": 1440,
+        "x": 0,
+        "y": 405.484375
+      },
+      "tag": "DIV",
+      "text": "Filter:\nAvailability\nPrice\nSort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17357908181226__16395959496ab8427e",
+      "rect": {
+        "height": 265.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 1318.578125
+      },
+      "tag": "SECTION",
+      "text": "Spice up your inbox\n\nSign up for our newsletter to get exclusive recipes, cooking tips, and more.\n\nEmail"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17357908181226__163959580689039127",
+      "rect": {
+        "height": 512.0234375,
+        "width": 1440,
+        "x": 0,
+        "y": 1648.375
+      },
+      "tag": "SECTION",
+      "text": "Recipes to get you fired up 🌶\nKrapow Shrimp Rice Paper Wraps\nDECEMBER 15, 2021\n\nSpicy, salty and oh-so-flavorful, these shrimp rice paper wraps make the perfect lil' snack.\n\n11 co"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17357908181226__1639540191727d196a",
+      "rect": {
+        "height": 758.59375,
+        "width": 1440,
+        "x": 0,
+        "y": 2224.3984375
+      },
+      "tag": "SECTION",
+      "text": "Hungry for more?\nCombo packs\nOther goodies"
+    }
+  ],
+  "title": "Meal starters – theme-crave-demo",
+  "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "\n            grid grid--2-col product-grid\n            \n               grid--3-col-tablet grid--one-third-max grid--4-col-desktop grid--quarter-max\n            ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 782.09375,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "blog__posts articles-wrapper grid grid--peek grid--2-col-tablet grid--4-col-desktop slider slider--tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 450.828125,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 450.828125,
+      "tag": "LI",
+      "width": 358.6640625
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 450.828125,
+      "tag": "LI",
+      "width": 358.671875
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 450.828125,
+      "tag": "LI",
+      "width": 358.6640625
+    },
+    {
+      "className": "collection-list grid grid--1-col grid--2-col-tablet slider slider--tablet grid--peek collection-list--2-items",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 601.3984375,
+      "tag": "UL",
+      "width": 1100
+    }
+  ],
+  "images": [
+    {
+      "alt": "Mala Salad Starter 3-pack",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 294.65625,
+        "width": 262
+      }
+    },
+    {
+      "alt": "Lemongrass BBQ Starter 3-Pack",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 294.75,
+        "width": 262
+      }
+    },
+    {
+      "alt": "Yuzu Misoyaki Starter 3-Pack",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 294.75,
+        "width": 262
+      }
+    },
+    {
+      "alt": "Sisig Starter 3-Pack",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 294.75,
+        "width": 262
+      }
+    },
+    {
+      "alt": "Larb Starter 3-Pack",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 294.75,
+        "width": 262
+      }
+    },
+    {
+      "alt": "Spicy Bulgogi Starter 3-Pack",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 294.75,
+        "width": 262
+      }
+    },
+    {
+      "alt": "Thai Krapow Starter 4-Pack",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 294.75,
+        "width": 262
+      }
+    },
+    {
+      "alt": "Top-down view of Krapow shrimp rice paper wraps on a bright green plate, served with lime wedges.",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 213.6484375,
+        "width": 354.6640625
+      }
+    },
+    {
+      "alt": "Top-down view of dumplings on a blue plate with a dipping sauce. ",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 213.65625,
+        "width": 354.671875
+      }
+    },
+    {
+      "alt": "Krapow dish served on a plate with a fried egg on top. The meal starter packet lies next to the plate. ",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 213.6484375,
+        "width": 354.6640625
+      }
+    },
+    {
+      "alt": "Combo packs",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 540,
+        "width": 540
+      }
+    },
+    {
+      "alt": "Other goodies",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 540,
+        "width": 540
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping on orders $35+ 🚀\n\nShop\nMeet us\nRecipes\nContact\nCart\nCollection:\nMeal starters\nA meal starter is a pantry shortcut, with all the sauces, aromatics, and seasonings you need. Just bring your own protein + veg to the party!\nFilter:\nAvailability\nPrice\nSort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to old\n7 products\nMala Salad Starter 3-pack\nRegular price\n$12.00 CAD\nLemongrass BBQ Starter 3-Pack\nRegular price\n$12.00 CAD\nYuzu Misoyaki Starter 3-Pack\nRegular price\n$12.00 CAD\nSisig Starter 3-Pack\nRegular price\n$12.00 CAD\nLarb Starter 3-Pack\nRegular price\n$12.00 CAD\nSpicy Bulgogi Starter 3-Pack\nRegular price\n$12.00 CAD\nThai Krapow Starter 4-Pack\nRegular price\n$18.00 CAD\nSpice up your inbox\n\nSign up for our newsletter to get exclusive recipes, cooking tips, and more.\n\nEmail\nRecipes to get you fired up 🌶\nKrapow Shrimp Rice Paper Wraps\nDECEMBER 15, 2021\n\nSpicy, salty and oh-so-flavorful, these shrimp rice paper wraps make the perfect lil' snack.\n\n11 comments\nVeggie Rice Paper Dumplings\nDECEMBER 15, 2021\n\nServe these flavor bombs on their own as an appetizer, or as a meal with your favorite grains!\n\n16 comments\nGround Meat Krapow\nDECEMBER 2, 2021\n\nFire up this beloved Teigen fam recipe for chili basil stir-fry in under 20 minutes.\n\n7 comments\nHungry for more?\nCombo packs\nOther goodies\nQuick links\nShop all\nMeet us\nRecipes\nContact\nOur mission\n\nTo bring proud, loud Asian flavors to your fingertips any day of the week.\n\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\nCountry/region\nCanada (CAD $)\nPayment methods\n© 2026, theme-crave-demo Powered by Shopify"
+}

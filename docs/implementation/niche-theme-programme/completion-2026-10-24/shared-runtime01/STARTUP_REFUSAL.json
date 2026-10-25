@@ -1,0 +1,16 @@
+{
+  "status": "NO_APPLICATION_STARTED_MISSING_PNPM_TSX_EXECUTABLE_METADATA",
+  "runId": "0063a6de4b34",
+  "testsExecuted": 0,
+  "testAcceptance": false,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "repair": "Copy/rebase213regulardependencyshims/metadata; actualexecutable/source-resolutionpreflightbeforefresh02launch"
+}

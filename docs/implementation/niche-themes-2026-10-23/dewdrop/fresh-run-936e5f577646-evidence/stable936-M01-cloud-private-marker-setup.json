@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-24T03:27:20.589Z",
+  "classification": "FIXED_APPROVED_SYNTHETIC_SETUP_NOT_M01_BROWSER_ACCEPTANCE",
+  "runId": "936e5f577646",
+  "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+  "productId": "1d743654-5039-41e9-931f-08bb4530dfc5",
+  "guardVerified": true,
+  "onlyCanonicalMetadataPatch": true,
+  "commandFields": [
+    "idempotency_key",
+    "metadata",
+    "version"
+  ],
+  "commandSha256": "aefcff9d7730451d1d4a40ff1e4bfaed87fd5ddb9520f74d7950269bee079e99",
+  "beforeVersion": 7,
+  "afterVersion": 9,
+  "patchStatus": 200,
+  "patchRequestId": "b0bdb04b-e442-4ece-bbdb-107c48a4e750",
+  "beforeRequestId": "ccf2a161-9f71-45a2-b1c5-8eee18a6ca98",
+  "afterRequestId": "ceea47af-b297-492a-8b87-5cc140a6440f",
+  "markerValueSha256": "57720f5b79505ad020ed1dc8333b4139371898cd9080bf5baf816a9f320d9617",
+  "checks": {
+    "canonicalPatchSucceeded": true,
+    "afterReadSucceeded": true,
+    "exactExpectedMetadata": true,
+    "beautyPreserved": true,
+    "currentApparelPreserved": true,
+    "priceStockImagesPreserved": true,
+    "scopeUnchanged": true,
+    "opaqueVersionChanged": true,
+    "markerPresent": true
+  },
+  "beforeScope": {
+    "cartSha256": "759377af79918bdc7c2f1b69e2e9c6ef73c845619192a9a1e41042d78f993d08",
+    "ordersSha256": "65849d4089fb17ae4e5ee0d219a291f0c5d7c1497ecbeab93fce26dbc2211877",
+    "optionsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "variantsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "inventorySha256": "ab3d2d48f35d47145484f78c8d9b85e5d91c0f5f1e6adc340e91f54f027548b6",
+    "orderItemsSha256": "40ee878daae0215ba4d4c3e1321c140d23f385848a4dc1177283637be19d6084",
+    "reservationsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "otherProductsSha256": "a5fdb768ece1e95303994e6029c09ca319ab6e901beb73a85bc298793431ba16"
+  },
+  "afterScope": {
+    "cartSha256": "759377af79918bdc7c2f1b69e2e9c6ef73c845619192a9a1e41042d78f993d08",
+    "ordersSha256": "65849d4089fb17ae4e5ee0d219a291f0c5d7c1497ecbeab93fce26dbc2211877",
+    "optionsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "variantsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "inventorySha256": "ab3d2d48f35d47145484f78c8d9b85e5d91c0f5f1e6adc340e91f54f027548b6",
+    "orderItemsSha256": "40ee878daae0215ba4d4c3e1321c140d23f385848a4dc1177283637be19d6084",
+    "reservationsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "otherProductsSha256": "a5fdb768ece1e95303994e6029c09ca319ab6e901beb73a85bc298793431ba16"
+  },
+  "rawPrivateEvidence0600Prefix": "/private/tmp/theme-editor-stable936-cloud-marker-",
+  "browserSessionInjection": false,
+  "paymentOrOrderOperation": false,
+  "fullM01": "NOT_RUN_REQUIRES_NORMAL_UI_SIX_FIELDS_AND_PRIVATE_SIBLING_PRESERVATION"
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T12:06:18.043010+00:00",
+  "classification": "SOURCE_READINESS_TRACE_NOT_BROWSER_EXECUTION",
+  "sourcePins": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "sha256": "0ccf3d8ed71eaaaf9d4abf75739d66c42f7047c6fcb59b2b98d9fcb40f9e235e"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "sha256": "2e30286b89c982dfd25aa52cc1bd92a40a958437fa178d24d0ff11c207d20a6b"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/buyer-order-drop.ts",
+      "sha256": "c854c31af611a21c85601e12c6bbcbee5479ae2e644bcd6865e1f10f31e6fa8a"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/buyer-auth/data-session.ts",
+      "sha256": "f0210b43a38ac85253fd613e5f59c77ef93a352ec042e4489ae6e3cd1f5a8439"
+    }
+  ],
+  "existingObserver": {
+    "class": "ThemeEditorFixtureObservation",
+    "failedOperations": [
+      "cart-replace",
+      "checkout-contact",
+      "checkout-delivery",
+      "checkout-payment-intent",
+      "checkout-confirm"
+    ],
+    "controls": [
+      "proof",
+      "finite-confirm-replay"
+    ],
+    "observesBuyerOrDiscoveryHTTP": false,
+    "observesExternalBrowserAttackRequests": false,
+    "canInduceD02CompatibilityFaults": false
+  },
+  "D02": {
+    "normalValidCurrentGateway": "Does not itself expose missing/malformed discovery transport on demand",
+    "absentDiscovery": "Basic legacy filters remain usable; nonlegacy niche filters throw StorefrontDiscoveryUnsupportedError",
+    "malformedDiscovery": "Schema/query/matches/facet inconsistencies throw unavailable",
+    "admissionNeeded": "Independently reviewed owned isolated compatibility/failure lane, with real frontend browser behavior, declared fault provenance, and positive/recovery controls. No production fault flag or silent replacement of normal backend output."
+  },
+  "O05": {
+    "normal401or403": "Maps to unauthenticated/null; cannot prove unavailable branch",
+    "unavailableSources": [
+      "Render-session resolution exception",
+      "Non-success profile transport response excluding401/403",
+      "Malformed profile with absent email",
+      "Order detail HTTP5xx",
+      "Caught dependency transport exception"
+    ],
+    "admissionNeeded": "Owned isolated failure of real required dependency plus browser/HTTP observations; no unauthorized disabled-account mutation or forged session."
+  },
+  "S01": {
+    "normalSetup": "Dedicated normally created and in-stock security product/variant, valid supplied beauty facts and hostile text/format label",
+    "primaryStockPreserved": true,
+    "admissionNeeded": "Supported scoped browser request observer with declared scope and actual zero/execution evidence; inert DOM alone cannot prove no external request. Preserve unsafe transport-suppression behavior."
+  },
+  "requestsDeliveredTo": [
+    "Themes",
+    "Theme Editor \u2014 End-to-End"
+  ],
+  "canonicalSourceChanged": false,
+  "runtimeBrowserDBProviderAction": false,
+  "newLivePasses": 0,
+  "all30Complete": false
+}

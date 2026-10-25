@@ -1,0 +1,784 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(3, 3, 2, 0.76)",
+    "font": "Geist, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load video: ",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Olive",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Midnight",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sycamore",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Plum",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Plum",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Midnight",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Plum",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sycamore",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Olive",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Olive",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Customer care",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "About us",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Connect",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "Geist, sans-serif",
+      "height": 1,
+      "line": "36px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "Fabric",
+      "weight": "400",
+      "width": 1,
+      "x": -1,
+      "y": -1
+    },
+    {
+      "font": "Geist, sans-serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "New Arrivals",
+      "weight": "400",
+      "width": 137.953125,
+      "x": 28,
+      "y": 2255.3515625
+    },
+    {
+      "font": "Geist, sans-serif",
+      "height": 70.390625,
+      "line": "35.2px",
+      "size": "32px",
+      "tag": "H2",
+      "text": "Meet the essentials of a better wardrobe",
+      "weight": "400",
+      "width": 358,
+      "x": 16,
+      "y": 3438.46875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-fabric-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "Womenswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "T-Shirts & Tanks",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womens-tshirts-tanks"
+    },
+    {
+      "text": "All Tops",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-tops"
+    },
+    {
+      "text": "Bottoms",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-bottoms"
+    },
+    {
+      "text": "Dresses",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-dresses"
+    },
+    {
+      "text": "Loungewear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-loungewear"
+    },
+    {
+      "text": "Socks & Accessories",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/socks-accessories"
+    },
+    {
+      "text": "Menswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "T-Shirts & Tanks",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-tshirts-tanks"
+    },
+    {
+      "text": "All Tops",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-tops"
+    },
+    {
+      "text": "Bottoms",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-bottoms"
+    },
+    {
+      "text": "Loungewear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-loungewear"
+    },
+    {
+      "text": "Socks & Accessories",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/socks-accessories"
+    },
+    {
+      "text": "Lightweight Knitwear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-lightweight-knitwear"
+    },
+    {
+      "text": "Home",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/home-new"
+    },
+    {
+      "text": "Bath",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/bath-new"
+    },
+    {
+      "text": "Bedding",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/bedding-new"
+    },
+    {
+      "text": "Apothecary",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/apothecary-new"
+    },
+    {
+      "text": "Womenswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "Menswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "Home",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/home-new"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/the-tefnut-collection"
+    },
+    {
+      "text": "Home",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/home-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "Discover the collection",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Tefnut Beach Vest",
+      "url": "https://theme-fabric-demo.myshopify.com/products/tefnut-beach-vest-in-black?variant=44434289131573"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-tefnut-beach-shorts-in-sycamore?variant=44434296799285"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/products/tefnut-beach-hoodie-in-black?variant=44434298535989"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/products/tefnut-beach-jacket-in-plum?variant=44434287525941"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-tefnut-cargo-pants-in-black?variant=44434297585717"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-tefnut-beach-pant-in-black?variant=44434297749557"
+    },
+    {
+      "text": "Shop the collection",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-fabric-demo.myshopify.com/search"
+    },
+    {
+      "text": "Womenswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "Menswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Fit guide",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/fit-guide"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Our story",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/our-story"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-fabric-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Materials & care",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/materials-care"
+    },
+    {
+      "text": "Fabric",
+      "url": "https://theme-fabric-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__hero_HPEeBq",
+      "rect": {
+        "height": 844,
+        "width": 390,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "SECTION",
+      "text": "Shop now"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__carousel_LeVxwU",
+      "rect": {
+        "height": 597.671875,
+        "width": 390,
+        "x": 0,
+        "y": 844
+      },
+      "tag": "DIV",
+      "text": "New this season\n\nA collection of inspired silhouettes crafted from the finest fibers.\n\nShop now"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__collection_list_mcURmi",
+      "rect": {
+        "height": 292.5,
+        "width": 390,
+        "x": 0,
+        "y": 1441.671875
+      },
+      "tag": "DIV",
+      "text": "Home\n\nHome"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__marquee_izzYrQ",
+      "rect": {
+        "height": 102.3828125,
+        "width": 390,
+        "x": 0,
+        "y": 1734.171875
+      },
+      "tag": "DIV",
+      "text": "A world of timeless designs that honour the people who make them & the places they’re made.\n\nA world of timeless designs that honour the people who make them & the places they’re m"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__section_8zY7P4",
+      "rect": {
+        "height": 389.796875,
+        "width": 390,
+        "x": 0,
+        "y": 1836.5546875
+      },
+      "tag": "DIV",
+      "text": "Play video\n\nEarth-inspired garments\n\nDiscover the collection"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__divider_WDCL3k",
+      "rect": {
+        "height": 1,
+        "width": 390,
+        "x": 0,
+        "y": 2226.3515625
+      },
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__product_list_4jqyPz",
+      "rect": {
+        "height": 551.125,
+        "width": 390,
+        "x": 0,
+        "y": 2227.3515625
+      },
+      "tag": "DIV",
+      "text": "New Arrivals\nTefnut Beach Vest\nChoose\nTefnut Beach Vest\n$128.00 CAD"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330460213__media_with_content_aF6TTD",
+      "rect": {
+        "height": 949.9453125,
+        "width": 390,
+        "x": 0,
+        "y": 2778.4765625
+      },
+      "tag": "DIV",
+      "text": "INSTANT CLASSICS\nMeet the essentials of a better wardrobe\n\nDesigned in styles and tones that endure the passing of time and the passing of fickle trends.\n\nBuilt for longevity and r"
+    }
+  ],
+  "title": "Fabric",
+  "url": "https://theme-fabric-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "390px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 844,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 448.7265625,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 448.7265625,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 448.7265625,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 448.7265625,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 448.7265625,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 448.7265625,
+      "tag": "DIV",
+      "width": 234
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 100,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Fabric",
+      "complete": true,
+      "naturalWidth": 223,
+      "rect": {
+        "height": 91.75,
+        "width": 358
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 530.2578125,
+        "width": 310
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 530.484375,
+        "width": 310
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 530.484375,
+        "width": 310
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 530.484375,
+        "width": 310
+      }
+    },
+    {
+      "alt": "Home",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Menswear",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Womenswear",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Home",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Menswear",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "Womenswear",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nFabric\nWomenswear\nT-Shirts & Tanks\nAll Tops\nBottoms\nDresses\nLoungewear\nSocks & Accessories\nMenswear\nT-Shirts & Tanks\nAll Tops\nBottoms\nLoungewear\nSocks & Accessories\nLightweight Knitwear\nHome\nBath\nBedding\nApothecary\nWomenswear\n\nWomenswear\n\nMenswear\n\nMenswear\n\nHome\n\nHome\n\nTotal items in cart: 0\nShop now\n\nNew this season\n\nA collection of inspired silhouettes crafted from the finest fibers.\n\nShop now\nHome\n\nHome\n\nA world of timeless designs that honour the people who make them & the places they’re made.\n\nA world of timeless designs that honour the people who make them & the places they’re made.\n\nPlay video\n\nEarth-inspired garments\n\nDiscover the collection\nNew Arrivals\nTefnut Beach Vest\nChoose\nTefnut Beach Vest\n$128.00 CAD\nINSTANT CLASSICS\nMeet the essentials of a better wardrobe\n\nDesigned in styles and tones that endure the passing of time and the passing of fickle trends.\n\nBuilt for longevity and rooted in practicality, these pieces accompany you through every journey - whether close to home or around the world.\n\nShop the collection\nEmail\nShop\nSearch\nWomenswear\nMenswear\nSale\nCustomer care\nFAQ\nFit guide\nContact us\nAbout us\nOur story\nBlog\nMaterials & care\nConnect\nInstagram\nTikTok\nYoutube\nFacebook\n© 2026 Fabric, Powered by Shopify"
+}

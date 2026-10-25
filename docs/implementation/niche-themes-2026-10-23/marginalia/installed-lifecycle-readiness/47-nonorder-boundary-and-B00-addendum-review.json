@@ -1,0 +1,116 @@
+{
+  "recordedAt": "2026-10-24T07:19:06.225982+00:00",
+  "classification": "ACTUAL_NONORDER_FINITE_BOUNDARY_EIGHT_PASS_INSTALL_LINEAGE_ONLY_GAP",
+  "runId": "936e5f577646",
+  "wholeLifecycleComplete": false,
+  "B00Behavior": "PASS_COMPLETE_BOUNDED_RETAKE_WITH_FINAL_ACK_DOM_AND_CANONICAL_B_READBACK",
+  "MG-INSTALL-01": "NOT_RUN_REQUIRED_INSTALLED_VERSION_ARTIFACT_JOIN_UNRESOLVED",
+  "MG-BK-OOS-01": "NOT_RUN_PURCHASE_ATTEMPT_NO_EFFECT_CLAUSE_HELD",
+  "finalRelease": {
+    "id": "6a374853-bf7f-4b22-8427-1b69513fb146",
+    "status": "published",
+    "themeId": "letbuyy-dawn",
+    "sourceDraftVersion": 14,
+    "assetManifestSqlSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "releaseConfigSqlSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314",
+    "templateSnapshotSqlSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314"
+  },
+  "activeDraft": {
+    "id": "29dae105-919a-4315-8905-619ab6f15f52",
+    "version": 16,
+    "configSqlSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314"
+  },
+  "retakeCorrection": "stable936-marginalia-retake-b-reapplied-readback.json was a PRE-B read: optional Dismiss notification autoexpired, controller stopped before any B action. Its actual restored-A data is correct; it is not B acknowledgement proof. Final B proof is the distinct acknowledged-readback file.",
+  "originalEvidence": "Prior early public mismatches/false checks remain immutable. New acknowledgedB07:09:04.955 and settledDOM07:08:47 close review45 final readback gap; PRE-Bread remainscorrectA. No additional cycle requested/performed by auditor.",
+  "lineage": {
+    "expectedCatalogId": "7b669c70-0000-4000-8000-000000000007",
+    "slug": "letbuyy-dawn",
+    "version": "2.0.0",
+    "rootAdmission": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+    "admittedArtifact": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-dawn-2.0.0.json",
+    "expectedBundleSha256": "5cbe36168853833fda0cf0a81dd5373d5cae013259bdbd330d3ee547f4d3726b",
+    "expectedPayloadSha256": "8c0eee170f703b1b3f3b4903b5313a755e78ce7ae7555ed46f599b102f292f2d",
+    "expectedFileSha256": "a4e23c63a700f87294a291a1760b94a93d2ee594f9bfea55038c0ff7ab335f3c",
+    "installedPackageId": "9134e98c-0650-41b5-9c1d-e3686e1f7751",
+    "installedPackageVersionId": "f052c554-94ef-4977-9f02-a7daca8c6c57",
+    "unresolvedJoin": "Actual installed immutable version payload/bundle checksum or equivalent acknowledged artifact binding and catalog UUID/version foreign linkage are absent in saved instance/draft readbacks. Expected artifact bytes are admitted; runtime version→artifact identity remains unproved here.",
+    "nullCatalogChecksumMeaning": "themes catalogChecksum SQLNULL is not a package mismatch or proof of differing bytes. SQL serialization digests prove recorded configuration states, not raw artifact equality."
+  },
+  "protectedWindow": {
+    "initialAt": "2026-10-24T06:52:37.853Z",
+    "finalAt": "2026-10-24T07:13:46.428Z",
+    "tables": 22,
+    "initialToFinalChanged": [
+      "inventory_levels",
+      "outbox_events"
+    ],
+    "afterBookSetupToFinalChanged": [
+      "outbox_events"
+    ],
+    "other20TablesExact": true,
+    "cartsCheckoutOrdersOrderItemsReservationAndInventoryBusinessExact": true,
+    "bookProductAllFieldsAndInventoryExactAfterSetup": true,
+    "existingTwoOrdersAndSnapshotProjectionsExact": true,
+    "boundaryCartReceipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-cart-marginalia-after.json",
+      "sha256": "cb92a21b36a67f739df9c4197a332be2d669bd3ef34d65998b77db7e71f55e86",
+      "bytes": 4711
+    },
+    "cartReadbackLimit": "No buyer/checkout action performed here; whole-table cart hash conservation establishes canonical preservation across MG window. No new MG cart/order bindings or historical-order case credit."
+  },
+  "ownerBoundaryRows": {
+    "PASS": 8,
+    "FAIL": 0,
+    "PARTIAL": 2,
+    "NOT_RUN": 6
+  },
+  "ownWholeCaseConvention": "Owner PARTIAL installation/OOS rows map toNOT_RUN with separately observed passing clauses; final own counts8PASS/0FAIL/8NOT_RUN.",
+  "scopeEnd": "Editor finite nonorder boundary recorded07:15:45UTC; no active MG browser/data lease assumed thereafter, six purchase/history/edit cases remain unallocated.",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-retake-b-reapplied-acknowledged-readback.json",
+      "sha256": "a5f94892e4cbb51cd0b8ed95c232f6c89561cff611cbeab7e85b161d496d1d6b",
+      "bytes": 10708
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-editor-cycle-recovery-addendum.json",
+      "sha256": "8f25cc06e4ec29894b5afdeccdd3e5f7cc722b5158b12db181b6ffb0fce235b4",
+      "bytes": 11502
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-bounded-recovery-retake-DOM.json",
+      "sha256": "cfb4b2c9ec34c58b44ea2c5897a133fd5bedb2def0d71a960386301255cf2bc8",
+      "bytes": 1589
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-retake-A-restored-settled.ax.txt",
+      "sha256": "3ac6ae5e859737f7e7a72f3c92ddf2df095e9054b9c612eecb982f2fa7f08114",
+      "bytes": 5340
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-retake-B-reapplied-settled.ax.txt",
+      "sha256": "d045cacc6eb442a1ea7a579c78f46e55ffa6ef68e72050b506a6d48c95f7ec19",
+      "bytes": 5340
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-retake-B-publish-ack.ax.txt",
+      "sha256": "a2ff14b68d4a15d3e9853a7edc8ca2c2d0371199ba5d0bcad1cdb4202c108b50",
+      "bytes": 5463
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-lifecycle-after-nonorder-ui.json",
+      "sha256": "7520d68dede2b8e4e2f3d15b51eca2abfd30dce377874258e93477751bd76f00",
+      "bytes": 10853
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-cart-marginalia-after.json",
+      "sha256": "cb92a21b36a67f739df9c4197a332be2d669bd3ef34d65998b77db7e71f55e86",
+      "bytes": 4711
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-finite-nonorder-boundary.json",
+      "sha256": "459273bb0b5f769cb2d6946f35a34fdcc5314759c9ad48028cafa1f47db88d79",
+      "bytes": 36608
+    }
+  ]
+}

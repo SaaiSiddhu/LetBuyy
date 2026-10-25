@@ -1,0 +1,212 @@
+[
+  {
+    "id": "01-home-top",
+    "number": 1,
+    "title": "Home \u00b7 search, tasks and featured hub",
+    "routeGroup": "home",
+    "note": "Search/category access precedes compact campaign.",
+    "source": "source/01-home-top.html",
+    "images": {
+      "desktop": "images/01-home-top-desktop.png",
+      "tablet": "images/01-home-top-tablet.png",
+      "mobile": "images/01-home-top-mobile.png"
+    },
+    "board": "boards/01-home-top.png"
+  },
+  {
+    "id": "02-home-bottom",
+    "number": 2,
+    "title": "Home \u00b7 product matrix, compatibility and service",
+    "routeGroup": "home",
+    "note": "Continuation of the same homepage.",
+    "source": "source/02-home-bottom.html",
+    "images": {
+      "desktop": "images/02-home-bottom-desktop.png",
+      "tablet": "images/02-home-bottom-tablet.png",
+      "mobile": "images/02-home-bottom-mobile.png"
+    },
+    "board": "boards/02-home-bottom.png"
+  },
+  {
+    "id": "03-collection",
+    "number": 3,
+    "title": "USB-C accessories \u00b7 retrieval and facets",
+    "routeGroup": "collection",
+    "note": "Proposed paginated facets; four-column cards become mobile rows.",
+    "source": "source/03-collection.html",
+    "images": {
+      "desktop": "images/03-collection-desktop.png",
+      "tablet": "images/03-collection-tablet.png",
+      "mobile": "images/03-collection-mobile.png"
+    },
+    "board": "boards/03-collection.png"
+  },
+  {
+    "id": "04-product-main",
+    "number": 4,
+    "title": "CG-7 hub \u00b7 model and purchase selection",
+    "routeGroup": "product",
+    "note": "One PDP, first section; graphite CG-7 selected.",
+    "source": "source/04-product-main.html",
+    "images": {
+      "desktop": "images/04-product-main-desktop.png",
+      "tablet": "images/04-product-main-tablet.png",
+      "mobile": "images/04-product-main-mobile.png"
+    },
+    "board": "boards/04-product-main.png"
+  },
+  {
+    "id": "05-product-specs",
+    "number": 5,
+    "title": "CG-7 hub \u00b7 compatibility and specifications",
+    "routeGroup": "product",
+    "note": "Same PDP continuation; factual model reference, no compare control.",
+    "source": "source/05-product-specs.html",
+    "images": {
+      "desktop": "images/05-product-specs-desktop.png",
+      "tablet": "images/05-product-specs-tablet.png",
+      "mobile": "images/05-product-specs-mobile.png"
+    },
+    "board": "boards/05-product-specs.png"
+  },
+  {
+    "id": "06-product-contents",
+    "number": 6,
+    "title": "CG-7 hub \u00b7 contents, policies and related items",
+    "routeGroup": "product",
+    "note": "Same PDP continuation; related products are independent SKUs.",
+    "source": "source/06-product-contents.html",
+    "images": {
+      "desktop": "images/06-product-contents-desktop.png",
+      "tablet": "images/06-product-contents-tablet.png",
+      "mobile": "images/06-product-contents-mobile.png"
+    },
+    "board": "boards/06-product-contents.png"
+  },
+  {
+    "id": "07-cart",
+    "number": 7,
+    "title": "Cart \u00b7 exact models and recoverable update",
+    "routeGroup": "cart",
+    "note": "CG-7 + CL-100; no client-authoritative commerce.",
+    "source": "source/07-cart.html",
+    "images": {
+      "desktop": "images/07-cart-desktop.png",
+      "tablet": "images/07-cart-tablet.png",
+      "mobile": "images/07-cart-mobile.png"
+    },
+    "board": "boards/07-cart.png"
+  },
+  {
+    "id": "08-checkout-address",
+    "number": 8,
+    "title": "Shared checkout \u00b7 contact, address and shipping",
+    "routeGroup": "checkout",
+    "note": "Canonical address step with fixture quote.",
+    "source": "source/08-checkout-address.html",
+    "images": {
+      "desktop": "images/08-checkout-address-desktop.png",
+      "tablet": "images/08-checkout-address-tablet.png",
+      "mobile": "images/08-checkout-address-mobile.png"
+    },
+    "board": "boards/08-checkout-address.png"
+  },
+  {
+    "id": "09-checkout-review",
+    "number": 9,
+    "title": "Shared checkout \u00b7 review, payment and retry",
+    "routeGroup": "checkout",
+    "note": "Complete summary precedes commitment at every width.",
+    "source": "source/09-checkout-review.html",
+    "images": {
+      "desktop": "images/09-checkout-review-desktop.png",
+      "tablet": "images/09-checkout-review-tablet.png",
+      "mobile": "images/09-checkout-review-mobile.png"
+    },
+    "board": "boards/09-checkout-review.png"
+  },
+  {
+    "id": "10-sign-in",
+    "number": 10,
+    "title": "LetBuyy buyer identity \u00b7 Circuit destination",
+    "routeGroup": "identity",
+    "note": "Canonical credential authority and explicit safe destination.",
+    "source": "source/10-sign-in.html",
+    "images": {
+      "desktop": "images/10-sign-in-desktop.png",
+      "tablet": "images/10-sign-in-tablet.png",
+      "mobile": "images/10-sign-in-mobile.png"
+    },
+    "board": "boards/10-sign-in.png"
+  },
+  {
+    "id": "11-create-account",
+    "number": 11,
+    "title": "LetBuyy buyer registration \u00b7 explicit continuation",
+    "routeGroup": "identity",
+    "note": "BuyerAuthorize email/password \u2192 identity session \u2192 explicit Continue to Circuit.",
+    "source": "source/11-create-account.html",
+    "images": {
+      "desktop": "images/11-create-account-desktop.png",
+      "tablet": "images/11-create-account-tablet.png",
+      "mobile": "images/11-create-account-mobile.png"
+    },
+    "board": "boards/11-create-account.png"
+  },
+  {
+    "id": "12-profile",
+    "number": 12,
+    "title": "Circuit account \u00b7 overview and profile edit",
+    "routeGroup": "account",
+    "note": "One buyer identity; merchant-scoped account context.",
+    "source": "source/12-profile.html",
+    "images": {
+      "desktop": "images/12-profile-desktop.png",
+      "tablet": "images/12-profile-tablet.png",
+      "mobile": "images/12-profile-mobile.png"
+    },
+    "board": "boards/12-profile.png"
+  },
+  {
+    "id": "13-orders",
+    "number": 13,
+    "title": "Circuit account \u00b7 owned order history",
+    "routeGroup": "account",
+    "note": "Same order and variants used throughout the story.",
+    "source": "source/13-orders.html",
+    "images": {
+      "desktop": "images/13-orders-desktop.png",
+      "tablet": "images/13-orders-tablet.png",
+      "mobile": "images/13-orders-mobile.png"
+    },
+    "board": "boards/13-orders.png"
+  },
+  {
+    "id": "14-order-detail",
+    "number": 14,
+    "title": "Circuit account \u00b7 owned order detail",
+    "routeGroup": "account",
+    "note": "Fictional order, variant, totals and status snapshot.",
+    "source": "source/14-order-detail.html",
+    "images": {
+      "desktop": "images/14-order-detail-desktop.png",
+      "tablet": "images/14-order-detail-tablet.png",
+      "mobile": "images/14-order-detail-mobile.png"
+    },
+    "board": "boards/14-order-detail.png"
+  },
+  {
+    "id": "15-addresses",
+    "number": 15,
+    "title": "Circuit account \u00b7 addresses and validation",
+    "routeGroup": "account",
+    "note": "Default address and representative edit with inline error.",
+    "source": "source/15-addresses.html",
+    "images": {
+      "desktop": "images/15-addresses-desktop.png",
+      "tablet": "images/15-addresses-tablet.png",
+      "mobile": "images/15-addresses-mobile.png"
+    },
+    "board": "boards/15-addresses.png"
+  }
+]

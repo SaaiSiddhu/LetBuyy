@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-24T09:00:19+00:00",
+  "goalStatus": "active",
+  "lastTurn": "PROGRESS_NEW_OFFLINE_DIGEST_LINKAGE",
+  "phase0": "complete",
+  "latestDiagnostic": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/g02-offline-lineage-20261024/RESULT.json",
+  "all19Audit": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+  "G02": "PARTIAL; admitted document and package-manifest digests match all six saved stage receipts; complete catalogue/collector provenance remains unverified",
+  "historicalOriginalResults": { "PASS": 3, "FAIL": 1, "NOT_RUN": 15 },
+  "controllerDiagnostics": { "PASS": 3, "FAIL": 1, "PARTIAL": 5, "NOT_RUN": 10 },
+  "historicalCaseResultChange": false,
+  "G08": "FAIL; failed preview read attributed404, exact missing-vs-expired cause remains unproved",
+  "KQA01": "OPEN P2, unchanged",
+  "sourceRuntimeLease": null,
+  "certificationIssued": false,
+  "nextDependency": "Recorded helper activation and exact current shared preview repair/controller grant",
+  "ownedResourcesStarted": [],
+  "cleanup": "No Kindred resource or lease acquired, closed or returned. Shared resources untouched; current shared liveness/teardown not certified."
+}

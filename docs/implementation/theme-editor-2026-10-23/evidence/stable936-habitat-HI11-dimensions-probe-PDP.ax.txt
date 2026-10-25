@@ -1,0 +1,113 @@
+Browser tab: 63, Title: "Habitat dimensions-only stand | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac".
+1 AXWebArea Habitat dimensions-only stand | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac
+	2 container
+		3 text Habitat 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Breadcrumb
+			11 link Description: Home /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+			12 link Description: Shop /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+			13 text Habitat dimensions-only stand
+		14 heading Habitat dimensions-only stand, Value: 1
+			15 text Habitat dimensions-only stand
+		16 text INR 1,200.00
+		17 container Common product dimensions
+			18 container
+				19 text Common product dimensions  · check the selected finish below.
+			20 container
+				21 text 60 W × 45 D × 70 H cm
+				22 text Assembled dimensions
+			23 link Description: Dimensions, material & access ↓, Value: syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac#habitat-dimensions-habitat-product-selection
+		24 container Common product facts
+			25 text Common product facts
+			26 definition list
+				27 container Assembled
+					28 text Assembled
+				29 text 60 W × 45 D × 70 H cm
+				30 container Package
+					31 text Package
+				32 text Package dimensions not supplied.
+				33 container Weight
+					34 text Weight
+				35 text Weight not supplied.
+				36 container Seat height
+					37 text Seat height
+				38 text Seat height not supplied.
+				39 container Materials
+					40 text Materials
+				41 text Material information not supplied.
+				42 container Assembly
+					43 text Assembly
+				44 text Assembly information not supplied.
+				45 container Care
+					46 text Care
+				47 text Care information not supplied.
+			48 text Only supplied measurements are listed. An absent width, depth, height or diameter is not supplied. Assembled and package measurements describe different things.
+			49 link Description: Common reference, named finishes & access guidance ↓, Value: syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac#habitat-dimensions-habitat-product-selection
+		50 container
+			51 text Quantity
+			52 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-habitat-product-selection
+			53 button Add to cart
+		54 container Add Habitat dimensions-only stand to wishlist
+			55 checkbox Description: Connect store account to use wishlist, Value: 0
+		56 button (collapsed) Description, Secondary Actions: Expand
+			57 text Description
+		58 container Description: Furniture measurements and materials, ID: habitat-dimensions-habitat-product-selection
+			59 text MAKE SPACE FOR IT
+			60 heading Know every dimension., Value: 2
+				61 text Know every dimension.
+			62 text Measure the room it will live in, then the access path it will take to get there.
+			63 text Product facts below are common reference information. A selected finish may override them; use its current facts above.
+			64 container Common product footprint schematic
+				65 text Width: 60 cm
+				66 text Footprint
+				67 text Depth: 45 cm
+			68 text Common product footprint only. Schematic, not to scale. Check the current finish measurements; no access or fit is guaranteed.
+			69 table Product facts (common) · selected finish facts are shown above
+				70 text Product facts (common) · selected finish facts are shown above
+				71 row
+					72 cell
+						73 text Assembled dimensions
+					74 cell
+						75 text 60 W × 45 D × 70 H cm
+			76 text Package size is not assembled size. Compare supplied package dimensions with doors, stairs, turns and lifts.
+			77 heading Product material & assembly (common), Value: 3
+				78 text Product material & assembly (common)
+			79 text Material information not supplied.
+			80 text Assembly information not supplied.
+			81 container
+				82 button (expanded) Delivery & access, Secondary Actions: Collapse
+					83 text Delivery & access
+				84 text Delivery options and charges are confirmed by checkout for your address. A delivery date is not available unless a service result supplies one.
+		85 container
+			86 heading Write a review, Value: 3
+				87 text Write a review
+			88 Your rating
+				89 radio button (settable, integer) Value: 0, ID: lb-review-star-1
+				90 checkbox Description: 1 star, Value: 0
+				91 radio button (settable, integer) Value: 0, ID: lb-review-star-2
+				92 checkbox Description: 2 stars, Value: 0
+				93 radio button (settable, integer) Value: 0, ID: lb-review-star-3
+				94 checkbox Description: 3 stars, Value: 0
+				95 radio button (settable, integer) Value: 0, ID: lb-review-star-4
+				96 checkbox Description: 4 stars, Value: 0
+				97 radio button (settable, integer) Value: 0, ID: lb-review-star-5
+				98 checkbox Description: 5 stars, Value: 0
+			99 text field (settable)
+			100 text field (settable)
+			101 text entry area (settable)
+			102 button Submit review
+		103 heading Threadline, Value: 3
+			104 text Threadline
+		105 text Habitat 936 B footer saved
+		106 heading CONTACT, Value: 4
+			107 text CONTACT
+		108 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		109 text © Threadline. All rights reserved.
+		110 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Habitat dimensions-only stand | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/product/d0269c4f-8175-4499-b13c-fb59f4d18eac

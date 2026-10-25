@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-24T11:47:54.772786+00:00",
+  "drift": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/first-party-theme-catalog.ts",
+      "preflightSha256": "3464bc35c39f811be3e785da8ff35499a1d38211244737aa45cc86e2a0a02c21",
+      "currentSha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3"
+    }
+  ],
+  "historicalCatalogueReconstruction": {
+    "base": {
+      "path": "/private/tmp/kindred-child-output-20261024-miky7gjz/src/first-party-theme-catalog.ts",
+      "sha256": "840af16589d97e99ebecdbc045e920567d4e71a3b30d9d00d22f440aa5cb34a8",
+      "bytes": 5576
+    },
+    "diffAuthority": {
+      "path": "docs/implementation/niche-theme-programme/heading-successor-integrations/04-threadline-catalog/source-result.json",
+      "sha256": "74d77ae91b7d12a5a82185f95099d1ccf8bea7703fdb364af46b7e7500ea8619",
+      "bytes": 2378
+    },
+    "exactReconstructedBytes": {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/child-contract-correction-20261024/private-proposal-guarded02/first-party-theme-catalog.preflight-exact.ts",
+      "sha256": "3464bc35c39f811be3e785da8ff35499a1d38211244737aa45cc86e2a0a02c21",
+      "bytes": 5794
+    },
+    "verifiedAgainst": "Actual preflight module hash3464bc35. Evidence reconstruction only; never executed or applied to Main."
+  },
+  "effect": "Historical58 source result retained. No credit transferred to current Main catalogue or any new closure. Current integrated/runtime qualification remains pending.",
+  "testsRepeated": false,
+  "mainWrites": 0
+}

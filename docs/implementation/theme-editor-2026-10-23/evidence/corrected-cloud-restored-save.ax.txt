@@ -1,0 +1,235 @@
+Browser tab: 16, Title: "LetBuyy Admin", URL: "http://admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/aa02e0ad-1151-4999-90b0-5fd61aa96260".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/aa02e0ad-1151-4999-90b0-5fd61aa96260
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/dashboard
+					15 link Description: Orders, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store
+						43 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			44 text Apps
+			45 container Apps
+				46 content list
+					47 link Description: Add, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/apps
+		48 container Settings navigation
+			49 content list
+				50 link Description: Settings, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/settings
+	51 container admin-page-scroll
+		52 text Your site is in 
+		53 text draft
+		54 text  mode. It is not visible to visitors yet.
+		231 container
+			232 heading Edit product, Value: 1
+				233 text Edit product
+			234 button Discard
+			235 button (disabled) Save product
+		236 container
+			237 heading Saved, Value: 3
+				238 text Saved
+			239 text Product saved
+		60 container
+			61 heading Details, Value: 2
+				62 text Details
+			63 text Name and describe the product as shoppers will see it. Title
+			64 text field (settable) Title, Value: Fixture Cloud Rinse
+			65 text Description
+			66 text entry area (settable) Description, Value: Synthetic owned beauty lifecycle fixture only.
+		67 container
+			68 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				69 text Apparel fit, fabric and care (optional)
+			70 container Product-specific facts
+				71 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				72 text Product facts category
+				73 pop up button (collapsed, settable) Product facts category, Value: Beauty and care, Secondary Actions: Expand
+					74 menu
+						75 (disabled) Choose product information to edit
+						76 Toys and activities
+						77 Electronics
+						78 Food and pantry
+						79 Furniture
+						80 Ready-made gifts
+						81 Text personalization
+						82 (selected) Beauty and care
+						83 Sports equipment
+						84 Books and stationery
+				188 container
+					189 button (expanded) Care ingredients and named shades (optional), Secondary Actions: Collapse
+						190 text Care ingredients and named shades (optional)
+					191 container Care ingredients and named shades (optional)
+						192 text Add information supplied for this product. Missing ingredients, directions and warnings remain unknown.
+						193 text Routine stage
+						194 pop up button (collapsed, settable) Routine stage, Value: Cleanse, Secondary Actions: Expand
+							195 menu
+								196 Not supplied
+								197 (selected) Cleanse
+								198 Care
+								199 Colour
+						200 text Product format
+						201 text field (settable) Product format, Value: Gel cleanser
+						202 text Use the product’s format, such as gel cleanser. Leave blank if unknown.
+						203 container Net quantity (optional)
+							204 text Net quantity (optional)
+							205 text Net quantity amount
+							206 stepper (settable, integer) Net quantity amount, Value: 150
+							207 text Net quantity unit
+							208 pop up button (collapsed, settable) Net quantity unit, Value: Millilitres (ml), Secondary Actions: Expand
+								209 menu
+									210 Not supplied
+									211 Grams (g)
+									212 (selected) Millilitres (ml)
+							213 button Clear net quantity
+						214 text Ingredients
+						215 text entry area (settable) Ingredients, Value: Cloud v1: Aqua, Glycerin.
+						216 text Directions
+						217 text entry area (settable) Directions, Value: Fixture directions v1: use as supplied.
+						218 text Warnings
+						219 text entry area (settable) Warnings, Value: Fixture warning v1: external use only.
+						220 container Named shade references (optional)
+							221 text Named shade references (optional)
+							222 text Choose an existing product option and its exact values. A colour reference never replaces a shade name or purchase variant. Two named shades may have the same RGB value.
+							223 text Shade product option
+							224 pop up button (collapsed, settable) Shade product option, Value: Shade (not in current product options), Secondary Actions: Expand
+								225 menu
+									226 Choose an existing product option
+									227 (disabled) Shade (not in current product options)
+							228 text Add product variant options in the product form to choose named shades. Existing entries are kept until you change or remove them.
+							229 button (disabled) Add named shade
+						230 button Clear all care facts
+			87 heading Media, Value: 2
+				88 text Media
+			89 text Upload images that help shoppers inspect the product.
+			90 container
+				91 image Product media 1
+				92 button Remove product media 1
+				93 button (disabled) Move product media 1 earlier
+				94 button (disabled) Move product media 1 later
+			95 button Upload more media
+		96 container
+			97 heading Category, Value: 2
+				98 text Category
+			99 text Add category metadata for tax, discovery, and reporting. Category
+			100 text field (settable) Category, Value: Care
+			101 text Determines tax rates and adds product metadata.
+		102 container
+			103 heading Pricing, Value: 2
+				104 text Pricing
+			105 text Set the customer-facing price and internal product cost. Price
+			106 stepper (settable, integer) Price, Value: 640
+			107 text Compare-at price
+			108 stepper (settable) Compare-at price
+			109 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			110 text Cost per item
+			111 stepper (settable) Cost per item
+			112 text Customers will not see this.
+		113 container
+			114 heading Inventory, Value: 2
+				115 text Inventory
+			116 text Track SKU, barcode, and sell-through behavior.
+			117 checkbox (settable, integer) Description: Track quantity, Value: 1
+			118 text Quantity
+			119 stepper (settable, integer) Quantity, Value: 12
+			120 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			121 text SKU (Stock Keeping Unit)
+			122 text field (settable) SKU (Stock Keeping Unit), Value: SYN-BEAUTY-CLOUD-f6074d90e894
+			123 text Barcode (ISBN, UPC, GTIN)
+			124 text field (settable) Barcode (ISBN, UPC, GTIN)
+		125 container
+			126 heading Shipping, Value: 2
+				127 text Shipping
+			128 text Collect fulfillment and customs information for physical products.
+			129 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			130 text Weight
+			131 stepper (settable, float) Weight, Value: 0.10000000149011612, Details: 0.1
+			132 text Unit
+			133 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				134 menu
+					135 (selected) kg
+					136 g
+					137 lb
+					138 oz
+			139 text Importer details (for imported products)
+			140 text entry area (settable) Importer details (for imported products)
+			141 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			142 text field (settable) Country/Region of origin, Value: India
+			143 text HS (Harmonized System) code
+			144 text field (settable) HS (Harmonized System) code
+		145 container
+			146 heading Variants, Value: 2
+				147 text Variants
+			148 text Add options like size, color, or material.
+			149 button Add option
+		150 container
+			151 heading Search engine listing, Value: 2
+				152 text Search engine listing
+			153 text Control how this product may appear in search results. syn-threadline-ui-33be9d94 .letbuyy.com/products/ syn-cloud-rinse-f6074d90e894 Fixture Cloud Rinse Synthetic owned beauty lifecycle fixture only. Page title
+			154 text field (settable) Page title
+			155 text 0 of 70 characters used Meta description
+			156 text entry area (settable) Meta description
+			157 text 0 of 160 characters used URL handle
+			158 text field (settable) URL handle, Value: syn-cloud-rinse-f6074d90e894
+		159 container
+			160 container
+				161 heading Status, Value: 2
+					162 text Status
+				163 text Product status
+				164 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					165 menu
+						166 (selected) Active
+						167 Draft
+						168 Archived
+				169 text Visible on storefront
+			170 container
+				171 heading Publishing, Value: 2
+					172 text Publishing
+				173 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			174 container
+				175 heading Product organization, Value: 2
+					176 text Product organization
+				177 text Use consistent metadata to keep catalog management fast. Product type
+				178 text field (settable) Product type
+				179 text Vendor
+				180 text field (settable) Vendor
+				181 text Tags
+				182 text field (settable) Tags
+				183 text Separate tags with commas.
+			184 container
+				185 heading Catalog readiness, Value: 2
+					186 text Catalog readiness
+				187 text Save product details, media, pricing, and inventory from one guided form.
+
+The focused UI element is 232 heading Edit product, Value: 1

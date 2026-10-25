@@ -1,0 +1,96 @@
+Browser tab: 173052885, Title: "The Everyday Linen Shirt | Threadline", URL: "http://syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1".
+1 AXWebArea The Everyday Linen Shirt | Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1
+	2 container
+		3 text Threadline Runtime07 A — everyday apparel
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: THREADLINE, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/customers/login
+		8 link Description: Cart ( 0 ), Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+		9 container Breadcrumb
+			10 link Description: Home /, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+			11 link Description: Shop /, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products
+			12 text The Everyday Linen Shirt
+		13 container
+			14 image The Everyday Linen Shirt
+			15 tab group Product images
+				16 tab (selected, settable, boolean) Description: Image 1 of 2, Value: 1
+				17 tab (selectable, settable, boolean) Description: Image 2 of 2, Value: 0
+		18 heading The Everyday Linen Shirt, Value: 1
+			19 text The Everyday Linen Shirt
+		20 text INR 2,490.00
+		21 link Description: Fit & garment measurements ↗, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1#fit-guide
+		22 container
+			23 text Color
+			24 checkbox Oat, Value: 0
+			25 text Size
+			26 checkbox S, Value: 0
+			27 checkbox M, Value: 0
+			28 checkbox L, Value: 0
+			29 checkbox XL, Value: 0
+			30 text Choose your options
+		31 container
+			32 text Quantity
+			33 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-sense-productDetail-product
+			34 button (disabled) Add to cart
+		35 container Add The Everyday Linen Shirt to wishlist
+			36 checkbox Description: Connect store account to use wishlist, Value: 0
+		37 button (collapsed) Description, Secondary Actions: Expand
+			38 text Description
+		39 container Description: Fit and garment information, ID: fit-guide
+			40 heading A fit you can understand, Value: 2
+				41 text A fit you can understand
+			42 text Relaxed fit. Synthetic garment fixture.
+			43 table Garment measurements · cm · Measure the garment, not the body.
+				44 text Garment measurements · cm · Measure the garment, not the body.
+				45 row
+					46 cell
+						47 text Size
+					48 cell
+						49 text Chest
+					50 cell
+						51 text Shoulder
+					52 cell
+						53 text Length
+				54 row
+					55 cell
+						56 text S
+					57 cell
+						58 text 98
+					59 cell
+						60 text 39
+					61 cell
+						62 text 68
+				63 row
+					64 cell
+						65 text M
+					66 cell
+						67 text 102
+					68 cell
+						69 text 40
+					70 cell
+						71 text 69
+				72 row
+					73 cell
+						74 text L
+					75 cell
+						76 text 106
+					77 cell
+						78 text 41
+					79 cell
+						80 text 70
+			81 container
+				82 button (expanded) Fabric, Secondary Actions: Collapse
+					83 text Fabric
+				84 text 100% linen. Fictional fixture composition.
+			85 button (collapsed) Care, Secondary Actions: Expand
+				86 text Care
+		87 heading Threadline, Value: 3
+			88 text Threadline
+		89 heading CONTACT, Value: 4
+			90 text CONTACT
+		91 link Description: Contact us, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/contact
+		92 text © Threadline. All rights reserved.
+		93 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea The Everyday Linen Shirt | Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1

@@ -68,5 +68,8 @@ BEGIN
    OR(a.grantee<>p.proowner AND a.is_grantable))) THEN
   RAISE EXCEPTION 'Migration371 refuses changed public reader definition, owner or privileges';
  END IF;
-END $guard$;COMMIT;
+END $guard$;
+-- Reassert named API-role closure after replacement; backend grants are retained.
+REVOKE ALL ON FUNCTION public.read_published_storefront_site_v1(text,boolean) FROM PUBLIC, anon, authenticated;
+COMMIT;
 NOTIFY pgrst,'reload schema';

@@ -1,0 +1,174 @@
+{
+  "recordedAt": "2026-10-24T05:09:59.484379+00:00",
+  "runId": "936e5f577646",
+  "case": "P00",
+  "status": "PASS",
+  "auditClass": "INDEPENDENT_READ_ONLY_RETAINED_ACTUAL_RECEIPT_AND_NATIVE_EVIDENCE",
+  "sourceRefs": {
+    "runtimeAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+    },
+    "correctedClientAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+    },
+    "apiSourceProofSha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+    "frontendSourceProof": {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/font-axis-source-proof.json",
+      "sha256": "4da3248de49a0c828f6e1daeaacb35d5c361bf11dc1f3d90bb34eea5c48979a0"
+    }
+  },
+  "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+  "instance": {
+    "slug": "letbuyy-refresh",
+    "status": "installed",
+    "version": "2.0.0",
+    "packageId": "368749ba-8eab-424d-be77-6987015b0210",
+    "instanceId": "13d91850-8ea2-4ec6-be97-6c3fc3abe9b6",
+    "bundleVersion": "2.0.0",
+    "draftRevision": 1,
+    "currentDraftId": "f91227c7-faaf-444d-be16-e71975452d11",
+    "activeReleaseId": null,
+    "catalogChecksum": null,
+    "packageVersionId": "296fd771-e249-46f7-b997-262e460556c9",
+    "installedConfigSqlSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12",
+    "packageManifestSqlSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7"
+  },
+  "observedReleaseSequence": [
+    {
+      "phase": "A",
+      "release": {
+        "id": "8896643a-d38a-4e06-bb36-bb8d4edc09d1",
+        "status": "published",
+        "themeId": "letbuyy-refresh",
+        "sourceDraftVersion": 4,
+        "assetManifestSqlSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "releaseConfigSqlSha256": "989a5dedbe4dcb7eda58a6be56cdfc029593e4fbd86a44710bffd5ca4ec4e7f0",
+        "templateSnapshotSqlSha256": "989a5dedbe4dcb7eda58a6be56cdfc029593e4fbd86a44710bffd5ca4ec4e7f0"
+      }
+    },
+    {
+      "phase": "B",
+      "release": {
+        "id": "0c89a7c7-9aeb-4916-a2cc-055611472b3d",
+        "status": "published",
+        "themeId": "letbuyy-refresh",
+        "sourceDraftVersion": 7,
+        "assetManifestSqlSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "releaseConfigSqlSha256": "9529be3fe8d07ae020e0c868d8c996a954bc3e67457c40fc4e71de94a4e89e92",
+        "templateSnapshotSqlSha256": "9529be3fe8d07ae020e0c868d8c996a954bc3e67457c40fc4e71de94a4e89e92"
+      }
+    },
+    {
+      "phase": "restoreA",
+      "release": {
+        "id": "7ac6ef21-f4fe-4548-b67f-71d651d67f56",
+        "status": "published",
+        "themeId": "letbuyy-refresh",
+        "sourceDraftVersion": null,
+        "assetManifestSqlSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "releaseConfigSqlSha256": "989a5dedbe4dcb7eda58a6be56cdfc029593e4fbd86a44710bffd5ca4ec4e7f0",
+        "templateSnapshotSqlSha256": "989a5dedbe4dcb7eda58a6be56cdfc029593e4fbd86a44710bffd5ca4ec4e7f0"
+      }
+    },
+    {
+      "phase": "reapplyB",
+      "release": {
+        "id": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+        "status": "published",
+        "themeId": "letbuyy-refresh",
+        "sourceDraftVersion": 9,
+        "assetManifestSqlSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "releaseConfigSqlSha256": "9529be3fe8d07ae020e0c868d8c996a954bc3e67457c40fc4e71de94a4e89e92",
+        "templateSnapshotSqlSha256": "9529be3fe8d07ae020e0c868d8c996a954bc3e67457c40fc4e71de94a4e89e92"
+      }
+    }
+  ],
+  "claims": [
+    "Fresh actual Pantry2 package/instance binding; catalogChecksum actual SQLNULL, no invented digest.",
+    "Normal editor saved/reloaded A/B; saved privateB preserved publicA until publication.",
+    "A/B/restoreA/reapplyB native public markers match guarded persisted serving-release hashes; activeB draft retained across restore.",
+    "Current public lentils PDP uses B header/footer plus actual ingredients/food layout and selection block.",
+    "2orders/18products unchanged across these install/publication readbacks."
+  ],
+  "limits": [
+    "No raw HTTP status or full HTML-byte identity invented. These SQL hashes name specific canonical projections, not entire rows or manifests.",
+    "P03/P07/P08/P09 etc require their own evidence; no source-only or screenshot-only acceptance."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-p00-before-install-readback.json",
+      "sha256": "d60f1c2bcc512d8c53987af179a4cd60482153bcb4f75db7c1ae12c29a5c5bba"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-p00-installed-readback.json",
+      "sha256": "5942d1a38792893dfde3c1a6febb8201963f27c4c963f470dac30dc140c30c51"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-p00-a-published-readback.json",
+      "sha256": "8fd67aba51c6dc6a95ef02b3945837039ff49206353bb5a8594b25bc91f055c2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-p00-b-saved-readback.json",
+      "sha256": "78d1565336efcb87ce35aa8a140d45ba87e217d3e391da85e3a4f6783d62a662"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-p00-b-published-readback.json",
+      "sha256": "7465e8c5d1a4935eb2e644626e57c7a55a4115d03e0571199e2412efbb797efa"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-p00-a-restored-readback.json",
+      "sha256": "9fc85ec5e7bce1c10bb4dff6bf1f8f74735a02a3c6b430b5a1e16e93bcbcff93"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-p00-b-reapplied-readback.json",
+      "sha256": "58d4b37a0167e9a5b95f2a0b37181396ef3f8ce04caa08eaf40c85f0b5b46036"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-installed-private.ax.txt",
+      "sha256": "1be5665bb756dafa47ecdddf9ccb79463019a1fa5b55d81bdd931a9437f15cba"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-A-saved-reloaded.ax.txt",
+      "sha256": "a92674a4abbacb0a2c939a9cce0f80507d100135e54316e154a244b9c002771d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-B-reloaded.ax.txt",
+      "sha256": "0aca6b4783c05b3df4d62b93ad765a152d59340933fbd7830ee52fc983a3e7c3"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-A-public.ax.txt",
+      "sha256": "132b8f313b1bd139585b8704e968de43e99bb31d33cf265c7d53d35179246c08"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-A-public-B-private.ax.txt",
+      "sha256": "132b8f313b1bd139585b8704e968de43e99bb31d33cf265c7d53d35179246c08"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-B-public.ax.txt",
+      "sha256": "12b7310259ba76a1fcccbcbd6203650792bfde89fa0516a669cf7c0ee7593644"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-reviewed-rollback.ax.txt",
+      "sha256": "f5cfb56f4c50e6e68118e4e80864938c31013d0a183cf5aca526a0702a844284"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-B-retained.ax.txt",
+      "sha256": "54830d4861b94d8a481bb323c9d2ea259abaf75b003246909793328d1db1d2bf"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-A-restored-public.ax.txt",
+      "sha256": "132b8f313b1bd139585b8704e968de43e99bb31d33cf265c7d53d35179246c08"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P00-B-reapplied-public.ax.txt",
+      "sha256": "12b7310259ba76a1fcccbcbd6203650792bfde89fa0516a669cf7c0ee7593644"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P03-no-selection.ax.txt",
+      "sha256": "f6e9bb16cd56be88dbe367744a8eedcb6ccb936515dc74d0c8fefcb07b47c0d3"
+    }
+  ],
+  "runtimeActionsByPantry": false
+}

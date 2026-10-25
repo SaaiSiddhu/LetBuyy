@@ -1,0 +1,431 @@
+{
+  "updatedAt": "2026-10-23T13:09:51+0530",
+  "candidate": "/private/tmp/letbuyy-marketplace-candidate-20261023-110027",
+  "scope": "Latest integrated merchant/commerce source and public assets only; existing owned local processes hot-reload. No env, credentials, held coordinator fixture or database modified. Gateway/migration snapshot is still older; no current installation acceptance claimed.",
+  "files": [
+    {
+      "path": "apps/commerce/web/src/app/api/buyer/orders/route.ts",
+      "sha256": "512082a8b21ae20002b7266c74c559608a170c8d13d42a16871f62f88d8e5a5d"
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "sha256": "048fc82a3b6dd8ddf5c6e92ab076dd0f8965e7fe7404b5932f9769a7e9fe6d38"
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/storefront-preview-bridge.tsx",
+      "sha256": "73fa885a31f8db23fb127de181bb5519caf960f6f2b0e5316d0de712a9126e67"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/account/orders/[id]/order-detail-client.tsx",
+      "sha256": "3799218f92b911b5a5e39815fda4fc7f3e084d68df67cf2bc260784b3ce11fe2"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/blog/(list)/page.tsx",
+      "sha256": "067bd6a2c8c07e37a4c72d26ee20289eaebf8c058b4ec77205d55c88b68c1964"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+    },
+    {
+      "path": "apps/commerce/web/src/components/CatalogPreviewNavigation.tsx",
+      "sha256": "3c4c12eefe3f5791880e41a27c8ff601227537f2424a824b3ff3381628734e3d"
+    },
+    {
+      "path": "apps/commerce/web/src/components/catalog-preview-frame.test.tsx",
+      "sha256": "7d11141c04aefa76b70e4d8eaa960aa761b58225d813915f2a197718889046fc"
+    },
+    {
+      "path": "apps/commerce/web/src/components/catalog-preview-navigation.test.tsx",
+      "sha256": "c91b8889a70f956885773c228a79113e5b8e3fc7e5eb6e1723bc2d8d14651bfc"
+    },
+    {
+      "path": "apps/commerce/web/src/components/storefront/niche-order-facts.test.tsx",
+      "sha256": "9799844f6ea14e3cb691e84be639afab4de8ffddcd17eaf65e0bc1345a94b2dd"
+    },
+    {
+      "path": "apps/commerce/web/src/components/storefront/niche-order-facts.tsx",
+      "sha256": "f642c4c9f9bd3ac4bd7384f14bcfca1ea7398d8b7ae5641df07c0213d115c74e"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/content-service.ts",
+      "sha256": "11219830420cc9dc67de0adf33b4239c117e810a181b62dd0a38caaf1ab37fc5"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/customer-drop.ts",
+      "sha256": "ba42c909d3c813d9c6cb5bbac298cae6efdd3e814fc3ff4775ab8fa05f8d9d8f"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.test.ts",
+      "sha256": "0cc0104810c5b159a69f13189028189368da9044df1642de1ee14c540045aa57"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "da96f8ef94d79e956a433dbe0eee17726ee99e702a3226561c3f8aeb917782a5"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/catalog-demo-route.test.ts",
+      "sha256": "b843fe45e55597c50b1e16603d724a87e1558d93304a79ebd8f464d78da802ec"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/catalog-demo-route.ts",
+      "sha256": "74639603da8d73c4adff0e197be9fbca70ebc41e67dbd049f4746d64f816eedd"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/circuit-demo.test.ts",
+      "sha256": "a519de9c944a50f00049aaabf269852f55577ede886662a2f16a2c17eee6bd59"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/circuit-demo.ts",
+      "sha256": "7c133c9bf255a27f93da6758df4fd46b21deb8736c59668f9fc2796019da45cc"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/dewdrop-demo.ts",
+      "sha256": "c30d8f5901ddc2d9d99e730b409ded2fbad9217d0546a9470fab1d2fbdba2487"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/habitat-demo.ts",
+      "sha256": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/kindred-demo.test.ts",
+      "sha256": "9353ec62fa22c16ff540d5d4444a841d78675359dfb130b196b8a5e72d1048e8"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/kindred-demo.ts",
+      "sha256": "ec8dadf3750e18f5caac7ebc7c1478a72f1b17ef589f21054e82fa7d2f33c213"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/madeyours-demo.test.ts",
+      "sha256": "4aea9fa5ade5bdcd5f57dd40ee16f47547effcdc64b17073714e2482dbc024ef"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/madeyours-demo.ts",
+      "sha256": "dde879421819cdacea741a440a905d8f03216a20d99f1346dd4045d5e2784af6"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/marginalia-demo.ts",
+      "sha256": "e4c9c277170279cf6982d264d96772fbdf9f52daa677a7f58cb93d87abb990f8"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/pantry-demo.ts",
+      "sha256": "5ebf3c97735d5429ff779a4fd30e437cc8ce66d34ab054f07fe65b15d78e874e"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/playfield-demo.ts",
+      "sha256": "4bc0939f73483969b4966df9c9d55c941244473dfdb3f1bb280a1f1d9163d6af"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/trailmark-demo.ts",
+      "sha256": "db0fdc1b4c289120d0485ae6e0ed9b7d448f30c550fc5c8ebdfa252d7dfe11db"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/order-fact-readback.ts",
+      "sha256": "90c4e486175c53945f7df7310b1ddb770b0edd6d815a3cf812a90ca3aded4f5d"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/pantry-variant-projection.test.ts",
+      "sha256": "c80e9365d8d1f23a1c823aabcd0003d54fed2a0ffc32603df2396ffe67ae4317"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "sha256": "f0164a1b247d1a91207abdb23f5ed5cc780a3780c7a447c9a1fad914ed640701"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-variants.ts",
+      "sha256": "44c5f49d1e9429b2426bab7c7b1f1819ec3dce6347282f0505ce25757fd0d374"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/apparel-route-query.ts",
+      "sha256": "89190bd66bf98398b1d2feb4ccc048b1e87ee639c6196ee18c79dec8f2b2462f"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.test.ts",
+      "sha256": "3888aa7966c22d85930df3df16a91284387a34d9db1601d6274c72de16955035"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/discovery-route-query.ts",
+      "sha256": "fb9cddfb6215e4da8b5847f90d849269d269a5ecc71e6416274f642792266328"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "36280b425d7cbc71b5ebd11564ce48384fa7cd74f281c5b60808ccab6ee367bc"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-preview-inspector.test.ts",
+      "sha256": "845526a4dc2bab1039906d4307437cd37a6f188c9bf2d95e49a8969c6d61a088"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-preview-inspector.ts",
+      "sha256": "5b543f2f79e07e467b231a18d52305d6f4a4f9008a0260a2baa98edb00953af4"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.test.ts",
+      "sha256": "37da992b9a31e46ab37bc45b0177783546b823417f9a234b28bb86381ca938de"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "171aee207ee79add0106c2558a344d5e69b4f4b9044b401b7d5c5383e8513bf9"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "3264754b19b7420278dcfaf8a290603f9a6d564f34ee72a2a946098e46bd4ea0"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/types.ts",
+      "sha256": "8ca0d83cf127164e4acf74888c8bba72f13fd7c246a6ac757c65c57167e3f38a"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.test.ts",
+      "sha256": "d614f0e57859a627af9942f10ffb26a359baefd4cd67e1a405ac243c127c7933"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "612a62dd4046cc7b94d7ecfc0691c1a6c2db384b9921ce13396a9fbe0859420b"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.test.ts",
+      "sha256": "214a81fc2fa4cff5ea9903995d7a89a11026eeecfdb6499fbf2d07d472ce5db6"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "sha256": "a38617b01334e40a1df48c2032711071ea8900477bcdc1a41f63611ce5f021ea"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "34ddf9c8f8ad8d792058ceb3fc5c83dcc8167b7cf610c42e4a9e0a907bb157c6"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+      "sha256": "38db82c1e2f6d5df655dc91e8e0cb07550ef0857c16328082445695ca64d3509"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "42d7323cab8cc15549304f7e7c63cb9c46f7ea9634989a3c42bc69e0da47ab00"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/resource-search/route.ts",
+      "sha256": "d05e1c0733432da5fd64e0ce81ef3abb0fee6b6f78a981d05d71e654bbd5b344"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/themes/install/route.ts",
+      "sha256": "4137d315b65cd3594ba174004b3ba95803778e27e2b485046f09db72a8251fab"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/themes/route.ts",
+      "sha256": "b8f5e93d4e2ff1efb05aa5f0970e6bb704cac9e54cc4049ea125745dee052cf6"
+    },
+    {
+      "path": "apps/merchant/web/src/components/orders/niche-order-facts.test.tsx",
+      "sha256": "9799844f6ea14e3cb691e84be639afab4de8ffddcd17eaf65e0bc1345a94b2dd"
+    },
+    {
+      "path": "apps/merchant/web/src/components/orders/niche-order-facts.tsx",
+      "sha256": "a907b6c1464e54eafd2f4f2f9fb1341e7a885256fd55b7118dfd4d9ca26cc41b"
+    },
+    {
+      "path": "apps/merchant/web/src/components/orders/order-line-items.ts",
+      "sha256": "8e2364b2a97ef5c698c2c9380557dec2ef7a372d4b3902861115e417ae65545e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/NicheFactsEditor.tsx",
+      "sha256": "2038755783ca6e437c51052354720760fd20e5b4c53c36ffe7ba4210869d9a29"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/VariantFactsEditor.test.tsx",
+      "sha256": "6f95b214c00d97429a82f49523757d86fd8de4d7ef5a2c2f58b55f9810e012cb"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/VariantFactsEditor.tsx",
+      "sha256": "505abd6430bd4c712edd30ea628e8f3981ca303529190ce9bdedd5437ca01487"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts-editor-types.ts",
+      "sha256": "b4af1df8cf67b1cfbc311c2bb59ae6f4ebb6d5f778aa0e9bf354bcd7e1148b76"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/circuit-facts-editor.test.tsx",
+      "sha256": "2caf3f3d2f87b5260187af5abbe92f04460f08e15208f37dc4ae6a9401205111"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/circuit-facts-editor.tsx",
+      "sha256": "c8bd9a836ab8ca796f43a1ca33e84bba212a3de3e76339cc2b7d58ae4de5e3d5"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.test.tsx",
+      "sha256": "fd3847b4fd9ab4bdac98e1e469d63db4d15a14884f71adf8a7711e5c6a395427"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.tsx",
+      "sha256": "489e8892a26e6e9a6b7465a5bd722fa6fec2e06428f156527cdfbb15fc09b098"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.test.tsx",
+      "sha256": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.tsx",
+      "sha256": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.test.tsx",
+      "sha256": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.tsx",
+      "sha256": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/kindred-facts-editor.test.tsx",
+      "sha256": "c31994818a05bd18b7da18dbe87ae071a4e3f1ef7cf697ebf691197a21d75af0"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/kindred-facts-editor.tsx",
+      "sha256": "85ebac24ce142a74168fd34093ff548a8474cdb1252f821dce68acf1b7718513"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.test.tsx",
+      "sha256": "28528ed63ccfae1a082afc9c978326dbe63539cdcb6249f963f65f0c4bfb6720"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.tsx",
+      "sha256": "f51a25256f3b1adc72c3a8251513dff635b34014a3a6fd85419e048f3a6c6e56"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.test.tsx",
+      "sha256": "9ab7c057c6724194f054eb7a00e96bbca8986d59a65d5b1ae3396af899ad8ba1"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "sha256": "c059678c802fa85099f2a649fef161b51d029624edec47e5cd3c7f4fe17f0aef"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.test.tsx",
+      "sha256": "7f7cc7b24d05624b4be997a33a87eb84051674a2c867743e695a1af7a78a016e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "sha256": "f87836610908763c4b5417ebcc67dbeb74ac9560377a4c8117c2ff10f549b13c"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/pantry-facts-editor.test.tsx",
+      "sha256": "dd560e0ed0c4bc327b782c4c4400d02a0d2c6eb61924349757d1fa9c0c2d755b"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/pantry-facts-editor.tsx",
+      "sha256": "05dc1c2ae34013f8979369fb1551070101889c3ca42ade425ebb58a11fbe60ef"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/pantry-variant-facts-editor.test.tsx",
+      "sha256": "7e148cf6585287c621ba8c434348a9bd4ccc112495405934de68e6cb28166495"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/pantry-variant-facts-editor.tsx",
+      "sha256": "4f8a414961e2a0ea0b78f8af6c1b9ca5380ef2a0a5d7193cc88d3b7556e1d5f6"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-facts-editor.module.css",
+      "sha256": "0ab26b1baaf7a4df65c6be1dcb7c870949fb3484eb4a86bdf5a5461d0fbb27ec"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-facts-editor.test.tsx",
+      "sha256": "1ba4a351604b92096169597286f6a2a6b2e4c274638292dd0746bc0ae26117f3"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-facts-editor.tsx",
+      "sha256": "6c36196072957c8fa94ec18c9883bed3e0567361a7dec22de4cc511b76408c0e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-variant-facts-editor.module.css",
+      "sha256": "67331f58571af680b4bae94b11e2c9043ace4225423440fc5265025c8c8338c4"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-variant-facts-editor.test.tsx",
+      "sha256": "7eb0527e441d1138cba181d6262f555dfe03d19837567628c9df5f0ba5162b7c"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/playfield-variant-facts-editor.tsx",
+      "sha256": "9d54d7363375921e4a1669f3792e242c0d21c8721254f0751d54d76a1bae196e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/trailmark-facts-editor.test.tsx",
+      "sha256": "6ac126eb1605cc25ab6674a610f0fe006c8d4a8dc4ae460beb5ec44852f48e9b"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/trailmark-facts-editor.tsx",
+      "sha256": "f67ff476bcf7fe1bb32cc2b66d34259783e3d9fccc31bc692fabb0b2a4d11f50"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/trailmark-variant-facts-editor.test.tsx",
+      "sha256": "7430edd03aa87c8eb9a222b12fe4a26903ef84d08005d4fd6d1a3249fcf45db9"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/trailmark-variant-facts-editor.tsx",
+      "sha256": "211ca4e83f819a35fc75030b2ac43ed6846c19c7f57114df7c64af517fa7c4ca"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "4da421caaea0ccbcb528189a9fbd227939d6257bca781baae14532a95f7c9872"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.tsx",
+      "sha256": "52e2120a3782c195fdeb43fcfabbbf267d6339acb35cbc0d0c1e2d414bef3963"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "sha256": "6966c599ae8eba8201615ff5c1c75903c8ed9ddf28ee327c217ee128c97880a4"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "sha256": "cab2a85da83563f6070d5916ec9f88bbeea4f730db48a5888e8f5d0f638c4124"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ColorSchemeControl.tsx",
+      "sha256": "e1a61d0b7634031f2f57e708fdb445faf379691c6cb0765a19dc509cb85c8e21"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ResourcePickerControl.tsx",
+      "sha256": "4143c0926a1809df5069e381acc66dda15c79173d9c6ad6b854e5c5d130ecf0a"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-view-state.ts",
+      "sha256": "80d4d2b3fb4b3c61bfa30830360f393a0c0f773084176cb269997002b2366d68"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-workspace.module.css",
+      "sha256": "12f968794a707c7120b1e6010a92d53fffd9493edc716629e74324693fbc005f"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/ThemeMarketplace.tsx",
+      "sha256": "5fe4018279951bb2386249cd31ff99a4c2facc2eb4cc3fbac3510a78b1e019e0"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+      "sha256": "39af44e95883715648cbbe0e5c0ffcc58779f35f7ce802e1e278b5f928534eca"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.ts",
+      "sha256": "b583ab3cd95324f4185ecec375090b2a80a162eec233e5854cf5a2728bd42271"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "1babef7539a4e88b6f54fcb04e5990453391c71460a5760dc771bf8d69c2ffd2"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/public-urls.ts",
+      "sha256": "2ebea3a084e4b873cb8dc7956284068efd6bd723f9a074cafe769a36594271e7"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/themes/marketplace-contract.ts",
+      "sha256": "86e81f8be4914f5e8418486ee78879f37269b234e54fbfb6ef4d6c2b084e0119"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+      "sha256": "a318ecc7594660d6c86ed1cfe4dbcbeab505705d929078c0a35648c27a2bf838"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.ts",
+      "sha256": "bb737af30a311b34128fb7d0d1d2b522e73898e889830d360c4d372c6b2af5e3"
+    }
+  ]
+}

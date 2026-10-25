@@ -1,0 +1,235 @@
+{
+  "recordedAt": "2026-10-24T05:19:10.143351+00:00",
+  "status": "FINITE_P00_P08_PASS_P09_FAIL_P10_P12_BLOCKED",
+  "wholeThemeAccepted": false,
+  "runId": "936e5f577646",
+  "sourceCheckpoint": {
+    "api": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+    "frontendAdmission02": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+  },
+  "safeCutoffUtc": "2026-10-24T08:50:00Z",
+  "counts": {
+    "PASS": 9,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "cases": [
+    {
+      "id": "P00",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P00-A-public-B-private.ax.txt",
+        "stable936-pantry-P00-A-public.ax.txt",
+        "stable936-pantry-P00-A-restored-public.ax.txt",
+        "stable936-pantry-P00-A-saved-reloaded.ax.txt",
+        "stable936-pantry-P00-B-public.ax.txt",
+        "stable936-pantry-P00-B-public.jpg",
+        "stable936-pantry-P00-B-reapplied-public.ax.txt",
+        "stable936-pantry-P00-B-reloaded.ax.txt",
+        "stable936-pantry-P00-B-retained.ax.txt",
+        "stable936-pantry-P00-completed.json",
+        "stable936-pantry-P00-installed-private.ax.txt",
+        "stable936-pantry-P00-reviewed-rollback.ax.txt"
+      ],
+      "notes": []
+    },
+    {
+      "id": "P01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P01-invalid-net-draft-kept.ax.txt",
+        "stable936-pantry-P01-rice-restored.ax.txt",
+        "stable936-pantry-P01-rice-save-reloaded.ax.txt",
+        "stable936-pantry-lifecycle-after-invalid-net.json",
+        "stable936-pantry-lifecycle-before-ui.json",
+        "stable936-pantry-rice-before-readback.json",
+        "stable936-pantry-rice-restored-readback.json",
+        "stable936-pantry-rice-saved-readback.json"
+      ],
+      "notes": [
+        "Net0normalSaveblocked/inlineguidance/draftretained. Product9/variants/options/inventory/orderrowsmatchbefore. Protectedoutboxbaseline spansP00; noall22invarianceclaim forinvalidSave. Ricecollectorlabel saysbeauty butactualfieldisfood; originalretained."
+      ]
+    },
+    {
+      "id": "P02",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P02-canonical-parent-Save-receipts.json",
+        "stable936-pantry-P02-canonical-parent-Save-sku-addendum.json",
+        "stable936-pantry-P02-explicit-clear-reloaded.ax.txt",
+        "stable936-pantry-P02-unknown-explicit750-reloaded.ax.txt",
+        "stable936-pantry-lifecycle-known750-saved.json",
+        "stable936-pantry-lifecycle-unknown-cleared-restored.json"
+      ],
+      "notes": [
+        "Actualparentmutations9\u219213 explicit750/commonmarker/SKUcontrol then13\u219217 metadata{}clear/commonSKUrestore; same3UUIDs/allstockomitted. NotrawHTTPcapture."
+      ]
+    },
+    {
+      "id": "P03",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P03-250g-two-packs.ax.txt",
+        "stable936-pantry-P03-blank-count.ax.txt",
+        "stable936-pantry-P03-fractional-count.ax.txt",
+        "stable936-pantry-P03-no-selection.ax.txt"
+      ],
+      "notes": [
+        "Blank/fractionalwholecountguidance/noderivedtotal. No invalidAdd. ExactselectedUUID joinedtoP07cart."
+      ]
+    },
+    {
+      "id": "P04",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P04-500g-unavailable.ax.txt",
+        "stable936-pantry-P04-label-only-unknown.ax.txt",
+        "stable936-pantry-P04-return250g.ax.txt"
+      ],
+      "notes": []
+    },
+    {
+      "id": "P05",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P05-return-lentils-unselected.ax.txt",
+        "stable936-pantry-P05-rice-two-packs.ax.txt"
+      ],
+      "notes": []
+    },
+    {
+      "id": "P06",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P06-actual-query-transitions.json",
+        "stable936-pantry-P06-clear-all-reloaded.ax.txt",
+        "stable936-pantry-P06-fixed-clear-all-reloaded.ax.txt",
+        "stable936-pantry-P06-fixed-collection-country-apply.ax.txt",
+        "stable936-pantry-P06-fixed-collection-query-transitions.json",
+        "stable936-pantry-P06-hdmi-cleared.ax.txt",
+        "stable936-pantry-P06-pack-chip-cleared.ax.txt",
+        "stable936-pantry-P06-pulses-filtered-reloaded.ax.txt",
+        "stable936-pantry-P06-pulses-membership.ax.txt",
+        "stable936-pantry-P06-rice-membership.ax.txt",
+        "stable936-pantry-P06-search-zero-repeated.ax.txt",
+        "stable936-pantry-P06-usbc-cleared.ax.txt",
+        "stable936-pantry-P06-zero-sorted.ax.txt",
+        "stable936-pantry-discovery-metadata.json"
+      ],
+      "notes": [
+        "Actualform/chip/clear/reload carriesrepeatedconnectors/search/category/country/limit/sort/fixedcollection; page2reset. Sixpublicsame-responsereadsseparate."
+      ]
+    },
+    {
+      "id": "P07",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-cart-pantry-cart.json",
+        "stable936-pantry-P07-known-and-unknown-cart.ax.txt",
+        "stable936-pantry-P07-known-cart-reloaded.ax.txt",
+        "stable936-pantry-P07-right-line-removed.ax.txt"
+      ],
+      "notes": [
+        "Known250q2\u00d7180=360/current17; unknownnetnullq1\u00d7210separatelyacceptedthenright-lineremoved."
+      ]
+    },
+    {
+      "id": "P08",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P08-completed.json",
+        "stable936-pantry-P08-five-rejected-recovery.ax.txt",
+        "stable936-pantry-P08-four-accepted-before-five.ax.txt",
+        "stable936-pantry-P08-valid-two-retry-reloaded.ax.txt"
+      ],
+      "notes": [
+        "ONEfiveattemptactual409INSUFFICIENT_INVENTORY;immediateall22hashesexact;nativeq4kept;normalretry2/reload."
+      ]
+    },
+    {
+      "id": "P09",
+      "status": "FAIL",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [
+        "stable936-pantry-P09-BuyerA-own-positive-before-checkout.ax.txt",
+        "stable936-pantry-P09-delivery-quote.ax.txt",
+        "stable936-pantry-P09-first-confirm-checkout-details-changed.ax.txt",
+        "stable936-pantry-P09-local-COD-before-confirm.ax.txt",
+        "stable936-pantry-P09-recovery-cart-reloaded.ax.txt",
+        "stable936-pantry-P09-refreshed-COD-before-confirm.ax.txt",
+        "stable936-pantry-P09-refreshed-confirm-same-failure.ax.txt",
+        "stable936-pantry-lifecycle-pantry-after-refresh-confirm.json",
+        "stable936-pantry-primary-confirm-first-failed-observer.json",
+        "stable936-pantry-refreshed-confirm-failed-observer.json"
+      ],
+      "notes": [
+        "BothordinaryCODattempts showCheckoutdetailschanged. NoPantryorderorstockconsumption. Confirm-onlyobserverhasnonewconfirm;failedstepactualHTTP/codeunknown. Rootactualsession/sourcepointsbackwardstransition. Furthercheckoutstoppedpendingproperfix."
+      ]
+    },
+    {
+      "id": "P10",
+      "status": "BLOCKED",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [],
+      "notes": [
+        "RequiresactualnewPantryP09orderfirst; no lateredit/stalecartsetup/historyclaim."
+      ]
+    },
+    {
+      "id": "P11",
+      "status": "BLOCKED",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [],
+      "notes": [
+        "RequiresactualnewPantryP09orderfirst; no lateredit/stalecartsetup/historyclaim."
+      ]
+    },
+    {
+      "id": "P12",
+      "status": "BLOCKED",
+      "runId": "936e5f577646",
+      "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "actualEvidence": [],
+      "notes": [
+        "RequiresactualnewPantryP09orderfirst; no lateredit/stalecartsetup/historyclaim."
+      ]
+    }
+  ],
+  "held": {
+    "cartId": "6284ebe8-98d4-41db-9272-292417bd41e5",
+    "quantity": 2,
+    "unitPrice": 180,
+    "subtotal": 360,
+    "productVersion": 17,
+    "fingerprint": "bb2e547c4e6d9e9c0bc64a2a42ee9d3e8a3e14eab3ecda31eceb1bd9d51eaa2f",
+    "orders": 2,
+    "newPantryOrders": 0,
+    "checkoutTab": 53,
+    "noLaterEdit": true
+  },
+  "limits": [
+    "Per-rowviewportnotremeasured;actualpublicJPEGviewed,noresponsiveparityclaim.",
+    "All10open;onlyRootmayadmitfix/runtime/resumecheckout."
+  ]
+}

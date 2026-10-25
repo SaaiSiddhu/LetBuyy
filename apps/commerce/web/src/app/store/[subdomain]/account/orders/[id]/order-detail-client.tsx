@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { NicheOrderFacts } from '@/components/storefront/niche-order-facts';
+import { readOrderItemFactSnapshot, savedOrderOptions } from '@/lib/order-fact-readback';
 import { useWishlist } from '@/context/wishlist-context';
 
 interface OrderDetail {
@@ -20,7 +22,7 @@ interface OrderDetail {
     tracking_number?: string | null;
     carrier?: string | null;
     shipping_address?: Record<string, unknown> | null;
-    items?: Array<{ name?: string; title?: string; quantity?: number; price?: number; image?: string }>;
+    items?: Array<{ name?: string; title?: string; quantity?: number; price?: number; image?: string; niche_snapshot?: unknown }>;
 }
 
 const formatMoney = (amount: number | null | undefined, currency: string | null | undefined) => {
@@ -100,7 +102,10 @@ export default function OrderDetailClient({ subdomain, id }: { subdomain: string
             </header>
             <section className="space-y-3 rounded-2xl border p-5" aria-labelledby="order-items-heading">
                 <h2 id="order-items-heading" className="text-lg font-semibold">Items</h2>
-                {items.length ? items.map((item, index) => <div key={`${item.name || item.title || 'item'}-${index}`} className="flex justify-between gap-4 border-t py-3"><div><p className="font-medium">{item.name || item.title || 'Item'}</p><p className="text-sm text-[var(--text-secondary)]">Quantity {item.quantity ?? 1}</p></div><strong>{formatMoney(item.price, order.currency)}</strong></div>) : <p className="text-sm">Item details are not available for this order yet.</p>}
+                {items.length ? items.map((item, index) => {
+                    const snapshot = readOrderItemFactSnapshot(item);
+                    return <div key={`${item.name || item.title || 'item'}-${index}`} className="min-w-0 border-t py-3"><div className="flex justify-between gap-4"><div><p className="font-medium">{item.name || item.title || 'Item'}</p><p className="text-sm text-[var(--text-secondary)]">Quantity {item.quantity ?? 1}</p></div><strong>{formatMoney(item.price, order.currency)}</strong></div><NicheOrderFacts facts={snapshot?.facts} personalization={snapshot?.personalization} options={savedOrderOptions(snapshot)} itemName={item.name || item.title} /></div>;
+                }) : <p className="text-sm">Item details are not available for this order yet.</p>}
                 <dl className="space-y-2 border-t pt-3 text-sm">
                     {order.subtotal != null && <div className="flex justify-between"><dt>Subtotal</dt><dd>{formatMoney(order.subtotal, order.currency)}</dd></div>}
                     {order.discount != null && Number(order.discount) !== 0 && <div className="flex justify-between"><dt>Discount</dt><dd>−{formatMoney(order.discount, order.currency)}</dd></div>}

@@ -46,3 +46,13 @@ test('nested invocations reuse their own client and separate invocations retain 
  const next=await withPooledSqlScope(async()=>getPooledSql(hyperdrive)!);
  assert.notEqual(first,next);
 });
+
+
+test('the storefront read rollback switch cannot disable a configured required tenant transaction',()=>{
+ const env={...hyperdrive,STOREFRONT_POOLED_SQL:'off'};
+ assert.equal(getPooledSql(env),null,'optional pooled reads remain disabled');
+ const required=getPooledSql(env,{purpose:'tenant-transaction'});assert.ok(required);
+ assert.equal(queryOptions(required.unsafe('SELECT $1::text',['synthetic'])).prepare,true);
+ assert.equal(getPooledSql(env),null,'a required transaction does not reopen optional reads');
+ assert.equal(getPooledSql({STOREFRONT_POOLED_SQL:'off'},{purpose:'tenant-transaction'}),null,'missing physical SQL still fails closed');
+});

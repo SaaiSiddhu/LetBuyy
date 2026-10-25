@@ -1,0 +1,11 @@
+{
+  "runId": "f6074d90e894",
+  "maxGets": 18,
+  "readOnly": true,
+  "retry": false,
+  "planSha256": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1",
+  "scopes": [
+    "search",
+    "collection"
+  ]
+}

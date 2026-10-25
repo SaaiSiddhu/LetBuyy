@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-24T05:19:52.339405+00:00",
+  "runId": "936e5f577646",
+  "case": "P09",
+  "status": "FAIL",
+  "classification": "NORMAL_UI_PRIMARY_ORDER_BLOCKED_AFTER_ONE_PERMITTED_RECOVERY",
+  "actualTrigger": "After PantryV250q2/180/360 accepted/reloaded, signed-in buyer entered normal hosted checkout, chose fixture delivery20 and COD(total380). First normal Confirm and the one permitted ordinary BackCart/fullreload/fresh-entry retry both show Checkout details changed. Refresh checkout and try again.",
+  "observedHttpStatus": null,
+  "observedHttpCode": null,
+  "httpLimit": "Neither snapshot has a matching new failed checkout-confirm observer record; contact/delivery/payment-intent/confirm failing HTTP step/status/code was not observed. Do not infer a code, pre-Gateway location or specific failing step from the curated UI message.",
+  "stateEvidence": {
+    "ordersRemain": 2,
+    "newPantryOrder": false,
+    "lentilsVersion": 17,
+    "variantAvailability": [
+      {
+        "variantId": null,
+        "available": 6,
+        "reserved": 0
+      },
+      {
+        "variantId": "d0c3990a-bee6-4705-a0f7-c38cc80a3147",
+        "available": 0,
+        "reserved": 0
+      },
+      {
+        "variantId": "56dec2f4-52ea-4210-bd65-334a7c52f0d0",
+        "available": 4,
+        "reserved": 0
+      },
+      {
+        "variantId": "bae0b0d9-8314-44cc-bd7b-a429664559fe",
+        "available": 2,
+        "reserved": 0
+      }
+    ],
+    "secondRecoveryWindow": {
+      "before": "2026-10-24T05:13:23.871Z",
+      "after": "2026-10-24T05:14:56.226Z",
+      "actualProductAndOrdersExact": true,
+      "all22ProtectedHashesExact": true
+    },
+    "rootActualCheckoutState": {
+      "cartStatus": "active",
+      "sessionStatus": "payment_intent",
+      "checkoutState": "payment_intent",
+      "paymentMethod": "cod",
+      "hasPaymentIntent": true,
+      "failedAt": null,
+      "confirmedAt": null,
+      "failureReason": null
+    }
+  },
+  "sourceCandidateQualification": {
+    "apiCandidate": "/private/tmp/theme-editor-stable392-20261024-02",
+    "apiSourceProofSha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+    "frontendCandidate": "/private/tmp/theme-editor-font-axis-20261024-01",
+    "frontendSourceProof": {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/font-axis-source-proof.json",
+      "sha256": "4da3248de49a0c828f6e1daeaacb35d5c361bf11dc1f3d90bb34eea5c48979a0"
+    },
+    "runtimeAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+    },
+    "inferenceOnly": "Root reports browser restarts contact while existing session is payment_intent; canonical backward-transition denial is a source candidate. Exact failing request is unobserved. Prior failed-terminal-session hypothesis does not match actual failed_atNULL/payment_intent state."
+  },
+  "ownership": "Already routed to sole Editor/controller and Themes. Root assigned MadeYours private-source diagnosis/proposal; shared main/current runtime frozen. Pantry performs no source/runtime/data actions.",
+  "stop": "No repeated Submit, fake freshcart/session rewrite, API order setup, SQL reset, provider payment or source edits. P10/P11/P12 NOT RUN until normal Pantry order/both histories prerequisite is repaired and reverified.",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P09-local-COD-before-confirm.ax.txt",
+      "sha256": "bf9395f442930ce1b870798bc1d44b99d1cf6ba190e8009f704663cebf7b96ed"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P09-first-confirm-checkout-details-changed.ax.txt",
+      "sha256": "fb5066747193965f22f584dc3928f29e52f50be8974f31bc21d61aa207a68002"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-primary-confirm-first-failed-observer.json",
+      "sha256": "dfd5dfa230cd241e0057a6cd48bf6878e316c358cbf82d39b9ffcc1460553fd2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-pantry-first-confirm-failed.json",
+      "sha256": "041bba949e9baf2c0253156471e11d340a7d645dea30db395560af79f659401a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P09-recovery-cart-reloaded.ax.txt",
+      "sha256": "c8720e6a592bb36ab7ad1d26adaa685a7ccad1a0771f6afd32fece735742bf0e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P09-refreshed-COD-before-confirm.ax.txt",
+      "sha256": "bf9395f442930ce1b870798bc1d44b99d1cf6ba190e8009f704663cebf7b96ed"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P09-refreshed-confirm-same-failure.ax.txt",
+      "sha256": "fb5066747193965f22f584dc3928f29e52f50be8974f31bc21d61aa207a68002"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-pantry-before-refresh-confirm.json",
+      "sha256": "2f371dfb815bfcbcacbd7aeecb72e5a1b57dc675967df2d470548a8e9d38337a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-pantry-after-refresh-confirm.json",
+      "sha256": "e08630b2060431ba04823f4ee0e3e25345af6acf4bb7e8a436822dc354fa93aa"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-refreshed-confirm-failed-observer.json",
+      "sha256": "1c695a23fe0c9e05d56993d669de6b41686ee8a9205c3cded640fc65948246d3"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/pantry-checkout-state-readonly-936.json",
+      "sha256": "794ca8473522d6d041544452364314dca4b83922ef8a54e9e1880c865c50b091"
+    }
+  ],
+  "sourceOrRuntimeActionsByPantry": false,
+  "acceptanceComplete": false
+}

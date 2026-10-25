@@ -1,0 +1,17 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "native-normalization",
+  "value": {
+    "manufacturer": "İ",
+    "value": "İ",
+    "normalized": "i̇",
+    "frontendKey": "i̇",
+    "matchedId": "40188fcc-cb5b-4db6-a377-2badd910aea3",
+    "facet": {
+      "key": "electronics_manufacturer",
+      "value": "i̇",
+      "label": "İ",
+      "count": 1
+    }
+  }
+}

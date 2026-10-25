@@ -250,6 +250,7 @@ export default function PoliciesSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
+                navigationKey="policies"
                 title="Policies"
                 description="Manage storefront and checkout policies that help customers buy with confidence."
                 store={store}
@@ -266,6 +267,7 @@ export default function PoliciesSettingsPage() {
 
     return (
         <SettingsPane
+                navigationKey="policies"
             title="Policies"
             description="Manage storefront and checkout policies that help customers buy with confidence."
             store={store}

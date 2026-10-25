@@ -1,0 +1,112 @@
+- banner:
+  - link "LetBuyy dashboard":
+    - /url: /syn-marketplace-23oct-a/dashboard
+  - button "Search":
+    - generic: Search
+    - generic: ⌘
+    - generic: K
+  - button "Setup assistant":
+  - button "Notifications":
+  - button "Switch store, current store Synthetic Marketplace QA":
+    - generic: SM
+    - generic: Synthetic Marketplace QA
+- complementary:
+  - navigation "Primary navigation":
+    - list:
+      - link "Home":
+        - /url: /syn-marketplace-23oct-a/dashboard
+        - generic: Home
+      - link "Orders":
+        - /url: /syn-marketplace-23oct-a/orders
+        - generic: Orders
+      - link "Products":
+        - /url: /syn-marketplace-23oct-a/products
+        - generic: Products
+      - button "Toggle Products section":
+      - link "Inventory":
+        - /url: /syn-marketplace-23oct-a/products/inventory
+        - generic: Inventory
+      - button "Toggle Inventory section":
+      - link "Purchasing":
+        - /url: /syn-marketplace-23oct-a/products/purchase-orders
+        - generic: Purchasing
+      - button "Toggle Purchasing section":
+      - link "Customers":
+        - /url: /syn-marketplace-23oct-a/customers
+        - generic: Customers
+      - button "Toggle Customers section":
+      - link "Money":
+        - /url: /syn-marketplace-23oct-a/settings/billing
+        - generic: Money
+      - button "Toggle Money section":
+      - link "Marketing":
+        - /url: /syn-marketplace-23oct-a/coupons
+        - generic: Marketing
+      - button "Toggle Marketing section":
+      - link "Content":
+        - /url: /syn-marketplace-23oct-a/pages
+        - generic: Content
+      - button "Toggle Content section":
+      - link "Analytics":
+        - /url: /syn-marketplace-23oct-a/analytics
+        - generic: Analytics
+  - generic: Sales channels
+  - navigation "Sales channels":
+    - list:
+      - link "Online Store":
+        - /url: /syn-marketplace-23oct-a/online-store
+        - generic: Online Store
+      - button "Toggle Online Store section" [expanded]:
+      - list:
+        - link "Themes":
+          - /url: /syn-marketplace-23oct-a/online-store/themes
+        - link "Store pages":
+          - /url: /syn-marketplace-23oct-a/online-store/pages
+        - link "Preferences":
+          - /url: /syn-marketplace-23oct-a/online-store/preferences
+  - generic: Apps
+  - navigation "Apps":
+    - list:
+      - link "Add":
+        - /url: /syn-marketplace-23oct-a/apps
+        - generic: Add
+  - navigation "Settings navigation":
+    - list:
+      - link "Settings":
+        - /url: /syn-marketplace-23oct-a/settings
+        - generic: Settings
+- main:
+  - text: Your site is in
+  - strong: draft
+  - text: mode. It is not visible to visitors yet.
+  - link "Your theme library":
+    - /url: /syn-marketplace-23oct-a/online-store/themes
+    - text: Your theme library
+  - text: "Destination: syn-marketplace-23oct-a"
+  - link "Back to results":
+    - /url: /syn-marketplace-23oct-a/online-store/themes/marketplace
+    - text: Back to results
+  - img "Threadline catalog preview"
+  - generic: Designed by LetBuyy
+  - heading "Threadline" [active] [level=1]
+  - text: Free
+  - generic: Version 2.0.0
+  - paragraph: Editorial apparel with silhouette discovery, garment measurements and size-aware shopping.
+  - link "View demo":
+    - /url: /syn-marketplace-23oct-a/online-store/themes/marketplace?theme=letbuyy-sense&view=demo
+    - text: View demo
+  - button "Add to library"
+  - paragraph:
+    - text: Add to
+    - strong: syn-marketplace-23oct-a
+    - text: . Your live theme, products and existing drafts stay in place.
+  - heading "Make it your own" [level=2]
+  - paragraph: Use your products, photography, navigation and content. The demo contains sample merchandise; adding the theme does not import it.
+  - paragraph: "Package: letbuyy-sense"
+  - heading "Theme features" [level=2]
+  - list:
+    - listitem: Responsive layouts
+    - listitem: Visual editor
+    - listitem: Free
+  - paragraph: Features are declared by the package catalog. Demo coverage and setup can vary.
+- alert

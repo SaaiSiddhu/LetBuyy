@@ -1,0 +1,66 @@
+{
+  "id": "section-search-box",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "search-box",
+    "group": "template",
+    "firstId": "section-631b0577-d4d0-4619-81f6-c8a9011b8c6b",
+    "finalId": "section-f050f5b0-850f-4731-beae-9b890ef764cc",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "search-box",
+          "settings": {
+            "placeholder": "Source fixture placeholder"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "search-box",
+          "settings": {
+            "placeholder": "Source fixture placeholder"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "search-box",
+          "settings": {
+            "placeholder": "Source fixture placeholder"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "search-box",
+          "settings": {
+            "placeholder": "Source fixture placeholder"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

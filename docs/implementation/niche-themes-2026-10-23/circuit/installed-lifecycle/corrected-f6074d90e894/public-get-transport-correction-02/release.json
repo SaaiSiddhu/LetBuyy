@@ -1,0 +1,76 @@
+{
+  "classification": "RENEWED_FINITE_THREE_GET_ALLOCATION_COMPLETED_AND_RELEASED_BACKEND_ONLY",
+  "recordedAt": "2026-10-23T18:16:01.852579+00:00",
+  "runId": "f6074d90e894",
+  "status": "PASS_ALL_THREE_BACKEND_PUBLIC_SEARCH_CHECKS",
+  "publishedContext": {
+    "theme": "Dewdrop",
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-publication-A-proof.json",
+    "sha256": "85109191680a2f4ad43f7f1b4363e5a32d4cd949f157c5f6d1e0cf91624974a1",
+    "packageVersion": "2.0.0",
+    "releaseId": "c68c4117-a6f1-430a-b321-ac76c5e7b145",
+    "sourceDraftVersion": 4,
+    "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+    "orders": 0,
+    "installed": 1,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "calls": [
+    {
+      "id": "name-positive",
+      "status": 200,
+      "requestId": "b319421e-c38c-4e42-99a4-66dde11b7a7c",
+      "bodySha256": "01f2a4ffb6fbe968b4f8b37abf3d0c7a327ff45130a730a631ff73ec59de17e3",
+      "total": 1,
+      "productIds": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ],
+      "result": "PASS"
+    },
+    {
+      "id": "model",
+      "status": 200,
+      "requestId": "f0c94d72-66c3-435b-ba47-928942e4c28b",
+      "bodySha256": "d5d40684af0024682d0c2ab9b865bfda9334e0c32d6b427d65ba9230cc7bfe2d",
+      "total": 1,
+      "productIds": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ],
+      "result": "PASS"
+    },
+    {
+      "id": "connector-usb-c",
+      "status": 200,
+      "requestId": "5c37e62b-3c38-49a8-a5b6-67fae71bf691",
+      "bodySha256": "d3a4ad4c3c40e15adc15054ffdfc22477f8b6ad8d14ba84698a0c8ba364c5317",
+      "total": 1,
+      "productIds": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ],
+      "result": "PASS"
+    }
+  ],
+  "successfulHttpResponses": 3,
+  "renewedFetchInvocations": 3,
+  "priorFailedTransportFetchInvocations": 1,
+  "combinedConservativeInvocations": 4,
+  "retriesInsideEitherAllocation": 0,
+  "connectorUsbA": "NOT_RUN_OUTSIDE_RENEWED_ALLOCATION",
+  "priorAttemptFilesUnchanged": true,
+  "sourcePinsUnchanged": 3,
+  "currentProductVersion": "NOT_INFERRED_FROM_DTO",
+  "fullCircuitCaseOrUiAcceptance": false,
+  "allocationReleased": true,
+  "files": {
+    "model.public-response.json": "d5d40684af0024682d0c2ab9b865bfda9334e0c32d6b427d65ba9230cc7bfe2d",
+    "public-readback-three.mjs": "ca5a9e00f98b008f15934bd8b97e429b3822976558f36a211f3f1b2ef4fa859f",
+    "public-get-allocation-consumed.json": "e3f4e52adc7746f28364aa08aee5b3a47d8e9470f8274d92fc59a77f99d3d8f7",
+    "connector-usb-c.public-response.json": "d3a4ad4c3c40e15adc15054ffdfc22477f8b6ad8d14ba84698a0c8ba364c5317",
+    "prior-attempt-source-pins.json": "4f60cf930bae09ee80504db572f79417673c998f1fd20baa418575bde47cb988",
+    "public-readback-three-report.json": "e456c1891314e6c43d65326989c4fa15b862ae38ecae7a3d71f6762d58104ee1",
+    "name-positive.public-response.json": "01f2a4ffb6fbe968b4f8b37abf3d0c7a327ff45130a730a631ff73ec59de17e3"
+  }
+}

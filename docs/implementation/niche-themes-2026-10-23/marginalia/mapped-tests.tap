@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: real app mapper derives public facts from canonical demo variant metadata
+ok 1 - real app mapper derives public facts from canonical demo variant metadata
+  ---
+  duration_ms: 1.078458
+  type: 'test'
+  ...
+# Subtest: actual mapped collection retains bibliography, stationery units and multiple-edition cue
+ok 2 - actual mapped collection retains bibliography, stationery units and multiple-edition cue
+  ---
+  duration_ms: 291.01175
+  type: 'test'
+  ...
+# Subtest: actual mapped PDP carries each durable edition with its own dimensions, price and stock
+ok 3 - actual mapped PDP carries each durable edition with its own dimensions, price and stock
+  ---
+  duration_ms: 165.616083
+  type: 'test'
+  ...
+# Subtest: stationery variants are presented as options and keep square media instead of book edition labels
+ok 4 - stationery variants are presented as options and keep square media instead of book edition labels
+  ---
+  duration_ms: 248.297041
+  type: 'test'
+  ...
+# Subtest: mapper rejects invalid/private facts and missing data remains explicit without fabricated details
+ok 5 - mapper rejects invalid/private facts and missing data remains explicit without fabricated details
+  ---
+  duration_ms: 185.469042
+  type: 'test'
+  ...
+# Subtest: mapped merchant edits render without raw markup execution or stale display strings
+ok 6 - mapped merchant edits render without raw markup execution or stale display strings
+  ---
+  duration_ms: 141.83125
+  type: 'test'
+  ...
+# Subtest: v2 dispatcher, Source Sans 3 and editable inline subject roots are explicit
+ok 7 - v2 dispatcher, Source Sans 3 and editable inline subject roots are explicit
+  ---
+  duration_ms: 39.217458
+  type: 'test'
+  ...
+# Subtest: subject root has its exact editor block identity only in preview, without an extra wrapper
+ok 8 - subject root has its exact editor block identity only in preview, without an extra wrapper
+  ---
+  duration_ms: 255.915709
+  type: 'test'
+  ...
+# Subtest: a cleared selected reading shelf cannot silently substitute the rest of the catalog
+ok 9 - a cleared selected reading shelf cannot silently substitute the rest of the catalog
+  ---
+  duration_ms: 104.719
+  type: 'test'
+  ...
+# Subtest: save inspectable real mapper → Liquid → canonical page-assembly evidence
+ok 10 - save inspectable real mapper → Liquid → canonical page-assembly evidence
+  ---
+  duration_ms: 469.918042
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5547.560459

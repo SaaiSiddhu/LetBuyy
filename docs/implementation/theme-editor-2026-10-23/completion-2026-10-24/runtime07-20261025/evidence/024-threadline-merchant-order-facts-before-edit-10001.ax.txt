@@ -1,0 +1,100 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders/422fb669-9db5-4da6-bffc-7fcea4c31f8d".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders/422fb669-9db5-4da6-bffc-7fcea4c31f8d
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/dashboard
+					15 link Description: Orders, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store
+						43 button (expanded) Description: Toggle Online Store section, Secondary Actions: Collapse
+						44 content list
+							45 link Description: Themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+							46 link Description: Store pages, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/pages
+							47 link Description: Preferences, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/preferences
+			48 text Apps
+			49 container Apps
+				50 content list
+					51 link Description: Add, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/apps
+		52 container Settings navigation
+			53 content list
+				54 link Description: Settings, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/settings
+	55 container admin-page-scroll
+		56 container
+			57 heading Order #ORD-20261024-10001, Value: 1
+				58 text Order #ORD-20261024-10001
+			59 link Description: All orders, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders
+		60 container
+			61 heading Order summary, Value: 2
+				62 text Order summary
+			63 text Confirmed Payment: Paid Fulfillment: Unfulfilled Refund: None Order number #ORD-20261024-10001 Placed 25 Oct 2026, 01:39 am Last updated 25 Oct 2026 Payment method RAZORPAY Payment gateway razorpay Payment ID pay_Trs8A3pb4lipen Payment processed 25 Oct 2026, 01:39 am
+		64 container
+			65 heading Customer, Value: 2
+				66 text Customer
+			67 text Name Threadline Buyer A Email
+			68 button [synthetic email]
+			69 text Phone 9000000000
+			70 button View customer profile
+		71 container
+			72 heading Line items, Value: 2
+				73 text Line items
+			74 text 1 item
+			75 image The Everyday Linen Shirt
+			76 text The Everyday Linen Shirt Oat / M / SYN-f13d4b5d-f840-453b-8be8-e53e515cf94a 1  ×  ₹2,490.00 ₹2,490.00
+			77 button (expanded) Saved product details for The Everyday Linen Shirt, Secondary Actions: Collapse
+				78 text Saved product details
+				79 text  for The Everyday Linen Shirt
+			88 container Saved options
+				89 heading Saved options, Value: 3
+					90 text Saved options
+				91 definition list
+					92 container Color
+						93 text Color
+					94 text Oat
+					95 container Size
+						96 text Size
+					97 text M
+		80 container
+			81 heading Addresses, Value: 2
+				82 text Addresses
+			83 text SHIP TO 1 Synthetic Test Road Bengaluru, Karnataka 560001 9000000000 BILL TO Same as shipping Shipping method standard
+		84 container
+			85 heading Payment summary, Value: 2
+				86 text Payment summary
+			87 text Subtotal ₹2,490.00 Shipping ₹20.00 Tax (GST) ₹0.00 Total ₹2,510.00 Refund status None Return status None
+
+The focused UI element is 77 button (expanded) Saved product details for The Everyday Linen Shirt, Secondary Actions: Collapse

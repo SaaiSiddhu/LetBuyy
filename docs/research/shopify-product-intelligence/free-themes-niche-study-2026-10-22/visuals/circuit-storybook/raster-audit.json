@@ -1,0 +1,861 @@
+{
+  "method": "Sharp decodes PNG metadata and channel statistics for all 45 screen images and 15 boards; variance rejects blank images, not poor design",
+  "passed": true,
+  "records": [
+    {
+      "file": "images/01-home-top-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1324,
+      "bytes": 381216,
+      "sha256": "45b1759798e7950d9cc88a8cf33178c01ccf29cfde96b440609f451184d0041b",
+      "standardDeviations": [
+        70.34,
+        66.36,
+        61.13
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/01-home-top-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2174,
+      "bytes": 241816,
+      "sha256": "ac2f03f467a3c34217d60ecb6041dda3afddec43c8c89456e2c0778199452621",
+      "standardDeviations": [
+        67.39,
+        63.03,
+        57.79
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/01-home-top-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1358,
+      "bytes": 317081,
+      "sha256": "db32c550af19d6706819c5828281822487a88b3159e1b14bdbecedda215e1f46",
+      "standardDeviations": [
+        70.05,
+        65.87,
+        60.65
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/02-home-bottom-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1952,
+      "bytes": 674339,
+      "sha256": "c24c1034989e9b92adfd1b03471dd98fb53f005bcac34af4ca72bd10d7e60688",
+      "standardDeviations": [
+        103.74,
+        98.25,
+        90.59
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/02-home-bottom-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 3481,
+      "bytes": 356789,
+      "sha256": "72c5bed61058e7a6e433d6e250721e9fc33869263cfe79589df2c61b3df615fe",
+      "standardDeviations": [
+        106.2,
+        100.4,
+        92.32
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/02-home-bottom-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 3071,
+      "bytes": 855482,
+      "sha256": "7ffaa961b34812381e8ce442615fcc7b928a1b08bedbc3637b02660aa156a550",
+      "standardDeviations": [
+        101.87,
+        96.46,
+        88.97
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/03-collection-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1621,
+      "bytes": 451615,
+      "sha256": "ef301bed56511b0091b2eeb771c2eaa4a398eca7efaa95cc5989bb6e209c69b9",
+      "standardDeviations": [
+        96.67,
+        91.56,
+        84.43
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/03-collection-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2526,
+      "bytes": 211021,
+      "sha256": "be25f7cdff199f09fd198a32cf0b952992686d19346b6fb560530dca9ccbbf4c",
+      "standardDeviations": [
+        101.69,
+        96,
+        88.15
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/03-collection-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 2545,
+      "bytes": 771228,
+      "sha256": "6981a642f1de8b36fe6eb47089bb71fd6dcab1ce163727b411e6bfb360322130",
+      "standardDeviations": [
+        92.44,
+        87.79,
+        81.38
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/04-product-main-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1370,
+      "bytes": 631130,
+      "sha256": "40fa5eeec744bd5f9804bd5c9f0648a62a7876c7c49acc9d6c634f25048ad6d2",
+      "standardDeviations": [
+        98.99,
+        93.18,
+        85.52
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/04-product-main-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2254,
+      "bytes": 260497,
+      "sha256": "303196dc79f9dde728392151d609fe80d5c3cae26d23bcfddfbf940dbeb0e953",
+      "standardDeviations": [
+        102.36,
+        96.11,
+        87.91
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/04-product-main-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1553,
+      "bytes": 298825,
+      "sha256": "ee7e702fda0e7f7cb19744f74453f441061db5fce6eae5eb2eb6d29a7b0da5fe",
+      "standardDeviations": [
+        104.71,
+        98.57,
+        90.31
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/05-product-specs-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1949,
+      "bytes": 259797,
+      "sha256": "9df4111c9bfb1f494d13142c3a965ad5688e6f9073a424d01604b7ba88cc0f9c",
+      "standardDeviations": [
+        91.78,
+        86.68,
+        79.47
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/05-product-specs-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2932,
+      "bytes": 217690,
+      "sha256": "543378e57ca81a6d4652e747c84775989dda65da717a6c110a83914737bb31fd",
+      "standardDeviations": [
+        98.97,
+        93.41,
+        85.54
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/05-product-specs-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 2420,
+      "bytes": 251540,
+      "sha256": "1ecbff7e869b88493cb4a2fa9dd407fb00ef1e619a17a0bd1432c2e26788976a",
+      "standardDeviations": [
+        95.98,
+        90.64,
+        83.07
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/06-product-contents-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1939,
+      "bytes": 466967,
+      "sha256": "6d4f8720d0b642781c25d1d3917cd11c933110ae6061d83d177cdfd66f8d0400",
+      "standardDeviations": [
+        92.54,
+        87.5,
+        80.43
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/06-product-contents-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 3301,
+      "bytes": 387775,
+      "sha256": "fcae6a71750ce1da9b8a4f7a36878600380c04ec34ed418580aa91cae189df55",
+      "standardDeviations": [
+        95.98,
+        90.8,
+        83.58
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/06-product-contents-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 2209,
+      "bytes": 453370,
+      "sha256": "ac2b3b21a67bb84c17d4a273fea64355342f5878737b3ac0f0d334edc8c71f24",
+      "standardDeviations": [
+        99.19,
+        93.8,
+        86.24
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/07-cart-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1313,
+      "bytes": 181375,
+      "sha256": "151a1928b30f882a01080252648d1f51f129db0529f7c70e591b5e7cd8f68081",
+      "standardDeviations": [
+        103.77,
+        97.53,
+        89.38
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/07-cart-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2159,
+      "bytes": 143200,
+      "sha256": "4871738627236daee9fa1dcda55eaadc2ffec0096c49e735cf5d77eefc9850cd",
+      "standardDeviations": [
+        107.39,
+        100.6,
+        91.95
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/07-cart-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1855,
+      "bytes": 166106,
+      "sha256": "f5718d32e578e08f8ea86d19491eb0cdf6c761bfe7436d51bffd4bd22afb4229",
+      "standardDeviations": [
+        105.22,
+        98.25,
+        89.61
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/08-checkout-address-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1409,
+      "bytes": 142412,
+      "sha256": "31c5d50186cde3c55215d7cb4ce68693fefbd10152da389cf67664ecae66daf8",
+      "standardDeviations": [
+        38.78,
+        32.85,
+        27.66
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/08-checkout-address-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2184,
+      "bytes": 126105,
+      "sha256": "e687b10c5c4a4712da08bfe75a4eba2824a42d92d43958345beb75725f27b51e",
+      "standardDeviations": [
+        46.95,
+        40.74,
+        34.99
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/08-checkout-address-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1930,
+      "bytes": 138563,
+      "sha256": "326026a50c77efaa22a23e8e1070114c4fb607285194622400aac7d0ae8841c2",
+      "standardDeviations": [
+        42.41,
+        36.02,
+        30.38
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/09-checkout-review-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1106,
+      "bytes": 147359,
+      "sha256": "4971aaf6aeae8528b5b4761382d119d7e6e2e8bf5d9b1f5cad2dae9db6cd5dfa",
+      "standardDeviations": [
+        41.61,
+        35.56,
+        30.11
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/09-checkout-review-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 1671,
+      "bytes": 126430,
+      "sha256": "bd38dd1c25687dc8de8d798f1cf6de1acdf6b3efbb746cf830a7d265e695fa6e",
+      "standardDeviations": [
+        50.53,
+        44.52,
+        38.52
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/09-checkout-review-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1565,
+      "bytes": 141054,
+      "sha256": "13174c1f07d8c7bbaf5018e4e46c5a5cada2100170a3ffa400efbcfc6653c63a",
+      "standardDeviations": [
+        44.72,
+        38.37,
+        32.58
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/10-sign-in-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1042,
+      "bytes": 69152,
+      "sha256": "34d59c1aae8df6ed8fd5995896acd2aaf51fdcb70f43dbd1c10ad6e192adf711",
+      "standardDeviations": [
+        16.58,
+        16.21,
+        13.82
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/10-sign-in-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 980,
+      "bytes": 56982,
+      "sha256": "3b5a79be819d0228936ebfe83d3ae5709dc8ed785e4ddaafa6a17cf6b55e501a",
+      "standardDeviations": [
+        30.74,
+        30.18,
+        25.87
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/10-sign-in-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1154,
+      "bytes": 65760,
+      "sha256": "e4a21d522e027fcad7859be5471187b8ac7a5eb3d811e07db04e6a7101b1b361",
+      "standardDeviations": [
+        20.63,
+        20.19,
+        17.23
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/11-create-account-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1401,
+      "bytes": 104233,
+      "sha256": "d80c0dfdb95de9f3b89941990a707004cdf3a7e9ce5e773180837d68e502163a",
+      "standardDeviations": [
+        26.39,
+        26.52,
+        23.42
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/11-create-account-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 1413,
+      "bytes": 89857,
+      "sha256": "1d6b162736c53e118be6d60424cf99c87f7930507fac637ab5a9c6d6c2aff72e",
+      "standardDeviations": [
+        45.72,
+        45.81,
+        40.54
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/11-create-account-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1401,
+      "bytes": 98044,
+      "sha256": "c0bd176780eb0c49e5d56177880637a3dd968a438bca94a408812bdc6d667fe7",
+      "standardDeviations": [
+        34.52,
+        34.68,
+        30.62
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/12-profile-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1363,
+      "bytes": 144028,
+      "sha256": "28971ff0e5bea8b81d435169319df696e3e483854672e3f902b09cb82fd26afc",
+      "standardDeviations": [
+        103.08,
+        97.27,
+        89.14
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/12-profile-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2274,
+      "bytes": 122324,
+      "sha256": "adad8e2bdda09d4be3e145ec2d7f881c03784491a1562e0fa132d56476c12262",
+      "standardDeviations": [
+        106.57,
+        100.32,
+        91.69
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/12-profile-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1630,
+      "bytes": 136183,
+      "sha256": "9f54078d26f4b1d38f7976836ebbe002b1e1ce89c00ae6c80d15330b148a5eb4",
+      "standardDeviations": [
+        107.41,
+        101.3,
+        92.78
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/13-orders-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1228,
+      "bytes": 140927,
+      "sha256": "315ecd0752075f0e389a86f302d4f0b64c7b9cede3b8b6dd3563d43a366c0813",
+      "standardDeviations": [
+        104.8,
+        99.12,
+        91.1
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/13-orders-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 1885,
+      "bytes": 113644,
+      "sha256": "ad3f67820dc686041afad9c4619b60b0260ab7148d2147b8c1525115087eb2b5",
+      "standardDeviations": [
+        109.09,
+        103.04,
+        94.56
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/13-orders-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1474,
+      "bytes": 130657,
+      "sha256": "e766db3c5e62010829ed93b81a938966a0c7f3594ef54a67f7fbda2a6fb78c8d",
+      "standardDeviations": [
+        108.53,
+        102.6,
+        94.23
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/14-order-detail-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1953,
+      "bytes": 218863,
+      "sha256": "c0cc6efa010547cbe39473870758d449a387f99de18bbf298258e48249be4c19",
+      "standardDeviations": [
+        92.48,
+        87.15,
+        79.74
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/14-order-detail-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2667,
+      "bytes": 172809,
+      "sha256": "17e803f325ef43eb4e366c3d60bfcb1adc2819993adbde764817b9214c19c05d",
+      "standardDeviations": [
+        102.71,
+        96.66,
+        88.29
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/14-order-detail-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 2220,
+      "bytes": 204238,
+      "sha256": "5b2b42a9cca742ebe61982c3464f3070915e3407997a432225d7ad5691c7ae66",
+      "standardDeviations": [
+        99.74,
+        93.92,
+        85.81
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/15-addresses-desktop.png",
+      "format": "png",
+      "width": 1440,
+      "height": 1573,
+      "bytes": 162981,
+      "sha256": "e004767e45782df75bedadcc15f66ea56ffe036dc884d17ed6dedae2fbf64be1",
+      "standardDeviations": [
+        98.77,
+        93.14,
+        85.34
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/15-addresses-mobile.png",
+      "format": "png",
+      "width": 390,
+      "height": 2610,
+      "bytes": 138512,
+      "sha256": "7a1aacfbe06e4d282d6f689c411bbab5a6a4de63802f4fb8b3bb0f43550217e0",
+      "standardDeviations": [
+        103.57,
+        97.28,
+        88.76
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "images/15-addresses-tablet.png",
+      "format": "png",
+      "width": 834,
+      "height": 1860,
+      "bytes": 153031,
+      "sha256": "c1956e56e5d2eeda5676d57e4b1ae3d655e0602ae10f559ce6ec14df079875a7",
+      "standardDeviations": [
+        104.13,
+        98.11,
+        89.82
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/01-home-top.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1247,
+      "bytes": 534926,
+      "sha256": "fdd3ddda22db3e9e21c72b6018069c4a788b996329c98ce32d414fc0b8593600",
+      "standardDeviations": [
+        50.07,
+        47.5,
+        44.23,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/02-home-bottom.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1901,
+      "bytes": 1000454,
+      "sha256": "bb1c41fd70166dcd58a8d91c970daa01f42b4c5a1f79d418469154a4890a5320",
+      "standardDeviations": [
+        86.17,
+        82.4,
+        76.99,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/03-collection.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1433,
+      "bytes": 735176,
+      "sha256": "bb389253ceeac8f990e9af89362e458dd294f557cd3650d445a675c07e2419e9",
+      "standardDeviations": [
+        79.02,
+        75.49,
+        70.5,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/04-product-main.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1287,
+      "bytes": 596601,
+      "sha256": "e6ea2deeeb9b4103742166f8f15758925904197054b17291d50c56b449c3ac79",
+      "standardDeviations": [
+        81.07,
+        77.16,
+        71.99,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/05-product-specs.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1626,
+      "bytes": 542337,
+      "sha256": "f841f5b93f2f9dc71b892d73557dcb1253bf87cc0f67df4a86a5ba6dccf734ec",
+      "standardDeviations": [
+        74.78,
+        71.08,
+        65.82,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/06-product-contents.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1811,
+      "bytes": 685819,
+      "sha256": "b395a5c80fd2b6b0159c533d41bb47b3f793c1479c69168c4ac9c84c479eb7fc",
+      "standardDeviations": [
+        72.5,
+        69.24,
+        64.62,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/07-cart.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1240,
+      "bytes": 358149,
+      "sha256": "5fa581c526c95136b96e55f893a1c8caa9ce3e98c677828517d41a294af873ec",
+      "standardDeviations": [
+        83.67,
+        79.1,
+        73.2,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/08-checkout-address.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1252,
+      "bytes": 308756,
+      "sha256": "e24564095aed143565d93f75ac54f2dc19838da63e064aa04dcaa7108ee00422",
+      "standardDeviations": [
+        31.39,
+        26.78,
+        22.74,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/09-checkout-review.png",
+      "format": "png",
+      "width": 1536,
+      "height": 996,
+      "bytes": 303571,
+      "sha256": "eb0f7d75df24caddafd846375007307c7c38b298e407e90827fcfaa51f0747b0",
+      "standardDeviations": [
+        34.05,
+        29.26,
+        25.02,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/10-sign-in.png",
+      "format": "png",
+      "width": 1536,
+      "height": 737,
+      "bytes": 157577,
+      "sha256": "69b539a7f81a12c4b72759e60ade77fabeb052a1e47bcf0d4c7024295b034d7d",
+      "standardDeviations": [
+        20.11,
+        18.69,
+        16.24,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/11-create-account.png",
+      "format": "png",
+      "width": 1536,
+      "height": 867,
+      "bytes": 213003,
+      "sha256": "eb4a5e64c8b9ad0596d2d998d5f05a62b139b5235d08c600759752ecbbe032e4",
+      "standardDeviations": [
+        28.71,
+        28.27,
+        25.07,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/12-profile.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1297,
+      "bytes": 326775,
+      "sha256": "97ac67695ec2cf62deaaf71e3974bf5765be60894aad9ce40023ad9b8b01e44e",
+      "standardDeviations": [
+        81.31,
+        77.3,
+        71.69,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/13-orders.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1103,
+      "bytes": 303177,
+      "sha256": "55dceafa13054aa61756bad219970b4dd083b5a4f1b499cb34951e0786ae3492",
+      "standardDeviations": [
+        85.72,
+        81.69,
+        75.93,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/14-order-detail.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1494,
+      "bytes": 417691,
+      "sha256": "eb2002536af91ffc29e3796b1103a8fecb83be8213d1b0eebd0ce767e7b12448",
+      "standardDeviations": [
+        78.01,
+        73.96,
+        68.33,
+        0
+      ],
+      "nonBlank": true
+    },
+    {
+      "file": "boards/15-addresses.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1465,
+      "bytes": 368660,
+      "sha256": "8a99c8b704eb2c6606f6ee8336807bf2562676522d60b09d5fc9d1c5a60a136e",
+      "standardDeviations": [
+        77.68,
+        73.76,
+        68.34,
+        0
+      ],
+      "nonBlank": true
+    }
+  ]
+}

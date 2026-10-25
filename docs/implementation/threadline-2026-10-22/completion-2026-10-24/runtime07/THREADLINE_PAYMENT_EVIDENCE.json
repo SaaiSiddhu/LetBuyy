@@ -1,0 +1,152 @@
+{
+  "recordedAt": "2026-10-24T21:03:08.917266+00:00",
+  "classification": "ACTUAL_THREADLINE_TEST_PURCHASE_AND_REVIEWED_FINANCIAL_CORRELATION",
+  "runId": "49ada80bc494",
+  "theme": {
+    "slug": "letbuyy-sense",
+    "version": "2.1.0",
+    "binding": {
+      "name": "Threadline",
+      "slug": "letbuyy-sense",
+      "version": "2.1.0",
+      "basis": "Actual normal-UI publication and intended product purchase receipts; absent order theme fields are not invented."
+    }
+  },
+  "positivePurchaseCase": "TL-ADD-RAZORPAY-01",
+  "positivePurchaseStatus": "PASS_FINANCIAL_FLOW;FULL_CERTIFICATE_REMAINS_OPEN",
+  "productId": "b2814421-b6ca-44d6-8eae-139d9fa0cfe1",
+  "variantId": "f13d4b5d-f840-453b-8be8-e53e515cf94a",
+  "selectedOptions": {
+    "Color": "Oat",
+    "Size": "M"
+  },
+  "quantity": 1,
+  "orderId": "422fb669-9db5-4da6-bffc-7fcea4c31f8d",
+  "orderNumber": "ORD-20261024-10001",
+  "providerOrderId": "order_Trs7ocV9z9qm6w",
+  "paymentId": "pay_Trs8A3pb4lipen",
+  "amountMinor": 251000,
+  "currency": "INR",
+  "captureTransactions": [
+    {
+      "id": "5ec5a0db-1cfc-4b3f-a19a-5b6afec9ea13",
+      "entries": 2,
+      "currency": "INR",
+      "sourceId": "razorpay:pay_Trs8A3pb4lipen",
+      "debitMinor": 251000,
+      "sourceType": "payment_capture",
+      "creditMinor": 251000,
+      "writerModule": "settlement"
+    }
+  ],
+  "durableWebhookEvents": [
+    {
+      "provider": "razorpay",
+      "eventType": "payment.authorized",
+      "processedAt": "2026-10-24T20:09:50.276+00:00",
+      "signatureValid": true,
+      "providerEventId": "payment.authorized:pay_Trs8A3pb4lipen",
+      "processingStatus": "processed"
+    },
+    {
+      "provider": "razorpay",
+      "eventType": "payment.captured",
+      "processedAt": "2026-10-24T20:09:51.364+00:00",
+      "signatureValid": true,
+      "providerEventId": "payment.captured:pay_Trs8A3pb4lipen",
+      "processingStatus": "processed"
+    }
+  ],
+  "actualCallbacks": [
+    {
+      "runId": "49ada80bc494",
+      "receivedAt": "2026-10-24T20:09:50.290Z",
+      "event": "payment.authorized",
+      "paymentId": "pay_Trs8A3pb4lipen",
+      "providerOrderId": "order_Trs7ocV9z9qm6w",
+      "paymentStatus": "authorized",
+      "amount": 251000,
+      "currency": "INR",
+      "providerEventId": "Trs8Zx3DvvXnMv",
+      "signaturePresent": true,
+      "bodySha256": "48831d6b38637145a43172366ec745d6707965d79896134ba46880d352618d77",
+      "canonicalStatus": 200
+    },
+    {
+      "runId": "49ada80bc494",
+      "receivedAt": "2026-10-24T20:09:51.368Z",
+      "event": "payment.captured",
+      "paymentId": "pay_Trs8A3pb4lipen",
+      "providerOrderId": "order_Trs7ocV9z9qm6w",
+      "paymentStatus": "captured",
+      "amount": 251000,
+      "currency": "INR",
+      "providerEventId": "Trs8bAS4ITew64",
+      "signaturePresent": true,
+      "bodySha256": "d6f3865e1b275b58f0fe7c2583f5d51110b03c34bff0eb487fc70dca051aca3f",
+      "canonicalStatus": 200
+    }
+  ],
+  "stockDeltaProof": {
+    "basis": "Actual single sale_committed inventory event for this exact order/variant",
+    "quantityDelta": -1,
+    "currentAvailableQuantity": 3,
+    "currentCommittedQuantity": 1,
+    "currentOnHandQuantity": 4
+  },
+  "buyerAndMerchantReadback": {
+    "buyer": "Confirmedownorder10001/INR2510/cart0",
+    "merchant": "RAZORPAYPaid/Confirmed/ColorOatSizeM"
+  },
+  "evidence": {
+    "controllerReceipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/THREADLINE_PURCHASE_10001.json",
+      "sha256": "9f23f63797229c0f637d2b2c3641b5ee00a65085933ae5eef863a7db908d6be4",
+      "bytes": 2754
+    },
+    "ownedReadOnlyCorrelation": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/THREADLINE_PANTRY_READONLY_PAYMENT_CORRELATION.json",
+      "sha256": "1d4ba014d79729cc1ddc2c6314b6832b51acae2679169abf76b1660426d56ee0",
+      "bytes": 21645
+    },
+    "independentFinancialReview": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/THREADLINE_PANTRY_FINANCIAL_CORRELATION_REVIEW.json",
+      "sha256": "d8ca17ace83fefed27eb6a6098a363f4282951066455026861b78a7ccd7dab49",
+      "bytes": 4316
+    },
+    "actionsSnapshot": {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/CONTROLLER_ACTIONS_SNAPSHOT01.json",
+      "sha256": "6aa7ce42213507d2dce3f51015c378ac39c18e459b34b95457222235079cf359",
+      "bytes": 10453
+    }
+  },
+  "paidSnapshotFacts": {
+    "apparel": null,
+    "selectedOptions": {
+      "Color": "Oat",
+      "Size": "M"
+    },
+    "policy": "No currentcatalogue fallback/backfill; originalemptyfactsremainimmutable."
+  },
+  "snapshotHashClasses": {
+    "observerOrderLinesDigest": "67ee39a5073f2faa0235340bd01e86ecd9e23a777467f1996b4bda272d077ac3",
+    "perItemProductSnapshotDigest": "9c0037901f31ec5c28497025cef24edf3914be74226a7be7079f403bc1802373",
+    "warning": "Differentobservables/algorithms; compareeachonlywithitsownlatermethod."
+  },
+  "openFindings": [
+    "R07-HOSTED-CAPTURE-FLAG-01: actualcanonicalledgerpresentbutcapturemetadatafalse;assignedMadeYours",
+    "BuyerownThreadlineorderdetaildoesnotrenderSavedOptions/facts;privatecorrectionexists,notapplied",
+    "Canonicalapparelsnapshot/provenance/summarysupportneededforfutureorders; old10001notfabricated"
+  ],
+  "notClosed": [
+    "Providerfailure/cancel/replay/adversarial/reversal/reconciliationclausesnotprovedbythissuccess",
+    "Normalemailverification",
+    "Full26original/318requirements",
+    "Latereditimmutablehistory/currentnewsuccessor/native/rollback",
+    "Globalindependentthemeacceptance"
+  ],
+  "LOCAL_E2E_VERIFIED": "PARTIAL",
+  "RAZORPAY_TEST_VERIFIED": "PARTIAL",
+  "REVIEW_ACCEPTED": "FINANCIAL_COMPONENT_ACCEPTED_ONLY",
+  "FULL_THEME_CERTIFIED": false
+}

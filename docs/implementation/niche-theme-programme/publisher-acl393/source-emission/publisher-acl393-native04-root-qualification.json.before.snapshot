@@ -1,0 +1,64 @@
+{
+  "recordedAt": "2026-10-24T05:42:19.394855+00:00",
+  "status": "ROOT_QUALIFIED_ACL393_V2_ALL_SEVEN_NATIVE_PHASES",
+  "runId": "3948938e7c9b",
+  "sourceAdmission": "publisher-acl393-http-attribution-native04-admission.json",
+  "suiteSha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+  "closureSha256": "2851f65451c43154e5f896d6bb0a7964a521307471baac90947c528a6ef42e16",
+  "sourceFilesRehashedAfterNative": 1080,
+  "migrationSourceCount": 321,
+  "maximumSourceMigration": 392,
+  "allMigrationHashesMatched": true,
+  "migrationCeiling": null,
+  "candidate393AppliedInsideOwnedSuiteOnly": true,
+  "nativeTAP": {
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "skip": 0,
+    "timeout": false
+  },
+  "nativeResult": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/04/result.json",
+    "sha256": "582091c745585c9446432a530e90aab22f75a500d8422cc84bff9caad55c2f9e"
+  },
+  "provenance": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/04/provenance-manifest.json",
+    "sha256": "0508534a09d36c923cd068c2b3d09ae4d98467b1b4aba8cebea67a70db49b2f2",
+    "allCopiedFilesHashVerified": 74
+  },
+  "finalPublisher": {
+    "owner": "postgres",
+    "bodyMd5": "56a6b7b15e8a7ec159341fe0331ac593",
+    "execute": {
+      "anon": false,
+      "app_tenant": false,
+      "service_role": true,
+      "authenticated": false,
+      "authenticator": false
+    },
+    "profileInvariant": "All non-target ACL/profile/body/ABI/dependency/catalog invariants enforced in actual suite; only direct tenant EXECUTE and its ACL dependency removed."
+  },
+  "actualGates": [
+    "Own-rowpositive/install",
+    "UP+replay exact fullbusiness/catalog invariants",
+    "Tenant own/foreign/unset+anon/auth42501 denial no effects",
+    "CanonicalserviceSave/publish/rollback/CAS/retry/privateC preservation plus exact attributed requestrecords",
+    "Bothdirectionunknownprofile atomic refusal",
+    "DOWN/replay/reUP/replay + finaldenial and fullparity",
+    "Final hardened profiles/sourcebindings"
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "sourceOrProductionEmission": false,
+  "current936OrMarketplaceChanged": false,
+  "wholeProgrammeAccepted": false,
+  "next": "Close qualification epoch; release exact paired393 source emission with current-regression/temporary-qualifier test compatibility, release controlled countpatch Main apply. No hosted apply/deployment."
+}

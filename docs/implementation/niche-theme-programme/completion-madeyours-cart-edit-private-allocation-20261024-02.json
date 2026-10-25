@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-10-24T11:31:07.752741+00:00",
+  "id": "completion-madeyours-cart-edit-private-02",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "authority": "completion-resume-resource-allocation-20261024-02.json",
+  "status": "FRESH_EIGHT_PATH_PRIVATE_ONLY_OVERLAY_PREPARATION_GRANTED",
+  "expiresAt": "2026-10-24T13:31:07.752741+00:00",
+  "sourceInputs": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "currentMainSHA256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts",
+      "currentMainSHA256": "cc2f0f484eb4a63e8e7c81a143611b6ddad01936eb0b3300780beb8a4eaf4f48"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/personalization-review-client.ts",
+      "currentMainSHA256": "1cb105f39245660177dd110403c6afba91efee1f2d4c5e63802b9dfe364a428b"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts",
+      "currentMainSHA256": null
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "currentMainSHA256": "2822a721bafd176241deaf274db2fdb0ab40fb687e738842f9ddd80912391560"
+    },
+    {
+      "path": "packages/checkout-core/test/madeyours-cart-edit.test.ts",
+      "currentMainSHA256": null
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "currentMainSHA256": "18a17fc31b1f328bd52413885d264d7bc2f23728c3f2e5c75f074776765a533a"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/madeyours-cart-edit.postgres.test.ts",
+      "currentMainSHA256": null
+    }
+  ],
+  "scope": "Renew original explicitinline edit/draft/Review/atomic acknowledged sameUUIDreplacement requirement; preserve accepted oldline and unrelated cart until acknowledgement; cancel/Unicode/lostack/sametab/staletab/concurrentedit/idempotent retry tests. Rebase on admitted08, no remove+add waiver.",
+  "originalContract": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/CONFIGURED_CART_EDIT_CONTRACT.md",
+  "privateSourcePaths": [
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+    "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts",
+    "apps/commerce/web/src/lib/theme-engine/personalization-review-client.ts",
+    "apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts",
+    "packages/checkout-core/src/index.ts",
+    "packages/checkout-core/test/madeyours-cart-edit.test.ts",
+    "services/api-gateway/src/routes/storefront/cart-routes.ts",
+    "services/api-gateway/src/__tests__/owned-db/madeyours-cart-edit.postgres.test.ts"
+  ],
+  "extraSQL": "Exact unnumbered UP/DOWN private proposal only under owned completionfolder if canonical DBatomic contract needs it; no migration reservation/emission/application or app-local authority workaround",
+  "mainWrites": false,
+  "nativeBuildBrowserDBRuntimeProvider": false,
+  "protected": "All11sealed08bytes/private05-08/oldfailures/frozenvisuals/apps/data; outputminimaladditionalpatches and actualsourceinputclosure",
+  "ends": "First sealed proposal or expiry; later Mainapply/native requires distinct allocation"
+}

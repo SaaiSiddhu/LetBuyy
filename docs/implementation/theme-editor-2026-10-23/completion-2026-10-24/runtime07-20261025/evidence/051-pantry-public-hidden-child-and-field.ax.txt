@@ -1,0 +1,82 @@
+Browser tab: 173052885, Title: "Threadline", URL: "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477".
+1 AXWebArea Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+	2 container
+		3 text Pantry Runtime07 A — everyday staples
+		4 link syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/customers/login
+		9 link Description: Cart ( 0 ), Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+		10 text THE EVERYDAY PANTRY
+		11 heading Good things start with staples., Value: 1
+			12 text Good things start with staples.
+		13 text Find your shelf, read the details, choose your pack.
+		14 link Description: Explore pantry shelves, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products
+		15 heading Find your shelf, Value: 2
+			16 text Find your shelf
+		17 container Pantry shelves
+			18 link Description: Care, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/019bb5fc-e33b-48f0-8f42-4fc2b34e2817
+			19 link Description: Cleanse, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/f196d855-c5cf-4928-bee1-c8995e6abbd5
+			20 link Description: Colour, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/8bcd4abc-51df-4014-9b9f-352c20ecb06b
+			21 link Description: Easy, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/b355524f-3f5b-4f57-a2e5-9e65b692eb76
+		22 heading A little everyday order., Value: 2
+			23 text A little everyday order.
+		24 container
+			25 link Description: Product image not supplied, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+			26 heading Trailmark lifecycle racket, Value: 3
+				27 link Description: Trailmark lifecycle racket, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+			28 text Choose a pack to check its net quantity INR 1,800.00
+			29 link Description: Choose pack, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+		30 container
+			31 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+			32 heading Fixture Cloud Rinse, Value: 3
+				33 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+			34 text Net quantity not supplied INR 640.00
+			35 link Description: Choose pack, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+		36 container
+			37 link Description: Fixture Daily Veil, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+			38 heading Fixture Daily Veil, Value: 3
+				39 link Description: Fixture Daily Veil, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+			40 text Net quantity not supplied INR 880.00
+			41 link Description: Choose pack, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+		42 container
+			43 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+			44 heading The Everyday Cotton Dress, Value: 3
+				45 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+			46 text Choose a pack to check its net quantity INR 3,990.00
+			47 link Description: Choose pack, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+		48 container
+			49 link Description: Fixture Soft Colour, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+			50 heading Fixture Soft Colour, Value: 3
+				51 link Description: Fixture Soft Colour, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+			52 text Choose a pack to check its net quantity INR 520.00
+			53 link Description: Choose pack, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+		54 container
+			55 link Description: Product image not supplied, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+			56 heading Pantry lifecycle rice, Value: 3
+				57 link Description: Pantry lifecycle rice, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+			58 text 1000 g net per pack INR 220.00 INR 22.00 / 100 g
+			59 link Description: Choose pack, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+		60 container Product pages
+			61 text Page 1
+		62 heading Choose the right pack, Value: 3
+			63 text Choose the right pack
+		64 text Pantry temporary declared-field roundtrip
+		65 heading Read the supplied details, Value: 3
+			66 text Read the supplied details
+		67 text Supplied ingredients and known information, clearly stated.
+		68 heading Shipping for your address, Value: 3
+			69 text Shipping for your address
+		70 text Available rates are shown for your address at checkout.
+		71 container
+			72 text Pantry temporary root A Pantry temporary child B
+		73 heading Threadline, Value: 3
+			74 text Threadline
+		75 heading CONTACT, Value: 4
+			76 text CONTACT
+		77 link Description: Contact us, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/contact
+		78 text © Threadline. All rights reserved.
+		79 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477

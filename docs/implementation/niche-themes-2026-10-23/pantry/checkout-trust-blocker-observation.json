@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-23T15:34:37.558464+00:00",
+  "classification": "COORDINATOR_REPORTED_ACTUAL_SHARED_BROWSER_TLS_BLOCKER_NOT_PANTRY_EXECUTION",
+  "runId": "9cd50e893016",
+  "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "reportedObservation": {
+    "source": "Direct Themes coordination message",
+    "case": "Dewdrop H01",
+    "host": "checkout.localhost",
+    "error": "ERR_CERT_AUTHORITY_INVALID",
+    "browserNavigationStopped": true,
+    "acceptance": "No completed hosted checkout or order/history proof follows this navigation."
+  },
+  "owner": "Theme Editor \u2014 End-to-End / Themes coordinates existing local trust handoff",
+  "ownerCurrentActivity": "Editor revision288 reports preparing local certificate/manual Mac trust steps; Pantry does not alter trust or open a browser.",
+  "structuredOwnerLedgerAtRead": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-browser-diagnostics.json",
+    "sha256": "cde0f8df848aec42c89bfd605f9a9e8fe3b6d7134fae58865232e234e354ef57",
+    "H01Status": "NOT_RUN",
+    "reconciliation": "H01 remains NOT_RUN in this saved interim ledger; coordinator-reported TLS observation awaits owner ledger finalization, and is recorded separately without manufacturing a result."
+  },
+  "affectedPantryRows": [
+    "P09",
+    "P10",
+    "P12"
+  ],
+  "pantryCasesExecuted": 0,
+  "certificateFingerprint": null,
+  "credentialOrCapabilityUrlsRecorded": false,
+  "instruction": "Finite independent Pantry diagnostic proceeds next under existing sole Editor controller. Only if P10 actually executes may additional accepted250g cart be preserved before P11 for P12. Keep checkout/history/stale rows blocked or unrun as their actual prerequisites require; all13 remain required on qualified baseline."
+}

@@ -533,14 +533,20 @@ test('real Next Commerce login cookie completes a session and profile read throu
         },
     });
     let output = '';
-        runtime.stdout.on('data', chunk => { output = (output + chunk.toString()).slice(-16000); });
-    runtime.stderr.on('data', chunk => { output = (output + chunk.toString()).slice(-16000); });
+    const stages = new Set<string>();
+    const capture = (chunk: Buffer) => {
+        const combined = output + chunk.toString();
+        for (const match of combined.matchAll(/(?:RUNTIME_STEP|RESET_FLOW|BROWSER_STEP):([a-z0-9-]+)/g)) stages.add(match[1]);
+        output = combined.slice(-16000);
+    };
+    runtime.stdout.on('data', capture);
+    runtime.stderr.on('data', capture);
     try {
         const exitCode = await new Promise<number>((resolveExit, reject) => {
             const timeout = setTimeout(() => {
                 const resetSteps = [...output.matchAll(/RESET_FLOW:([a-z0-9-]+)/g)].map(match => match[1]).join(' → ') || 'none';
                 const browserSteps = [...output.matchAll(/BROWSER_STEP:([a-z0-9-]+)/g)].map(match => match[1]).join(' → ') || 'none';
-                reject(new Error(`Commerce + Identity session runtime exceeded 240 seconds; reset steps: ${resetSteps}; browser steps: ${browserSteps}`));
+                reject(new Error(`Commerce + Identity session runtime exceeded 330 seconds; stages: ${[...stages].join(' → ')}; reset steps: ${resetSteps}; browser steps: ${browserSteps}`));
             }, 330_000);
             runtime.once('error', error => { clearTimeout(timeout); reject(error); });
             runtime.once('exit', code => { clearTimeout(timeout); resolveExit(code ?? 1); });

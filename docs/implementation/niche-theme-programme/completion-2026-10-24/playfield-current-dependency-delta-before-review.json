@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-24T09:55:45.039560+00:00",
+  "classification": "PLAYFIELD_CURRENT_DEPENDENCY_DELTA_REQUIRES_REVIEW",
+  "path": "packages/theme-engine/src/niche-order-presentation.ts",
+  "ownerBeforeSha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3",
+  "currentSha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+  "observedBeforeExecution": true,
+  "probeLaunchedDespitePinFailure": true,
+  "correction": "Retain source-only run as unqualified until allocator shared-helper change and exact runtime inputs are reviewed; no native/browser/DB action occurred",
+  "privatePlayfieldSourceChanged": false
+}

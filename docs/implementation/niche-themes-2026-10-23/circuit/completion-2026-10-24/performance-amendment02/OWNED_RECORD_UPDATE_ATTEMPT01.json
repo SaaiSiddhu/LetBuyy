@@ -1,0 +1,8 @@
+{
+  "recordedAt": "2026-10-25T00:01:32.985136+00:00",
+  "classification": "OWNED_METADATA_SHAPE_ASSUMPTION_NOT_TEST_FAILURE",
+  "error": "Treated COVERAGE.sourceInvestigationEvidence list as dictionary; TypeError before COVERAGE write.",
+  "safePartialEffect": "STATUS was updated; other owned records were not yet changed.",
+  "correction": "Append a typed sealed-amendment reference to the existing list; preserve its entries.",
+  "nativeOrRuntimeActions": 0
+}

@@ -1,0 +1,180 @@
+{
+  "recordedAt": "2026-10-24T05:35:29.954Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "evidenceClass": "Actual persisted canonical mutation from normal merchant Save; not raw HTTP capture",
+  "productId": "7070e083-276f-461d-8b17-c441561fae40",
+  "originalVariantIds": [
+    "45027d62-4770-4819-bd4b-783e36187692",
+    "8ca6dfcb-bf81-4e61-9109-01565c483872"
+  ],
+  "actual": [
+    {
+      "idempotencyKey": "7c8f0619-3363-458c-8066-33564e082f5e",
+      "expectedVersion": 8,
+      "returnedVersion": 20,
+      "operation": "product.update.v1",
+      "createdAt": "2026-10-24T05:34:39.680967+00:00",
+      "mutationSqlTextToNodeJsonSha256": "8b26f52d64469c9341e549776deb2025008b98b061f1d918ed785a57760a6285",
+      "topLevelStockOmitted": true,
+      "fieldsStockOmitted": true,
+      "existingVariantsStockOmitted": false,
+      "sameOriginalVariantIds": false,
+      "variants": [
+        {
+          "id": "8ca6dfcb-bf81-4e61-9109-01565c483872",
+          "title": "48 in / Natural",
+          "sku": null,
+          "price": 8900,
+          "options": {
+            "Width": "48 in",
+            "Finish": "Natural"
+          },
+          "metadata": {
+            "furniture": {
+              "care": "Natural finish: wipe dry.",
+              "finish": "Natural",
+              "weight": {
+                "unit": "kg",
+                "value": 11.5
+              },
+              "package": {
+                "unit": "in",
+                "depth": 25,
+                "width": 50
+              },
+              "assembly": {
+                "tools": "4 mm hex key",
+                "status": "required",
+                "instructions": "Use the supplied sample instructions."
+              },
+              "assembled": {
+                "unit": "in",
+                "depth": 30,
+                "width": 48,
+                "height": 29.5
+              },
+              "materials": [
+                "Wood"
+              ]
+            }
+          }
+        },
+        {
+          "id": "45027d62-4770-4819-bd4b-783e36187692",
+          "title": "Common size / Natural",
+          "sku": null,
+          "price": 8700,
+          "explicitStock": 0,
+          "options": {
+            "Width": "Common size",
+            "Finish": "Natural"
+          }
+        },
+        {
+          "title": "130 cm / Black",
+          "sku": null,
+          "price": 9300,
+          "explicitStock": 3,
+          "options": {
+            "Width": "130 cm",
+            "Finish": "Black"
+          },
+          "metadata": {
+            "furniture": {
+              "care": "Black finish: use a dry cloth.",
+              "finish": "Black",
+              "weight": {
+                "unit": "kg",
+                "value": 13
+              },
+              "package": {
+                "unit": "cm",
+                "depth": 65,
+                "width": 135,
+                "height": 20
+              },
+              "assembled": {
+                "unit": "cm",
+                "depth": 60,
+                "width": 130,
+                "height": 75
+              },
+              "materials": [
+                "Metal"
+              ]
+            }
+          }
+        },
+        {
+          "title": "48 in width only / Natural",
+          "sku": null,
+          "price": 9000,
+          "explicitStock": 2,
+          "options": {
+            "Width": "48 in width only",
+            "Finish": "Natural"
+          },
+          "metadata": {
+            "furniture": {
+              "assembled": {
+                "unit": "in",
+                "width": 48
+              }
+            }
+          }
+        }
+      ],
+      "options": [
+        {
+          "name": "Width",
+          "values": [
+            "48 in",
+            "Common size",
+            "130 cm",
+            "48 in width only"
+          ],
+          "position": 0
+        },
+        {
+          "name": "Finish",
+          "values": [
+            "Natural",
+            "Black"
+          ],
+          "position": 1
+        }
+      ],
+      "furniture": {
+        "care": "Wipe dry.",
+        "finish": "Natural",
+        "weight": {
+          "unit": "kg",
+          "value": 12
+        },
+        "package": {
+          "unit": "cm",
+          "depth": 65,
+          "width": 130,
+          "height": 20
+        },
+        "assembly": {
+          "tools": "Hex key",
+          "status": "required",
+          "instructions": "Use the sample desk instructions."
+        },
+        "assembled": {
+          "unit": "cm",
+          "depth": 60,
+          "width": 120,
+          "height": 75
+        },
+        "materials": [
+          "Wood"
+        ]
+      },
+      "privateSiblingDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  ]
+}

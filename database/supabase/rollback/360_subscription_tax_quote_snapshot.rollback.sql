@@ -25,11 +25,46 @@ BEGIN
   AND pid<>pg_backend_pid() AND backend_xid IS NOT NULL) THEN
   RAISE EXCEPTION '360 rollback refuses a foreign assigned transaction';END IF;
 END $maintenance$;
-LOCK TABLE pg_catalog.pg_proc,pg_catalog.pg_class,pg_catalog.pg_attribute,pg_catalog.pg_attrdef,pg_catalog.pg_constraint,
+-- Preserve native catalog exclusion. Managed PostgreSQL requires the reviewed
+-- provider-admin bootstrap; no advisory/event-trigger substitute is accepted.
+DO $managed_catalog_fence$
+BEGIN
+ IF (SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user) THEN
+  LOCK TABLE pg_catalog.pg_proc,pg_catalog.pg_class,pg_catalog.pg_attribute,pg_catalog.pg_attrdef,pg_catalog.pg_constraint,
  pg_catalog.pg_index,pg_catalog.pg_trigger,pg_catalog.pg_event_trigger,pg_catalog.pg_policy,pg_catalog.pg_depend,pg_catalog.pg_shdepend,
  pg_catalog.pg_namespace,pg_catalog.pg_type,pg_catalog.pg_description,pg_catalog.pg_seclabel,pg_catalog.pg_authid,pg_catalog.pg_auth_members,
  pg_catalog.pg_inherits,pg_catalog.pg_rewrite,pg_catalog.pg_language,pg_catalog.pg_opclass,pg_catalog.pg_opfamily,pg_catalog.pg_operator,
  pg_catalog.pg_am,pg_catalog.pg_collation,pg_catalog.pg_tablespace,pg_catalog.pg_default_acl IN SHARE ROW EXCLUSIVE MODE NOWAIT;
+ ELSE
+  IF current_user<>'postgres' OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
+ WHERE p.oid=pg_catalog.to_regprocedure('letbuyy_maintenance.lock_catalogs_v1()')
+ AND n.nspname='letbuyy_maintenance' AND n.nspowner='supabase_admin'::regrole
+ AND p.proowner='supabase_admin'::regrole AND p.prosecdef AND p.prokind='f' AND NOT p.proretset
+ AND p.prorettype='pg_catalog.void'::regtype AND p.prolang=(SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')
+ AND p.pronargs=0 AND p.pronargdefaults=0 AND p.proargnames IS NULL AND p.proargmodes IS NULL AND p.proallargtypes IS NULL
+ AND NOT p.proisstrict AND NOT p.proleakproof AND p.prosupport=0 AND p.provolatile='v' AND p.proparallel='u'
+ AND p.proconfig=ARRAY['search_path=pg_catalog, pg_temp']::text[]
+ AND pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(p.prosrc,'UTF8')),'hex')='4772eebc5017ef1e188b188f87f1cca8fb8f2b9cfd1e928798ef5cd5dfebfabc'
+ AND EXISTS(SELECT 1 FROM pg_catalog.pg_roles r WHERE r.oid=p.proowner AND r.rolsuper)
+ AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)))a
+  WHERE a.grantor<>p.proowner OR a.grantee NOT IN(p.proowner,'postgres'::regrole) OR (a.grantee<>p.proowner AND a.is_grantable))
+ AND pg_catalog.has_function_privilege('postgres',p.oid,'EXECUTE')
+ AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(n.nspacl,pg_catalog.acldefault('n',n.nspowner)))a
+  WHERE a.grantor<>n.nspowner OR a.grantee NOT IN(n.nspowner,'postgres'::regrole)
+   OR(a.grantee<>n.nspowner AND (a.is_grantable OR a.privilege_type<>'USAGE')))
+ AND pg_catalog.has_schema_privilege('postgres',n.oid,'USAGE')
+ AND (SELECT count(*) FROM pg_catalog.pg_proc x WHERE x.pronamespace=n.oid AND x.proname=p.proname)=1) THEN
+   RAISE EXCEPTION 'LETBUYY_PROVIDER_ADMIN_CATALOG_FENCE_REQUIRED' USING ERRCODE='42501';END IF;
+  PERFORM letbuyy_maintenance.lock_catalogs_v1();
+  -- Prove actual backend-held relation locks, including cluster-shared catalogs.
+  IF EXISTS(SELECT 1 FROM unnest(ARRAY['pg_catalog.pg_proc'::pg_catalog.regclass,'pg_catalog.pg_class'::pg_catalog.regclass,'pg_catalog.pg_attribute'::pg_catalog.regclass,'pg_catalog.pg_attrdef'::pg_catalog.regclass,'pg_catalog.pg_constraint'::pg_catalog.regclass,'pg_catalog.pg_index'::pg_catalog.regclass,'pg_catalog.pg_trigger'::pg_catalog.regclass,'pg_catalog.pg_event_trigger'::pg_catalog.regclass,'pg_catalog.pg_policy'::pg_catalog.regclass,'pg_catalog.pg_depend'::pg_catalog.regclass,'pg_catalog.pg_shdepend'::pg_catalog.regclass,'pg_catalog.pg_namespace'::pg_catalog.regclass,'pg_catalog.pg_type'::pg_catalog.regclass,'pg_catalog.pg_description'::pg_catalog.regclass,'pg_catalog.pg_seclabel'::pg_catalog.regclass,'pg_catalog.pg_authid'::pg_catalog.regclass,'pg_catalog.pg_auth_members'::pg_catalog.regclass,'pg_catalog.pg_inherits'::pg_catalog.regclass,'pg_catalog.pg_rewrite'::pg_catalog.regclass,'pg_catalog.pg_language'::pg_catalog.regclass,'pg_catalog.pg_opclass'::pg_catalog.regclass,'pg_catalog.pg_opfamily'::pg_catalog.regclass,'pg_catalog.pg_operator'::pg_catalog.regclass,'pg_catalog.pg_am'::pg_catalog.regclass,'pg_catalog.pg_collation'::pg_catalog.regclass,'pg_catalog.pg_tablespace'::pg_catalog.regclass,'pg_catalog.pg_default_acl'::pg_catalog.regclass]::oid[]) catalog_oid
+    WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_locks l WHERE l.pid=pg_catalog.pg_backend_pid()
+     AND l.locktype='relation' AND l.relation=catalog_oid AND l.granted
+     AND l.mode IN('ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')
+     AND l.database IN(0,(SELECT oid FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database())))) THEN
+   RAISE EXCEPTION 'LETBUYY_NATIVE_CATALOG_LOCKS_REQUIRED';END IF;
+ END IF;
+END $managed_catalog_fence$;
 LOCK TABLE public.sites IN EXCLUSIVE MODE NOWAIT;
 LOCK TABLE public.billing_history,public.subscriptions,public.merchant_billing_invoices,public.audit_logs,public.migration_privilege_journal IN SHARE ROW EXCLUSIVE MODE NOWAIT;
 DO $guard$
@@ -45,13 +80,17 @@ BEGIN
   OR EXISTS(SELECT 1 FROM public.audit_logs WHERE metadata?'subscription_tax_source_id' OR metadata->>'subscription_tax_policy'='D-SUB-TAX-INCLUSIVE-V1') THEN
   RAISE EXCEPTION '360 rollback refuses retained tax evidence; retain forward schema';END IF;
  -- TAX360-CUSTODY-BEGIN: private actual grant receipt binds this verifier,
- -- including its catalog SET birth identities. Comments are cosmetic only.
+ -- including source-bound birth identities. COMMENT metadata is cosmetic only.
  IF EXISTS(SELECT 1 FROM pg_roles WHERE rolname IN('anon','authenticated','app_tenant') AND (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR rolcanlogin OR NOT rolinherit))
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role' AND NOT rolsuper AND NOT rolcreatedb AND NOT rolcreaterole AND NOT rolreplication AND rolbypassrls AND NOT rolcanlogin AND rolinherit)
-  OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND rolsuper)
+  OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND (rolsuper OR (NOT rolsuper AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls AND EXISTS(SELECT 1 FROM pg_roles managed_admin WHERE managed_admin.rolname='supabase_admin' AND managed_admin.rolsuper) AND EXISTS(SELECT 1 FROM pg_auth_members managed_member JOIN pg_roles managed_parent ON managed_parent.oid=managed_member.roleid WHERE managed_member.member='postgres'::regrole AND managed_parent.rolname='supabase_privileged_role' AND managed_member.inherit_option AND managed_member.set_option AND NOT managed_member.admin_option))))
   OR EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.roleid IN('service_role'::regrole,'anon'::regrole,'authenticated'::regrole,'app_tenant'::regrole)
    AND NOT((m.roleid='app_tenant'::regrole AND m.member IN('postgres'::regrole,'service_role'::regrole) AND NOT m.admin_option AND m.inherit_option AND m.set_option)
-    OR(m.member=to_regrole('authenticator') AND m.roleid IN('anon'::regrole,'authenticated'::regrole,'service_role'::regrole) AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option)))
+    OR(m.member=to_regrole('authenticator') AND m.roleid IN('anon'::regrole,'authenticated'::regrole,'service_role'::regrole) AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option
+    OR (m.member='postgres'::regrole AND m.grantor=to_regrole('supabase_admin')
+     AND EXISTS(SELECT 1 FROM pg_roles managed_postgres WHERE managed_postgres.rolname='postgres' AND NOT managed_postgres.rolsuper)
+     AND ((m.roleid IN('anon'::regrole,'authenticated'::regrole,'service_role'::regrole) AND m.admin_option AND m.inherit_option AND m.set_option)
+       OR(m.roleid='app_tenant'::regrole AND m.admin_option AND NOT m.inherit_option AND NOT m.set_option))))))
   OR EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member IN('anon'::regrole,'authenticated'::regrole,'app_tenant'::regrole,'service_role'::regrole)
    AND NOT(m.member='service_role'::regrole AND m.roleid='app_tenant'::regrole AND NOT m.admin_option AND m.inherit_option AND m.set_option)) THEN
   RAISE EXCEPTION '360 refuses unknown critical role or membership profile';END IF;
@@ -102,7 +141,7 @@ BEGIN
  IF NOT has_table_privilege('service_role','public.migration_privilege_journal','SELECT')
   OR has_table_privilege('service_role','public.migration_privilege_journal','SELECT WITH GRANT OPTION')
   OR EXISTS(SELECT 1 FROM aclexplode(coalesce((SELECT relacl FROM pg_class WHERE oid='public.migration_privilege_journal'::regclass),acldefault('r','postgres'::regrole)))acl
-   WHERE acl.grantee NOT IN('postgres'::regrole,'service_role'::regrole) OR acl.grantor<>'postgres'::regrole OR (acl.grantee='service_role'::regrole AND acl.is_grantable)) THEN
+   WHERE acl.grantee NOT IN('postgres'::regrole,'service_role'::regrole) OR acl.grantor<>'postgres'::regrole OR (acl.grantee='service_role'::regrole AND (acl.is_grantable OR acl.privilege_type<>'SELECT'))) THEN
   RAISE EXCEPTION '360 refuses unknown private journal ACL/grant options';END IF;
 
  IF EXISTS(SELECT 1 FROM unnest(ARRAY['INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'])priv WHERE has_table_privilege('service_role','public.migration_privilege_journal',priv))
@@ -115,8 +154,7 @@ BEGIN
  IF v_fn.oid IS NULL OR v_journal.object_oid IS DISTINCT FROM v_fn.oid OR v_journal.object_owner IS DISTINCT FROM v_fn.proowner
   OR v_journal.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex') THEN
   RAISE EXCEPTION '360 refuses changed historical custody verifier identity or definition';END IF;
- SELECT substring(config from length('letbuyy.subscription_tax_birth_bindings=')+1)::jsonb INTO binding FROM unnest(v_fn.proconfig)config
-  WHERE starts_with(config,'letbuyy.subscription_tax_birth_bindings=');
+ SELECT convert_from(decode((regexp_match(v_fn.prosrc,E'\\n/\\*TAX360_BINDING_BASE64:([A-Za-z0-9+/=]+)\\*/\\n?$'))[1],'base64'),'UTF8')::jsonb INTO binding;
  IF jsonb_typeof(binding) IS DISTINCT FROM 'object' OR binding->>'schema_version' IS DISTINCT FROM '1'
   OR (SELECT count(*) FROM jsonb_each(binding->'functions'))<>14 THEN RAISE EXCEPTION '360 refuses missing or incomplete birth bindings';END IF;
  IF 'public'::regnamespace::oid IS DISTINCT FROM (binding->>'namespace_oid')::oid THEN RAISE EXCEPTION '360 refuses changed namespace identity';END IF;
@@ -130,7 +168,7 @@ BEGIN
   SELECT * INTO v_fn FROM pg_proc WHERE oid=to_regprocedure(v_entry.key);
   IF v_fn.oid IS NULL OR v_fn.oid IS DISTINCT FROM (v_entry.value->>'oid')::oid OR v_fn.proowner IS DISTINCT FROM (v_entry.value->>'owner')::oid
    OR v_fn.proacl::text IS DISTINCT FROM v_entry.value->>'acl' OR v_fn.proowner<>'postgres'::regrole
-   OR encode(sha256(convert_to(v_fn.prosrc,'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'body_hash'
+   OR encode(sha256(convert_to(CASE WHEN v_entry.key='public.guard_subscription_tax_ddl_360()' THEN regexp_replace(v_fn.prosrc,E'\\n/\\*TAX360_BINDING_BASE64:[A-Za-z0-9+/=]+\\*/\\n?$','') ELSE v_fn.prosrc END,'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'body_hash'
    OR (v_entry.key<>'public.guard_subscription_tax_ddl_360()' AND encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'definition_hash')
    OR (SELECT count(*) FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname=v_fn.proname)<>1
    OR v_fn.prokind<>'f' OR v_fn.prolang<>(SELECT oid FROM pg_language WHERE lanname='plpgsql') OR v_fn.prosecdef OR v_fn.proretset OR v_fn.proisstrict
@@ -289,9 +327,8 @@ BEGIN
  -- TAX360-OWNED-SHAPE-END
 END $guard$;
 CREATE TEMP TABLE tax360_retirement_binding ON COMMIT DROP AS
- SELECT substring(config from length('letbuyy.subscription_tax_birth_bindings=')+1)::jsonb AS binding
- FROM pg_proc p CROSS JOIN LATERAL unnest(p.proconfig)config
- WHERE p.oid='public.guard_subscription_tax_ddl_360()'::regprocedure AND starts_with(config,'letbuyy.subscription_tax_birth_bindings=');
+ SELECT convert_from(decode((regexp_match(p.prosrc,E'\\n/\\*TAX360_BINDING_BASE64:([A-Za-z0-9+/=]+)\\*/\\n?$'))[1],'base64'),'UTF8')::jsonb AS binding
+ FROM pg_proc p WHERE p.oid='public.guard_subscription_tax_ddl_360()'::regprocedure;
 CREATE TEMP TABLE tax360_original_comments ON COMMIT DROP AS
  SELECT key AS signature,value->>'previous_comment' AS original_comment FROM tax360_retirement_binding b CROSS JOIN LATERAL jsonb_each(b.binding->'functions')
  WHERE split_part(key,'(',1) IN('public.claim_merchant_subscription_checkout_v1','public.bind_merchant_subscription_checkout_v1','public.read_merchant_subscription_checkout_v1','public.activate_merchant_subscription_v1');
@@ -316,7 +353,7 @@ DROP TRIGGER subscription_tax_audit_truncate_360 ON public.audit_logs;
 DROP FUNCTION public.guard_subscription_tax_rows_360();
 CREATE OR REPLACE FUNCTION public.claim_merchant_subscription_checkout_v1(
  p_actor uuid,p_site uuid,p_key text,p_request jsonb,p_quote jsonb DEFAULT NULL)
-RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET letbuyy.subscription_checkout_version='347' AS $f$
+RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET application_name='claim_merchant_subscription_checkout_v1:347' AS $f$
 DECLARE s public.sites%ROWTYPE;c public.billing_history%ROWTYPE;receipt uuid:=gen_random_uuid();amount bigint;scope text;free_quote boolean;
 BEGIN
  SELECT * INTO s FROM public.sites WHERE id=p_site AND deleted_at IS NULL FOR SHARE;
@@ -325,10 +362,10 @@ BEGIN
  -- The table admission lock is already held by the store SELECT above. A
  -- call compiled before rollback may have waited on that lock; verify the
  -- currently bound function's own SET attribute, not the caller/session GUC.
- -- pg_get_functiondef reads the live catalog binding even for a cached frame.
- IF p_quote->>'mode'='free_activation' AND pg_catalog.strpos(
-  pg_catalog.split_part(pg_catalog.pg_get_functiondef('public.claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)'::pg_catalog.regprocedure),E'\nAS ',1),
-  E'\n SET "letbuyy.subscription_checkout_version" TO ''347''')=0 THEN
+ -- Read the live catalog binding even for a cached frame; admit exact supported versions only.
+ IF p_quote->>'mode'='free_activation' AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc current_binding
+  WHERE current_binding.oid='public.claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)'::pg_catalog.regprocedure
+   AND current_binding.proconfig && ARRAY['application_name=claim_merchant_subscription_checkout_v1:347','application_name=claim_merchant_subscription_checkout_v1:347:360']::text[]) THEN
   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CONTEXT_INVALID'); END IF;
  IF nullif(btrim(p_key),'') IS NULL OR length(p_key)>200 OR jsonb_typeof(p_request) IS DISTINCT FROM 'object' THEN
   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CONTEXT_INVALID'); END IF;
@@ -416,7 +453,7 @@ BEGIN
  RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CHECKOUT_CONFLICT');
 END $f$;
 CREATE OR REPLACE FUNCTION public.activate_merchant_subscription_v1(p_input jsonb)
-RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET letbuyy.subscription_checkout_version='347' AS $function$
+RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET application_name='activate_merchant_subscription_v1:347' AS $function$
 DECLARE s public.sites%ROWTYPE;plan public.plans%ROWTYPE;existing public.subscriptions%ROWTYPE;created public.subscriptions%ROWTYPE;
  actor uuid;site uuid;plan_id uuid;gateway text;payment text;period text;amount bigint;tax bigint;total bigint;
  charge public.billing_history%ROWTYPE;source_ref text;free_id uuid;is_free boolean;
@@ -458,10 +495,10 @@ BEGIN
  -- The table admission lock is already held by the store SELECT above. A
  -- call compiled before rollback may have waited on that lock; verify the
  -- currently bound function's own SET attribute, not the caller/session GUC.
- -- pg_get_functiondef reads the live catalog binding even for a cached frame.
- IF is_free AND pg_catalog.strpos(
-  pg_catalog.split_part(pg_catalog.pg_get_functiondef('public.activate_merchant_subscription_v1(jsonb)'::pg_catalog.regprocedure),E'\nAS ',1),
-  E'\n SET "letbuyy.subscription_checkout_version" TO ''347''')=0 THEN
+ -- Read the live catalog binding even for a cached frame; admit exact supported versions only.
+ IF is_free AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc current_binding
+  WHERE current_binding.oid='public.activate_merchant_subscription_v1(jsonb)'::pg_catalog.regprocedure
+   AND current_binding.proconfig && ARRAY['application_name=activate_merchant_subscription_v1:347','application_name=activate_merchant_subscription_v1:347:360']::text[]) THEN
   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CONTEXT_INVALID'); END IF;
  IF is_free THEN
   SELECT * INTO charge FROM public.billing_history WHERE id=free_id FOR UPDATE;
@@ -597,12 +634,12 @@ DO $journal_restore360$
 DECLARE v_entry record;
 BEGIN
  FOR v_entry IN SELECT value FROM tax360_retirement_binding b CROSS JOIN LATERAL jsonb_array_elements(b.binding->'journal_revocations') LOOP
-  IF v_entry.value->>'privilege' NOT IN('INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER') THEN RAISE EXCEPTION '360 refuses unknown validated privilege delta';END IF;
+  IF v_entry.value->>'privilege' NOT IN('INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER','MAINTAIN') THEN RAISE EXCEPTION '360 refuses unknown validated privilege delta';END IF;
   EXECUTE format('GRANT %s ON TABLE public.migration_privilege_journal TO service_role',v_entry.value->>'privilege');
  END LOOP;
  DELETE FROM public.migration_privilege_journal WHERE migration='360' AND
   ((object_signature='public.guard_subscription_tax_ddl_360()' AND grantee='service_role' AND privilege='EXECUTE' AND action='granted')
-   OR(object_signature='TABLE public.migration_privilege_journal' AND grantee='service_role' AND action='revoked' AND privilege IN('INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER')));
+   OR(object_signature='TABLE public.migration_privilege_journal' AND grantee='service_role' AND action='revoked' AND privilege IN('INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER','MAINTAIN')));
 END $journal_restore360$;
 NOTIFY pgrst,'reload schema';
 COMMIT;

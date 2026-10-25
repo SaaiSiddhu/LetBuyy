@@ -1,0 +1,91 @@
+{
+  "classification": "LOCAL_IN_PROCESS_REPAIR_RELEASE_NOT_BROWSER_SQL_OR_INSTALLED_ACCEPTANCE",
+  "releasedAt": "2026-10-23T13:49:41Z",
+  "defect": "CIRCUIT-CART-409-001",
+  "status": "RESOLVED_IN_CONTROLLED_NATIVE_TESTS",
+  "writerReleased": true,
+  "productionPathsChangedByThisSlice": [
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx"
+  ],
+  "testPathsChangedByThisSlice": [
+    "apps/commerce/web/src/lib/theme-engine/liquid-add-to-cart-acceptance.test.ts"
+  ],
+  "beforeSha256": "734a6a314e570a3c0ffedbd487db46ec5920c2b05b5c0de6703e3dabe8cfe7b5",
+  "afterSha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+  "nativeTestSha256": "ccb107c79d088859c366e705ee2ca1bedddcf6a43bf1beeaf66e670df12ad2dd",
+  "governance": [
+    "CODE-R6",
+    "CODE-R10",
+    "WIN-R4",
+    "ARCH-R17"
+  ],
+  "validation": {
+    "originalActualComposition": {
+      "pass": 9,
+      "fail": 1,
+      "skipped": 0,
+      "evidence": "baseline-red/preflight.log"
+    },
+    "focusedNative": {
+      "pass": 13,
+      "fail": 0,
+      "skipped": 0,
+      "command": "focused.command.json",
+      "evidence": "focused.tap"
+    },
+    "existingNativeRegressions": {
+      "pass": 54,
+      "fail": 0,
+      "skipped": 0,
+      "command": "native-regressions.command.json",
+      "evidence": "native-regressions.tap"
+    },
+    "actualCircuitComposition": {
+      "pass": 10,
+      "fail": 0,
+      "skipped": 0,
+      "command": "../preflight.command.json",
+      "evidence": "../preflight.tap"
+    },
+    "commerceNoEmit": {
+      "exitCode": 0,
+      "command": "commerce-noEmit.command.json",
+      "evidence": "commerce-noEmit.log"
+    }
+  },
+  "initialOwnTestTypeFailure": "Preserved as commerce-noEmit.initial-type-failure.log. Corrected the new test to use the repository JSDOM Window type pattern; no production workaround.",
+  "behavior": [
+    "Generic Add and Buy Now wait for canonical cart sync acceptance before Added/drawer/navigation.",
+    "409 and other definite4xx rejections restore only the unchanged optimistic draft; an older response cannot replace a newer local edit.",
+    "503/network/response-loss retry reuses identical replacement lines and quantity rather than incrementing twice.",
+    "Existing serialized write queue, durable variant/configuration identities, server-only accepted prices/facts and personalization review path are preserved.",
+    "Retirement discovered during sync is not a successful new acceptance; stale failure callbacks are scoped to unchanged storefront/token.",
+    "Status timers are guarded by attempt identity; disconnect invalidates generic completion."
+  ],
+  "resourcesStarted": {
+    "database": [],
+    "browser": [],
+    "server": [],
+    "build": []
+  },
+  "runtimeAcceptance": {
+    "status": "NOT_RUN",
+    "cases": 25,
+    "completed": 0,
+    "bindings": "ALL_NULL",
+    "dependency": "ONE coordinator-owned Editor fixture allocation and final candidate binding"
+  },
+  "notClaimed": [
+    "Real inventory rejection or DB writes",
+    "Installed package/browser E2E acceptance",
+    "Financial one-effect/concurrency proof",
+    "New SQL qualification",
+    "Deployment or provider transaction"
+  ],
+  "frozenThemePackagesChanged": false,
+  "packageArtifactsRegenerated": false,
+  "hashes": {
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+    "apps/commerce/web/src/lib/theme-engine/liquid-add-to-cart-acceptance.test.ts": "ccb107c79d088859c366e705ee2ca1bedddcf6a43bf1beeaf66e670df12ad2dd"
+  }
+}

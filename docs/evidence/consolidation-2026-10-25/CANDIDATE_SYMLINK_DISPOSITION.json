@@ -1,0 +1,20 @@
+{
+  "generatedExcluded": [
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-02/apps/commerce/web/node_modules",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-02/packages/commerce-core/node_modules",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/apps/commerce/web/node_modules",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/packages/commerce-core/node_modules",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/services/api-gateway/node_modules",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/private-heading-successor/packages/theme-engine/node_modules"
+  ],
+  "sourceMaterialized": [
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-02/apps/commerce/web/src/lib/theme-engine/discovery-route-query.ts",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-02/apps/commerce/web/src/lib/theme-engine/types.ts",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/apps/commerce/web/src/lib/theme-engine/discovery-route-query.ts",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/apps/commerce/web/src/lib/theme-engine/types.ts",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/services/api-gateway/src/__tests__/owned-db/gateway-harness.ts",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/services/api-gateway/src/__tests__/owned-db/synthetic-tenant.ts",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/services/api-gateway/src/lib/storefront-discovery.ts"
+  ]
+}

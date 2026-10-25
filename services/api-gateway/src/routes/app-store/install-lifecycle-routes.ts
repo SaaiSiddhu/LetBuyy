@@ -251,6 +251,7 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
             .from('app_installations')
             .update({ config: finalConfig })
             .eq('id', data.id)
+            .eq('store_id', storeId)
             .select()
             .single();
 
@@ -483,6 +484,7 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
 
             const registryRevocation = await revokeAppExtensionRegistry(db, {
                 installationId: installation.id,
+                storeId: resolvedStoreId,
                 actorId: customUser.id,
                 revokedAt: now.toISOString(),
             });

@@ -357,7 +357,7 @@ test('a permitted staff member (products:write, not the owner) can DELETE a prod
     assert.equal(tables.products[0].is_active, false);
 });
 
-test('a permitted staff member (products:write, not the owner) can POST a new product', async (t) => {
+test('permitted staff reach atomic product creation and cannot fall back to REST without SQL', async (t) => {
     const tables = freshTables();
     const fake = installFakePostgrest(tables);
     t.after(fake.restore);
@@ -368,10 +368,10 @@ test('a permitted staff member (products:write, not the owner) can POST a new pr
         body: JSON.stringify({ store_id: SITE_A, name: 'Created by permitted staff', price: 199 }),
     });
     const text = await res.text();
-    assert.equal(res.status, 201, text);
-    const body = JSON.parse(text) as { data: { name: string; store_id: string } };
-    assert.equal(body.data.name, 'Created by permitted staff');
-    assert.equal(body.data.store_id, SITE_A);
+    assert.equal(res.status, 503, text);
+    assert.equal(JSON.parse(text).error.code, 'PRODUCT_EDIT_UNAVAILABLE');
+    assert.equal(tables.products.some(row => row.name === 'Created by permitted staff'), false,
+        'unavailable SQL must not create a parent or variants through REST');
 });
 
 test('a staff member with only products:read is still denied PATCH, DELETE, and POST -- this fix never over-corrects', async (t) => {

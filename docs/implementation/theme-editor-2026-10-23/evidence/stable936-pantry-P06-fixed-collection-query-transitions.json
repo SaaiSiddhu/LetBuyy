@@ -1,0 +1,69 @@
+{
+  "runId": "936e5f577646",
+  "actual": [
+    {
+      "phase": "fixed-collection-country-apply",
+      "entries": [
+        [
+          "limit",
+          "1"
+        ],
+        [
+          "search",
+          "lentils"
+        ],
+        [
+          "category",
+          "Staples"
+        ],
+        [
+          "sort",
+          "price-desc"
+        ],
+        [
+          "collection_id",
+          "d03ce5fa-ece2-432a-8ead-27d7aed0e75b"
+        ],
+        [
+          "connector",
+          "hdmi"
+        ],
+        [
+          "connector",
+          "usb-c"
+        ],
+        [
+          "pack_size",
+          "g:250"
+        ],
+        [
+          "country_of_origin",
+          "India"
+        ]
+      ],
+      "href": "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=1&search=lentils&category=Staples&sort=price-desc&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b&connector=hdmi&connector=usb-c&pack_size=g%3A250&country_of_origin=India"
+    },
+    {
+      "phase": "fixed-collection-clear-all",
+      "entries": [
+        [
+          "limit",
+          "1"
+        ],
+        [
+          "search",
+          "lentils"
+        ],
+        [
+          "sort",
+          "price-desc"
+        ],
+        [
+          "collection_id",
+          "d03ce5fa-ece2-432a-8ead-27d7aed0e75b"
+        ]
+      ],
+      "href": "http://syn-threadline-ui-6815276b.localhost:50494/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=1&search=lentils&sort=price-desc&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b"
+    }
+  ]
+}

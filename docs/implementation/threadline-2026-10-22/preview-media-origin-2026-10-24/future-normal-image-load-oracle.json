@@ -1,0 +1,17 @@
+{
+  "classification": "FUTURE_NORMAL_BROWSER_IMAGE_LOAD_ORACLE_NOT_EXECUTED_NOT_RESOURCE_GRANT",
+  "currentF607PreviewMediaCase": "OPEN; no current f607 or Marketplace candidate touched",
+  "preconditions": [
+    "Root admits exact final source hash and separately grants fresh source-copy/build/runtime/browser slots",
+    "Future own candidate contains admitted commerce env setting, pinned helper/CSP/Next config and actual run-scoped verified tenant commerceOrigin",
+    "Sole Editor browser controller uses new owned tabs and normal merchant marketplace/catalog preview flow; preserve all owner/current/retained tabs and login"
+  ],
+  "requiredObservations": [
+    "Bind actual fresh run/site/package/version, platform preview document URL, final tenant image URL and source/build receipt",
+    "Actual platform preview response CSP img-src contains the exact new tenant commerceOrigin with port; no generichttp: ornewwildcard; frame-ancestors/private/customer/checkout framing remain as before",
+    "Normal Cloud image retains its real canonical tenant-origin src/currentSrc, becomes complete with positive naturalWidth/naturalHeight and visibly renders; distinguish real image from placeholder/error fallback",
+    "Actual browser network/security observation has no corresponding CSP image refusal; asset GET200 and matching tenant/platform SHA are supporting evidence only",
+    "Full normal preview reload repeats real image success; preview errors remain recoverable; no DOM/src manipulation, asset replacement, bypass, certificate exception, cleared shared cache/session or API substitute"
+  ],
+  "passBoundary": "Pass only after actual corrected-runtime normal image render/reload evidence. PureCSP probe, source29PASS and HTTP200/sameSHA alone do not close the f607 case."
+}

@@ -35,10 +35,10 @@ async function ready(url: string, process: OwnedClientProcess) {
 }
 const savePath = (url: string) => new URL(url).pathname.endsWith('/editor/draft');
 async function toggle(page: Page, row = 0) {
-    const section = page.getByRole('tree', { name: 'Template sections', exact: true }).getByRole('treeitem').nth(row);
+    const section = page.getByRole('tree', { name: 'Theme sections', exact: true }).getByRole('group',{name:'Template sections',exact:true}).locator(':scope > [role="treeitem"]').nth(row);
     const hidden = (await section.getAttribute('class') || '').includes('theme-os-tree-section--hidden');
     await section.hover();
-    const button = section.getByRole('button', { name: 'Toggle visibility', exact: true });
+    const button = section.getByRole('button', { name: /^Toggle .+ visibility$/ });
     await expect(button).toBeVisible({ timeout: 5000 });
     await button.click({ timeout: 5000 });
     if (hidden) await expect(section).not.toHaveClass(/theme-os-tree-section--hidden/, { timeout: 5000 });
@@ -174,7 +174,7 @@ test('normal editor recovers lost replies, serializes saves and reviews exact co
         const editorClientFailure = new Promise<never>((_resolve, reject) => page!.once('pageerror', error => reject(new Error('Editor client failed: ' + redact(error.message)))));
         const [initialEditor, firstDraft] = await Promise.all([Promise.race([initialEditorResponse, editorClientFailure]), firstDraftResponse, page.goto(editor, { waitUntil: 'load' })]);
         assert.equal(initialEditor.status(), 200, await initialEditor.text());
-        await expect(page.getByRole('region', { name: 'Smart defaults', exact: true })).toBeVisible({ timeout: 30_000 });
+        await expect(page.locator('details[aria-label="Smart defaults"]')).toBeVisible({ timeout: 30_000 });
         assert.equal(firstDraft.status(), 200, await firstDraft.text());
         await page.waitForLoadState('networkidle');
         await expect.poll(revision).toBeGreaterThan(0); await saved(page);
@@ -234,7 +234,7 @@ test('normal editor recovers lost replies, serializes saves and reviews exact co
 
         stage = 'conflict';
         const other = await context.newPage(); other.setDefaultTimeout(30_000);
-        await other.goto(editor); await expect(other.getByRole('region', { name: 'Smart defaults', exact: true })).toBeVisible(); await saved(other);
+        await other.goto(editor); await expect(other.locator('details[aria-label="Smart defaults"]')).toBeVisible(); await saved(other);
         const beforeConflict = revision(); await toggle(page); await expect.poll(revision).toBe(beforeConflict + 1); await saved(page);
         await toggle(other, 1); await expect(other.getByRole('dialog', { name: 'Draft conflict', exact: true })).toBeVisible();
         await other.getByRole('button', { name: 'Keep editing locally', exact: true }).click();

@@ -1,0 +1,65 @@
+{
+  "recordedAt": "2026-10-23T18:57:14.804708+00:00",
+  "status": "ROOT_MARKETPLACE_PROXY_SOURCE_AND_COPY_ADMITTED_NORMAL_UI_ADD_PENDING",
+  "sourceRelease": {
+    "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/marketplace-proxy-return-source-release.json",
+    "sha256": "23e2fd036d7c37cceafc076e08bd792598303d26cb633db00e99468b82c29451"
+  },
+  "rootReview": [
+    "Exact configured marketplace origin supplies return_to; requested path and full query retained.",
+    "Merchant-realm session verification and public-route guards unchanged.",
+    "Focused tests cover normalized URL, hostile origin/userinfo, nested caller return_to, existing session and public routes. Other app SSO contracts remain covered."
+  ],
+  "validation": {
+    "TAPBlocks": {
+      "pass": [
+        24,
+        24
+      ],
+      "fail": [
+        0,
+        0
+      ],
+      "skipped": [
+        0,
+        0
+      ]
+    },
+    "totalPass": 48,
+    "fail": 0,
+    "skip": 0,
+    "parserCorrection": "First read-only audit expected one TAP48 block and failed; actual package log correctly has two separate24-pass blocks. No source/test result changed."
+  },
+  "sourceEpoch": "standalone-proxy02",
+  "sourceFilesIndependentlyRehashed": 17234,
+  "admittedDeltas": 10,
+  "candidateRoot": "/private/tmp/theme-marketplace-latest392-20261023-retry02",
+  "runId": "555b91e19691",
+  "sourceProofSha256": "971e114e5ce317d2b9d8c3e671c6e46bfc94894d471b2d13e7a304a4260f150e",
+  "containedWorkspaceResolutionsChecked": 45,
+  "dependencyClosureReceiptVerified": {
+    "path": "/private/tmp/theme-marketplace-latest392-20261023-retry02/marketplace-runtime-dependency-proof.json",
+    "sha256": "55eed1895cc5a844637efc2f2008ca08381289b1cec1a1797d94b0a9f6bc4c10",
+    "packageConsumers": 26,
+    "declaredResolutions": 155,
+    "cliOnlyPackages": [
+      {
+        "consumer": "apps/platform/identity",
+        "name": "react-email"
+      }
+    ]
+  },
+  "publicHttpReadiness": {
+    "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/latest392-http-readiness.json",
+    "sha256": "f50f3011dd7fb0834437b987fcbefede2caf686231956e2c843f627569b44fba",
+    "gallery": 200,
+    "detail": 200,
+    "demos": 10,
+    "canonicalReturn": true,
+    "classification": "OWN_RUNTIME_HTTP_RECEIPT_NOT_BROWSER_ADD"
+  },
+  "normalBrowserAdd": "NOT_RUN",
+  "nextActor": "Editor sole UI controller at safe Habitat boundary",
+  "f607Changed": false,
+  "backendRestarted": false
+}

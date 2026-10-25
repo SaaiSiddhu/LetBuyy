@@ -1,0 +1,179 @@
+{
+  "recordedAt": "2026-10-24T04:26:21.562284+00:00",
+  "classification": "SHARED936_AXIS_NAME_NORMAL_SAVE_RELOAD_STOCK_HISTORY_COMPONENT_VERIFIED_NO_MG_CREDIT",
+  "scope": "One new offline audit of actual Editor58090 normal Save/fullreload and corrected readback; separate Dewdrop component, never an MG case or full theme acceptance. No source/hash test reruns or live actions.",
+  "runId": "936e5f577646",
+  "merchantOrigin": "http://admin.threadline-936e5f577646.localhost:58090",
+  "productId": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+  "versions": [
+    15,
+    23,
+    27
+  ],
+  "normalSave": {
+    "uiSavedAck": true,
+    "axisAndShadeBindingFullReload": true,
+    "persistedCanonicalMutationEvidenceNotRawHttp": true,
+    "stockOmittedInBothCommands": true,
+    "versionPairs": [
+      [
+        15,
+        23
+      ],
+      [
+        23,
+        27
+      ]
+    ]
+  },
+  "identityAndFacts": {
+    "variantIdsUnchanged": [
+      "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+      "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+      "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab"
+    ],
+    "targetVariantId": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+    "targetOptionChange": [
+      "Pink Clay",
+      "New Clay name"
+    ],
+    "axisNameChange": [
+      "Shade name",
+      "Renamed shade option"
+    ],
+    "axisPositionsRetained": [
+      0,
+      1
+    ],
+    "unicodePackAndNullThirdSlotsExact": true,
+    "rawVariantMetadataExact": true,
+    "otherProductMetadataDigestExact": "b536c2e59679592f5fa954cbf677e3e34a1d1da92774eff7bc6eb633910e34a4",
+    "optionDescriptorRowIdsAreNotVariantIdentities": "Canonical descriptor row IDs changed; no option-row UUID invariance claimed."
+  },
+  "inventory": {
+    "parentStock": 8,
+    "variantStockByUuid": {
+      "3f4e08a8-bf2e-4899-bbeb-06c7283af499": 2,
+      "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b": 0,
+      "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab": 4
+    },
+    "actualInventoryRowsExact": true,
+    "consumedTargetAvailable": 2,
+    "targetReserved": 0
+  },
+  "priceCorrection": {
+    "classification": "TEST_ACTION_TARGETING_MISTAKE_CORRECTED_THROUGH_NORMAL_FORM_NOT_PRICING_DEFECT",
+    "initialVersion23": {
+      "Rosewater": 899,
+      "NewClay": 560
+    },
+    "finalVersion27": {
+      "Rosewater": 520,
+      "NewClay": 899,
+      "Terracotta": 590,
+      "parent": 999
+    },
+    "initialEvidenceRetained": true,
+    "sourceChangeNeeded": false
+  },
+  "oldOrderHistory": {
+    "orderIds": [
+      "36b89194-f491-49ab-b42c-401029a4a58c",
+      "84a52d92-6cb4-46bb-b941-8d7f37e8cb74"
+    ],
+    "guardedOrdersProjectionIncludingRowAndItemHashesExact": true,
+    "buyerAndMerchantExpandedFactsMatchOriginal": true,
+    "oldAxisShadeCodeRgbAndFactsPreserved": true,
+    "primaryOriginalTotal": 1140,
+    "primaryOriginalLine": 1120,
+    "merchantUnit": 560,
+    "buyerUnitTextNotRequired": true
+  },
+  "protectedTables": {
+    "recorded": 22,
+    "beforeToFirstChanged": [
+      "outbox_events"
+    ],
+    "beforeToCorrectionChanged": [
+      "carts",
+      "checkout_sessions",
+      "outbox_events"
+    ],
+    "businessInventoryOrderTablesExact": true,
+    "all22UnchangedNotClaimed": true
+  },
+  "limits": [
+    "No raw HTTP request/response captured; persisted canonical command receipt only.",
+    "Stale-cart confirmation/whole guard and preview-font parity remain separate owner work; no inference.",
+    "SKU fields are not in lifecycle projection; no full before/final SKU invariance claimed here.",
+    "Digest-only other metadata does not establish genuinely absent apparel; no new apparel-absence claim.",
+    "Corrected-v27 UI acknowledgement/canonical readback and both histories verified; name/binding full reload was v23, no separately saved v27 editor fullreload inferred."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-lifecycle-before-o03-new-client.json",
+      "sha256": "8931845460fe35bfe80113e234ecec82465a860bfdb91f55ce30778f363655bd",
+      "bytes": 10833
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-lifecycle-after-o03-edit.json",
+      "sha256": "e9670966651549e04f49c8a11707c9c8f291d1930aa4b46613f72e46af518e75",
+      "bytes": 10874
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-lifecycle-after-o03-price-correction.json",
+      "sha256": "e6c704325cd9a0b3b701e7ed700ad36d22d0d69eb0a98eb4d59f82420e1114b1",
+      "bytes": 10886
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-canonical-normal-Save-receipt.json",
+      "sha256": "7ff708c39c69cb88de8ed65b05b7aa900f601b832f08708d2d2707fb1f90be8f",
+      "bytes": 3345
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-corrective-price-canonical-receipt.json",
+      "sha256": "104c4955d78639d4bb264f6a631bf2995ba807acc3909b5f8f19d28cae9ec9c1",
+      "bytes": 3345
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-variant-price-diagnostic.json",
+      "sha256": "ad51e67d4565073623dc29becb94c56cb9d5d7428222514e2eaccb7690d980fc",
+      "bytes": 2106
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-later-edit-acknowledged.ax.txt",
+      "sha256": "8943193dd1425c0fc5276c23be43dcc5da872ca460923d0ec02d293371f53abd",
+      "bytes": 17748
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-later-edit-reloaded.ax.txt",
+      "sha256": "8d6ee2d7786c5488239f1e2a5bddb4ca5e3711c8404bb2294f958a0e8497f265",
+      "bytes": 17587
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-corrective-price-acknowledged.ax.txt",
+      "sha256": "9e14fa790195ff4259cd9d506e2e4f6d269cf7ebcd5d00707f95926b0f14f2e5",
+      "bytes": 17750
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-corrected-v27-primary-buyer-history.ax.txt",
+      "sha256": "72b83de4b0b204769527114326c2db55a6bcac28dd6fca7fd18e930dec5de1ff",
+      "bytes": 2399
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-O03-corrected-v27-primary-merchant-history.ax.txt",
+      "sha256": "d62b5782fbb2cb0f6dcb7a0e2c3203bc2fb92508f880863969fc6dc6f47b0f90",
+      "bytes": 6650
+    }
+  ],
+  "MGqueue": 9,
+  "MGactiveLease": false,
+  "MGbindings": null,
+  "MGcases": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16
+  },
+  "auditCompleteOnce": true,
+  "repeatOnlyOnNewRelevantFailureOrChange": true
+}

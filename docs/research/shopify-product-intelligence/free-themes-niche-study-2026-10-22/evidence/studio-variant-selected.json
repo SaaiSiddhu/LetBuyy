@@ -1,0 +1,622 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(16, 57, 72, 0.75)",
+    "font": "Cormorant, serif",
+    "fontSize": "17.6px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop by Artist",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Cormorant, serif",
+      "height": 20.7890625,
+      "line": "20.8px",
+      "size": "14.3px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 312.3984375,
+      "x": 969.703125,
+      "y": -153.296875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 183.5859375,
+      "line": "61.2px",
+      "size": "48px",
+      "tag": "H2",
+      "text": "Give the gift of unique artwork that’s always the right size and style.",
+      "weight": "500",
+      "width": 522.5,
+      "x": 458.75,
+      "y": -87.875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 61.1953125,
+      "line": "61.2px",
+      "size": "48px",
+      "tag": "H1",
+      "text": "Gift Card",
+      "weight": "500",
+      "width": 379.5,
+      "x": 945.5,
+      "y": 371.921875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 27.5390625,
+      "line": "27.54px",
+      "size": "21.6px",
+      "tag": "H3",
+      "text": "Rachel Crummey",
+      "weight": "500",
+      "width": 376.625,
+      "x": 115,
+      "y": 1661.359375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 27.5390625,
+      "line": "27.54px",
+      "size": "21.6px",
+      "tag": "H3",
+      "text": "Leia Bryans",
+      "weight": "500",
+      "width": 376.625,
+      "x": 531.625,
+      "y": 1661.359375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 27.5390625,
+      "line": "27.54px",
+      "size": "21.6px",
+      "tag": "H3",
+      "text": "Melanie Keay",
+      "weight": "500",
+      "width": 376.625,
+      "x": 948.25,
+      "y": 1661.359375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 61.1953125,
+      "line": "61.2px",
+      "size": "48px",
+      "tag": "H2",
+      "text": "Build your collection",
+      "weight": "500",
+      "width": 408.7734375,
+      "x": 192,
+      "y": 1876.7734375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 27.5390625,
+      "line": "27.54px",
+      "size": "21.6px",
+      "tag": "H2",
+      "text": "Shop",
+      "weight": "500",
+      "width": 272.5,
+      "x": 115,
+      "y": 2287.34375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 27.5390625,
+      "line": "27.54px",
+      "size": "21.6px",
+      "tag": "H2",
+      "text": "Info",
+      "weight": "500",
+      "width": 272.5,
+      "x": 427.5,
+      "y": 2287.34375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 27.5390625,
+      "line": "27.54px",
+      "size": "21.6px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "500",
+      "width": 272.5,
+      "x": 1052.5,
+      "y": 2287.34375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 27.5390625,
+      "line": "27.54px",
+      "size": "21.6px",
+      "tag": "H2",
+      "text": "Subscribe to our emails",
+      "weight": "500",
+      "width": 1210,
+      "x": 115,
+      "y": 2554.8515625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card?variant=42007835017384#MainContent"
+    },
+    {
+      "text": "Discover our newest collection from Leia Bryans",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    },
+    {
+      "text": "Prints",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "Originals",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "Art Objects",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/eryn-lougheed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/sid-hicks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/misbah-ahmed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/rachel-crummey"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/melanie-keay"
+    },
+    {
+      "text": "Gift Cards",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-studio-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card?variant=42007835017384#ProductInfo-template--17836821643432__main"
+    },
+    {
+      "text": "Rachel Crummey",
+      "url": "https://theme-studio-demo.myshopify.com/collections/rachel-crummey"
+    },
+    {
+      "text": "Leia Bryans",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "Melanie Keay",
+      "url": "https://theme-studio-demo.myshopify.com/collections/melanie-keay"
+    },
+    {
+      "text": "Prints",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "Originals",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "Art Objects",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "Gift Cards",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-studio-demo.myshopify.com/search"
+    },
+    {
+      "text": "Our Story",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-studio-demo",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821643432__1645220976df198eba",
+      "rect": {
+        "height": 616,
+        "width": 1440,
+        "x": 0,
+        "y": -304.078125
+      },
+      "tag": "SECTION",
+      "text": "Give the gift of unique artwork that’s always the right size and style."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821643432__main",
+      "rect": {
+        "height": 898.1171875,
+        "width": 1440,
+        "x": 0,
+        "y": 311.921875
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\nGift Card\nAmount\n$50\n $100\n $150\n $200\n $250\n $300\n $350\n $400\n $450\n $500\nAdd to cart\nBuy it now\nShare\n\nArt is a meaningful gift "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821643432__1645220980302e0716",
+      "rect": {
+        "height": 533.5546875,
+        "width": 1440,
+        "x": 0,
+        "y": 1210.0390625
+      },
+      "tag": "SECTION",
+      "text": "Rachel Crummey\nLeia Bryans\nMelanie Keay"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821643432__1645476970e405d335",
+      "rect": {
+        "height": 499.75,
+        "width": 1440,
+        "x": 0,
+        "y": 1743.59375
+      },
+      "tag": "DIV",
+      "text": "Build your collection\n\nAll our pieces are carefully chosen to reflect a cohesive, contemporary aesthetic. Simply mix and match to create your unique gallery wall."
+    }
+  ],
+  "title": "Give the Gift of Art | Ninth Editions – theme-studio-demo",
+  "url": "https://theme-studio-demo.myshopify.com/products/gift-card?variant=42007835017384",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "Amount\n$50\n $100\n $150\n $200\n $250\n $300\n $350\n $400\n $450\n $500"
+  ],
+  "grids": [
+    {
+      "className": "slideshow banner banner--medium grid grid--1-col slider slider--everywhere banner--mobile-bottom",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 616,
+      "tag": "DIV",
+      "width": 1210
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 616,
+      "tag": "DIV",
+      "width": 1210
+    },
+    {
+      "className": "product product--large product--stacked grid grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 838.1171875,
+      "tag": "DIV",
+      "width": 1210
+    },
+    {
+      "className": "product__media-list grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 608.25,
+      "tag": "UL",
+      "width": 786.5
+    },
+    {
+      "className": "collection-list contains-card contains-card--standard grid grid--1-col grid--3-col-desktop grid--3-col-tablet collection-list--3-items",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 441.5546875,
+      "tag": "UL",
+      "width": 1210
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--2-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 403.75,
+      "tag": "DIV",
+      "width": 1210
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1439,
+      "rect": {
+        "height": 616,
+        "width": 1210
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715,
+      "rect": {
+        "height": 608.25,
+        "width": 786.5
+      }
+    },
+    {
+      "alt": "Rachel Crummey",
+      "complete": true,
+      "naturalWidth": 366,
+      "rect": {
+        "height": 376.625,
+        "width": 376.625
+      }
+    },
+    {
+      "alt": "Leia Bryans",
+      "complete": true,
+      "naturalWidth": 366,
+      "rect": {
+        "height": 376.625,
+        "width": 376.625
+      }
+    },
+    {
+      "alt": "Melanie Keay",
+      "complete": true,
+      "naturalWidth": 366,
+      "rect": {
+        "height": 376.625,
+        "width": 376.625
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 403.75,
+        "width": 605
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nDiscover our newest collection from Leia Bryans \n\nPrints\nOriginals\nArt Objects\nShop by Artist\nGift Cards\nAbout\nCart\nGive the gift of unique artwork that’s always the right size and style.\nSkip to product information\nOpen media 1 in modal\nGift Card\nAmount\n$50\n $100\n $150\n $200\n $250\n $300\n $350\n $400\n $450\n $500\nAdd to cart\nBuy it now\nShare\n\nArt is a meaningful gift that will live with your loved one for years to come. \n\nWe can mail the gift card to you or send it directly to your recipient with a personalized message included. \n\nThe amount gifted can be used towards any artwork on the site and will never expire. Your recipient can continue to check back as new works are added to ensure they end up with their perfect artwork. \n\nRachel Crummey\nLeia Bryans\nMelanie Keay\nBuild your collection\n\nAll our pieces are carefully chosen to reflect a cohesive, contemporary aesthetic. Simply mix and match to create your unique gallery wall.\n\nShop\nPrints\nOriginals\nArt Objects\nGift Cards\nSearch\nInfo\nOur Story\nJournal\nContact\nOur mission\n\nWe curate affordably priced pieces from the most exciting up-and-coming artists.\n\nSubscribe to our emails\nEmail\nPayment methods\n© 2026, theme-studio-demo Powered by Shopify"
+}

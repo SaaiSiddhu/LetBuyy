@@ -1,0 +1,376 @@
+{
+  "recordedAt": "2026-10-23T20:21:31.819035+00:00",
+  "runId": "f6074d90e894",
+  "classification": "UPDATED_ACTUAL_COHORT_QUERIES_NORMAL_COD_HISTORY_PREEDIT_CART_CHECKPOINT_HI16_MUTATION_HELD",
+  "theme": "Habitat",
+  "version": "2.0.0",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "bindings": {
+    "desk": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+    "originalVariantIds": [
+      "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+      "30e7bb70-6ef0-4175-83f0-16368a3e9fda"
+    ],
+    "stand": "646e8bcb-3267-4f70-b31b-e44fb5f542a6",
+    "shelf": "57d0c360-01a6-49dc-88f7-f3796e313b2e",
+    "probeCollection": "bd1a8fea-6b45-4bdc-8517-170f184a5209",
+    "currentRelease": {
+      "packageVersion": "2.0.0",
+      "releaseId": "3a3356f7-5a77-4dd4-84a5-bdbcdf4a3810",
+      "sourceDraftVersion": 10,
+      "releaseSha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b",
+      "orders": 0,
+      "installed": 3,
+      "editorObservations": {
+        "captureFailures": 0,
+        "records": []
+      }
+    },
+    "A": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+    "B": "50982c60-e567-42b4-85e4-2b893b234a4a",
+    "C": "30e7bb70-6ef0-4175-83f0-16368a3e9fda",
+    "D": "b1c16f63-5d1c-4ab0-995c-552b45f11fab",
+    "deskCollection": "6eaffbfd-c208-40ea-8988-67bf4e75da5c"
+  },
+  "cases": [
+    {
+      "id": "HI-01",
+      "status": "PASS",
+      "actual": "Actual installed2.0 instance/config/liquidBundle/catalog manifest hashes bound; normal owned merchant session and BuyerA account+own history order verified. SQLNULLcatalogchecksum preserved.",
+      "remaining": "",
+      "evidence": [
+        "corrected-first-three-actual-installed-bindings.json",
+        "corrected-habitat-buyer-A-account-before-COD.ax.txt",
+        "corrected-habitat-COD-and-preedit-cart-checkpoint.json"
+      ]
+    },
+    {
+      "id": "HI-02",
+      "status": "PASS",
+      "actual": "Earlier normalfirstFinishrejection preserved. Controlled admitted54183 normalfirstNatural Save/reload retains07d32/30e7; then exact four-row metadata/prices/stock4/3/0/2 saved/reloaded with actual newB/D IDs. Both probes and real named desk/probe collections persisted normally.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-controlled-axis-positive.json",
+        "corrected-habitat-axis-tuple-values-readback.json",
+        "corrected-habitat-four-cohort-validation.json",
+        "corrected-habitat-four-cohort-reloaded.ax.txt",
+        "corrected-habitat-desk-collection-public.ax.txt"
+      ]
+    },
+    {
+      "id": "HI-03",
+      "status": "PASS",
+      "actual": "ActualmissingunitCreateblocked+normalcorrectionprobe saved; canonical common and all four variant groups saved/reloaded exactly. Groupomissions preserved/no null furniture product namespace. Invalidprobe uses earlier62075 same unchanged protected furniture fact helper; axis-authoring save uses admitted54183.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-probe-invalid-create.ax.txt",
+        "corrected-habitat-four-cohort-validation.json",
+        "corrected-habitat-four-cohort-reloaded.ax.txt"
+      ]
+    },
+    {
+      "id": "HI-04",
+      "status": "PASS",
+      "actual": "All specified normal save/reload/preview/publishA/editB/publishB/restoreA/retainedB/reapplyB steps executed; exact A/B release content hashes reproduced.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-editor-cycle.json"
+      ]
+    },
+    {
+      "id": "HI-05",
+      "status": "PASS",
+      "actual": "Real desk-only collection; actual collection and search forms apply HQ01/HQ02 normalizedmaterial/finishlabels; server same-response variants exactA/D orB, storedbase8900 retained/Bmatching9300.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-four-cohort-query-results.json"
+      ]
+    },
+    {
+      "id": "HI-06",
+      "status": "PASS",
+      "actual": "Actualunselected/Finishonly states common/noUUID/purchaseblocked. Unmatched48inBlack exactunknownmessage/commonfacts/noUUID anddisabledAdd; validNaturalrecoversA.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-PDP-state-observations.json"
+      ]
+    },
+    {
+      "id": "HI-07",
+      "status": "PASS",
+      "actual": "ActualAselected UUID07d32/unit8900/enabled; exact48\u00d730\u00d729.5in/package50\u00d725in(noheight)/11.5kg/Wood/Atoolcare. Normalreloadclearsselectiontocommon/disabled; explicitreselectionrestoresexactA. Selectionpersistence NOTclaimed. Validq2fullsnapshotlateraccepted/reloaded.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-PDP-state-observations.json",
+        "corrected-cart-habitat-cart-3.json",
+        "corrected-habitat-full-A-cart-reloaded-before-COD.ax.txt"
+      ]
+    },
+    {
+      "id": "HI-08",
+      "status": "PASS",
+      "actual": "ActualB\u2192D\u2192A states correctdistinctUUIDs/prices9300/9000/8900; Bcommonassembly/Dwidth-only+commonpackage+Wood/common12kg; noBblackcare orAdeepdimensionsleak.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-PDP-state-observations.json"
+      ]
+    },
+    {
+      "id": "HI-09",
+      "status": "PASS",
+      "actual": "AllHQ03\u201307 executedactualcollection+searchforms; canonical18read-only responses exactwitnesses. Inclusive121.92/76.2 passesA,121.9199 fails; no crossvariantconjunction/Cfallback.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-collection-control-presence-addendum.json"
+      ]
+    },
+    {
+      "id": "HI-10",
+      "status": "PASS",
+      "actual": "HQ04zero fields hide butactivechips/hiddenvaluespreservedthroughSortNameApply. Bothactualindependentclears insearch+collection retainotheraxis/category/country/search/limit/sort/fixedcollection, resetpage2\u21921 andrecoveroneproduct; nativewitnessB orA/D exact.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-HQ04-sort-name-zero.ax.txt",
+        "corrected-habitat-HQ04-independent-clear-results.json",
+        "corrected-habitat-four-cohort-query-results.json"
+      ]
+    },
+    {
+      "id": "HI-11",
+      "status": "PARTIAL",
+      "actual": "Both probe PDPs honest unknowns; actual search+collection controls and same-response JSON capability tuples; off-page positive cohort retains true axes; real Clear recovers.",
+      "remaining": "No legacy absent-capability runtime target assigned/exercised.",
+      "evidence": [
+        "corrected-habitat-probe-query-results.json",
+        "corrected-habitat-probe-collection-query-results.json",
+        "corrected-habitat-HQ08-past-end.ax.txt",
+        "corrected-habitat-HQ09-past-end.ax.txt"
+      ]
+    },
+    {
+      "id": "HI-12",
+      "status": "PASS",
+      "actual": "Acurrentassembled48\u00d730\u00d729.5in andseparatepackage50\u00d725in/missingheight; common schematicexplicitcommon. HQ05canonicalonlyA despitepackagewidth127cm>122, preservedoriginalinches.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-PDP-state-observations.json",
+        "corrected-habitat-four-cohort-query-results.json"
+      ]
+    },
+    {
+      "id": "HI-13",
+      "status": "PASS",
+      "actual": "ActualC Common size/Natural UUID30e7 stateunavailable/price8700, inheritedcommonfactsvisibleandAdddisabled; stock0 verifiedcanonical, no bypassclick.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-PDP-state-observations.json",
+        "corrected-habitat-four-cohort-validation.json"
+      ]
+    },
+    {
+      "id": "HI-14",
+      "status": "FAIL",
+      "actual": "Original preserved variant q2\u00d78900=17800 accepted/reload/readback. q3/q4 accepted. q5 attempt server remains exactly4/orders0, but UI row remains5/header4/total35600 with no error, persisting reload. Normal decreases recover valid2; all desk lines removed and exact Pink baseline restored. Later FULLauthoredAq2/version30/17800/exactfullinchsnapshot accepted andactualreloadbeforeCOD; oldwidth-onlynegativefailure remains open, notrerun asfullfixedPASS.",
+      "remaining": "Planned full-A snapshot case blocked by HI02. Actual HTTP409/code and reservation invariance not captured; backend rejection alone does not establish whole-case PASS.",
+      "evidence": [
+        "corrected-cart-habitat-cart.json",
+        "corrected-cart-habitat-stock.json",
+        "corrected-cart-habitat-stock-2.json",
+        "corrected-habitat-stock-stale-quantity.ax.txt",
+        "corrected-habitat-stock-stale-quantity.jpg",
+        "corrected-habitat-cart-reload-after-stock-denial.ax.txt",
+        "corrected-cart-habitat-cart-2.json",
+        "corrected-cart-habitat-restored.json",
+        "corrected-cart-habitat-cart-3.json",
+        "corrected-habitat-full-A-cart-reloaded-before-COD.ax.txt"
+      ]
+    },
+    {
+      "id": "HI-15",
+      "status": "PASS",
+      "actual": "NormalBuyerA freshlysignedownedcarthandoff\u2192realtrustedHTTPS\u2192fixturecontact/Karnataka560001\u2192actual20shipping\u2192COD\u2192Confirm. Exactlyoneorderc5a7d7a4/ORD-20261023-10000 pending_cod/unpaid;2\u00d78900=17800+20tax0discount0=17820. Existingcapturedconfirmsamepath/body/key/headers exactretry200SAMEID andobservereffectsunchanged; bothnormalhistoryviews/reloadsreadoldfacts.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-COD-and-preedit-cart-checkpoint.json",
+        "corrected-habitat-COD-confirm-outcome.ax.txt",
+        "corrected-habitat-COD-exact-confirm-retry.json",
+        "corrected-habitat-order-before-edit-readback.json"
+      ]
+    },
+    {
+      "id": "HI-16",
+      "status": "BLOCKED",
+      "actual": "ActualoldCOD+bothhistorybaselinesandsnapshot/orderhashes pinned. SeparateNEWactivecart3877932f A1/version31/fulloldfacts accepted+reloaded beforeedit; consumedAstock2. Current54183serializeralwaysincludesstock, so NOlatercatalogmutation attempted. Rootassignedcanonicalomissionfix; onlythismutationholds.",
+      "remaining": "Await actuallylive omission fix then prescribed sameUUID lateedit +old bothhistories/digestparity +staleactivecart rejection.",
+      "evidence": [
+        "corrected-habitat-COD-and-preedit-cart-checkpoint.json",
+        "corrected-habitat-preedit-active-cart-settled-reload.ax.txt",
+        "corrected-habitat-axis-post-order-readback.json"
+      ]
+    },
+    {
+      "id": "HI-17",
+      "status": "NOT_RUN",
+      "actual": "No assigned malformed/legacy order exists.",
+      "remaining": "Conditional case; no synthetic legacy order manufactured.",
+      "evidence": []
+    },
+    {
+      "id": "HQ-01",
+      "status": "PASS",
+      "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-HQ04-independent-clear-results.json"
+      ]
+    },
+    {
+      "id": "HQ-02",
+      "status": "PASS",
+      "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-HQ04-independent-clear-results.json"
+      ]
+    },
+    {
+      "id": "HQ-03",
+      "status": "PASS",
+      "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-HQ04-independent-clear-results.json"
+      ]
+    },
+    {
+      "id": "HQ-04",
+      "status": "PASS",
+      "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-HQ04-independent-clear-results.json"
+      ]
+    },
+    {
+      "id": "HQ-05",
+      "status": "PASS",
+      "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-HQ04-independent-clear-results.json"
+      ]
+    },
+    {
+      "id": "HQ-06",
+      "status": "PASS",
+      "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-HQ04-independent-clear-results.json"
+      ]
+    },
+    {
+      "id": "HQ-07",
+      "status": "PASS",
+      "actual": "Exact frozen query executed via both real collection/search forms, same-response canonical IDs/prices/witnesses/capabilities checked. HQ04 independent clearlinks/Sort state and inclusivefractionalboundary executed.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-four-cohort-query-results.json",
+        "corrected-habitat-collection-query-form-results.json",
+        "corrected-habitat-search-query-form-results.json",
+        "corrected-habitat-HQ04-independent-clear-results.json"
+      ]
+    },
+    {
+      "id": "HQ-08",
+      "status": "PASS",
+      "actual": "Actual exact search/category/country and real probe collection yield only stand; width/depth controls true, no material/finish choices. Same-response public JSON validates IDs/total and whole three-member capabilities. Off-page positive cohort retains controls and normal clear recovers.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-HQ08-exact-query.ax.txt",
+        "corrected-habitat-HQ08-collection-form.ax.txt",
+        "corrected-habitat-probe-query-results.json",
+        "corrected-habitat-probe-collection-query-results.json"
+      ]
+    },
+    {
+      "id": "HQ-09",
+      "status": "PASS",
+      "actual": "Actual exact shelf search/category/country and collection yield only shelf; width true/depth false. Depth100 yields0 and real depth-only Clear recovers shelf while retaining scope/category/country. JSON agrees; off-page width capability retained.",
+      "remaining": "",
+      "evidence": [
+        "corrected-habitat-HQ09-exact-query.ax.txt",
+        "corrected-habitat-HQ09-collection-depth-zero.ax.txt",
+        "corrected-habitat-HQ09-collection-depth-recovery.ax.txt",
+        "corrected-habitat-probe-query-results.json",
+        "corrected-habitat-probe-collection-query-results.json"
+      ]
+    }
+  ],
+  "totals": {
+    "PASS": 22,
+    "PARTIAL": 1,
+    "FAIL": 1,
+    "BLOCKED": 1,
+    "NOT_RUN": 1
+  },
+  "cartConservation": {
+    "exactBeforeAfterWhitelistedActualEquality": true,
+    "stockAttemptServerActualEquality": true,
+    "orders": 1,
+    "scope": "Compared all whitelisted cart fields/facts/version/fingerprint, NOT complete cart DB-row timestamps/private session fields or reservation tables",
+    "historicalBaselineNote": "EarlierPinkrestoreproofsunchanged. Original59convertedbyrealCOD; currentactivecartA1isrequiredpre-editpositive, so finalsemanticPinkbaseline restoration occursAFTERhistory/stale slice, neverresurrectconverted59."
+  },
+  "safeCheckpoint": {
+    "tab21": "OriginalrejectedFinishstaledraftKEEP/noSave",
+    "tab30": "Controlled54183productv30cachedbeforeorder; MUSTfreshreloadfromcanonicalstock2/v31 beforelateredit whennewsourceadmitted",
+    "tab31": "ActualCODconfirmationpreserved",
+    "tab32": "OwnedBuyerorderdetailoldfacts expanded/reloaded",
+    "tab33": "Normalmerchantorderdetailoldfacts expanded/reloaded",
+    "tab34": "RequiredseparateacceptedA1/version31activecart reloaded; PRESERVE",
+    "tab25": "HabitatBsource10currentpublicsameBhash"
+  },
+  "installedAccepted": false,
+  "next": "WaitonlyHI16writeforlivecanonicalstock-intentserializer; continueindependentchecks/docs. Thenlateredit/bothhistories/staleguard/finalPinkrestoration. Circuit thenDewdropreturn remain required.",
+  "earlierCheckpoint": "corrected-habitat-browser-diagnostics.json",
+  "earlierFailureHistoryPreserved": true,
+  "currentOrder": {
+    "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+    "number": "ORD-20261023-10000",
+    "method": "cod",
+    "status": "pending_cod",
+    "total": 17820,
+    "snapshotSha256": "436431a4e61c70fd6cd1dd5a650f9bfe5d2f1f3f5bbbcaa1caecbb1d50665cb9"
+  },
+  "preEditCart": {
+    "id": "3877932f-b20c-437d-91d7-524cbba72011",
+    "variant": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+    "quantity": 1,
+    "productVersion": 31,
+    "snapshotFingerprint": "7ce55c10aed62f082841288066219392dd5ffed2a8560348eb8e23fa7b18523c"
+  },
+  "currentPhase": "OnlyHI16mutationhelduntilstockomissionlive; HI14negativeUIrepairseparateopen. PreserveactiveA1pre-editcart; noPinkrestorationuntilstalecartcasefinishes. Original59convertedlegitimately."
+}

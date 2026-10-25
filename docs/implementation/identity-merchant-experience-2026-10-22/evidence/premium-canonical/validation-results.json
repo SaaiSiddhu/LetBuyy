@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-23",
+  "merchant": {
+    "tests": [
+      220,
+      810
+    ],
+    "fail": 0,
+    "skipped": 0,
+    "typecheck": "passed",
+    "production_build": "passed"
+  },
+  "shared_ui": {
+    "tests": 61,
+    "files": 5,
+    "typecheck": "passed",
+    "storybook_build": "passed",
+    "public_exports": 381,
+    "token_variables": 439,
+    "alias_groups": 138,
+    "dtcg_resolved_tokens": 221,
+    "mobile_projection": "in sync, application theme unchanged"
+  },
+  "governance": {
+    "pass": 114,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "not_applicable": 1,
+    "discovered": 115,
+    "environment": "disposable validation checkout only"
+  },
+  "governance_traversal": {
+    "tests": 38,
+    "fail": 0,
+    "skipped": 0
+  },
+  "existing_preview_dependency": {
+    "isolated_pg_suites": 1,
+    "tests": 1,
+    "skipped": 0,
+    "local_migration": 383,
+    "product_rows_before": 20,
+    "product_rows_after": 20
+  },
+  "affected_consumers": {
+    "identity_typecheck": "passed",
+    "console_typecheck": "passed"
+  },
+  "scope": "Representative normal local browser journeys plus class-appropriate unit/contracts/governance/build checks. No claim of all providers/roles/physical devices or deployment.",
+  "source": "source-snapshot.json"
+}

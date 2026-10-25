@@ -1,0 +1,14 @@
+Browser tab: 8, Title: "LetBuyy Admin", URL: "http://localhost:9001/ux-audit-1022/online-store/themes".
+1 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/online-store/themes
+	2 container Dawn theme
+		3 container
+			4 heading Dawn theme, Value: 2
+				5 text Dawn theme
+			6 button Close
+		7 image Dawn illustrative preview
+		8 text Calm and scholarly for bookshops, stationery, and educational content. Warm parchment tones with a slate-blue accent — for the thoughtful reader.
+		9 text Illustrative design preview. Open the interactive preview to explore the actual storefront layout.
+		10 link Description: Open interactive preview, Value: localhost:9000/theme-preview/letbuyy-dawn
+		11 button Add to theme library
+
+The focused UI element is 6 button Close

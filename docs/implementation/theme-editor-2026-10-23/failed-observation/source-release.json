@@ -1,0 +1,162 @@
+{
+  "recordedAt": "2026-10-24T01:09:32.244926+00:00",
+  "status": "CONDITIONAL_SOURCE_RELEASED_FROZEN_PENDING_ROOT_REVIEW_AND_SHARED_GATE",
+  "scope": [
+    "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+    "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts"
+  ],
+  "source": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "beforeSha256": "b7753b14b8706231e136d6e7d0af03a01dc8782b1316c1fb04ceb88309bb612e",
+      "sha256": "c37c7779822b50d533496a7ad4aa6fb14f1d5422894b90adb27fa98589ad6a11"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "beforeSha256": "6e25fdec57a25ba8282f0a2420b4dc19bc620c51370f3b867b33794322b3f0c2",
+      "sha256": "6ae2734f24f0e54e272bf63fe4f512fe98266e3b8fcc4d9d3f388b2961680256"
+    }
+  ],
+  "validation": {
+    "baselineObserver": {
+      "pass": 13,
+      "fail": 0,
+      "skip": 0
+    },
+    "actualInitialRed": {
+      "pass": 13,
+      "fail": 10,
+      "skip": 0,
+      "meaning": "Ten newly added diagnostics regressions fail against the original non-2xx-dropping observer; raw TAP preserved."
+    },
+    "finalObserver": {
+      "pass": 24,
+      "fail": 0,
+      "skip": 0,
+      "composition": "All13original+11new. Eleventh additional test verifies request auth/cookie headers are not read."
+    },
+    "finalCombined": {
+      "pass": 36,
+      "fail": 0,
+      "skip": 0,
+      "command": "node --import tsx --test services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts"
+    },
+    "scopedChecks": {
+      "original13TestBodiesByteExactExceptAddedOwnedLookupMock": true,
+      "successfulCaptureBlockByteExact": true,
+      "proofAndReplayControlsByteExact": true,
+      "leasedSourceWhitespaceClean": true,
+      "scopedLintErrors": 0,
+      "scopedLintWarnings": 0,
+      "observerTypeScriptDiagnostics": 0
+    },
+    "fullGatewayNoEmit": {
+      "status": "OPEN_CONCURRENT_UPDATER_WIP_NOT_A_PASS",
+      "exit": 2,
+      "totalDiagnostics": 37,
+      "leasedObserverDiagnostics": 0,
+      "otherDiagnosticPaths": [
+        "src/__tests__/theme-update.test.ts",
+        "src/execution/theme-execution.adapter.ts",
+        "src/lib/tenant-transaction.ts",
+        "src/routes/themes/theme-update-route.ts"
+      ],
+      "log": "docs/implementation/theme-editor-2026-10-23/failed-observation/typecheck.log"
+    },
+    "lint": {
+      "status": "PASS_USING_EXISTING_EXPLICIT_CONFIG",
+      "exit": 0,
+      "config": "apps/commerce/web/eslint.config.mjs",
+      "errors": 0,
+      "warnings": 0,
+      "initialDefaultInvocation": "exit2: no root eslint.config; preserved. Final explicit existing config succeeds."
+    }
+  },
+  "contract": {
+    "failedOperations": [
+      "PATCH existing canonical storefront cart",
+      "POST cart replacement only with existing owned cart_token",
+      "POST canonical checkout confirm with exactly matching single site_id"
+    ],
+    "diagnosticFields": [
+      "operation",
+      "cartId",
+      "status",
+      "responseCode (allowlisted or null)",
+      "requestId (UUID or null)",
+      "commandSha256",
+      "responseSha256"
+    ],
+    "maxFailedRecords": 128,
+    "maxRequestBodyBytes": 4096,
+    "maxResponseTextBytes": 4096,
+    "successfulRecords": 32,
+    "successfulReplayBudget": 3,
+    "unknownErrorCode": "null, no private message/details/body",
+    "ownership": "Read-only cart UUID lookup with fixture store predicate and actual cart_id or token+site subdomain; validated UUID/route tokens and SQL quoting; deleted rows excluded.",
+    "noHeaderReadForFailures": true,
+    "failedReplays": "No failure is a replay candidate. Original successful index namespace unchanged.",
+    "summaryPrivacy": "No raw token/query/path/body/header/contact/private-error text, only bounded hashes and public metadata; existing nonce/profile gate retained.",
+    "responseConservation": "No Gateway response or actual side effect modified; observer catches diagnostic failures."
+  },
+  "limits": [
+    "Failed first-time cart creation with no pre-existing owned token is intentionally not recorded; cannot infer an owned cart from a failed creation.",
+    "Unknown codes remain null; hashes and actual status retained.",
+    "These unit/mocked-owned-read checks are source qualification, not real Gateway/native/DB/cart/checkout acceptance.",
+    "f607 is retired and no failed response metadata can be retroactively recovered.",
+    "Full Gateway typecheck remains open until the independent updater owner releases a stable conforming source epoch."
+  ],
+  "noRuntimeOrBrowserOrDatabaseStarted": true,
+  "noFixtureGuardTimeoutOrProductionRouteChanged": true,
+  "freeze": "Both leased source paths frozen after handback; further changes require coordinator lease.",
+  "artifacts": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/baseline.json",
+      "sha256": "96893cb17cadf1975d23a0fbb04a52155f64d50ac0cebb062bd937b042a1a729"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/red.tap",
+      "sha256": "7d580ed7304c21d1936e2b915ef8ebb1a9865716ab55945e414ab415b1f1872d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/green.tap",
+      "sha256": "81d78596f5aeb0950004e4cfdbf6df32aebcc8eac80c5cf617d8027b2146a7b8"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/combined-green.tap",
+      "sha256": "b36795592ea705708154cea8d46e2ced89fad2d6055796ea3d411cdab47f6627"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/typecheck.log",
+      "sha256": "febe2c53f4e3a3e4bf06bc0afd5a702bd0a27f3ef1a6fd8197931f488b425441"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/lint.log",
+      "sha256": "857e2947e893f4b44e8c0ea617d43fa41dcf956932e978c5ecedbe14d8a12256"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/lint-explicit-config.log",
+      "sha256": "2e62c1b1d9f4f9150cfc5c79660085d5044874e7db83597ac1cf6741abea57fc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/lint-final.json",
+      "sha256": "201514ce8c0a9de12af56eaf74e2ef831252c6bf85e000e72ef90929df0f959c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/lint-final.stderr",
+      "sha256": "6ef9f5cb3da64c6db4927355030d85ef24be96b5e7f9786e8b384ddb573a5503"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/source.diff",
+      "sha256": "a3ce28198dcd4b096796492002ffbc01e27c06cb8955bcb32b74ccb4cbbbc791"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/theme-editor-fixture-observation.ts.before.snapshot",
+      "sha256": "b7753b14b8706231e136d6e7d0af03a01dc8782b1316c1fb04ceb88309bb612e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/failed-observation/theme-editor-fixture-observation.test.ts.before.snapshot",
+      "sha256": "6e25fdec57a25ba8282f0a2420b4dc19bc620c51370f3b867b33794322b3f0c2"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "recordedAt": "2026-10-23T16:39:19.911150+00:00",
+  "status": "DOCS_AND_REVIEW_DIFFS_FROZEN_ACTIVE_SUITE_SOURCE_LEASE_NOT_GRANTED",
+  "activeSourcesUnchanged": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+      "sha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+      "bytes": 33370
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+      "sha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+      "bytes": 41419
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/README.md",
+      "sha256": "7f2e3ff335c004a2c9b3787b4dcf3314ba615bbf645522f8d92002d7b0148b46",
+      "bytes": 5152
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/admission.json",
+      "sha256": "9cc828684907ab05778d651f1e5ab5eac5e18110cf7ae0e27de216448049038b",
+      "bytes": 173
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/admission.template.proposed.json",
+      "sha256": "a3e9ebf55e4de1916ab2dcc454f616e414a49e1f968526f8764dad3afe468feb",
+      "bytes": 1482
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/niche-theme-promotion.postgres.test.ts.diff",
+      "sha256": "2ee9c038915fb92b9f91c79740e3f6126fa0f986d8c245ab778691a125e09479",
+      "bytes": 18676
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/niche-theme-promotion.postgres.test.ts.proposed",
+      "sha256": "3e054c10e72363d9dc2a24ab64d8d773a509b7db5bd107aa551bf68b904089ea",
+      "bytes": 50392
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/proposal.json",
+      "sha256": "d27adb6e8855db6233fa3f138c07b2eb16786eb35d68a66c0580345271a854e8",
+      "bytes": 3983
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/syntax-only.json",
+      "sha256": "2355505c7c4f27252aabd793ab93f49995b6ca32983372f9d05171092d555f8e",
+      "bytes": 486
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/theme-shared-groups.postgres.test.ts.diff",
+      "sha256": "6ddcce9c681bb3d9ddbf75b6e6bc73bf6e8701f48eb287b6272cb2bf0266b598",
+      "bytes": 12782
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/theme-shared-groups.postgres.test.ts.proposed",
+      "sha256": "36378d078724fbf9ac3977b2a63c4dd111689808cd7b1e72fdc7cabac1cfdb3c",
+      "bytes": 41624
+    }
+  ],
+  "existing391ChildPhasesPreserved": 5,
+  "existingPromotionChildPhasesPreserved": 4,
+  "newTestCases": 0,
+  "newHarnesses": 0,
+  "syntaxOnlyDiagnostics": 0,
+  "typecheckExecuted": false,
+  "testsExecuted": false,
+  "nativeExecuted": false,
+  "frozen47SourceInputsUnchanged": true,
+  "waitingFor": [
+    "Actual392 native qualification/root exact pair pin",
+    "Root reviewed exact consumer/native-receipt schema and revised source pins",
+    "Explicit active two-file source lease",
+    "Separately allocated existing-owned LATEST qualification lanes"
+  ],
+  "retainedResourcesTouched": false,
+  "crossChatMessagesSent": false
+}

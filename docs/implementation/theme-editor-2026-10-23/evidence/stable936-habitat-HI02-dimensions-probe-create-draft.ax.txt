@@ -1,0 +1,287 @@
+Browser tab: 64, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/new".
+0 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/new
+	1 container
+		2 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		3 button Search
+		4 button Setup assistant
+		5 button Notifications
+		6 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			7 text TH
+			8 text Threadline
+	9 container admin-nav-drawer
+		10 container
+			11 container Primary navigation
+				12 content list
+					13 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					14 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					15 container
+						16 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						17 button (expanded) Description: Toggle Products section, Secondary Actions: Collapse
+						18 content list
+							19 link Description: Add product, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/new
+							20 link Description: Collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections
+							21 link Description: Smart collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/smart-collections
+							22 link Description: Categories, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/categories
+							23 link Description: Export and import, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/export
+					24 container
+						25 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						26 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					27 container
+						28 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						29 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					30 container
+						31 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						32 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					33 container
+						34 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						35 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					36 container
+						37 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						38 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					39 container
+						40 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						41 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					42 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			43 text Sales channels
+			44 container Sales channels
+				45 content list
+					46 container
+						47 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						48 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			49 text Apps
+			50 container Apps
+				51 content list
+					52 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		53 container Settings navigation
+			54 content list
+				55 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	56 container admin-page-scroll
+		185 heading Add product, Value: 1
+			186 text Add product
+		62 container
+			63 heading Details, Value: 2
+				64 text Details
+			65 text Name and describe the product as shoppers will see it. Title
+			66 text field (settable) Title, Value: Habitat dimensions-only stand
+			67 text Description
+			68 text entry area (settable) Description, Value: Synthetic owned theme acceptance fixture only.
+		69 container
+			70 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				71 text Apparel fit, fabric and care (optional)
+			72 container Product-specific facts
+				73 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				74 text Product facts category
+				75 pop up button (collapsed, settable) Product facts category, Value: Furniture, Secondary Actions: Expand
+					76 menu
+						77 (disabled) Choose product information to edit
+						78 Toys and activities
+						79 Electronics
+						80 Food and pantry
+						81 (selected) Furniture
+						82 Ready-made gifts
+						83 Text personalization
+						84 Beauty and care
+						85 Sports equipment
+						86 Books and stationery
+				191 container
+					192 button (expanded) Furniture measurements, materials and care (optional), Secondary Actions: Collapse
+						193 text Furniture measurements, materials and care (optional)
+					194 text Enter supplied facts only. Assembled size describes room fit; package size describes access. Photographs do not establish measurements or a delivery date.
+					195 container Assembled dimensions
+						196 text Assembled dimensions
+						197 text Assembled dimensions unit
+						198 pop up button (collapsed, settable) Assembled dimensions unit, Value: Centimetres (cm), Secondary Actions: Expand
+							199 menu
+								200 Not supplied
+								201 Millimetres (mm)
+								202 (selected) Centimetres (cm)
+								203 Inches (in)
+						204 text Assembled dimensions width
+						205 stepper (settable, integer) Assembled dimensions width, Value: 60
+						206 text Use a positive supplied value in the selected unit.
+						207 text Assembled dimensions depth
+						208 stepper (settable, integer) Assembled dimensions depth, Value: 45
+						209 text Use a positive supplied value in the selected unit.
+						210 text Assembled dimensions height
+						211 stepper (settable, integer) Assembled dimensions height, Value: 70
+						212 text Use a positive supplied value in the selected unit.
+						213 text Assembled dimensions diameter
+						214 stepper (settable) Assembled dimensions diameter
+						215 text Use a positive supplied value in the selected unit.
+						216 button Clear assembled dimensions
+							217 text Clear 
+							289 text assembled dimensions
+					218 container Package dimensions
+						219 text Package dimensions
+						220 text Package dimensions unit
+						221 pop up button (collapsed, settable) Package dimensions unit, Value: Not supplied, Secondary Actions: Expand
+							222 menu
+								223 (selected) Not supplied
+								224 Millimetres (mm)
+								225 Centimetres (cm)
+								226 Inches (in)
+						227 text Package dimensions width
+						228 stepper (settable) Package dimensions width
+						229 text Use a positive supplied value in the selected unit.
+						230 text Package dimensions depth
+						231 stepper (settable) Package dimensions depth
+						232 text Use a positive supplied value in the selected unit.
+						233 text Package dimensions height
+						234 stepper (settable) Package dimensions height
+						235 text Use a positive supplied value in the selected unit.
+						236 text Package dimensions diameter
+						237 stepper (settable) Package dimensions diameter
+						238 text Use a positive supplied value in the selected unit.
+						239 button (disabled) Clear package dimensions
+							240 text Clear  package dimensions
+					241 container Seat height
+						242 text Seat height
+						243 text Seat height value
+						244 stepper (settable) Seat height value
+						245 text Use a positive supplied value in the selected unit.
+						246 text Seat height unit
+						247 pop up button (collapsed, settable) Seat height unit, Value: Not supplied, Secondary Actions: Expand
+							248 menu
+								249 (selected) Not supplied
+								250 Millimetres (mm)
+								251 Centimetres (cm)
+								252 Inches (in)
+						253 button (disabled) Clear seat height
+					254 container Product weight
+						255 text Product weight
+						256 text Product weight value
+						257 stepper (settable) Product weight value
+						258 text Use a positive supplied value in the selected unit.
+						259 text Product weight unit
+						260 pop up button (collapsed, settable) Product weight unit, Value: Not supplied, Secondary Actions: Expand
+							261 menu
+								262 (selected) Not supplied
+								263 Grams (g)
+								264 Kilograms (kg)
+						265 button (disabled) Clear product weight
+					266 container Materials
+						267 text Materials
+						268 button Add material
+					269 text Finish (optional)
+					270 text field (settable) Finish (optional)
+					271 container Assembly
+						272 text Assembly
+						273 text Assembly status
+						274 pop up button (collapsed, settable) Assembly status, Value: Not supplied, Secondary Actions: Expand
+							275 menu
+								276 (selected) Not supplied
+								277 Arrives assembled
+								278 Assembly required
+								279 Information not supplied
+						280 text Assembly instructions (optional)
+						281 text entry area (settable) Assembly instructions (optional)
+						282 text Assembly tools (optional)
+						283 text field (settable) Assembly tools (optional)
+						284 button (disabled) Clear assembly facts
+					285 text Care instructions (optional)
+					286 text entry area (settable) Care instructions (optional)
+					287 button Clear all furniture facts
+			87 heading Media, Value: 2
+				88 text Media
+			89 text Upload images that help shoppers inspect the product.
+			90 heading No product media yet, Value: 3
+				91 text No product media yet
+			92 text Upload product images so shoppers can inspect materials, colors, and details before buying.
+			93 button Upload media
+		94 container
+			95 heading Category, Value: 2
+				96 text Category
+			97 text Add category metadata for tax, discovery, and reporting. Category
+			98 text field (settable) Category, Value: Habitat dimensional controls
+			99 text Determines tax rates and adds product metadata.
+		100 container
+			101 heading Pricing, Value: 2
+				102 text Pricing
+			103 text Set the customer-facing price and internal product cost. Price
+			104 stepper (settable, integer) Price, Value: 1200
+			105 text Compare-at price
+			106 stepper (settable) Compare-at price
+			107 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			108 text Cost per item
+			109 stepper (settable) Cost per item
+			110 text Customers will not see this.
+		111 container
+			112 heading Inventory, Value: 2
+				113 text Inventory
+			114 text Track SKU, barcode, and sell-through behavior.
+			115 checkbox (settable, integer) Description: Track quantity, Value: 1
+			116 text Quantity
+			117 stepper (settable, integer) Quantity, Value: 2
+			118 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			119 text SKU (Stock Keeping Unit)
+			120 text field (settable) SKU (Stock Keeping Unit)
+			121 text Barcode (ISBN, UPC, GTIN)
+			122 text field (settable) Barcode (ISBN, UPC, GTIN)
+		123 container
+			124 heading Shipping, Value: 2
+				125 text Shipping
+			126 text Collect fulfillment and customs information for physical products.
+			127 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			128 text Weight
+			129 stepper (settable) Weight
+			130 text Unit
+			131 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				132 menu
+					133 (selected) kg
+					134 g
+					135 lb
+					136 oz
+			137 text Importer details (for imported products)
+			138 text entry area (settable) Importer details (for imported products)
+			139 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			140 text field (settable) Country/Region of origin, Value: India
+			141 text HS (Harmonized System) code
+			142 text field (settable) HS (Harmonized System) code
+		143 container
+			144 heading Variants, Value: 2
+				145 text Variants
+			146 text Add options like size, color, or material.
+			147 button Add option
+		148 container
+			149 heading Search engine listing, Value: 2
+				150 text Search engine listing
+			151 text Control how this product may appear in search results. syn-threadline-ui-6815276b .letbuyy.com/products/ syn-habitat-dimensions-only-936e5f577646 Habitat dimensions-only stand Synthetic owned theme acceptance fixture only. Page title
+			152 text field (settable) Page title
+			153 text 0 of 70 characters used Meta description
+			154 text entry area (settable) Meta description
+			155 text 0 of 160 characters used URL handle
+			156 text field (settable) URL handle, Value: syn-habitat-dimensions-only-936e5f577646
+		157 container
+			158 container
+				159 heading Status, Value: 2
+					160 text Status
+				161 text Product status
+				162 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					163 menu
+						164 (selected) Active
+						165 Draft
+				166 text Visible on storefront
+			167 container
+				168 heading Publishing, Value: 2
+					169 text Publishing
+				170 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			171 container
+				172 heading Product organization, Value: 2
+					173 text Product organization
+				174 text Use consistent metadata to keep catalog management fast. Product type
+				175 text field (settable) Product type
+				176 text Vendor
+				177 text field (settable) Vendor
+				178 text Tags
+				179 text field (settable) Tags
+				180 text Separate tags with commas.
+			181 container
+				182 heading Catalog readiness, Value: 2
+					183 text Catalog readiness
+				184 text Save product details, media, pricing, and inventory from one guided form.
+		187 container
+			188 text Unsaved changes
+			189 button Discard
+			190 button Create product
+
+The focused UI element is 211 stepper (settable, integer) Assembled dimensions height, Value: 70

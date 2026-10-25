@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T11:38:00.847821+00:00",
+  "classification": "PREPARATION_FOR_EXACT_FRESH_ADMISSION_NOT_A_LEASE_OR_EXECUTION",
+  "authority": "docs/implementation/niche-theme-programme/completion-resumed-owner-preparation-20261024-02.json",
+  "humanResume": {
+    "actualUserMessageId": "01a16da6-891f-7691-b85f-cc5d9ae276e2",
+    "answer": "Resume all ten themes and both shared owners",
+    "verifiedThrough": "read_thread actual userMessage, requesting chat01a16ce5-e5ba-7191-ab2c-a1b76947d2b5"
+  },
+  "goalState": {
+    "existingGoalPreserved": true,
+    "platformStatusObserved": "paused",
+    "humanWorkScopeResumed": true,
+    "newGoalCreated": false,
+    "statusResumeToolAvailable": false,
+    "automaticFollowupsResumed": false
+  },
+  "existingSourcePins": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+      "sha256": "722a170a86cdaaabd3503f3360d810d0e59b55f58dc1cc39cfc95f399a5df177"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gateway-harness.ts",
+      "sha256": "8ea080a22eda42ad030a849c9aed109d2224ad52a346081d3a0466c1f8b648f7"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/preview-viewport.ts",
+      "sha256": "8f5f1908ccb0824511b8a98c8f88887ab3462c505e82d6542ab53a5653ff25e1"
+    }
+  ],
+  "requiredAdmissionFields": [
+    "allocator",
+    "owner/controller",
+    "current-source-candidate/manifest/compiled-import identities",
+    "qualified migrations and catalogue/package/schema identities",
+    "run/site/account/product/variant/delivery bindings",
+    "exact API/issuer/merchant/buyer/preview/checkout/callback origins",
+    "normal TLS/browser proof",
+    "private capability/credential references only",
+    "permitted operations and finite negative/control budgets",
+    "browser capabilities/owned surfaces",
+    "expiry/cleanup owner",
+    "case queue and protected baseline snapshots"
+  ],
+  "checks": [
+    {
+      "id": "A01",
+      "area": "Source closure",
+      "requiredEvidence": "Allocator receipt pins current runtime source, actual compiled imports, package exports and all admitted fixes. A frozen builder reproduction and the live runtime graph are distinct proofs.",
+      "currentBoundary": "SOURCE_IDENTITY"
+    },
+    {
+      "id": "A02",
+      "area": "Sealed Editor inputs",
+      "requiredEvidence": "Consume CHILD_CONTRACT03_HANDOFF final six-file closure and CHECKOUT_OBSERVATION02_HANDOFF two-file closure; current bytes match. Reuse113 and40 scope-bound checks without adding overlapping totals.",
+      "currentBoundary": "SOURCE_IDENTITY"
+    },
+    {
+      "id": "A03",
+      "area": "Nested rendered output",
+      "requiredEvidence": "Independently review Kindred single private proposal; actual parent+child Liquid output, empty-child default parity, source sanitization and eligible first-party boundaries must be proven. Model/compile is not visible output.",
+      "currentBoundary": "OPEN_KINDRED_OWNER_PACKET"
+    },
+    {
+      "id": "A04",
+      "area": "Playfield standalone block",
+      "requiredEvidence": "Resolve PF-B-standalone-badge/PF-F-package_block.badge.setting.label on actual target2.0.1. A parser-permitted block in a section that ignores blocks is not a merchant control. No invented host or blanketN/A.",
+      "currentBoundary": "OPEN_APPLICABILITY_AND_RENDER"
+    },
+    {
+      "id": "A05",
+      "area": "Versioned package admission",
+      "requiredEvidence": "Join frozen original captures, approved compatible successors, catalogue/package/version/schema/runtime dispatch, native migration UP/DOWN/replay, and installed manifests.393/394 grants or old fixture bindings are not automatic fresh qualification.",
+      "currentBoundary": "ALLOCATOR_NATIVE_AND_LINEAGE"
+    },
+    {
+      "id": "A06",
+      "area": "One owned runtime",
+      "requiredEvidence": "Fresh run ID/candidate/DB labels, normal isolated ports/origins, account/site scope, bounded expiry, cleanup owner and source manifest. Reject old936 adoption/keepalive. Preserve user applications and Marketplace.",
+      "currentBoundary": "NO_RUNTIME_GRANTED"
+    },
+    {
+      "id": "A07",
+      "area": "Normal trusted checkout TLS",
+      "requiredEvidence": "Use admitted manual-os-trusted checkout mode and actual browser trust. Native-ephemeral or Node trust alone is not browser trust; no exception/bypass. Verify exact host/origin and full normal cart-to-hosted redirect.",
+      "currentBoundary": "NOT_RUN"
+    },
+    {
+      "id": "A08",
+      "area": "Preview origin and continuity",
+      "requiredEvidence": "Merchant preview targets the platform localhost Commerce origin as current fixture source specifies; exact CSP/bridge/session/revision/template/resource binding. Retake G08 expiry/refusal/Retry through ordinary UI at measured Desktop/Tablet/Mobile dimensions; saved draft retained.",
+      "currentBoundary": "NOT_RUN"
+    },
+    {
+      "id": "A09",
+      "area": "Bounded browser capability admission",
+      "requiredEvidence": "One interactive controller and named owned surface/tabs. Verify actual per-tab width/zoom/failure capability before320/390/768/820/834/1440 work. No browser-wide override affecting user/other-project tabs; state unavailable controls honestly and obtain an allocated safe facility.",
+      "currentBoundary": "NO_BROWSER_GRANTED"
+    },
+    {
+      "id": "A10",
+      "area": "Synthetic account and commercial scope",
+      "requiredEvidence": "Bind actual owner/site/product/variant/options/version/price/stock/delivery IDs from acknowledgements. Seeded owner/buyer is setup, not normal signup proof. Preserve consumed stock and stable UUIDs; omit untouched stock in ordinary edits.",
+      "currentBoundary": "NOT_BOUND"
+    },
+    {
+      "id": "A11",
+      "area": "Normal identity entry",
+      "requiredEvidence": "New buyer signup/verification/signin/consent/callback, store-bound customer entry, reload/profile/addresses/signout/recovery and positive-first buyer/store/realm denial. Existing local fixture captures only its own synthetic Resend seam into a private0600 file; no external-mail delivery credit.",
+      "currentBoundary": "NOT_RUN"
+    },
+    {
+      "id": "A12",
+      "area": "Real provider binding",
+      "requiredEvidence": "MadeYours is sole protected binding/ingress owner. Reference verified Test API auth receipt only; Editor does not open/copy keys or issue independent provider requests. Require actual canonical adapter mode, owned accepted public HTTPS receiver, matching secret and raw-body/durable dedup proof.",
+      "currentBoundary": "READINESS_UNVERIFIED"
+    },
+    {
+      "id": "A13",
+      "area": "Separate actual per-theme purchases",
+      "requiredEvidence": "Every theme needs its own normal COD unpaid/pending and actual Razorpay TEST purchase with local/provider linkage, totals, status, ledger/inventory/outbox and buyer/merchant history. Mock/native/COD/API-auth checks do not count as provider purchases.",
+      "currentBoundary": "NOT_RUN"
+    },
+    {
+      "id": "A14",
+      "area": "Recovery and mutation evidence",
+      "requiredEvidence": "Canonical cart quantity/stock/server totals, stale facts/price, same-intent uncertain acknowledgement, cancellation/refund where required, authenticated replay/concurrency and exactly-once effects. Diagnostic observer records only supported redacted failures; it creates no new fault/replay surface. Any finite control needs an exact allocation.",
+      "currentBoundary": "NOT_RUN"
+    },
+    {
+      "id": "A15",
+      "area": "Serialized theme boundaries",
+      "requiredEvidence": "Proposed queue Threadline,Pantry,Dewdrop,Habitat,Circuit,Trailmark,Marginalia,Kindred,MadeYours,Playfield. Prefer separately bound synthetic store scopes in one candidate; if theme-switching one site, seal cart/order/source/draft boundary before handoff. Positions grant no rights.",
+      "currentBoundary": "PROPOSED_ONLY"
+    },
+    {
+      "id": "A16",
+      "area": "Inventory-driven editor execution",
+      "requiredEvidence": "Reconcile owner CAPABILITY_INVENTORY/COVERAGE against actual admitted installed schema. Every applicable declared section/block/field/template/resource and promised niche control gets valid/invalid/clear/false/zero and full lifecycle evidence. Preserve original IDs and failures; a heading-only A/B cycle is subcoverage.",
+      "currentBoundary": "NOT_RUN"
+    },
+    {
+      "id": "A17",
+      "area": "Independent acceptance and preservation",
+      "requiredEvidence": "No full certificate with requiredFAIL/PARTIAL/BLOCKED/NOT_RUN. Review applicable exact-source security/performance/rollback gates, responsive/keyboard/media and historical snapshots. Preserve all evidence/drafts/user data and restrict cleanup to separately authorized owned resources.",
+      "currentBoundary": "PENDING"
+    }
+  ],
+  "sealedEditorHandoff": "CHILD_CONTRACT03_HANDOFF.json",
+  "sealedObservationHandoff": "CHECKOUT_OBSERVATION02_HANDOFF.json",
+  "currentRuntimeAdmission": null,
+  "currentBrowserLease": null,
+  "providerReceipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-test-credential-preflight-network-20261024.json",
+  "originalCaseIndex": "CONTROLLER_CASE_INDEX_01.json",
+  "originalCaseIndexPolicy": "Snapshot only; refresh exact source pointers/digests when admission and newer owner results are available. No owner status is overwritten.",
+  "preservation": {
+    "mainWrites": 0,
+    "runtimeLaunches": 0,
+    "browserActions": 0,
+    "databaseActions": 0,
+    "providerCalls": 0,
+    "credentialSourceReads": 0,
+    "automationsChanged": 0
+  },
+  "allTenCertified": false
+}

@@ -5,7 +5,7 @@ import { assertStaffPermission } from '../middleware/staff-permission';
 import { emailProviderConfigured, escapeHtml } from '../lib/customer-email';
 import { customerCursorPage, orderCustomerSummaries } from '../lib/customer-pagination';
 import { cursorPaginated, getSupabaseAdmin, paginated, success } from '../lib/supabase';
-import { resolveOwnedStoreScope } from '../lib/tenant-context';
+import { resolveOwnedStoreScope, resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
     CreateCustomerSchema,
@@ -474,11 +474,12 @@ router.patch('/segments/:id', validate('json', UpdateCustomerSegmentSchema), asy
     const id = c.req.param('id');
     const body = c.get('validatedBody') as UpdateCustomerSegmentInput;
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
 
     const { data: existing, error: existingError } = await db
         .from('customer_segments')
         .select('id,store_id,rules')
-        .eq('id', id)
+        .eq('id', id).in('store_id', storeIds)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -501,7 +502,7 @@ router.patch('/segments/:id', validate('json', UpdateCustomerSegmentSchema), asy
     const { data, error } = await db
         .from('customer_segments')
         .update(updates)
-        .eq('id', id)
+        .eq('id', id).in('store_id', storeIds)
         .eq('store_id', existingSegment.store_id)
         .select('id,store_id,name,description,rules,created_by,updated_by,deleted_by,created_at,updated_at,deleted_at')
         .single();
@@ -1308,12 +1309,13 @@ router.patch('/:email/addresses/:id', async (c) => {
     const addressId = c.req.param('id');
     const body = await c.req.json() as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('customer_addresses')
         .select('store_id')
-        .eq('id', addressId)
+        .eq('id', addressId).in('store_id', storeIds)
         .eq('customer_email', email)
         .single();
 
@@ -1353,12 +1355,13 @@ router.delete('/:email/addresses/:id', async (c) => {
     const email = decodeURIComponent(c.req.param('email'));
     const addressId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('customer_addresses')
         .select('store_id')
-        .eq('id', addressId)
+        .eq('id', addressId).in('store_id', storeIds)
         .eq('customer_email', email)
         .single();
 
@@ -1367,7 +1370,7 @@ router.delete('/:email/addresses/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { error } = await db.from('customer_addresses').delete().eq('id', addressId);
+    const { error } = await db.from('customer_addresses').delete().eq('id', addressId).in('store_id', storeIds);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

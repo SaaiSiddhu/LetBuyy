@@ -1,0 +1,46 @@
+[
+  {
+    "editionName": "Inherited",
+    "carriers": [
+      {
+        "productId": "db9fdd4f-da77-4d74-806b-759edce71270",
+        "state": "selected",
+        "text": "Inherited sample edition.Toy factsAge information6–8 yearsIncluded contents12 × tiles · 2 × idea cards · 1 × trayDimensions24 length × 19 width × 1.5 height cmOther dimensionsEach tile: 5 length × 5 width × 0.6 height cmMaterialsWoodFinishSample blue finishSupplied warningsRead the sample kit information. · Fictional integration fixture",
+        "variantId": "39b713a7-44a5-4327-ae9f-40d45c76bc2d"
+      }
+    ]
+  },
+  {
+    "editionName": "Unknown facts",
+    "carriers": [
+      {
+        "productId": "db9fdd4f-da77-4d74-806b-759edce71270",
+        "state": "selected",
+        "text": "Explicit unknown sample edition.Toy factsMaterialsWood",
+        "variantId": "2fcc0c0f-3551-419b-a72b-cc4bfe012898"
+      }
+    ]
+  },
+  {
+    "editionName": "Paper",
+    "carriers": [
+      {
+        "productId": "db9fdd4f-da77-4d74-806b-759edce71270",
+        "state": "selected",
+        "text": "Different paper sample edition.Toy factsAge informationAges 9–12Included contents36 × paper sheetsDimensions21 length × 14.8 width cmMaterialsPaper",
+        "variantId": "d21309b4-c4a0-4eca-a591-c5a3f01d138f"
+      }
+    ]
+  },
+  {
+    "editionName": "Inherited",
+    "carriers": [
+      {
+        "productId": "db9fdd4f-da77-4d74-806b-759edce71270",
+        "state": "selected",
+        "text": "Inherited sample edition.Toy factsAge information6–8 yearsIncluded contents12 × tiles · 2 × idea cards · 1 × trayDimensions24 length × 19 width × 1.5 height cmOther dimensionsEach tile: 5 length × 5 width × 0.6 height cmMaterialsWoodFinishSample blue finishSupplied warningsRead the sample kit information. · Fictional integration fixture",
+        "variantId": "39b713a7-44a5-4327-ae9f-40d45c76bc2d"
+      }
+    ]
+  }
+]

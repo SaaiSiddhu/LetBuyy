@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { Suspense, use, useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
+import { useMerchantRouter as useRouter, useMerchantDeparture } from './MerchantNavigationProvider'
+import { MerchantNavigationLink as Link } from './MerchantNavigationLink'
 import Image from 'next/image'
 import type { SessionUser } from '@/lib/auth/session'
-import type { StoreData, UserStore } from './AdminShell'
+import type { StoreData, UserStore, StoreSwitcherResult } from './AdminShell'
 import dynamic from 'next/dynamic'
 import { Button, MaterialIcon, acquireScrollLock } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
@@ -18,6 +18,7 @@ interface HeaderBarProps {
     storeData: StoreData
     user: SessionUser
     userStores: UserStore[]
+    userStoresPromise?: Promise<StoreSwitcherResult>
     onMenuToggle: () => void
     onSearchOpen: () => void
     onAISidebarToggle: () => void
@@ -49,11 +50,27 @@ function getSiteTypeLabel(type: string): string {
     }
 }
 
+function DeferredStoreList({ promise, fallback, render, retry }: {
+    promise: Promise<StoreSwitcherResult>
+    fallback: UserStore[]
+    render: (stores: UserStore[]) => ReactNode
+    retry: () => void
+}) {
+    const result = use(promise)
+    return <>
+        {result.unavailable && <div role="alert" className="p-[var(--lb-space-3)]">
+            Other stores could not load. <Button variant="ghost" onClick={retry}>Retry stores</Button>
+        </div>}
+        {render(result.stores.length ? result.stores : fallback)}
+    </>
+}
+
 export default function MerchantHeaderBar({
     store,
     storeData,
     user,
     userStores,
+    userStoresPromise,
     onMenuToggle,
     onSearchOpen,
     onAISidebarToggle,
@@ -62,6 +79,7 @@ export default function MerchantHeaderBar({
     menuDrawerId,
 }: HeaderBarProps) {
     const router = useRouter()
+    const requestDeparture = useMerchantDeparture()
     const [switcherOpen, setSwitcherOpen] = useState(false)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
@@ -164,7 +182,7 @@ export default function MerchantHeaderBar({
         }
     }, [clearShortcutPrefix, onSearchOpen, router, store, storeData.site_type])
 
-    const handleSignOut = async () => {
+    const performSignOut = async () => {
         try {
             const res = await fetch('/api/auth/logout', {
                 method: 'POST',
@@ -175,6 +193,7 @@ export default function MerchantHeaderBar({
             window.location.assign(getAccountsUrl('/lookup'))
         }
     }
+    const handleSignOut = () => requestDeparture(() => { void performSignOut() })
 
     const handleSwitchStore = (subdomain: string) => {
         setSwitcherOpen(false)
@@ -187,6 +206,19 @@ export default function MerchantHeaderBar({
     const userDisplayName = user.fullName?.trim() || user.email.split('@')[0] || 'Account'
     const userInitial = userDisplayName.charAt(0).toUpperCase()
 
+    const renderStores = (stores: UserStore[]) => stores.map((s) => {
+        const isCurrent = s.subdomain === store || s.store_name === store
+        return <Button unstyled key={s.id} className={`store-switcher-item ${isCurrent ? 'active' : ''}`}
+            onClick={() => !isCurrent && handleSwitchStore(s.subdomain)}>
+            <span className="store-switcher-item-icon">{getStoreInitials(s.name || s.store_name)}</span>
+            <div className="store-switcher-item-info">
+                <span className="store-switcher-item-name">{s.name || s.store_name}</span>
+                <span className="store-switcher-item-type">{getSiteTypeLabel(s.site_type)}</span>
+            </div>
+            {isCurrent && <MaterialIcon name="check" className="store-switcher-check" />}
+        </Button>
+    })
+
     /* ——— Store switcher content (shared between dropdown & bottom sheet) ——— */
     const switcherContent = (
         <>
@@ -195,29 +227,10 @@ export default function MerchantHeaderBar({
 
             {/* Section 1: Store list */}
             <div className="store-switcher-section">
-                {userStores.map((s) => {
-                    const isCurrent = s.subdomain === store || s.store_name === store
-                    return (
-                        <Button unstyled
-                            key={s.id}
-                            className={`store-switcher-item ${isCurrent ? 'active' : ''}`}
-                            onClick={() => !isCurrent && handleSwitchStore(s.subdomain)}
-                        >
-                            <span className="store-switcher-item-icon">
-                                {getStoreInitials(s.name || s.store_name)}
-                            </span>
-                            <div className="store-switcher-item-info">
-                                <span className="store-switcher-item-name">{s.name || s.store_name}</span>
-                                <span className="store-switcher-item-type">
-                                    {getSiteTypeLabel(s.site_type)}
-                                </span>
-                            </div>
-                            {isCurrent && (
-                                <MaterialIcon name="check" className="store-switcher-check" />
-                            )}
-                        </Button>
-                    )
-                })}
+                {userStoresPromise ? <Suspense fallback={<>
+                    {renderStores(userStores)}
+                    <p role="status" className="p-[var(--lb-space-3)]">Loading stores…</p>
+                </>}><DeferredStoreList promise={userStoresPromise} fallback={userStores} render={renderStores} retry={() => router.refresh()} /></Suspense> : renderStores(userStores)}
             </div>
 
             {/* Section 2: All stores link */}

@@ -1,0 +1,63 @@
+{
+  "id": "HAB-SLICE-EDITOR-01",
+  "status": "READY_FOR_FUTURE_EXACT_ALLOCATION_NOT_GRANTED",
+  "candidate": null,
+  "controller": null,
+  "syntheticStore": null,
+  "sacrificialDraft": null,
+  "entryConditions": [
+    "Explicit helper activation",
+    "Fresh current exact source/runtime admission and controller lease",
+    "Owned sacrificial draft/store, empty original-user state changes",
+    "Pre-slice protected state snapshot and source/release binding",
+    "Existing Editor flat/nested wiring plus canonical absent-child follow-up03 sealed and current source admitted; no independent rewrite"
+  ],
+  "sourceCases": [
+    "HAB-C-TEMPLATE-index",
+    "HAB-C-SECTION-habitat-measurement-guide",
+    "HAB-C-SECTION-faq-accordion",
+    "HAB-C-BLOCK-faq-accordion--faq-item",
+    "HAB-C-EDITOR-RECOVERY-INSPECTOR",
+    "HAB-C-FIELD-section-faq-accordion--setting-title",
+    "HAB-C-FIELD-section-faq-accordion--setting-allowMultipleOpen",
+    "HAB-C-FIELD-section-faq-accordion--inline-block-faq-item--setting-question",
+    "HAB-C-FIELD-section-faq-accordion--inline-block-faq-item--setting-answer",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-eyebrow",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-title",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-description",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-step1Title",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-step1Text",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-step2Title",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-step2Text",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-step3Title",
+    "HAB-C-FIELD-section-habitat-measurement-guide--setting-step3Text",
+    "HAB-C-REUSABLE-badge",
+    "HAB-C-FIELD-block-badge--setting-label",
+    "HAB-C-SECTION-spotlight",
+    "HAB-C-BLOCK-spotlight--badge"
+  ],
+  "actions": [
+    "Bind actual acknowledged IDs and revision; record all existing protected state",
+    "Normal UI add/edit/reorder/hide/show guide and FAQ, including two identical-label FAQ blocks with distinct acknowledged IDs",
+    "Change all actual guide fields and FAQ question/answer with valid/clear/limit values; save / full reload / private preview / publish / public readback",
+    "Delete/save / reload / public absence / re-add / rebind; supported undo/redo and draft recovery; retain source/oldfailedreceipts",
+    "Seal exact output/source/revision/body/asset/effect records; no cart/order/provider action in this slice",
+    "Use the declared spotlight root badge host for supported reusable badge child/grandchild operations, not FAQ-item recursion. Bind actual IDs and require actual saved/rendered field effects after admitting the source remedy. Inline-only parents require restriction/preservation proof."
+  ],
+  "exit": "Finite actual operation receipts and independent review; does not certify remaining templates, original purchase cases or Razorpay",
+  "fieldCaseCount": 14,
+  "updatedAt": "2026-10-24T11:38:47.427330+00:00",
+  "runtime07Override": {
+    "status": "READY_FOR_EDITOR_BOUND_OWNED_DRAFT",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runId": "49ada80bc494",
+    "package": "letbuyy-craft@2.1.0",
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "addedCases": [
+      "HAB-C-BLOCK-trust-badges--badge",
+      "HAB-C-FIELD-section-trust-badges--inline-block-badge--setting-label"
+    ],
+    "rule": "The original200 slice remains historical specification. For exact qualified210 FAQ-item and9other inline parents support badge children. Actual normal UI IDs/effects still required. Use trust-badges as an additional optional root host; no third-party execution.",
+    "actualExecutedCases": 0
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "hero-banner",
+  "group": "template",
+  "originalId": "section-77e23a72-78c0-471e-a5b1-94a0a49cd057",
+  "finalId": "section-ec412bde-4ab4-4475-898a-d27941637417",
+  "sectionFieldsExercised": [
+    "eyebrow",
+    "heading",
+    "subheading",
+    "image",
+    "product1",
+    "ctaText",
+    "ctaLink"
+  ],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "eyebrow": "Circuit source eyebrow",
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading",
+          "image": "https://example.invalid/circuit/image.webp",
+          "product1": "22222222-2222-4222-8222-222222222222",
+          "ctaText": "Circuit source ctaText",
+          "ctaLink": "https://example.invalid/circuit/ctaLink.webp"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "eyebrow": "Circuit source eyebrow",
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading",
+          "image": "https://example.invalid/circuit/image.webp",
+          "product1": "22222222-2222-4222-8222-222222222222",
+          "ctaText": "Circuit source ctaText",
+          "ctaLink": "https://example.invalid/circuit/ctaLink.webp"
+        },
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "eyebrow": "Circuit source eyebrow",
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading",
+          "image": "https://example.invalid/circuit/image.webp",
+          "product1": "22222222-2222-4222-8222-222222222222",
+          "ctaText": "Circuit source ctaText",
+          "ctaLink": "https://example.invalid/circuit/ctaLink.webp"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "eyebrow": "Circuit source eyebrow",
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading",
+          "image": "https://example.invalid/circuit/image.webp",
+          "product1": "22222222-2222-4222-8222-222222222222",
+          "ctaText": "Circuit source ctaText",
+          "ctaLink": "https://example.invalid/circuit/ctaLink.webp"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

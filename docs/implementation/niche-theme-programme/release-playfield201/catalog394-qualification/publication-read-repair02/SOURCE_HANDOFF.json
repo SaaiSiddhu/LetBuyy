@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-24T12:09:36.648197+00:00",
+  "status": "SEALED_TEN_STRICT_PERMISSION_MODEL_PASS_GATEWAY_TSC0_NATIVE_PENDING",
+  "files": [
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "sha256": "536eb0b6020a94d8784930543707d91ca9c8e544f0a5b24c7be25384370789c2"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/tenant-transaction.test.ts",
+      "sha256": "441de6392a5ed52cef5db208b81bca75d9fdb03c0d5c5b818eccbbb6ae0134a4"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+      "sha256": "84becdfe37203f28a31471c336cce40f2b559e0d6dcb61ea7bede7d50904767c"
+    }
+  ],
+  "modelTests": {
+    "PASS": 10,
+    "FAIL": 0,
+    "strongerOracle": "Tenantmodelrefusesallglobalcapture/priorrelease SELECT, notonlyrowlocks; normalpublication/shadow/race/poisoningpass"
+  },
+  "gatewayTypecheck": 0,
+  "fixtureDiagnostics": "OwnedroleSELECT/UPDATEbooleanmatrix + stagedpin/tempcreation markers; original8phases/exactoracles retained",
+  "sourceScope": "Samecanonicalhelper, guardedfixedservicecapability forglobalreads/locks; ownedsite+instancepreflight; noACL/guard/schema/RPC changes"
+}

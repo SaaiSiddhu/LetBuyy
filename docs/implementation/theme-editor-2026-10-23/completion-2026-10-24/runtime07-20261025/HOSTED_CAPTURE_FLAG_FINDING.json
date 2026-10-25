@@ -1,0 +1,213 @@
+{
+  "recordedAt": "2026-10-24T20:30:33.719217+00:00",
+  "id": "R07-HOSTED-CAPTURE-FLAG-01",
+  "status": "OPEN_FOR_CANONICAL_OWNER_REVIEW",
+  "runId": "49ada80bc494",
+  "classification": "Observed metadata inconsistency; actual captures and balanced ledger present; no financial loss inferred",
+  "source": {
+    "path": "services/api-gateway/src/routes/checkout.ts",
+    "sha256": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e",
+    "sealedCandidateSameBytes": true,
+    "captureProofPredicateLine": 1459,
+    "captureProofIdempotencyPredicateLine": 1464,
+    "persistedFlagLine": 1489
+  },
+  "orders": [
+    {
+      "number": "ORD-20261024-10001",
+      "id": "422fb669-9db5-4da6-bffc-7fcea4c31f8d",
+      "paymentId": "pay_Trs8A3pb4lipen",
+      "session": "dd0e6d32-fd89-400a-9088-073463ed2673",
+      "storedCapturePostedToLedger": false,
+      "ledger": [
+        {
+          "id": "5ec5a0db-1cfc-4b3f-a19a-5b6afec9ea13",
+          "entries": 2,
+          "currency": "INR",
+          "sourceId": "razorpay:pay_Trs8A3pb4lipen",
+          "debitMinor": 251000,
+          "sourceType": "payment_capture",
+          "creditMinor": 251000,
+          "writerModule": "settlement"
+        }
+      ],
+      "financialChecks": {
+        "ownedOrderConfirmedPaid": true,
+        "oneIntendedProductQuantityOne": true,
+        "oneSandboxHostedIntent": true,
+        "serverAmountMatches": true,
+        "exactlyOneBalancedCapture": true,
+        "completedConfirmedHostedCheckout": true,
+        "signedCapturedCallback200": true,
+        "durableCapturedSignatureProcessed": true,
+        "singleQuantityOneInventoryConsumption": true
+      }
+    },
+    {
+      "number": "ORD-20261024-10002",
+      "id": "d79f15fb-bbd6-4084-b391-1a7586294023",
+      "paymentId": "pay_TrsMHrL9Kx60ef",
+      "session": "6482a347-1cfa-4999-92c6-3faef9252b46",
+      "storedCapturePostedToLedger": false,
+      "ledger": [
+        {
+          "id": "ad74c185-9fd3-46f7-9b7f-4be7e7e93173",
+          "entries": 2,
+          "currency": "INR",
+          "sourceId": "razorpay:pay_TrsMHrL9Kx60ef",
+          "debitMinor": 20000,
+          "sourceType": "payment_capture",
+          "creditMinor": 20000,
+          "writerModule": "settlement"
+        }
+      ],
+      "financialChecks": {
+        "ownedOrderConfirmedPaid": true,
+        "oneIntendedProductQuantityOne": true,
+        "oneSandboxHostedIntent": true,
+        "serverAmountMatches": true,
+        "exactlyOneBalancedCapture": true,
+        "completedConfirmedHostedCheckout": true,
+        "signedCapturedCallback200": true,
+        "durableCapturedSignatureProcessed": true,
+        "singleQuantityOneInventoryConsumption": true
+      }
+    },
+    {
+      "number": "ORD-20261024-10003",
+      "id": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+      "paymentId": "pay_TrsWOjFmQm62M0",
+      "session": "1c63b862-cd1b-495f-8cc4-2b51045ba48a",
+      "storedCapturePostedToLedger": false,
+      "ledger": [
+        {
+          "id": "07a154ad-b802-4111-8428-125f30667dcc",
+          "entries": 2,
+          "currency": "INR",
+          "sourceId": "razorpay:pay_TrsWOjFmQm62M0",
+          "debitMinor": 58000,
+          "sourceType": "payment_capture",
+          "creditMinor": 58000,
+          "writerModule": "settlement"
+        }
+      ],
+      "financialChecks": {
+        "oneOwnedConfirmedPaidOrder": true,
+        "oneIntendedProductVariantQuantity": true,
+        "oneSandboxHostedIntent": true,
+        "serverAmountMatches": true,
+        "exactlyOneBalancedCapture": true,
+        "completedConfirmedHostedCheckout": true,
+        "signedCapturedCallback200": true,
+        "durableCapturedSignatureProcessed": true,
+        "oneExactVariantSaleConsumption": true,
+        "currentStockMatchesControllerBaselineMinusPurchase": true
+      },
+      "receipt": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json"
+    },
+    {
+      "number": "ORD-20261024-10004",
+      "id": "c65a6d67-a933-43f2-9c8b-391e7c15dcaf",
+      "caseId": "HAB-RZP-DESK-01",
+      "paymentId": "pay_TrsleqZCaHyZcZ",
+      "session": "855e80e1-fdcf-4230-ad2e-529bcc095196",
+      "storedCapturePostedToLedger": false,
+      "ledger": [
+        {
+          "id": "1f5e56a3-1d4b-4401-b726-9ffe961462cf",
+          "entries": 2,
+          "currency": "INR",
+          "sourceId": "razorpay:pay_TrsleqZCaHyZcZ",
+          "debitMinor": 892000,
+          "sourceType": "payment_capture",
+          "creditMinor": 892000,
+          "writerModule": "settlement"
+        }
+      ],
+      "financialChecks": {
+        "oneOwnedConfirmedPaidOrder": true,
+        "oneIntendedProductVariantQuantity": true,
+        "oneSandboxHostedIntent": true,
+        "serverAmountMatches": true,
+        "exactlyOneBalancedCapture": true,
+        "completedConfirmedHostedCheckout": true,
+        "signedCapturedCallback200": true,
+        "durableCapturedSignatureProcessed": true,
+        "oneExactVariantSaleConsumption": true,
+        "currentStockMatchesControllerBaselineMinusPurchase": true
+      },
+      "receipt": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/HABITAT_ORDER_10004_READONLY_CORRELATION.json"
+    },
+    {
+      "number": "ORD-20261024-10005",
+      "id": "ef2ec85f-4f88-4a81-8d50-c6d3c16ba3cb",
+      "paymentId": "pay_TrszunRgM1c6LO",
+      "session": "760d8710-e247-4f27-9922-943bc9c67936",
+      "storedCapturePostedToLedger": false,
+      "ledger": [
+        {
+          "id": "d8d0f721-4b3c-4821-a9ff-859db8481945",
+          "entries": 2,
+          "currency": "INR",
+          "sourceId": "razorpay:pay_TrszunRgM1c6LO",
+          "debitMinor": 122000,
+          "sourceType": "payment_capture",
+          "creditMinor": 122000,
+          "writerModule": "settlement"
+        }
+      ],
+      "financialChecks": {
+        "oneOwnedConfirmedPaidOrder": true,
+        "oneIntendedProductVariantQuantity": true,
+        "oneSandboxHostedIntent": true,
+        "serverAmountMatches": true,
+        "exactlyOneBalancedCapture": true,
+        "completedConfirmedHostedCheckout": true,
+        "signedCapturedCallback200": true,
+        "durableCapturedSignatureProcessed": true,
+        "oneExactVariantSaleConsumption": true,
+        "currentStockMatchesControllerBaselineMinusPurchase": true
+      },
+      "receipt": "/Volumes/Projects/LetBuyy/docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/CIRCUIT_ORDER_10005_READONLY_CORRELATION.json"
+    },
+    {
+      "number": "ORD-20261024-10006",
+      "id": "c2991cb7-d637-4f11-86d4-fe02252dfc7f",
+      "paymentId": "pay_TrtDBBhYggySd6",
+      "session": "33f8f477-d48f-4a16-b401-7506f937580b",
+      "storedCapturePostedToLedger": false,
+      "ledger": [
+        {
+          "id": "6c0d1833-c760-410a-8d27-742ed67b4888",
+          "entries": 2,
+          "currency": "INR",
+          "sourceId": "razorpay:pay_TrtDBBhYggySd6",
+          "debitMinor": 182000,
+          "sourceType": "payment_capture",
+          "creditMinor": 182000,
+          "writerModule": "settlement"
+        }
+      ],
+      "financialChecks": {
+        "oneOwnedConfirmedPaidOrder": true,
+        "oneIntendedProductVariantQuantity": true,
+        "oneSandboxHostedIntent": true,
+        "serverAmountMatches": true,
+        "exactlyOneBalancedCapture": true,
+        "completedConfirmedHostedCheckout": true,
+        "signedCapturedCallback200": true,
+        "durableCapturedSignatureProcessed": true,
+        "oneExactVariantSaleConsumption": true,
+        "currentStockMatchesControllerBaselineMinusPurchase": true
+      },
+      "receipt": "/Volumes/Projects/LetBuyy/docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/TRAILMARK_ORDER_10006_READONLY_CORRELATION.json"
+    }
+  ],
+  "observation": "Both cart-bound hosted sessions are completed/confirmed with correct sandbox intent, but metadata.capture_posted_to_ledger is false. Each order has exactly one actual canonical capture with two balanced entries and processed signature-valid captured event.",
+  "sourceInference": "The hosted confirmation capture read requires its own confirmation-specific idempotency key in addition to the provider-payment source ID. A prior webhook capture can use another key, which can explain the false flag. This is a source-based inference, not a separately executed fault reproduction.",
+  "scope": "Record for the existing canonical checkout owner; no source/candidate edit, new transaction, replay, stock change or browser action performed. Downstream notification effects were not asserted.",
+  "evidence": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/THREADLINE_PANTRY_READONLY_PAYMENT_CORRELATION.json",
+  "fullCertificationImpact": "No full certificate issued; owner/reviewer must disposition this observed metadata inconsistency.",
+  "updatedAt": "2026-10-24T21:20:49.838325+00:00",
+  "observedOrderCount": 6
+}

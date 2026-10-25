@@ -1,0 +1,10 @@
+{
+  "classification": "PRIVATE_SETUP_FAILURE_NOT_BEHAVIORAL_TEST",
+  "failure": "Assumedroot-levelcandidate/node_modules/zod. ActualisolatedpnpmusesCore-localresolution; no businesssourcewasmodifiedbeforefailure.",
+  "resolvedVendorRoots": {
+    "zod": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/zod@4.3.6/node_modules/zod",
+    "tsx": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx"
+  },
+  "sharedTypes": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/shared-types",
+  "runtimeSourceRule": "Onlyapprovedvendordepsoutsidecandidate; no Mainworkspacebusinessmoduleimports."
+}

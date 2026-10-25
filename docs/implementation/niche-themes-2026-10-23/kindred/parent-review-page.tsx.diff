@@ -1,0 +1,305 @@
+--- /private/tmp/letbuyy-kindred-parent-before-image-binding-20261023/0-page.tsx	2026-10-23 11:47:13
++++ apps/merchant/web/src/app/[store]/products/new/page.tsx	2026-10-23 11:54:35
+@@ -13,6 +13,8 @@
+     createFormSignature,
+     type ProductEditIntent,
+     publicMediaReference,
++    retainProductMediaReferences,
++    buildProductFormFields,
+     readUnsavedProduct,
+     restoreProductEdit,
+     generateHandle,
+@@ -21,7 +23,7 @@
+ } from '@/lib/product-form-state'
+ import { NicheFactsEditor } from '@/components/products/NicheFactsEditor'
+ import { ApparelFactsEditor } from '@/components/products/ApparelFactsEditor'
+-import { composeProductMetadata } from '@/lib/product-facts-draft'
++import { composeProductMetadata, resolveProductGiftImages } from '@/lib/product-facts-draft'
+ 
+ import { useReadRequest } from '@/lib/api/use-read-request'
+ 
+@@ -36,6 +38,7 @@
+ } from '@/lib/marketplace-resubmission-key'
+ import { Button, Input,
+     ArrowLeft,
++    ArrowRight,
+     Badge,
+     Banner,
+     Card,
+@@ -130,6 +133,7 @@
+     const [vendor, setVendor] = useState(defaultProductSnapshot.vendor)
+     const [apparelFacts, setApparelFacts] = useState(defaultProductSnapshot.apparelFacts)
+     const [nicheFacts, setNicheFacts] = useState(defaultProductSnapshot.nicheFacts)
++    const [giftMediaImageOrder, setGiftMediaImageOrder] = useState(defaultProductSnapshot.giftMediaImageOrder)
+     const productMetadataRef = useRef<Record<string, unknown>>({})
+     const [tags, setTags] = useState(defaultProductSnapshot.tags)
+     const [saving, setSaving] = useState(false)
+@@ -147,11 +151,12 @@
+     activeScope.current = scopeKey
+     const requestLifecycle = useRef({ mounted: false, generation: 0 })
+     useEffect(() => {
+-        requestLifecycle.current.mounted = true
+-        requestLifecycle.current.generation += 1
++        const lifecycle = requestLifecycle.current
++        lifecycle.mounted = true
++        lifecycle.generation += 1
+         return () => {
+-            requestLifecycle.current.mounted = false
+-            requestLifecycle.current.generation += 1
++            lifecycle.mounted = false
++            lifecycle.generation += 1
+         }
+     }, [scopeKey])
+     const loadedScope = useRef<string | null>(null)
+@@ -173,9 +178,11 @@
+         isEditing ? null : createFormSignature(defaultProductSnapshot)
+     ))
+ 
++    const resolvedGiftDraft = resolveProductGiftImages(nicheFacts, productMetadataRef.current, giftMediaImageOrder, images)
+     const currentSnapshot = useMemo<ProductFormSnapshot>(() => ({
+         apparelFacts,
+-        nicheFacts,
++        nicheFacts: resolvedGiftDraft.value,
++        giftMediaImageOrder: resolvedGiftDraft.imageOrder,
+         title,
+         description,
+         images,
+@@ -206,7 +213,8 @@
+         tags,
+     }), [
+         apparelFacts,
+-        nicheFacts,
++        resolvedGiftDraft.value,
++        resolvedGiftDraft.imageOrder,
+         barcode,
+         category,
+         chargeTax,
+@@ -238,6 +246,9 @@
+     ])
+ 
+     const currentSignature = useMemo(() => createFormSignature(currentSnapshot), [currentSnapshot])
++    const recoverySignature = useMemo(() => createFormSignature(retainProductMediaReferences(currentSnapshot)), [currentSnapshot])
++    const latestProductDraft = useRef(currentSnapshot)
++    latestProductDraft.current = currentSnapshot
+     const latestSignature = useRef(currentSignature)
+     latestSignature.current = currentSignature
+     const latestVariants = useRef(variantMatrix)
+@@ -264,11 +275,28 @@
+     useEffect(() => {
+         if (editIntent.current?.scope !== scopeKey) return
+         try {
+-            window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...editIntent.current, draftSignature: currentSignature }))
++            window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...editIntent.current, draftSignature: recoverySignature }))
+         } catch {
+             setError('Your newer draft could not be retained across reload. Keep this page open and recover the pending save.')
+         }
+-    }, [currentSignature, pendingStorageKey, scopeKey])
++    }, [recoverySignature, pendingStorageKey, scopeKey])
++
++    const updateProductImages = useCallback((update: (previous: string[]) => string[]) => {
++        const before = latestProductDraft.current
++        const next = update(before.images)
++        const resolved = resolveProductGiftImages(before.nicheFacts, productMetadataRef.current, before.giftMediaImageOrder, next)
++        setImages(next)
++        setNicheFacts(resolved.value)
++        setGiftMediaImageOrder(resolved.imageOrder)
++        latestProductDraft.current = { ...before, images: next, nicheFacts: resolved.value, giftMediaImageOrder: resolved.imageOrder }
++    }, [])
++
++    const updateProductFacts = (next: string) => {
++        const order = next === '' || resolvedGiftDraft.issue ? '' : JSON.stringify(images)
++        setNicheFacts(next)
++        setGiftMediaImageOrder(order)
++        latestProductDraft.current = { ...currentSnapshot, nicheFacts: next, giftMediaImageOrder: order }
++    }
+ 
+     const applySnapshot = useCallback((snapshot: ProductFormSnapshot) => {
+         setTitle(snapshot.title)
+@@ -301,6 +329,7 @@
+         setTags(snapshot.tags)
+         setApparelFacts(snapshot.apparelFacts ?? '{}')
+         setNicheFacts(snapshot.nicheFacts ?? '')
++        setGiftMediaImageOrder(snapshot.giftMediaImageOrder ?? '')
+         setSavedSignature(createFormSignature(snapshot))
+     }, [])
+ 
+@@ -318,7 +347,7 @@
+         try {
+             if (!hasUnsavedChanges) window.sessionStorage.removeItem(draftStorageKey)
+             else {
+-                const snapshot = { ...currentSnapshot, importerDetails: '', images: currentSnapshot.images.filter(publicMediaReference) }
++                const snapshot = retainProductMediaReferences({ ...currentSnapshot, importerDetails: '' })
+                 const retained = JSON.stringify({ scope: scopeKey, version: productVersion, updatedAt: Date.now(), snapshot })
+                 if (retained.length > 256_000) throw new Error('Draft too large')
+                 window.sessionStorage.setItem(draftStorageKey, retained)
+@@ -492,7 +521,7 @@
+         }
+ 
+         if (newImages.length > 0) {
+-            setImages((prev) => [...prev, ...newImages])
++            updateProductImages((prev) => [...prev, ...newImages])
+             notify({
+                 title: newImages.length === 1 ? 'Image uploaded' : 'Images uploaded',
+                 description: 'Save the product to keep these media changes.',
+@@ -513,8 +542,17 @@
+     }
+ 
+     const removeImage = (index: number) => {
+-        setImages((prev) => prev.filter((_, imageIndex) => imageIndex !== index))
++        updateProductImages((prev) => prev.filter((_, imageIndex) => imageIndex !== index))
+     }
++
++    const moveImage = (from: number, to: number) => updateProductImages(previous => {
++        if (to < 0 || to >= previous.length) return previous
++        const next = [...previous]
++        const moved = next[from]
++        next[from] = next[to]
++        next[to] = moved
++        return next
++    })
+ 
+     const rebuildMatrix = useCallback((nextOptions: VariantOption[], currentMatrix: VariantRow[], basePrice: string) => {
+         setVariantMatrix(buildVariantMatrix(nextOptions, basePrice, currentMatrix))
+@@ -627,60 +665,9 @@
+                 ? `/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`
+                 : `/api/stores/${encodeURIComponent(store)}/products`
+ 
+-            const fields = {
+-                    metadata: pending ? undefined : composeProductMetadata(productMetadataRef.current, apparelFacts, nicheFacts),
+-                    name: productTitle,
+-                    description: description.trim(),
+-                    images,
+-                    category: category || (isEditing ? null : undefined),
+-                    price: parseFloat(price) || 0,
+-                    compare_price: parseFloat(comparePrice) || null,
+-                    cost_per_item: parseFloat(costPerItem) || null,
+-                    charge_tax: chargeTax,
+-                    stock: parseInt(quantity) || 0,
+-                    track_inventory: trackInventory,
+-                    sku: sku || null,
+-                    barcode: barcode || null,
+-                    sell_when_oos: sellWhenOos,
+-                    is_physical: isPhysical,
+-                    weight: parseFloat(weight) || null,
+-                    weight_unit: weightUnit,
+-                    country_of_origin: countryOfOrigin.trim() || null,
+-                    importer_details: importerDetails.trim() || null,
+-                    hs_code: hsCode || null,
+-                    url_handle: urlHandle || null,
+-                    seo_title: seoTitle || null,
+-                    seo_description: seoDescription || null,
+-                    product_type: productType || null,
+-                    vendor: vendor || null,
+-                    tags: tags ? tags.split(',').map((tag) => tag.trim()).filter(Boolean) : [],
+-                    is_active: status === 'active',
+-                    product_options: variantOptions.map((option, index) => ({
+-                        name: option.name,
+-                        position: index,
+-                        values: option.values,
+-                    })),
+-                    variants: variantMatrix.map((row, index) => ({
+-                        ...(isEditing && row.id ? { id: row.id } : {}),
+-                        title: row.title,
+-                        price: parseFloat(row.price) || parseFloat(price) || 0,
+-                        compare_price: parseFloat(row.comparePrice) || null,
+-                        sku: row.sku || null,
+-                        stock: parseInt(row.stock) || 0,
+-                        options: [
+-                            row.option1 ? variantOptions[0]?.name ?? 'Option 1' : null,
+-                            row.option2 ? variantOptions[1]?.name ?? 'Option 2' : null,
+-                            row.option3 ? variantOptions[2]?.name ?? 'Option 3' : null,
+-                        ]
+-                            .map((name, i) => {
+-                                const vals = [row.option1, row.option2, row.option3]
+-                                return name && vals[i] ? [name, vals[i]] : null
+-                            })
+-                            .filter((entry): entry is [string, string] => entry !== null)
+-                            .reduce<Record<string, string>>((acc, [k, v]) => { acc[k] = v; return acc }, {}),
+-                        position: index,
+-                    })),
+-                }
++            if (!pending && resolvedGiftDraft.issue) throw new Error(resolvedGiftDraft.issue)
++            if (!pending && images.some(image => !publicMediaReference(image))) throw new Error('Use public product image URLs before saving. Your draft is kept.')
++            const fields = buildProductFormFields(currentSnapshot, pending ? undefined : composeProductMetadata(productMetadataRef.current, apparelFacts, currentSnapshot.nicheFacts), isEditing)
+             let intent = pending
+             if (isEditing && !intent) {
+                 const key = crypto.randomUUID()
+@@ -691,7 +678,7 @@
+             if (intent) {
+                 // Persist the immutable command before allowing its first effect.
+                 // Later draft edits update only draftSignature, never this payload/key.
+-                try { window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...intent, draftSignature: currentSignature })) }
++                try { window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...intent, draftSignature: recoverySignature })) }
+                 catch { throw new Error('This browser could not retain the save request. Allow session storage before saving.') }
+                 editIntent.current = intent
+             }
+@@ -764,7 +751,7 @@
+         } finally {
+             if (requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setSaving(false)
+         }
+-    }, [apparelFacts, nicheFacts,
++    }, [apparelFacts, currentSnapshot, resolvedGiftDraft.issue, recoverySignature,
+         actorId,
+         draftStorageKey,
+         applySnapshot,
+@@ -776,40 +763,16 @@
+         saveBlocked,
+         saving,
+         scopeKey,
+-        barcode,
+-        category,
+-        chargeTax,
+-        comparePrice,
+-        costPerItem,
+-        countryOfOrigin,
+-        importerDetails,
+         currentSignature,
+-        description,
+-        hsCode,
+         images,
+         isEditing,
+-        isPhysical,
+         notify,
+-        price,
+         productId,
+-        productType,
+-        quantity,
+         router,
+-        sellWhenOos,
+-        seoDescription,
+-        seoTitle,
+-        sku,
+         status,
+         store,
+-        tags,
+         title,
+-        trackInventory,
+-        urlHandle,
+         variantMatrix,
+-        variantOptions,
+-        vendor,
+-        weight,
+-        weightUnit,
+     ])
+ 
+     const discardDraft = useCallback(() => {
+@@ -949,7 +912,7 @@
+                     </Card>
+ 
+                     <Card>
+-                        <div className="space-y-[var(--lb-space-4)] p-[var(--lb-space-4)]"><ApparelFactsEditor value={apparelFacts} onChange={setApparelFacts} /><NicheFactsEditor key={scopeKey} value={nicheFacts} metadata={productMetadataRef.current} onChange={setNicheFacts} resources={{ images, variantOptions }} disabled={loadingProduct || editBlocked || contextChanged} /></div>
++                        <div className="space-y-[var(--lb-space-4)] p-[var(--lb-space-4)]"><ApparelFactsEditor value={apparelFacts} onChange={setApparelFacts} /><NicheFactsEditor key={scopeKey} value={currentSnapshot.nicheFacts} metadata={productMetadataRef.current} onChange={updateProductFacts} resources={{ images, variantOptions }} disabled={loadingProduct || editBlocked || contextChanged} giftMediaIssue={resolvedGiftDraft.issue} onConfirmGiftMedia={() => setGiftMediaImageOrder(JSON.stringify(images))} /></div>
+                         <Section title="Media" description="Upload images that help shoppers inspect the product.">
+                             <Input unstyled
+                                 ref={fileInputRef}
+@@ -980,6 +943,10 @@
+                                             >
+                                                 <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                             </Button>
++                                            <div className="absolute bottom-[var(--lb-space-2)] left-[var(--lb-space-2)] flex gap-[var(--lb-space-1)]">
++                                                <Button type="button" variant="secondary" size="icon" aria-label={`Move product media ${index + 1} earlier`} disabled={index === 0} onClick={() => moveImage(index, index - 1)}><ArrowLeft aria-hidden="true" /></Button>
++                                                <Button type="button" variant="secondary" size="icon" aria-label={`Move product media ${index + 1} later`} disabled={index === images.length - 1} onClick={() => moveImage(index, index + 1)}><ArrowRight aria-hidden="true" /></Button>
++                                            </div>
+                                         </div>
+                                     ))}
+                                 </div>

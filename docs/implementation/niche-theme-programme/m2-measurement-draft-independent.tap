@@ -1,0 +1,108 @@
+TAP version 13
+# Subtest: proposal unit domain and upper bound match the actual canonical query contract
+ok 1 - proposal unit domain and upper bound match the actual canonical query contract
+  ---
+  duration_ms: 12.215625
+  type: 'test'
+  ...
+# Subtest: canonical cm, mm, m and inch equivalents normalize without source-unit facets
+ok 2 - canonical cm, mm, m and inch equivalents normalize without source-unit facets
+  ---
+  duration_ms: 0.158208
+  type: 'test'
+  ...
+# Subtest: paired measurement validation and unrelated repeated query values remain canonical
+ok 3 - paired measurement validation and unrelated repeated query values remain canonical
+  ---
+  duration_ms: 2.039583
+  type: 'test'
+  ...
+# Subtest: canonical selected sports measurement replaces the whole value/unit pair
+ok 4 - canonical selected sports measurement replaces the whole value/unit pair
+  ---
+  duration_ms: 0.740708
+  type: 'test'
+  ...
+# Subtest: furniture dimension groups remain atomic and do not inherit an absent depth
+ok 5 - furniture dimension groups remain atomic and do not inherit an absent depth
+  ---
+  duration_ms: 0.739959
+  type: 'test'
+  ...
+# Subtest: existing strict readers require a coordinated metadata extension before SQL activation
+not ok 6 - existing strict readers require a coordinated metadata extension before SQL activation
+  ---
+  duration_ms: 8.649292
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/measurement-discovery/contract-checks.test.ts:2:5875'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(!StorefrontDiscoveryMetadataSchema.safeParse({...current,measurement_capabilities:{equipment_length:{available:false,allowed_units:[]},max_width_cm:{available:false},max_depth_cm:{available:false}}}).success)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/measurement-discovery/contract-checks.test.ts:60:2)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: draft DOWN restores the exact qualified386 function definition and body hash
+ok 7 - draft DOWN restores the exact qualified386 function definition and body hash
+  ---
+  duration_ms: 0.62075
+  type: 'test'
+  ...
+# Subtest: draft retains every original browse predicate, order, page, facet and witness expression
+ok 8 - draft retains every original browse predicate, order, page, facet and witness expression
+  ---
+  duration_ms: 0.244459
+  type: 'test'
+  ...
+# Subtest: both drafts pin full helper profiles and forbid non-body catalog/ACL/dependency drift
+ok 9 - both drafts pin full helper profiles and forbid non-body catalog/ACL/dependency drift
+  ---
+  duration_ms: 0.578709
+  type: 'test'
+  ...
+# Subtest: UP and DOWN reject initial non-owner grantors in every helper-profile admission
+ok 10 - UP and DOWN reject initial non-owner grantors in every helper-profile admission
+  ---
+  duration_ms: 0.655291
+  type: 'test'
+  ...
+# Subtest: furniture equivalence and fixed cm threshold bounds reuse the canonical contracts
+ok 11 - furniture equivalence and fixed cm threshold bounds reuse the canonical contracts
+  ---
+  duration_ms: 1.250667
+  type: 'test'
+  ...
+# Subtest: expanded SQL emits all3 finite capabilities and independently guards actual available axes
+ok 12 - expanded SQL emits all3 finite capabilities and independently guards actual available axes
+  ---
+  duration_ms: 0.247375
+  type: 'test'
+  ...
+# Subtest: equipment-only SQL revision and its complete evidence manifest remain byte-identical
+ok 13 - equipment-only SQL revision and its complete evidence manifest remain byte-identical
+  ---
+  duration_ms: 2.473125
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 12
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 511.489625

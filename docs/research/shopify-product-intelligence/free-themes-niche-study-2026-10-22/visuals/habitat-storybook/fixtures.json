@@ -1,0 +1,88 @@
+{
+  "fictional": true,
+  "buyer": {
+    "name": "Mira Rao",
+    "email": "mira@example.test",
+    "address": "Flat 2, Sample House, Example Lane, Pune, Maharashtra 411001, India"
+  },
+  "products": [
+    {
+      "id": "aara-chair",
+      "name": "Aara lounge chair",
+      "commonDimensionsCm": {
+        "width": 68,
+        "depth": 78,
+        "height": 74,
+        "seatHeight": 38
+      },
+      "variants": [
+        {
+          "id": "aara-natural",
+          "finish": "Natural teak",
+          "priceMinor": 1890000,
+          "packageCm": [
+            72,
+            82,
+            78
+          ],
+          "weightKg": 13.8
+        },
+        {
+          "id": "aara-smoked",
+          "finish": "Smoked teak",
+          "priceMinor": 1990000,
+          "packageCm": [
+            74,
+            84,
+            78
+          ],
+          "weightKg": 14.2
+        }
+      ]
+    },
+    {
+      "id": "nila-table",
+      "name": "Nila side table",
+      "priceMinor": 640000,
+      "dimensionsCm": {
+        "diameter": 50,
+        "height": 42
+      },
+      "finish": "Natural teak",
+      "packageCm": [
+        56,
+        56,
+        48
+      ]
+    }
+  ],
+  "cart": {
+    "lines": [
+      {
+        "variant": "aara-natural",
+        "quantity": 1,
+        "unitMinor": 1890000
+      },
+      {
+        "variant": "nila-natural",
+        "quantity": 1,
+        "unitMinor": 640000
+      }
+    ],
+    "subtotalMinor": 2530000,
+    "shippingMinor": 50000,
+    "discountMinor": 0,
+    "totalMinor": 2580000,
+    "tax": "included in fictional item prices; no rate assertion"
+  },
+  "order": {
+    "id": "HB-1042",
+    "date": "2026-10-18",
+    "status": "preparing",
+    "dispatchEvent": null,
+    "deliveryDate": null,
+    "samplePaymentRecorded": true
+  },
+  "deliveryDate": null,
+  "catalogCount": 2
+}

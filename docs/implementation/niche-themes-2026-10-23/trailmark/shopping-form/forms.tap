@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: before-fix positive control reproduces lost canonical fields using the actual old Liquid source and native FormData
+ok 1 - before-fix positive control reproduces lost canonical fields using the actual old Liquid source and native FormData
+  ---
+  duration_ms: 214.92375
+  type: 'test'
+  ...
+# Subtest: collection: Apply and sort preserve every unedited key/array/limit, exclude page and avoid duplicate edited fields
+ok 2 - collection: Apply and sort preserve every unedited key/array/limit, exclude page and avoid duplicate edited fields
+  ---
+  duration_ms: 122.633458
+  type: 'test'
+  ...
+# Subtest: collection: missing capabilities preserve selected sports values; absent unit metadata never fabricates length controls
+ok 3 - collection: missing capabilities preserve selected sports values; absent unit metadata never fabricates length controls
+  ---
+  duration_ms: 176.434167
+  type: 'test'
+  ...
+# Subtest: collection: actual supplied length units enable an independent required pair; blank/half-pairs cannot submit
+ok 4 - collection: actual supplied length units enable an independent required pair; blank/half-pairs cannot submit
+  ---
+  duration_ms: 87.239041
+  type: 'test'
+  ...
+# Subtest: collection: active clear links retain every other value and clear length/unit together; clear-all uses its canonical URL
+ok 5 - collection: active clear links retain every other value and clear length/unit together; clear-all uses its canonical URL
+  ---
+  duration_ms: 90.736417
+  type: 'test'
+  ...
+# Subtest: search: Apply and sort preserve every unedited key/array/limit, exclude page and avoid duplicate edited fields
+ok 6 - search: Apply and sort preserve every unedited key/array/limit, exclude page and avoid duplicate edited fields
+  ---
+  duration_ms: 75.758334
+  type: 'test'
+  ...
+# Subtest: search: missing capabilities preserve selected sports values; absent unit metadata never fabricates length controls
+ok 7 - search: missing capabilities preserve selected sports values; absent unit metadata never fabricates length controls
+  ---
+  duration_ms: 146.75175
+  type: 'test'
+  ...
+# Subtest: search: actual supplied length units enable an independent required pair; blank/half-pairs cannot submit
+ok 8 - search: actual supplied length units enable an independent required pair; blank/half-pairs cannot submit
+  ---
+  duration_ms: 74.808042
+  type: 'test'
+  ...
+# Subtest: search: active clear links retain every other value and clear length/unit together; clear-all uses its canonical URL
+ok 9 - search: active clear links retain every other value and clear length/unit together; clear-all uses its canonical URL
+  ---
+  duration_ms: 84.278
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2208.82425

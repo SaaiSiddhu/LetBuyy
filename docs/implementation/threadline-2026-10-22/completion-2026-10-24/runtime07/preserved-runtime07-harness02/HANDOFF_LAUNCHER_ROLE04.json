@@ -1,0 +1,62 @@
+{
+  "recordedAt": "2026-10-25T04:19:50.574321+00:00",
+  "status": "SEALED_COMBINED_THREE_PATH_LAUNCHER_AND_LOCAL_SIX_ROLE_SUPPLEMENT_SOURCE_ONLY",
+  "baseHandoff": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/HANDOFF.json",
+    "sha256": "690e9908e196ebe142ecfc94d2ae245269d799f1734cdf5c0b900132704bca7b"
+  },
+  "preservedEarlierTwoPathSeal": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/HANDOFF_LAUNCHER03.json",
+    "sha256": "e1abce2e0df0edfe216146cfbdd79fa4f8e1c5ab3ec8fe6d687f89ddfce6e806",
+    "reason": "Roleaddendum created04:15 but delivered after ownerissued04:16 two-pathseal. Earlier seal/patch/TAP/beforebytes preserved; this is a separate combined three-path final rather than overwriting evidence."
+  },
+  "grant": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_HARNESS02_LOCAL_ROLE_REQUIREMENT_ADDENDUM_05.json",
+    "sha256": "1dfb6b0aeba6faae20e7681fc31eb92035c2cc73451cb2a61ae8610350463696"
+  },
+  "sourcePaths": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeSha256": "2960af9b57479eb9365ad3962239a44c406ab7d216d1e0f99d6357542f023f34",
+      "beforeArchive": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/before-local-role04/scripts/governance/owned-database-provision.mjs",
+      "afterSha256": "59a1ca8dd37d76c99b8b8724dbaa3d53b11a34d0eb875d437274b386ce0de1d7",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/owned-database-provision.mjs"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "beforeSha256": "313e71fee08a772d3a15cb58db636c37ad501aedca0d15ed57ff4d4548f46662",
+      "beforeArchive": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/before-launcher03/scripts/governance/run-executable-suites.mjs",
+      "afterSha256": "9bee1039e32cef1d36cf43b879307f48a38511873c770a8ba45da443e6539c2f",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/run-executable-suites.mjs"
+    },
+    {
+      "path": "tests/governance/owned-preserved-runtime.test.mjs",
+      "beforeSha256": "bf5e6594e7c2d96a52748e2a2651ddc7a3da1028ef2677a66e9b5dd88f6a1540",
+      "beforeArchive": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/before-launcher03/tests/governance/owned-preserved-runtime.test.mjs",
+      "afterSha256": "54a4a0ee923dee0058c33958742315c6aa85b2f561a78f5832543df225bcb287",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/tests/governance/owned-preserved-runtime.test.mjs"
+    }
+  ],
+  "otherSevenContextUnchanged": true,
+  "base15EvidenceUnchanged": true,
+  "changes": {
+    "launcher": "SamefixedselectedTSXpath ancestors/realpath/regularfile/X_OK checked inactualrunner beforeanyDocker/privatecapsuleread; no fallback, list/reap/Node-onlyintents unchanged.",
+    "localRoles": "Onlyminimum role list loses mandatorysupabase_admin. Allsixactuallocalfixture roles mandatory; optionaladmin allowedonlyifactuallypresent, allrole/profile/password/settings/membership/security/witness checks unchanged."
+  },
+  "validation": {
+    "newFocusedCases": 7,
+    "pass": 7,
+    "fail": 0,
+    "skip": 0,
+    "rolePositive": "Synthetic20roles/8memberships withoutsupabase_admin, no actualprivateprofile reads.",
+    "roleNegatives": "OmitEACHsix+recomputedprofileSHA =>CANONICAL_ROLES_REQUIRED; fullprofiletamper/superuserguard retained.",
+    "launcherControls": "Actualmain+guard fakeDocker, fivebadmodeszeroDocker, ordinaryvalidgateway/list/reap/Node-onlypositive.",
+    "prior11Runtime5ReaperAndTypes": "Reused frozen evidence; not rerun or added to unique count.",
+    "syntax": "Changedprovisioner+runner node--checkpass.",
+    "actualNativeOrRestore": "NOT_RUN"
+  },
+  "patch": "UNAPPLIED_LAUNCHER_ROLE04.patch after original02 base, supersedes two-path patch for integration; neverappliedMain",
+  "actualPrivateArchiveStateRolesKeysDockerDBAppProviderBrowserActions": 0,
+  "fullThemeCertified": false,
+  "sourceScopeEnds": "FIRST_COMBINED3PATH_SEAL_NOW"
+}

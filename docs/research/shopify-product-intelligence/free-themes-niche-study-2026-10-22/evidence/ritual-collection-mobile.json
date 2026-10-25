@@ -1,0 +1,616 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "Geist, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Filter",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Single",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Default",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Ivory",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Blue",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Pink",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Gray",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "BRAND",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CONNECT",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "OK",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Chivo, sans-serif",
+      "height": 39.59375,
+      "line": "39.6px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "NEW",
+      "weight": "700",
+      "width": 82.265625,
+      "x": 16,
+      "y": 93.59375
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/tops"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bottoms"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/products/blooming-belle-fitted-tee-white"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/products/black-swan-t-shirt-black"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bella-hooded-blazer-black-red-scarf-silk-wool"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/"
+    },
+    {
+      "text": "Skip to results list",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new#ResultsList"
+    },
+    {
+      "text": "Bonding Rose Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621"
+    },
+    {
+      "text": "Blooming Belle Fitted Tee",
+      "url": "https://theme-ritual-demo.myshopify.com/products/blooming-belle-fitted-tee-white?variant=45001469460669"
+    },
+    {
+      "text": "Black Swan T-Shirt",
+      "url": "https://theme-ritual-demo.myshopify.com/products/black-swan-t-shirt-black?variant=45001471983805"
+    },
+    {
+      "text": "Bella Hooded Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bella-hooded-blazer-black-red-scarf-silk-wool?variant=45001483649213"
+    },
+    {
+      "text": "Bella Hooded Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bella-hooded-blazer-black-white-scarf-silk-wool?variant=45001481486525"
+    },
+    {
+      "text": "Bella Hooded Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bella-hooded-blazer-black-scarf-silk-wool?variant=45001481224381"
+    },
+    {
+      "text": "Bella Hooded Asymmetrical Top",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bella-hooded-asymmetrical-top-silver?variant=45001478963389"
+    },
+    {
+      "text": "Becoming a White Swan T-Shirt",
+      "url": "https://theme-ritual-demo.myshopify.com/products/becoming-a-white-swan-t-shirt-washed-greige?variant=45001471197373"
+    },
+    {
+      "text": "Altered Dreamwear T-shirt",
+      "url": "https://theme-ritual-demo.myshopify.com/products/altered-dreamwear-t-shirt-ivory?variant=45001470279869"
+    },
+    {
+      "text": "Carnivorous Rose Denim Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/carnivorous-rose-denim-blazer-vintage-wash-red-rose?variant=45001484697789"
+    },
+    {
+      "text": "Carnivorous Rose Denim Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/carnivorous-rose-denim-blazer-light-wash-pink-rose?variant=45001484927165"
+    },
+    {
+      "text": "Chest Rose Denim Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/chest-rose-denim-blazer-vintage-wash?variant=45001478799549"
+    },
+    {
+      "text": "Chest Rose Leather Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/chest-rose-leather-blazer-black?variant=45001479979197"
+    },
+    {
+      "text": "Classic Oversized Suit Trousers",
+      "url": "https://theme-ritual-demo.myshopify.com/products/classic-oversized-suit-trousers-black-virgin-wool?variant=45001480143037"
+    },
+    {
+      "text": "Denim Rose Blazer",
+      "url": "https://theme-ritual-demo.myshopify.com/products/denim-rose-blazer-vintage-wash?variant=45001484533949"
+    },
+    {
+      "text": "Fresh Cut Open Trousers",
+      "url": "https://theme-ritual-demo.myshopify.com/products/fresh-cut-open-trousers-black?variant=45001474343101"
+    },
+    {
+      "text": "His Last Rose Jeans",
+      "url": "https://theme-ritual-demo.myshopify.com/products/his-last-rose-jeans-white-denim?variant=45001467920573"
+    },
+    {
+      "text": "His Last Rose Jeans",
+      "url": "https://theme-ritual-demo.myshopify.com/products/his-last-rose-jeans-washed-black-denim?variant=45001473884349"
+    },
+    {
+      "text": "His Last Rose Jeans",
+      "url": "https://theme-ritual-demo.myshopify.com/products/his-last-rose-jeans-denim-blue?variant=45001474113725"
+    },
+    {
+      "text": "His Last Rose Shirt",
+      "url": "https://theme-ritual-demo.myshopify.com/products/his-last-rose-shirt-white?variant=45001473720509"
+    },
+    {
+      "text": "Illusion Layered Mini Skirt Jeans",
+      "url": "https://theme-ritual-demo.myshopify.com/products/illusion-layered-mini-skirt-jeans-denim-blue-wool-cotton?variant=45001478308029"
+    },
+    {
+      "text": "Lace Craft Jeans",
+      "url": "https://theme-ritual-demo.myshopify.com/products/lace-craft-jeans-white-denim?variant=45001468936381"
+    },
+    {
+      "text": "Lace Craft Jeans",
+      "url": "https://theme-ritual-demo.myshopify.com/products/lace-craft-jeans-washed-black-denim?variant=45001469100221"
+    },
+    {
+      "text": "Macramé Exposé Denim Skirt",
+      "url": "https://theme-ritual-demo.myshopify.com/products/macrame-expose-denim-skirt-white-denim?variant=45001468772541"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "New arrivals",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-ritual-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Shipping & Returns",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/shipping-returns"
+    },
+    {
+      "text": "Fit guide",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/fit-guide"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Ritual",
+      "url": "https://theme-ritual-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531863814333__section",
+      "rect": {
+        "height": 106.78125,
+        "width": 390,
+        "x": 0,
+        "y": 60
+      },
+      "tag": "DIV",
+      "text": "NEW"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531863814333__main",
+      "rect": {
+        "height": 3795.34375,
+        "width": 390,
+        "x": 0,
+        "y": 166.78125
+      },
+      "tag": "DIV",
+      "text": "Skip to results list\nFilter\nColumn grid\nBonding Rose Blazer\nBONDING ROSE BLAZER\n$2,800.00\nBlooming Belle Fitted Tee\nBLOOMING BELLE FITTED TEE\n$1,800.00\nBlack Swan T-Shirt\nBLACK SWA"
+    }
+  ],
+  "title": "New – Ritual",
+  "url": "https://theme-ritual-demo.myshopify.com/collections/new",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Beige\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Black\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Blue\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Gray\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Pink\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Red\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Silver\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      White\n                      \n                    \n                  ",
+    "\n    \n      Column grid\n    \n\n    \n      \n        \n        \n\n\n\n\n\n\n      \n\n      \n        \n        \n\n\n\n\n\n\n\n\n\n\n\n      \n    \n  ",
+    "Column grid",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Beige\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Black\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Blue\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Gray\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Pink\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Red\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Silver\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      White\n                      \n                    \n                  ",
+    ""
+  ],
+  "grids": [
+    {
+      "className": "collection-wrapper grid gap-style",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 3743.34375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n    grid main-collection-grid\n\n collection-wrapper--full-width-on-mobile\n    spacing-style\n  ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 3695.34375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "product-grid product-grid--template--20531863814333__main product-grid--grid ",
+      "columns": "189px 189px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 3695.34375,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 298.4453125,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 298.4453125,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 283.046875,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 283.046875,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 283.046875,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 283.046875,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 298.4453125,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 298.4453125,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 342.0390625,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 342.0390625,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 298.4453125,
+      "tag": "DIV",
+      "width": 189
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 298.4453125,
+      "tag": "DIV",
+      "width": 189
+    }
+  ],
+  "images": [
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Blooming Belle Fitted Tee",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Blooming Belle Fitted Tee",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Blooming Belle Fitted Tee",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Black Swan T-Shirt",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Black Swan T-Shirt",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Black Swan T-Shirt",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Bella Hooded Blazer",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    },
+    {
+      "alt": "Bella Hooded Blazer",
+      "complete": true,
+      "naturalWidth": 189,
+      "rect": {
+        "height": 236.25,
+        "width": 189
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nTotal items in cart: 0\nNEW\nSkip to results list\nFilter\nColumn grid\nBonding Rose Blazer\nBONDING ROSE BLAZER\n$2,800.00\nBlooming Belle Fitted Tee\nBLOOMING BELLE FITTED TEE\n$1,800.00\nBlack Swan T-Shirt\nBLACK SWAN T-SHIRT\n$890.00\nBella Hooded Blazer\nBELLA HOODED BLAZER\n$2,680.00\nBella Hooded Blazer\nBELLA HOODED BLAZER\n$2,680.00\nBella Hooded Blazer\nBELLA HOODED BLAZER\n$2,680.00\nBella Hooded Asymmetrical Top\nBELLA HOODED ASYMMETRICAL TOP\n$2,200.00\nBecoming a White Swan T-Shirt\nBECOMING A WHITE SWAN T-SHIRT\n$890.00\nAltered Dreamwear T-shirt\nALTERED DREAMWEAR T-SHIRT\n$1,250.00\nCarnivorous Rose Denim Blazer\nSALE\nCARNIVOROUS ROSE DENIM BLAZER\nSale price \n$950.00 \nRegular price \n$1,900.00\nCarnivorous Rose Denim Blazer\nSALE\nCARNIVOROUS ROSE DENIM BLAZER\nSale price \n$950.00 \nRegular price \n$1,900.00\nChest Rose Denim Blazer\nSALE\nCHEST ROSE DENIM BLAZER\nSale price \n$1,000.00 \nRegular price \n$2,000.00\nChest Rose Leather Blazer\nSALE\nCHEST ROSE LEATHER BLAZER\nSale price \n$1,840.00 \nRegular price \n$2,300.00\nClassic Oversized Suit Trousers\nCLASSIC OVERSIZED SUIT TROUSERS\n$980.00\nDenim Rose Blazer\nSALE\nDENIM ROSE BLAZER\nSale price \n$1,100.00 \nRegular price \n$2,200.00\nFresh Cut Open Trousers\nFRESH CUT OPEN TROUSERS\n$1,580.00\nHis Last Rose Jeans\nHIS LAST ROSE JEANS\n$1,450.00\nHis Last Rose Jeans\nHIS LAST ROSE JEANS\n$1,450.00\nHis Last Rose Jeans\nHIS LAST ROSE JEANS\n$1,450.00\nHis Last Rose Shirt\nHIS LAST ROSE SHIRT\n$1,390.00\nIllusion Layered Mini Skirt Jeans\nILLUSION LAYERED MINI SKIRT JEANS\n$1,100.00\nLace Craft Jeans\nLACE CRAFT JEANS\n$1,580.00\nLace Craft Jeans\nLACE CRAFT JEANS\n$1,580.00\nMacramé Exposé Denim Skirt\nMACRAMÉ EXPOSÉ DENIM SKIRT\n$1,450.00\nSHOP\nShop all\nBestsellers\nNew arrivals\nBRAND\nAbout us\nBlog\nShipping & Returns\nFit guide\nCONNECT\nInstagram\nTikTok\nFacebook\nContact us\n\nGET ON THE LIST\n\nEmail\nOK\nRitual\n© 2026 Ritual, Powered by Shopify"
+}

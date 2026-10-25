@@ -1,0 +1,158 @@
+{
+  "classification": "REVIEWED_EXISTING_NATIVE_COMPLEMENT_NOT_LIVE_CIRCUIT_OR_NEW_EXECUTION",
+  "recordedAt": "2026-10-23T14:56:59.723836+00:00",
+  "caseLinks": [
+    "CL-19",
+    "CL-20",
+    "CL-22",
+    "CL-23"
+  ],
+  "rawCombinedRun": {
+    "path": "docs/implementation/niche-themes-2026-10-23/madeyours/final-gate-results.json",
+    "sha256": "0ca1ef1bd2f756f179473443cfe89a3d644cbd9fc87a07eb3a6b7b25765be537",
+    "runId": "2250e55744bb",
+    "tests": 60,
+    "pass": 59,
+    "fail": 1,
+    "skipped": 0,
+    "components": [
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/authenticated-checkout.postgres.test.ts",
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "throughMigration": 388
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+        "tests": 23,
+        "pass": 23,
+        "fail": 0,
+        "throughMigration": 388
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+        "tests": 15,
+        "pass": 15,
+        "fail": 0,
+        "throughMigration": 388
+      },
+      {
+        "path": "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "throughMigration": 388
+      },
+      {
+        "path": "tests/owned-db/payment-refund-reconciliation.postgres.test.ts",
+        "tests": 11,
+        "pass": 11,
+        "fail": 0,
+        "throughMigration": 388
+      }
+    ],
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Four checkout/fact/ownership/refund components passed59; the raw run has one failed scheduled-ledger parent. Never present this raw file as a completely green run."
+  },
+  "scheduledLedgerQualifiedRerun": {
+    "path": "docs/implementation/niche-themes-2026-10-23/madeyours/n7-isolated-results.json",
+    "sha256": "e84efafad5ffe9eecfe1f0693d09b8482fd278146d47ff44060cf8a1f42c471e",
+    "runId": "68fc2c08fd36",
+    "tests": 11,
+    "pass": 11,
+    "fail": 0,
+    "skipped": 0,
+    "suite": "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
+    "profile": "prepared2 explicitly per command",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "candidateReceipt": "docs/implementation/niche-themes-2026-10-23/madeyours/n7-candidate-receipt.json",
+    "candidateReceiptSha256": "2d557b7885a3886b5c1ac839541f7ab735f8c74cc71b6dc24d58d6532fb5e923"
+  },
+  "currentParity": [
+    {
+      "path": "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
+      "testedSha256": "0fbb8f1a556496310013886ac8e167a6719b146c75817280ee11ae2d5d70d2f9",
+      "currentSha256": "0fbb8f1a556496310013886ac8e167a6719b146c75817280ee11ae2d5d70d2f9",
+      "equal": true
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "testedSha256": "9d208fb22f3ef074955b15c468dff7929a07bfbe1392a7378f626a1a0885cded",
+      "currentSha256": "9d208fb22f3ef074955b15c468dff7929a07bfbe1392a7378f626a1a0885cded",
+      "equal": true
+    },
+    {
+      "path": "scripts/governance/owned-client-launcher.mjs",
+      "testedSha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f",
+      "currentSha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f",
+      "equal": true
+    },
+    {
+      "path": "scripts/governance/owned-money-ledger-scheduled-probe.mjs",
+      "testedSha256": "5edb9dff1211b24443ce77978c8c22419b24fbe01b9d466583993c98a79a28a4",
+      "currentSha256": "5edb9dff1211b24443ce77978c8c22419b24fbe01b9d466583993c98a79a28a4",
+      "equal": true
+    },
+    {
+      "path": "services/queue-workers/src/index.ts",
+      "testedSha256": "734a6fe215264dba05a401455970a9fbaac208727ce2a8897beb37b3f6bed19a",
+      "currentSha256": "734a6fe215264dba05a401455970a9fbaac208727ce2a8897beb37b3f6bed19a",
+      "equal": true
+    },
+    {
+      "path": "services/queue-workers/src/money-ledger-reconciliation.ts",
+      "testedSha256": "d792516e56ff22d86b09a3793bd228b55563158d37a7c8784efe576e47f5f0b0",
+      "currentSha256": "d792516e56ff22d86b09a3793bd228b55563158d37a7c8784efe576e47f5f0b0",
+      "equal": true
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "testedSha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+      "currentSha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+      "equal": true
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "testedSha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+      "currentSha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+      "equal": true
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "testedSha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b",
+      "currentSha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b",
+      "equal": true
+    },
+    {
+      "path": "database/supabase/rollback/349_money_ledger_reconciliation_traversal.rollback.sql",
+      "testedSha256": "cbe14f9495820f7a3fd1bd420e32a9c9c4cca1dc03082f79c738974cdf57cbed",
+      "currentSha256": "cbe14f9495820f7a3fd1bd420e32a9c9c4cca1dc03082f79c738974cdf57cbed",
+      "equal": true
+    }
+  ],
+  "allScheduledPinsStillEqual": true,
+  "coverageBoundaries": [
+    "23 passed fact-snapshot native tests include parallel canonical order RPC calls, stale-catalog lock refusal, immutable history and transactional fault rollback; these are not a browser/network fault exercise.",
+    "10 authenticated checkout and15 buyer ownership tests are separate native components, not live Circuit buyer sessions.",
+    "The11-test scheduled-ledger rerun is a real separate owned PostgreSQL result, not a replay-hook balance check.",
+    "Pending COD remains unpaid and does not imply a payment-capture entry.",
+    "No installed Circuit browser case, live concurrent gateway confirmation or live injected response-loss is completed by reviewing these files."
+  ],
+  "liveCircuitStatus": "NOT_RUN",
+  "testsRerun": false
+}

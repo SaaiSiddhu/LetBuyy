@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:48:59.349875+00:00",
+  "classification": "OWNED_FIXTURE_FAILED_STEP_DIAGNOSTICS_SOURCE_REPAIR_NOT_GATEWAY_DB_OR_BROWSER_PROOF",
+  "lease": "completion-editor-checkout-diagnostics-20261024-02",
+  "files": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "beforeSHA256": "c37c7779822b50d533496a7ad4aa6fb14f1d5422894b90adb27fa98589ad6a11",
+      "afterSHA256": "0ccf3d8ed71eaaaf9d4abf75739d66c42f7047c6fcb59b2b98d9fcb40f9e235e"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "beforeSHA256": "6ae2734f24f0e54e272bf63fe4f512fe98266e3b8fcc4d9d3f388b2961680256",
+      "afterSHA256": "c770cc8252329badb9fa27f01bf6ef519dbbb59c8e8b07427a92a9b7e1bd9003"
+    }
+  ],
+  "beforeImages": "/private/tmp/theme-editor-child-contract-20261024-03/before",
+  "behavior": "Existing bounded failedRequests now recognizes canonical contact/delivery/payment-intent POSTs using the respective canonical Zod schema and exact fixture-site/cart binding; added safe code CHECKOUT_STATE_CONFLICT only. New-step queries reject unknown or duplicate handoff keys.",
+  "retention": "New failed diagnostics retain operation/cart UUID/status/allowlisted code/request UUID/command and response hashes only. No new raw body/header/cookie/token/URL/PII retention or output.",
+  "canonicalQueryKeys": [
+    "site_id",
+    "cart_token",
+    "expires_at",
+    "cart_digest",
+    "signature",
+    "channel"
+  ],
+  "unchanged": {
+    "successfulCaptureProofControlsDisposeTailByteExact": true,
+    "failureBudget128": true,
+    "bodyResponseLimit4096": true,
+    "successfulReplayAndNonceControls": true,
+    "realGatewayAcknowledgementUntouched": true,
+    "productionCheckoutRoutesEdited": false
+  },
+  "checks": {
+    "focusedObserverAndFixtureTests": {
+      "exitCode": 0,
+      "tests": 40,
+      "pass": 40,
+      "fail": 0,
+      "skip": 0,
+      "composition": "28 observer +12 retained origin/setup checks; source units only, no mounted Worker/PG execution."
+    },
+    "gatewayNoEmitTypecheck": {
+      "exitCode": 0,
+      "incremental": false
+    },
+    "focusedLint": {
+      "exitCode": 0,
+      "sourceErrors": 0,
+      "sourceWarnings": 0,
+      "configurationNotes": [
+        "Existing merchant shared Next TypeScript/boundary configuration applied explicitly because gateway has no standalone lint configuration.",
+        "React auto-detect/pages-directory advisory emitted; no source-rule failure."
+      ]
+    }
+  },
+  "logs": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/observation02-evidence/theme-editor-observation02-unit-01.log",
+      "sha256": "f0f1b34796288f98a0a22b7e0eb64766645078b07bf516eb2e759da9e03494a6"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/observation02-evidence/theme-editor-observation02-gateway-typecheck-01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/observation02-evidence/theme-editor-observation02-lint-01.log",
+      "sha256": "2e62c1b1d9f4f9150cfc5c79660085d5044874e7db83597ac1cf6741abea57fc"
+    }
+  ],
+  "sourceWritesSealed": true,
+  "leaseRelease": "First sealed handoff ends observation02 writer lease.",
+  "independentReview": "PENDING",
+  "freshFixtureAdmission": "NOT_RUN",
+  "browserNativeDatabaseProviderActions": 0,
+  "wholeThemeCertified": false
+}

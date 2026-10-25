@@ -1,0 +1,158 @@
+{
+  "controls": [
+    {
+      "class": "Polaris-Tabs__Tab Polaris-Tabs__Tab--active",
+      "label": "All",
+      "rect": {
+        "h": 28,
+        "w": 39.265625,
+        "x": 248,
+        "y": 66
+      },
+      "role": "tab",
+      "style": {
+        "bg": "rgba(0, 0, 0, 0.03)",
+        "border": "0px none rgb(166, 166, 166)",
+        "borderRadius": "9999px",
+        "color": "rgb(166, 166, 166)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "4px 12px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "class": "Polaris-Tabs__Tab Polaris-Tabs__Tab--iconOnly",
+      "label": "Create new view",
+      "rect": {
+        "h": 28,
+        "w": 32,
+        "x": 291.265625,
+        "y": 66
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(166, 166, 166)",
+        "borderRadius": "9999px",
+        "color": "rgb(166, 166, 166)",
+        "display": "inline-flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "4px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "class": "Polaris-Button Polaris-Button--pressable Polaris-Button--variantSecondary Polaris-Button--sizeSlim Polaris-Button--textAlignCenter Polaris-Button--iconOnly Polaris-Button--disabled Polaris-Button--adm",
+      "label": "Search and filter results",
+      "rect": {
+        "h": 28,
+        "w": 48,
+        "x": 746,
+        "y": 65
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0.03)",
+        "border": "0px none rgb(166, 166, 166)",
+        "borderRadius": "9999px",
+        "color": "rgb(166, 166, 166)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "2px",
+        "lineHeight": "20px",
+        "padding": "4px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "class": "Polaris-Button Polaris-Button--pressable Polaris-Button--variantSecondary Polaris-Button--sizeSlim Polaris-Button--textAlignCenter Polaris-Button--iconOnly Polaris-Button--disabled Polaris-Button--adm",
+      "label": "Sort the results",
+      "rect": {
+        "h": 28,
+        "w": 28,
+        "x": 802,
+        "y": 65
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0.03)",
+        "border": "0px none rgb(166, 166, 166)",
+        "borderRadius": "9999px",
+        "color": "rgb(166, 166, 166)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "2px",
+        "lineHeight": "20px",
+        "padding": "4px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "dialogs": [],
+  "headerAncestors": [],
+  "headings": [],
+  "main": {
+    "class": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+    "label": "All Create new view Add your productsStart by stocking your store with products your customers will love Add p",
+    "rect": {
+      "h": 1026,
+      "w": 638,
+      "x": 220,
+      "y": 4
+    },
+    "role": null,
+    "style": {
+      "bg": "rgb(255, 255, 255)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "16px",
+      "color": "rgb(16, 16, 16)",
+      "display": "flex",
+      "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "position": "relative",
+      "shadow": "none",
+      "top": "0px",
+      "zIndex": "auto"
+    },
+    "tag": "MAIN"
+  },
+  "path": "/store/[store]/products",
+  "viewport": {
+    "dpr": 2,
+    "h": 1034,
+    "w": 862
+  }
+}

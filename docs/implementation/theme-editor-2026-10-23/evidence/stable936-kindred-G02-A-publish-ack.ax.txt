@@ -1,0 +1,162 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-summit/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-summit/editor
+	2 container
+		3 container
+			4 link Description: Back to themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+			5 checkbox Description: Toggle navigation panel, Value: 1
+			6 button Sections
+			7 button Theme settings
+			8 button Theme styles
+			9 button Versions
+			10 text Kindred Active
+			11 text Saved
+			12 container Template
+				13 pop up button (collapsed, settable) Description: Template, Value: Kindred gift discovery, Secondary Actions: Expand
+					14 menu
+						15 (selected) Kindred gift discovery
+						16 Kindred gift product
+						17 Kindred occasion collection
+						18 Page
+						19 LetBuyy Core cart
+						20 Blog
+						21 Article
+						22 Policy page
+						23 Kindred gift search
+						24 Contact
+						25 Password
+						26 404 Not Found
+						27 Login
+						28 Order detail
+						29 Order history
+						30 All collections
+						31 Account
+						32 Register
+						33 Account settings
+						34 Wishlist
+						35 Addresses
+			36 button (disabled) Undo
+			37 button (disabled) Redo
+			38 button (disabled) Save
+			39 button Publish
+		40 container Theme editor navigation
+			41 heading Kindred gift discovery, Value: 2
+				42 text Kindred gift discovery
+			43 text v4
+			44 outline Theme sections
+				45 container
+					46 text HEADER
+					47 button Announcement Bar
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selected) Gift discovery opening Toggle Gift discovery opening visibility Move Gift discovery opening up Move Gift discovery opening down Remove Gift discovery opening
+							53 button Gift discovery opening
+							54 checkbox Description: Toggle Gift discovery opening visibility, Value: 1
+							55 button (disabled) Move Gift discovery opening up
+							56 button Move Gift discovery opening down
+							57 button Remove Gift discovery opening
+						58 row (selectable) Occasion collections
+							59 button Occasion collections
+						60 row (selectable) Curated gift gallery
+							61 button Curated gift gallery
+						62 row (selectable) Packaging and contents editorial
+							63 button Packaging and contents editorial
+						64 row (selectable) Gift help and merchant policies
+							65 button Gift help and merchant policies
+					66 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						67 menu
+							68 (selected) Marquee
+							69 404 Not Found
+							70 Spotlight
+							71 Gift search
+							72 Video Hero
+							73 Call to Action
+							74 Gift discovery opening
+							75 Blog Listing
+							76 Cart
+							77 Contact Form
+							78 Page Content
+							79 Curated gift gallery
+							80 Rich Content
+							81 Testimonials
+							82 Gift help and merchant policies
+							83 Packaging and contents editorial
+							84 Brand Marquee
+							85 Occasion collections
+							86 FAQ Accordion
+							87 Password Gate
+							88 Services Grid
+							89 App Block Slot
+							90 Customer Login
+							91 Policy Content
+							92 Portfolio Grid
+							93 Product Detail
+							94 Skills Section
+							95 Article Content
+							96 Banner Carousel
+							97 Order History
+							98 Announcement Bar
+							99 Customer Account
+							100 Collection Banner
+							101 Occasion, recipient and budget
+							102 Customer Register
+							103 Account Settings
+							104 Wishlist
+							105 Independent related gifts
+							106 Newsletter Signup
+							107 Addresses
+							108 Experience Timeline
+							109 Order Detail
+							110 Gift results
+					111 button Add
+				112 container
+					113 text FOOTER
+					114 button Footer
+		115 container Live theme preview
+			116 text Live preview
+			117 text syn-threadline-ui-6815276b . localhost  -  1440 px
+			118 container Preview device
+				119 checkbox Desktop, Value: 1
+				120 checkbox Tablet, Value: 0
+				121 checkbox Mobile, Value: 0
+			122 container
+				123 text syn-threadline-ui-6815276b . localhost
+				124 checkbox Description: Inspect preview, Value: 1
+				125 text Preparing preview…
+				126 text Syncing preview…
+		127 container Theme properties
+			128 text Selected section
+			129 heading Gift discovery opening, Value: 2
+				130 text Gift discovery opening
+			131 container
+				132 container Smart defaults
+					133 button (collapsed) Smart defaults, Secondary Actions: Expand
+						134 text Smart defaults
+				135 text Gift photograph
+				136 text field (settable) Gift photograph image URL
+				137 container
+					138 text Upload image
+					139 button Upload image file
+				140 button Browse media library for Gift photograph
+				141 container
+					142 text Eyebrow
+					143 text field (settable) Eyebrow, Value: THE GIFT IS IN THE THOUGHT
+				144 container
+					145 text Heading
+					146 text field (settable) Heading, Value: Kindred saved heading A 936e5f577646
+				147 container
+					148 text Image description
+					149 text field (settable) Image description
+				150 container
+					151 text Description
+					152 text field (settable) Description, Value: Something for their moment, their kind of day.
+				153 container
+					154 text Finder heading
+					155 text field (settable) Finder heading, Value: Who’s on your mind?
+				156 text BLOCKS
+		157 container
+			158 text Theme published Kindred gift discovery is now included in the live storefront version.
+			159 button Dismiss notification
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-summit/editor

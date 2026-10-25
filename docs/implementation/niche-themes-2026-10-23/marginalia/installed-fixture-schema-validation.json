@@ -1,0 +1,93 @@
+{
+  "classification": "CANONICAL_SCHEMA_VALIDATION_ONLY_NOT_EXECUTED_ACCEPTANCE",
+  "checkedAt": "2026-10-23T13:01:05.885Z",
+  "checks": [
+    {
+      "key": "books",
+      "schemas": [
+        "CreateProductSchema",
+        "BooksFactsSchema"
+      ],
+      "result": "PASS",
+      "variantCount": 3
+    },
+    {
+      "key": "books.en_hardback",
+      "schemas": [
+        "ProductVariantSchema",
+        "BooksVariantFactsSchema"
+      ],
+      "result": "PASS"
+    },
+    {
+      "key": "books.hi_paperback",
+      "schemas": [
+        "ProductVariantSchema",
+        "BooksVariantFactsSchema"
+      ],
+      "result": "PASS"
+    },
+    {
+      "key": "books.en_paperback_oos",
+      "schemas": [
+        "ProductVariantSchema",
+        "BooksVariantFactsSchema"
+      ],
+      "result": "PASS"
+    },
+    {
+      "key": "stationery",
+      "schemas": [
+        "CreateProductSchema",
+        "BooksFactsSchema"
+      ],
+      "result": "PASS",
+      "variantCount": 0
+    },
+    {
+      "key": "laterCatalogEdits.book",
+      "schemas": [
+        "ProductEditVariantSchema",
+        "BooksVariantFactsSchema"
+      ],
+      "result": "PASS",
+      "stockOmitted": true
+    },
+    {
+      "key": "laterCatalogEdits.stationery",
+      "schemas": [
+        "BooksFactsSchema"
+      ],
+      "result": "PASS",
+      "stockOmitted": true
+    }
+  ],
+  "inputs": {
+    "docs/implementation/niche-themes-2026-10-23/marginalia/book-editions-create-product.plan.json": "f5008950fd8b233851f01b01245ce03a1db267f99df48feaa3084bc4482fbfca",
+    "docs/implementation/niche-themes-2026-10-23/marginalia/stationery-create-product.plan.json": "bcbcb2cdf414dd4a21a967b73d6144c40f1a3fed0903934867a99845d6dd3649",
+    "docs/implementation/niche-themes-2026-10-23/marginalia/installed-book-stationery-lifecycle.matrix.json": "f65557129858ac0906fd6f7dfd78fc00c6124e30fbd2a52187cb82b8913bed82"
+  },
+  "schemaSources": {
+    "packages/commerce-core/src/index.ts": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9",
+    "packages/commerce-core/src/marginalia-facts.ts": "891d8e5f77cf301213421b1fd945746fb22a887cc024f2ad4ca5d1cd0d2071c0"
+  },
+  "substitutions": {
+    "storeUuid": "SYNTHETIC_VALIDATION_ONLY_NOT_AN_ACTUAL_STORE",
+    "runId": "schema-check",
+    "mediaOrigin": "https://fixture.example.invalid",
+    "editVariantUuid": "SYNTHETIC_VALIDATION_ONLY_NOT_AN_ACTUAL_VARIANT"
+  },
+  "actualLifecycle": {
+    "caseCount": 16,
+    "allStatuses": "NOT_RUN",
+    "allEvidence": null,
+    "allRuntimeBindings": null,
+    "productCreated": false,
+    "apiRequested": false,
+    "databaseStarted": false,
+    "browserStarted": false,
+    "buildStarted": false,
+    "proposalRegenerated": false,
+    "sqlEmitted": false
+  }
+}

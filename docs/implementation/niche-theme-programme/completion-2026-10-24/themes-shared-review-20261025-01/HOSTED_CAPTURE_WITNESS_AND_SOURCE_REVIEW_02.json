@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-25T00:44:21.340375+00:00",
+  "status": "ACCEPT_EXACT_CAUSAL_WITNESS_PAIR_AND_CLOSED_INPUTS_FOR_STANDALONE_PREFLIGHT_ONLY",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "humanAuthority": "RESUME_AUTHORITY_20261025_02.json",
+  "requestingCtoGrant": "Exactly two600s native cohorts delegated, source acceptance and standalone terminal0 required first",
+  "handoffSha256": "31215729304d0365458b4127eccd87a95f84469b28093c448c8dc81565872cbb",
+  "acceptedWitnessTestSha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76",
+  "wrapperSha256": "d5660a3d777799c6e74c06f659265196930f01639b0cb1e25a4ce566b84d1fcc",
+  "causalReview": [
+    "Actual canonical capture ID/key/payment ownership/amount/currency/writer/2balanced entries and completed hosted row read BEFORE intended metadata assertion. No mutation added.",
+    "Preconditions-pass marker includes observed flag and capture key; RED is accepted only for concrete webhook-first falseflag assertion after those preconditions. Query-shape/setup failures alone are not reproduction.",
+    "Only change from original sealed test49f705 is this read-only witness block; original source01 test/wrapper remain immutable. Same4a7d1a5 witness in both source candidates."
+  ],
+  "physicalReview": {
+    "pinnedHandoffReferences": 23,
+    "referencesMismatched": 0,
+    "sourceFilesRehashedEach": 6545,
+    "pairDifferingPaths": [
+      "services/api-gateway/src/routes/checkout.ts"
+    ],
+    "original6547Receipt": true,
+    "copiedSourceEnvExclusions": 6
+  },
+  "fullVendorAndRuntimeVerification": "Preflight is explicitly activated to rehash41519 vendor files/links plus all candidate inputs and Node/tsx/actual CJS+ESM exports under denied application fetch/socket/subprocess/env access. Actual full vendor bytes/runtime loads are not claimed PASS before that terminal result.",
+  "standaloneScope": "Actual module/export/CLI inventory only; no Worker requests, DB/native/Docker/provider calls or build. TSX compiler initialization may use its documented own process before application guards; not a zero-process bootstrap claim.",
+  "nativeActivationGranted": false,
+  "remaining": "Require distinct terminal exit0 and PASS_STANDALONE_PREFLIGHT_ONLY for RED and GREEN, then exact native activation. Stop first unexpected refusal and preserve output; no workaround/rerun."
+}

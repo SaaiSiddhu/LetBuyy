@@ -1,0 +1,359 @@
+{
+  "recordedAt": "2026-10-23T17:34:38.481845+00:00",
+  "classification": "INDEPENDENT_SAVED_EVIDENCE_FIRST_PASS_AUDIT_NOT_FINAL_ACCEPTANCE",
+  "runId": "9cd50e893016",
+  "executionOwnerThread": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "auditOwnerThread": "01a164ba-d306-7953-9745-b375f5cf21c9",
+  "ownershipReceipt": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/editor-sole-controller-handoff.json",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+  "databaseThroughMigration": 390,
+  "matrix": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/INSTALLED_GIFTS_LIFECYCLE.md",
+  "cases": [
+    {
+      "id": "G01",
+      "title": "Bind the single shared fixture",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "PARTIAL",
+      "editorObservation": "Actual gifted productUUID8e02cb4f... exists from original fourteen setup; remaining exact shipping/instance/version bindings not fully captured.",
+      "auditReason": "Actual site/product/cart bindings observed; shipping-rate, collection, installed-instance/version receipts incomplete.",
+      "evidenceSnapshots": [
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/cart-kindred-one-gift.json"
+      ],
+      "continuationRequired": true
+    },
+    {
+      "id": "G02",
+      "title": "Install and publish Kindred v2",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "PARTIAL",
+      "editorObservation": "Full normal installed2.0 template A/Bsave/reload/publication/restoreA/retainedB/reapplyB and exact hashes pass; complete installed binding and unchanged catalog proof not captured.",
+      "auditReason": "A/B heading reload and publication/recovery receipts agree; full installed binding and before/after unchanged-catalog proof absent. Preview baseline failure is separately retained.",
+      "evidenceSnapshots": [
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-heading-A-reload.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-heading-B-reload.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-publication-A-proof.json",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-publication-B-proof.json",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-publication-restored-A-proof.json",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-retained-B-after-restore-A.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-publication-reapplied-B-proof.json"
+      ],
+      "continuationRequired": true
+    },
+    {
+      "id": "G03",
+      "title": "Edit the existing gifts product",
+      "status": "FAIL",
+      "editorDiagnosticStatus": "FAIL",
+      "editorObservation": "NormalUI set birthday/thank-you +friend/colleague preserving3contents/images; Save rejects merchant origin; failed draft retained tab15.",
+      "auditReason": "Actual normal merchant Save displays “This change must originate from this merchant app.” Required occasion/recipient save/reload failed; draft values are not durable save proof.",
+      "evidenceSnapshots": [
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-G03-product-save.ax.txt"
+      ],
+      "continuationRequired": true
+    },
+    {
+      "id": "G04",
+      "title": "Invalid media-role recovery",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No observed out-of-range/duplicate role command or validation response. Not executed in finite first pass.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G05",
+      "title": "Unknown-facts recovery",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No observed unknown-contents/role omission and restoration through successful normal save.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G06",
+      "title": "Collection and search discovery",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Occasion/recipient precondition Save failed; exact planned discovery corpus unprepared.",
+      "auditReason": "Required occasion/recipient save failed; planned discovery corpus unprepared. Prior static discovery evidence gives no installed credit.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G07",
+      "title": "PDP and supplied media",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "PARTIAL",
+      "editorObservation": "ActualPDP Mug300ml/Handwash+Notebook+Pen, open/closed labeledimages and no variants shown. Visual primary-image/render verification unavailable with0viewport.",
+      "auditReason": "Actual PDP shows 300 ml/Hand wash., Notebook, Pen and two role-labelled images; exact rendered image identity/visual proof remains incomplete. No variant/options invented.",
+      "evidenceSnapshots": [
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-G07-PDP.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/cart-kindred-one-gift.json"
+      ],
+      "continuationRequired": true
+    },
+    {
+      "id": "G08",
+      "title": "Keyboard and responsive browsing",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "BLOCKED",
+      "editorObservation": "Actual browser viewport0x0. Frozen knownKQA01long-brandP2 remainsopen; no responsive pass.",
+      "auditReason": "No installed 320/768/1440 keyboard/hydration evidence. Owner reports viewport 0x0; exact KQA-01 failure retained in original evidence, not reobserved or closed in this run.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G09",
+      "title": "Server cart and reload",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "PARTIAL",
+      "editorObservation": "Normal q1gift1100 cart/reload+guarded facts/mediaRoles and empty options; exact canonical saved primary-image receipt missing. Actualq9Addreject/cartordersunchanged; exact2Pinkrestored.",
+      "auditReason": "UI/reload and guarded cart agree q1, INR1100, variant null/properties empty and approved facts/mediaRoles; saved primary-image receipt missing. Overstock rejection is a subcase only.",
+      "evidenceSnapshots": [
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-G09-cart-drawer.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-G09-cart-reload-stable.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/cart-kindred-one-gift.json",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-above-stock-rejection.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/cart-kindred-overstock.json"
+      ],
+      "continuationRequired": true
+    },
+    {
+      "id": "G10",
+      "title": "Client authority negative",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No actual unsupported price/snapshot or display-property spoof command/response observed.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G11",
+      "title": "Buyer identity",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "PARTIAL",
+      "editorObservation": "Existing normallyregisteredBuyerA session reused; no Kindred-specific account reload/hosted carry verified.",
+      "auditReason": "Owner reports reuse of previously normally registered Buyer A, but no Kindred-specific account reload and hosted session carry proof in sealed inputs.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G12",
+      "title": "Hosted COD checkout",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "BLOCKED",
+      "editorObservation": "Current9cdTLSselfsigned; RootOStrustedsetup complete, requires freshmanual-os-trustedfixture normalbrowser proof.",
+      "auditReason": "No accepted Kindred order. Current9cd remains old self-signed TLS; newly approved OS trust is not browser checkout proof on this candidate. Fresh trusted fixture is pending.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G13",
+      "title": "Idempotent retry",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No accepted G12 order or captured accepted idempotency command to repeat.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G14",
+      "title": "Initial saved readback",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No accepted G12 order for buyer/merchant/Liquid saved-order readbacks.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G15",
+      "title": "Merchant mutation after purchase",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No accepted purchase; no successful post-purchase Mug250ml/media mutation.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G16",
+      "title": "Historical readback after mutation",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "G12/G15 prerequisites absent; no historical readback proof.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G17",
+      "title": "Stale cart review",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No separately accepted stale cart and successful mutation/review-command evidence.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G18",
+      "title": "Tenant and buyer isolation",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "NOT_RUN",
+      "editorObservation": "Specific case not executed in finiteoldfixture slice; corrected merchant save/trusted checkout/order or isolation prerequisite required.",
+      "auditReason": "No positive own-order control or allocated foreign buyer/site denial evidence.",
+      "evidenceSnapshots": [],
+      "continuationRequired": true
+    },
+    {
+      "id": "G19",
+      "title": "Conflict and resource recovery",
+      "status": "NOT_RUN",
+      "editorDiagnosticStatus": "PARTIAL",
+      "editorObservation": "Oldfixture safecheckpoint+exactcartrestoration/retaineddrafts recorded; specific stale product conflict not executed.",
+      "auditReason": "Exact whitelisted cart restoration and paused old UI checkpoint verified; stale-version conflict and final shared-runtime teardown were not executed/delegated.",
+      "evidenceSnapshots": [
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-cart-original-restored.ax.txt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/kindred-cart-transition-and-restoration.json",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/cart-kindred-before.json",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/installed-lifecycle/first-pass-9cd50e893016/inputs/cart-kindred-restored.json"
+      ],
+      "continuationRequired": true
+    }
+  ],
+  "counts": {
+    "NOT_RUN": 18,
+    "FAIL": 1
+  },
+  "editorDiagnosticCounts": {
+    "PARTIAL": 6,
+    "FAIL": 1,
+    "NOT_RUN": 10,
+    "BLOCKED": 2
+  },
+  "normalization": "Only a complete case can PASS. PARTIAL/BLOCKED and owner NOT_RUN remain provisional NOT_RUN for full acceptance; detailed diagnostic statuses retained. G03 is an observed failure. This is not a terminal disposition for all19.",
+  "verifiedSubcases": {
+    "normalGiftCartAndReload": true,
+    "quantity": 1,
+    "unitPriceINR": 1100,
+    "lineTotalINR": 1100,
+    "variantId": null,
+    "properties": {},
+    "overstockCartExactUnchanged": true,
+    "originalCartExactRestored": true,
+    "ordersAtFourControls": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "restoredAHashMatchesA": true,
+    "reappliedBHashMatchesB": true,
+    "allFourPublicationStatuses200": true
+  },
+  "provenance": {
+    "sourceAndArtifactChecks": [
+      {
+        "file": "packages/theme-engine/src/kindred-theme.ts",
+        "expectedSha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+        "actualSha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+        "matches": true
+      },
+      {
+        "file": "packages/theme-engine/src/kindred-discovery.ts",
+        "expectedSha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+        "actualSha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+        "matches": true
+      },
+      {
+        "file": "packages/theme-engine/src/kindred-styles.ts",
+        "expectedSha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+        "actualSha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+        "matches": true
+      },
+      {
+        "file": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-summit-2.0.0.json",
+        "expectedSha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+        "actualSha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+        "matches": true
+      },
+      {
+        "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+        "expectedSha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+        "actualSha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+        "matches": true
+      }
+    ],
+    "candidateKindredSourceChecks": [
+      {
+        "file": "packages/theme-engine/src/kindred-theme.ts",
+        "expectedSha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+        "actualSha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+        "matches": true
+      },
+      {
+        "file": "packages/theme-engine/src/kindred-discovery.ts",
+        "expectedSha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+        "actualSha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+        "matches": true
+      },
+      {
+        "file": "packages/theme-engine/src/kindred-styles.ts",
+        "expectedSha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+        "actualSha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+        "matches": true
+      }
+    ],
+    "candidateManifest": {
+      "path": "/private/tmp/theme-editor-candidate-20261023-final02/theme-editor-candidate-source.json",
+      "sha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "matchesLedger": true
+    },
+    "packageComparison": {
+      "method": "Read-only in-memory candidate createFirstPartyCatalogBundle; JSON.stringify hash then recursive sorted-key JSON equality with frozen accepted document.liquidBundle. No artifact regenerated/written.",
+      "candidateRawJsonSha256": "4702e911bbc5d90b9ec46b9ff3d902249d7411b699e0a0c81283a713f91c1655",
+      "candidateSortedJsonSha256": "d3d19b3da2cb0214613ba81ba4a08a187cacdce985fefc2c351a7c6a72792058",
+      "acceptedSortedJsonSha256": "d3d19b3da2cb0214613ba81ba4a08a187cacdce985fefc2c351a7c6a72792058",
+      "semanticJsonEqual": true,
+      "interpretation": "Editor sourceBundleSha256 uses raw property insertion order; accepted bundle uses sorted serialized JSON. Different raw hashes do not establish different bundle semantics. Live installed DB identity still needs its own receipt.",
+      "execution": "node --import tsx completed exit0; initial tsx CLI attempt exited1 on sandbox IPC EPERM before comparison; no fixture or server started."
+    },
+    "originalEvidenceFilesChecked": 186,
+    "originalEvidenceChanged": []
+  },
+  "kqa01": {
+    "status": "OPEN",
+    "priority": "P2",
+    "originalBrand": "Kindred उपहार और Thoughtfully Selected Everyday Celebrations",
+    "viewport": 768,
+    "installedReobservation": "NOT_RUN",
+    "originalScreenshots": [
+      "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/screenshots/collection-long-labels-768.png",
+      "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/screenshots/search-long-labels-768.png"
+    ],
+    "sourcePatchApplied": false
+  },
+  "cleanup": {
+    "kindredBrowserContextsOrTabsCreated": 0,
+    "kindredServersBuildsOrDatabasesStarted": 0,
+    "kindredSeparateLeaseGranted": false,
+    "kindredLeaseToReturn": false,
+    "readOnlyHashComparisonProcessExited": true,
+    "editorCartRestoration": "EXACT_WHITELISTED_EQUALITY",
+    "editorUiState": "PAUSED_SAFE_FOR_CONTROLLED_CORRECTED_FIXTURE_ALL_OLD_TABS_PRESERVED",
+    "sharedResources": "Retained under Editor/runtime owner; no shared teardown delegated or performed by Kindred. Original tabs/drafts/evidence preserved.",
+    "finalRuntimeTeardown": "NOT_CLAIMED"
+  },
+  "continuation": {
+    "status": "OPEN_CORRECTED_FIXTURE_REQUIRED",
+    "all19StillConserved": true,
+    "controller": "Editor remains sole UI/data controller",
+    "remaining": "Retest G03 and complete every incomplete case on coordinator-admitted corrected fixture; no parallel runtime/controller.",
+    "heartbeat": "Remain active for sealed follow-up evidence; no duplicate cart/purchase execution by audit chat."
+  }
+}

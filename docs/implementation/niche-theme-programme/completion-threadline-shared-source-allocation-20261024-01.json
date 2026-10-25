@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-24T12:52:09.868771+00:00",
+  "id": "threadline-current-shared-source-run01",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "status": "GRANTED_ONE_SERIAL_SOURCE_RUN_FINISHED_UI03_PLAYFIELD202_CIRCUIT03",
+  "expiresAt": "2026-10-24T13:22:09.868771+00:00",
+  "input": {
+    "path": "docs/implementation/niche-theme-programme/completion-threadline-shared-source-input-20261024-01.json",
+    "sha256": "d562e724fce272c0b92d8e388bce9da072bb5c0fc4ef1263d391e38015a864ad"
+  },
+  "output": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01",
+  "sourcePins": 179,
+  "expectedIdentity": {
+    "slug": "letbuyy-sense",
+    "version": "2.0.1",
+    "bundleSha256": "bc53034a4b715778036e80bebd24ead37babe9c0a86b1e6831d8c7933ea45ab2"
+  },
+  "command": [
+    "env",
+    "-u",
+    "NODE_OPTIONS",
+    "-u",
+    "NODE_PATH",
+    "node",
+    "--import",
+    "tsx",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/run.mjs",
+    "--input=/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-threadline-shared-source-input-20261024-01.json",
+    "--output=/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01"
+  ],
+  "scope": "One sharedsource data-contract run, no Main/native/build/browser/DB/provider/runtime; sameunchangedcentralserializer/adapter",
+  "ends": "Oneexit/firstseal/expiry; failure/refusalpreserved noautoredrive",
+  "proofLimits": "Current201source-dataonly; original26/318/fullUI/provider obligations unchanged"
+}

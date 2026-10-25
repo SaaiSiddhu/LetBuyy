@@ -1,0 +1,981 @@
+{
+  "body": {
+    "background": "rgb(255, 250, 247)",
+    "color": "rgba(118, 30, 11, 0.74)",
+    "font": "Liter, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Availability",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Price",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "38.00",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Sort",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Default",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom out",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Skincare",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Makeup",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "Liter, sans-serif",
+      "height": 27.59375,
+      "line": "27.6px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Join the club",
+      "weight": "400",
+      "width": 612,
+      "x": 40,
+      "y": 2412.578125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare#MainContent"
+    },
+    {
+      "text": "Sign up for our newsletter",
+      "url": "https://theme-pitch-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Shop",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/makeup"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/makeup"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/best-sellers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-pitch-demo.myshopify.com/"
+    },
+    {
+      "text": "Skip to results list",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/skincare#ResultsList"
+    },
+    {
+      "text": "Hydrating Cream Cleanser",
+      "url": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807"
+    },
+    {
+      "text": "Face Primer",
+      "url": "https://theme-pitch-demo.myshopify.com/products/smooth-skin?variant=49913025462567"
+    },
+    {
+      "text": "Advanced Retinoid Eye Balm",
+      "url": "https://theme-pitch-demo.myshopify.com/products/smooth-landing?variant=49913027625255"
+    },
+    {
+      "text": "Hydrating Milky Toner",
+      "url": "https://theme-pitch-demo.myshopify.com/products/skin-soothe?variant=49913029034279"
+    },
+    {
+      "text": "Moisture Cream",
+      "url": "https://theme-pitch-demo.myshopify.com/products/skin-soak?variant=49913029984551"
+    },
+    {
+      "text": "Instant Resurfacing Mask",
+      "url": "https://theme-pitch-demo.myshopify.com/products/doctors-visit?variant=49913026937127"
+    },
+    {
+      "text": "Advanced Retinol Body Butter",
+      "url": "https://theme-pitch-demo.myshopify.com/products/press-restart-advanced-retinol-body-butter?variant=49913040044327"
+    },
+    {
+      "text": "Gentle Retinol Serum",
+      "url": "https://theme-pitch-demo.myshopify.com/products/press-restart-serum?variant=49913028084007"
+    },
+    {
+      "text": "Gentle Retinol Body Lotion",
+      "url": "https://theme-pitch-demo.myshopify.com/products/press-restart-lotion?variant=49913027789095"
+    },
+    {
+      "text": "Brightening Serum",
+      "url": "https://theme-pitch-demo.myshopify.com/products/brightening-serum?variant=49690244776231"
+    },
+    {
+      "text": "Gel-Cream Moisturizer",
+      "url": "https://theme-pitch-demo.myshopify.com/products/dew-point?variant=49913030279463"
+    },
+    {
+      "text": "Microcrystal Exfoliator",
+      "url": "https://theme-pitch-demo.myshopify.com/products/day-maker?variant=49913030770983"
+    },
+    {
+      "text": "Day Dissolve Jumbo",
+      "url": "https://theme-pitch-demo.myshopify.com/products/day-dissolve-jumbo?variant=49913036243239"
+    },
+    {
+      "text": "Day Dissolve",
+      "url": "https://theme-pitch-demo.myshopify.com/products/day-dissolve?variant=49913031786791"
+    },
+    {
+      "text": "Daily Sunscreen SPF 50",
+      "url": "https://theme-pitch-demo.myshopify.com/products/daily-sunscreen-spf-50?variant=49689950126375"
+    },
+    {
+      "text": "Daily Gel Cleanser",
+      "url": "https://theme-pitch-demo.myshopify.com/products/daily-gel-cleanser?variant=49690167181607"
+    },
+    {
+      "text": "Daily Brightening Solution",
+      "url": "https://theme-pitch-demo.myshopify.com/products/daily-brightening-solution?variant=49690250805543"
+    },
+    {
+      "text": "Exfoliating Lip Scrub",
+      "url": "https://theme-pitch-demo.myshopify.com/products/cloud-polish?variant=49913025757479"
+    },
+    {
+      "text": "Lip Recovery Mask",
+      "url": "https://theme-pitch-demo.myshopify.com/products/cloud-wrap?variant=49913025855783"
+    },
+    {
+      "text": "AHA Exfoliating Body Scrub",
+      "url": "https://theme-pitch-demo.myshopify.com/products/buff-it-out?variant=49913027461415"
+    },
+    {
+      "text": "Cleansers",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/cleansers"
+    },
+    {
+      "text": "Moisturizers",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/moisturizers"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Eyes and lips",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/eyes-and-lips"
+    },
+    {
+      "text": "Face",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/face"
+    },
+    {
+      "text": "Accessories",
+      "url": "https://theme-pitch-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "Get to know us",
+      "url": "https://theme-pitch-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-pitch-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-pitch-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Pitch",
+      "url": "https://theme-pitch-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26029916553511__media_with_content_pezPEP",
+      "rect": {
+        "height": 500,
+        "width": 1440,
+        "x": 0,
+        "y": 110.390625
+      },
+      "tag": "DIV",
+      "text": "Skincare\n\nCleanse, brighten, buff, and protect. We've dialled in these skincare staples that keep you glowing. Made with only the ingredients you need, and nothing extra. "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26029916553511__main",
+      "rect": {
+        "height": 1739.1875,
+        "width": 1440,
+        "x": 0,
+        "y": 610.390625
+      },
+      "tag": "DIV",
+      "text": "Skip to results list\nAvailability\nPrice\n20 items\nSort\nColumn grid\nHydrating Cream Cleanser\nAdd\nHydrating Cream Cleanser\n$12.99\nFace Primer\nAdd\nFace Primer\n$16.99\nAdvanced Retinoid "
+    }
+  ],
+  "title": "Skincare – Pitch",
+  "url": "https://theme-pitch-demo.myshopify.com/collections/skincare",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "Column grid",
+    "\n    \n      Column grid\n    \n\n    \n      \n        \n        \n\n\n\n      \n\n      \n        \n        \n\n\n\n\n\n\n      \n\n    \n  "
+  ],
+  "grids": [
+    {
+      "className": "section product-grid-container color-scheme-1",
+      "columns": "40px 1360px 40px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 1739.1875,
+      "tag": "RESULTS-LIST",
+      "width": 1440
+    },
+    {
+      "className": "collection-wrapper grid gap-style",
+      "columns": "0px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 0px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 1643.1875,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "facets__inputs-list list-unstyled",
+      "columns": "none",
+      "display": "flex",
+      "gap": "11.2px",
+      "height": 43.1953125,
+      "tag": "UL",
+      "width": 96.625
+    },
+    {
+      "className": "\n    grid main-collection-grid\n\n collection-wrapper--full-width-on-mobile\n    spacing-style\n  ",
+      "columns": "0px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 0px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 1575.1875,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "product-grid product-grid--template--26029916553511__main product-grid--grid ",
+      "columns": "259.195px 259.203px 259.195px 259.203px 259.203px",
+      "display": "grid",
+      "gap": "16px",
+      "height": 1575.1875,
+      "tag": "UL",
+      "width": 1360
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 381.796875,
+      "tag": "DIV",
+      "width": 259.203125
+    }
+  ],
+  "images": [
+    {
+      "alt": "Skincare",
+      "complete": true,
+      "naturalWidth": 1350,
+      "rect": {
+        "height": 500,
+        "width": 720
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Hydrating Cream Cleanser",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Face Primer",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Face Primer",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Face Primer",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Advanced Retinoid Eye Balm",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Advanced Retinoid Eye Balm",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Advanced Retinoid Eye Balm",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Hydrating Milky Toner",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 325,
+        "width": 260
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSign up for our newsletter\n\nSign up for our newsletter\nShop\nBundles\nBestsellers\nTotal items in cart: 0\n\nSkincare\n\nCleanse, brighten, buff, and protect. We've dialled in these skincare staples that keep you glowing. Made with only the ingredients you need, and nothing extra. \n\nSkip to results list\nAvailability\nPrice\n20 items\nSort\nColumn grid\nHydrating Cream Cleanser\nAdd\nHydrating Cream Cleanser\n$12.99\nFace Primer\nAdd\nFace Primer\n$16.99\nAdvanced Retinoid Eye Balm\nAdd\nAdvanced Retinoid Eye Balm\n$17.99\nHydrating Milky Toner\nAdd\nHydrating Milky Toner\n$14.99\nMoisture Cream\nAdd\nMoisture Cream\n$14.99\nInstant Resurfacing Mask\nAdd\nInstant Resurfacing Mask\n$17.99\nAdvanced Retinol Body Butter\nSale\nAdd\nAdvanced Retinol Body Butter\nSale price \n$15.39 \nRegular price \n$21.99\nGentle Retinol Serum\nAdd\nGentle Retinol Serum\n$19.99\nGentle Retinol Body Lotion\nAdd\nGentle Retinol Body Lotion\n$17.99\nBrightening Serum\nAdd\nBrightening Serum\n$17.99\nGel-Cream Moisturizer\nAdd\nGel-Cream Moisturizer\n$14.99\nMicrocrystal Exfoliator\nAdd\nMicrocrystal Exfoliator\n$14.99\nDay Dissolve Jumbo\nSale\nAdd\nDay Dissolve Jumbo\nSale price \n$25.99 \nRegular price \n$35.99\nDay Dissolve\nAdd\nDay Dissolve\n$17.99\nDaily Sunscreen SPF 50\nChoose\nDaily Sunscreen SPF 50\n$19.00\nDaily Gel Cleanser\nAdd\nDaily Gel Cleanser\n$12.99\nDaily Brightening Solution\nAdd\nDaily Brightening Solution\n$0.00\nExfoliating Lip Scrub\nAdd\nExfoliating Lip Scrub\n$13.99\nLip Recovery Mask\nAdd\nLip Recovery Mask\n$13.99\nAHA Exfoliating Body Scrub\nAdd\nAHA Exfoliating Body Scrub\n$14.99\nJoin the club\n\nGet new product announcements, skincare tips, and exclusive discounts.\n\nEmail\nSign up\nSkincare\nCleansers\nMoisturizers\nBundles\nMakeup\nEyes and lips\nFace\nAccessories\nAbout\nGet to know us\nBlog\nContact\n© 2026 Pitch, Powered by Shopify"
+}

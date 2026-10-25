@@ -1,0 +1,96 @@
+{
+  "recordedAt": "2026-10-23T14:25:16.550348+00:00",
+  "status": "NATIVE389_390_GREEN_EXACT390_SOURCE_EMITTED_LIVE_BROWSER_PENDING",
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+    "sha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+    "lines": 447,
+    "topLevelTests": 1,
+    "dependentNativePhases": 4
+  },
+  "admissionSha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+  "acceptedInputs": [
+    {
+      "key": "rootReceipt",
+      "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+      "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+    },
+    {
+      "key": "manifest",
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+      "sha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515"
+    },
+    {
+      "key": "generator",
+      "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3"
+    },
+    {
+      "key": "389UP",
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61"
+    },
+    {
+      "key": "389DOWN",
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927"
+    },
+    {
+      "key": "390UP",
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    {
+      "key": "390DOWN",
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    }
+  ],
+  "typecheck": {
+    "command": "pnpm --filter @letbuyy/api-gateway exec tsc --noEmit",
+    "exitCode": 0,
+    "log": "active-counter-typecheck-10.log"
+  },
+  "sourceReview": {
+    "nativeEntry": "Exact through388 baseline OR all9 admitted389 with checkpoint+actualcaptures and baseline/390 body. Partial/unknown entries refuse. Latest entry performs390DOWN first ifneeded, then389DOWN to reviewed baseline without capture deletion.",
+    "proposal": "Actual9 disk artifacts and root receipt, each exact byte hash, canonical assertProposalIntegrity and renderPromotionPair. No factory generation or old proposal fallback. Actual emitted389 pair must equal accepted rendered bytes.",
+    "conservation": "All10 stable catalog/preset/alias IDs; protectedThreadline exactsource pin/catalogrow/capture. ActualpackageUUIDs+prior capture rows collected beforepromotion; v2 fullversion/schema/renderer/catalog/defaults checked beforeinstall.",
+    "realWorker": "All9 exactinstall/load/unchanged JSON-wire save/reload/idempotent retries/publication, unknown globals/version selection/foreignstore refusal; private SQL proxy and real mounted gateway.",
+    "negativeMutants": "Transaction wrapper only removed from admitted DDL for rollback-only refused probes. Shadow mutable package identity and append synthetic conflicting captures within transaction; original immutable captures never updated/deleted. Specific version/schema/renderer/ambiguity/revoked/unavailable/stalerollback errors plus exactstate equality.",
+    "composition": "Apply390after389; realSQL plusHTTP length/width/depth, split-axis joint negative. 389DOWN preserves discovery fullprofile/body/rawresponses and immutablecaptures/instances/drafts/releases;389UPthen390DOWN/UP exact restoration.",
+    "dependencyStop": "Any failed native phase stops dependent phases; no skip path."
+  },
+  "runtimeResults": {
+    "native01": "RED nullable SQL checksum oracle, preserved",
+    "native02": "3pass/2fail originalpublic503, preserved",
+    "native03": "3pass/2fail publicpolicy valid, preserved",
+    "native04": "3pass/2fail ECONNRESET thensameSDK200, preserved",
+    "native05": "3pass/2fail: all3first-attemptHTTP200; laterpreinstallcounteroracle mismatch preserved",
+    "native06": {
+      "runId": "1a4e6e2c85ad",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  },
+  "resourcesStarted": "Six explicitly allocated owned native runs; all runner-owned resources cleaned",
+  "browserActions": false,
+  "centralInventory": "Registered by coordinator; this chat did not edit inventory",
+  "nativeSlot": "Explicitly released to coordinator after green and exact390 source emission",
+  "limitations": [
+    "Preparation and compilation do not prove PostgreSQL syntax/fixtures/SQL/API expectations.",
+    "Any actual generator/SQL defect must be reported with exact expected/observed field before production changes.",
+    "Live installed browser/checkout/account journeys remain separate owner acceptance."
+  ],
+  "qualification": "qualification.json",
+  "390SourceEmission": "390-emission-receipt.json"
+}

@@ -1,0 +1,14 @@
+{
+  "command": "node --conditions=react-server --import tsx docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/qualify-source.cjs typecheck",
+  "diagnostics": 0,
+  "exitCode": 0,
+  "strict": true,
+  "noEmit": true,
+  "composite": false,
+  "incremental": false,
+  "entries": [
+    "packages/theme-engine/src/playfield-theme-v202.ts",
+    "packages/theme-engine/test/playfield-subtitle-successor.test.ts"
+  ],
+  "typescript": "5.9.3"
+}

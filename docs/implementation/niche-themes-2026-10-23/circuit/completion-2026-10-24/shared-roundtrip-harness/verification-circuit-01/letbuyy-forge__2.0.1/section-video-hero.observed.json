@@ -1,0 +1,74 @@
+{
+  "id": "section-video-hero",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "video-hero",
+    "group": "template",
+    "firstId": "section-17f25511-9389-4d6f-b68f-86c5dfbc6e6d",
+    "finalId": "section-07e64122-31ae-4d64-acda-35625d4812d3",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "video-hero",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "video-hero",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "video-hero",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "video-hero",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

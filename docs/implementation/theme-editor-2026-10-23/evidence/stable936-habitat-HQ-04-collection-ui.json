@@ -1,0 +1,95 @@
+{
+  "runId": "936e5f577646",
+  "id": "HQ-04",
+  "route": "collection",
+  "evidenceClass": "Observed actual browser URL/visible controls/DOM; canonical matching semantics in separate native receipt",
+  "actual": {
+    "pathname": "/collections/ff302898-894c-4f35-9157-987ced4231db",
+    "productLinks": [],
+    "query": [
+      [
+        "page",
+        "1"
+      ],
+      [
+        "limit",
+        "20"
+      ],
+      [
+        "sort",
+        "display_order"
+      ],
+      [
+        "search",
+        "Habitat lifecycle desk"
+      ],
+      [
+        "category",
+        "Furniture"
+      ],
+      [
+        "country_of_origin",
+        "India"
+      ],
+      [
+        "max_width_cm",
+        "122"
+      ],
+      [
+        "max_depth_cm",
+        "61"
+      ],
+      [
+        "collection_id",
+        "ff302898-894c-4f35-9157-987ced4231db"
+      ]
+    ],
+    "selects": [
+      {
+        "choices": [
+          {
+            "label": "Featured",
+            "value": "display_order"
+          },
+          {
+            "label": "Price: low to high",
+            "value": "price-asc"
+          },
+          {
+            "label": "Price: high to low",
+            "value": "price-desc"
+          },
+          {
+            "label": "Newest",
+            "value": "newest"
+          },
+          {
+            "label": "Name",
+            "value": "name"
+          }
+        ],
+        "name": "sort",
+        "value": "display_order"
+      }
+    ],
+    "text": "Habitat 936 B — saved recovery draft.\nTHREADLINE\nSearch\nLog in\nCart\n(\n2\n)\nCountry of origin\nApply filter\nClear origin filter\nHome\n/\nLifecycle furniture\nA SPACE TO SLOW DOWN\nLifecycle furniture\n\nSynthetic theme acceptance setup only.\n\nSearch furniture\nSort\nFeatured\nPrice: low to high\nPrice: high to low\nNewest\nName\nApply\nClear filters\nCategory: Furniture\n×\nCountry of origin: India\n×\nMaximum width (cm): 122\n×\nMaximum depth (cm): 61\n×\n\n0 pieces\n\nAssembled measurements describe room fit. Check separate package measurements for access.\n\nNo pieces found. Try a broader collection or clear the filters.\n\nExplore all furniture\nThreadline\n\nHabitat 936 B footer saved\n\nCONTACT\nContact us\n\n© Threadline. All rights reserved.\n\nPowered by LetBuyy",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    },
+    "visibleInputs": [
+      {
+        "label": null,
+        "name": "country_of_origin",
+        "type": "text",
+        "value": "India"
+      },
+      {
+        "label": null,
+        "name": "search",
+        "type": "search",
+        "value": "Habitat lifecycle desk"
+      }
+    ]
+  }
+}

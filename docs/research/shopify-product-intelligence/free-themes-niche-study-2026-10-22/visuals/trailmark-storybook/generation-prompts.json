@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "method": "Five original images; native HTML/CSS and Lucide React render UI. Images are illustrative and do not prove fixture measurements or certification.",
+  "assets": [
+    {
+      "asset": "assets/activity.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: photorealistic-natural. Asset type: original Trailmark recreational equipment storefront lifestyle image. A quiet neighbourhood outdoor badminton court in southern India at late afternoon, two adult friends playing casual badminton, a single dark green racket visible, muted sunlit green court and trees, candid editorial photograph with natural texture. Wide 16:9 composition, people occupying right half, uncluttered court on left. Recreational non-competitive mood, no dramatic athletic feats. No text, no logos, no watermark, no branding, no children.",
+      "generatedAt": "2026-10-22",
+      "purpose": "Original fictional Trailmark asset; no Shopify imagery used",
+      "originalPath": "/Users/saai_mithra/.codex/generated_images/01a164ba-f650-7f00-beea-90431a510973/exec-bfa567cc-8b13-47ba-a3a1-50d3625545fe.png",
+      "sha256": "b4b6ddc9b37ef8c2b865f50209d039355e7c4bc7d51de32ec1ed0574c681ee40"
+    },
+    {
+      "asset": "assets/racket.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: product-mockup. Asset type: original catalog photograph for fictional Trailmark Rally 68 recreational badminton racket. One complete adult badminton racket with forest-green slender oval frame, fine pale strings, matte dark shaft and dark graphite handle with green grip wrap. Entire racket visible including handle, diagonal from bottom left to top right, on warm pale gray studio background. Soft daylight, precise realistic product photography, minimal shadow, no extra objects. 4:3 landscape. No logos, no numbers, no text, no watermark. Preserve realistic recreational equipment proportions.",
+      "generatedAt": "2026-10-22",
+      "purpose": "Original fictional Trailmark asset; no Shopify imagery used",
+      "originalPath": "/Users/saai_mithra/.codex/generated_images/01a164ba-f650-7f00-beea-90431a510973/exec-28a37d80-a66e-4523-a2e8-302a14f1f3b3.png",
+      "sha256": "7518637400e45a07c428eae0a16a28a0cf8280a3b0598c6fe3ad1443a39558a5"
+    },
+    {
+      "asset": "assets/accessories.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: product-mockup. Asset type: original recreational accessories editorial flat lay for Trailmark storefront. On pale warm gray studio surface, a neatly arranged unbranded moss green cylindrical shuttle tube with three white nylon shuttlecocks beside it, a small rolled sage green cotton sports towel, and a graphite gray fabric racket sleeve. All objects fully visible, spaced apart for visual clarity, soft natural shadows, overhead product photography. Wide landscape. No racket, no text, no logos, no numbers, no watermark.",
+      "generatedAt": "2026-10-22",
+      "purpose": "Original fictional Trailmark asset; no Shopify imagery used",
+      "originalPath": "/Users/saai_mithra/.codex/generated_images/01a164ba-f650-7f00-beea-90431a510973/exec-0b975949-2156-471c-bba3-cdab8a343f10.png",
+      "sha256": "878c60e96dc60283537886d00f64309fbc7330a36f8cd3ab86e4cbe5409c8105"
+    },
+    {
+      "asset": "assets/shuttles.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: product-mockup. Asset type: original catalog photograph for fictional Trailmark Court Nylon 3 shuttlecock pack. Three white nylon badminton shuttlecocks with white cork bases beside one open unbranded dark moss green cylindrical storage tube. Whole objects fully visible, minimal realistic studio product photograph on warm pale gray background, soft shadow, landscape 4:3 frame. No text, no logos, no numbers, no watermark.",
+      "generatedAt": "2026-10-22",
+      "purpose": "Original fictional Trailmark asset; no Shopify imagery used",
+      "originalPath": "/Users/saai_mithra/.codex/generated_images/01a164ba-f650-7f00-beea-90431a510973/exec-fc85ccbd-dd63-49ec-95bb-0c7f53912646.png",
+      "sha256": "d47166575cd0d5b26613608329361288161805ef228b7224c6938f7f30354330"
+    },
+    {
+      "asset": "assets/sleeve.png",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: product-mockup. Asset type: original catalog photograph for fictional Trailmark Court Sleeve badminton racket cover. One elongated graphite gray fabric zippered sleeve shaped for a single adult badminton racket, forest green short carry handle, closed zipper, lying diagonal on warm pale gray background, whole object fully visible. Minimal realistic studio product photograph, natural woven fabric texture and soft shadow, 4:3 landscape. No racket visible, no text, no logos, no watermark.",
+      "generatedAt": "2026-10-22",
+      "purpose": "Original fictional Trailmark asset; no Shopify imagery used",
+      "originalPath": "/Users/saai_mithra/.codex/generated_images/01a164ba-f650-7f00-beea-90431a510973/exec-b08c4ee6-aa8e-422b-8148-3533a6606439.png",
+      "sha256": "4ac84ddf3272d4398f8d4aeef193d0c477354b185b0429d4b91aafcabd8a16b6"
+    }
+  ],
+  "fonts": {
+    "family": "Inter",
+    "weights": [
+      400,
+      600,
+      800
+    ],
+    "license": "assets/Inter-OFL.txt",
+    "source": "https://fonts.google.com/specimen/Inter"
+  },
+  "icons": {
+    "family": "Lucide React",
+    "version": "0.562.0",
+    "export": "source/icons.json"
+  },
+  "identityLogo": {
+    "asset": "assets/letbuyy-logo.svg",
+    "source": "apps/platform/identity/public/icons/letbuyy-logo-light.svg",
+    "method": "Exact copy from current canonical issuer app; no redraw"
+  }
+}

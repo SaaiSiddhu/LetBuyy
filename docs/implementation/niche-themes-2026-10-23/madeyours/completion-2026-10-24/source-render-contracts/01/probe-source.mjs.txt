@@ -1,0 +1,100 @@
+// Pure actual Liquid source witness. No app build/browser/server/DB/provider.
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { createFirstPartyCatalogBundle } from '../../../../../packages/theme-engine/src/first-party-theme-catalog.ts';
+import { LiquidRenderer } from '../../../../../packages/theme-engine/src/theme-renderer.ts';
+import { DEFAULT_THEME_SETTINGS } from '../../../../../packages/theme-engine/src/theme-settings.ts';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
+const { JSDOM } = createRequire(resolve(root, 'packages/theme-engine/package.json'))('jsdom');
+const out = resolve(dirname(fileURLToPath(import.meta.url)), 'source-render-contracts/01');
+mkdirSync(out, { recursive: true });
+const hash = value => createHash('sha256').update(value).digest('hex');
+const inputs = ['packages/theme-engine/src/madeyours-theme.ts', 'packages/theme-engine/src/theme-bundle-core.ts', 'packages/theme-engine/src/theme-bundle.ts', 'packages/theme-engine/src/theme-renderer.ts', 'packages/theme-engine/src/niche-order-presentation.ts', 'packages/theme-engine/src/first-party-theme-catalog.ts'].map(path => ({ path, sha256: hash(readFileSync(resolve(root, path))) }));
+const baseline = createFirstPartyCatalogBundle('letbuyy-nova', { designVersion: '2.0.0' });
+const baselineHash = hash(JSON.stringify(baseline));
+const originalFetch = globalThis.fetch;
+let fetchCalls = 0;
+globalThis.fetch = async () => { fetchCalls++; throw new Error('Source witness forbids network'); };
+const rows = [];
+async function render(key, change = () => {}, context = {}) {
+  const bundle = structuredClone(baseline); change(bundle);
+  const result = await new LiquidRenderer().render({
+    context: { storeId: '11111111-1111-4111-8111-111111111111', subdomain: 'source-only-madeyours', path: key === 'customers/order' ? '/account/orders/source-only' : '/', previewMode: false, locale: 'en-IN' },
+    storeTemplate: { themeId: 'letbuyy-nova', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: key, type: key === 'customers/order' ? 'account' : 'index', layoutKey: 'theme', sections: [] },
+    liquidBundle: bundle, liquidTemplateKey: key,
+    liquidContext: { shop: { name: 'Synthetic MadeYours source witness', subdomain: 'source-only-madeyours' },
+      buyer: { email: 'buyer@example.test' },
+      order: { number: 'SOURCE-ONLY-1', status: 'paid', currency: 'INR', total: 69000, line_items: [{ title: 'Saved synthetic notebook', quantity: 1, line_price: 69000, niche_facts_text: 'Text: Asha\nMethod: Engraving' }], timeline: [] },
+      collection: { title: 'Real synthetic collection', products: [], total: 0 }, collections: [], section_products: {},
+      ...context },
+  });
+  if (result.status !== 'rendered' || !result.liquid || result.warnings?.length) throw new Error(JSON.stringify({ status: result.status, warnings: result.warnings }));
+  return { html: result.liquid.layoutHtml, result: result.liquid };
+}
+function doc(rendered) { return new JSDOM(rendered.html, { url: 'https://source-only.example.invalid' }); }
+async function check(id, requirement, fn) {
+  try { const observed = await fn(); rows.push({ id, requirement, status: observed.pass ? 'PASS' : 'FAIL', ...observed }); }
+  catch (error) { rows.push({ id, requirement, status: 'ERROR', error: String(error.stack || error) }); }
+}
+try {
+  await check('SRC-ORDER-HEADING', 'Declared customer-order-detail.heading changes the rendered owned-order heading.', async () => {
+    const before = await render('customers/order');
+    const marker = 'Production details <img src=x onerror=attack()> आशा';
+    const after = await render('customers/order', b => { b.templates['customers/order'].sections['customer-order-detail-default'].settings.heading = marker; });
+    const beforeDoc = doc(before), afterDoc = doc(after);
+    const beforeHeading = beforeDoc.window.document.querySelector('.lb-order-detail h1')?.textContent;
+    const afterHeading = afterDoc.window.document.querySelector('.lb-order-detail h1')?.textContent;
+    const attacks = afterDoc.window.document.querySelectorAll('.lb-order-detail img,.lb-order-detail script,[onerror]').length;
+    beforeDoc.window.close(); afterDoc.window.close();
+    return { pass: !!afterHeading?.includes(marker) && afterHeading !== beforeHeading && attacks === 0,
+      expected: 'Exact escaped edited heading plus retained immutable order number; no executable markup.',
+      observed: { beforeHeading, afterHeading, markupNodes: attacks },
+      binding: 'templates[customers/order].sections[customer-order-detail-default].settings.heading',
+      beforeHtmlSha256: hash(before.html), afterHtmlSha256: hash(after.html), outputByteIdentical: before.html === after.html };
+  });
+  await check('SRC-FAVICON', 'Declared global faviconUrl produces an actual safe head icon link.', async () => {
+    const before = await render('index');
+    const url = 'https://assets.example.invalid/madeyours-source-only-icon.png';
+    const after = await render('index', b => { b.config.settings_data.current.faviconUrl = url; });
+    const beforeDoc = doc(before), afterDoc = doc(after);
+    const icons = Array.from(afterDoc.window.document.querySelectorAll('link[rel~="icon"]')).map(n => n.getAttribute('href'));
+    beforeDoc.window.close(); afterDoc.window.close();
+    return { pass: icons.includes(url), expected: `One safe rel=icon link to ${url}.`, observed: { icons },
+      beforeHtmlSha256: hash(before.html), afterHtmlSha256: hash(after.html), outputByteIdentical: before.html === after.html };
+  });
+  for (const [setting, value, expected] of [
+    ['primaryColor', '#123456', '--primary:#123456;'],
+    ['headingFontFamily', 'Georgia', '--font-display:Georgia;'],
+    ['bodyFontFamily', 'serif', '--font-body:serif;'],
+  ]) await check(`SRC-TOKEN-${setting}`, 'Global token is consumed by the actual CSS serializer despite no direct Liquid setting read.', async () => {
+    const before = await render('index'), after = await render('index', b => { b.config.settings_data.current[setting] = value; });
+    const combined = JSON.stringify(after.result);
+    return { pass: combined.includes(expected) && before.html !== after.html, expected, observed: { tokenPresent: combined.includes(expected), outputChanged: before.html !== after.html }, beforeHtmlSha256: hash(before.html), afterHtmlSha256: hash(after.html) };
+  });
+  await check('SRC-HERO-HEADING', 'Owned hero heading is an escaped functional field (positive control).', async () => {
+    const text = 'Own heading <script>attack()</script> தமிழ்';
+    const after = await render('index', b => { b.templates.index.sections['madeyours-intro'].settings.heading = text; });
+    const dom = doc(after), h1 = dom.window.document.querySelector('.my-intro h1')?.textContent;
+    const scriptNodes = dom.window.document.querySelectorAll('script').length;dom.window.close();
+    return { pass: h1 === text && scriptNodes === 0, expected: text, observed: { h1, scriptNodes }, htmlSha256: hash(after.html) };
+  });
+  await check('SRC-META-DESCRIPTION', 'Declared metadata text reaches the actual head through escaped output (positive control).', async () => {
+    const text = 'Synthetic description <b>literal</b> आशा';
+    const after = await render('index', b => { b.config.settings_data.current.metaDescription = text; });
+    const dom = doc(after), value = dom.window.document.querySelector('meta[name="description"]')?.getAttribute('content');dom.window.close();
+    return { pass: value === text, expected: text, observed: { description: value }, htmlSha256: hash(after.html) };
+  });
+} finally { globalThis.fetch = originalFetch; }
+const report = { classification: 'ACTUAL_IN_PROCESS_LIQUID_SOURCE_CONTRACT_NOT_BROWSER_OR_NATIVE_ACCEPTANCE', createdAt: new Date().toISOString(),
+  inputs, baselineBundleSha256: baselineHash, cases: rows,
+  summary: { total: rows.length, pass: rows.filter(r => r.status === 'PASS').length, fail: rows.filter(r => r.status === 'FAIL').length, error: rows.filter(r => r.status === 'ERROR').length },
+  fetchCalls, sourceFactoryUnmutated: baselineHash === hash(JSON.stringify(baseline)),
+  resources: { appsStarted: 0, builds: 0, database: 0, browser: 0, providerCalls: 0, mainSourceWrites: 0 },
+  limits: ['Direct actual Liquid input, not editor persistence, Next metadata, installed release or browser rendering.', 'No source patch applied.', 'Resource-picker consumption belongs to the data-binding plan and is not inferred absent from missing Liquid references.'] };
+writeFileSync(resolve(out, 'report.json'), JSON.stringify(report, null, 2) + '\n');
+console.log(JSON.stringify({ ...report.summary, fetchCalls, sourceFactoryUnmutated: report.sourceFactoryUnmutated, cases: rows.map(r => ({ id: r.id, status: r.status, ...(r.error ? { error: r.error.split('\n')[0] } : { observed: r.observed }) })) }));
+if (report.summary.fail || report.summary.error || fetchCalls || !report.sourceFactoryUnmutated) process.exitCode = 1;

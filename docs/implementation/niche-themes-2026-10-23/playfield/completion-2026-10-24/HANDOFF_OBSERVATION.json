@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T08:38:30.310389+00:00",
+  "currentHandoffRecordedAt": "2026-10-24T07:31:46.158801+00:00",
+  "completionPhase": "COMPLETION_PHASE0_PREPARATION",
+  "helperActivation": {
+    "themes": "AWAITING_EXPLICIT_MESSAGE_RESUME_AUTHORIZATION",
+    "editor": "AWAITING_EXPLICIT_MESSAGE_RESUME_AUTHORIZATION",
+    "marketplace": "NOT_RESUMED_PRESERVE_RUNNING_LOCAL_APP"
+  },
+  "activeBrowserLease": null,
+  "activeSharedWriter": null,
+  "PlayfieldProposedQueue": 10,
+  "queueIsReservationOnly": true,
+  "legacy936SafeCutoffUtc": "2026-10-24T08:50:00Z",
+  "currentPlayfieldRuntimeHandoff": "ABSENT",
+  "original14CurrentStatus": "NOT_RUN",
+  "old9cdResultsRetained": true,
+  "noRuntimeBrowserDatabaseBuildOrNetworkStarted": true,
+  "noCrossChatMessageSent": true,
+  "automationNotReactivated": true
+}

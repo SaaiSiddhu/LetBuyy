@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-25T01:46:47.136Z",
+  "status": "ACTUAL_CANONICAL_REAPER_WITH_FAKE_DOCKER_REMOVES_STANDARD_LABELLED_UNSAFE_PRESERVED_RESOURCES_AFTER_OWNER_EXIT",
+  "sourceSha256": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+  "unsafeCheckpointMemory": {
+    "preservedSafetyRequired": true,
+    "preservedSafeToCleanup": false
+  },
+  "actualFunctionResult": {
+    "containers": [
+      "letbuyy-exec-424242-review"
+    ],
+    "networks": [],
+    "volumes": [
+      "letbuyy-exec-424242-review-data"
+    ],
+    "failures": []
+  },
+  "simulatedRemovalCalls": [
+    [
+      "rm",
+      "-f",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+      "volume",
+      "rm",
+      "letbuyy-exec-424242-review-data"
+    ]
+  ],
+  "actualDockerCalls": 0,
+  "actualResourceOrDatabaseActions": 0,
+  "actualNativeCohorts": 0,
+  "meaning": "Current eight-path proposal only records preservation safety in memory and still creates ordinary four-label resources. A failed checkpoint returns71/exits; the unchanged canonical stale reaper has no persisted retention gate, so a later normal/scoped reaper treats that new data volume as disposable. Original runtime07 was not inspected or touched."
+}

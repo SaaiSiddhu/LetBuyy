@@ -1,0 +1,138 @@
+{
+  "classification": "UNAPPLIED_PROPOSAL_CONTROL_FLOW_MODEL_ONLY_NOT_CRYPTO_OS_TRUST_TLS_OR_BROWSER_ACCEPTANCE",
+  "passed": 25,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "manual opt-in uses only fixed issuer command and OS verification, with no trust installation",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "no manual hold refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "QA profile refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "other platform refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "missing CA refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "symlink refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "foreign owner refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "loose mode refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "hardlink refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "empty file refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "oversize file refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "changed realpath refuses before issuer execution",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "extra SAN refuses before OS-trust evaluation and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "wildcard SAN refuses before OS-trust evaluation and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "CA leaf refuses before OS-trust evaluation and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "name mismatch refuses before OS-trust evaluation and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "expired leaf refuses before OS-trust evaluation and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "client-auth EKU refuses before OS-trust evaluation and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "mismatched key refuses before OS-trust evaluation and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "OS trust denial fails closed without fallback and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "issuer unavailable fails closed without fallback and cleans generated directory",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "forged owned handle refuses before guard/tool/file work",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "changed fixture binding refuses before TLS work",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "unknown modes refuse after ownership proof without issuer/file work",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    },
+    {
+      "name": "default native generation body remains byte-identical in unapplied patch",
+      "result": "PASS",
+      "classification": "CONTROL_FLOW_MODEL_ONLY"
+    }
+  ],
+  "actualCommandsExecuted": [],
+  "actualPrivateFilesRead": [],
+  "certificatesGenerated": 0,
+  "trustChanges": 0,
+  "realCryptoAndOwnedIntegration": "NOT_RUN_REQUIRES_REVIEW_AND_AUTHORIZED_OWNED_LANE",
+  "browser": "NOT_RUN_REQUIRES_EDITOR_LEASE_AND_HUMAN_TRUST_DECISION"
+}

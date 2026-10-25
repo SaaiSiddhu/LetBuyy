@@ -1,0 +1,153 @@
+{
+  "classification": "REAL_LIQUID_NATIVE_ISLAND_SOURCE_PROOF_NOT_INSTALLED_ACCEPTANCE",
+  "packageVersion": "2.0.1",
+  "syntheticSourceTestIds": true,
+  "recipeInputSha256": "eefebbda07c13ebbdf5dd1a7f40d53ecdbe98c8af23ce464ffcdc5191deb4864",
+  "frames": [
+    {
+      "name": "01-unselected",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": null,
+      "selectionState": "incomplete",
+      "age": "Choose an edition for age information.",
+      "contents": "Choose an edition for its included contents.",
+      "materials": null,
+      "warningsHidden": true,
+      "details": "Edition factsChoose an edition for its measurements and materials.",
+      "purchaseDisabled": true,
+      "htmlSha256": "db311018ef3cca0b70da02d461686026608041748c3081718433af7b74b999aa"
+    },
+    {
+      "name": "02-inherited",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": "22222222-2222-4222-8222-222222222222",
+      "selectionState": "selected",
+      "age": "6–8 years",
+      "contents": "12tiles2idea cards1tray15 items in total, according to the merchant.",
+      "materials": "Wood",
+      "warningsHidden": false,
+      "details": "DimensionsTrayLength 24 cm · Width 19 cm · Height 1.5 cmEach tileLength 5 cm · Width 5 cm · Height 0.6 cmMaterialsWoodFinishSample blue finishCareNot supplied.",
+      "purchaseDisabled": false,
+      "htmlSha256": "8e76ba9e7a6769e5caa2c0590929a8535f00ef7f5835bfc20eaee4baacb52260"
+    },
+    {
+      "name": "03-unknown",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": "33333333-3333-4333-8333-333333333333",
+      "selectionState": "selected",
+      "age": "Age information not supplied.",
+      "contents": "Contents have not been supplied.",
+      "materials": "Wood",
+      "warningsHidden": true,
+      "details": "DimensionsDimensions have not been supplied.MaterialsWoodFinishNot supplied.CareNot supplied.",
+      "purchaseDisabled": false,
+      "htmlSha256": "9b237383810e5aabd0cf9cfc71fd2c69c27c3f9426608bc4fc15cd120d875f06"
+    },
+    {
+      "name": "04-paper",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": "44444444-4444-4444-8444-444444444444",
+      "selectionState": "selected",
+      "age": "Ages 9–12",
+      "contents": "36paper sheets36 items in total, according to the merchant.",
+      "materials": "Paper",
+      "warningsHidden": true,
+      "details": "DimensionsA5 sheetLength 21 cm · Width 14.8 cmMaterialsPaperFinishNot supplied.CareNot supplied.",
+      "purchaseDisabled": false,
+      "htmlSha256": "79c30ca05aac875f2bd1e3afaa7602b393d5caaa1cf86a3d3b1c5c922b4f154b"
+    },
+    {
+      "name": "05-returned-inherited",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": "22222222-2222-4222-8222-222222222222",
+      "selectionState": "selected",
+      "age": "6–8 years",
+      "contents": "12tiles2idea cards1tray15 items in total, according to the merchant.",
+      "materials": "Wood",
+      "warningsHidden": false,
+      "details": "DimensionsTrayLength 24 cm · Width 19 cm · Height 1.5 cmEach tileLength 5 cm · Width 5 cm · Height 0.6 cmMaterialsWoodFinishSample blue finishCareNot supplied.",
+      "purchaseDisabled": false,
+      "htmlSha256": "8e76ba9e7a6769e5caa2c0590929a8535f00ef7f5835bfc20eaee4baacb52260"
+    },
+    {
+      "name": "06-explicit-material-clear",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": "33333333-3333-4333-8333-333333333333",
+      "selectionState": "selected",
+      "age": "Age information not supplied.",
+      "contents": "Contents have not been supplied.",
+      "materials": "Not supplied.",
+      "warningsHidden": true,
+      "details": "DimensionsDimensions have not been supplied.MaterialsNot supplied.FinishNot supplied.CareNot supplied.",
+      "purchaseDisabled": false,
+      "htmlSha256": "b194b6fa9c1367c469044ac21b2b68976a8ebac829056edb0751f323dd5de202"
+    },
+    {
+      "name": "07-unavailable-paper",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": "44444444-4444-4444-8444-444444444444",
+      "selectionState": "unavailable",
+      "age": "Ages 9–12",
+      "contents": "36paper sheets36 items in total, according to the merchant.",
+      "materials": "Paper",
+      "warningsHidden": true,
+      "details": "DimensionsA5 sheetLength 21 cm · Width 14.8 cmMaterialsPaperFinishNot supplied.CareNot supplied.",
+      "purchaseDisabled": true,
+      "htmlSha256": "5864215c87099e6d294a9fef0e5ca4486ca63c758e1e92fcea7fd0b148507bb8"
+    },
+    {
+      "name": "08-product-only",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": null,
+      "selectionState": "product",
+      "age": "6–8 years",
+      "contents": "12tiles2idea cards1tray15 items in total, according to the merchant.",
+      "materials": "Wood",
+      "warningsHidden": false,
+      "details": "DimensionsTrayLength 24 cm · Width 19 cm · Height 1.5 cmEach tileLength 5 cm · Width 5 cm · Height 0.6 cmMaterialsWoodFinishNot supplied.CareNot supplied.",
+      "purchaseDisabled": false,
+      "htmlSha256": "42d0c77e27d2b66056e3b0854d55da2a0676e0353fb5ec87a6353b875dda68d8"
+    },
+    {
+      "name": "09-setting-off",
+      "classification": "SOURCE_ONLY_JSDOM_NATIVE_PICKER_NOT_BROWSER",
+      "variantId": null,
+      "selectionState": null,
+      "age": null,
+      "contents": null,
+      "materials": null,
+      "warningsHidden": null,
+      "details": null,
+      "purchaseDisabled": false,
+      "htmlSha256": "3d4c43f1242fe85ce07f4b8d022a986611fe7167f622149fdd90e6a5f83101fe"
+    }
+  ],
+  "liveCalls": 0,
+  "screenshots": "NOT_RUN_NO_BROWSER_ALLOCATION",
+  "sources": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "sha256": "829f6f49e4330c819a640ef11be87cd0f48eca02c03722c6072234c6c14b35dd"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "40b12590447f6689d59197e52f7f35841589d1b1b7da3e1ae3e11b84a50e9864"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4"
+    }
+  ]
+}

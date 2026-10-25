@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-24T12:43:53.710934+00:00",
+  "classification": "READ_ONLY_UNSANDBOXED_OS_TRUST_DIAGNOSTIC_PUBLIC_CERT_ONLY",
+  "exitCode": 0,
+  "recognizedOutputLabels": [],
+  "rawOutputRetained": false,
+  "keyRead": false,
+  "trustChanged": false,
+  "networkCall": false
+}

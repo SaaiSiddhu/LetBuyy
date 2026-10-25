@@ -1,0 +1,182 @@
+{
+  "recordedAt": "2026-10-24T03:07:41.007507+00:00",
+  "status": "ROOT_RENEWED_NATIVE_RUN_STOPPED_AT_ACTUAL_PUBLISHER_PRIVILEGE_GUARD_FAILURE_NO_REPAIR_OR_RETRY",
+  "runId": "515b6d97865b",
+  "runnerExitCode": 1,
+  "suiteExitCode": 1,
+  "kind": "gateway-db",
+  "ownership": "verified before start",
+  "sandboxPermissions": "require_escalated",
+  "jobs": 1,
+  "noReap": true,
+  "preparedTransactions": 2,
+  "childTimeoutSeconds": 600,
+  "timedOut": false,
+  "sourceMigrationCount": 321,
+  "sourceMigrationMaximum": 392,
+  "migrationCeiling": null,
+  "appliedMigrations": 321,
+  "all321MigrationHashesMatchAdmittedSource": true,
+  "migrationReceipt": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/migration-receipt.json",
+    "sha256": "4d1497e73e697673b684df34bd1a10c4124d8797378ad3e7798627a540ae447b",
+    "bytes": 55403
+  },
+  "candidate393Applied": false,
+  "candidate393Emitted": false,
+  "tap": {
+    "expectedCompleteTests": 9,
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "raw": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/suite-logs/playfield201-promotion.postgres.log",
+      "sha256": "8e2ce61dd9ccd1181c460ede7eccf2c960359cc78db60ff710ae55ccb21c6e2b",
+      "bytes": 1101
+    }
+  },
+  "failure": {
+    "source": "services/api-gateway/src/__tests__/owned-db/playfield201-promotion.postgres.test.ts",
+    "line": 187,
+    "column": 50,
+    "assertion": "assert.equal(record(entryPublisher).tenant_execute,false)",
+    "actualDatabaseExpression": "has_function_privilege('app_tenant',p.oid,'EXECUTE')",
+    "functionSignature": "public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)",
+    "actual": true,
+    "expected": false,
+    "classification": "ACTUAL_PUBLISHER_EFFECTIVE_EXECUTE_PERMISSION_PROFILE_MISMATCH",
+    "beforePhase": 1,
+    "fullPublisherProfileCaptured": false,
+    "exactGrantOrInheritanceCause": "NOT_QUALIFIED_PROFILE_NOT_EMITTED_BEFORE_ASSERTION",
+    "actualTenantPublisherInvocation": false
+  },
+  "phaseResults": [
+    {
+      "phase": 1,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    },
+    {
+      "phase": 2,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    },
+    {
+      "phase": 3,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    },
+    {
+      "phase": 4,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    },
+    {
+      "phase": 5,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    },
+    {
+      "phase": 6,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    },
+    {
+      "phase": 7,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    },
+    {
+      "phase": 8,
+      "status": "NOT_STARTED_PARENT_PROFILE_GUARD_FAILED"
+    }
+  ],
+  "provenance": {
+    "emittedPhaseProofs": 0,
+    "ownedEmptyProofDirectories": []
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "suiteCleanup": {
+    "rest": true,
+    "database": true
+  },
+  "reaped": [],
+  "sourceClosureFilesRehashedAfter": 1079,
+  "admissionSourceAndClosureUnchanged": true,
+  "sourceGrantsRlsGuardsProfilesMigrationsChanged": false,
+  "retryAttempted": false,
+  "otherFixtureOrRetainedResourcesTouched": false,
+  "priorAttempt": {
+    "runId": "98f95df21bc7",
+    "status": "INFRASTRUCTURE_ONLY_SOCKET_ACCESS_DENIED",
+    "tests": 0,
+    "migrations": 0,
+    "resources": 0
+  },
+  "next": "STOPPED. Root must review actual effective EXECUTE mismatch and explicitly scope any new diagnostic/repair/run. No privilege broadening, guard/profile weakening, migration393 changes or extra retries.",
+  "narrative": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/NATIVE-RESULT.md",
+    "sha256": "9ec52f2fe3f7af51e03891a07b24896a8d7e39ba20115ca40372aeca09515954",
+    "bytes": 2567
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/NATIVE-RESULT.md",
+      "sha256": "9ec52f2fe3f7af51e03891a07b24896a8d7e39ba20115ca40372aeca09515954",
+      "bytes": 2567
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/admission.json.after.snapshot",
+      "sha256": "c4dad9484f280065a823417baef08b6dc6a0287713b684d1643d84c203d0270e",
+      "bytes": 1064
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/admission.json.before.snapshot",
+      "sha256": "c4dad9484f280065a823417baef08b6dc6a0287713b684d1643d84c203d0270e",
+      "bytes": 1064
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/invocation.json",
+      "sha256": "45a5c122ade71d836e2c6d55d28194132499f26ba91c85bbb6b06b3d6d8aa961",
+      "bytes": 1473
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/migration-receipt.json",
+      "sha256": "4d1497e73e697673b684df34bd1a10c4124d8797378ad3e7798627a540ae447b",
+      "bytes": 55403
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/result.json",
+      "sha256": "e05044423a5437cc5374a79910177d0e35f4886f53295fb449bd31e928859706",
+      "bytes": 67006
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/run-receipt.json",
+      "sha256": "b7aabf6dc0f493cdaaf9d8ca185d118045c70ad42f0a5b98ec4e2b94ed69e44f",
+      "bytes": 96
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/runner.log",
+      "sha256": "45c9fd007968106a40cee8d9f95b54369548a0f2e05bcea52a515908eaa03f3b",
+      "bytes": 413
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/source-input-closure.json.after.snapshot",
+      "sha256": "5cdd2a350ceed9c63cdd09b26f445f07318ebdc496e782a76635e16c91d3335f",
+      "bytes": 565877
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/source-input-closure.json.before.snapshot",
+      "sha256": "5cdd2a350ceed9c63cdd09b26f445f07318ebdc496e782a76635e16c91d3335f",
+      "bytes": 565877
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/suite-logs/playfield201-promotion.postgres.log",
+      "sha256": "8e2ce61dd9ccd1181c460ede7eccf2c960359cc78db60ff710ae55ccb21c6e2b",
+      "bytes": 1101
+    }
+  ]
+}

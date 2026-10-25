@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: book facts preserve supplied bibliography and omit absent ISBN
+ok 1 - book facts preserve supplied bibliography and omit absent ISBN
+  ---
+  duration_ms: 1.769083
+  type: 'test'
+  ...
+# Subtest: ISBN normalizes only a valid supplied identifier
+ok 2 - ISBN normalizes only a valid supplied identifier
+  ---
+  duration_ms: 0.768
+  type: 'test'
+  ...
+# Subtest: stationery units/counts remain factual and distinct from bibliography
+ok 3 - stationery units/counts remain factual and distinct from bibliography
+  ---
+  duration_ms: 0.809125
+  type: 'test'
+  ...
+# Subtest: strict bounds reject extra/private fields and unbounded input
+ok 4 - strict bounds reject extra/private fields and unbounded input
+  ---
+  duration_ms: 0.588208
+  type: 'test'
+  ...
+# Subtest: excerpt requires a declared permission and attribution; no guessed rights
+ok 5 - excerpt requires a declared permission and attribution; no guessed rights
+  ---
+  duration_ms: 0.317583
+  type: 'test'
+  ...
+# Subtest: reader fails closed for absent, inherited, invalid and accessor facts and excludes private metadata
+ok 6 - reader fails closed for absent, inherited, invalid and accessor facts and excludes private metadata
+  ---
+  duration_ms: 0.8505
+  type: 'test'
+  ...
+# Subtest: inline canonical variant facts distinguish editions without a second ID map
+ok 7 - inline canonical variant facts distinguish editions without a second ID map
+  ---
+  duration_ms: 0.925542
+  type: 'test'
+  ...
+# Subtest: unknown facts remain absent and text is not silently rewritten as a claim
+ok 8 - unknown facts remain absent and text is not silently rewritten as a claim
+  ---
+  duration_ms: 0.077958
+  type: 'test'
+  ...
+# Subtest: pure v2 factory preserves v1 input and canonical template set, with a distinct home structure
+ok 9 - pure v2 factory preserves v1 input and canonical template set, with a distinct home structure
+  ---
+  duration_ms: 45.607333
+  type: 'test'
+  ...
+# Subtest: actual Liquid rendering carries original product identity, edition facts and scoped styles
+ok 10 - actual Liquid rendering carries original product identity, edition facts and scoped styles
+  ---
+  duration_ms: 283.895583
+  type: 'test'
+  ...
+# Subtest: collection bibliography and stationery dimensions survive the unchanged depth-four sandbox
+ok 11 - collection bibliography and stationery dimensions survive the unchanged depth-four sandbox
+  ---
+  duration_ms: 49.138417
+  type: 'test'
+  ...
+# Subtest: persisted variant UUIDs keep different dimensions attached to the matching edition
+ok 12 - persisted variant UUIDs keep different dimensions attached to the matching edition
+  ---
+  duration_ms: 58.234708
+  type: 'test'
+  ...
+# Subtest: merchant text, media, subject blocks and product resource changes affect Liquid output
+ok 13 - merchant text, media, subject blocks and product resource changes affect Liquid output
+  ---
+  duration_ms: 70.526375
+  type: 'test'
+  ...
+# Subtest: XSS payloads remain escaped text in bibliography, excerpt, links and edition attributes
+ok 14 - XSS payloads remain escaped text in bibliography, excerpt, links and edition attributes
+  ---
+  duration_ms: 52.677875
+  type: 'test'
+  ...
+# Subtest: missing facts and unlicensed excerpts never invent ISBN, dimensions, reviews or reading rights
+ok 15 - missing facts and unlicensed excerpts never invent ISBN, dimensions, reviews or reading rights
+  ---
+  duration_ms: 131.409083
+  type: 'test'
+  ...
+# Subtest: stationery is not relabelled as a book; dimensions and pages/sheets stay distinct
+ok 16 - stationery is not relabelled as a book; dimensions and pages/sheets stay distinct
+  ---
+  duration_ms: 39.087041
+  type: 'test'
+  ...
+# Subtest: discovery facets require a server capability and preserve filters/pagination without a second query engine
+ok 17 - discovery facets require a server capability and preserve filters/pagination without a second query engine
+  ---
+  duration_ms: 97.455791
+  type: 'test'
+  ...
+# Subtest: long English/Hindi strings remain intact and responsive rules contain narrow covers and wrapping
+ok 18 - long English/Hindi strings remain intact and responsive rules contain narrow covers and wrapping
+  ---
+  duration_ms: 63.190459
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1601.180667

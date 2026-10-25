@@ -1,0 +1,22 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/early-model-search-9cd50e893016/diagnostic.ts"
+  ],
+  "environment": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json",
+    "NODE_PATH": "apps/commerce/web/node_modules"
+  },
+  "exitCode": 1,
+  "exitReason": "Observed canonical model-search miss with positive control",
+  "transport": "Authorized owned-local escalation after one no-response restricted attempt",
+  "sdkGetCalls": 4,
+  "additionalStatusGetCalls": 1,
+  "conservativeFetchInvocationsIncludingPriorAttempt": 6,
+  "grantBudget": 6,
+  "sourceSha256": "43fa504eda61e723f2a6c43c3cbd83fcde54353f5212c4257baf41f346291f76",
+  "reportSha256": "77826d90ce43e78286227ac548276df91464853ec33d24baa18c3ee08a94a07c",
+  "recordedAt": "2026-10-23T15:14:49.156922+00:00"
+}

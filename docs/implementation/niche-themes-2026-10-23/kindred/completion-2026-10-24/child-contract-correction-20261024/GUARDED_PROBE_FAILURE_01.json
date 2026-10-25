@@ -1,0 +1,12 @@
+{
+  "classification": "PRESERVED_PREPAUSE_GUARDED_PROBE_HARNESS_FAILURE",
+  "command": "node --import /Volumes/Projects/LetBuyy/node_modules/tsx/dist/loader.mjs /private/tmp/kindred-child-output-20261024-miky7gjz/probe-guarded.mjs",
+  "exitCode": 1,
+  "toolChunkId": "b059fa",
+  "errorCode": "MODULE_NOT_FOUND",
+  "error": "Cannot find module liquidjs",
+  "requireContext": "/Volumes/Projects/LetBuyy/apps/merchant/web/package.json",
+  "outputReceiptWritten": false,
+  "prior50NotCreditedToGuardedBytes": true,
+  "correction": "Resolve liquidjs from its declaring theme-engine package in a NEW owned probe file; original failed script/result are retained."
+}

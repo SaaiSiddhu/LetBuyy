@@ -1,0 +1,60 @@
+{
+  "recordedAt": "2026-10-24T11:36:01.402052+00:00",
+  "classification": "PRIVATE_OWNED_PRESENTATION_CONTROL_SOURCE_PROPOSAL",
+  "inputs": [
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "sha256": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "3464bc35c39f811be3e785da8ff35499a1d38211244737aa45cc86e2a0a02c21"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "packages/commerce-core/src/pantry-facts.ts",
+      "sha256": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/pages/page.tsx",
+      "sha256": "30d63ac005ffe446184ee962a76bbbe973bc0e0d0613e740f5178c21440b0afb"
+    },
+    {
+      "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/letbuyy-design-blueprints/04-refresh-pantry.md",
+      "sha256": "83a60004f991bb74c02539317d6c4394faf5afb97484f5d6c4bf134068a401b4"
+    }
+  ],
+  "scope": "Pantry leaf presentation only; no Main/catalogue/shared editor/domain schema write or runtime/provider action",
+  "versionDecision": "PENDING_ALLOCATOR; this overlay is not a new immutable2.0.1 capture"
+}

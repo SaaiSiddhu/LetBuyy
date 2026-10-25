@@ -1,0 +1,104 @@
+{
+  "status": "PURE_AST_EXACT_SQL_SECURITY_STAGE_CONSERVATION",
+  "phases": [
+    {
+      "phase": 1,
+      "label": "1 own fixture and real selected-theme install positive controls",
+      "before": "371617317126d646c1065cc79bc654a829237b92fb420fc2f3a7a97fc3c4e620",
+      "after": "371617317126d646c1065cc79bc654a829237b92fb420fc2f3a7a97fc3c4e620",
+      "exact": true
+    },
+    {
+      "phase": 2,
+      "label": "2 exact UP and replay preserve business/non-ACL catalog state",
+      "before": "5168284a9f87d49e9ec3d9e47f39b7c724a639e39e7b3e9d3895e17900691f38",
+      "after": "5168284a9f87d49e9ec3d9e47f39b7c724a639e39e7b3e9d3895e17900691f38",
+      "exact": true
+    },
+    {
+      "phase": 3,
+      "label": "3 actual app_tenant valid-payload42501 with own-row positive-first and zero effects",
+      "before": "d9bc49aa6a91ad23016c4e3ca707ab45e5e277b18d8b9e8c5ff0b21914ef555b",
+      "after": "d9bc49aa6a91ad23016c4e3ca707ab45e5e277b18d8b9e8c5ff0b21914ef555b",
+      "exact": true
+    },
+    {
+      "phase": 4,
+      "label": "4 canonical service publish and reviewed rollback retain CAS/retry/private-draft contracts",
+      "before": "cf9a3b8a3afa4ddc8fc770b752603b7465a066b8d5a62fadbf9a15bba8e18bd1",
+      "after": "57b6daa377a705c02b26c066c06bf4bfab3ae897aaac3ec6ad934760c90b4e07",
+      "exact": false
+    },
+    {
+      "phase": 5,
+      "label": "5 unknown publisher profiles refuse both directions atomically through ordinary DDL controls",
+      "before": "56e6baddaee74b9e50a4abe6550b484acfe25229c3ccc1fcd3f4562416e2876c",
+      "after": "56e6baddaee74b9e50a4abe6550b484acfe25229c3ccc1fcd3f4562416e2876c",
+      "exact": true
+    },
+    {
+      "phase": 6,
+      "label": "6 exact isolated DOWN/replay then re-UP/replay ends denied with complete parity",
+      "before": "d1bcb00e8850981fabc72743ebaf1b97dab5c386605f1a2ae79ec34cdb8f85bf",
+      "after": "d1bcb00e8850981fabc72743ebaf1b97dab5c386605f1a2ae79ec34cdb8f85bf",
+      "exact": true
+    },
+    {
+      "phase": 7,
+      "label": "7 final hardened profiles and frozen source bindings are conserved",
+      "before": "0444f33437e934c899468ee23ccbb7444693f3e43c11ae4d41b47527dd15c656",
+      "after": "0444f33437e934c899468ee23ccbb7444693f3e43c11ae4d41b47527dd15c656",
+      "exact": true
+    }
+  ],
+  "functions": [
+    {
+      "name": "businessState",
+      "before": "f521ce75c3010e6e9d6ca984d1de89a64c2257399694b69eae82b72890841f4f",
+      "after": "f521ce75c3010e6e9d6ca984d1de89a64c2257399694b69eae82b72890841f4f",
+      "exact": true
+    },
+    {
+      "name": "snapshot",
+      "before": "fcd036f532eea3f4488a7fa020f604d3e44c62ffdd5c3e4418da584c8ce45787",
+      "after": "fcd036f532eea3f4488a7fa020f604d3e44c62ffdd5c3e4418da584c8ce45787",
+      "exact": true
+    },
+    {
+      "name": "unrelatedCatalog",
+      "before": "821b9e5c472bac76c4ff5eb07f445ac2c495e8b76c19879eafed3d9fad686b3e",
+      "after": "821b9e5c472bac76c4ff5eb07f445ac2c495e8b76c19879eafed3d9fad686b3e",
+      "exact": true
+    },
+    {
+      "name": "profile",
+      "before": "c72bfb173eb5df192c93d2ac1ec9cadb0117db4afd6281f84094552ce4c5ff18",
+      "after": "c72bfb173eb5df192c93d2ac1ec9cadb0117db4afd6281f84094552ce4c5ff18",
+      "exact": true
+    },
+    {
+      "name": "withoutTenant",
+      "before": "4e7cafd79d86f43c8f33858f3e844ffc3b917cafa5b4962c416352695eeff1a5",
+      "after": "4e7cafd79d86f43c8f33858f3e844ffc3b917cafa5b4962c416352695eeff1a5",
+      "exact": true
+    },
+    {
+      "name": "dependencyCount",
+      "before": "60877e9955f158cd0e8051100119fe150312bafccae8e50714ee65d501c96ab5",
+      "after": "60877e9955f158cd0e8051100119fe150312bafccae8e50714ee65d501c96ab5",
+      "exact": true
+    },
+    {
+      "name": "assertTenantDenied",
+      "before": "53b8a1d1f943f9ed8ded53e570b91ee8099efc11cc2ecbc241b840a3c576f949",
+      "after": "53b8a1d1f943f9ed8ded53e570b91ee8099efc11cc2ecbc241b840a3c576f949",
+      "exact": true
+    },
+    {
+      "name": "applyCandidate",
+      "before": "07156d3284c68dd9ac0d3ad7d149496986b0ee6a38509f06c9a73f9d0d08726a",
+      "after": "07156d3284c68dd9ac0d3ad7d149496986b0ee6a38509f06c9a73f9d0d08726a",
+      "exact": true
+    }
+  ]
+}

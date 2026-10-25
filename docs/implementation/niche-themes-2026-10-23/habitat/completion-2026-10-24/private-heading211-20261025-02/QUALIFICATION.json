@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-10-25T00:26:12.803179+00:00",
+  "status": "NARROW_AMENDMENT_SOURCE_READY_FOR_INDEPENDENT_REVIEW_NATIVE_NOT_RUN",
+  "findingsAddressed": {
+    "HEADING211-R01": "All10 deterministic managed fields bound to immutable prior payload; exact11-field saved shape/two-key journal; original valid config preserved and compared.42 prepared transactional refusals include34 nested checkpoint replay/DOWN controls.",
+    "HEADING211-R02": "Immediate settled pre-HTTP full witness; four echoed request/trace IDs, exact authenticated identity/status/dimensions/cardinality, pre-existing records and complete base/parent/leaf mirrors. Other public tables unchanged; subsequent SQL starts from full settled post-HTTP witness."
+  },
+  "newPureSourceChecks": {
+    "tests": 31,
+    "PASS": 31,
+    "FAIL": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "evidence": "pure-final.tap",
+    "scope": "Exact generated-predicate source model and extracted actual pure telemetry reconciler with synthetic rows; not PG/HTTP execution"
+  },
+  "retained61": {
+    "status": "PASS_DATED_SOURCE_PROOF_READONLY_NOT_RERUN",
+    "new": 22,
+    "retained": 39,
+    "receipt": "../private-heading211-20261025-01/QUALIFICATION.json"
+  },
+  "fourPackageCapturesAndPayloadUnchanged": true,
+  "native": {
+    "status": "NOT_RUN_NOT_GRANTED",
+    "preparedRefusals": 42,
+    "nestedCheckpointRefusals": 34,
+    "readbacks": 4,
+    "mainPhases": 8,
+    "extraSetupStage": "phase2b",
+    "oneCohortWallSeconds": 600
+  },
+  "typeEvidence": "TYPE_COMPARISON.json",
+  "typeVerdict": "Zero diagnostics in mutable files; five identical unrelated focused-program diagnostics remain. Not a full-project green typecheck.",
+  "sourceClosure": {
+    "path": "native-source-closure.json",
+    "sha256": "27a621aed16e2fd6e801bf3891ac8ed67e4809ffdcd1c4969d2587ec0bc7f7a1",
+    "files": 1080,
+    "runtimeModules": 477,
+    "edges": 3730,
+    "migrationCount": 322,
+    "migrationMaximum": 393,
+    "migrationCeiling": null,
+    "threeNegativeInventoryGuards": "PASS",
+    "modulesExecutedByDiscovery": false
+  },
+  "otherSourcePrepCorrections": [
+    "Canonical proxy.stop() teardown type",
+    "Fresh signed internal identity per request; no reused JTI",
+    "Cohort budget checked before dependent SQL/HTTP and terminal receipt; Node test timeout600s plus mandatory future outer supervisor deadline."
+  ],
+  "MainRuntimeNativeDbDockerBuildBrowserProviderActions": 0,
+  "old01Mutated": false,
+  "SenseAdded": false,
+  "FULL_THEME_CERTIFIED": false
+}

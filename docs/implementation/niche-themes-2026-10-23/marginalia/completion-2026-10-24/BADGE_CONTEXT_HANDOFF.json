@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T11:31:05.434189+00:00",
+  "classification": "MARGINALIA_CAPTURED_DECLARATION_CONTEXT_FOR_EXISTING_SHARED_BADGE_OWNER_NOT_RENDER_OR_BROWSER_PROOF",
+  "theme": "Marginalia",
+  "preset": "dawn",
+  "artifactReference": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-dawn-2.0.0.json",
+  "lineage": "Reuse completed installed48 lineage; no repeated hash/raw catalogue audit. Targeted declaration read for the new shared child-contract dependency only.",
+  "rootHosts": [
+    {
+      "sectionType": "spotlight",
+      "schemaPointer": "/document/liquidBundle/sections/spotlight/schema/blocks",
+      "rootFields": [],
+      "defaultTemplateInstances": [],
+      "consumesBlockHtml": false,
+      "consumesSubBlocks": false
+    },
+    {
+      "sectionType": "trust-badges",
+      "schemaPointer": "/document/liquidBundle/sections/trust-badges/schema/blocks",
+      "rootFields": [
+        "label",
+        "description"
+      ],
+      "defaultTemplateInstances": [],
+      "consumesBlockHtml": false,
+      "consumesSubBlocks": false
+    }
+  ],
+  "reusableBadge": {
+    "pointer": "/document/liquidBundle/blocks/badge",
+    "fields": [
+      "label"
+    ],
+    "sourceConsumesSubBlocks": false
+  },
+  "affectedCaseIds": [
+    "MG-C-BLOCK-SPOTLIGHT-BADGE",
+    "MG-C-BLOCK-TRUST-BADGES-BADGE",
+    "MG-C-BLOCK-FIELD-TRUST-BADGES-BADGE-LABEL",
+    "MG-C-BLOCK-FIELD-TRUST-BADGES-BADGE-DESCRIPTION",
+    "MG-C-GLOBAL-BLOCK-BADGE",
+    "MG-C-GLOBAL-BLOCK-FIELD-BADGE-LABEL"
+  ],
+  "sourceDescriptorReview": "docs/implementation/niche-theme-programme/completion-2026-10-24/editor-child-contract-followup-independent-review.json",
+  "renderReachOwnerEvidence": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/CANONICAL_BLOCK_RENDER_REACH_02.json",
+  "owner": "Existing Kindred/Editor shared reusable-badge correction; no duplicate patch here.",
+  "requiredBehavior": [
+    "Preserve trust-badges root inline label AND description; nested reusable badge has label-only descriptor/defaults.",
+    "A correctly acknowledged reusable parent/child hierarchy must produce visible intended child output, not merely parse, roundtrip or an internal html property.",
+    "Preserve zero-child default output, escaping and safe hierarchy; no forced generic renderer output or frozen2.0.0 rewrite.",
+    "Neither badge host is instantiated in the admitted default Marginalia templates; normal add/select/readback reachability still needs actual scoped controller evidence.",
+    "Marginalia subject links remain their separate inline subject type with label/href; do not reinterpret them as reusable badges or invent unsupported child hosts."
+  ],
+  "browserOrPerThemeRenderProof": "NOT_RUN",
+  "caseStatusChanges": 0,
+  "fullThemeCertified": false
+}

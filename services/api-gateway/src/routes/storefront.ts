@@ -1,3 +1,5 @@
+import { StorefrontDiscoveryQuerySchema, type StorefrontDiscoveryQuery, type StorefrontDiscoveryMetadata } from '@letbuyy/commerce-core';
+import { STOREFRONT_DISCOVERY_RPC, storefrontDiscoveryRpcArgs, readStorefrontDiscoveryPayload } from '../lib/storefront-discovery';
 // ============================================================
 // STOREFRONT (PUBLIC) — Unauthenticated APIs (Doc 10/09 §21)
 // ============================================================
@@ -5,7 +7,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
-import { toPublicVariant, withPublicPriceObservation, type PublicPriceObservation } from '../lib/public-product-view';
+import { toPublicProduct, toPublicVariant, withPublicPriceObservation, type PublicPriceObservation } from '../lib/public-product-view';
 import {
     cachedJson,
     storefrontRequestCacheKey,
@@ -355,9 +357,9 @@ const STOREFRONT_SITE_COMPAT_SELECT: string =
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,importer_details,display_order,created_at,updated_at,seo_title,seo_description';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,importer_details,display_order,created_at,updated_at,seo_title,seo_description,metadata';
 const PRODUCT_SELECT_COMPAT: string =
-    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,display_order,created_at,updated_at,seo_title,seo_description';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,display_order,created_at,updated_at,seo_title,seo_description,metadata';
 const PRODUCT_SELECT_MINIMAL: string =
     'id,store_id,name,description,images,price,category,tags,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
@@ -377,6 +379,7 @@ type PublicProductQueryOptions = {
     search?: string;
     countryOfOrigin?: string;
     paginated?: boolean;
+    discovery?: StorefrontDiscoveryQuery;
 };
 
 type SqlRecord = Record<string, unknown>;
@@ -387,6 +390,7 @@ type PublicProductQueryResult = {
     data: PublicProductRow[];
     count: number;
     error: DatabaseErrorLike;
+    discovery?: StorefrontDiscoveryMetadata;
 };
 
 type SearchDocumentProductResult = {
@@ -410,6 +414,7 @@ type PublicProductVariantRow = {
     option3?: string | null;
     image_url?: string | null;
     position?: number | string | null;
+    metadata?: unknown;
 };
 
 type StorefrontOrderItemRow = {
@@ -493,6 +498,7 @@ function publicProductVariantView(row: PublicProductVariantRow): Record<string, 
         option3: storefrontString(row.option3),
         image_url: storefrontString(row.image_url),
         position: storefrontNumber(row.position) ?? 0,
+        metadata: row.metadata,
     });
 }
 
@@ -508,7 +514,7 @@ async function hydratePublicProductVariants(c: AppContext, products: PublicProdu
     if (productVariantRelationalReadsEnabled(c.env)) {
         const { data, error } = await db
             .from('product_variants')
-            .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+            .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position, metadata')
             .in('product_id', Array.from(new Set(productIds)))
             .order('position', { ascending: true });
 
@@ -653,14 +659,14 @@ async function hydrateStorefrontOrderItems(c: AppContext, orders: SqlRecord[]): 
 function productRowWithoutCount(row: ProductSqlRow): SqlRecord {
     const normalized = normalizeSqlRecord(row);
     delete normalized.__total_count;
-    return normalized;
+    return toPublicProduct(normalized);
 }
 
 function publicProductRows(value: unknown): PublicProductRow[] {
     if (!Array.isArray(value)) return [];
     return value.filter((row): row is PublicProductRow => {
         return Boolean(row) && typeof row === 'object' && !Array.isArray(row);
-    });
+    }).map(row => toPublicProduct(row));
 }
 
 function searchDocumentTerm(value: string | undefined): string | null {
@@ -1126,82 +1132,14 @@ async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Pr
 }
 
 async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult> {
-    const db = getSupabaseAdmin(c);
-    if (options.search && !options.countryOfOrigin && storefrontSearchIndexReadsEnabled(c.env)) {
-        const projected = await querySearchDocumentProductIds(c, storeId, options);
-        if (projected) {
-            if (projected.ids.length === 0) return { data: [], count: 0, error: null };
-
-            const hydrated = await queryPublicProducts(c, storeId, {
-                ...options,
-                ids: projected.ids,
-                limit: projected.ids.length,
-                paginated: false,
-                search: undefined,
-            });
-
-            return {
-                data: sortProductsBySearchDocumentIds(hydrated.data, projected.ids),
-                count: projected.count,
-                error: hydrated.error,
-            };
-        }
-    }
-
-    const pooledResult = await queryPublicProductsFromPooledSql(c, storeId, options);
-    if (pooledResult) {
-        return {
-            ...pooledResult,
-            data: await hydratePublicProductVariants(c, pooledResult.data),
-        };
-    }
-
-    const relationalProductVariants = productVariantRelationalReadsEnabled(c.env);
-    const attempts = [
-        { select: relationalProductVariants ? PRODUCT_SELECT_FULL_RELATIONAL : PRODUCT_SELECT_FULL, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
-        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
-        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: false, useActive: true, orderBy: 'display_order' },
-        { select: PRODUCT_SELECT_MINIMAL, useDeletedAt: false, useActive: false, orderBy: 'created_at' },
-    ];
-    let lastError: DatabaseErrorLike = null;
-
-    for (const attempt of attempts) {
-        if (options.countryOfOrigin && !attempt.select.includes('country_of_origin')) continue;
-        let query = options.paginated
-            ? db.from('products').select(attempt.select, { count: 'exact' })
-            : db.from('products').select(attempt.select);
-
-        query = query.eq('store_id', storeId);
-        if (attempt.useActive) query = query.eq('is_active', true);
-        if (attempt.useDeletedAt) query = query.is('deleted_at', null);
-        if (options.ids?.length) query = query.in('id', options.ids);
-        if (options.category && attempt.select.includes('category')) query = query.eq('category', options.category);
-        if (options.search && attempt.select.includes('name')) query = query.ilike('name', `%${options.search}%`);
-        if (options.countryOfOrigin) {
-            const origin = options.countryOfOrigin.trim().replace(/[\\%_]/g, (match) => `\\${match}`);
-            query = query.ilike('country_of_origin', origin);
-        }
-        query = query.order(attempt.orderBy, { ascending: true });
-
-        const offset = ((options.page || 1) - 1) * options.limit;
-        const result = options.paginated
-            ? await query.range(offset, offset + options.limit - 1)
-            : await query.limit(options.limit);
-
-        if (!result.error) {
-            const data = publicProductRows(result.data);
-            return {
-                data: await hydratePublicProductVariants(c, data),
-                count: result.count || data.length,
-                error: null,
-            };
-        }
-
-        lastError = result.error;
-        if (!isSchemaMismatchError(result.error)) break;
-    }
-
-    return { data: [], count: 0, error: lastError };
+    const query = options.discovery ?? StorefrontDiscoveryQuerySchema.parse({
+        page: options.page, limit: options.limit, search: options.search,
+        category: options.category, country_of_origin: options.countryOfOrigin,
+    });
+    const result = await getSupabaseAdmin(c).rpc(STOREFRONT_DISCOVERY_RPC, storefrontDiscoveryRpcArgs(storeId, query, options.ids));
+    if (result.error) return { data: [], count: 0, error: result.error };
+    const payload = readStorefrontDiscoveryPayload(result.data, query);
+    return { ...payload, data: await hydratePublicProductVariants(c, publicProductRows(payload.data)), error: null };
 }
 
 function normalizePublicRouteToken(value: string): string | null {

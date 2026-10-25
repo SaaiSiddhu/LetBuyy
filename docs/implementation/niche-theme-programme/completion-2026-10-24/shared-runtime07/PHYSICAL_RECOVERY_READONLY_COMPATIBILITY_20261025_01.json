@@ -1,0 +1,27 @@
+{
+  "extensions": [
+    {
+      "name": "pg_trgm",
+      "version": "1.6"
+    },
+    {
+      "name": "pgcrypto",
+      "version": "1.3"
+    },
+    {
+      "name": "plpgsql",
+      "version": "1.0"
+    }
+  ],
+  "eventGuards": [
+    {
+      "name": "subscription_tax_ddl_guard_360",
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function": "guard_subscription_tax_ddl_360()"
+    }
+  ],
+  "logicalSlots": 0,
+  "unloggedRelations": [],
+  "preparedTransactions": 0
+}

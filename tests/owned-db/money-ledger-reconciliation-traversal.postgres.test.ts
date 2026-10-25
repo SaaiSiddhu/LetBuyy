@@ -20,7 +20,7 @@ async function scheduled(tick: number, loseReply = false): Promise<ScheduledObse
         N7_SCHEDULED_TIME: String(1700000000000 + tick * 900000),
         N7_LOSE_RECONCILIATION_REPLY: loseReply ? '1' : '0',
     } });
-    let stdout = '';
+    let stdout = '', stderr = '';
     try {
         const code = await new Promise<number | null>((resolve, reject) => {
             const timer = setTimeout(() => reject(new Error('Owned scheduled invocation timed out')), 90000);
@@ -28,10 +28,11 @@ async function scheduled(tick: number, loseReply = false): Promise<ScheduledObse
                 stdout += chunk.toString();
                 if (Buffer.byteLength(stdout) > 1024 * 1024) reject(new Error('Owned scheduled output exceeded limit'));
             });
+            child.stderr.on('data', chunk => { stderr = (stderr + chunk.toString()).slice(-32768); });
             child.once('error', () => { clearTimeout(timer); reject(new Error('Owned scheduled invocation could not start')); });
             child.once('close', code => { clearTimeout(timer); resolve(code); });
         });
-        assert.equal(code, 0, 'Owned scheduled invocation failed');
+        assert.equal(code, 0, `Owned scheduled invocation failed${stderr.trim() ? ': ' + stderr.trim() : ''}`);
         return JSON.parse(stdout) as ScheduledObservation[];
     } finally { await stopOwnedClientRuntime(child); }
 }
@@ -203,7 +204,7 @@ test('fresh scheduled invocations progress beyond two pages despite tied timesta
 
     // Guard/AFTER SOURCE PROPOSAL ONLY. No new SQL has been executed.
     await t.test('AFTER: retained state, unknown catalog and active writers refuse retirement; exact replay/resume and known-empty roundtrip conserve money', async () => {
-        assert.equal(createHash('sha256').update(rollback).digest('hex'), 'bd1e84a84f50bbb78383b3ad8b7b3616ef96785463df08f41c222e2b62d8390b');
+        assert.equal(createHash('sha256').update(rollback).digest('hex'), 'cbe14f9495820f7a3fd1bd420e32a9c9c4cca1dc03082f79c738974cdf57cbed');
         const moneyTables = ['ledger_accounts', 'ledger_transactions', 'ledger_entries', 'wallet_ledger_entries',
             'payout_statements', 'commission_reconciliation_entries', 'cod_reconciliation_entries',
             'settlements', 'reserves', 'payouts', 'payout_items', 'recon_breaks',

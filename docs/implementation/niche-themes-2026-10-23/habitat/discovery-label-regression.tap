@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: collection: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+ok 1 - collection: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+  ---
+  duration_ms: 452.598125
+  type: 'test'
+  ...
+# Subtest: collection: selected and unselected choices retain supplied merchant labels and normalized values
+ok 2 - collection: selected and unselected choices retain supplied merchant labels and normalized values
+  ---
+  duration_ms: 271.103292
+  type: 'test'
+  ...
+# Subtest: collection: actual independent clears, clear-all and pagination keep unrelated query values
+ok 3 - collection: actual independent clears, clear-all and pagination keep unrelated query values
+  ---
+  duration_ms: 296.579542
+  type: 'test'
+  ...
+# Subtest: collection: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+ok 4 - collection: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+  ---
+  duration_ms: 464.4615
+  type: 'test'
+  ...
+# Subtest: collection: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+ok 5 - collection: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+  ---
+  duration_ms: 179.902917
+  type: 'test'
+  ...
+# Subtest: search: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+ok 6 - search: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+  ---
+  duration_ms: 189.661417
+  type: 'test'
+  ...
+# Subtest: search: selected and unselected choices retain supplied merchant labels and normalized values
+ok 7 - search: selected and unselected choices retain supplied merchant labels and normalized values
+  ---
+  duration_ms: 173.426542
+  type: 'test'
+  ...
+# Subtest: search: actual independent clears, clear-all and pagination keep unrelated query values
+ok 8 - search: actual independent clears, clear-all and pagination keep unrelated query values
+  ---
+  duration_ms: 168.771
+  type: 'test'
+  ...
+# Subtest: search: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+ok 9 - search: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+  ---
+  duration_ms: 365.937584
+  type: 'test'
+  ...
+# Subtest: search: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+ok 10 - search: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+  ---
+  duration_ms: 148.355083
+  type: 'test'
+  ...
+# Subtest: pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+ok 11 - pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+  ---
+  duration_ms: 66.739708
+  type: 'test'
+  ...
+# Subtest: actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+ok 12 - actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+  ---
+  duration_ms: 436.850666
+  type: 'test'
+  ...
+# Subtest: PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+ok 13 - PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+  ---
+  duration_ms: 138.954333
+  type: 'test'
+  ...
+# Subtest: missing facts/media never become invented sizes/materials/delivery promises
+ok 14 - missing facts/media never become invented sizes/materials/delivery promises
+  ---
+  duration_ms: 112.014666
+  type: 'test'
+  ...
+# Subtest: merchant content/resource settings survive document roundtrip and change actual output
+ok 15 - merchant content/resource settings survive document roundtrip and change actual output
+  ---
+  duration_ms: 261.21525
+  type: 'test'
+  ...
+# Subtest: furniture filters require real server capability and preserve supported search/query values
+ok 16 - furniture filters require real server capability and preserve supported search/query values
+  ---
+  duration_ms: 196.000208
+  type: 'test'
+  ...
+# Subtest: related furniture requires explicit canonical section products and never invents bundles
+ok 17 - related furniture requires explicit canonical section products and never invents bundles
+  ---
+  duration_ms: 212.88075
+  type: 'test'
+  ...
+# Subtest: scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+ok 18 - scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+  ---
+  duration_ms: 17.683708
+  type: 'test'
+  ...
+# Subtest: nested variant facts require a bounded display projection; renderer depth cap stays intact
+ok 19 - nested variant facts require a bounded display projection; renderer depth cap stays intact
+  ---
+  duration_ms: 230.496334
+  type: 'test'
+  ...
+# Subtest: room context is an explicit merchant media choice, never inferred from a second photo
+ok 20 - room context is an explicit merchant media choice, never inferred from a second photo
+  ---
+  duration_ms: 184.999875
+  type: 'test'
+  ...
+# Subtest: declared product display projection renders supplied measures without inventing missing raw material
+ok 21 - declared product display projection renders supplied measures without inventing missing raw material
+  ---
+  duration_ms: 123.321833
+  type: 'test'
+  ...
+# Subtest: current finish panel follows the real picker, precedes purchase and starts with explicit common/unknown facts
+ok 22 - current finish panel follows the real picker, precedes purchase and starts with explicit common/unknown facts
+  ---
+  duration_ms: 127.750042
+  type: 'test'
+  ...
+# Subtest: retained addable FAQ and standalone badge keep exact preview IDs on native roots, absent publicly
+ok 23 - retained addable FAQ and standalone badge keep exact preview IDs on native roots, absent publicly
+  ---
+  duration_ms: 145.34025
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4394.722459

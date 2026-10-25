@@ -1,0 +1,139 @@
+{
+  "recordedAt": "2026-10-25T04:35:13.000551+00:00",
+  "status": "REVIEW_ONLY_NOT_EXECUTION_ADMISSION",
+  "cwd": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05",
+  "sourceClosure": {
+    "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/native-source-closure.json",
+    "sha256": "739004c0b2255bd839cd58823325b90b86b36236115310bc25394a9bba4d6e04"
+  },
+  "plan": {
+    "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/NATIVE_PREPARATION_PLAN.json",
+    "sha256": "0068aa055d22bdac8015a50ac456101fd9493c8c04c926dc31f20cab8d028c50"
+  },
+  "proposalSql": [
+    {
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/UNNUMBERED_apparel_order_facts.up.proposal.sql",
+      "sha256": "2bfb45a18178a0098780efad25171751a317060adb0282cd8e2022d4eaae68ce"
+    },
+    {
+      "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/UNNUMBERED_apparel_order_facts.down.proposal.sql",
+      "sha256": "fca8fc2fb303f065ba98ed5fa4a2c1d08e12c0ed05c0cbb8a1797bdb406fa1d0"
+    }
+  ],
+  "requiredNewAuthority": "Themes independent05 source/bootstrap acceptance plus a NEW direct human permission bound to this source/command/effects/one600s/maxAttempts1. Prior04 three cohorts fully consumed. Current human approval covers only CLI checks, not native/restore.",
+  "orderedProtocol": [
+    {
+      "step": 1,
+      "action": "Before executing any control module or creating a new resource, coordinator verifies final05HANDOFF/artifact/source/plan/control/policy/Node/vendor pins and valid fresh native admission. Create exclusive activation receipt; refuse existing activation, changed bytes, expiry or missing direct human approval."
+    },
+    {
+      "step": 2,
+      "action": "Before any Docker provisioning run exact standalone metadata preflight. Capture terminal0/stdout in separately admitted output directory. Any refusal stops; no fallback CLI/loader or retry. This does not repeat --version/smoke.",
+      "argv": [
+        "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+        "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/dependency-launcher-preflight.cjs",
+        "--root",
+        "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05",
+        "--policy-sha",
+        "834a2a9ebaf7a3c297ebe840d4ca7067e0cdc26380f8b331729009dbdf7ece88"
+      ],
+      "expectedStatus": "CANONICAL_NATIVE_LAUNCHER_METADATA_PASS",
+      "applicationImports": 0
+    },
+    {
+      "step": 3,
+      "action": "Only after steps1/2, canonical parent invocation below; no wrapper/alternate loader/ceiling/reseed/current-runtime mutation. Child independently validates admission, closure, guard bytes and launcher before business imports.",
+      "argv": [
+        "node",
+        "scripts/governance/run-executable-suites.mjs",
+        "--suite",
+        "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+        "--kind",
+        "gateway-db",
+        "--jobs",
+        "1",
+        "--no-reap",
+        "--prepared-transactions",
+        "2",
+        "--timeout",
+        "600",
+        "--log-dir",
+        "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance05/future-native-one-cohort/logs",
+        "--json-out",
+        "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance05/future-native-one-cohort/result.json",
+        "--run-receipt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance05/future-native-one-cohort/run-receipt.json",
+        "--json"
+      ],
+      "environmentBindings": {
+        "LETBUYY_APPAREL_NATIVE_ADMISSION": "UNISSUED: future Themes-issued exact private admission file",
+        "LETBUYY_APPAREL_NATIVE_ADMISSION_SHA256": "UNISSUED: actual future admission SHA256"
+      }
+    },
+    {
+      "step": 4,
+      "action": "Retain actual terminal/result/receipt/TAP. Use unchanged metadata-only verify-native-result.mjs with canonical installed TSX module resolution AFTER parent exits; require fourPASS/zero skip/fail, exact ordered322 migration hashes/max393/no ceiling and complete owned cleanup. Any failed attempt is terminal; no auto retry."
+    }
+  ],
+  "futureAdmissionSchema": {
+    "requiredStatus": "GRANTED_ONE_FRESH_OWNED_APPAREL_NATIVE_COHORT",
+    "fields": [
+      "allocatorThreadId",
+      "ownerThreadId",
+      "privateRoot",
+      "suitePath",
+      "sourceClosureSha256",
+      "planSha256",
+      "proposalUpSha256",
+      "proposalDownSha256",
+      "expiresAt",
+      "cohortCount",
+      "maxAttempts",
+      "jobs",
+      "timeoutSeconds",
+      "noReap",
+      "preparedTransactions",
+      "migrationCeiling",
+      "runReceiptPath",
+      "evidenceDirectory",
+      "argv"
+    ],
+    "cohortCount": 1,
+    "maxAttempts": 1,
+    "jobs": 1,
+    "timeoutSeconds": 600,
+    "preparedTransactions": 2,
+    "noReap": true,
+    "migrationCeiling": null,
+    "sourceClosureSha256": "739004c0b2255bd839cd58823325b90b86b36236115310bc25394a9bba4d6e04",
+    "planSha256": "0068aa055d22bdac8015a50ac456101fd9493c8c04c926dc31f20cab8d028c50",
+    "proposalUpSha256": "2bfb45a18178a0098780efad25171751a317060adb0282cd8e2022d4eaae68ce",
+    "proposalDownSha256": "fca8fc2fb303f065ba98ed5fa4a2c1d08e12c0ed05c0cbb8a1797bdb406fa1d0",
+    "fileCreated": false
+  },
+  "effectBudget": {
+    "freshOwnedClusters": 1,
+    "restSidecars": 1,
+    "nativeSuiteDatabases": 1,
+    "sites": 2,
+    "syntheticProducts": 7,
+    "variants": 14,
+    "acceptedCarts": 6,
+    "buyers": 7,
+    "orders": 4,
+    "orderItems": 4,
+    "aggregateOrderedUnits": 5,
+    "configuredEditReceipts": 1,
+    "schemaCacheReadinessInvalidRPCProbesMaximum": 20,
+    "runnerReadOnlyProcessInspection": 1,
+    "providerCalls": 0,
+    "browserActions": 0,
+    "runtime07Mutations": 0,
+    "UPDOWNAllowedEffects": "Four exact prerequisite files apply their reviewed fresh-fixture catalogue/schema changes before baseline. Apparel UP/DOWN alter only2 existing function bodies and must conserve every public row and all other security/metadata."
+  },
+  "cleanup": "Canonical owned runner drops only its freshly labelled suite DB/REST/cluster/network/volume after completion/failure/timeout. --no-reap prevents cleanup of any pre-existing run. Verify result cleanup failures=[] and remaining resources=[]; do not clean runtime07, user apps or preserved data.",
+  "expectedEvidenceDirectory": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance05/future-native-one-cohort/evidence",
+  "actualNativeStarts": 0,
+  "originalRuntimeAndBrowserActions": 0,
+  "actualPermissionGranted": false
+}

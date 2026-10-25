@@ -1,0 +1,147 @@
+{
+  "classification": "INDEPENDENT_BOUNDED_SOURCE_REVIEW_PLUS_INSPECTED_OWNER_PG_RECEIPT_NOT_INDEPENDENT_PG_EXECUTION",
+  "upSha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+  "downSha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b",
+  "dispositions": {
+    "F1": "closed for bounded scope: fail-closed grantee/grantor/overload/membership admission and exact immediate DOWN profile",
+    "F2": "closed for bounded scope: configuration-aware duplicate/binding/receipt identities and live approvals preserved",
+    "F3": "closed for bounded scope: parent/variant/relational-option/cart rollback inventory",
+    "F4": "closed for bounded scope: outer and inner lock order aligned, no approval weakening",
+    "earlyClosedCart": "source pass before hydration plus active-state write predicate",
+    "rawLegacyException": "source pass: raw-only empty common/variant facts and no option values/rows; accepted-cart and any facts/options still require selected UUID"
+  },
+  "newSourceFindings": [],
+  "pairedBodyChecks": [
+    {
+      "side": "UP",
+      "function": "create_order_with_inventory_reservations",
+      "bodyMd5": "fff80af060ac84b405796811f0e63fd3",
+      "presentInPairedGuard": true
+    },
+    {
+      "side": "UP",
+      "function": "apply_product_edit_v1",
+      "bodyMd5": "6abf85c4c775fb493076a36481b8864e",
+      "presentInPairedGuard": true
+    },
+    {
+      "side": "UP",
+      "function": "create_marketplace_checkout_order",
+      "bodyMd5": "cf2045226f9e4e8137e79c43f779d440",
+      "presentInPairedGuard": true
+    },
+    {
+      "side": "UP",
+      "function": "create_checkout_order",
+      "bodyMd5": "e767fab28186e86e523f92a8a9b59898",
+      "presentInPairedGuard": true
+    },
+    {
+      "side": "DOWN",
+      "function": "create_order_with_inventory_reservations",
+      "bodyMd5": "a800e8bde1bd2f148cefa2109157b9d2",
+      "presentInPairedGuard": true
+    },
+    {
+      "side": "DOWN",
+      "function": "apply_product_edit_v1",
+      "bodyMd5": "5e7247c39839bdaa723c795bf98ed859",
+      "presentInPairedGuard": true
+    },
+    {
+      "side": "DOWN",
+      "function": "create_marketplace_checkout_order",
+      "bodyMd5": "ada658304ad928c846ba639eec319f58",
+      "presentInPairedGuard": true
+    },
+    {
+      "side": "DOWN",
+      "function": "create_checkout_order",
+      "bodyMd5": "d3319352252bc9bae33756a4cb5515ae",
+      "presentInPairedGuard": true
+    }
+  ],
+  "ownerEvidence": {
+    "path": "docs/implementation/niche-themes-2026-10-23/madeyours/final-gate-results.json",
+    "sha256": "0ca1ef1bd2f756f179473443cfe89a3d644cbd9fc87a07eb3a6b7b25765be537",
+    "runId": "2250e55744bb",
+    "results": [
+      {
+        "name": "authenticated-checkout.postgres",
+        "exitCode": 0,
+        "tests": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "ownedBeforeStart": true,
+        "up388Sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+      },
+      {
+        "name": "cart-order-fact-snapshots.postgres",
+        "exitCode": 0,
+        "tests": 23,
+        "passed": 23,
+        "failed": 0,
+        "skipped": 0,
+        "ownedBeforeStart": true,
+        "up388Sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+      },
+      {
+        "name": "hosted-checkout-buyer-ownership.postgres",
+        "exitCode": 0,
+        "tests": 15,
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0,
+        "ownedBeforeStart": true,
+        "up388Sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+      },
+      {
+        "name": "money-ledger-reconciliation-traversal.postgres",
+        "exitCode": 1,
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "ownedBeforeStart": true,
+        "up388Sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+      },
+      {
+        "name": "payment-refund-reconciliation.postgres",
+        "exitCode": 0,
+        "tests": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "ownedBeforeStart": true,
+        "up388Sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+      }
+    ],
+    "fourSuitePasses": 59,
+    "completeGate": {
+      "tests": 60,
+      "passed": 59,
+      "failed": 1,
+      "failedSuites": 1
+    },
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "receiptPins": "UP388 migration bytes; no separate DOWN/Worker-source digest in result"
+  },
+  "staleRecords": [
+    "owned-db-results.json and checkout-ledger-regression-results.json pin earlier d0f2372e8b0fc7659c0902738f8ee057b0b1ab5227002efbb7b446c21c94b8da",
+    "evidence.json generatedAt08:41:23.519013+00:00 has older source hashes/queued-DB wording; final-gate-results.json is current receipt"
+  ],
+  "remaining": [
+    "N7 ledger traversal ownership/environment guard:1 failed, isolated-candidate rerun belongs to its owner",
+    "Full production/browser/provider gates remain separate"
+  ],
+  "productionEdits": false,
+  "dbRerun": false
+}

@@ -357,7 +357,8 @@ export default function CustomersPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="customers"
+                recipe="index"
                 eyebrow="Relationships"
                 title="Customers"
                 description="Understand customer history, order value, contact details, and account status."

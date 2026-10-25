@@ -1,0 +1,245 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-refresh/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-refresh/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Pantry Draft theme
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Pantry home, Secondary Actions: Expand
+				13 menu
+					14 (selected) Pantry home
+					15 Pantry product
+					16 Pantry shelf
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 LetBuyy Core search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Pantry home, Value: 2
+				41 text Pantry home
+			42 text v4
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selectable) Compact pantry introduction
+							53 button Compact pantry introduction
+						54 row (selectable) Pantry shelf shortcuts
+							55 button Pantry shelf shortcuts
+						56 row (selectable) Pantry shelf list
+							57 button Pantry shelf list
+						58 row (selectable) Ingredient and recipe education
+							59 button Ingredient and recipe education
+						60 row (selectable) Independently sold pantry pairings
+							61 button Independently sold pantry pairings
+						62 row (selectable) Merchant service information
+							63 button Merchant service information
+					64 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						65 menu
+							66 (selected) Marquee
+							67 404 Not Found
+							68 Spotlight
+							69 Search
+							70 Video Hero
+							71 Call to Action
+							72 Compact pantry introduction
+							73 Blog Listing
+							74 Cart
+							75 Contact Form
+							76 Page Content
+							77 Pantry shelf list
+							78 Rich Content
+							79 Testimonials
+							80 Merchant service information
+							81 Ingredient and recipe education
+							82 Brand Marquee
+							83 Pantry shelf shortcuts
+							84 FAQ Accordion
+							85 Password Gate
+							86 Services Grid
+							87 App Block Slot
+							88 Customer Login
+							89 Policy Content
+							90 Portfolio Grid
+							91 Product Detail
+							92 Skills Section
+							93 Article Content
+							94 Banner Carousel
+							95 Order History
+							96 Announcement Bar
+							97 Customer Account
+							98 Collection Banner
+							99 Pantry discovery
+							100 Customer Register
+							101 Account Settings
+							102 Wishlist
+							103 Independently sold pantry pairings
+							104 Newsletter Signup
+							105 Addresses
+							106 Experience Timeline
+							107 Order Detail
+							108 Pantry collection rows
+					109 button Add
+				110 container
+					111 text FOOTER
+					112 button Footer
+					272 checkbox Description: Toggle Footer visibility, Value: 1
+		113 container Live theme preview
+			114 text Live preview
+			115 text syn-threadline-ui-6815276b . localhost  -  1440 px
+			116 container Preview device
+				117 checkbox Desktop, Value: 1
+				118 checkbox Tablet, Value: 0
+				119 checkbox Mobile, Value: 0
+			120 container
+				121 text syn-threadline-ui-6815276b . localhost
+				122 checkbox Description: Inspect preview, Value: 1
+				297 container syn-threadline-ui-6815276b storefront preview
+					298 AXWebArea LetBuyy Store, URL: localhost:58091/preview?[query-redacted]
+						299 container
+							300 checkbox Description: Select announcement-bar section, Value: 0
+								301 text Pantry 936 A — staples and saved facts.
+								302 link localhost:58091/preview?[query-redacted]
+							303 checkbox Description: Select header section, Value: 0
+								304 container Description: Primary, ID: lb-nav-panel-header-default
+								305 link Description: Threadline, Value: localhost:58091/store/syn-threadline-ui-6815276b
+								306 button (collapsed) Description: Search, Secondary Actions: Expand
+								307 link Description: Log in, Value: localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+								308 link Description: Cart ( 0 ), Value: localhost:58091/store/syn-threadline-ui-6815276b/cart
+							309 checkbox Description: Select hero-banner section, Value: 0
+								310 text THE EVERYDAY PANTRY
+								311 heading Pantry 936 A everyday staples, Value: 1
+									312 text Pantry 936 A everyday staples
+								313 text Find your shelf, read the details, choose your pack.
+								314 link Description: Explore pantry shelves, Value: localhost:58091/store/syn-threadline-ui-6815276b/products
+							315 checkbox Description: Select category-grid section, Value: 0
+								316 heading Find your shelf, Value: 2
+									317 text Find your shelf
+								318 container Pantry shelves
+									319 link Description: Care, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/d2005c42-10c1-4bf4-af35-5fcf33be5af9
+									320 link Description: Cleanse, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/2deb16a5-cac9-4df9-b8a6-635d25fbaae2
+									321 link Description: Colour, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/310a7230-7390-4b87-ba67-08c38f35b838
+									322 link Description: Easy, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/32db8972-ce49-4b69-8c08-6f65d4de20b5
+							323 checkbox Description: Select product-grid section, Value: 0
+								324 heading A little everyday order., Value: 2
+									325 text A little everyday order.
+								326 container
+									327 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									328 heading The Everyday Cotton Dress, Value: 3
+										329 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									330 text Choose a pack to check its net quantity INR 3,990.00
+									331 link Description: Choose pack, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+								332 container
+									333 link Description: Product image not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									334 heading MadeYours lifecycle notebook, Value: 3
+										335 link Description: MadeYours lifecycle notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									336 text Choose a pack to check its net quantity INR 690.00
+									337 link Description: Choose pack, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+								338 container
+									339 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									340 heading Fixture Cloud Rinse, Value: 3
+										341 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									342 text Net quantity not supplied INR 640.00
+									343 link Description: Choose pack, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+								344 container
+									345 link Description: Marginalia lifecycle lined notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+									346 heading Marginalia lifecycle lined notebook, Value: 3
+										347 link Description: Marginalia lifecycle lined notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+									348 text Net quantity not supplied INR 320.00
+									349 link Description: Choose pack, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+								350 container
+									351 link Description: The Everyday Linen Shirt, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+									352 heading The Everyday Linen Shirt, Value: 3
+										353 link Description: The Everyday Linen Shirt, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+									354 text Choose a pack to check its net quantity INR 2,490.00
+									355 link Description: Choose pack, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+								356 container
+									357 link Description: Kindred lifecycle gift box, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+									358 heading Kindred lifecycle gift box, Value: 3
+										359 link Description: Kindred lifecycle gift box, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+									360 text Net quantity not supplied INR 1,100.00
+									361 link Description: Choose pack, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+								362 container Product pages
+							363 checkbox Description: Select about-section section, Value: 0
+							364 checkbox Description: Select featured-products section, Value: 0
+							365 checkbox Description: Select trust-badges section, Value: 0
+								366 heading Choose the right pack, Value: 3
+									367 text Choose the right pack
+								368 text Pack count and total net quantity stay distinct.
+								369 heading Read the supplied details, Value: 3
+									370 text Read the supplied details
+								371 text Supplied ingredients and known information, clearly stated.
+								372 heading Shipping for your address, Value: 3
+									373 text Shipping for your address
+								374 text Available rates are shown for your address at checkout.
+							375 checkbox Description: Select footer section, Value: 1
+								376 heading Threadline, Value: 3
+									377 text Threadline
+								378 text Pantry 936 A footer saved
+								379 heading CONTACT, Value: 4
+									380 text CONTACT
+								381 link Description: Contact us, Value: localhost:58091/store/syn-threadline-ui-6815276b/contact
+								382 text © Threadline. All rights reserved.
+								383 link Description: Powered by LetBuyy, Value: letbuyy.com/
+		125 container Theme properties
+			126 text Selected section
+			127 heading Footer, Value: 2
+				128 text Footer
+			230 container
+				231 container Smart defaults
+					232 button (collapsed) Smart defaults, Secondary Actions: Expand
+						233 text Smart defaults
+				273 container
+					274 text Tagline
+					275 text field (settable) Tagline, Value: Pantry 936 A footer saved
+				276 container
+					277 text Store name
+					278 text field (settable) Store name
+				279 container
+					280 text Twitter/X URL
+					281 text field (settable) Twitter/X URL
+				282 container
+					283 text Facebook URL
+					284 text field (settable) Facebook URL
+				285 container
+					286 text Contact email
+					287 text field (settable) Contact email
+				288 container
+					289 text Contact phone
+					290 text field (settable) Contact phone
+				291 container
+					292 text Instagram URL
+					293 text field (settable) Instagram URL
+				265 text BLOCKS
+				294 button Add Link
+					295 text Add 
+					296 text Link
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-refresh/editor

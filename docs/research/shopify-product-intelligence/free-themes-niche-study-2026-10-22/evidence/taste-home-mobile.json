@@ -1,0 +1,917 @@
+{
+  "body": {
+    "background": "rgb(252, 252, 252)",
+    "color": "rgba(2, 9, 18, 0.75)",
+    "font": "\"Anonymous Pro\", monospace",
+    "fontSize": "15.75px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Fiery Ginger Booster",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Fiery Ginger Booster",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Figtree, sans-serif",
+      "height": 53.75,
+      "line": "0px",
+      "size": "37.5px",
+      "tag": "H1",
+      "text": "",
+      "weight": "500",
+      "width": 115.75,
+      "x": 137.125,
+      "y": 51.2734375
+    },
+    {
+      "font": "\"Anonymous Pro\", monospace",
+      "height": 20.140625,
+      "line": "20.15px",
+      "size": "13.65px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 301.8046875,
+      "x": 36.75,
+      "y": -32.421875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 62.59375,
+      "line": "62.6px",
+      "size": "50px",
+      "tag": "H2",
+      "text": "Take a sip",
+      "weight": "500",
+      "width": 225.0546875,
+      "x": 82.46875,
+      "y": 522.3203125
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 31.296875,
+      "line": "31.3px",
+      "size": "25px",
+      "tag": "H2",
+      "text": "Meet our bestsellers",
+      "weight": "500",
+      "width": 243.125,
+      "x": 15.75,
+      "y": 920.1640625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 18.7734375,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "Genius",
+      "weight": "500",
+      "width": 173.25,
+      "x": 15.75,
+      "y": 1262.4609375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 18.7734375,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "The Stranger",
+      "weight": "500",
+      "width": 173.25,
+      "x": 201,
+      "y": 1262.4609375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 18.7734375,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "The Giver",
+      "weight": "500",
+      "width": 173.25,
+      "x": 15.75,
+      "y": 1626.171875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 18.7734375,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "Wing Man",
+      "weight": "500",
+      "width": 173.25,
+      "x": 201,
+      "y": 1626.171875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 187.78125,
+      "line": "46.95px",
+      "size": "37.5px",
+      "tag": "H2",
+      "text": "Drinks that taste as good as they make you feel.",
+      "weight": "500",
+      "width": 285,
+      "x": 52.5,
+      "y": 1819.4921875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 26.6015625,
+      "line": "26.605px",
+      "size": "21.25px",
+      "tag": "H3",
+      "text": "Boosters",
+      "weight": "500",
+      "width": 358.5,
+      "x": 15.75,
+      "y": 2512.53125
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 26.6015625,
+      "line": "26.605px",
+      "size": "21.25px",
+      "tag": "H3",
+      "text": "Kombuchas",
+      "weight": "500",
+      "width": 358.5,
+      "x": 15.75,
+      "y": 2936.9296875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 26.6015625,
+      "line": "26.605px",
+      "size": "21.25px",
+      "tag": "H3",
+      "text": "Cold-pressed Juices",
+      "weight": "500",
+      "width": 358.5,
+      "x": 15.75,
+      "y": 3361.328125
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 328.6171875,
+      "line": "46.95px",
+      "size": "37.5px",
+      "tag": "H2",
+      "text": "“This spicy, pocket-sized booster is the healthy kickstart I need to start my day.”",
+      "weight": "500",
+      "width": 274.5,
+      "x": 57.75,
+      "y": 3870.2734375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 93.890625,
+      "line": "46.95px",
+      "size": "37.5px",
+      "tag": "H2",
+      "text": "Fiery Ginger Booster",
+      "weight": "500",
+      "width": 358.5,
+      "x": 15.75,
+      "y": 4731.40625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 31.296875,
+      "line": "31.3px",
+      "size": "25px",
+      "tag": "H2",
+      "text": "Keeping it green",
+      "weight": "500",
+      "width": 197.0546875,
+      "x": 15.75,
+      "y": 5365.9375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 150.859375,
+      "line": "30.175px",
+      "size": "21.25px",
+      "tag": "H3",
+      "text": "We strive for sustainability in every facet of our business. From our plant-based recipes to our glass bottles, it’s central to who we are.",
+      "weight": "500",
+      "width": 302,
+      "x": 44,
+      "y": 5839.484375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 31.296875,
+      "line": "31.3px",
+      "size": "25px",
+      "tag": "H2",
+      "text": "Bundle up and save",
+      "weight": "500",
+      "width": 230.65625,
+      "x": 15.75,
+      "y": 6524.59375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 18.7734375,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "Green Bundle",
+      "weight": "500",
+      "width": 173.25,
+      "x": 15.75,
+      "y": 6817.6015625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 18.7734375,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "Standard Bundle",
+      "weight": "500",
+      "width": 173.25,
+      "x": 201,
+      "y": 6817.6015625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 37.546875,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "Days of the Week Greens",
+      "weight": "500",
+      "width": 173.25,
+      "x": 15.75,
+      "y": 7132.0234375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 18.7734375,
+      "line": "18.78px",
+      "size": "15px",
+      "tag": "H3",
+      "text": "Immunity Kit",
+      "weight": "500",
+      "width": 173.25,
+      "x": 201,
+      "y": 7132.0234375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25.0390625,
+      "line": "25.04px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "Quick links",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 7307.0078125
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25.0390625,
+      "line": "25.04px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 7582.640625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25.0390625,
+      "line": "25.04px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "We send delicious emails.",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 7813.4296875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-taste-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/all-drinks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/cold-pressed-juices"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/boosters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/kombuchas"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/plant-milks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/shakes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/lemonades"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-taste-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Shop Lemonades",
+      "url": "https://theme-taste-demo.myshopify.com/collections/lemonades"
+    },
+    {
+      "text": "Genius",
+      "url": "https://theme-taste-demo.myshopify.com/products/copy-of-the-good"
+    },
+    {
+      "text": "The Stranger",
+      "url": "https://theme-taste-demo.myshopify.com/products/copy-of-wing-man-1"
+    },
+    {
+      "text": "The Giver",
+      "url": "https://theme-taste-demo.myshopify.com/products/copy-of-wing-man"
+    },
+    {
+      "text": "Wing Man",
+      "url": "https://theme-taste-demo.myshopify.com/products/copy-of-deep-roots"
+    },
+    {
+      "text": "Boosters",
+      "url": "https://theme-taste-demo.myshopify.com/collections/boosters"
+    },
+    {
+      "text": "Kombuchas",
+      "url": "https://theme-taste-demo.myshopify.com/collections/kombuchas"
+    },
+    {
+      "text": "Cold-pressed Juices",
+      "url": "https://theme-taste-demo.myshopify.com/collections/cold-pressed-juices"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-taste-demo.myshopify.com/#ProductInfo-template--22715887222806__1645126111d823f1ba"
+    },
+    {
+      "text": "View full details",
+      "url": "https://theme-taste-demo.myshopify.com/products/fiery-ginger-booster"
+    },
+    {
+      "text": "Learn more",
+      "url": "https://theme-taste-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Green Bundle",
+      "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1"
+    },
+    {
+      "text": "Standard Bundle",
+      "url": "https://theme-taste-demo.myshopify.com/products/standard-cleanse"
+    },
+    {
+      "text": "Days of the Week Greens",
+      "url": "https://theme-taste-demo.myshopify.com/products/days-of-the-week-greens"
+    },
+    {
+      "text": "Immunity Kit",
+      "url": "https://theme-taste-demo.myshopify.com/products/immunity-kit"
+    },
+    {
+      "text": "Drinks",
+      "url": "https://theme-taste-demo.myshopify.com/collections/all-drinks"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-taste-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-taste-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "theme-taste-demo",
+      "url": "https://theme-taste-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__16451239582ff4a6fd",
+      "rect": {
+        "height": 760.640625,
+        "width": 390,
+        "x": 0,
+        "y": 115.5234375
+      },
+      "tag": "DIV",
+      "text": "Take a sip\n\nSweet, tart, and oh-so-refreshing, our low-sugar, probiotic lemonades taste like summer in a bottle.\n\nShop Lemonades"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__featured_collection",
+      "rect": {
+        "height": 850.21875,
+        "width": 390,
+        "x": 0,
+        "y": 896.1640625
+      },
+      "tag": "SECTION",
+      "text": "Meet our bestsellers\nGenius\nRegular price\nFrom $7.95 CAD\nThe Stranger\nRegular price\nFrom $8.95 CAD\nThe Giver\nRegular price\nFrom $8.95 CAD\nWing Man\nRegular price\nFrom $7.95 CAD"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__16451248477c9272aa",
+      "rect": {
+        "height": 294,
+        "width": 390,
+        "x": 0,
+        "y": 1766.3828125
+      },
+      "tag": "SECTION",
+      "text": "Drinks that taste as good as they make you feel."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__1645126011c810ad84",
+      "rect": {
+        "height": 1345.1953125,
+        "width": 390,
+        "x": 0,
+        "y": 2080.3828125
+      },
+      "tag": "SECTION",
+      "text": "Boosters\nKombuchas\nCold-pressed Juices"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__1645126108f0da17fa",
+      "rect": {
+        "height": 895.5625,
+        "width": 390,
+        "x": 0,
+        "y": 3445.578125
+      },
+      "tag": "DIV",
+      "text": "“This spicy, pocket-sized booster is the healthy kickstart I need to start my day.”\n\n- JANE S."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__1645126111d823f1ba",
+      "rect": {
+        "height": 960.796875,
+        "width": 390,
+        "x": 0,
+        "y": 4361.140625
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\nFiery Ginger Booster\nRegular price\n$3.95 CAD\nSize\n60 mL\n Six Pack\n Twelve Pack\nQuantity\nDecrease quantity for Fiery Ginger Booster"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__multicolumn",
+      "rect": {
+        "height": 1138.65625,
+        "width": 390,
+        "x": 0,
+        "y": 5341.9375
+      },
+      "tag": "SECTION",
+      "text": "Keeping it green\nWe strive for sustainability in every facet of our business. From our plant-based recipes to our glass bottles, it’s central to who we are.\nLearn more "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887222806__1645126269ed7c2e21",
+      "rect": {
+        "height": 746.4140625,
+        "width": 390,
+        "x": 0,
+        "y": 6500.59375
+      },
+      "tag": "SECTION",
+      "text": "Bundle up and save\nGreen Bundle\nRegular price\n$64.95 CAD\nStandard Bundle\nRegular price\n$64.95 CAD\nDays of the Week Greens\nRegular price\n$29.95 CAD\nImmunity Kit\nRegular price\n$39.95"
+    }
+  ],
+  "title": "theme-taste-demo",
+  "url": "https://theme-taste-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    "Size\n60 mL\n Six Pack\n Twelve Pack"
+  ],
+  "grids": [
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 727.640625,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "grid product-grid contains-card contains-card--standard grid--4-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 715.421875,
+      "tag": "UL",
+      "width": 358.5
+    },
+    {
+      "className": "slideshow banner banner--small grid grid--1-col slider slider--everywhere",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 294,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 294,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "collection-list contains-card contains-card--standard grid grid--3-col-desktop grid--1-col-tablet-down collection-list--3-items",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 1261.1953125,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 832.5625,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "featured-product product grid grid--1-col gradient color-background-1 isolate grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 912.796875,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 1027.859375,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "grid product-grid contains-card contains-card--standard grid--4-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 635.6171875,
+      "tag": "UL",
+      "width": 358.5
+    }
+  ],
+  "images": [
+    {
+      "alt": "Lemonades placed on a light blue background with lemons and crushed ice positioned around them.",
+      "complete": true,
+      "naturalWidth": 170,
+      "rect": {
+        "height": 351.796875,
+        "width": 354.5
+      }
+    },
+    {
+      "alt": "Genius",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 265.8515625,
+        "width": 173.25
+      }
+    },
+    {
+      "alt": "The Stranger",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 265.8515625,
+        "width": 173.25
+      }
+    },
+    {
+      "alt": "The Giver",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 265.8515625,
+        "width": 173.25
+      }
+    },
+    {
+      "alt": "Wing Man",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 265.8515625,
+        "width": 173.25
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 294,
+        "width": 358.5
+      }
+    },
+    {
+      "alt": "Boosters",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 358.5,
+        "width": 358.5
+      }
+    },
+    {
+      "alt": "Kombuchas",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 358.5,
+        "width": 358.5
+      }
+    },
+    {
+      "alt": "Cold-pressed Juices",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 358.5,
+        "width": 358.5
+      }
+    },
+    {
+      "alt": "Fiery ginger and Inside job booster juice bottles placed next to orange and ginger slices.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 354.6953125,
+        "width": 354.5
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 311.140625,
+        "width": 354.5
+      }
+    },
+    {
+      "alt": "Empty glass drinking bottles",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 354.5,
+        "width": 354.5
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nWelcome to our store\n\nCart\nTake a sip\n\nSweet, tart, and oh-so-refreshing, our low-sugar, probiotic lemonades taste like summer in a bottle.\n\nShop Lemonades\nMeet our bestsellers\nGenius\nRegular price\nFrom $7.95 CAD\nThe Stranger\nRegular price\nFrom $8.95 CAD\nThe Giver\nRegular price\nFrom $8.95 CAD\nWing Man\nRegular price\nFrom $7.95 CAD\nDrinks that taste as good as they make you feel.\nBoosters\nKombuchas\nCold-pressed Juices\n“This spicy, pocket-sized booster is the healthy kickstart I need to start my day.”\n\n- JANE S.\n\nSkip to product information\nOpen media 1 in modal\nFiery Ginger Booster\nRegular price\n$3.95 CAD\nSize\n60 mL\n Six Pack\n Twelve Pack\nQuantity\nDecrease quantity for Fiery Ginger Booster\nIncrease quantity for Fiery Ginger Booster\nAdd to cart\nBuy it now\nView full details \nKeeping it green\nWe strive for sustainability in every facet of our business. From our plant-based recipes to our glass bottles, it’s central to who we are.\nLearn more \nBundle up and save\nGreen Bundle\nRegular price\n$64.95 CAD\nStandard Bundle\nRegular price\n$64.95 CAD\nDays of the Week Greens\nRegular price\n$29.95 CAD\nImmunity Kit\nRegular price\n$39.95 CAD\nQuick links\nDrinks\nBundles\nRecipes\nAbout\nOur mission\n\nWe offer sustainable access to delicious plant-based nutrition.\n\nWe send delicious emails.\nEmail\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\n© 2026, theme-taste-demo Powered by Shopify"
+}

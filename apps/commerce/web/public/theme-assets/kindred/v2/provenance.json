@@ -1,0 +1,39 @@
+{
+  "theme": "Kindred",
+  "version": "2.0.0",
+  "created": "2026-10-23",
+  "usage": "Synthetic catalog preview; merchant bindings remain explicit; never seeded as real merchant stock",
+  "generationPrompts": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/kindred-storybook/generation-prompts.json",
+  "assets": [
+    {
+      "file": "little-pause-open.webp",
+      "width": 1200,
+      "height": 900,
+      "bytes": 72046,
+      "source": "Kindred approved storybook/assets/little-pause-open.png",
+      "sourceSha256": "4b3cb0fbe90c289f419cbf2712235ae946ee692a18c57eabb09604820ae22b1c",
+      "sha256": "ede8e9fc0acc1a61a1998703b46cb690bba50264973aab1cbdc8fb62cc575ae5",
+      "method": "Proportional resize and WebP encoding only; no crop or photographic change"
+    },
+    {
+      "file": "little-pause-closed.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 64810,
+      "source": "Kindred approved storybook/assets/little-pause-closed.png",
+      "sourceSha256": "78e903f62fec0bc5ffd24fcdfa255a060ab8798a2d9eb5eef0145f54cca60c2a",
+      "sha256": "a8379ed174288fd70ed84a8fa130936dac84d1ebde02640cc72d45bedf3dca17",
+      "method": "Proportional resize and WebP encoding only; no crop or photographic change"
+    },
+    {
+      "file": "desk-companion.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 97608,
+      "source": "Kindred approved storybook/assets/desk-companion.png",
+      "sourceSha256": "ae30aaf0d4216f22b79b8afea42f096aa9d20b34bb4e68e70e273e74e3f6918d",
+      "sha256": "54961c3bf2fe86ec55d015057e22b91219f93dd6383edee0c9e22ba997136ed4",
+      "method": "Proportional resize and WebP encoding only; no crop or photographic change"
+    }
+  ]
+}

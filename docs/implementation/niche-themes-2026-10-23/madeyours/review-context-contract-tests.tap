@@ -1,0 +1,208 @@
+TAP version 13
+# Subtest: storefront order creation requires idempotency and bounded cart lines
+ok 1 - storefront order creation requires idempotency and bounded cart lines
+  ---
+  duration_ms: 5.775792
+  type: 'test'
+  ...
+# Subtest: marketplace cart line binds listing identity independently from catalog product identity
+ok 2 - marketplace cart line binds listing identity independently from catalog product identity
+  ---
+  duration_ms: 0.630583
+  type: 'test'
+  ...
+# Subtest: Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails
+ok 3 - Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails
+  ---
+  duration_ms: 1.050792
+  type: 'test'
+  ...
+# Subtest: hosted checkout confirmation accepts explicit Razorpay proof fields and rejects generic payment IDs
+ok 4 - hosted checkout confirmation accepts explicit Razorpay proof fields and rejects generic payment IDs
+  ---
+  duration_ms: 0.19025
+  type: 'test'
+  ...
+# Subtest: GST invoice generation separates intra-state CGST/SGST from inter-state IGST
+ok 5 - GST invoice generation separates intra-state CGST/SGST from inter-state IGST
+  ---
+  duration_ms: 1.307917
+  type: 'test'
+  ...
+# Subtest: discount stack planner applies product, order, and shipping classes deterministically
+ok 6 - discount stack planner applies product, order, and shipping classes deterministically
+  ---
+  duration_ms: 0.672334
+  type: 'test'
+  ...
+# Subtest: discount stack planner rejects non-combinable discounts instead of reordering them
+ok 7 - discount stack planner rejects non-combinable discounts instead of reordering them
+  ---
+  duration_ms: 0.115667
+  type: 'test'
+  ...
+# Subtest: shipping serviceability planner enforces pincode, COD, amount, and weight limits
+ok 8 - shipping serviceability planner enforces pincode, COD, amount, and weight limits
+  ---
+  duration_ms: 0.0955
+  type: 'test'
+  ...
+# Subtest: checkout state transitions move forward and stop at terminal states
+ok 9 - checkout state transitions move forward and stop at terminal states
+  ---
+  duration_ms: 0.23375
+  type: 'test'
+  ...
+# Subtest: store branding is constrained to data, not executable checkout code
+ok 10 - store branding is constrained to data, not executable checkout code
+  ---
+  duration_ms: 0.535166
+  type: 'test'
+  ...
+# Subtest: order risk heuristic requests COD confirmation without fraud ML
+ok 11 - order risk heuristic requests COD confirmation without fraud ML
+  ---
+  duration_ms: 0.179333
+  type: 'test'
+  ...
+# Subtest: one strict cart schema accepts only reviewed buyer draft IDs/text and stale-review echo
+ok 12 - one strict cart schema accepts only reviewed buyer draft IDs/text and stale-review echo
+  ---
+  duration_ms: 11.842375
+  type: 'test'
+  ...
+# Subtest: signed binding is order invariant across configurations and changes with facts, quantity or exact configuration
+ok 13 - signed binding is order invariant across configurations and changes with facts, quantity or exact configuration
+  ---
+  duration_ms: 6.986
+  type: 'test'
+  ...
+# Subtest: normalized private order readback projects only the canonical saved snapshot and keeps legacy fallback honest
+ok 14 - normalized private order readback projects only the canonical saved snapshot and keeps legacy fallback honest
+  ---
+  duration_ms: 2.6335
+  type: 'test'
+  ...
+# Subtest: partial settings patches preserve omission, explicit clearing and false/zero values
+ok 15 - partial settings patches preserve omission, explicit clearing and false/zero values
+  ---
+  duration_ms: 2.615208
+  type: 'test'
+  ...
+# Subtest: missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+ok 16 - missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+  ---
+  duration_ms: 12.743417
+  type: 'test'
+  ...
+# Subtest: canonical UUID/version and selected variant parent are mandatory server context
+ok 17 - canonical UUID/version and selected variant parent are mandatory server context
+  ---
+  duration_ms: 1.0935
+  type: 'test'
+  ...
+# Subtest: malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+ok 18 - malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+  ---
+  duration_ms: 1.712542
+  type: 'test'
+  ...
+# Subtest: food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+ok 19 - food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+  ---
+  duration_ms: 3.477
+  type: 'test'
+  ...
+# Subtest: furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+ok 20 - furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+  ---
+  duration_ms: 1.83725
+  type: 'test'
+  ...
+# Subtest: book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+ok 21 - book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+  ---
+  duration_ms: 2.617125
+  type: 'test'
+  ...
+# Subtest: required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+ok 22 - required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+  ---
+  duration_ms: 3.418458
+  type: 'test'
+  ...
+# Subtest: NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+ok 23 - NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+  ---
+  duration_ms: 9.983084
+  type: 'test'
+  ...
+# Subtest: SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+ok 24 - SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+  ---
+  duration_ms: 13.395125
+  type: 'test'
+  ...
+# Subtest: a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+ok 25 - a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+  ---
+  duration_ms: 2.867375
+  type: 'test'
+  ...
+# Subtest: accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+ok 26 - accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+  ---
+  duration_ms: 1.498875
+  type: 'test'
+  ...
+# Subtest: historical order readback validates frozen facts/labels and never falls back to current catalog facts
+ok 27 - historical order readback validates frozen facts/labels and never falls back to current catalog facts
+  ---
+  duration_ms: 1.491917
+  type: 'test'
+  ...
+# Subtest: revision transition permits no-effect resaves and requires advances for capability meaning changes
+ok 28 - revision transition permits no-effect resaves and requires advances for capability meaning changes
+  ---
+  duration_ms: 0.414542
+  type: 'test'
+  ...
+# Subtest: echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+ok 29 - echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+  ---
+  duration_ms: 3.04325
+  type: 'test'
+  ...
+# Subtest: saved canonical option names and values retain spaces and Hindi without label inference
+ok 30 - saved canonical option names and values retain spaces and Hindi without label inference
+  ---
+  duration_ms: 1.045
+  type: 'test'
+  ...
+# Subtest: review echo requires explicit variant context and cannot move across variants or use the old product-only digest
+ok 31 - review echo requires explicit variant context and cannot move across variants or use the old product-only digest
+  ---
+  duration_ms: 1.643166
+  type: 'test'
+  ...
+# Subtest: actual SDK makes only the exact no-store review GET, with bounded canonical response and no price/version authority
+ok 32 - actual SDK makes only the exact no-store review GET, with bounded canonical response and no price/version authority
+  ---
+  duration_ms: 22.674459
+  type: 'test'
+  ...
+# Subtest: SDK rejects malformed facts and a valid but different product or variant context
+ok 33 - SDK rejects malformed facts and a valid but different product or variant context
+  ---
+  duration_ms: 2.171708
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 635.791083

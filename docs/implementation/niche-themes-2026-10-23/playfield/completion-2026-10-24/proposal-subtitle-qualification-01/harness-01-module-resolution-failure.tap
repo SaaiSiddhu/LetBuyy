@@ -1,0 +1,44 @@
+TAP version 13
+# node:internal/modules/cjs/loader:1430
+#   const err = new Error(message);
+#               ^
+# Error: Cannot find module 'jsdom'
+# Require stack:
+# - /Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/proposal-subtitle-qualification-01/subtitle-proposal.test.ts
+#     at Module._resolveFilename (node:internal/modules/cjs/loader:1430:15)
+#     at m._resolveFilename (file:///Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-B7jrtLTO.mjs:1:789)
+#     at nextResolveSimple (/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs:4:1004)
+#     at /Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs:3:2630
+#     at /Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs:3:1542
+#     at resolveTsPaths (/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs:4:760)
+#     at Function._resolveFilename (/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs:4:1102)
+#     at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)
+#     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)
+#     at Module._load (node:internal/modules/cjs/loader:1216:25) {
+#   code: 'MODULE_NOT_FOUND',
+#   requireStack: [
+#     '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/proposal-subtitle-qualification-01/subtitle-proposal.test.ts'
+#   ]
+# }
+# Node.js v22.23.3
+# Subtest: docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/proposal-subtitle-qualification-01/subtitle-proposal.test.ts
+not ok 1 - docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/proposal-subtitle-qualification-01/subtitle-proposal.test.ts
+  ---
+  duration_ms: 167.967792
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/proposal-subtitle-qualification-01/subtitle-proposal.test.ts:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 172.048083

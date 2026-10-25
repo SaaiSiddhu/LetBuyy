@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-23T20:13:26.635475+00:00",
+  "runId": "f6074d90e894",
+  "scope": "One existing observer exact captured successful normal COD confirm replay, same private body/path/key/headers; no order factory",
+  "status": 200,
+  "actual": {
+    "index": 0,
+    "originalOrderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+    "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+    "commandSha256": "c124cad665231bfb09e9c1bceccb171993dcb381df39d4d13f592135dd6fec86",
+    "responseSha256": "1f83d069b6ac37a07ed498aaad1afbc50d02d84aaba76c282fe73562a929ba56",
+    "responseStatus": 200,
+    "requestId": "da365b75-37b8-4ca3-8d6b-55385224c682",
+    "sameOrder": true,
+    "effectsUnchanged": true,
+    "before": {
+      "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+      "productId": null,
+      "siteOrderCount": 1,
+      "orderLineCount": 1,
+      "snapshotSha256": "8d033d3445b739949586f9424b8158448a34344a9bb0c6b16ce39efe4e161581",
+      "productOrderLineCount": 1,
+      "inventoryRows": 5,
+      "inventorySha256": "84bd3f1c64367bb17db40fec1ec20a96491cb2b6e3bfb5e96ca544851321dc81",
+      "inventoryEventCount": 1,
+      "inventoryAdjustmentCount": 7
+    },
+    "after": {
+      "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+      "productId": null,
+      "siteOrderCount": 1,
+      "orderLineCount": 1,
+      "snapshotSha256": "8d033d3445b739949586f9424b8158448a34344a9bb0c6b16ce39efe4e161581",
+      "productOrderLineCount": 1,
+      "inventoryRows": 5,
+      "inventorySha256": "84bd3f1c64367bb17db40fec1ec20a96491cb2b6e3bfb5e96ca544851321dc81",
+      "inventoryEventCount": 1,
+      "inventoryAdjustmentCount": 7
+    }
+  },
+  "checks": {
+    "status": true,
+    "sameOrder": true,
+    "expectedOrder": true,
+    "effectsUnchanged": true,
+    "oneOrder": true
+  },
+  "notClaimed": "Ledger/outbox/reservation invariance outside existing observer hash/count scope"
+}

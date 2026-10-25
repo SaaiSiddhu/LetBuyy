@@ -2,6 +2,7 @@
 // ANALYTICS — Store analytics + revenue (Doc 04 + Doc 09 § 5.2)
 // ============================================================
 import { Hono, type Context } from 'hono';
+import { z } from 'zod';
 import type { Env } from '../index';
 import { resolveCustomUser, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
@@ -339,49 +340,6 @@ async function loadRollupDashboard(db: AnalyticsDb, storeId: string, period: str
     };
 }
 
-function revenueChartFromRollupRows(rows: AnalyticsRollupRow[]) {
-    const byDate = new Map<string, { revenue: number; orders: number }>();
-    for (const row of rows) {
-        const entry = byDate.get(row.rollup_date) || { revenue: 0, orders: 0 };
-        if (row.metric_name === 'revenue.paid_minor') entry.revenue += rollupNumber(row.metric_value) / 100;
-        if (row.metric_name === 'orders.paid') entry.orders += rollupNumber(row.metric_value);
-        byDate.set(row.rollup_date, entry);
-    }
-
-    return Array.from(byDate.entries()).map(([date, value]) => ({
-        date,
-        revenue: Math.round(value.revenue),
-        orders: value.orders,
-    }));
-}
-
-async function loadRollupRevenue(db: AnalyticsDb, storeId: string, period: string) {
-    const days = analyticsPeriodDays(period === '12m' ? '90d' : period);
-    const currentSince = rollupDate(days);
-    const previousSince = rollupDate(days * 2);
-    const rows = await loadRollups(db, storeId, ['orders.paid', 'revenue.paid_minor'], previousSince);
-    // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
-    // the queue-worker rollup cron hasn't caught up) must fall through to the live query below,
-    // not be served as a confirmed "everything is zero" projection.
-    if (!rows || rows.length === 0) return null;
-
-    const currentRows = rollupRowsBetween(rows, currentSince);
-    const previousRows = rollupRowsBetween(rows, previousSince, currentSince);
-
-    return {
-        period,
-        chart: revenueChartFromRollupRows(currentRows),
-        comparison: {
-            previous_period: {
-                from: previousSince,
-                to: currentSince,
-                label: `Previous ${days} days`,
-            },
-            chart: revenueChartFromRollupRows(previousRows),
-        },
-    };
-}
-
 async function loadRollupTopProducts(db: AnalyticsDb, storeId: string, limit: number) {
     const rows = await loadRollups(db, storeId, ['product.units_sold', 'product.revenue_minor'], undefined, 2000);
     // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
@@ -631,53 +589,41 @@ router.get('/dashboard', async (c) => {
 router.get('/revenue', async (c) => {
     const auth = c.get('auth');
     const storeId = c.req.query('store_id');
-    const period = c.req.query('period') || '30d';
+    const parsedPeriod = z.enum(['7d','30d','90d','12m']).safeParse(c.req.query('period') || '30d');
+    if (!parsedPeriod.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid reporting period' } }, 400);
+    const period = parsedPeriod.data;
     const db = getSupabaseAdmin(c);
 
     if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
     const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
     if (accessBlock) return accessBlock;
 
-    if (analyticsRollupReadsEnabled(c.env)) {
-        const projected = await loadRollupRevenue(db, storeId, period);
-        if (projected) return c.json(success(projected));
+    const { data, error } = await db.rpc('merchant_daily_revenue_history', {
+        p_site_id: storeId,
+        p_days: analyticsPeriodDays(period),
+    });
+    if (error || !Array.isArray(data) || data.length !== analyticsPeriodDays(period) * 2) {
+        return c.json({ success: false, error: { code: 'ANALYTICS_UNAVAILABLE', message: 'Revenue history could not load. Try again.' } }, 503);
     }
-
-    const days = analyticsPeriodDays(period === '12m' ? '90d' : period);
-    const since = new Date(Date.now() - days * 86400000).toISOString();
-    const prevSince = new Date(Date.now() - days * 2 * 86400000).toISOString();
-
-    const { data: orders } = await db.from('orders').select('total, created_at, payment_status')
-        .eq('store_id', storeId).gte('created_at', since).eq('payment_status', 'paid')
-        .order('created_at', { ascending: true });
-
-    const { data: previousOrders } = await db.from('orders').select('total, created_at, payment_status')
-        .eq('store_id', storeId).gte('created_at', prevSince).lt('created_at', since).eq('payment_status', 'paid')
-        .order('created_at', { ascending: true });
-
-    const dailyChart = (rows: Array<{ total?: number | null; created_at: string }>) => {
-        const dailyMap = new Map<string, { revenue: number; orders: number }>();
-        for (const o of rows) {
-            const date = o.created_at.slice(0, 10);
-            const entry = dailyMap.get(date) || { revenue: 0, orders: 0 };
-            entry.revenue += o.total || 0;
-            entry.orders += 1;
-            dailyMap.set(date, entry);
-        }
-
-        return Array.from(dailyMap.entries()).map(([date, d]) => ({ date, ...d }));
-    };
-
+    const points = data.map((row: { report_date: string; revenue: number | string; orders: number | string }) => ({
+        date: row.report_date,
+        revenue: Number(row.revenue),
+        orders: Number(row.orders),
+    }));
+    if (points.some(point => !Number.isFinite(point.revenue) || !Number.isSafeInteger(point.orders))) {
+        return c.json({ success: false, error: { code: 'ANALYTICS_UNAVAILABLE', message: 'Revenue history could not load. Try again.' } }, 503);
+    }
+    const days = analyticsPeriodDays(period);
+    const previous = points.slice(0, days);
+    const chart = points.slice(days);
     return c.json(success({
         period,
-        chart: dailyChart(orders || []),
+        timezone: 'Asia/Kolkata',
+        source: 'orders',
+        chart,
         comparison: {
-            previous_period: {
-                from: new Date(prevSince).toISOString().slice(0, 10),
-                to: new Date(since).toISOString().slice(0, 10),
-                label: `Previous ${days} days`,
-            },
-            chart: dailyChart(previousOrders || []),
+            previous_period: { from: previous[0].date, to: chart[0].date, label: `Previous ${days} days` },
+            chart: previous,
         },
     }));
 });

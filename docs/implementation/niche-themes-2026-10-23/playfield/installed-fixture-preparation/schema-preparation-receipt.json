@@ -1,0 +1,219 @@
+{
+  "classification": "SOURCE_SCHEMA_PREPARATION_ONLY",
+  "recordedAt": "2026-10-23T13:24:31.270Z",
+  "sharedEntryExact": true,
+  "canonicalSchemas": [
+    "CreateProductSchema",
+    "ToyFactsSchema",
+    "ToyVariantFactsSchema",
+    "ProductVariantMetadataSchema",
+    "resolveToyFacts"
+  ],
+  "createPayload": {
+    "status": "PASS_FIELDS_WITH_REQUIRED_BINDING_NOT_RUN",
+    "canonicalValidationIssues": [
+      {
+        "path": [
+          "store_id"
+        ],
+        "code": "invalid_type"
+      }
+    ],
+    "explanation": "Exact canonical CreateProductSchema called with the unbound plan. The only issue is missing store_id. No placeholder identity was supplied. Full bound create must validate after readback."
+  },
+  "editions": [
+    {
+      "edition": "Inherited",
+      "stock": 4,
+      "partial": {
+        "finish": "Sample blue finish"
+      },
+      "resolved": {
+        "schemaVersion": 1,
+        "ageBands": [
+          "6-8"
+        ],
+        "ageStatement": "6–8 years",
+        "interests": [
+          "art"
+        ],
+        "contents": [
+          {
+            "label": "tiles",
+            "quantity": 12
+          },
+          {
+            "label": "idea cards",
+            "quantity": 2
+          },
+          {
+            "label": "tray",
+            "quantity": 1
+          }
+        ],
+        "contentsComplete": true,
+        "dimensions": {
+          "label": "Tray",
+          "length": 24,
+          "width": 19,
+          "height": 1.5,
+          "unit": "cm"
+        },
+        "additionalDimensions": [
+          {
+            "label": "Each tile",
+            "length": 5,
+            "width": 5,
+            "height": 0.6,
+            "unit": "cm"
+          }
+        ],
+        "materials": "Wood",
+        "finish": "Sample blue finish",
+        "warnings": [
+          {
+            "text": "Read the sample kit information.",
+            "sourceLabel": "Fictional integration fixture"
+          }
+        ]
+      }
+    },
+    {
+      "edition": "Unknown facts",
+      "stock": 2,
+      "partial": {
+        "ageBands": [],
+        "contents": [],
+        "dimensions": null,
+        "additionalDimensions": [],
+        "warnings": []
+      },
+      "resolved": {
+        "schemaVersion": 1,
+        "ageBands": [],
+        "interests": [
+          "art"
+        ],
+        "contents": [],
+        "contentsComplete": false,
+        "dimensions": null,
+        "additionalDimensions": [],
+        "materials": "Wood",
+        "warnings": []
+      }
+    },
+    {
+      "edition": "Paper",
+      "stock": 3,
+      "partial": {
+        "ageBands": [
+          "9-12"
+        ],
+        "contents": [
+          {
+            "label": "paper sheets",
+            "quantity": 36
+          }
+        ],
+        "contentsComplete": true,
+        "dimensions": {
+          "label": "A5 sheet",
+          "length": 21,
+          "width": 14.8,
+          "unit": "cm"
+        },
+        "additionalDimensions": [],
+        "materials": "Paper",
+        "warnings": []
+      },
+      "resolved": {
+        "schemaVersion": 1,
+        "ageBands": [
+          "9-12"
+        ],
+        "interests": [
+          "art"
+        ],
+        "contents": [
+          {
+            "label": "paper sheets",
+            "quantity": 36
+          }
+        ],
+        "contentsComplete": true,
+        "dimensions": {
+          "label": "A5 sheet",
+          "length": 21,
+          "width": 14.8,
+          "unit": "cm"
+        },
+        "additionalDimensions": [],
+        "materials": "Paper",
+        "warnings": []
+      }
+    }
+  ],
+  "fragments": {
+    "explicitMaterialUnknown": {
+      "materials": ""
+    },
+    "changedInheritedFinish": {
+      "finish": "Sample green finish"
+    }
+  },
+  "stock": {
+    "product": 8,
+    "variants": [
+      {
+        "edition": "Inherited",
+        "stock": 4
+      },
+      {
+        "edition": "Unknown facts",
+        "stock": 2
+      },
+      {
+        "edition": "Paper",
+        "stock": 3
+      }
+    ],
+    "authority": "Observe canonical per-variant stock readbacks; do not silently reconcile the existing plan product stock 8 with variant sum 9."
+  },
+  "runtime": {
+    "status": "NOT_RUN",
+    "resourcesStarted": [],
+    "mutationsSent": 0,
+    "ordersCreated": 0,
+    "idsInvented": 0
+  },
+  "sources": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-data.plan.json",
+      "sha256": "eefebbda07c13ebbdf5dd1a7f40d53ecdbe98c8af23ce464ffcdc5191deb4864"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-preparation-source-release-14-products.json",
+      "sha256": "5258fe38d03f6d2449e7db62dcd95fde6cbebffc2076ef533309e6d45a5e60e1"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9"
+    },
+    {
+      "path": "packages/commerce-core/src/playfield-facts.ts",
+      "sha256": "96c17f8c65c1aa1e12233b00368ba29f4e76eb07dcf0374f822747f4f472e9a4"
+    },
+    {
+      "path": "packages/commerce-core/src/niche-product-facts.ts",
+      "sha256": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+      "sha256": "c1f8c88126c57a0a08d6e75c05035da59adc918345e3080853ca1647d657d02f"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "sha256": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588"
+    }
+  ]
+}

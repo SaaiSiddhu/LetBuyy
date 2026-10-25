@@ -1,0 +1,94 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { loadThemeServerDom } from '../src/server-dom-runtime';
+import { createLetbuyyCoreLiquidThemeBundleFixture } from '../src/theme-bundle-core';
+import { createPlayfieldThemeV201 as currentFactory } from '../src/playfield-theme-v201';
+import { DEFAULT_THEME_SETTINGS } from '../src/theme-settings';
+import { LiquidRenderer } from '../src/theme-renderer';
+
+const factory = currentFactory;
+const product = {
+    // Synthetic source-only key, never an installed product/UUID/readback.
+    id: 'source-only-subtitle-product', title: 'Source-only activity', price: 1, currency: 'INR',
+    url: '/product/source-only-activity', images: [], available: true,
+    toys_card: { ageLabel: '', contentsLabel: '', contentsComplete: false, hasOptions: false },
+};
+
+async function render(subtitle?: string, products = [product], sibling = false) {
+    const bundle = factory(createLetbuyyCoreLiquidThemeBundleFixture());
+    const settings = { title: 'Related activity heading', columns: 3, productLimit: 6, ...(subtitle === undefined ? {} : { subtitle }) };
+    bundle.templates.product = {
+        name: 'Source-only related section comparison', layout: 'theme',
+        sections: {
+            related: { type: 'featured-products', settings, blocks: {}, block_order: [], disabled: false },
+            ...(sibling ? { sibling: { type: 'product-grid', settings: { title: 'Sibling heading', subtitle: 'Sibling description' }, blocks: {}, block_order: [], disabled: false } } : {}),
+        },
+        order: sibling ? ['related', 'sibling'] : ['related'],
+    };
+    const result = await new LiquidRenderer().render({
+        context: { storeId: 'source-only-store', subdomain: 'source-only-subtitle', path: '/product/source-only-activity', previewMode: false, locale: 'en-IN' },
+        storeTemplate: { themeId: 'letbuyy-bloom', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+        routeTemplate: { id: 'product', type: 'product', layoutKey: 'theme', sections: [] },
+        liquidBundle: bundle, liquidTemplateKey: 'product',
+        liquidContext: { section_products: { related: products, sibling: products }, shop: { name: 'Source-only subtitle review' } },
+    });
+    assert.equal(result.status, 'rendered', JSON.stringify(result.warnings));
+    assert.deepEqual(result.warnings, []);
+    return result.liquid!.contentForLayout;
+}
+
+async function inspect(html: string, run: (document: Document) => void) {
+    const { JSDOM } = await loadThemeServerDom();
+    const dom = new JSDOM(html);
+    try { run(dom.window.document); } finally { dom.window.close(); }
+}
+
+test('declared related-products description renders once after its own heading', async () => {
+    await inspect(await render('An independently chosen activity.'), document => {
+        const section = document.querySelector('[data-section-id="related"]')!;
+        assert.ok(section);
+        const heading = section.querySelector('h2')!;
+        assert.equal(heading.textContent, 'Related activity heading');
+        assert.equal(heading.nextElementSibling?.tagName, 'P');
+        assert.equal(heading.nextElementSibling?.textContent, 'An independently chosen activity.');
+        assert.equal([...section.querySelectorAll('p')].filter(p => p.textContent === 'An independently chosen activity.').length, 1);
+    });
+});
+
+test('empty and omitted descriptions add no empty paragraph before the grid', async () => {
+    for (const subtitle of ['', undefined]) await inspect(await render(subtitle), document => {
+        const heading = document.querySelector('[data-section-id="related"] h2')!;
+        assert.equal(heading.nextElementSibling?.className, 'pf-grid');
+    });
+});
+
+test('merchant markup remains inert while Tamil and Hindi text survives the canonical renderer', async () => {
+    const description = '<script>globalThis.subtitleUnsafe = true</script> தமிழ் गतिविधि & choosing';
+    await inspect(await render(description), document => {
+        const section = document.querySelector('[data-section-id="related"]')!;
+        assert.equal(section.querySelector('script'), null);
+        assert.match(section.textContent!, /தமிழ் गतिविधि/);
+        assert.equal(section.querySelector('h2')!.nextElementSibling?.textContent, description);
+    });
+});
+
+test('an empty product set does not create a phantom related description or heading', async () => {
+    await inspect(await render('No phantom products.', []), document => {
+        const section = document.querySelector('[data-section-id="related"]')!;
+        assert.ok(section);
+        assert.equal(section.querySelector('h2'), null);
+        assert.doesNotMatch(section.textContent!, /No phantom products/);
+    });
+});
+
+test('a sibling grid retains its own description and does not consume the related value', async () => {
+    await inspect(await render('Related description', [product], true), document => {
+        const related = document.querySelector('[data-section-id="related"]')!;
+        const sibling = document.querySelector('[data-section-id="sibling"]')!;
+        assert.match(related.textContent!, /Related description/);
+        assert.doesNotMatch(related.textContent!, /Sibling description/);
+        assert.match(sibling.textContent!, /Sibling description/);
+        assert.doesNotMatch(sibling.textContent!, /Related description/);
+    });
+});
+

@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-25T06:04:12.251435+00:00",
+  "status": "HUMAN_REQUESTED_PROJECT_WIDE_PAUSE",
+  "directHumanInstruction": "Bro Pause the entiree work on letbuyy and tell this to other chats also,..",
+  "sourceThreadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "rootGoalStatus": "paused",
+  "supersedes": "All earlier LetBuyy resume/continuation instructions until a later explicit human resume",
+  "scope": "All LetBuyy engineering, analysis, source preparation, tests, builds, runtime recovery, browser/provider work and coordination expansion",
+  "preservation": "Leave original/retained resources, apps, data, drafts, keys, backups and private source copies intact. No SIGCONT55109 or cleanup/reaper/new native action.",
+  "sourcePreparationAtPause": "New private four-file context materialized; physical-recovery implementation and tests not started. No physical backup/provision/build/serve/payment action started.",
+  "notifications": "Dispatching pause to all23 other visible LetBuyy checkout chats; delivery receipt follows."
+}

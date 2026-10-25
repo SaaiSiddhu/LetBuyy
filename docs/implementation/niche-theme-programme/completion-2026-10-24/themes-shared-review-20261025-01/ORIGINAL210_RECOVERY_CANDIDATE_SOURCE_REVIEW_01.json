@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-25T04:25:05.433800+00:00",
+  "status": "ACCEPT_SEALED_ORIGINAL210_DERIVED_SOURCE_AND_REDACTED_INPUT_PREFLIGHT_FOR_CONCRETE_RESTORE_PLAN_NO_EXECUTION_GRANT",
+  "handoff": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/HANDOFF.json",
+    "sha256": "ae3a328d4b214cf52cbce4d67e34880bc3e9324684499f865c92025e450595c5"
+  },
+  "sourceManifest": {
+    "path": "/private/tmp/letbuyy-original210-recovery-20261025-01/SOURCE_MANIFEST.json",
+    "sha256": "ead833d5f7740585658a1cf2e4d9ec58dc5aa9ee723ad2eb670f008933e25e37",
+    "files": 6546
+  },
+  "independentPhysicalChecks": {
+    "artifacts": 5,
+    "sourceFiles": 6546,
+    "exactOverlayPaths": 17,
+    "MainPreimages": 17,
+    "dependencyLinks": 2175,
+    "copyLocalWrappers": 168,
+    "ordinaryReadOnlyGuards": 4,
+    "sourceOrHashIssues": 0,
+    "MainBusinessFallbackLinks": 0
+  },
+  "wrapperNormalization": "Independently compared all168before/afterbytes: onlyold02root\u2192newcandidateRootUTF8pathreplacement, executableaccess retained. No vendorbytechange claimed/needed. Actualnormal selectedCLIwrapperhash+canonicalCLI+NodepinsmatchRootactualversion/smoke0receipt.",
+  "scope": "Exact10harnesscontext incl3reviewedcombined04pins+capture1+revision3+parentdevice2+CSS1. Allother6546manifestcode/config/appdata paths physicallycontained. No unactivated211/apparelproducer/heading/perf/notificationoverlay. Original210catalogue/default/versioneligibility code unchanged.",
+  "sourceQualificationReused": [
+    "Harness5P1source02+combinedlauncher/localrole04",
+    "CaptureREDcausalwitness+GREEN25PASS limitedfakeprovider/queue",
+    "Gatewaypreviewguard8focused/limitedtypes;parentdevice/CSSRootsourceacceptance"
+  ],
+  "RootPrivatePreflight": "Redactedfinalreceipt only reviewed, no privatecapsule/archive/key/rolesread byThemes. Receipt bindsactual25,353,695bytearchive94eb..., finalcapsule282e.../6546manifest,20roles8memberships8orders,no inventedrole/keygen/resources. Rootloadedprivatecapsulehashes; restore/fullOS/browserparity notproven.",
+  "privateCapsule": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-capsule-final01.json",
+    "sha256": "282e544c0b1617a29aa80ec96b2a385d11fa6f5f0573e81d2a8d77a1ba10eff0",
+    "expiresAt": "2026-10-25T10:22:55.858Z"
+  },
+  "monitorReview": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_MONITOR_SOURCE_REVIEW_02.json",
+    "sha256": "f4672698d6e0710fb25e4c56da51797bbfa66ae9bde3e757b366b9b9d1856e3f",
+    "actualPureControls": 8,
+    "nativeRuns": 0
+  },
+  "next": "Rootprepareexactone600swholeparent commandboundfinalcapsule/source/monitor/output andnewactualhumanpermission. NoNative underexhausted04; no build/stage/serve/cutover/provider fromthissourceacceptance.",
+  "preservation": "OriginalDB/volume/archive retained; 54685absent/55109STOPorphan neverresume/adopt/relabel/reap. Original488tablewitness separatefromsemanticv2.",
+  "MainOrActualRuntimeActionsByThemes": 0,
+  "fullThemeCertificates": 0
+}

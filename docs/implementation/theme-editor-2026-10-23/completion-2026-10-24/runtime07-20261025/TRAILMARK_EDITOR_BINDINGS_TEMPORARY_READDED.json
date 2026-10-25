@@ -1,0 +1,250 @@
+{
+  "recordedAt": "2026-10-25T00:53:57.830293+00:00",
+  "runId": "49ada80bc494",
+  "theme": "Trailmark",
+  "slug": "letbuyy-ride",
+  "phase": "temporary-readded",
+  "classification": "BOUNDED_READONLY_ACTIVE_EDITOR_INSTANCE_DRAFT_RELEASE_BINDING",
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "labelsAndRunMarkerVerified": true,
+    "originalOwnerPid": 54685
+  },
+  "binding": {
+    "draft": {
+      "id": "2b166c0b-c913-4cb8-930f-b78bad1b675f",
+      "status": "active",
+      "version": 17,
+      "updatedAt": "2026-10-25T00:53:53.829007+00:00",
+      "workingManifestSha256": "9427f650aca67a53f6b36dbec65a61a53aa309918af4bb8741e33309fb84f6fc",
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "ride-services-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0",
+          "idField": "block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary root A",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/0",
+          "idField": "block-869dc5da-85b5-4888-a04e-e4019584b488",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child B",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/1",
+          "idField": "block-9285ead1-f76c-492d-98e4-618b88488918",
+          "mapKey": null,
+          "type": "badge",
+          "order": 20,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index",
+          "idField": null,
+          "mapKey": "ride-services-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index/blocks/block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344",
+          "idField": null,
+          "mapKey": "block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary root A",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index/blocks/block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344/blocks/block-869dc5da-85b5-4888-a04e-e4019584b488",
+          "idField": null,
+          "mapKey": "block-869dc5da-85b5-4888-a04e-e4019584b488",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child B",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index/blocks/block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344/blocks/block-9285ead1-f76c-492d-98e4-618b88488918",
+          "idField": null,
+          "mapKey": "block-9285ead1-f76c-492d-98e4-618b88488918",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/ride-services-index",
+          "idField": null,
+          "mapKey": "ride-services-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "release": {
+      "id": "04c5a5c3-896e-4716-b531-e676f6db9b83",
+      "createdAt": "2026-10-25T00:53:53.702953+00:00",
+      "snapshotSha256": "9427f650aca67a53f6b36dbec65a61a53aa309918af4bb8741e33309fb84f6fc",
+      "sourceDraftVersion": 15,
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "ride-services-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0",
+          "idField": "block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary root A",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/0",
+          "idField": "block-869dc5da-85b5-4888-a04e-e4019584b488",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child B",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/1",
+          "idField": "block-9285ead1-f76c-492d-98e4-618b88488918",
+          "mapKey": null,
+          "type": "badge",
+          "order": 20,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index",
+          "idField": null,
+          "mapKey": "ride-services-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index/blocks/block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344",
+          "idField": null,
+          "mapKey": "block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary root A",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index/blocks/block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344/blocks/block-869dc5da-85b5-4888-a04e-e4019584b488",
+          "idField": null,
+          "mapKey": "block-869dc5da-85b5-4888-a04e-e4019584b488",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child B",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/ride-services-index/blocks/block-b504aa9a-62aa-41fc-9fd3-79ccaf4a5344/blocks/block-9285ead1-f76c-492d-98e4-618b88488918",
+          "idField": null,
+          "mapKey": "block-9285ead1-f76c-492d-98e4-618b88488918",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Trailmark temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/ride-services-index",
+          "idField": null,
+          "mapKey": "ride-services-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "instance": {
+      "id": "3b2795c8-a59f-47c5-b4ee-c8e22f3ab54e",
+      "slug": "letbuyy-ride",
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "packageId": "c189dd2a-fee9-4dda-896c-1abec5b8a57e",
+      "updatedAt": "2026-10-25T00:53:53.829007+00:00",
+      "currentDraftId": "2b166c0b-c913-4cb8-930f-b78bad1b675f",
+      "instanceStatus": "active",
+      "activeReleaseId": "04c5a5c3-896e-4716-b531-e676f6db9b83",
+      "packageVersionId": "b6b203cf-24c3-404e-ba6a-7165a9c81d0e"
+    },
+    "siteCurrentTheme": {
+      "slug": "letbuyy-ride",
+      "releaseId": "04c5a5c3-896e-4716-b531-e676f6db9b83"
+    }
+  },
+  "nodeScope": "Only actual trust-badges hosts and uniquely labelled owned temporary nodes; schema declarations excluded. IDs and map keys are raw stored values, not inferred UUIDs.",
+  "browserActions": 0,
+  "businessMutations": 0,
+  "fullThemeCertified": false
+}

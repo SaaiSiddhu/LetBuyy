@@ -1,0 +1,48 @@
+{
+  "classification": "READ_ONLY_INDEPENDENT_AUDIT_OF_ALL3_DEFAULT_LATEST392_NATIVE_RESULTS_NOT_BROWSER_ACCEPTANCE",
+  "recordedAt": "2026-10-23T17:15:09.605394+00:00",
+  "runId": "bc5db405796b",
+  "qualification": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-qualification.json",
+    "sha256": "c8950c43a7a041bf1fa97e54d5fe414f896ab5abb23fddcff846f29265620ffa"
+  },
+  "result": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/native-runs/01/result.json",
+    "sha256": "b05fac61fb3c87b3fd83fb4eb3865fed277a35e8ca6f8cd4a33103f8fc3a1b42",
+    "bytes": 198738
+  },
+  "pass": 19,
+  "fail": 0,
+  "skip": 0,
+  "suiteCounts": {
+    "niche-theme-promotion.postgres": 5,
+    "storefront-electronics-search.postgres": 8,
+    "theme-shared-groups.postgres": 6
+  },
+  "migrationCeilingFlagAbsent": true,
+  "actualMaxPerSuite": 392,
+  "appliedMigrationFilesPerSuite": 321,
+  "sourceBeforeAfterHashesConserved": 816,
+  "copiedNativeProofHashesMatchEmitted": 365,
+  "proofCounts": {
+    "niche-theme-promotion.postgres": 7,
+    "storefront-electronics-search.postgres": 343,
+    "theme-shared-groups.postgres": 15
+  },
+  "own343ProofsExactAdmittedSourceRunAndStrictLatest392DownUpValidated": true,
+  "allTenHeaderFooterSaveReloadPublishPublic200": true,
+  "omittedGroupCases": 30,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "browserAcceptanceClaimed": false,
+  "current9cdAppliedByThisAudit": false,
+  "currentCircuit25Audit": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/first-pass-audit-9cd50e893016.json",
+  "latestApprovalNote": "Root reports broader synthetic cart/COD approval verified; historical Circuit checkpoint retains earlier pending-approval state. Trusted localHTTPS setup approval now pending with Root."
+}

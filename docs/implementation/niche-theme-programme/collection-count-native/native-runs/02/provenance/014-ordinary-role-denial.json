@@ -1,0 +1,10 @@
+{
+  "runId": "5d023114b98b",
+  "name": "ordinary-role-denial",
+  "sequence": 14,
+  "suiteSha256": "ff95aa6fb61dfd68df3ea2bfd1451e6923fa7d29faf33e493ff0e6212cb10e99",
+  "value": {
+    "statement": "SELECT id FROM public.collection_products WHERE collection_id=$1::uuid",
+    "code": "42501"
+  }
+}

@@ -1,0 +1,374 @@
+TAP version 13
+# Subtest: unregistered transaction cannot bind an actor or invoke the capability
+ok 1 - unregistered transaction cannot bind an actor or invoke the capability
+  ---
+  duration_ms: 3.821542
+  type: 'test'
+  ...
+# Subtest: ordinary withTenantTx callback behavior and initial role/GUC setup remain unchanged
+ok 2 - ordinary withTenantTx callback behavior and initial role/GUC setup remain unchanged
+  ---
+  duration_ms: 34.93125
+  type: 'test'
+  ...
+# Subtest: invalid resolved actor poisons commit even if callback catches refusal
+ok 3 - invalid resolved actor poisons commit even if callback catches refusal
+  ---
+  duration_ms: 14.220125
+  type: 'test'
+  ...
+# Subtest: unknown publisher profile poisons the full outer update before privilege use
+ok 4 - unknown publisher profile poisons the full outer update before privilege use
+  ---
+  duration_ms: 9.5495
+  type: 'test'
+  ...
+# Subtest: governance source guard detects rejected baseline and confines elevation to fixed canonical helpers
+ok 5 - governance source guard detects rejected baseline and confines elevation to fixed canonical helpers
+  ---
+  duration_ms: 0.41225
+  type: 'test'
+  ...
+# Subtest: read-only tenant catalogue permissions permit the guarded publisher without global UPDATE grants
+ok 6 - read-only tenant catalogue permissions permit the guarded publisher without global UPDATE grants
+  ---
+  duration_ms: 7.206916
+  type: 'test'
+  ...
+# Subtest: shadow profile refusal precedes global locking and privilege use even with read-only tenant captures
+ok 7 - shadow profile refusal precedes global locking and privilege use even with read-only tenant captures
+  ---
+  duration_ms: 6.429208
+  type: 'test'
+  ...
+# Subtest: changedSelection: trusted recheck refuses a changed publication target before the RPC
+ok 8 - changedSelection: trusted recheck refuses a changed publication target before the RPC
+  ---
+  duration_ms: 10.702417
+  type: 'test'
+  ...
+# Subtest: changedPrior: trusted recheck refuses a changed publication target before the RPC
+ok 9 - changedPrior: trusted recheck refuses a changed publication target before the RPC
+  ---
+  duration_ms: 5.683417
+  type: 'test'
+  ...
+# Subtest: publisher failure restores tenant context and cannot be swallowed into an outer commit
+ok 10 - publisher failure restores tenant context and cannot be swallowed into an outer commit
+  ---
+  duration_ms: 5.914
+  type: 'test'
+  ...
+# Subtest: fixed catalogue read uses service permissions and restores its resolved tenant without writes
+ok 11 - fixed catalogue read uses service permissions and restores its resolved tenant without writes
+  ---
+  duration_ms: 7.366166
+  type: 'test'
+  ...
+# Subtest: catalogue read refuses a foreign private theme before returning its data
+ok 12 - catalogue read refuses a foreign private theme before returning its data
+  ---
+  duration_ms: 4.679834
+  type: 'test'
+  ...
+# Subtest: catalogue read refuses an unbound actor before entering trusted permissions
+ok 13 - catalogue read refuses an unbound actor before entering trusted permissions
+  ---
+  duration_ms: 5.706791
+  type: 'test'
+  ...
+# Subtest: trusted selector preserves unavailable-version invisibility instead of exposing its metadata
+ok 14 - trusted selector preserves unavailable-version invisibility instead of exposing its metadata
+  ---
+  duration_ms: 4.757709
+  type: 'test'
+  ...
+# Subtest: confirmation binds exact diff, base release and target UUID
+ok 15 - confirmation binds exact diff, base release and target UUID
+  ---
+  duration_ms: 110.01875
+  type: 'test'
+  ...
+# Subtest: canonical resolver precedes adapter; route has no raw pool or body-derived GUC
+ok 16 - canonical resolver precedes adapter; route has no raw pool or body-derived GUC
+  ---
+  duration_ms: 0.219417
+  type: 'test'
+  ...
+# Subtest: existing auth middleware and update route mounting remain intact
+ok 17 - existing auth middleware and update route mounting remain intact
+  ---
+  duration_ms: 0.126625
+  type: 'test'
+  ...
+# Subtest: selected public target has guarded read-only positive control
+ok 18 - selected public target has guarded read-only positive control
+  ---
+  duration_ms: 54.297292
+  type: 'test'
+  ...
+# Subtest: selected private target has guarded read-only positive control
+ok 19 - selected private target has guarded read-only positive control
+  ---
+  duration_ms: 41.033666
+  type: 'test'
+  ...
+# Subtest: target deleted-version refuses without mutation
+ok 20 - target deleted-version refuses without mutation
+  ---
+  duration_ms: 36.916292
+  type: 'test'
+  ...
+# Subtest: target revoked refuses without mutation
+ok 21 - target revoked refuses without mutation
+  ---
+  duration_ms: 37.031792
+  type: 'test'
+  ...
+# Subtest: target disabled-package refuses without mutation
+ok 22 - target disabled-package refuses without mutation
+  ---
+  duration_ms: 36.688667
+  type: 'test'
+  ...
+# Subtest: target deleted-package refuses without mutation
+ok 23 - target deleted-package refuses without mutation
+  ---
+  duration_ms: 35.198125
+  type: 'test'
+  ...
+# Subtest: target wrong-package refuses without mutation
+ok 24 - target wrong-package refuses without mutation
+  ---
+  duration_ms: 34.019417
+  type: 'test'
+  ...
+# Subtest: target identity refuses without mutation
+ok 25 - target identity refuses without mutation
+  ---
+  duration_ms: 34.795584
+  type: 'test'
+  ...
+# Subtest: target unsupported refuses without mutation
+ok 26 - target unsupported refuses without mutation
+  ---
+  duration_ms: 37.718292
+  type: 'test'
+  ...
+# Subtest: target missing-bundle refuses without mutation
+ok 27 - target missing-bundle refuses without mutation
+  ---
+  duration_ms: 34.112167
+  type: 'test'
+  ...
+# Subtest: target foreign-private refuses without mutation
+ok 28 - target foreign-private refuses without mutation
+  ---
+  duration_ms: 31.763125
+  type: 'test'
+  ...
+# Subtest: missing current release refuses without privileged fallback
+ok 29 - missing current release refuses without privileged fallback
+  ---
+  duration_ms: 30.98075
+  type: 'test'
+  ...
+# Subtest: success: selected pin, fixed publisher, capability audit and enrichment share canonical transaction
+ok 30 - success: selected pin, fixed publisher, capability audit and enrichment share canonical transaction
+  ---
+  duration_ms: 41.361125
+  type: 'test'
+  ...
+# Subtest: string-date: selected pin, fixed publisher, capability audit and enrichment share canonical transaction
+ok 31 - string-date: selected pin, fixed publisher, capability audit and enrichment share canonical transaction
+  ---
+  duration_ms: 37.107959
+  type: 'test'
+  ...
+# Subtest: foreign refuses before mutation/capability
+ok 32 - foreign refuses before mutation/capability
+  ---
+  duration_ms: 29.798
+  type: 'test'
+  ...
+# Subtest: stale refuses before mutation/capability
+ok 33 - stale refuses before mutation/capability
+  ---
+  duration_ms: 32.379459
+  type: 'test'
+  ...
+# Subtest: changed-key refuses before mutation/capability
+ok 34 - changed-key refuses before mutation/capability
+  ---
+  duration_ms: 31.512833
+  type: 'test'
+  ...
+# Subtest: response-loss replay reads receipt under app_tenant without publication/audit
+ok 35 - response-loss replay reads receipt under app_tenant without publication/audit
+  ---
+  duration_ms: 31.70025
+  type: 'test'
+  ...
+# Subtest: exact replay under mutation lock has one effect
+ok 36 - exact replay under mutation lock has one effect
+  ---
+  duration_ms: 31.7275
+  type: 'test'
+  ...
+# Subtest: changed receipt request conflicts
+ok 37 - changed receipt request conflicts
+  ---
+  duration_ms: 30.42625
+  type: 'test'
+  ...
+# Subtest: missing transport remains503 and concurrency remains409
+ok 38 - missing transport remains503 and concurrency remains409
+  ---
+  duration_ms: 60.175042
+  type: 'test'
+  ...
+# Subtest: publisher-fault: no successful transaction and sanitized INTERNAL_ERROR
+ok 39 - publisher-fault: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 34.531625
+  type: 'test'
+  ...
+# Subtest: audit-fault: no successful transaction and sanitized INTERNAL_ERROR
+ok 40 - audit-fault: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 33.302459
+  type: 'test'
+  ...
+# Subtest: enrich-fault: no successful transaction and sanitized INTERNAL_ERROR
+ok 41 - enrich-fault: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 34.952208
+  type: 'test'
+  ...
+# Subtest: profile-drift: no successful transaction and sanitized INTERNAL_ERROR
+ok 42 - profile-drift: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 30.389208
+  type: 'test'
+  ...
+# Subtest: restore-fault: no successful transaction and sanitized INTERNAL_ERROR
+ok 43 - restore-fault: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 33.023917
+  type: 'test'
+  ...
+# Subtest: transport-fault: no successful transaction and sanitized INTERNAL_ERROR
+ok 44 - transport-fault: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 30.330375
+  type: 'test'
+  ...
+# Subtest: temp-shadow: no successful transaction and sanitized INTERNAL_ERROR
+ok 45 - temp-shadow: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 30.455291
+  type: 'test'
+  ...
+# Subtest: tenant-grant: no successful transaction and sanitized INTERNAL_ERROR
+ok 46 - tenant-grant: no successful transaction and sanitized INTERNAL_ERROR
+  ---
+  duration_ms: 29.940125
+  type: 'test'
+  ...
+# Subtest: scope actor mismatch cannot set actor or publish
+ok 47 - scope actor mismatch cannot set actor or publish
+  ---
+  duration_ms: 30.247667
+  type: 'test'
+  ...
+# Subtest: package downgrade remains a canonical pure rejection
+ok 48 - package downgrade remains a canonical pure rejection
+  ---
+  duration_ms: 6.089708
+  type: 'test'
+  ...
+# Subtest: unknown selected version is404 without mutation
+ok 49 - unknown selected version is404 without mutation
+  ---
+  duration_ms: 29.955667
+  type: 'test'
+  ...
+# Subtest: current release is read under the positively verified tenant
+ok 50 - current release is read under the positively verified tenant
+  ---
+  duration_ms: 37.235334
+  type: 'test'
+  ...
+# Subtest: fixed capability rejects a changed active prior release before publication
+not ok 51 - fixed capability rejects a changed active prior release before publication
+  ---
+  duration_ms: 36.755167
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:2:19979'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(!f.calls.some(c=>c.query.includes('SELECT * FROM public.publish_theme_release')||/^UPDATE |INSERT /.test(c.query)))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-update.test.ts:73:280)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: route retains both422 mappings and orders reviewed merge, confirmation, conversion before publication
+ok 52 - route retains both422 mappings and orders reviewed merge, confirmation, conversion before publication
+  ---
+  duration_ms: 0.1675
+  type: 'test'
+  ...
+# Subtest: current release read refuses changed ownership without privileged fallback
+ok 53 - current release read refuses changed ownership without privileged fallback
+  ---
+  duration_ms: 29.812833
+  type: 'test'
+  ...
+# Subtest: version update plans from published merchant templates and settings rather than captured defaults
+ok 54 - version update plans from published merchant templates and settings rather than captured defaults
+  ---
+  duration_ms: 44.337541
+  type: 'test'
+  ...
+# Subtest: version update preserves an explicit published setting clear
+ok 55 - version update preserves an explicit published setting clear
+  ---
+  duration_ms: 37.453042
+  type: 'test'
+  ...
+# Subtest: safe trace survives unexpected transport logs without arbitrary error codes
+ok 56 - safe trace survives unexpected transport logs without arbitrary error codes
+  ---
+  duration_ms: 28.138958
+  type: 'test'
+  ...
+# Subtest: known conflict remains409 without unexpected-error logging
+ok 57 - known conflict remains409 without unexpected-error logging
+  ---
+  duration_ms: 29.724792
+  type: 'test'
+  ...
+# Subtest: exact retry survives a commit between its first receipt read and current baseline read
+ok 58 - exact retry survives a commit between its first receipt read and current baseline read
+  ---
+  duration_ms: 68.8045
+  type: 'test'
+  ...
+1..58
+# tests 58
+# suites 0
+# pass 57
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2168.326792

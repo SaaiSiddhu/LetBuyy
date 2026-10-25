@@ -1,0 +1,163 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "skills-section",
+  "group": "template",
+  "originalId": "section-fe892557-cdf0-4000-af17-a1b27900e3ad",
+  "finalId": "section-c9109456-5ce3-40d0-bda5-9eda906735e1",
+  "sectionFieldsExercised": [
+    "title"
+  ],
+  "effectiveBlockFieldsExercised": [
+    "skill.name",
+    "skill.level"
+  ],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-8a989b06-e68a-4437-9425-b14877cf028c",
+          "block-f000b9aa-3c24-46e9-80f5-da8aceaeb37d"
+        ],
+        "blocks": {
+          "block-8a989b06-e68a-4437-9425-b14877cf028c": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-f000b9aa-3c24-46e9-80f5-da8aceaeb37d": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": true,
+        "block_order": [
+          "block-f000b9aa-3c24-46e9-80f5-da8aceaeb37d",
+          "block-8a989b06-e68a-4437-9425-b14877cf028c"
+        ],
+        "blocks": {
+          "block-f000b9aa-3c24-46e9-80f5-da8aceaeb37d": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-8a989b06-e68a-4437-9425-b14877cf028c": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-f000b9aa-3c24-46e9-80f5-da8aceaeb37d",
+          "block-8a989b06-e68a-4437-9425-b14877cf028c"
+        ],
+        "blocks": {
+          "block-f000b9aa-3c24-46e9-80f5-da8aceaeb37d": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-8a989b06-e68a-4437-9425-b14877cf028c": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-64199149-37b1-44fb-808b-4395f8e35b9e",
+          "block-16cc42e4-ddc9-446a-9e0a-060346dd5fa4"
+        ],
+        "blocks": {
+          "block-64199149-37b1-44fb-808b-4395f8e35b9e": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-16cc42e4-ddc9-446a-9e0a-060346dd5fa4": {
+            "type": "skill",
+            "settings": {
+              "name": "Circuit source name",
+              "level": 0
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

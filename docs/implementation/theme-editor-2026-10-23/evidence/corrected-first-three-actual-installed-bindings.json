@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-10-23T19:43:58.746Z",
+  "runId": "f6074d90e894",
+  "guardVerified": true,
+  "readOnly": true,
+  "serialization": "Postgres jsonb::text SHA256, not equivalent to JS source hashes",
+  "actual": [
+    {
+      "slug": "letbuyy-aura",
+      "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+      "version": "2.0.0",
+      "packageId": "bb61b9c3-183d-4047-a318-db6aa5311e0a",
+      "instanceId": "7620d3c6-4e18-4625-8849-f16f9c5b483f",
+      "instanceStatus": "inactive",
+      "catalogChecksum": null,
+      "packageVersionId": "89b901b5-63af-410b-ab96-70ca8a20067b",
+      "liquidBundleSha256": "d15d1a8813c64750bc8bc51e895c54a1b4c26898f4e117c275bff6a6c7f01d35",
+      "installedConfigKeys": [
+        "themeId",
+        "sections",
+        "templates",
+        "experienceId",
+        "liquidBundle",
+        "themeSettings",
+        "rendererEngine",
+        "liquidRenderingCanary"
+      ],
+      "catalogManifestSha256": "d0c6e2e26452d82adb03b28f467502c2ca6ca6a2e50f7c93d7d8798ec356c2b9",
+      "installedConfigSha256": "a82030f4c29c5d8c43b8e534610fa6698cb2056bc677f1ff7f7633cf76177706"
+    },
+    {
+      "slug": "letbuyy-craft",
+      "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+      "version": "2.0.0",
+      "packageId": "7dc07901-92f1-4d86-95c8-2be4e47cc632",
+      "instanceId": "3870076c-49c1-4a88-be62-f1bca036258f",
+      "instanceStatus": "inactive",
+      "catalogChecksum": null,
+      "packageVersionId": "a40d4059-e0f5-4dee-bf62-2e3b2b1d13b7",
+      "liquidBundleSha256": "e2208bb6d6b85dc0d0a37c19a50ecd18a8b1a85af467d196f3c14bd21edb4a8c",
+      "installedConfigKeys": [
+        "themeId",
+        "sections",
+        "templates",
+        "experienceId",
+        "liquidBundle",
+        "themeSettings",
+        "rendererEngine",
+        "liquidRenderingCanary"
+      ],
+      "catalogManifestSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384",
+      "installedConfigSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06"
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+      "version": "2.0.0",
+      "packageId": "981c9e11-1243-430a-8b10-92007f3a7a6b",
+      "instanceId": "8e17f03c-6e75-467b-96da-360dd6f92d67",
+      "instanceStatus": "active",
+      "catalogChecksum": null,
+      "packageVersionId": "f8ce6870-b3ee-438c-accd-08806676f33f",
+      "liquidBundleSha256": "0e792cc5944a0bbaefc5e29771c1c4af6c44b62d907053e26293d0fe845f902c",
+      "installedConfigKeys": [
+        "themeId",
+        "sections",
+        "templates",
+        "experienceId",
+        "liquidBundle",
+        "themeSettings",
+        "rendererEngine",
+        "liquidRenderingCanary"
+      ],
+      "catalogManifestSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7",
+      "installedConfigSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "runId": "936e5f577646",
+  "actual": {
+    "attackImageNodes": 0,
+    "attackScriptNodes": 3,
+    "noProducts": true,
+    "searchInputs": [
+      {
+        "attributeValue": null,
+        "type": "search",
+        "value": ""
+      },
+      {
+        "attributeValue": null,
+        "type": "hidden",
+        "value": "<redacted>"
+      },
+      {
+        "attributeValue": null,
+        "type": "search",
+        "value": ""
+      }
+    ],
+    "title": "Search results for \"</script><script>fixtureAttack()</script>\" | Threadline"
+  },
+  "stage": "Actual parsed DOM and visible native query form; no execution hook/network interception, no fabricated HTTPstatus"
+}

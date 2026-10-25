@@ -1,0 +1,98 @@
+{
+  "recordedAt": "2026-10-24T03:33:27.976Z",
+  "beforeSha256": "4669d10383c4d6bb388e36a0c8b13d19fe5de037a74e8e86cc0630bbd688fbc7",
+  "afterSha256": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa",
+  "onlyRegistryImportAndFontMapDefinitionChanged": true,
+  "buildThemeCssBytesIdentical": true,
+  "buildThemeCssSha256": "abaea291c26dfba380ed16cfaf66e12873df7507b027eb46d40ded4d79d674a9",
+  "normalizeFontBytesIdentical": true,
+  "existingStylesheetImportRetained": true,
+  "newCssDeclarationsOrAliases": 0,
+  "publicLayoutChanged": false,
+  "sourceClosure": [
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "sha256": "4669d10383c4d6bb388e36a0c8b13d19fe5de037a74e8e86cc0630bbd688fbc7",
+      "afterSha256": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa",
+      "unchanged": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/layout.tsx",
+      "sha256": "6c1da1775b1b763e93f709ec8f11f45683cd19f3ef71cca0e9abf0e363b6076a",
+      "afterSha256": "6c1da1775b1b763e93f709ec8f11f45683cd19f3ef71cca0e9abf0e363b6076a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+      "afterSha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/app/globals.css",
+      "sha256": "68376df68faf1d3868681603cf89bee0aa94835a390e677f79fcf488093d2581",
+      "afterSha256": "68376df68faf1d3868681603cf89bee0aa94835a390e677f79fcf488093d2581",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "sha256": "c7c4e98ddebf6a9c707d77e3f66cab975f894edab36e6f65c7ab58604bda2ef7",
+      "afterSha256": "c7c4e98ddebf6a9c707d77e3f66cab975f894edab36e6f65c7ab58604bda2ef7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765",
+      "afterSha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765",
+      "unchanged": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "afterSha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "unchanged": true
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+      "afterSha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+      "unchanged": true
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+      "afterSha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+      "unchanged": true
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+      "afterSha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/storefront-preview-bridge.tsx",
+      "sha256": "73fa885a31f8db23fb127de181bb5519caf960f6f2b0e5316d0de712a9126e67",
+      "afterSha256": "73fa885a31f8db23fb127de181bb5519caf960f6f2b0e5316d0de712a9126e67",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-preview-server.ts",
+      "sha256": "93dc887d15a7ec55b5023047e8e096d9a034152ca1f725105c912515a248cb41",
+      "afterSha256": "93dc887d15a7ec55b5023047e8e096d9a034152ca1f725105c912515a248cb41",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.ts",
+      "sha256": "6d624d185a901a635fe0a269c87862f162a9404bcfab6007166bd7267358cc08",
+      "afterSha256": "6d624d185a901a635fe0a269c87862f162a9404bcfab6007166bd7267358cc08",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/template-resolver.ts",
+      "sha256": "2a77a84121bbbc78c8d312c6d6aa545d6fb345c68cb112c3f0f41bcd0949585d",
+      "afterSha256": "2a77a84121bbbc78c8d312c6d6aa545d6fb345c68cb112c3f0f41bcd0949585d",
+      "unchanged": true
+    }
+  ]
+}

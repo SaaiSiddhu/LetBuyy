@@ -1,0 +1,15 @@
+{
+  "preservedUnchangedPngs": 36,
+  "changedScenes": [
+    "07-cart",
+    "10-sign-in",
+    "11-sign-up"
+  ],
+  "changedPngs": 9,
+  "identityPrimary": "#2C2642",
+  "identityFont": "GeistIdentity",
+  "explicitContinue": true,
+  "acceptedText": "Kabir",
+  "failedDraft": "Kabir-Rae",
+  "unexpectedChangedFiles": []
+}

@@ -199,7 +199,8 @@ export default function ContactPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Contact submissions"
                     description="Review customer questions and reply from one focused inbox."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Contact' }]}
@@ -215,7 +216,8 @@ export default function ContactPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Contact submissions"
                 description="Review customer questions and reply from one focused inbox."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Contact' }]}

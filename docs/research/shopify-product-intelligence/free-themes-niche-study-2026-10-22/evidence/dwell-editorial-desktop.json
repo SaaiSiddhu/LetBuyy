@@ -1,0 +1,475 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 0, 0.71)",
+    "font": "Newsreader, serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SUBSCRIBE",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CUSTOMER CARE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "INFORMATION",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 79.1953125,
+      "line": "79.2px",
+      "size": "72px",
+      "tag": "H2",
+      "text": "Our comfort, your aesthetic.",
+      "weight": "300",
+      "width": 863.390625,
+      "x": 288.3046875,
+      "y": 327.3984375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 44,
+      "line": "44px",
+      "size": "40px",
+      "tag": "H2",
+      "text": "“Perfect color and texture.”",
+      "weight": "300",
+      "width": 1300,
+      "x": 70,
+      "y": 862.3828125
+    },
+    {
+      "font": "\"Red Hat Display\", sans-serif",
+      "height": 14.3984375,
+      "line": "14.4px",
+      "size": "12px",
+      "tag": "H2",
+      "text": "VOGUE",
+      "weight": "500",
+      "width": 390,
+      "x": 525,
+      "y": 922.3828125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 88,
+      "line": "44px",
+      "size": "40px",
+      "tag": "H2",
+      "text": "Elevate your lifestyle with crafted comfort and unbeatable quality.",
+      "weight": "300",
+      "width": 910,
+      "x": 265,
+      "y": 1326.59375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Thoughtfully designed for the everyday",
+      "weight": "400",
+      "width": 386.0078125,
+      "x": 40,
+      "y": 1899.203125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Our top categories",
+      "weight": "400",
+      "width": 780,
+      "x": 40,
+      "y": 2299.7890625
+    },
+    {
+      "font": "\"Red Hat Display\", sans-serif",
+      "height": 14.3984375,
+      "line": "14.4px",
+      "size": "12px",
+      "tag": "H2",
+      "text": "NEWSLETTER",
+      "weight": "500",
+      "width": 390,
+      "x": 40,
+      "y": 3002.1875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/about-us#MainContent"
+    },
+    {
+      "text": "SHOP THE BEDROOM EVENT - ON NOW!",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/"
+    },
+    {
+      "text": "Bedding",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/pillows-duvets"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sheets"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/quilts-comforters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/pillows-duvets"
+    },
+    {
+      "text": "Bath",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-mats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/robes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/slippers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/towels"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/throws"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-mats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/candles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/throws"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Inspiration",
+      "url": "https://theme-dwell-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "SHOP NOW",
+      "url": "https://theme-dwell-demo.myshopify.com/products/percale-venice-set"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/quilts-comforters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/mattress"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/shipping"
+    },
+    {
+      "text": "Returns",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/returns"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-dwell-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Responsible Design",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/responsible-design"
+    },
+    {
+      "text": "Care & Maintenance",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/care-maintenance"
+    },
+    {
+      "text": "Dwell",
+      "url": "https://theme-dwell-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022036669__section_i9zJ6P",
+      "rect": {
+        "height": 500,
+        "width": 1440,
+        "x": 0,
+        "y": 151.7890625
+      },
+      "tag": "DIV",
+      "text": "Our comfort, your aesthetic.\n\nOur mission is to help people feel at home. So we focus on responsibly making comfortable, quality essentials that elevate everyday rituals as well as"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022036669__hero_HRGffr",
+      "rect": {
+        "height": 500,
+        "width": 1440,
+        "x": 0,
+        "y": 651.7890625
+      },
+      "tag": "SECTION",
+      "text": "★★★★★\n\n“Perfect color and texture.”\nVOGUE"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022036669__section_YXadbh",
+      "rect": {
+        "height": 500,
+        "width": 1440,
+        "x": 0,
+        "y": 1151.7890625
+      },
+      "tag": "DIV",
+      "text": "Elevate your lifestyle with crafted comfort and unbeatable quality.\n\nWe believe that comfort is the truest form of wellness. So we’ve spent years perfecting our life-changing produ"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022036669__media_with_content_kQAYJ6",
+      "rect": {
+        "height": 600,
+        "width": 1440,
+        "x": 0,
+        "y": 1651.7890625
+      },
+      "tag": "DIV",
+      "text": "UNBEATABLE QUALITY\n\nThoughtfully designed for the everyday\n\nFrom carefully selected fabrics to artfully crafted details, our pieces turn everyday routines to moments of comfort and"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022036669__collection_list_AQFETX",
+      "rect": {
+        "height": 690.3984375,
+        "width": 1440,
+        "x": 0,
+        "y": 2251.7890625
+      },
+      "tag": "DIV",
+      "text": "Our top categories"
+    }
+  ],
+  "title": "About Us – Dwell",
+  "url": "https://theme-dwell-demo.myshopify.com/pages/about-us",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "1440px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 500,
+      "tag": "DIV",
+      "width": 1440
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 100,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1118,
+      "rect": {
+        "height": 600,
+        "width": 833.3359375
+      }
+    },
+    {
+      "alt": "Bedding",
+      "complete": true,
+      "naturalWidth": 474,
+      "rect": {
+        "height": 540,
+        "width": 432
+      }
+    },
+    {
+      "alt": "Bath",
+      "complete": true,
+      "naturalWidth": 474,
+      "rect": {
+        "height": 540,
+        "width": 432
+      }
+    },
+    {
+      "alt": "Decor",
+      "complete": true,
+      "naturalWidth": 474,
+      "rect": {
+        "height": 540,
+        "width": 432
+      }
+    },
+    {
+      "alt": "Quilts & Comforters",
+      "complete": true,
+      "naturalWidth": 475,
+      "rect": {
+        "height": 540,
+        "width": 432
+      }
+    },
+    {
+      "alt": "Mattress",
+      "complete": true,
+      "naturalWidth": 475,
+      "rect": {
+        "height": 540,
+        "width": 432
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSHOP THE BEDROOM EVENT - ON NOW!\n\nSHOP THE BEDROOM EVENT - ON NOW!\nBedding\nBath\nDecor\nSale\nInspiration\nOur comfort, your aesthetic.\n\nOur mission is to help people feel at home. So we focus on responsibly making comfortable, quality essentials that elevate everyday rituals as well as special experiences.\n\n★★★★★\n\n“Perfect color and texture.”\nVOGUE\nElevate your lifestyle with crafted comfort and unbeatable quality.\n\nWe believe that comfort is the truest form of wellness. So we’ve spent years perfecting our life-changing products. This is your key to better days ahead.\n\nUNBEATABLE QUALITY\n\nThoughtfully designed for the everyday\n\nFrom carefully selected fabrics to artfully crafted details, our pieces turn everyday routines to moments of comfort and joy.\n\nSHOP NOW\nOur top categories\nNEWSLETTER\nEmail\nSUBSCRIBE\nSHOP\nSale\nDecor\nCUSTOMER CARE\nFAQ\nShipping\nReturns\nContact\nINFORMATION\nAbout us\nBlog\nResponsible Design\nCare & Maintenance\n© 2026 Dwell, Powered by Shopify"
+}

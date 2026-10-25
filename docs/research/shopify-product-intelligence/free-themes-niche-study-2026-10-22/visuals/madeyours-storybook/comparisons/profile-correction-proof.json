@@ -1,0 +1,31 @@
+{
+  "finding": "Scene12 canonical sign-in email is plain read-only text; full-name editing retained",
+  "coordinatorSourceFinding": "2026-10-23",
+  "captured": true,
+  "preservation": [
+    {
+      "folder": "images",
+      "preservedCount": 42,
+      "unexpectedChanges": []
+    },
+    {
+      "folder": "boards",
+      "preservedCount": 14,
+      "unexpectedChanges": []
+    }
+  ],
+  "acceptedFreezeExceptions": [
+    "MadeYours-45-mockups.zip",
+    "boards/12-profile.png",
+    "images/12-profile-desktop.png",
+    "images/12-profile-mobile.png",
+    "images/12-profile-tablet.png",
+    "source/12-profile.html",
+    "source/build-storybook.py",
+    "source/capture.mjs"
+  ],
+  "renderedContractAudit": "comparisons/profile-contract-audit.json",
+  "slotReleased": true,
+  "productionEdits": false,
+  "independentReview": "pending_corrected_scene12_review"
+}

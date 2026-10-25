@@ -1,0 +1,27 @@
+{
+  "runId": "936e5f577646",
+  "case": "P08",
+  "status": "PASS",
+  "actualFailure": {
+    "operation": "cart-replace",
+    "cartId": "6284ebe8-98d4-41db-9272-292417bd41e5",
+    "status": 409,
+    "responseCode": "INSUFFICIENT_INVENTORY",
+    "requestId": "a09af1b0-6c43-4e2c-93c9-a8bba0b8db08",
+    "commandSha256": "83da4cc4a71b773312841361d4eea60a3c8582465a0498813b9fbb4e7ed55421",
+    "responseSha256": "dc052ee27d92c2d159484eb4bb2847c415e6676d60ae206a0479f4c8b7d1bcba"
+  },
+  "all22ProtectedTablesExact": true,
+  "productVersionUnchanged": true,
+  "cartBefore": "pantry-stock",
+  "ui": [
+    "stable936-pantry-P08-four-accepted-before-five.ax.txt",
+    "stable936-pantry-P08-five-rejected-recovery.ax.txt",
+    "stable936-pantry-P08-valid-two-retry-reloaded.ax.txt"
+  ],
+  "retry": "Actual normal decrease4\u21923\u21922 and fullreload; acknowledged2\u00d7180=360/current17",
+  "observerCaptureFailures": [
+    0,
+    0
+  ]
+}

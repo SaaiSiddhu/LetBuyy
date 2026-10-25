@@ -1,0 +1,16 @@
+{
+  "extends": "../../../../apps/commerce/web/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../../../..",
+    "incremental": false,
+    "composite": false,
+    "noEmit": true
+  },
+  "include": [
+    "selected-finish-fixtures.ts",
+    "selected-finish-render.test.ts",
+    "selected-finish-controller.test.ts",
+    "order-facts-roundtrip.test.ts",
+    "discovery-form-roundtrip.test.ts"
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "createdAt": "2026-10-24T01:01:38.569939+00:00",
+  "scope": "Root-authorized two-file CHECKOUT_PRODUCT_CHANGED BFF guidance repair; no runtime/browser/DB",
+  "before": [
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "sha256": "ab8ddce7b62828fe7956223824205ab69d535761a5cc1c24c6c12dcb9c4cacbe",
+      "snapshot": "route.before.ts"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "sha256": "55500eb3860ac87982afd9dd89e0d0eff35cd74be04a7fa5d077812aad619532",
+      "snapshot": "route.test.before.ts"
+    }
+  ],
+  "commands": [
+    {
+      "phase": "lint-before",
+      "command": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "src/app/api/checkout/[cartId]/[step]/route.ts",
+        "src/app/api/checkout/route.test.ts",
+        "--format",
+        "json"
+      ],
+      "cwd": "apps/commerce/web",
+      "exitCode": 0,
+      "stdout": "lint-before.json",
+      "stderr": "lint-before.stderr.txt"
+    },
+    {
+      "phase": "test-red",
+      "at": "2026-10-24T01:02:07.258227+00:00",
+      "command": [
+        "pnpm",
+        "exec",
+        "node",
+        "--conditions",
+        "react-server",
+        "--import",
+        "tsx",
+        "--test",
+        "src/app/api/checkout/route.test.ts"
+      ],
+      "cwd": "apps/commerce/web",
+      "exitCode": 1,
+      "stdout": "test-red.stdout.txt",
+      "stderr": "test-red.stderr.txt",
+      "productionSha256": "ab8ddce7b62828fe7956223824205ab69d535761a5cc1c24c6c12dcb9c4cacbe",
+      "testSha256": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+    },
+    {
+      "phase": "test-green",
+      "startedAt": "2026-10-24T01:02:25.547090+00:00",
+      "completedAt": "2026-10-24T01:02:26.704630+00:00",
+      "command": [
+        "pnpm",
+        "exec",
+        "node",
+        "--conditions",
+        "react-server",
+        "--import",
+        "tsx",
+        "--test",
+        "src/app/api/checkout/route.test.ts"
+      ],
+      "cwd": "apps/commerce/web",
+      "exitCode": 0,
+      "stdout": "test-green.stdout.txt",
+      "stderr": "test-green.stderr.txt",
+      "sourceSha256": {
+        "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b",
+        "apps/commerce/web/src/app/api/checkout/route.test.ts": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+      }
+    },
+    {
+      "phase": "lint-after",
+      "startedAt": "2026-10-24T01:02:26.705036+00:00",
+      "completedAt": "2026-10-24T01:02:29.221339+00:00",
+      "command": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "src/app/api/checkout/[cartId]/[step]/route.ts",
+        "src/app/api/checkout/route.test.ts",
+        "--format",
+        "json"
+      ],
+      "cwd": "apps/commerce/web",
+      "exitCode": 0,
+      "stdout": "lint-after.json",
+      "stderr": "lint-after.stderr.txt",
+      "sourceSha256": {
+        "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b",
+        "apps/commerce/web/src/app/api/checkout/route.test.ts": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+      }
+    },
+    {
+      "phase": "commerce-noemit",
+      "startedAt": "2026-10-24T01:02:29.221827+00:00",
+      "completedAt": "2026-10-24T01:02:38.598295+00:00",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "apps/commerce/web",
+      "exitCode": 0,
+      "stdout": "commerce-noemit.stdout.txt",
+      "stderr": "commerce-noemit.stderr.txt",
+      "sourceSha256": {
+        "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b",
+        "apps/commerce/web/src/app/api/checkout/route.test.ts": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+      }
+    },
+    {
+      "phase": "diff-check",
+      "at": "2026-10-24T01:03:32.447954+00:00",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+        "apps/commerce/web/src/app/api/checkout/route.test.ts"
+      ],
+      "cwd": "/Volumes/Projects/LetBuyy",
+      "exitCode": 0,
+      "stdout": "diff-check.stdout.txt",
+      "stderr": "diff-check.stderr.txt"
+    }
+  ],
+  "final": [
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "beforeSha256": "ab8ddce7b62828fe7956223824205ab69d535761a5cc1c24c6c12dcb9c4cacbe",
+      "afterSha256": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "beforeSha256": "55500eb3860ac87982afd9dd89e0d0eff35cd74be04a7fa5d077812aad619532",
+      "afterSha256": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+    }
+  ],
+  "completedAt": "2026-10-24T01:03:32.447954+00:00"
+}

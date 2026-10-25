@@ -1,0 +1,79 @@
+Browser tab: 173052885, Title: "Threadline", URL: "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477".
+1 AXWebArea Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+	2 container
+		3 text Trailmark Runtime07 A — ready for movement
+		4 link syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/customers/login
+		9 link Description: Cart ( 0 ), Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+		10 text RECREATION / EVERYDAY MOVEMENT
+		11 heading Make room for a game., Value: 1
+			12 text Make room for a game.
+		13 text Start with the activity. Find the gear. Check the measurements.
+		14 link Description: Find your equipment →, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/products
+		15 heading Find your kind of play, Value: 2
+			16 text Find your kind of play
+		17 link Description: Care ↗ Synthetic theme acceptance setup only., Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/019bb5fc-e33b-48f0-8f42-4fc2b34e2817
+		18 link Description: Cleanse ↗ Synthetic theme acceptance setup only., Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/f196d855-c5cf-4928-bee1-c8995e6abbd5
+		19 link Description: Colour ↗ Synthetic theme acceptance setup only., Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/8bcd4abc-51df-4014-9b9f-352c20ecb06b
+		20 link Description: Easy ↗, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/b355524f-3f5b-4f57-a2e5-9e65b692eb76
+		21 link Description: Lifecycle accessories ↗ Synthetic theme acceptance setup only., Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/fd7366c5-295d-4593-ab8f-5266cb6b91b2
+		22 link Description: Lifecycle activities ↗ Synthetic theme acceptance setup only., Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/collections/2a036ab7-acde-44ef-a48a-463f1147aff9
+		23 heading A simple start. Proper details., Value: 2
+			24 text A simple start. Proper details.
+		25 container
+			26 link Description: Product image not supplied, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+			27 text BADMINTON
+			28 heading Trailmark lifecycle racket, Value: 3
+				29 link Description: Trailmark lifecycle racket, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+			30 text 67.5 cm length 85 g 67.5 × 26 × 2 cm INR 1,800.00
+			31 link Description: View equipment →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/22446d70-4e10-41f0-97f0-55662eeea763
+		32 container
+			33 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+			34 heading Fixture Cloud Rinse, Value: 3
+				35 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+			36 text INR 640.00
+			37 link Description: View equipment →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+		38 container
+			39 link Description: Fixture Daily Veil, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+			40 heading Fixture Daily Veil, Value: 3
+				41 link Description: Fixture Daily Veil, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+			42 text INR 880.00
+			43 link Description: View equipment →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+		44 container
+			45 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+			46 heading The Everyday Cotton Dress, Value: 3
+				47 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+			48 text Color: Rust Size: S, M, L, XL INR 3,990.00
+			49 link Description: View clothing →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+		50 container
+			51 link Description: Fixture Soft Colour, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+			52 heading Fixture Soft Colour, Value: 3
+				53 link Description: Fixture Soft Colour, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+			54 text INR 520.00
+			55 link Description: View equipment →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/5dd7adcb-50c2-4453-9602-a669139b4270
+		56 container
+			57 link Description: Product image not supplied, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+			58 heading Pantry lifecycle rice, Value: 3
+				59 link Description: Pantry lifecycle rice, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+			60 text INR 220.00
+			61 link Description: View equipment →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/643b76eb-5e75-4ff1-8472-14df4192d815
+		62 text KNOW YOUR GEAR
+		63 heading Different kit. Different measurements., Value: 2
+			64 text Different kit. Different measurements.
+		65 heading Measurements before labels, Value: 3
+			66 text Measurements before labels
+		67 text Trailmark temporary declared-field roundtrip
+		68 container
+			69 text Trailmark temporary root A Trailmark temporary child B Trailmark temporary child A
+		70 heading Threadline, Value: 3
+			71 text Threadline
+		72 heading CONTACT, Value: 4
+			73 text CONTACT
+		74 link Description: Contact us, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/contact
+		75 text © Threadline. All rights reserved.
+		76 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477

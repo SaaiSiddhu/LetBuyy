@@ -1,0 +1,830 @@
+{
+  "sense": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#241E1A",
+      "background": "#FAF7F2",
+      "ratio": 15.41,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#65574C",
+      "background": "#FAF7F2",
+      "ratio": 6.5,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#713F35",
+      "ratio": 8.52,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#713F35",
+      "background": "#FFFFFF",
+      "ratio": 8.52,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#766657",
+      "background": "#FFFFFF",
+      "ratio": 5.51,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#65574C",
+      "background": "#EFE7DC",
+      "ratio": 5.67,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "bloom": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#29251D",
+      "background": "#FFF9EE",
+      "ratio": 14.55,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#655A43",
+      "background": "#FFF9EE",
+      "ratio": 6.47,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#1D5C54",
+      "ratio": 7.75,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#1D5C54",
+      "background": "#FFFFFF",
+      "ratio": 7.75,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#7A6A4D",
+      "background": "#FFFFFF",
+      "ratio": 5.25,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#655A43",
+      "background": "#F3E6C8",
+      "ratio": 5.48,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "forge": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#142236",
+      "background": "#F5F7FA",
+      "ratio": 14.92,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#4C5B70",
+      "background": "#F5F7FA",
+      "ratio": 6.44,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#17476E",
+      "ratio": 9.71,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#17476E",
+      "background": "#FFFFFF",
+      "ratio": 9.71,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#67768B",
+      "background": "#FFFFFF",
+      "ratio": 4.62,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#4C5B70",
+      "background": "#E7EDF5",
+      "ratio": 5.87,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "refresh": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#262A1D",
+      "background": "#FCF8EF",
+      "ratio": 13.84,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#5A624A",
+      "background": "#FCF8EF",
+      "ratio": 6.04,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#36533D",
+      "ratio": 8.53,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#36533D",
+      "background": "#FFFFFF",
+      "ratio": 8.53,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#707858",
+      "background": "#FFFFFF",
+      "ratio": 4.65,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#5A624A",
+      "background": "#EEE8D8",
+      "ratio": 5.23,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "craft": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#302C25",
+      "background": "#F7F3EB",
+      "ratio": 12.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#625C50",
+      "background": "#F7F3EB",
+      "ratio": 5.99,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#4E573E",
+      "ratio": 7.62,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#4E573E",
+      "background": "#FFFDFA",
+      "ratio": 7.5,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#7B7261",
+      "background": "#FFFDFA",
+      "ratio": 4.68,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFDFA",
+      "ratio": 5.89,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#625C50",
+      "background": "#E9E2D5",
+      "ratio": 5.15,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "summit": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#352329",
+      "background": "#FBF5F2",
+      "ratio": 13.66,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#73545E",
+      "background": "#FBF5F2",
+      "ratio": 6.16,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#793F56",
+      "ratio": 7.9,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#793F56",
+      "background": "#FFFFFF",
+      "ratio": 7.9,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#8B6874",
+      "background": "#FFFFFF",
+      "ratio": 4.85,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#73545E",
+      "background": "#F0E1DB",
+      "ratio": 5.22,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "nova": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#23243E",
+      "background": "#F5F6FC",
+      "ratio": 13.97,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#595D7D",
+      "background": "#F5F6FC",
+      "ratio": 5.92,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#484B8B",
+      "ratio": 7.91,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#484B8B",
+      "background": "#FFFFFF",
+      "ratio": 7.91,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#747999",
+      "background": "#FFFFFF",
+      "ratio": 4.25,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#595D7D",
+      "background": "#E7EAF7",
+      "ratio": 5.33,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "aura": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#293229",
+      "background": "#FAF8F4",
+      "ratio": 12.51,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#596754",
+      "background": "#FAF8F4",
+      "ratio": 5.67,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#3F5E51",
+      "ratio": 7.16,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#3F5E51",
+      "background": "#FFFFFF",
+      "ratio": 7.16,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#74816C",
+      "background": "#FFFFFF",
+      "ratio": 4.12,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#596754",
+      "background": "#EDE9E1",
+      "ratio": 4.97,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "ride": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#222B22",
+      "background": "#F5F6F1",
+      "ratio": 13.46,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#53604C",
+      "background": "#F5F6F1",
+      "ratio": 6.15,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#314E3B",
+      "ratio": 9.2,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#314E3B",
+      "background": "#FFFFFF",
+      "ratio": 9.2,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#708064",
+      "background": "#FFFFFF",
+      "ratio": 4.23,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#53604C",
+      "background": "#E5E9DD",
+      "ratio": 5.41,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "inverse masthead text / dark surface",
+      "foreground": "#FFFFFF",
+      "background": "#222B22",
+      "ratio": 14.62,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ],
+  "dawn": [
+    {
+      "pair": "main text / canvas",
+      "foreground": "#30291E",
+      "background": "#FAF6EA",
+      "ratio": 13.3,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / canvas",
+      "foreground": "#6B5C45",
+      "background": "#FAF6EA",
+      "ratio": 5.99,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "label / action",
+      "foreground": "#FFFFFF",
+      "background": "#744A26",
+      "ratio": 7.64,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "link / surface",
+      "foreground": "#744A26",
+      "background": "#FFFFFF",
+      "ratio": 7.64,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "control border / surface",
+      "foreground": "#867354",
+      "background": "#FFFFFF",
+      "ratio": 4.57,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "focus / surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passes": true
+    },
+    {
+      "pair": "error / error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "warning / warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "success / success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passes": true
+    },
+    {
+      "pair": "supporting / surface2",
+      "foreground": "#6B5C45",
+      "background": "#EDE5D1",
+      "ratio": 5.16,
+      "threshold": 4.5,
+      "passes": true
+    }
+  ]
+}

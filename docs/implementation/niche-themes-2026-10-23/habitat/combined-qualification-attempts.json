@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-10-23T14:03:34.546255+00:00",
+  "attempts": [
+    {
+      "attempt": "01",
+      "result": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/01/result.json",
+      "runId": "2185ed02f5df",
+      "tests": 2,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "classification": "PREREQUISITE_DATABASE_QUALIFICATION_NOT_HABITAT_INSTALLED_CASES"
+    },
+    {
+      "attempt": "02",
+      "result": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/02/result.json",
+      "runId": "eccf5f1df418",
+      "tests": 5,
+      "passed": 3,
+      "failed": 2,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "classification": "PREREQUISITE_DATABASE_QUALIFICATION_NOT_HABITAT_INSTALLED_CASES"
+    }
+  ],
+  "knownOwnerDiagnosis": {
+    "01": "Missing versus null test oracle mismatch; original result preserved; corrected test only",
+    "02": "Public HTTP503 after nine-package install/save/reload/publish/rollback coverage; diagnosis ongoing"
+  },
+  "cartRepair": {
+    "status": "ROOT_INDEPENDENT67_CHECKS_PASS",
+    "ownerRelease": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/cart-repair/source-release.json"
+  },
+  "editorObservationHook": "Owner reports17 checks and gateway typecheck pass",
+  "HabitatRuntimeCases": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 26
+  },
+  "runtimeAllocated": false
+}

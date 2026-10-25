@@ -1,0 +1,150 @@
+{
+  "classification": "PRIVATE04_SEALED_REVIEW_INPUTS_NOT_NATIVE_ADMISSION",
+  "files": [
+    {
+      "path": "MATERIALIZATION.json",
+      "sha256": "3ec046c53aa46dae516efaa8ef75db8883dcbeee064017a97cfceb72d01aac88",
+      "bytes": 1404620
+    },
+    {
+      "path": "NATIVE_PREPARATION_PLAN.json",
+      "sha256": "b9ea9ee5f367e8f3663952c0423cd30a93e11e222dd218b9c76cb1f3300f837b",
+      "bytes": 4985
+    },
+    {
+      "path": "SOURCE_MANIFEST.json",
+      "sha256": "2f5f6758288c8caad49d6ecd69670be9050cac34ab028139189535675bf718aa",
+      "bytes": 1295387
+    },
+    {
+      "path": "SQL_SOURCE_CONSERVATION.json",
+      "sha256": "5ce0f0f16ee7926075d2f575bba1b0fe17c351b66f48df54dbe15b1f75e2e594",
+      "bytes": 4583
+    },
+    {
+      "path": "UNNUMBERED_apparel_order_facts.down.proposal.sql",
+      "sha256": "fca8fc2fb303f065ba98ed5fa4a2c1d08e12c0ed05c0cbb8a1797bdb406fa1d0",
+      "bytes": 60973
+    },
+    {
+      "path": "UNNUMBERED_apparel_order_facts.up.proposal.sql",
+      "sha256": "2bfb45a18178a0098780efad25171751a317060adb0282cd8e2022d4eaae68ce",
+      "bytes": 60973
+    },
+    {
+      "path": "capture-native-source.mjs",
+      "sha256": "7435cfc568432efc63b8738db49a0dbc87d406d8418f9986a9999260f544c6e6",
+      "bytes": 693
+    },
+    {
+      "path": "check-changed-leaf-types.mjs",
+      "sha256": "ea9e034e3accd539a99f0a6f12abd85b272de53391d00b5afd27931f569696b3",
+      "bytes": 3736
+    },
+    {
+      "path": "native-io-amendment.UNAPPLIED.diff",
+      "sha256": "fb824e93009caa0f93c34acedae8a4ad7e139d31c341ff7fbfd067bb3c7efebb",
+      "bytes": 2693
+    },
+    {
+      "path": "native-source-closure.json",
+      "sha256": "72d47209758ab5c503a91ebb36db3a62c62f0bd0d908dad74eb7a81ed7449f0b",
+      "bytes": 2498984
+    },
+    {
+      "path": "overlay/apps/commerce/web/src/lib/order-fact-readback.test.ts",
+      "sha256": "dcf663fd71f5ebdc1bc5017bbf9e6ad9473aa3544698789eeef0459bd3018049",
+      "bytes": 3896
+    },
+    {
+      "path": "overlay/packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "2f20d1555ff729e11215d8bee70a85391d7f473523b3a75b2b9e2b6ed1723ae3",
+      "bytes": 15150
+    },
+    {
+      "path": "overlay/packages/commerce-core/src/product-facts-summary.ts",
+      "sha256": "e9ead6d7d043022ab1886a9a75fde03ba088ffcaaa2a748e5d5dcf5722560913",
+      "bytes": 14759
+    },
+    {
+      "path": "overlay/packages/commerce-core/test/apparel-order-history.test.ts",
+      "sha256": "46112ebd032ad054d13829e04435c8da8ec22e9fc35cf15a1f00e43d4cb095bc",
+      "bytes": 7229
+    },
+    {
+      "path": "overlay/packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "63e5a3836f9602a843df27bc61be28572ab8c5491a2ae4f60d38e04acd5d686b",
+      "bytes": 4339
+    },
+    {
+      "path": "overlay/packages/theme-engine/test/threadline-order-facts-v211.test.ts",
+      "sha256": "714179af00e3f76811c08ebd23abd4308675adbff6d224a06b4bed13b5d7cec9",
+      "bytes": 4548
+    },
+    {
+      "path": "overlay/services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+      "sha256": "a2cb454b17885c2bdc5c51d9916caf3c5c17b05298de7160a30577637f7ea7f3",
+      "bytes": 32809
+    },
+    {
+      "path": "overlay/services/api-gateway/src/lib/cart-product-facts.ts",
+      "sha256": "57bdd378f890b55b241c70141ba366c732b9bc458829f179b1359c94e9908fc1",
+      "bytes": 4368
+    },
+    {
+      "path": "preparation-evidence/EXACT_IO_CORRECTION_PROOF.json",
+      "sha256": "b0c184c8a4aa4761e6c85464ca016c73913f822a893df33b3b6b7059d2990009",
+      "bytes": 1173
+    },
+    {
+      "path": "preparation-evidence/FINAL04_SOURCE_RESULT.json",
+      "sha256": "df53a8bf6622cddfb0b2f1bb32beb47d4b32351b33f1df69ee7ce0c019c28a82",
+      "bytes": 1135
+    },
+    {
+      "path": "preparation-evidence/PRIOR03_HISTORY_REFERENCE.json",
+      "sha256": "143f9fac28655fe3accbbc1af0c059eabfa64c61ea067a938796bb0be227f826",
+      "bytes": 491
+    },
+    {
+      "path": "preparation-evidence/changed-leaf-typecheck01.json",
+      "sha256": "f15fceaa759834022694577b06b1b1bce486a4d35246e876b9c1b0d852829be8",
+      "bytes": 6099
+    },
+    {
+      "path": "preparation-evidence/changed-leaf-typecheck01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "preparation-evidence/changed-leaf-typecheck01.stdout",
+      "sha256": "c6e60c78af47aa8d647f29004463630fe94a52a6fd35e0cb6fb6cd1dcb906691",
+      "bytes": 79
+    },
+    {
+      "path": "preparation-evidence/source-closure01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "preparation-evidence/source-closure01.stdout",
+      "sha256": "7b22862edb5d2e4009128063cdc02926d4deafcf0bc0c9634a7616a6a013bcdf",
+      "bytes": 140
+    },
+    {
+      "path": "qualification-inputs.ts",
+      "sha256": "6081d310dd13ef54e9ec3a85f044441a43538f14fa13fa810d586812f253db23",
+      "bytes": 22498
+    },
+    {
+      "path": "verify-native-result.mjs",
+      "sha256": "578894155cfc4fe50ea453cd0248957400d29ba07c31ca7e244b148a3f269055",
+      "bytes": 642
+    },
+    {
+      "path": "verify-preparation.mjs",
+      "sha256": "98f6898dde3868a73e5e76ba6b316272f09268f94d697884d9ca91ef74330eb2",
+      "bytes": 6389
+    }
+  ]
+}

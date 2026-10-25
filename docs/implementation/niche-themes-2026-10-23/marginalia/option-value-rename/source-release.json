@@ -1,0 +1,141 @@
+{
+  "recordedAt": "2026-10-23T15:45:10.063570+00:00",
+  "status": "RELEASED_SOURCE_ONLY_FOR_CONTROLLED_NEXT_CANDIDATE",
+  "lease": "GRANTED_CANONICAL_OPTION_RENAME_COMPLETION_FOR_REQUIRED_SAME_UUID_BOOK_EDIT",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "beforeSha256": "42d7323cab8cc15549304f7e7c63cb9c46f7ea9634989a3c42bc69e0da47ab00",
+      "sha256": "1a99ded9a1e0dbf98fdf520af6c3685ad9ee3d46d2137a9e0d38e5b1e12c0b20",
+      "bytes": 87173,
+      "lines": 1470
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "beforeSha256": "1babef7539a4e88b6f54fcb04e5990453391c71460a5760dc771bf8d69c2ffd2",
+      "sha256": "23ff59003b3297384a8de416ea08edfb5923cf95dfbd6fa7ab93e0b0455ec120",
+      "bytes": 23355,
+      "lines": 448
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "beforeSha256": "4da421caaea0ccbcb528189a9fbd227939d6257bca781baae14532a95f7c9872",
+      "sha256": "2cd027c295b74e62f4f4212f49b572c2c67dcfeb36bd2050b6cdd488a2484dd7",
+      "bytes": 73311,
+      "lines": 1121
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-rename.test.ts",
+      "new": true,
+      "sha256": "5b5879811f895d35f6b371159b7dbf282451b6fa2becfd31dccf2dfaa0b5df9e",
+      "bytes": 5393,
+      "lines": 73
+    }
+  ],
+  "validation": {
+    "mountedRed": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "exitCode": 1,
+      "evidence": "red-mounted.tap"
+    },
+    "completeSharedRegression": {
+      "tests": 79,
+      "pass": 79,
+      "fail": 0,
+      "skip": 0,
+      "originalTestsRetained": 69,
+      "newTests": 10,
+      "exitCode": 0,
+      "evidence": "shared-regression-corrected.tap"
+    },
+    "merchantNoEmit": {
+      "exitCode": 0,
+      "attempts": 2,
+      "firstFailure": "Canonical defaulted ZodArray requires unwrap before element access; corrected and rerun.",
+      "evidence": "merchant-noemit-corrected.log"
+    },
+    "scopedEslint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 11,
+      "newWarnings": 0,
+      "evidence": "scoped-eslint-corrected.log"
+    },
+    "diffCheck": {
+      "newTrailingWhitespace": 0,
+      "pageLineLimit": 1500,
+      "actualPageLines": 1470
+    },
+    "protectedSourcesExact": true
+  },
+  "scope": {
+    "runtimeChanged": false,
+    "browserStarted": false,
+    "databaseStarted": false,
+    "buildRun": false,
+    "apiWrites": 0,
+    "installedCases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "NOT_RUN": 16
+    }
+  },
+  "next": "Coordinator admits source into controlled next candidate; Editor proves normal save/reload and rename; Marginalia runs exact 16 cases only after allocated fixture/browser lease.",
+  "outputs": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/REPORT.md",
+      "sha256": "f79c7d33a5ec5deff74a742679b38d1fd8391c60d6a600e65d4ff17f1be8d18f"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/before.json",
+      "sha256": "103c0ecc9644c6be0a5b7dcc18fa5a286ba3735872a1e172bfe9d7e5b99afed7"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/focused-first.tap",
+      "sha256": "5a8071ba46b3a803f35680a37e04a4396152e0bb6bf28a0d20da458c26d9daa4"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/green-mounted-initial.tap",
+      "sha256": "7e4bb59f11b4cfc4a93aa849a5baf1ed002dbbec47a0593520dd2d7426ae8004"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/merchant-noemit-corrected.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/merchant-noemit.log",
+      "sha256": "9616e692cde01ad00eb5fbfec065ccea46a991718496135e1458cb9ada51fec0"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/red-mounted.tap",
+      "sha256": "5bd481419cb455d918513fbb0afc44715b14b5dd4f22d0f7d4a7754bfa66dfef"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/scoped-eslint-corrected.log",
+      "sha256": "bfa40105f6ac4788ce0fe5c0d6a20e823d2667cbeeb92075b80993225e6b9f3d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/scoped-eslint.log",
+      "sha256": "d1327309cfb9b67529ae0cf7e3f93c20323380a91c9c9691ccfe23b59f8cc96b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/shared-regression-corrected.tap",
+      "sha256": "f2d6c76a559756a6a50cf355417d4e4ca0ddefdf1008eb7b777cc2da8f47636d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/shared-regression-final.tap",
+      "sha256": "32b218c3bb9c116bbe0e5e8070f36fb4e58667722376dcdd1df1d75c6fcbc7a8"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/shared-regression.tap",
+      "sha256": "6e15bf26503dae938117e24b9ad8aaf9390db0524c1e5e6f78d57096ec1889ef"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/source.patch",
+      "sha256": "642a5f9a5e1496c0e806cff7ce91801adaabb34b2cf680c9b19e32ba3537e6d5"
+    }
+  ]
+}

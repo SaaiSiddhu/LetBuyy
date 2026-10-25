@@ -1,0 +1,12 @@
+{
+  "scope": "Read-only installed-driver behavior evidence; lockfile binds dependency; not project governance authority",
+  "installedEntry": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postgres@3.4.9/node_modules/postgres/cjs/src/index.js",
+  "typesSha256": "8ba968fc19489cdb670e8fc0d184b942eafa5f3d7a06dca4b165318fcd57e9fb",
+  "timestampTypes": [
+    1082,
+    1114,
+    1184
+  ],
+  "parser": "parse: x => new Date(x)",
+  "databaseCalls": 0
+}

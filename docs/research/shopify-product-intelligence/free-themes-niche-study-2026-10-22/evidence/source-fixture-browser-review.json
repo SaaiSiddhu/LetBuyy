@@ -1,0 +1,102 @@
+[
+  {
+    "preset": "forge",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "sense",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "aura",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "craft",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "refresh",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "ride",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "dawn",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "bloom",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "nova",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  },
+  {
+    "preset": "summit",
+    "page": "index",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "method": "pure Liquid source fixture; not Next live store",
+    "bodyLength": 1138
+  }
+]

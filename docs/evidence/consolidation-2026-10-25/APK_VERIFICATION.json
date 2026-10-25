@@ -1,0 +1,8 @@
+{
+  "artifact": "private backup merchant-debug-qualified.apk",
+  "sha256": "e2a57b1e6889b1c72cccbd7d04fb1c1a64142a135371dedc2226b3c82f03dbb8",
+  "bytes": 188870476,
+  "badging": "package: name='com.letbuyy.store' versionCode='1' versionName='1.0.0' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
+  "build": "flutter build apk --debug --no-pub",
+  "installed_or_published": false
+}

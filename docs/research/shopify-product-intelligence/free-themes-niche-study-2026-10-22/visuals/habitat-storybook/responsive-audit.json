@@ -1,0 +1,2678 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1219,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:55.940Z"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1112,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.034Z"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1246,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.109Z"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 2586,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.332Z"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2374,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.465Z"
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3451,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.574Z"
+  },
+  {
+    "scene": "03-collection",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1787,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.734Z"
+  },
+  {
+    "scene": "03-collection",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1753,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.831Z"
+  },
+  {
+    "scene": "03-collection",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2360,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:56.922Z"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1771,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.135Z"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1655,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.263Z"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1839,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/room.png",
+        "naturalWidth": 1672,
+        "naturalHeight": 941
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.356Z"
+  },
+  {
+    "scene": "05-product-dimensions",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1800,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.425Z"
+  },
+  {
+    "scene": "05-product-dimensions",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2060,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.487Z"
+  },
+  {
+    "scene": "05-product-dimensions",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2590,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.540Z"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 2097,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.665Z"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2229,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.755Z"
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3123,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.831Z"
+  },
+  {
+    "scene": "07-cart",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1389,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.907Z"
+  },
+  {
+    "scene": "07-cart",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1914,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:57.980Z"
+  },
+  {
+    "scene": "07-cart",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2145,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.051Z"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1450,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.130Z"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2243,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.205Z"
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2578,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.273Z"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1344,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.347Z"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2069,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.414Z"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2249,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.472Z"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1018,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "unloaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "loaded"
+      }
+    ],
+    "bodyFont": "Geist, Arial, sans-serif",
+    "headingFont": "Geist, Arial, sans-serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.519Z"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1112,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "unloaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "loaded"
+      }
+    ],
+    "bodyFont": "Geist, Arial, sans-serif",
+    "headingFont": "Geist, Arial, sans-serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.558Z"
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1240,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "unloaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "loaded"
+      }
+    ],
+    "bodyFont": "Geist, Arial, sans-serif",
+    "headingFont": "Geist, Arial, sans-serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.605Z"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1265,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "unloaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "loaded"
+      }
+    ],
+    "bodyFont": "Geist, Arial, sans-serif",
+    "headingFont": "Geist, Arial, sans-serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.657Z"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1213,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "unloaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "loaded"
+      }
+    ],
+    "bodyFont": "Geist, Arial, sans-serif",
+    "headingFont": "Geist, Arial, sans-serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.705Z"
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1504,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "unloaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "loaded"
+      }
+    ],
+    "bodyFont": "Geist, Arial, sans-serif",
+    "headingFont": "Geist, Arial, sans-serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/letbuyy-logo.svg",
+        "naturalWidth": 680,
+        "naturalHeight": 220
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.750Z"
+  },
+  {
+    "scene": "12-profile",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1665,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.813Z"
+  },
+  {
+    "scene": "12-profile",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1757,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.865Z"
+  },
+  {
+    "scene": "12-profile",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2385,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.912Z"
+  },
+  {
+    "scene": "13-orders",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1514,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:58.980Z"
+  },
+  {
+    "scene": "13-orders",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1604,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.046Z"
+  },
+  {
+    "scene": "13-orders",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1994,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.104Z"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1987,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.192Z"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2103,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.274Z"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2783,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [
+      {
+        "source": "../assets/chair.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      },
+      {
+        "source": "../assets/table.png",
+        "naturalWidth": 1448,
+        "naturalHeight": 1086
+      }
+    ],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.342Z"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "requestedViewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1663,
+    "bodyWidth": 1440,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.406Z"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "tablet",
+    "requestedViewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1776,
+    "bodyWidth": 834,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.457Z"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "requestedViewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2681,
+    "bodyWidth": 390,
+    "brokenImages": [],
+    "fontsReady": true,
+    "fonts": [
+      {
+        "family": "Libre Baskerville",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Libre Baskerville",
+        "weight": "700",
+        "status": "unloaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "normal",
+        "status": "loaded"
+      },
+      {
+        "family": "Source Sans Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Geist",
+        "weight": "100 900",
+        "status": "unloaded"
+      }
+    ],
+    "bodyFont": "\"Source Sans Pro\", Arial, sans-serif",
+    "headingFont": "\"Libre Baskerville\", Georgia, serif",
+    "overflowElements": [],
+    "images": [],
+    "captureMethod": "Isolated Playwright Chromium; file://; fresh temporary profile; chromiumSandbox:true; network blocked",
+    "captureTime": "2026-10-23T03:35:59.504Z"
+  }
+]

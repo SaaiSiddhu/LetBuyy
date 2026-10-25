@@ -1,0 +1,134 @@
+// Offline FOUR-package distribution proposal. Never connects to a database,
+// emits a numbered migration, modifies a previous capture or starts a runtime.
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createFirstPartyCatalogBundle,firstPartyThemeListings} from '../../../../../packages/theme-engine/src/first-party-theme-catalog';
+import {buildLiquidThemePackagePersistencePayload} from '../../../../../packages/theme-engine/src/theme-bundle';
+import {canonicalJson,sourceHashes,sha256} from '../../release-v2/generate-release';
+
+const directory=dirname(fileURLToPath(import.meta.url));
+const previousDirectory=resolve(directory,'../child-customization-integration01');
+const previousProposal=JSON.parse(readFileSync(resolve(previousDirectory,'DISTRIBUTION_PROPOSAL.json'),'utf8')) as {
+ payloadSha256:string;artifacts:Array<{slug:string;version:string;bundleSha256:string}>;
+};
+assert.equal(previousProposal.payloadSha256,'cf10d8f413585425416d7555a2c786fe6b41d9e43b7add32f02043cf69d466bb');
+const sourceBefore=sourceHashes();
+const slugs=['letbuyy-craft','letbuyy-dawn','letbuyy-nova','letbuyy-summit'];
+const artifacts=firstPartyThemeListings({designVersion:'2.0.0'}).filter(row=>slugs.includes(row.slug)).map(listing=>{
+ const previous=createFirstPartyCatalogBundle(listing.slug,{customizationVersion:'2.1.0'});
+ const bundle=createFirstPartyCatalogBundle(listing.slug,{customizationVersion:'2.1.1'});
+ assert.equal(sha256(canonicalJson(previous)),previousProposal.artifacts.find(row=>row.slug===listing.slug&&row.version==='2.1.0')?.bundleSha256,'Previous capture must be the exact qualified210');
+ const document=(input:typeof bundle)=>({themeId:listing.slug,experienceId:listing.presetId,rendererEngine:'liquid',liquidRenderingCanary:true,themeSettings:input.config.settings_data.current,liquidBundle:input,templates:input.templates,sections:{}});
+ return {id:listing.id,slug:listing.slug,name:listing.name,category:listing.category,version:'2.1.1',previousVersion:'2.1.0',
+  previousDocument:document(previous),previousPersistence:buildLiquidThemePackagePersistencePayload(previous),
+  document:document(bundle),persistence:buildLiquidThemePackagePersistencePayload(bundle)};
+});
+assert.deepEqual(artifacts.map(row=>row.slug).sort(),slugs);
+const payload=canonicalJson(artifacts),payloadSha256=sha256(payload),delimiter='$heading211$';assert.ok(!payload.includes(delimiter));
+const checkpoint='firstPartyOrderHeading211';
+const columns=['name','category','version','default_template','section_schemas','block_schemas','settings_schema','renderer_manifest','schema_version','renderer_version','config'];
+const snapshot=`jsonb_build_object(${columns.flatMap(key=>["'"+key+"'",'t.'+key]).join(',')})`;
+const captureColumns="ARRAY['id','theme_package_id','published_at','created_by','created_at','updated_at','deleted_at']";
+function captureChecks(prefix:string,variable:string){return `
+ body:=item#>'{${prefix},themePackageVersion}';
+ SELECT * INTO STRICT ${variable} FROM public.theme_package_versions WHERE theme_package_id=p.id AND version=body->>'version' FOR UPDATE;
+ IF ${variable}.deleted_at IS NOT NULL OR (to_jsonb(${variable})-${captureColumns}) IS DISTINCT FROM (body||jsonb_build_object('checksum',body->'checksum')) THEN RAISE EXCEPTION 'Immutable heading211 ${prefix} version conflict'; END IF;
+ body:=item#>'{${prefix},schemaManifest}';
+ SELECT * INTO STRICT s FROM public.theme_schema_manifests WHERE theme_package_version_id=${variable}.id FOR UPDATE;
+ IF (to_jsonb(s)-ARRAY['id','theme_package_version_id','created_at','updated_at']) IS DISTINCT FROM body THEN RAISE EXCEPTION 'Immutable heading211 ${prefix} schema conflict'; END IF;
+ body:=item#>'{${prefix},rendererManifest}';
+ SELECT * INTO STRICT r FROM public.theme_renderer_manifests WHERE theme_package_version_id=${variable}.id FOR UPDATE;
+ IF (to_jsonb(r)-ARRAY['id','theme_package_version_id','created_at','updated_at']) IS DISTINCT FROM body THEN RAISE EXCEPTION 'Immutable heading211 ${prefix} renderer conflict'; END IF;`;}
+function catalogMatches(document:string,persistence:string,version:string){return `(
+ t.version='${version}' AND t.name IS NOT DISTINCT FROM item->>'name' AND t.category IS NOT DISTINCT FROM item->>'category'
+ AND t.default_template IS NOT DISTINCT FROM item->'${document}'
+ AND t.section_schemas IS NOT DISTINCT FROM item#>'{${persistence},schemaManifest,section_schemas}'
+ AND t.block_schemas IS NOT DISTINCT FROM item#>'{${persistence},schemaManifest,block_schemas}'
+ AND t.settings_schema IS NOT DISTINCT FROM item#>'{${persistence},schemaManifest,settings_schema}'
+ AND t.renderer_manifest IS NOT DISTINCT FROM item#>'{${document},liquidBundle,renderer}'
+ AND t.schema_version IS NOT DISTINCT FROM item#>>'{${persistence},themePackageVersion,schema_version}'
+ AND t.renderer_version IS NOT DISTINCT FROM item#>>'{${persistence},themePackageVersion,renderer_version}')`;}
+const priorMatches=catalogMatches('previousDocument','previousPersistence','2.1.0');
+const currentMatches=catalogMatches('document','persistence','2.1.1');
+const identity=`
+ SELECT * INTO STRICT t FROM public.themes WHERE id=(item->>'id')::uuid AND slug=item->>'slug' AND owned_by_site_id IS NULL AND NOT is_site_private FOR UPDATE;
+ IF t.is_active IS DISTINCT FROM true THEN RAISE EXCEPTION 'Heading211 inactive catalog conflict'; END IF;
+ IF (SELECT count(*) FROM public.theme_packages WHERE slug=t.slug OR legacy_theme_id=t.id)<>1 THEN RAISE EXCEPTION 'Heading211 package identity conflict'; END IF;
+ SELECT * INTO STRICT p FROM public.theme_packages WHERE (slug=t.slug OR legacy_theme_id=t.id) AND deleted_at IS NULL AND status='active' FOR UPDATE;
+ IF p.slug<>t.slug OR p.legacy_theme_id IS DISTINCT FROM t.id THEN RAISE EXCEPTION 'Heading211 canonical package identity conflict'; END IF;`;
+const checkpointGuard=`
+ prior:=t.config#>'{${checkpoint},previous}';
+ IF t.config#>>'{${checkpoint},payloadSha256}' IS DISTINCT FROM '${payloadSha256}' OR prior IS NULL
+ OR prior->>'version' IS DISTINCT FROM '2.1.0' OR prior->'default_template' IS DISTINCT FROM item->'previousDocument'
+ OR jsonb_typeof(prior->'config') IS DISTINCT FROM 'object'
+ OR prior#>>'{config,firstPartyCustomization210,payloadSha256}' IS DISTINCT FROM '${previousProposal.payloadSha256}'
+ OR t.config IS DISTINCT FROM (prior->'config'||jsonb_build_object('${checkpoint}',jsonb_build_object('payloadSha256','${payloadSha256}','previous',prior)))
+ THEN RAISE EXCEPTION 'Heading211 checkpoint or replay conflict'; END IF;`;
+const declarations=`item jsonb; t public.themes; p public.theme_packages; v public.theme_package_versions; old_version public.theme_package_versions; s public.theme_schema_manifests; r public.theme_renderer_manifests; body jsonb; prior jsonb; restored public.themes;`;
+const up=`-- UNNUMBERED PRIVATE PROPOSAL: four explicit2.1.1 packages only. No installed work or prior captures are rewritten.
+BEGIN;
+DO $promotion$
+DECLARE ${declarations}
+BEGIN
+ FOR item IN SELECT value FROM jsonb_array_elements(${delimiter}${payload}${delimiter}::jsonb) LOOP
+ ${identity}
+ IF t.version IS DISTINCT FROM '2.1.0' AND t.version IS DISTINCT FROM '2.1.1' THEN RAISE EXCEPTION 'Heading211 stale prior catalog version'; END IF;
+ ${captureChecks('previousPersistence','old_version')}
+ IF t.version='2.1.0' THEN
+  IF (${priorMatches}) IS NOT TRUE OR t.config ? '${checkpoint}' OR t.config#>>'{firstPartyCustomization210,payloadSha256}' IS DISTINCT FROM '${previousProposal.payloadSha256}' THEN RAISE EXCEPTION 'Heading211 prior catalog differs from exact captured210'; END IF;
+ END IF;
+ body:=item#>'{persistence,themePackageVersion}';
+ INSERT INTO public.theme_package_versions(theme_package_id,version,version_number,release_status,renderer_version,schema_version,compatibility_range,package_manifest,checksum,published_at)
+ SELECT p.id,x.version,x.version_number,x.release_status,x.renderer_version,x.schema_version,x.compatibility_range,x.package_manifest,x.checksum,now()
+ FROM jsonb_populate_record(NULL::public.theme_package_versions,body) x ON CONFLICT(theme_package_id,version) DO NOTHING;
+ SELECT * INTO STRICT v FROM public.theme_package_versions WHERE theme_package_id=p.id AND version='2.1.1' FOR UPDATE;
+ body:=item#>'{persistence,schemaManifest}';
+ INSERT INTO public.theme_schema_manifests(theme_package_version_id,manifest_version,schema_manifest,section_schemas,block_schemas,settings_schema,template_schema,layout_schema,validation_rules)
+ SELECT v.id,x.manifest_version,x.schema_manifest,x.section_schemas,x.block_schemas,x.settings_schema,x.template_schema,x.layout_schema,x.validation_rules FROM jsonb_populate_record(NULL::public.theme_schema_manifests,body) x ON CONFLICT(theme_package_version_id) DO NOTHING;
+ body:=item#>'{persistence,rendererManifest}';
+ INSERT INTO public.theme_renderer_manifests(theme_package_version_id,renderer_manifest,approved_renderer_keys,asset_manifest,performance_budget)
+ SELECT v.id,x.renderer_manifest,x.approved_renderer_keys,x.asset_manifest,x.performance_budget FROM jsonb_populate_record(NULL::public.theme_renderer_manifests,body) x ON CONFLICT(theme_package_version_id) DO NOTHING;
+ ${captureChecks('persistence','v')}
+ IF t.version='2.1.1' THEN
+  IF (${currentMatches}) IS NOT TRUE THEN RAISE EXCEPTION 'Heading211 catalog replay conflict'; END IF;
+  ${checkpointGuard}
+  CONTINUE;
+ END IF;
+ prior:=${snapshot};
+ UPDATE public.themes SET name=item->>'name',category=item->>'category',version='2.1.1',default_template=item->'document',
+ section_schemas=item#>'{persistence,schemaManifest,section_schemas}',block_schemas=item#>'{persistence,schemaManifest,block_schemas}',settings_schema=item#>'{persistence,schemaManifest,settings_schema}',renderer_manifest=item#>'{document,liquidBundle,renderer}',schema_version=v.schema_version,renderer_version=v.renderer_version,
+ config=t.config||jsonb_build_object('${checkpoint}',jsonb_build_object('payloadSha256','${payloadSha256}','previous',prior)),updated_at=now() WHERE id=t.id;
+ END LOOP;
+END;
+$promotion$;
+COMMIT;
+`;
+const down=`-- Paired private DOWN restores exact prior210 metadata, retaining211 captures and every installed draft/release/order/history row.
+BEGIN;
+DO $rollback$
+DECLARE ${declarations}
+BEGIN
+ FOR item IN SELECT value FROM jsonb_array_elements(${delimiter}${payload}${delimiter}::jsonb) LOOP
+ ${identity}
+ ${captureChecks('previousPersistence','old_version')}
+ IF NOT (t.config ? '${checkpoint}') THEN
+  IF (${priorMatches}) IS NOT TRUE OR t.config#>>'{firstPartyCustomization210,payloadSha256}' IS DISTINCT FROM '${previousProposal.payloadSha256}' THEN RAISE EXCEPTION 'Heading211 rollback missing checkpoint or conflicting prior'; END IF;
+  CONTINUE;
+ END IF;
+ IF (${currentMatches}) IS NOT TRUE THEN RAISE EXCEPTION 'Heading211 stale rollback conflict'; END IF;
+ ${captureChecks('persistence','v')}
+ ${checkpointGuard}
+ restored:=jsonb_populate_record(NULL::public.themes,prior);
+ UPDATE public.themes SET ${columns.map(key=>key+'=restored.'+key).join(',')},updated_at=now() WHERE id=t.id;
+ END LOOP;
+END;
+$rollback$;
+COMMIT;
+`;
+assert.deepEqual(sourceHashes(),sourceBefore,'All source inputs unchanged during offline generation');
+const outputs={'heading211.up.proposal.sql':up,'heading211.down.proposal.sql':down};
+for(const [name,bytes] of Object.entries(outputs))writeFileSync(resolve(directory,name),bytes,{flag:'wx'});
+writeFileSync(resolve(directory,'DISTRIBUTION_PROPOSAL.json'),JSON.stringify({recordedAt:new Date().toISOString(),status:'PRIVATE_SOURCE_PREPARED_NOT_NATIVE_ADMITTED',version:'2.1.1',versionNumber:6,affectedSlugs:slugs,previousVersion:'2.1.0',previousPromotionPayloadSha256:previousProposal.payloadSha256,payloadSha256,sourceHashes:sourceBefore,artifacts:artifacts.map(row=>({id:row.id,slug:row.slug,version:row.version,prior:row.previousVersion,bundleSha256:sha256(canonicalJson(row.document.liquidBundle)),previousBundleSha256:sha256(canonicalJson(row.previousDocument.liquidBundle))})),files:Object.entries(outputs).map(([path,bytes])=>({path,sha256:sha256(bytes),bytes:Buffer.byteLength(bytes)})),generatorSha256:sha256(readFileSync(fileURLToPath(import.meta.url))),nativeExecuted:false,canonicalMigrationsEmitted:false,mainOrRuntimeMutated:false},null,2)+'\n',{flag:'wx'});
+console.info(JSON.stringify({artifacts:artifacts.length,payloadBytes:Buffer.byteLength(payload),nativeExecuted:false,canonicalMigrationsEmitted:false}));

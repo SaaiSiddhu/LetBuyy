@@ -1,0 +1,8 @@
+{
+  "path": "/private/tmp/theme-editor-prepare-candidate.py",
+  "beforeSha256": "753e308411d15188230beded597a4a6123fe866b3f4f76e8b8ed1f2302d3c0de",
+  "sha256": "7cd835ce6abd6f30997d3a4aa58a6d7fa8f0c154f762231713f440f83f8e55ce",
+  "change": "Skip installed .vite cache while reconstructing dependency directories; no source-parity, workspace-link, ownership or launch guard changed.",
+  "syntax": "PASS; ast.parse only",
+  "execution": "No candidate copy or process launch performed by coordinator."
+}

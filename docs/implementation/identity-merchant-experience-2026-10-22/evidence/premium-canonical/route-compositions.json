@@ -1,0 +1,2661 @@
+[
+  {
+    "label": "Inventory",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "heading": [
+      "Inventory"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/inventory",
+    "sectionHeadings": [
+      "Stock levels"
+    ],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Purchasing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "heading": [
+      "Purchase orders"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/purchase-orders",
+    "sectionHeadings": [
+      "Inbound inventory"
+    ],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Customers",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "heading": [
+      "Customers"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/customers",
+    "sectionHeadings": [
+      "Customer list"
+    ],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Marketing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "heading": [
+      "Coupons"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/coupons",
+    "sectionHeadings": [
+      "Coupon list"
+    ],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Content",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "heading": [
+      "Pages"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/pages",
+    "sectionHeadings": [
+      "Page list"
+    ],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Analytics",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "heading": [
+      "Analytics"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/analytics",
+    "sectionHeadings": [
+      "Reporting period",
+      "Orders by status"
+    ],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "General",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "General",
+      "Store details",
+      "Store contact details",
+      "Store address",
+      "Store defaults",
+      "Search engine optimization (SEO)",
+      "Order ID format",
+      "Site type",
+      "Languages & localization",
+      "Danger zone"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/general",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Business details",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Business details",
+      "Business identity",
+      "GST registration",
+      "Verification & KYC",
+      "Fees & settlements",
+      "Data & privacy"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/business",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Domains",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Domains",
+      "Your domains"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/domains",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Billing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 239
+      },
+      {
+        "radius": "16px",
+        "width": 239
+      },
+      {
+        "radius": "16px",
+        "width": 239
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Billing",
+      "Upcoming bill",
+      "Payment method",
+      "Past bills"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/billing",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Plan",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Plan",
+      "Plan details",
+      "Subscriptions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/plan",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Users and permissions",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Users and permissions",
+      "Store owner",
+      "Staff",
+      "Roles & permissions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/users",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Security",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Security",
+      "Two-factor authentication"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/security",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Loyalty",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Loyalty",
+      "Loyalty is not set up",
+      "Reward settings"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/loyalty",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Payments",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Payments",
+      "Razorpay account",
+      "Accepted methods"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/payments",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Checkout",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Checkout",
+      "Customer contact method",
+      "Customer accounts",
+      "Form options",
+      "Additional options"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/checkout",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Shipping and delivery",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Shipping and delivery",
+      "Shipping zones"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/shipping",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Taxes and duties",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Taxes and duties",
+      "Tax region",
+      "Tax rates"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/taxes",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Notifications",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Notifications",
+      "Notification preferences",
+      "Delivery logs"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/notifications",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Policies",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Policies",
+      "Storefront policies"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/policies",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Apps and sales channels",
+    "alerts": [],
+    "cards": [],
+    "documentOverflow": 0,
+    "headings": [
+      "404",
+      "Page not found"
+    ],
+    "loading": false,
+    "mainCount": 0,
+    "path": "/urban-kicks-demo/settings/apps",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "intentional frozen FEATURE_APP_PLATFORM route; not visual acceptance"
+  },
+  {
+    "label": "Dashboard",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      },
+      {
+        "radius": "16px",
+        "width": 740
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Dashboard",
+      "Store foundation",
+      "Commerce",
+      "Storefront & trust",
+      "Plan & team",
+      "Extensions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "General",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "General",
+      "Store details",
+      "Store contact details",
+      "Store address",
+      "Store defaults",
+      "Search engine optimization (SEO)",
+      "Order ID format",
+      "Site type",
+      "Languages & localization",
+      "Danger zone"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/general",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Business details",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Business details",
+      "Business identity",
+      "GST registration",
+      "Verification & KYC",
+      "Fees & settlements",
+      "Data & privacy"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/business",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Domains",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Domains",
+      "Your domains"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/domains",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Billing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 211
+      },
+      {
+        "radius": "16px",
+        "width": 211
+      },
+      {
+        "radius": "16px",
+        "width": 211
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Billing",
+      "Upcoming bill",
+      "Payment method",
+      "Past bills"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/billing",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Plan",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Plan",
+      "Plan details",
+      "Subscriptions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/plan",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Users and permissions",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Users and permissions",
+      "Store owner",
+      "Staff",
+      "Roles & permissions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/users",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Security",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Security",
+      "Two-factor authentication"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/security",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Loyalty",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Loyalty",
+      "Loyalty is not set up",
+      "Reward settings"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/loyalty",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Payments",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Payments",
+      "Razorpay account",
+      "Accepted methods"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/payments",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Checkout",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Checkout",
+      "Customer contact method",
+      "Customer accounts",
+      "Form options",
+      "Additional options"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/checkout",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Shipping and delivery",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Shipping and delivery",
+      "Shipping zones"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/shipping",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Taxes and duties",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Taxes and duties",
+      "Tax region",
+      "Tax rates"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/taxes",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Notifications",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      },
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Notifications",
+      "Notification preferences",
+      "Delivery logs"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/notifications",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Policies",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 656
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Policies",
+      "Storefront policies"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/policies",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Dashboard",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 688
+      },
+      {
+        "radius": "16px",
+        "width": 688
+      },
+      {
+        "radius": "16px",
+        "width": 688
+      },
+      {
+        "radius": "16px",
+        "width": 688
+      },
+      {
+        "radius": "16px",
+        "width": 688
+      },
+      {
+        "radius": "16px",
+        "width": 688
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Dashboard",
+      "Store foundation",
+      "Commerce",
+      "Storefront & trust",
+      "Plan & team",
+      "Extensions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "General",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "General",
+      "Store details",
+      "Store contact details",
+      "Store address",
+      "Store defaults",
+      "Search engine optimization (SEO)",
+      "Order ID format",
+      "Site type",
+      "Languages & localization",
+      "Danger zone"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/general",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Business details",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Business details",
+      "Business identity",
+      "GST registration",
+      "Verification & KYC",
+      "Fees & settlements",
+      "Data & privacy"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/business",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Domains",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Domains",
+      "Your domains"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/domains",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Billing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Billing",
+      "Upcoming bill",
+      "Payment method",
+      "Past bills"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/billing",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Plan",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Plan",
+      "Plan details",
+      "Subscriptions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/plan",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Users and permissions",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Users and permissions",
+      "Store owner",
+      "Staff",
+      "Roles & permissions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/users",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Security",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Security",
+      "Two-factor authentication"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/security",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Loyalty",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Loyalty",
+      "Loyalty is not set up",
+      "Reward settings"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/loyalty",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Payments",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Payments",
+      "Razorpay account",
+      "Accepted methods"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/payments",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Checkout",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Checkout",
+      "Customer contact method",
+      "Customer accounts",
+      "Form options",
+      "Additional options"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/checkout",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Shipping and delivery",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Shipping and delivery",
+      "Shipping zones"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/shipping",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Taxes and duties",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Taxes and duties",
+      "Tax region",
+      "Tax rates"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/taxes",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Notifications",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Notifications",
+      "Notification preferences",
+      "Delivery logs"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/notifications",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Policies",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Policies",
+      "Storefront policies"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings/policies",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Dashboard",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      },
+      {
+        "radius": "16px",
+        "width": 358
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Dashboard",
+      "Store foundation",
+      "Commerce",
+      "Storefront & trust",
+      "Plan & team",
+      "Extensions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/settings",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Home",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Urban Kicks Demo",
+      "Setup guide",
+      "Opening checklist for urban-kicks-demo",
+      "Recent activity"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/dashboard",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Orders",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Orders",
+      "Order queue"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/orders",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Products",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Products",
+      "Catalog"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Inventory",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Inventory",
+      "Stock levels"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/inventory",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Purchasing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Purchase orders",
+      "Inbound inventory"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/purchase-orders",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Customers",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Customers",
+      "Customer list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/customers",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Marketing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 388
+      },
+      {
+        "radius": "16px",
+        "width": 388
+      },
+      {
+        "radius": "16px",
+        "width": 388
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Coupons",
+      "Coupon list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/coupons",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Content",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 388
+      },
+      {
+        "radius": "16px",
+        "width": 388
+      },
+      {
+        "radius": "16px",
+        "width": 388
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Pages",
+      "Page list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/pages",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Analytics",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 1188
+      },
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 285
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      },
+      {
+        "radius": "16px",
+        "width": 1188
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Analytics",
+      "Reporting period",
+      "Orders by status",
+      "Monthly revenue",
+      "Next best actions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/analytics",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Online Store",
+    "alerts": [],
+    "cards": [],
+    "documentOverflow": 0,
+    "headings": [
+      "Online Store",
+      "Urban KicksCurrent theme",
+      "My themes",
+      "Discover themes"
+    ],
+    "loading": false,
+    "mainCount": 2,
+    "path": "/urban-kicks-demo/online-store/themes",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "intermediate pre-adoption measurement; superseded by final-compositions.json"
+  },
+  {
+    "label": "Add",
+    "alerts": [],
+    "cards": [],
+    "documentOverflow": 0,
+    "headings": [
+      "404",
+      "Page not found"
+    ],
+    "loading": false,
+    "mainCount": 0,
+    "path": "/urban-kicks-demo/apps",
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "disposition": "intentional frozen FEATURE_APP_PLATFORM route; not visual acceptance"
+  },
+  {
+    "label": "Home",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 736
+      },
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Urban Kicks Demo",
+      "Setup guide",
+      "Opening checklist for urban-kicks-demo",
+      "Recent activity"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/dashboard",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Orders",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Orders",
+      "Order queue"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/orders",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Products",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Products",
+      "Catalog"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Inventory",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Inventory",
+      "Stock levels"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/inventory",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Purchasing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Purchase orders",
+      "Inbound inventory"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/purchase-orders",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Customers",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Customers",
+      "Customer list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/customers",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Marketing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 237
+      },
+      {
+        "radius": "16px",
+        "width": 237
+      },
+      {
+        "radius": "16px",
+        "width": 237
+      },
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Coupons",
+      "Coupon list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/coupons",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Content",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 237
+      },
+      {
+        "radius": "16px",
+        "width": 237
+      },
+      {
+        "radius": "16px",
+        "width": 237
+      },
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Pages",
+      "Page list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/pages",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Analytics",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 736
+      },
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 360
+      },
+      {
+        "radius": "16px",
+        "width": 736
+      },
+      {
+        "radius": "16px",
+        "width": 736
+      },
+      {
+        "radius": "16px",
+        "width": 736
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Analytics",
+      "Reporting period",
+      "Orders by status",
+      "Monthly revenue",
+      "Next best actions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/analytics",
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Home",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Urban Kicks Demo",
+      "Setup guide",
+      "Opening checklist for urban-kicks-demo",
+      "Recent activity"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/dashboard",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Orders",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Orders",
+      "Order queue"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/orders",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Products",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Products",
+      "Catalog"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Inventory",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Inventory",
+      "Stock levels"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/inventory",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Purchasing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Purchase orders",
+      "Inbound inventory"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/products/purchase-orders",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Customers",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Customers",
+      "Customer list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/customers",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Marketing",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Coupons",
+      "Coupon list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/coupons",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Content",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Pages",
+      "Page list"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/pages",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  },
+  {
+    "label": "Analytics",
+    "alerts": [],
+    "cards": [
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      },
+      {
+        "radius": "16px",
+        "width": 366
+      }
+    ],
+    "documentOverflow": 0,
+    "headings": [
+      "Analytics",
+      "Reporting period",
+      "Orders by status",
+      "Monthly revenue",
+      "Next best actions"
+    ],
+    "loading": false,
+    "mainCount": 1,
+    "path": "/urban-kicks-demo/analytics",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "disposition": "representative composed route inspection; not full record/provider/permission E2E"
+  }
+]

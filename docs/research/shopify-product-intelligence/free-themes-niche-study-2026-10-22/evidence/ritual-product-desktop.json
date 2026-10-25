@@ -1,0 +1,482 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "Geist, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "XS/34",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "S/36",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "M/38",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "L/40",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "XL/42",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Decrease quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "BRAND",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CONNECT",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "OK",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Chivo, sans-serif",
+      "height": 16.09375,
+      "line": "16.1px",
+      "size": "14px",
+      "tag": "H3",
+      "text": "BONDING ROSE BLAZER",
+      "weight": "400",
+      "width": 270.1328125,
+      "x": 497.59375,
+      "y": 1038.3515625
+    },
+    {
+      "font": "Chivo, sans-serif",
+      "height": 36.796875,
+      "line": "36.8px",
+      "size": "32px",
+      "tag": "H1",
+      "text": "BONDING ROSE BLAZER",
+      "weight": "700",
+      "width": 442.6640625,
+      "x": 957.328125,
+      "y": 114
+    },
+    {
+      "font": "Chivo, sans-serif",
+      "height": 52.796875,
+      "line": "52.8px",
+      "size": "48px",
+      "tag": "H3",
+      "text": "GOES WELL WITH...",
+      "weight": "700",
+      "width": 443.71875,
+      "x": 40,
+      "y": 2299
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621#MainContent"
+    },
+    {
+      "text": "NEW",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new"
+    },
+    {
+      "text": "TOPS",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/tops"
+    },
+    {
+      "text": "BOTTOMS",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bottoms"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621#ProductInformation-template--20531863879869__main"
+    },
+    {
+      "text": "Bestsellers 39",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "Dresses 6",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/dresses"
+    },
+    {
+      "text": "Tops 17",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/tops"
+    },
+    {
+      "text": "Accessories 4",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/accessories-1"
+    },
+    {
+      "text": "Bottoms 30",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bottoms"
+    },
+    {
+      "text": "Denim 20",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/denim"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "New arrivals",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-ritual-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Shipping & Returns",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/shipping-returns"
+    },
+    {
+      "text": "Fit guide",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/fit-guide"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Ritual",
+      "url": "https://theme-ritual-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531863879869__main",
+      "rect": {
+        "height": 2275,
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "DIV",
+      "text": "BONDING ROSE BLAZER\nXS/34\n$2,800.00\nAdd to cart\nSkip to product information\nOpen image in full screen\nOpen image in full screen\nOpen image in full screen\nOpen image in full screen\n"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531863879869__product-recommendations",
+      "rect": {
+        "height": 566.125,
+        "width": 1440,
+        "x": 0,
+        "y": 2275
+      },
+      "tag": "DIV",
+      "text": "GOES WELL WITH..."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531863879869__collection_links_9Pc4EL",
+      "rect": {
+        "height": 274.3984375,
+        "width": 1440,
+        "x": 0,
+        "y": 2841.125
+      },
+      "tag": "DIV",
+      "text": "Bestsellers 39\nDresses 6\nTops 17\nAccessories 4\nBottoms 30\nDenim 20"
+    }
+  ],
+  "title": "Bonding Rose Blazer – Ritual",
+  "url": "https://theme-ritual-demo.myshopify.com/products/bonding-rose-blazer-black-leather-rose?variant=45001483026621",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "Size\nXS/34\nS/36\nM/38\nL/40\nXL/42"
+  ],
+  "grids": [
+    {
+      "className": "product-information__grid product-information--media-left",
+      "columns": "933.328px 466.664px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 2209,
+      "tag": "DIV",
+      "width": 1400
+    },
+    {
+      "className": "media-gallery__grid list-unstyled",
+      "columns": "454.664px 454.664px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 2275,
+      "tag": "UL",
+      "width": 909.328125
+    },
+    {
+      "className": "resource-list resource-list--grid",
+      "columns": "331px 331px 331px 331px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 441.328125,
+      "tag": "DIV",
+      "width": 1360
+    }
+  ],
+  "images": [
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 52,
+        "width": 52
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 976,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 508,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 508,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 508,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 976,
+      "rect": {
+        "height": 1137.5,
+        "width": 910
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 508,
+      "rect": {
+        "height": 568.75,
+        "width": 455
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 508,
+      "rect": {
+        "height": 568.75,
+        "width": 455
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 508,
+      "rect": {
+        "height": 568.75,
+        "width": 455
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Bonding Rose Blazer",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nNEW\nTOPS\nBOTTOMS\nTotal items in cart: 0\nBONDING ROSE BLAZER\nXS/34\n$2,800.00\nAdd to cart\nSkip to product information\nOpen image in full screen\nOpen image in full screen\nOpen image in full screen\nOpen image in full screen\nBONDING ROSE BLAZER\n$2,800.00\nSize\nXS/34\nS/36\nM/38\nL/40\nXL/42\nDecrease quantity\nIncrease quantity\nAdd to cart\nBuy it now\n\nThis is a demonstration store. You can purchase products like this from Seen Users.\n\nThe Bonding Rose Blazer is a slightly oversized, boxy-shaped blazer, that cinches the waist through a rose on a long soft stem, acting as either a belt or a styling piece. The blazer is covered in hand-crafted leather roses.\n\n\n\n\nGOES WELL WITH...\nBestsellers 39\nDresses 6\nTops 17\nAccessories 4\nBottoms 30\nDenim 20\nSHOP\nShop all\nBestsellers\nNew arrivals\nBRAND\nAbout us\nBlog\nShipping & Returns\nFit guide\nCONNECT\nInstagram\nTikTok\nFacebook\nContact us\n\nGET ON THE LIST\n\nEmail\nOK\nRitual\n© 2026 Ritual, Powered by Shopify"
+}

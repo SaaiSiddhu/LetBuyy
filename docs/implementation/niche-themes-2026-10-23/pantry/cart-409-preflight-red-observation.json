@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-23T13:37:00.967987+00:00",
+  "classification": "SHARED_CLIENT_IN_PROCESS_PREFLIGHT_FAILURE_NOT_PANTRY_EXECUTION",
+  "originatingChat": "01a164ba-a97f-7d80-9430-57924218664b",
+  "reportedByCoordinator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "sourceReport": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/preflight-report.json",
+    "sha256": "7fb61b37711a1adf658ce3b6c629d121e2035ec137280a4b2766aaccfd7f59a1",
+    "classification": "IN_PROCESS_COMPOSITION_NOT_SQL_BROWSER_E2E_OR_INSTALLED_ACCEPTANCE",
+    "liveCases": "NOT_RUN",
+    "syntheticIdentifiersNotRuntimeBindings": true
+  },
+  "finding": {
+    "id": "CIRCUIT-CART-409-001",
+    "scope": "IN_PROCESS_CONTROLLED_409_NOT_SQL",
+    "owner": "Canonical native Liquid cart island",
+    "selector": "lb-add-to-cart [data-lb-add-to-cart-status]",
+    "observed": {
+      "requestedQuantity": 9,
+      "suppliedStock": 8,
+      "responseStatus": 409,
+      "responseCode": "INSUFFICIENT_INVENTORY",
+      "status": "Added",
+      "cachedQuantity": 9,
+      "acceptedServerReceipt": null
+    }
+  },
+  "sourceAtReproduction": {
+    "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+    "sha256": "734a6a314e570a3c0ffedbd487db46ec5920c2b05b5c0de6703e3dabe8cfe7b5",
+    "unchangedDuringPreflight": true
+  },
+  "reproduction": "Circuit actual v2 factory/render/native cart composition, synthetic hub stock8, request quantity9, intercept canonical cart POST with controlled409 INSUFFICIENT_INVENTORY, flush native update; observed Added and optimistic cached9 without accepted receipt. This is not an actual database stock rejection.",
+  "candidateHash": null,
+  "pantryCasesExecuted": 0,
+  "requiredInstalledReverification": "Pantry P08: actual V250 accepted2/available4 then quantity5 real409, actionable failure/no false success or committed5, normal retry2 acknowledged with reload; P07 and P09 retain receipt authority."
+}

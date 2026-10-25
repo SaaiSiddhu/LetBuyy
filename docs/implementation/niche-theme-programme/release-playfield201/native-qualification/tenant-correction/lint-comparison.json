@@ -1,0 +1,94 @@
+{
+  "status": "NO_NEW_DIAGNOSTICS_RELATIVE_TO_PRESERVED_PRE_REPAIR_SOURCE",
+  "fullyGreen": false,
+  "errors": 8,
+  "warnings": 4,
+  "newDiagnostics": 0,
+  "comparison": "rule/severity/message/exact source line; locations may move; baseline raw reports and code snapshots preserved",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/theme-safe-update.ts",
+      "sha256": "10a4b866dbe3167e879d9af43fd61b8c3d751d605ca181e5b2c65adfaa39f539",
+      "baseline": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/theme-safe-update.ts.baseline-eslint.json",
+        "sha256": "7bcecee3738137752f8c60f5d7365d3c21737ca197780e2afbeb627885beb3a8",
+        "bytes": 37309
+      },
+      "errors": 5,
+      "warnings": 2,
+      "newDiagnostics": 0
+    },
+    {
+      "path": "packages/theme-engine/test/theme-safe-update.test.ts",
+      "sha256": "bc7c41e8b3c1b8bb840a7349d1f856a52e27cd11bc5c6ec7bc3cf4e653878ae3",
+      "baseline": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/theme-safe-update.test.ts.baseline-eslint.json",
+        "sha256": "7947e48f102a2553faf57777dbd24189dc542ee256a082a476a0ba3a51f591e6",
+        "bytes": 55874
+      },
+      "errors": 2,
+      "warnings": 2,
+      "newDiagnostics": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-promotion.postgres.test.ts",
+      "sha256": "aa26dd41b09cbbb188b413b385acf80ad6e21f4e23bbdf789ebff68a8bc42782",
+      "baseline": null,
+      "errors": 0,
+      "warnings": 0,
+      "newDiagnostics": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/tenant-transaction.test.ts",
+      "sha256": "b909fcc59ca6ccdc647c3b4a83eface4ff6723b6d97db8713abf78e27354a514",
+      "baseline": null,
+      "errors": 0,
+      "warnings": 0,
+      "newDiagnostics": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-update.test.ts",
+      "sha256": "68737654162040ca1d027f99c93e31d5e2964e43d831d6834aa59b75e1f3ba54",
+      "baseline": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/theme-update.test.ts.baseline-eslint.json",
+        "sha256": "02258e4e381ef94ea730441244a6c0b9d60a44316f5c9a6f270ba5992b47c328",
+        "bytes": 20513
+      },
+      "errors": 0,
+      "warnings": 0,
+      "newDiagnostics": 0
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "sha256": "df46632ce72b129a0cda8137f29d64e9165aba468c9cf934968ebb3d2fda3f29",
+      "baseline": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/theme-execution.adapter.ts.baseline-eslint.json",
+        "sha256": "665bcfc97774c377bf31e46af78f110ad71da60adea729b826748c3a8863b451",
+        "bytes": 95665
+      },
+      "errors": 1,
+      "warnings": 0,
+      "newDiagnostics": 0
+    },
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "sha256": "8cbaa6e78b6cb4b580bd20168b194c6c4f9f77d9601de816cc02eec68dd6917c",
+      "baseline": null,
+      "errors": 0,
+      "warnings": 0,
+      "newDiagnostics": 0
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes/theme-update-route.ts",
+      "sha256": "53cb5f2b80ef151e427fb7ce20388d29924812be4527e4720ddd36aca1593f75",
+      "baseline": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/theme-update-route.ts.baseline-eslint.json",
+        "sha256": "b7a834a2a6dce065f3691fb8684442b29c14e481d739719d770568b27bbc44d2",
+        "bytes": 265
+      },
+      "errors": 0,
+      "warnings": 0,
+      "newDiagnostics": 0
+    }
+  ]
+}

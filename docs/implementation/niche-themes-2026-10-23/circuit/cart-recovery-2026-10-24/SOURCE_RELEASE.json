@@ -1,0 +1,168 @@
+{
+  "recordedAt": "2026-10-23T20:07:13.612114+00:00",
+  "status": "SOURCE_QUALIFIED_WRITER_RELEASED_ROOT_PEER_REVIEW_AND_COMBINED_GATE_PENDING",
+  "classification": "SOURCE_ONLY_NOT_INSTALLED_ACCEPTANCE",
+  "sourceFiles": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts",
+      "sha256": "1cc8bd46a88302dc9319f00d8e4a3c5688760bfcc8a76f494936b83943245070"
+    }
+  ],
+  "inheritedHydrationSha256": "5f0b2659f1fcfe65d651f248a2c052dba4201bf7c5caa36907a20aa527463bdd",
+  "qualifiedPickerSha256": "be1ecdf27902e67705e9eddafaa78d13f61fa0dbb44391310e093cf2021cafdf",
+  "onlyExistingCartClassChanged": true,
+  "newTestFile": "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts",
+  "validation": {
+    "red": {
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "log": "red-native-cart.tap",
+      "actualExpectedMismatch": "5 !== 4; actual native class/header"
+    },
+    "finalTargetedCartTests": {
+      "pass": 61,
+      "fail": 0,
+      "skip": 0,
+      "cancel": 0,
+      "newRecoveryTests": 14,
+      "existingTests": 47,
+      "log": "cart-regression-final.tap",
+      "reactMode": "normal client mode; final wider RSC cohort remains separate"
+    },
+    "commerceNoEmit": {
+      "exitCode": 0,
+      "log": "commerce-noemit-complete.log"
+    },
+    "lint": {
+      "baselineErrors": 1,
+      "baselineWarnings": 23,
+      "currentErrors": 1,
+      "currentWarnings": 23,
+      "introduced": 0,
+      "newTestErrors": 0,
+      "newTestWarnings": 0,
+      "normalizedDiagnosticSourceLinesEqual": true,
+      "wholeFileGreen": false
+    }
+  },
+  "preservation": {
+    "parent134SourcePinsUnchangedExceptAllocatedHydration": 133,
+    "parent150IntegrationEvidenceUnchanged": 17,
+    "existingCartTestsByteExact": true,
+    "candidateHydrationStill9e87": [
+      "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01/apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "/private/tmp/theme-editor-candidate-20261023-final02/apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx"
+    ]
+  },
+  "diff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/allocated-diff.patch",
+    "sha256": "cf84afefe83c18a1df03f8ffc480331d7df0d9c0a0181458471541a0d264e3ea"
+  },
+  "qualification": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/qualification.json",
+    "sha256": "a0212882a380af741d0c418acff436adfc945b991bd1586af2478b72e731b7d5"
+  },
+  "liveFailureEvidence": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-shared-cart-recovery-audit.json",
+      "sha256": "ae1e4efa2840cf11728604a6c3e226c7d75dbc02dd54f33364d3dfd499624ff5"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p08-cart-recovery-failure.json",
+      "sha256": "60ced882bc07ad535530dff562cb556f7001b44aa92431d0ece472d940616396"
+    }
+  ],
+  "scope": {
+    "liveApiBrowserDatabaseBuildActions": 0,
+    "candidateWrites": false,
+    "globalSyncCheckoutAuthVariantDomainSqlChanged": false,
+    "newCartAuthority": false,
+    "serverTotalsDerived": false
+  },
+  "fullFileLintGreen": false,
+  "installedCaseStatusAdvanced": false,
+  "next": "Root peer review then ONE combined Playfield URL/facts/order/cart gate; 131 RSC source +19 normal BuyNow +14 normal cart recovery =164 unique; controlled client/browser retest remains separate",
+  "evidenceFiles": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/REPORT.md",
+      "sha256": "66e6139d4d458b66e560e5c47a3b14152ff2bcbaf268fd4dbf8f9d3963ee893b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/allocated-diff.patch",
+      "sha256": "cf84afefe83c18a1df03f8ffc480331d7df0d9c0a0181458471541a0d264e3ea"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/before/liquid-cart-island.test.ts",
+      "sha256": "cc7144356922dc1d3c51c5d52d7f681d3deadd19cbde3f36c9b7af9fadafacec"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/before/liquid-hydration-islands.tsx",
+      "sha256": "5f0b2659f1fcfe65d651f248a2c052dba4201bf7c5caa36907a20aa527463bdd"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/cart-regression-final.tap",
+      "sha256": "22c6fe5aaebd9aa652cb48371e651b035c46618ecc47e5eda008ecf2edc2d440"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/cart-regression.tap",
+      "sha256": "f1765a31edae384b6bfc8618302df33f94947fed9e89b5a3a6821cb97abb8a79"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/commerce-noemit-complete.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/commerce-noemit-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/commerce-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-after.json",
+      "sha256": "da6bbcac0906f36e647238c3a8695b0019750cd2fd580c2b29b2b6e42ffbe64c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-before.json",
+      "sha256": "e844bad64171531dcf3d087837082a5404e155d272e03cbe0c8c3cbf08325bed"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-complete.json",
+      "sha256": "9370b472ed39500fbfa4a3bc4c54946f19821e67d7b292619a5e6e390f45b8d5"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-new-test-final.json",
+      "sha256": "bf2d61e1bef6e1df4f4b4aa30b5a1868308970607111c2dcd72c316576dc4bc3"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/focused-edge-cases.tap",
+      "sha256": "c4ea34b052a8329b2663a8b59d73b70c38ea4dde0c3e370c77e6abf045c90042"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/focused-final.tap",
+      "sha256": "97d556f3f2a36465506ac12f1c7cf8e8f4a93d6ddcc5e8b1f0b0711a5d1dc769"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/focused-first.tap",
+      "sha256": "b56169507584a4d79692e393c76b61861535d2016b51f841f4ee0924d07ab953"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/inherited-source-pins.json",
+      "sha256": "7aa1ff2b38fadd8ea1bad9637ce1e3c6d9ac9414d35469de52451955086e7984"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/qualification.json",
+      "sha256": "a0212882a380af741d0c418acff436adfc945b991bd1586af2478b72e731b7d5"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/red-native-cart.tap",
+      "sha256": "055163eda34fc21c4f0abdba667cef6af2cfed2028e7eb90115502fdd4a4f5c3"
+    }
+  ]
+}

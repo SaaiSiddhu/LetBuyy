@@ -1,0 +1,257 @@
+{
+  "generatedAt": "2026-10-23T07:53:29.449589+00:00",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "qualification": "Final-source static Liquid browser review passed; canonical server cart/order/revision source implemented and focused checks green. Migration388 and real owned-DB suite prepared but not executed; no end-to-end or production acceptance.",
+  "sourceFiles": [
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "bytes": 18030,
+      "sha256": "81e23b9d0ea149050ff8968777263126920036abadeb06c1a7f4aaf38f850097"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "bytes": 11904,
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "bytes": 3135,
+      "sha256": "ef00d65baaba0d7fcef3eb0534d9986868246e89998de7190fd8e71f903862ea"
+    },
+    {
+      "path": "packages/theme-engine/test/madeyours.test.ts",
+      "bytes": 15475,
+      "sha256": "e789648541e52aa96268a17048940c24a0ed227e25ee6a37f23892ba3e608f5f"
+    },
+    {
+      "path": "packages/commerce-core/src/madeyours-facts.ts",
+      "bytes": 7554,
+      "sha256": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813"
+    },
+    {
+      "path": "packages/commerce-core/test/madeyours-facts.test.ts",
+      "bytes": 6869,
+      "sha256": "5546ef3cee097abe41258b88e087eef6cc53f8ece7047d97547496ad879b4218"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/madeyours-demo.ts",
+      "bytes": 5378,
+      "sha256": "dde879421819cdacea741a440a905d8f03216a20d99f1346dd4045d5e2784af6"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/madeyours-demo.test.ts",
+      "bytes": 3644,
+      "sha256": "4aea9fa5ade5bdcd5f57dd40ee16f47547effcdc64b17073714e2482dbc024ef"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts",
+      "bytes": 8144,
+      "sha256": "ea47cfea00f91bd0ab12731cf4ce7ef06ed23b26715920979417362f5bb0f8dc"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.test.ts",
+      "bytes": 12053,
+      "sha256": "7ad91bc09b12b587498b1422807e53ee315dd214ee36f40a690568b838972b82"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/block.webp",
+      "bytes": 34834,
+      "sha256": "202b1f57d10f40f8306c7c9f7c25e51d6d850b39c486ba72f8ba18a85ddc65dc"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/hero.webp",
+      "bytes": 94696,
+      "sha256": "0befe5fe85c32b9d27f6fec68f5d5b6076d8878da8d81651c9e255f7d6689aaa"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/notebook.webp",
+      "bytes": 95704,
+      "sha256": "73c4886506b153e1d975cc8a57e66fd205354b4b41a6549c6f06219ef417a128"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/provenance.json",
+      "bytes": 2282,
+      "sha256": "9dd8da37928c0516929b2fdba5f2b3c53e8aeee4e48446fd82f023651b3ec4e2"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.tsx",
+      "bytes": 11069,
+      "sha256": "f51a25256f3b1adc72c3a8251513dff635b34014a3a6fd85419e048f3a6c6e56"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.test.tsx",
+      "bytes": 11868,
+      "sha256": "28528ed63ccfae1a082afc9c978326dbe63539cdcb6249f963f65f0c4bfb6720"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "bytes": 14127,
+      "sha256": "6b5651748175d5c6667aaa1f80b8114bf4af0060581be8b6cc0cfaeaea3f2e8c"
+    },
+    {
+      "path": "packages/commerce-core/test/product-fact-snapshot.test.ts",
+      "bytes": 20803,
+      "sha256": "be238ddeeab8821956b39d4494fbda59062f4ce98a8fd40838c20ef40066109b"
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "bytes": 76932,
+      "sha256": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da"
+    },
+    {
+      "path": "packages/checkout-core/test/product-fact-binding.test.ts",
+      "bytes": 3800,
+      "sha256": "e3ba82b6cdf22368eac4e732a0d1a582babf13292cb5766d230692e791d0d87e"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "bytes": 4352,
+      "sha256": "a7d469d4983f5ec495ecd6bc85d4293540d4bc145c81471746f2ba294a02b5fd"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "bytes": 42201,
+      "sha256": "85a4690b0ebe0edb3bd0f29286f75125fbebd09eafbef1a6d85aed21bd2445b7"
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "bytes": 75454,
+      "sha256": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a"
+    },
+    {
+      "path": "services/api-gateway/src/execution/order-execution.adapter.ts",
+      "bytes": 23531,
+      "sha256": "fd2975fb31972c5e4c20952b6b48e7476ac81cf0a6bc8882d9f173bc4b719aa1"
+    },
+    {
+      "path": "services/api-gateway/src/execution/product-mutation.adapter.ts",
+      "bytes": 7663,
+      "sha256": "39a23ad08cc835d22bf0feb951c5ec44515e6c466f01be8cdd81800577d1257d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+      "bytes": 26531,
+      "sha256": "a0b3b17851e4504c246c7178531881c2f990a901f812a213966da37c42fe1f2f"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "bytes": 45944,
+      "sha256": "b3912985bf82dddb4466e39af2d62886036c909e4522871a554b2d6785345190"
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "bytes": 35037,
+      "sha256": "192b37c447e2045be699c7342190d50c861487c7daf00f2a749f1eb2c6bdf912"
+    }
+  ],
+  "tests": {
+    "package-tests.tap": {
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "skipped": 0
+    },
+    "runtime-helper-tests.tap": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skipped": 0
+    },
+    "merchant-editor-tests.tap": {
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "skipped": 0
+    },
+    "snapshot-contract-tests.tap": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "typechecks": [
+    {
+      "command": "pnpm exec tsc -p packages/theme-engine/tsconfig.json --noEmit --tsBuildInfoFile /private/tmp/madeyours-theme-engine.tsbuildinfo",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsc -p packages/commerce-core/tsconfig.json --noEmit --tsBuildInfoFile /private/tmp/madeyours-commerce-core.tsbuildinfo",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsc -p docs/implementation/niche-themes-2026-10-23/madeyours/scoped-typecheck.json --noEmit",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsc -p docs/implementation/niche-themes-2026-10-23/madeyours/merchant-editor-typecheck.json --noEmit",
+      "exitCode": 0
+    }
+  ],
+  "acceptedMockups": {
+    "freeze": "post-profile-freeze.json",
+    "verifiedFiles": 103,
+    "changed": []
+  },
+  "sharedPipeline": [
+    "explicit v2 catalog dispatch; default Nova v1 remains",
+    "actual product-liquid-drop.ts validated namespace projection",
+    "unchanged global Liquid drop depth4 and generic JSON filter",
+    "exact inert JSON survives final DOM attribute decode",
+    "owned helper binds canonical lb-add-to-cart with explicit review guard",
+    "actual preview process block IDs and public-mode absence",
+    "mounted controlled merchant editor fields\u2192canonical schema payload, invalid correction, explicit null removal"
+  ],
+  "pending": [
+    "Owned PostgreSQL388 migration/security/concurrency/rollback/hosted-checkout tests under explicit lease",
+    "386 strict validator dependency rollback refusal owned by Circuit",
+    "Actual frontend SSR opaque review echo, personalization draft wire and configuration-aware cart actions after lease handoff",
+    "Buyer/merchant immutable order readback integration owned by Dewdrop",
+    "Full canonical checkout idempotency, tenancy and money reconciliation qualification under coordinator gates",
+    "Hydrated browser/cart/order and performance qualification"
+  ],
+  "resourcesHeld": [],
+  "productionReleasePublished": false,
+  "browser": {
+    "recordedSnapshotStatus": "pass",
+    "captures": 58,
+    "interactions": 8,
+    "audit": "browser-audit.json",
+    "currentSourceQualification": "Final static source incl related-PDP correction:58/58 captures pass,8 scenarios; resources closed/released. No cart/DB/lifecycle claim.",
+    "allWidths": [
+      1440,
+      834,
+      390,
+      320
+    ]
+  },
+  "serverIntegration": {
+    "migration": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+    "rollback": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+    "databaseExecuted": false,
+    "ownedSuite": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+    "sharedContracts": {
+      "passed": 47,
+      "failed": 0,
+      "evidence": "shared-contract-tests.tap"
+    },
+    "existingGatewayFocused": {
+      "passed": 22,
+      "failed": 0,
+      "evidence": "gateway-focused-tests.tap"
+    },
+    "sourceTypechecks": [
+      "checkout-source-typecheck.json",
+      "gateway-source-typecheck.json"
+    ],
+    "fullGatewayTypecheck": "Six concurrent storefront-blog-pagination.test.ts diagnostics outside leased source; gateway-typecheck.txt",
+    "productWriterUnit": {
+      "passed": 6,
+      "failed": 0,
+      "evidence": "product-writer-unit-tests.tap"
+    },
+    "ownedCasesPrepared": 14,
+    "dependency386": "dependency-386.json"
+  }
+}

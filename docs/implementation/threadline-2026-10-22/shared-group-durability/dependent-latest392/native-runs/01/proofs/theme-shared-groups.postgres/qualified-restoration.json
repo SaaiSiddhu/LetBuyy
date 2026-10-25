@@ -1,0 +1,17 @@
+{
+  "runId": "bc5db405796b",
+  "stateDigest": "4fa539d09e3fc9995b31c8dbb18eaac5",
+  "baselineProfileSha256": "f74f45f9a7b6588275973b36d8196bd0982e9e6873a78040be12ab4c119e865e",
+  "upgradedProfileSha256": "5050d0122cfc9069fc2aa1fe8c84dc8a4b4a31a0ee65b4df89e9719412d2e037",
+  "conservedNonBodyProfileSha256": "a225208857d4044baecd7c0ed67bb4531a2c565f9d0641e9f3a6f11fad5d1994",
+  "immutableCaptureDigest": "3cc0174a936c3cdfc1a158b3e2dfab0c",
+  "protectedThreadline": "cc8c4366a02c263c803189206c17f70b611d86f85320fda9f829a57251e84550",
+  "protectedCatalog": {
+    "rowSha256": "99c464e0a82e4426d1cc1615e7095f0d4d41439235d98050a62ac3819987a53a",
+    "activeCount": 1,
+    "lastInstallUpdate": "2026-10-23T17:09:11.482132+00:00",
+    "protectedContentSha256": "8718b19bf74f15e49853eccdaf82b3172f0bb3ab154e58eec8ce4bc7d8a3765d"
+  },
+  "oldBody": "2a6e74135720d0557ba921d517e88a13",
+  "newBody": "f14f2252157119e56f6614decef4c4aa"
+}

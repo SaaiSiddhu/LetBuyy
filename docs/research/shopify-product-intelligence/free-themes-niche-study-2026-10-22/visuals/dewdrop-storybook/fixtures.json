@@ -1,0 +1,100 @@
+{
+  "fictional": true,
+  "domain": "dewdrop.example.test",
+  "buyer": {
+    "name": "Asha Rao",
+    "email": "asha@example.test"
+  },
+  "catalog": [
+    {
+      "id": "cloud-rinse",
+      "name": "Cloud Rinse",
+      "kind": "Gel cleanser",
+      "qty": "150 ml",
+      "price": 640,
+      "stage": "Cleanse",
+      "asset": "cleanser",
+      "note": "Face \u00b7 Rinse-off"
+    },
+    {
+      "id": "daily-veil",
+      "name": "Daily Veil",
+      "kind": "Face cream",
+      "qty": "50 g",
+      "price": 880,
+      "stage": "Care",
+      "asset": "cream",
+      "note": "Face \u00b7 Leave-on"
+    },
+    {
+      "id": "soft-colour",
+      "name": "Soft Colour",
+      "kind": "Lip tint",
+      "qty": "6 ml",
+      "price": 520,
+      "stage": "Colour",
+      "asset": "tint",
+      "note": "Lips \u00b7 3 named shades"
+    },
+    {
+      "id": "palm-wash",
+      "name": "Palm Wash",
+      "kind": "Hand wash",
+      "qty": "250 ml",
+      "price": 460,
+      "stage": "Cleanse",
+      "asset": null,
+      "note": "Hands \u00b7 Ingredients not supplied"
+    }
+  ],
+  "variants": [
+    {
+      "id": "tint-rosewater",
+      "name": "Rosewater",
+      "code": "RW01",
+      "color": "#a36a65",
+      "available": true
+    },
+    {
+      "id": "tint-pink-clay",
+      "name": "Pink Clay",
+      "code": "PC02",
+      "color": "#a36a65",
+      "available": true
+    },
+    {
+      "id": "tint-terracotta",
+      "name": "Terracotta",
+      "code": "TC03",
+      "color": "#9a5944",
+      "available": false
+    }
+  ],
+  "cart": {
+    "lines": [
+      {
+        "product": "soft-colour",
+        "variant": "tint-rosewater",
+        "quantity": 1,
+        "unitMinor": 52000
+      },
+      {
+        "product": "cloud-rinse",
+        "variant": "default",
+        "quantity": 1,
+        "unitMinor": 64000
+      }
+    ],
+    "subtotalMinor": 116000,
+    "shippingMinor": 6000,
+    "totalMinor": 122000,
+    "tax": "included"
+  },
+  "order": {
+    "id": "DD-1042",
+    "date": "2026-10-18",
+    "mode": "mock",
+    "state": "processing",
+    "totalMinor": 122000
+  }
+}

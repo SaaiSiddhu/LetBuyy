@@ -5,10 +5,22 @@
   "themes": {
     "light": [
       {
-        "value": "#111827",
+        "value": "#0a0912",
         "variables": [
           "--lb-color-background-dark",
+          "--lb-primitive-color-ink-950"
+        ]
+      },
+      {
+        "value": "#0d0b16",
+        "variables": [
           "--lb-color-surface-dark",
+          "--lb-primitive-color-ink-850"
+        ]
+      },
+      {
+        "value": "#111827",
+        "variables": [
           "--lb-color-text",
           "--lb-color-text-primary-light",
           "--lb-component-button-secondary-text",
@@ -28,6 +40,14 @@
           "--lb-component-banner-success-text",
           "--lb-primitive-color-green-700",
           "--lb-semantic-status-text-success"
+        ]
+      },
+      {
+        "value": "#16A34A",
+        "variables": [
+          "--lb-component-badge-solid-success-bg",
+          "--lb-component-banner-solid-success-bg",
+          "--lb-component-toast-success-bg"
         ]
       },
       {
@@ -55,9 +75,16 @@
         ]
       },
       {
+        "value": "#2563EB",
+        "variables": [
+          "--lb-component-badge-solid-info-bg",
+          "--lb-component-banner-solid-info-bg",
+          "--lb-component-toast-info-bg"
+        ]
+      },
+      {
         "value": "#334155",
         "variables": [
-          "--lb-color-border-dark",
           "--lb-color-border-strong",
           "--lb-primitive-color-slate-700",
           "--lb-semantic-border-strong"
@@ -171,9 +198,20 @@
         ]
       },
       {
+        "value": "#D97706",
+        "variables": [
+          "--lb-component-badge-solid-warning-bg",
+          "--lb-component-banner-solid-warning-bg",
+          "--lb-component-toast-warning-bg"
+        ]
+      },
+      {
         "value": "#DC2626",
         "variables": [
           "--lb-color-critical-hover",
+          "--lb-component-badge-solid-danger-bg",
+          "--lb-component-banner-solid-danger-bg",
+          "--lb-component-toast-danger-bg",
           "--lb-primitive-color-red-600"
         ]
       },
@@ -293,11 +331,15 @@
           "--lb-color-surface-raised",
           "--lb-color-text-inverse",
           "--lb-color-text-primary-dark",
+          "--lb-component-badge-solid-text",
+          "--lb-component-banner-solid-action-text",
+          "--lb-component-banner-solid-text",
           "--lb-component-button-primary-text",
           "--lb-component-card-bg",
           "--lb-component-empty-state-bg",
           "--lb-component-input-bg",
           "--lb-component-table-bg",
+          "--lb-component-toast-text",
           "--lb-primitive-color-white",
           "--lb-semantic-background-card",
           "--lb-semantic-background-header",
@@ -495,7 +537,8 @@
         "value": "44px",
         "variables": [
           "--lb-density-table-header-height",
-          "--lb-density-table-row-height"
+          "--lb-density-table-row-height",
+          "--lb-size-touch-target"
         ]
       },
       {
@@ -636,62 +679,88 @@
         ]
       },
       {
-        "value": "#0A0F1A",
+        "value": "#0a0912",
         "variables": [
+          "--lb-color-background",
+          "--lb-color-background-dark",
+          "--lb-color-bg",
           "--lb-color-surface-subdued",
-          "--lb-primitive-color-slate-950",
+          "--lb-content-bg",
+          "--lb-primitive-color-ink-950",
+          "--lb-semantic-background-page",
           "--lb-semantic-background-subdued"
         ]
       },
       {
-        "value": "#0F172A",
+        "value": "#0d0b15",
         "variables": [
           "--lb-color-sidebar",
           "--lb-component-sidebar-bg",
-          "--lb-primitive-color-slate-900",
+          "--lb-primitive-color-ink-900",
           "--lb-semantic-background-sidebar",
           "--lb-sidebar-bg"
         ]
       },
       {
-        "value": "#111827",
+        "value": "#0d0b16",
         "variables": [
-          "--lb-color-background",
-          "--lb-color-background-dark",
-          "--lb-color-bg",
           "--lb-color-header",
           "--lb-color-surface",
           "--lb-color-surface-dark",
-          "--lb-color-text-inverse",
-          "--lb-color-text-primary-light",
           "--lb-component-button-secondary-bg",
           "--lb-component-input-bg",
           "--lb-component-table-header-bg",
           "--lb-component-table-row-hover-bg",
-          "--lb-content-bg",
-          "--lb-primitive-color-gray-900",
+          "--lb-primitive-color-ink-850",
           "--lb-semantic-background-header",
-          "--lb-semantic-background-page",
           "--lb-semantic-background-surface",
-          "--lb-semantic-button-secondary-bg",
+          "--lb-semantic-button-secondary-bg"
+        ]
+      },
+      {
+        "value": "#111827",
+        "variables": [
+          "--lb-color-text-inverse",
+          "--lb-color-text-primary-light",
+          "--lb-primitive-color-gray-900",
           "--lb-semantic-text-inverse"
+        ]
+      },
+      {
+        "value": "#15131f",
+        "variables": [
+          "--lb-card-bg",
+          "--lb-color-card",
+          "--lb-component-button-secondary-hover",
+          "--lb-component-card-bg",
+          "--lb-component-empty-state-bg",
+          "--lb-component-table-bg",
+          "--lb-primitive-color-ink-800",
+          "--lb-semantic-background-card",
+          "--lb-semantic-button-secondary-hover"
+        ]
+      },
+      {
+        "value": "#16A34A",
+        "variables": [
+          "--lb-component-badge-solid-success-bg",
+          "--lb-component-banner-solid-success-bg",
+          "--lb-component-toast-success-bg"
+        ]
+      },
+      {
+        "value": "#1b1827",
+        "variables": [
+          "--lb-color-surface-raised",
+          "--lb-primitive-color-ink-700",
+          "--lb-semantic-background-raised"
         ]
       },
       {
         "value": "#1F2937",
         "variables": [
-          "--lb-card-bg",
-          "--lb-color-card",
-          "--lb-color-surface-raised",
-          "--lb-component-button-secondary-hover",
-          "--lb-component-card-bg",
-          "--lb-component-empty-state-bg",
-          "--lb-component-table-bg",
           "--lb-primitive-color-gray-800",
-          "--lb-primitive-color-slate-850",
-          "--lb-semantic-background-card",
-          "--lb-semantic-background-raised",
-          "--lb-semantic-button-secondary-hover"
+          "--lb-primitive-color-slate-850"
         ]
       },
       {
@@ -706,20 +775,11 @@
         ]
       },
       {
-        "value": "#334155",
+        "value": "#2563EB",
         "variables": [
-          "--lb-color-border",
-          "--lb-color-border-dark",
-          "--lb-component-button-secondary-border",
-          "--lb-component-card-border",
-          "--lb-component-empty-state-border",
-          "--lb-component-input-border",
-          "--lb-component-sidebar-border",
-          "--lb-component-table-border",
-          "--lb-primitive-color-slate-700",
-          "--lb-semantic-border-default",
-          "--lb-semantic-border-subtle",
-          "--lb-semantic-button-secondary-border"
+          "--lb-component-badge-solid-info-bg",
+          "--lb-component-banner-solid-info-bg",
+          "--lb-component-toast-info-bg"
         ]
       },
       {
@@ -846,9 +906,20 @@
         ]
       },
       {
+        "value": "#D97706",
+        "variables": [
+          "--lb-component-badge-solid-warning-bg",
+          "--lb-component-banner-solid-warning-bg",
+          "--lb-component-toast-warning-bg"
+        ]
+      },
+      {
         "value": "#DC2626",
         "variables": [
           "--lb-color-critical-hover",
+          "--lb-component-badge-solid-danger-bg",
+          "--lb-component-banner-solid-danger-bg",
+          "--lb-component-toast-danger-bg",
           "--lb-primitive-color-red-600"
         ]
       },
@@ -903,6 +974,9 @@
           "--lb-color-surface-light",
           "--lb-color-text",
           "--lb-color-text-primary-dark",
+          "--lb-component-badge-solid-text",
+          "--lb-component-banner-solid-action-text",
+          "--lb-component-banner-solid-text",
           "--lb-component-button-primary-text",
           "--lb-component-button-secondary-text",
           "--lb-component-card-text",
@@ -911,6 +985,7 @@
           "--lb-component-page-header-icon-text",
           "--lb-component-sidebar-active-text",
           "--lb-component-table-text",
+          "--lb-component-toast-text",
           "--lb-primitive-color-white",
           "--lb-semantic-button-primary-text",
           "--lb-semantic-button-secondary-text"
@@ -1104,7 +1179,8 @@
         "value": "44px",
         "variables": [
           "--lb-density-table-header-height",
-          "--lb-density-table-row-height"
+          "--lb-density-table-row-height",
+          "--lb-size-touch-target"
         ]
       },
       {
@@ -1178,6 +1254,22 @@
           "--lb-component-input-focus-ring",
           "--lb-primitive-opacity-purple-subtle",
           "--lb-semantic-accent-subtle"
+        ]
+      },
+      {
+        "value": "rgba(139, 92, 246, 0.18)",
+        "variables": [
+          "--lb-color-border",
+          "--lb-color-border-dark",
+          "--lb-component-button-secondary-border",
+          "--lb-component-card-border",
+          "--lb-component-empty-state-border",
+          "--lb-component-input-border",
+          "--lb-component-sidebar-border",
+          "--lb-component-table-border",
+          "--lb-semantic-border-default",
+          "--lb-semantic-border-subtle",
+          "--lb-semantic-button-secondary-border"
         ]
       },
       {

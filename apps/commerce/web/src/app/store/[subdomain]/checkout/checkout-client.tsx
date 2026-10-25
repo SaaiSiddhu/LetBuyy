@@ -1,5 +1,7 @@
 'use client';
 
+import { prepareHostedStepRequest } from '@/lib/checkout/step-idempotency';
+
 import { CartContext } from '@/context/cart-context';
 import { useContext, useEffect, useRef, useState } from 'react';
 import Image, { type ImageLoaderProps } from 'next/image';
@@ -553,11 +555,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             `/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/${step}?${new URLSearchParams(checkoutOrigin.handoff).toString()}`;
         const send = async (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm', body: Record<string, unknown>) => {
             const payloadFingerprint = JSON.stringify(body);
-            const keyScope = `hosted-${step}`;
-            if (hostedStepPayloadsRef.current[keyScope] !== payloadFingerprint) {
-                delete idempotencyKeysRef.current[keyScope];
-                hostedStepPayloadsRef.current[keyScope] = payloadFingerprint;
-            }
+            const keyScope = prepareHostedStepRequest(checkoutOrigin, step, payloadFingerprint, hostedStepPayloadsRef.current);
             const requestBody = { ...body, idempotency_key: getIdempotencyKey(keyScope) };
             const response = await fetch(endpoint(step), {
                 method: 'POST',
@@ -627,11 +625,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             `/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/${step}?${new URLSearchParams(checkoutOrigin.handoff).toString()}`;
         const send = async (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm', body: Record<string, unknown>) => {
             const payloadFingerprint = JSON.stringify(body);
-            const keyScope = `hosted-${step}`;
-            if (hostedStepPayloadsRef.current[keyScope] !== payloadFingerprint) {
-                delete idempotencyKeysRef.current[keyScope];
-                hostedStepPayloadsRef.current[keyScope] = payloadFingerprint;
-            }
+            const keyScope = prepareHostedStepRequest(checkoutOrigin, step, payloadFingerprint, hostedStepPayloadsRef.current);
             const response = await fetch(endpoint(step), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -706,11 +700,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             razorpay_signature: response.razorpay_signature,
         };
         const fingerprint = JSON.stringify(body);
-        const keyScope = `hosted-confirm-${response.razorpay_payment_id}`;
-        if (hostedStepPayloadsRef.current[keyScope] !== fingerprint) {
-            delete idempotencyKeysRef.current[keyScope];
-            hostedStepPayloadsRef.current[keyScope] = fingerprint;
-        }
+        const keyScope = prepareHostedStepRequest(checkoutOrigin, 'confirm', fingerprint, hostedStepPayloadsRef.current);
         const result = await fetch(`/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/confirm?${query.toString()}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-23T18:50:26.002193+00:00",
+  "runId": "f6074d90e894",
+  "classification": "INDEPENDENT_ACTUAL_CASE_EVIDENCE_AUDIT_NO_NEW_BROWSER_OR_API_REQUEST",
+  "C01": {
+    "status": "PASS",
+    "method": "Actual fresh same-IAB full-document cart goto plus guarded accepted server cart. No explicit Reload gesture claimed.",
+    "exactVariant": "f5adb52e-2e20-442a-b607-cc1b5c52ce88",
+    "quantity": 2,
+    "unitPrice": 560,
+    "lineTotal": 1120,
+    "acceptedProductVersion": 10,
+    "snapshotFingerprintPresent": true
+  },
+  "D01": {
+    "status": "PASS",
+    "ordinaryCount": 17,
+    "allFourCarePresent": true,
+    "unknownPalmHonest": true
+  },
+  "D07": {
+    "status": "PASS",
+    "exactPayload": "</script><script>fixtureAttack()</script>",
+    "httpStatus": 200,
+    "actualNormalRecovery17": true,
+    "rawExecutablePayloadPresent": false,
+    "hiddenHtmlEscapedCarrierRetained": true,
+    "independentSsrAudit": "docs/implementation/niche-themes-2026-10-23/dewdrop/d07-closing-script-ssr-audit-f6074d90e894.json",
+    "broadAttributeRemovalClaim": false,
+    "losslessRoundtripClaim": false
+  },
+  "freshTotals": {
+    "PASS": 4,
+    "FAIL": 0,
+    "BLOCKED": 1,
+    "NOT_RUN": 25
+  },
+  "sourceEvidence": [
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-d01-products.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-run-f6074d90e894-evidence/corrected-dewdrop-d01-products.ax.txt",
+      "sha256": "46ab75b2bc00c94058894e4d10304931f22bb0b6115ca6cab50790744f2f3fd4"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-d07-closing-script-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-run-f6074d90e894-evidence/corrected-dewdrop-d07-closing-script-result.json",
+      "sha256": "b28f945177790aed59bf7f2fdb5a3319216a6075048904b4c89585f3db69bed5"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-d07-closing-script.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-run-f6074d90e894-evidence/corrected-dewdrop-d07-closing-script.ax.txt",
+      "sha256": "935e0d90c6b1c7a5e93866090b73b1f2217ba8f0c0a7124621f56145f16eae26"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-d07-observed-url.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-run-f6074d90e894-evidence/corrected-dewdrop-d07-observed-url.json",
+      "sha256": "82fca4f5cc55e14f0a06dedf80795d1cc218b3d954eadaa913d61ca5f982c00c"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-d07-carrier-and-recovery-addendum.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-run-f6074d90e894-evidence/corrected-dewdrop-d07-carrier-and-recovery-addendum.json",
+      "sha256": "01c95067ef196035e86a0c918a9898588a184da86a0419d216deb74875110f61"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-d07-recovery.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/corrected-run-f6074d90e894-evidence/corrected-dewdrop-d07-recovery.ax.txt",
+      "sha256": "f833a387ffe55ccbc4d1e78f190997ec4be2258439fe414613fd486a4e5bcd65"
+    }
+  ],
+  "runtimeNetworkRequestsByVerifier": 0,
+  "privateCredentialsOrFixtureStateRead": false,
+  "full30Complete": false
+}

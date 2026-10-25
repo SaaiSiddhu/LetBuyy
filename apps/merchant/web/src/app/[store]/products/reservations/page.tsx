@@ -215,7 +215,8 @@ export default function InventoryReservationsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Inventory Reservations"
                 description="Active, committed, and expired stock reservations"
             />

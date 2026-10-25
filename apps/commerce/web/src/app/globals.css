@@ -658,3 +658,6 @@ html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .
 .catalog-preview-storefront header { position: sticky; top: 0; }
 .storefront-liquid-editor-section { cursor: pointer; outline-offset: -2px; }
 .storefront-liquid-editor-section:hover, .storefront-liquid-editor-section:focus-visible, .storefront-liquid-editor-section--selected { outline: 2px solid var(--lb-color-focus-ring); }
+
+/* Catalog controls belong to platform chrome; the iframe renders the portable theme. */
+.catalog-preview-frame{padding:var(--lb-space-4,1rem);background:var(--lb-color-surface-subdued,#f6f6f6);min-height:100vh}.catalog-preview-frame h1{font-size:var(--lb-font-size-xl,1.5rem)}.catalog-preview-frame nav,.catalog-preview-frame [role="group"]{display:flex;gap:var(--lb-space-3,.75rem);margin-block:var(--lb-space-3,.75rem);flex-wrap:wrap}.catalog-preview-frame button{min-height:44px;padding:var(--lb-space-3,.75rem);border:1px solid var(--lb-color-border,#ccc);border-radius:var(--lb-radius-md,.5rem);text-transform:capitalize}.catalog-preview-frame button[aria-pressed="true"]{background:var(--lb-color-primary);color:var(--lb-color-on-primary)}.catalog-preview-frame__scroll{overflow:auto}.catalog-preview-frame iframe{display:block;max-width:none;border:1px solid var(--lb-color-border,#ccc);margin-inline:auto;background:var(--lb-color-surface,#fff)}

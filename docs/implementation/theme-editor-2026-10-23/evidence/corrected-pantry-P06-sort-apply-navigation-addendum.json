@@ -1,0 +1,16 @@
+{
+  "url": "http://syn-threadline-ui-33be9d94.localhost:62076/collections/a91548fe-f71d-4d94-94e2-94fe26915172?limit=1&category=Staples&country_of_origin=India&collection_id=a91548fe-f71d-4d94-94e2-94fe26915172&connector=usb-c&connector=hdmi&pack_size=g%3A250&search=lentils&sort=name",
+  "checks": {
+    "sortName": true,
+    "pageReset": true,
+    "connectors": true,
+    "country": true,
+    "category": true,
+    "search": true,
+    "limit": true,
+    "pack": true,
+    "collection": true,
+    "noDuplicateScalar": true
+  },
+  "correction": "Earlier sort-apply-query.json captured the pre-navigation URL; preserved as timing error, superseded by this settled actual navigation. No application failure inferred from that early capture."
+}

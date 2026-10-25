@@ -1,0 +1,51 @@
+Browser tab: 79, Title: "Lifecycle gifts | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000&sort=display_order&limit=20&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a".
+1 AXWebArea Lifecycle gifts | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000&sort=display_order&limit=20&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a
+	2 container
+		3 text Ready-made gifts. A little more considered.
+		4 link syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000&sort=display_order&limit=20&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, ID: lb-product-origin-filter
+				14 button Apply filter
+		15 text A LITTLE DIRECTION
+		16 heading Lifecycle gifts, Value: 1
+			17 text Lifecycle gifts
+		18 text 0 products
+		19 container
+			20 text Minimum budget
+			21 stepper (settable, integer) Minimum budget, Value: 1000
+			22 text Maximum budget
+			23 stepper (settable, integer) Maximum budget, Value: 1000
+			24 text Sort
+			25 pop up button (collapsed, settable) Sort, Value: Featured, Secondary Actions: Expand
+				26 menu
+					27 (selected) Featured
+					28 Price: low to high
+					29 Price: high to low
+					30 Newest
+					31 Name
+			32 button Find gifts →
+		33 link Description: Remove Minimum price: 1000 ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&max_price=1000&occasion=thank-you&recipient=colleague
+		34 link Description: Remove Maximum price: 1000 ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&occasion=thank-you&recipient=colleague
+		35 link Description: Remove Occasion: thank-you ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&max_price=1000&recipient=colleague
+		36 link Description: Remove Recipient: colleague ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&max_price=1000&occasion=thank-you
+		37 link Description: Clear all filters, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a
+		38 heading No matching products., Value: 2
+			39 text No matching products.
+		40 text Your filter choices remain available above. Remove one to widen the selection.
+		41 link Description: Browse all products →, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/products
+		42 heading Threadline, Value: 3
+			43 text Threadline
+		44 heading CONTACT, Value: 4
+			45 text CONTACT
+		46 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/contact
+		47 text © Threadline. All rights reserved.
+		48 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle gifts | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000&sort=display_order&limit=20&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a

@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-25T00:47:18.841Z",
+  "status": "STRICT_SOURCE_LEAVES_AND_SYNTAX_PASS_NOT_NATIVE_PROBE",
+  "sourceRoot": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01",
+  "roots": [
+    "services/api-gateway/src/__tests__/owned-db/circuit-indexed-performance-qualification.manual.ts",
+    "services/api-gateway/src/__tests__/owned-db/circuit-auto-explain-preflight.manual.ts",
+    "services/api-gateway/src/__tests__/owned-db/plan-parser.ts"
+  ],
+  "inputPinsBefore": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/circuit-indexed-performance-qualification.manual.ts",
+      "sha256": "9418a4406913a645ecb4997e49fb285121bc1f0c59373a73b490675dcb73c817"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/circuit-auto-explain-preflight.manual.ts",
+      "sha256": "2382b3a06c04cbe363a8fbea1fdc13d57e3492711da8b84e6ddfe899e164cee3"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/plan-parser.ts",
+      "sha256": "624ffc2856d6013f078662fb4fdf5d6dbfb5323a5d50ca226b20af39a2071292"
+    }
+  ],
+  "inputPinsAfter": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/circuit-indexed-performance-qualification.manual.ts",
+      "sha256": "9418a4406913a645ecb4997e49fb285121bc1f0c59373a73b490675dcb73c817"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/circuit-auto-explain-preflight.manual.ts",
+      "sha256": "2382b3a06c04cbe363a8fbea1fdc13d57e3492711da8b84e6ddfe899e164cee3"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/plan-parser.ts",
+      "sha256": "624ffc2856d6013f078662fb4fdf5d6dbfb5323a5d50ca226b20af39a2071292"
+    }
+  ],
+  "compilerVersion": "5.9.3",
+  "programSourceFiles": 949,
+  "scopedDiagnostics": [],
+  "otherDependencyDiagnostics": 0,
+  "otherDependencyDiagnosticSample": [],
+  "syntaxDiagnostics": [],
+  "sourceFilesInspectedNotExecuted": true,
+  "nativeDockerDatabaseModuleProbeBuildBrowserProviderActions": 0
+}

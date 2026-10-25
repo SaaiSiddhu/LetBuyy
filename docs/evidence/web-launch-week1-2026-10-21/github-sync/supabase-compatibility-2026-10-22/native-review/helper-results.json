@@ -1,0 +1,806 @@
+{
+  "image": "public.ecr.aws/supabase/postgres:17.6.1.127",
+  "scope": "Independent native helper mechanism test on a frozen source copy, synthetic provider-image cluster, direct managed postgres login. Administrator used only for synthetic provisioning/retirement, never hosted access.",
+  "checks": [
+    {
+      "name": "direct_managed_login",
+      "exitCode": 0,
+      "stdout": "postgres|postgres|off|f",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "unassisted_native_catalog_lock_refused",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  permission denied for table pg_auth_members",
+      "asExpected": true
+    },
+    {
+      "name": "managed_installer_refused",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  LETBUYY_PROVIDER_ADMIN_INSTALL_REQUIRED\nCONTEXT:  PL/pgSQL function inline_code_block line 4 at RAISE",
+      "asExpected": true
+    },
+    {
+      "name": "provider_installer_positive_control",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "second_installer_refuses_existing_schema",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  LETBUYY_MAINTENANCE_EXISTING_SCHEMA_REQUIRES_REVIEW\nCONTEXT:  PL/pgSQL function inline_code_block line 6 at RAISE",
+      "asExpected": true
+    },
+    {
+      "name": "owner_profile",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"supabase_admin\", \"definer\": true, \"function\": \"supabase_admin\", \"body_sha256\": \"4772eebc5017ef1e188b188f87f1cca8fb8f2b9cfd1e928798ef5cd5dfebfabc\"}",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "application_role_denied_anon",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  permission denied for schema letbuyy_maintenance\nLINE 1: SELECT letbuyy_maintenance.lock_catalogs_v1();\n               ^",
+      "asExpected": true
+    },
+    {
+      "name": "application_role_denied_authenticated",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  permission denied for schema letbuyy_maintenance\nLINE 1: SELECT letbuyy_maintenance.lock_catalogs_v1();\n               ^",
+      "asExpected": true
+    },
+    {
+      "name": "application_role_denied_service_role",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  permission denied for schema letbuyy_maintenance\nLINE 1: SELECT letbuyy_maintenance.lock_catalogs_v1();\n               ^",
+      "asExpected": true
+    },
+    {
+      "name": "application_role_denied_app_tenant",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  permission denied for schema letbuyy_maintenance\nLINE 1: SELECT letbuyy_maintenance.lock_catalogs_v1();\n               ^",
+      "asExpected": true
+    },
+    {
+      "name": "helper_function_replacement_denied",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  permission denied for schema letbuyy_maintenance",
+      "asExpected": true
+    },
+    {
+      "name": "helper_drop_denied",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  must be owner of function letbuyy_maintenance.lock_catalogs_v1",
+      "asExpected": true
+    },
+    {
+      "name": "helper_overload_denied",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  permission denied for schema letbuyy_maintenance",
+      "asExpected": true
+    },
+    {
+      "name": "caller_identity_and_locks_in_same_backend",
+      "exitCode": 0,
+      "stdout": "postgres|postgres|off\n31\n0",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_347_free_subscription_checkout_receipts.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_349_money_ledger_reconciliation_traversal.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_353_approved_platform_job_recovery.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_353_approved_platform_job_recovery.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_354_atomic_theme_release_rollback.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_354_atomic_theme_release_rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_355_ad_campaign_current_budget_authority.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_355_ad_campaign_current_budget_authority.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_356_inventory_adjustment_receipts.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_357_buyer_review_ownership.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_357_buyer_review_ownership.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_358_console_current_oncall.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_358_console_current_oncall.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_359_private_reel_intake.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_359_private_reel_intake.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_360_subscription_tax_quote_snapshot.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_360_subscription_tax_quote_snapshot.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_361_collection_membership.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_362_console_oncall_schedules.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_362_console_oncall_schedules.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_363_console_runtime_command_history.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_363_console_runtime_command_history.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_366_theme_publication_visibility.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_366_theme_publication_visibility.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_371_storefront_access_metadata.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_376_atomic_theme_instance_switch.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_376_atomic_theme_instance_switch.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_377_theme_install_event_contract.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_377_theme_install_event_contract.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_378_storefront_metadata_role_closure.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_378_storefront_metadata_role_closure.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_379_merchant_ai_usage_total.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_380_merchant_transfer_metrics.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "wrapper_381_bounded_merchant_operations_reads.rollback.sql",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_role_attributes",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_critical_member_grant",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_role_creation",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_function_creation",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_function_replacement",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_table_creation",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_event_disable",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_event_drop",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_extension_creation",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_publication_creation",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_replica_ddl",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_table_acl",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "foreign_default_acl",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "cross_database_role_change",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  canceling statement due to lock timeout",
+      "asExpected": true
+    },
+    {
+      "name": "unrelated_ddl_after_release",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "completed_uncommitted_ddl_does_not_guarantee_relation_lock",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "full360_assigned_xid_preflight_refuses_prior_ddl",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  360 refuses foreign assigned or prepared transactions\nCONTEXT:  PL/pgSQL function inline_code_block line 7 at RAISE",
+      "asExpected": true
+    },
+    {
+      "name": "helper_nowait_refuses_existing_conflicting_native_lock",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  could not obtain lock on relation \"pg_catalog.pg_proc\"\nCONTEXT:  SQL statement \"LOCK TABLE pg_catalog.pg_am,\n  pg_catalog.pg_attrdef,\n  pg_catalog.pg_attribute,\n  pg_catalog.pg_auth_members,\n  pg_catalog.pg_authid,\n  pg_catalog.pg_class,\n  pg_catalog.pg_collation,\n  pg_catalog.pg_constraint,\n  pg_catalog.pg_database,\n  pg_catalog.pg_default_acl,\n  pg_catalog.pg_depend,\n  pg_catalog.pg_description,\n  pg_catalog.pg_event_trigger,\n  pg_catalog.pg_extension,\n  pg_catalog.pg_index,\n  pg_catalog.pg_inherits,\n  pg_catalog.pg_init_privs,\n  pg_catalog.pg_language,\n  pg_catalog.pg_namespace,\n  pg_catalog.pg_opclass,\n  pg_catalog.pg_operator,\n  pg_catalog.pg_opfamily,\n  pg_catalog.pg_policy,\n  pg_catalog.pg_proc,\n  pg_catalog.pg_rewrite,\n  pg_catalog.pg_seclabel,\n  pg_catalog.pg_shdepend,\n  pg_catalog.pg_statistic_ext,\n  pg_catalog.pg_tablespace,\n  pg_catalog.pg_trigger,\n  pg_catalog.pg_type IN SHARE ROW EXCLUSIVE MODE NOWAIT\"\nPL/pgSQL function letbuyy_maintenance.lock_catalogs_v1() line 7 at SQL statement",
+      "asExpected": true
+    },
+    {
+      "name": "helper_succeeds_after_foreign_rollback",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "managed_retirement_refused",
+      "exitCode": 3,
+      "stdout": "",
+      "stderr": "ERROR:  LETBUYY_PROVIDER_FENCE_PROFILE\nCONTEXT:  PL/pgSQL function inline_code_block line 21 at RAISE",
+      "asExpected": true
+    },
+    {
+      "name": "provider_retirement_positive_control",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "asExpected": true
+    },
+    {
+      "name": "helper_absent_after_retirement",
+      "exitCode": 0,
+      "stdout": "t",
+      "stderr": "",
+      "asExpected": true
+    }
+  ],
+  "bootstrapFileSha256": "45b4be3e5fed061a0e2026079ccec1d35b3f42ed016eb75e8ccb30ee0c034c6e",
+  "frozenFenceCount": 34,
+  "heldNativeLocks": [
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_am"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_attrdef"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_attribute"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "0",
+      "relation": "pg_authid"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "0",
+      "relation": "pg_auth_members"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_class"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_collation"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_constraint"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "0",
+      "relation": "pg_database"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_default_acl"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_depend"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_description"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_event_trigger"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_extension"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_index"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_inherits"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_init_privs"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_language"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_namespace"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_opclass"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_operator"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_opfamily"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_policy"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_proc"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_rewrite"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_seclabel"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "0",
+      "relation": "pg_shdepend"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_statistic_ext"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "0",
+      "relation": "pg_tablespace"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_trigger"
+    },
+    {
+      "mode": "ShareRowExclusiveLock",
+      "database": "5",
+      "relation": "pg_type"
+    }
+  ],
+  "completed": true,
+  "allChecksAsExpected": true,
+  "frozenSources": [
+    {
+      "file": "347_free_subscription_checkout_receipts.rollback.sql",
+      "sha256": "fe0889fea512bcd010e97bef425a92e506a4f53640e81d05687fb4e3ebe84bfb"
+    },
+    {
+      "file": "349_money_ledger_reconciliation_traversal.rollback.sql",
+      "sha256": "cbe14f9495820f7a3fd1bd420e32a9c9c4cca1dc03082f79c738974cdf57cbed"
+    },
+    {
+      "file": "353_approved_platform_job_recovery.rollback.sql",
+      "sha256": "d3ebde8c87774a40963afda0477d823a74781032ba887cec4ddb1431842035c3"
+    },
+    {
+      "file": "353_approved_platform_job_recovery.sql",
+      "sha256": "d7e03977390b81c60cd4698b9b5ee8591368f863dfa1106e8329faf9f327fe49"
+    },
+    {
+      "file": "354_atomic_theme_release_rollback.rollback.sql",
+      "sha256": "4e6958bc3c9b53332d498d1b80e12aebd8475428a45ebac3fa461e889faacc82"
+    },
+    {
+      "file": "354_atomic_theme_release_rollback.sql",
+      "sha256": "3be0b06be60e3e2f7b15140feef826528ba98bc332f2289f479a918315b3d7ec"
+    },
+    {
+      "file": "355_ad_campaign_current_budget_authority.rollback.sql",
+      "sha256": "f0833ae96c85a9711f8be953989965b558baf411c0c4837d435f8b80ee7f23c2"
+    },
+    {
+      "file": "355_ad_campaign_current_budget_authority.sql",
+      "sha256": "c7290b31bb234c885568e9f5388da69b917a244722c85704c9df436f61ef3d45"
+    },
+    {
+      "file": "356_inventory_adjustment_receipts.rollback.sql",
+      "sha256": "de7bdc33a804d9575c36add9f61ce7e2897cc1284849e2bc3cc1cfdcf4c6bc0e"
+    },
+    {
+      "file": "357_buyer_review_ownership.rollback.sql",
+      "sha256": "231549e2c3240d87e8b7a241d1ca63cfc533dfcc907d3160b5d2d19393d7d016"
+    },
+    {
+      "file": "357_buyer_review_ownership.sql",
+      "sha256": "8a35f176d524f4a42821306462193b55bb1f38a6e2a5232ad0b1baf6e3c1ce71"
+    },
+    {
+      "file": "358_console_current_oncall.rollback.sql",
+      "sha256": "6cbcc66677942b0807650ac55d661fad7307caf20ecd976e18c8af94a339962f"
+    },
+    {
+      "file": "358_console_current_oncall.sql",
+      "sha256": "7aef46fdea08b3b05cd20900f2aa2d6b6b39bd9da0bd7813d3949f83bd7cf17e"
+    },
+    {
+      "file": "359_private_reel_intake.rollback.sql",
+      "sha256": "fdce42d199c349323b7f6b1d18415d51d4762ce6addd218846e3409808f75dda"
+    },
+    {
+      "file": "359_private_reel_intake.sql",
+      "sha256": "8c358bb53630198c859931ff83e858040b348270ce99f1bae6e246b74944e919"
+    },
+    {
+      "file": "360_subscription_tax_quote_snapshot.rollback.sql",
+      "sha256": "bc47406517a3d7223c1cb2caa5a4e59b4a1d361e1928b849bfd71ecbae6b069c"
+    },
+    {
+      "file": "360_subscription_tax_quote_snapshot.sql",
+      "sha256": "341a56d190f40140f1a6cfd5d2a2de587d6ff1cdf050b71203f06c9b438c313d"
+    },
+    {
+      "file": "361_collection_membership.rollback.sql",
+      "sha256": "2e54a8f301c66d2eb3b701856b73b3d2c53f99c43a807051fd80829de9b498ba"
+    },
+    {
+      "file": "362_console_oncall_schedules.rollback.sql",
+      "sha256": "c12d94ca0b83a830ef5b890d455a14f41f1513c12cd9a5a179343d74a5ce2303"
+    },
+    {
+      "file": "362_console_oncall_schedules.sql",
+      "sha256": "5e39fbe9fd6fb15ca156054186d1de455ea6b50c02cec667c9a10bfbe8e55aef"
+    },
+    {
+      "file": "363_console_runtime_command_history.rollback.sql",
+      "sha256": "4c0a00e49c47b4ccdaf9cceadc29337393d73f645faa14990466b7467af94df4"
+    },
+    {
+      "file": "363_console_runtime_command_history.sql",
+      "sha256": "70f653250d891f9f29b4ad797561e50af95c5943a92d64ee50801329ccb05dbb"
+    },
+    {
+      "file": "366_theme_publication_visibility.rollback.sql",
+      "sha256": "7f6c7209088f24dcf627b5a2bc03143d1895e030a1596604863c4f71c9074768"
+    },
+    {
+      "file": "366_theme_publication_visibility.sql",
+      "sha256": "1c7debf652bf16160f5582620da6caf4f9582bcb49fded067a7848bf01d9ad4f"
+    },
+    {
+      "file": "371_storefront_access_metadata.rollback.sql",
+      "sha256": "83268e8309280bdd1952687eaa81cb2df406b8597ab0ca719556ae6a0b263782"
+    },
+    {
+      "file": "376_atomic_theme_instance_switch.rollback.sql",
+      "sha256": "9f3cad29f5c1a10a750e29526b99b85470615b4025ba5f873a646e09b725fb5e"
+    },
+    {
+      "file": "376_atomic_theme_instance_switch.sql",
+      "sha256": "f9c2490cc60bde775b9298e9d4bbbae0288c00f500fe8e8a4d3028d858b53746"
+    },
+    {
+      "file": "377_theme_install_event_contract.rollback.sql",
+      "sha256": "8f3f31cc27545bb2ae05d0159f64e8e386947e618458c89504747eae7219f832"
+    },
+    {
+      "file": "377_theme_install_event_contract.sql",
+      "sha256": "d1077e7aee38820ed3166552f78a4fc17c9f8331aea34c74b659185ee56ba77c"
+    },
+    {
+      "file": "378_storefront_metadata_role_closure.rollback.sql",
+      "sha256": "05ad14a1f9bd366e333c3ed3001071bc983d7196ebe38d6f31a2852d80435319"
+    },
+    {
+      "file": "378_storefront_metadata_role_closure.sql",
+      "sha256": "6bd92b57b28d62b13b6cd2329e8ad69debee2f7c5b23b33d0054ac92692878ac"
+    },
+    {
+      "file": "379_merchant_ai_usage_total.rollback.sql",
+      "sha256": "4991d43ec5996c72bc3deaefaa962b668ec6b4d7a5c8d8df3b73e21c849d7df5"
+    },
+    {
+      "file": "380_merchant_transfer_metrics.rollback.sql",
+      "sha256": "70d2e022ca7796de1e4370d2bd1ed1cce28389d41e3249db37d5a46c0d19d79b"
+    },
+    {
+      "file": "381_bounded_merchant_operations_reads.rollback.sql",
+      "sha256": "9eb8403c48d55ed45647ffc0e843e1c000d2310317b9cd794714da7d97e8bec6"
+    },
+    {
+      "file": "provider-admin-catalog-fence.rollback.sql",
+      "sha256": "6919fc94976af2248a8191895d4f3c034dcfd7120fa75b9e47c3ab5d9ac553dc"
+    },
+    {
+      "file": "provider-admin-catalog-fence.sql",
+      "sha256": "45b4be3e5fed061a0e2026079ccec1d35b3f42ed016eb75e8ccb30ee0c034c6e"
+    }
+  ],
+  "cleanup": {
+    "ownedContainerRemoved": true
+  }
+}

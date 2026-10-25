@@ -1,0 +1,7 @@
+{
+  "classification": "INITIAL_AUDIT_ORACLE_ASSUMPTION_CORRECTED_NO_SOURCE_OR_ASSERTION_CHANGE",
+  "initialAssumption": "Both historical215/107path lists contain bothconsumer source paths, so expect2changes each.",
+  "actual": "Each path list contains only the old391 source; the oldpromotion identity is in its separate qualifying receipt/archive.",
+  "correction": "Require exact equality with the authorized consumer paths actually present in each historical list, and verify both historical/current consumer identities separately. Unknown drift remains forbidden.",
+  "productOrSuiteSourceChanged": false
+}

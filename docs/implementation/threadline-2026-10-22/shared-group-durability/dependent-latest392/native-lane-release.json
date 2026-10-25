@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-23T17:13:41.849662+00:00",
+  "status": "ADMITTED_ALL3_DEFAULT_LATEST392_LANE_COMPLETED_AND_RELEASED",
+  "runId": "bc5db405796b",
+  "pass": 19,
+  "fail": 0,
+  "skip": 0,
+  "remainingResources": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "cleanupFailures": [],
+  "reaped": [],
+  "finalReview": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-final-review.json",
+    "sha256": "097eee8536a97889b563b7f6953a6f60ccb982f2e91ac05f17f793d4bc8286f0",
+    "bytes": 1598
+  },
+  "qualification": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-qualification.json",
+    "sha256": "c8950c43a7a041bf1fa97e54d5fe414f896ab5abb23fddcff846f29265620ffa",
+    "bytes": 11718
+  },
+  "next": "Coordinator independently reviews evidence; retained candidate application and browser proof remain separately allocated.",
+  "retainedFixturesAppsLoginsTabsTouched": false
+}

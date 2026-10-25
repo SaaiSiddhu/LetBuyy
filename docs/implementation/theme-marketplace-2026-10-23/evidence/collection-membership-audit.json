@@ -1,0 +1,332 @@
+{
+  "generatedAt": "2026-10-23T06:28:24.014Z",
+  "source": "Explicit v2 factory + immutable leaf fixture memberships; not persisted catalog, browser rollout or end-to-end acceptance.",
+  "dispatcherSha256": "9c68ceafb53c131ba5776bd185f955a90d9bbd25727441615150b470b63dc554",
+  "themes": [
+    {
+      "slug": "letbuyy-forge",
+      "name": "Circuit",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "c1c01700-3000-4000-8000-000000000001",
+          "handle": "charge",
+          "title": "Charge",
+          "count": 2,
+          "productIds": [
+            "c1c01700-1000-4000-8000-000000000003",
+            "c1c01700-1000-4000-8000-000000000004"
+          ]
+        },
+        {
+          "id": "c1c01700-3000-4000-8000-000000000002",
+          "handle": "connect",
+          "title": "Connect",
+          "count": 2,
+          "productIds": [
+            "c1c01700-1000-4000-8000-000000000001",
+            "c1c01700-1000-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "c1c01700-3000-4000-8000-000000000003",
+          "handle": "listen",
+          "title": "Listen",
+          "count": 0,
+          "productIds": []
+        },
+        {
+          "id": "c1c01700-3000-4000-8000-000000000004",
+          "handle": "work",
+          "title": "Work",
+          "count": 0,
+          "productIds": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-sense",
+      "name": "Threadline",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-3000-4000-8000-000000000001",
+          "title": "Relaxed",
+          "count": 1,
+          "productIds": [
+            "7b669c70-1000-4000-8000-000000000001"
+          ]
+        },
+        {
+          "id": "7b669c70-3000-4000-8000-000000000002",
+          "title": "Straight",
+          "count": 1,
+          "productIds": [
+            "7b669c70-1000-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "7b669c70-3000-4000-8000-000000000003",
+          "title": "Easy",
+          "count": 1,
+          "productIds": [
+            "7b669c70-1000-4000-8000-000000000003"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-aura",
+      "name": "Dewdrop",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-8300-4000-8000-000000000001",
+          "handle": "cleanse",
+          "title": "Cleanse",
+          "count": 2,
+          "productIds": [
+            "7b669c70-8100-4000-8000-000000000001",
+            "7b669c70-8100-4000-8000-000000000004"
+          ]
+        },
+        {
+          "id": "7b669c70-8300-4000-8000-000000000002",
+          "handle": "care",
+          "title": "Care",
+          "count": 1,
+          "productIds": [
+            "7b669c70-8100-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "7b669c70-8300-4000-8000-000000000003",
+          "handle": "colour",
+          "title": "Colour",
+          "count": 1,
+          "productIds": [
+            "7b669c70-8100-4000-8000-000000000003"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-craft",
+      "name": "Habitat",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-4300-4000-8000-000000000001",
+          "handle": "living-room",
+          "title": "Living room",
+          "count": 2,
+          "productIds": [
+            "7b669c70-4100-4000-8000-000000000001",
+            "7b669c70-4100-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "7b669c70-4300-4000-8000-000000000002",
+          "handle": "reading-corner",
+          "title": "Reading corner",
+          "count": 1,
+          "productIds": [
+            "7b669c70-4100-4000-8000-000000000001"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "name": "Pantry",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-3005-4000-8000-000000000001",
+          "handle": "pulses-lentils",
+          "title": "Pulses & lentils",
+          "count": 1,
+          "productIds": [
+            "7b669c70-1005-4000-8000-000000000001"
+          ]
+        },
+        {
+          "id": "7b669c70-3005-4000-8000-000000000002",
+          "handle": "rice-grains",
+          "title": "Rice & grains",
+          "count": 1,
+          "productIds": [
+            "7b669c70-1005-4000-8000-000000000002"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-ride",
+      "name": "Trailmark",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-8620-4000-8000-000000000001",
+          "handle": "court-time",
+          "title": "Court time",
+          "count": 3,
+          "productIds": [
+            "7b669c70-8600-4000-8000-000000000001",
+            "7b669c70-8600-4000-8000-000000000002",
+            "7b669c70-8600-4000-8000-000000000003"
+          ]
+        },
+        {
+          "id": "7b669c70-8620-4000-8000-000000000002",
+          "handle": "rackets",
+          "title": "Rackets",
+          "count": 1,
+          "productIds": [
+            "7b669c70-8600-4000-8000-000000000001"
+          ]
+        },
+        {
+          "id": "7b669c70-8620-4000-8000-000000000003",
+          "handle": "court-accessories",
+          "title": "Court accessories",
+          "count": 2,
+          "productIds": [
+            "7b669c70-8600-4000-8000-000000000002",
+            "7b669c70-8600-4000-8000-000000000003"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "name": "Marginalia",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-7300-4000-8000-000000000001",
+          "handle": "essays",
+          "title": "Essays",
+          "count": 2,
+          "productIds": [
+            "7b669c70-7100-4000-8000-000000000001",
+            "7b669c70-7100-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "7b669c70-7300-4000-8000-000000000002",
+          "handle": "stationery",
+          "title": "Stationery",
+          "count": 1,
+          "productIds": [
+            "7b669c70-7100-4000-8000-000000000003"
+          ]
+        },
+        {
+          "id": "7b669c70-7300-4000-8000-000000000003",
+          "handle": "reading-soon",
+          "title": "Reading soon",
+          "count": 0,
+          "productIds": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "name": "Playfield",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-8200-4000-8000-000000000001",
+          "handle": "art-making",
+          "title": "Art & making",
+          "count": 3,
+          "productIds": [
+            "7b669c70-8000-4000-8000-000000000001",
+            "7b669c70-8000-4000-8000-000000000002",
+            "7b669c70-8000-4000-8000-000000000004"
+          ]
+        },
+        {
+          "id": "7b669c70-8200-4000-8000-000000000002",
+          "handle": "building",
+          "title": "Building",
+          "count": 1,
+          "productIds": [
+            "7b669c70-8000-4000-8000-000000000003"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-nova",
+      "name": "MadeYours",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-9200-4000-8000-000000000001",
+          "handle": "desk-details",
+          "title": "Desk details",
+          "count": 1,
+          "productIds": [
+            "7b669c70-9000-4000-8000-000000000001"
+          ]
+        },
+        {
+          "id": "7b669c70-9200-4000-8000-000000000002",
+          "handle": "paper-and-plans",
+          "title": "Paper and plans",
+          "count": 1,
+          "productIds": [
+            "7b669c70-9000-4000-8000-000000000002"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-summit",
+      "name": "Kindred",
+      "version": "2.0.0",
+      "collections": [
+        {
+          "id": "7b669c70-4300-4000-8000-000000000001",
+          "handle": "birthday",
+          "title": "Birthday",
+          "count": 2,
+          "productIds": [
+            "7b669c70-4100-4000-8000-000000000001",
+            "7b669c70-4100-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "7b669c70-4300-4000-8000-000000000002",
+          "handle": "thank-you",
+          "title": "Thank you",
+          "count": 2,
+          "productIds": [
+            "7b669c70-4100-4000-8000-000000000001",
+            "7b669c70-4100-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "7b669c70-4300-4000-8000-000000000003",
+          "handle": "housewarming",
+          "title": "Housewarming",
+          "count": 1,
+          "productIds": [
+            "7b669c70-4100-4000-8000-000000000002"
+          ]
+        },
+        {
+          "id": "7b669c70-4300-4000-8000-000000000004",
+          "handle": "just-because",
+          "title": "Just because",
+          "count": 1,
+          "productIds": [
+            "7b669c70-4100-4000-8000-000000000001"
+          ]
+        }
+      ]
+    }
+  ]
+}

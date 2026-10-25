@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-24T04:39:35.905Z",
+  "runId": "936e5f577646",
+  "status": "SIGTERM_SENT_TO_VERIFIED_OWNED_SUPPLEMENTAL_PARENT",
+  "parentPid": 26856,
+  "childSupervisorPids": [
+    26954,
+    27146
+  ],
+  "safeCheckpoint": "Editor confirmed normal v1 Save and full reload complete, Save disabled/current36. Buyer/cart recovery remains original50494.",
+  "reason": "stdin was already closed; exact parent normal SIGTERM handler invokes canonical child cleanup. No force kill or original runner/application signal.",
+  "originalRunnerPid": 90680,
+  "originalProcessesStopped": false
+}

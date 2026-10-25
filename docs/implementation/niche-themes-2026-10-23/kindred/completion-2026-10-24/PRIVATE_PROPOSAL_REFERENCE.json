@@ -1,0 +1,7 @@
+{
+  "path": "/private/tmp/kindred-kqa01-20261023-_u9dyb95/KQA-01.patch",
+  "present": true,
+  "sha256": "c3377a51013c704699a8fa549334c0b4c22b17cfeaff79bc93b6e2dae7edbf5d",
+  "applied": false,
+  "classification": "Existing private proposal retained; no duplicate repair or current writer grant"
+}

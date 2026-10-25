@@ -1,0 +1,208 @@
+TAP version 13
+# Subtest: qualified beafe boundary still rejects actual034 with two503 metrics
+ok 1 - qualified beafe boundary still rejects actual034 with two503 metrics
+  ---
+  duration_ms: 12.50775
+  type: 'test'
+  ...
+# Subtest: v2 accepts actual034 with exactly one source-bound503 alert and all487 table hashes retained
+ok 2 - v2 accepts actual034 with exactly one source-bound503 alert and all487 table hashes retained
+  ---
+  duration_ms: 3.38075
+  type: 'test'
+  ...
+# Subtest: unchanged non503 behavior and return shape: native01-http-200-a.json
+ok 3 - unchanged non503 behavior and return shape: native01-http-200-a.json
+  ---
+  duration_ms: 1.869417
+  type: 'test'
+  ...
+# Subtest: unchanged non503 behavior and return shape: native01-http-200-b.json
+ok 4 - unchanged non503 behavior and return shape: native01-http-200-b.json
+  ---
+  duration_ms: 2.076083
+  type: 'test'
+  ...
+# Subtest: unchanged non503 behavior and return shape: native01-http-403.json
+ok 5 - unchanged non503 behavior and return shape: native01-http-403.json
+  ---
+  duration_ms: 1.746625
+  type: 'test'
+  ...
+# Subtest: 503 requires the canonical alert; it cannot be silently omitted
+ok 6 - 503 requires the canonical alert; it cannot be silently omitted
+  ---
+  duration_ms: 2.683625
+  type: 'test'
+  ...
+# Subtest: an extra canonical alert is rejected
+ok 7 - an extra canonical alert is rejected
+  ---
+  duration_ms: 1.508083
+  type: 'test'
+  ...
+# Subtest: an unrelated metric is rejected
+ok 8 - an unrelated metric is rejected
+  ---
+  duration_ms: 1.300625
+  type: 'test'
+  ...
+# Subtest: foreign alert request is rejected
+ok 9 - foreign alert request is rejected
+  ---
+  duration_ms: 1.584084
+  type: 'test'
+  ...
+# Subtest: foreign alert trace is rejected
+ok 10 - foreign alert trace is rejected
+  ---
+  duration_ms: 2.473708
+  type: 'test'
+  ...
+# Subtest: foreign alert site is rejected
+ok 11 - foreign alert site is rejected
+  ---
+  duration_ms: 1.62475
+  type: 'test'
+  ...
+# Subtest: foreign alert correlation is rejected
+ok 12 - foreign alert correlation is rejected
+  ---
+  duration_ms: 1.825792
+  type: 'test'
+  ...
+# Subtest: malformed alert value is rejected
+ok 13 - malformed alert value is rejected
+  ---
+  duration_ms: 1.3625
+  type: 'test'
+  ...
+# Subtest: malformed alert id is rejected
+ok 14 - malformed alert id is rejected
+  ---
+  duration_ms: 1.512708
+  type: 'test'
+  ...
+# Subtest: alert with an extra row field is rejected
+ok 15 - alert with an extra row field is rejected
+  ---
+  duration_ms: 2.139375
+  type: 'test'
+  ...
+# Subtest: alert with an extra dimension is rejected
+ok 16 - alert with an extra dimension is rejected
+  ---
+  duration_ms: 1.65225
+  type: 'test'
+  ...
+# Subtest: wrong alert status is rejected
+ok 17 - wrong alert status is rejected
+  ---
+  duration_ms: 1.294042
+  type: 'test'
+  ...
+# Subtest: wrong deployment environment is rejected
+ok 18 - wrong deployment environment is rejected
+  ---
+  duration_ms: 1.441375
+  type: 'test'
+  ...
+# Subtest: wrong telemetry environment is rejected
+ok 19 - wrong telemetry environment is rejected
+  ---
+  duration_ms: 1.149708
+  type: 'test'
+  ...
+# Subtest: wrong source is rejected
+ok 20 - wrong source is rejected
+  ---
+  duration_ms: 1.155166
+  type: 'test'
+  ...
+# Subtest: wrong severity is rejected
+ok 21 - wrong severity is rejected
+  ---
+  duration_ms: 2.343375
+  type: 'test'
+  ...
+# Subtest: wrong route is rejected
+ok 22 - wrong route is rejected
+  ---
+  duration_ms: 1.342167
+  type: 'test'
+  ...
+# Subtest: wrong alert auth source is rejected
+ok 23 - wrong alert auth source is rejected
+  ---
+  duration_ms: 1.126209
+  type: 'test'
+  ...
+# Subtest: wrong alert error code is rejected
+ok 24 - wrong alert error code is rejected
+  ---
+  duration_ms: 1.061417
+  type: 'test'
+  ...
+# Subtest: alert timestamps must be within this request window
+ok 25 - alert timestamps must be within this request window
+  ---
+  duration_ms: 1.063084
+  type: 'test'
+  ...
+# Subtest: alert recorded timestamp must equal its actual creation timestamp
+ok 26 - alert recorded timestamp must equal its actual creation timestamp
+  ---
+  duration_ms: 1.714875
+  type: 'test'
+  ...
+# Subtest: non503 does not receive a server-alert exception even with consistent row status502
+ok 27 - non503 does not receive a server-alert exception even with consistent row status502
+  ---
+  duration_ms: 1.4115
+  type: 'test'
+  ...
+# Subtest: altered prior metric rows are rejected
+ok 28 - altered prior metric rows are rejected
+  ---
+  duration_ms: 1.269708
+  type: 'test'
+  ...
+# Subtest: deleted prior metric rows are rejected
+ok 29 - deleted prior metric rows are rejected
+  ---
+  duration_ms: 1.054417
+  type: 'test'
+  ...
+# Subtest: domain table effects are rejected
+ok 30 - domain table effects are rejected
+  ---
+  duration_ms: 1.0035
+  type: 'test'
+  ...
+# Subtest: alert parent mirror omission is rejected
+ok 31 - alert parent mirror omission is rejected
+  ---
+  duration_ms: 1.184916
+  type: 'test'
+  ...
+# Subtest: wrong alert physical leaf is rejected
+ok 32 - wrong alert physical leaf is rejected
+  ---
+  duration_ms: 0.939708
+  type: 'test'
+  ...
+# Subtest: a foreign worker actor cannot be hidden behind a matching alert
+ok 33 - a foreign worker actor cannot be hidden behind a matching alert
+  ---
+  duration_ms: 0.99725
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 277.600875

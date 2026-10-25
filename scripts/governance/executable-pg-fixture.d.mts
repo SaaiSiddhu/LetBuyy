@@ -1,0 +1,10 @@
+export const FIXTURE_LABEL: string;
+export const OWNER_PID_LABEL: string;
+export const RUN_ID_LABEL: string;
+export const ROLE_LABEL: string;
+export function newRunId(): string;
+export function createVolume(options: { name: string; runId: string }): string;
+export function requireImagePresent(image: string): void;
+export function waitUntilAccepting(name: string): Promise<void>;
+export function removeCluster(cluster: { name: string; runId: string; volume: string; network?: string }): void;
+export function docker(args: string[], options?: { env?: Record<string, string>; input?: string; allowFailure?: boolean; timeout?: number }): { status: number | null; stdout: string; stderr: string };

@@ -1,0 +1,798 @@
+--- before/apps/merchant/web/src/lib/product-form-state.ts
++++ apps/merchant/web/src/lib/product-form-state.ts
+@@ -17,6 +17,8 @@
+     comparePrice: string
+     sku: string
+     stock: string
++    stockBaseline?: string
++    stockNeedsReview?: boolean
+     factsMetadataBaseline?: unknown
+     factsMetadataDraft?: unknown
+     factsMetadataEdited?: boolean
+@@ -36,6 +38,8 @@
+     chargeTax: boolean
+     trackInventory: boolean
+     quantity: string
++    quantityBaseline?: string
++    quantityNeedsReview?: boolean
+     sku: string
+     barcode: string
+     sellWhenOos: boolean
+@@ -241,6 +245,7 @@
+                 ? String(v.inventory_qty)
+                 : v.stock !== undefined && v.stock !== null ? String(v.stock) : '0',
+         }, Object.hasOwn(v, 'metadata') ? v.metadata : {}))
++        .map(row => ({ ...row, stockBaseline: row.stock }))
+ }
+ 
+ export const weightUnitOptions = [
+@@ -282,7 +287,11 @@
+         && draft.variantMatrix.every(row => row && ['title', 'price', 'comparePrice', 'sku', 'stock'].every(key => typeof row[key as keyof VariantRow] === 'string')
+             && ['option1', 'option2', 'option3'].every(key => row[key as keyof VariantRow] === null || typeof row[key as keyof VariantRow] === 'string')
+             && (row.id === undefined || typeof row.id === 'string')
+-            && (row.factsMetadataEdited === undefined || typeof row.factsMetadataEdited === 'boolean'))
++            && (row.factsMetadataEdited === undefined || typeof row.factsMetadataEdited === 'boolean')
++            && (row.stockBaseline === undefined || typeof row.stockBaseline === 'string')
++            && (row.stockNeedsReview === undefined || typeof row.stockNeedsReview === 'boolean'))
++        && (draft.quantityBaseline === undefined || typeof draft.quantityBaseline === 'string')
++        && (draft.quantityNeedsReview === undefined || typeof draft.quantityNeedsReview === 'boolean')
+         && ['active', 'draft', 'archived'].includes(draft.status)
+ }
+ 
+@@ -318,7 +327,7 @@
+         || !(record.version === null || (typeof record.version === 'number' && Number.isInteger(record.version) && record.version > 0))) {
+         throw new Error('The retained draft is expired or unreadable. Discard it before continuing.')
+     }
+-    return { snapshot: record.snapshot, version: record.version as number | null }
++    return { snapshot: reviewLegacyInventory(record.snapshot), version: record.version as number | null }
+ }
+ 
+ // This is a per-tab recovery record, never authority. SQL still verifies the
+@@ -340,7 +349,72 @@
+     }
+     const intent = { ...saved }
+     delete intent.draftSignature
+-    return { intent, draft }
++    return { intent, draft: reviewLegacyInventory(draft) }
++}
++
++/** Older presentation drafts have no evidence of inventory intent. Keep their
++ * quantities and other fields, but require review rather than inferring intent
++ * from a difference against today's (possibly consumed) inventory. */
++function reviewLegacyInventory(snapshot: ProductFormSnapshot): ProductFormSnapshot {
++    return { ...snapshot,
++        ...(snapshot.quantityBaseline === undefined ? { quantityNeedsReview: true } : {}),
++        variantMatrix: snapshot.variantMatrix.map(row => row.id && row.stockBaseline === undefined ? { ...row, stockNeedsReview: true } : row),
++    }
++}
++
++function restoreInventoryValue(value: string, baseline: string | undefined, review: boolean | undefined, current: string | undefined) {
++    if (review || baseline === undefined || current === undefined) return { value, baseline, review: true }
++    if (value === baseline) return { value: current, baseline: current, review: false }
++    return { value, baseline, review: baseline !== current }
++}
++
++/** Reconcile an unsent retained draft with a real current read, using original
++ * baselines and durable UUIDs. An untouched old quantity is never a restock. */
++export function restoreProductInventory(draft: ProductFormSnapshot, current: ProductFormSnapshot): ProductFormSnapshot {
++    const quantity = restoreInventoryValue(draft.quantity, draft.quantityBaseline, draft.quantityNeedsReview, current.quantity)
++    return { ...draft, quantity: quantity.value, quantityBaseline: quantity.baseline, quantityNeedsReview: quantity.review,
++        variantMatrix: draft.variantMatrix.map(row => {
++            if (!row.id) return row
++            const saved = current.variantMatrix.find(candidate => candidate.id === row.id)
++            const stock = restoreInventoryValue(row.stock, row.stockBaseline, row.stockNeedsReview, saved?.stock)
++            return { ...row, stock: stock.value, stockBaseline: stock.baseline, stockNeedsReview: stock.review }
++        }),
++    }
++}
++
++/** Explicit review action: retain all catalogue drafts and use quantities from
++ * the acknowledged readback. Missing UUIDs remain blocked for review. */
++export function keepCurrentProductInventory(draft: ProductFormSnapshot, current: ProductFormSnapshot): ProductFormSnapshot {
++    return { ...draft, quantity: current.quantity, quantityBaseline: current.quantity, quantityNeedsReview: false,
++        variantMatrix: draft.variantMatrix.map(row => {
++            if (!row.id) return row
++            const saved = current.variantMatrix.find(candidate => candidate.id === row.id)
++            return saved ? { ...row, stock: saved.stock, stockBaseline: saved.stock, stockNeedsReview: false } : { ...row, stockNeedsReview: true }
++        }),
++    }
++}
++
++function acknowledgedInventoryValue(value: string, baseline: string | undefined, review: boolean | undefined, sent: string | undefined, acknowledged: string | undefined) {
++    if (acknowledged === undefined) return { value, baseline, review: true }
++    // Equality with the exact sent presentation means there is no newer stock
++    // edit, including after an immutable legacy command has been acknowledged.
++    if (value === sent) return { value: acknowledged, baseline: acknowledged, review: false }
++    return { value, baseline: acknowledged, review: Boolean(review || baseline === undefined || sent === undefined) }
++}
++
++/** A pending command's bytes/key never change. Once confirmed, clear only its
++ * acknowledged inventory intent; keep genuinely newer edits by UUID. */
++export function rebaseProductInventoryAfterSave(draft: ProductFormSnapshot, sent: ProductFormSnapshot, acknowledged: ProductFormSnapshot): ProductFormSnapshot {
++    const quantity = acknowledgedInventoryValue(draft.quantity, draft.quantityBaseline, draft.quantityNeedsReview, sent.quantity, acknowledged.quantity)
++    return { ...draft, quantity: quantity.value, quantityBaseline: quantity.baseline, quantityNeedsReview: quantity.review,
++        variantMatrix: draft.variantMatrix.map(row => {
++            if (!row.id) return row
++            const before = sent.variantMatrix.find(candidate => candidate.id === row.id)
++            const saved = acknowledged.variantMatrix.find(candidate => candidate.id === row.id)
++            const stock = acknowledgedInventoryValue(row.stock, row.stockBaseline, row.stockNeedsReview, before?.stock, saved?.stock)
++            return { ...row, stock: stock.value, stockBaseline: stock.baseline, stockNeedsReview: stock.review }
++        }),
++    }
+ }
+ 
+ export function generateHandle(text: string) {
+@@ -404,6 +478,7 @@
+         chargeTax: product.charge_tax !== false,
+         trackInventory: product.track_inventory !== false,
+         quantity: normalizeNumberInput(product.stock ?? product.stock_quantity ?? 0),
++        quantityBaseline: normalizeNumberInput(product.stock ?? product.stock_quantity ?? 0),
+         sku: normalizeString(product.sku),
+         barcode: normalizeString(product.barcode),
+         sellWhenOos: Boolean(product.sell_when_oos),
+@@ -433,6 +508,9 @@
+         countryOfOrigin, importerDetails, hsCode, urlHandle, seoTitle, seoDescription,
+         productType, vendor, tags, status, variantOptions, variantMatrix,
+     } = snapshot
++    if (isEditing && (snapshot.quantityNeedsReview || variantMatrix.some(row => row.id && row.stockNeedsReview))) {
++        throw new Error('Review retained inventory before saving. Keep current inventory or confirm each retained quantity.')
++    }
+     const productTitle = title.trim()
+     return {
+         metadata,
+@@ -444,7 +522,7 @@
+         compare_price: parseFloat(comparePrice) || null,
+         cost_per_item: parseFloat(costPerItem) || null,
+         charge_tax: chargeTax,
+-        stock: parseInt(quantity) || 0,
++        ...(!isEditing || (snapshot.quantityBaseline !== undefined && quantity !== snapshot.quantityBaseline) ? { stock: parseInt(quantity) || 0 } : {}),
+         track_inventory: trackInventory,
+         sku: sku || null,
+         barcode: barcode || null,
+@@ -474,7 +552,7 @@
+             price: parseFloat(row.price) || parseFloat(price) || 0,
+             compare_price: parseFloat(row.comparePrice) || null,
+             sku: row.sku || null,
+-            stock: parseInt(row.stock) || 0,
++            ...(!isEditing || !row.id || (row.stockBaseline !== undefined && row.stock !== row.stockBaseline) ? { stock: parseInt(row.stock) || 0 } : {}),
+             options: [
+                 row.option1 ? variantOptions[0]?.name ?? 'Option 1' : null,
+                 row.option2 ? variantOptions[1]?.name ?? 'Option 2' : null,
+--- before/apps/merchant/web/src/app/[store]/products/new/page.tsx
++++ apps/merchant/web/src/app/[store]/products/new/page.tsx
+@@ -20,6 +20,9 @@
+     buildProductFormFields,
+     readUnsavedProduct,
+     restoreProductEdit,
++    restoreProductInventory,
++    keepCurrentProductInventory,
++    rebaseProductInventoryAfterSave,
+     generateHandle,
+     getPayloadError,
+     normalizeProductSnapshot,
+@@ -117,6 +120,9 @@
+     const [chargeTax, setChargeTax] = useState(defaultProductSnapshot.chargeTax)
+     const [trackInventory, setTrackInventory] = useState(defaultProductSnapshot.trackInventory)
+     const [quantity, setQuantity] = useState(defaultProductSnapshot.quantity)
++    const [quantityBaseline, setQuantityBaseline] = useState<string | undefined>()
++    const [quantityNeedsReview, setQuantityNeedsReview] = useState<boolean | undefined>()
++    const acknowledgedProduct = useRef<ProductFormSnapshot | null>(null)
+     const [sku, setSku] = useState(defaultProductSnapshot.sku)
+     const [barcode, setBarcode] = useState(defaultProductSnapshot.barcode)
+     const [sellWhenOos, setSellWhenOos] = useState(defaultProductSnapshot.sellWhenOos)
+@@ -201,6 +207,8 @@
+         chargeTax,
+         trackInventory,
+         quantity,
++        quantityBaseline,
++        quantityNeedsReview,
+         sku,
+         barcode,
+         sellWhenOos,
+@@ -237,6 +245,8 @@
+         price,
+         productType,
+         quantity,
++        quantityBaseline,
++        quantityNeedsReview,
+         sellWhenOos,
+         seoDescription,
+         seoTitle,
+@@ -317,6 +327,8 @@
+         setChargeTax(snapshot.chargeTax)
+         setTrackInventory(snapshot.trackInventory)
+         setQuantity(snapshot.quantity)
++        setQuantityBaseline(snapshot.quantityBaseline)
++        setQuantityNeedsReview(snapshot.quantityNeedsReview)
+         setSku(snapshot.sku)
+         setBarcode(snapshot.barcode)
+         setSellWhenOos(snapshot.sellWhenOos)
+@@ -376,6 +388,7 @@
+         setRecoveredDraft(null)
+         setProductVersion(null)
+         loadedScope.current = null
++        acknowledgedProduct.current = null
+         editIntent.current = null
+         setProductConflict(null)
+         setEditBlocked(false)
+@@ -396,6 +409,7 @@
+             }
+             loadedScope.current = requestScope
+             setProductVersion(payload.data.version)
++            acknowledgedProduct.current = normalizeProductSnapshot(payload.data as Record<string, unknown>)
+             productMetadataRef.current = payload.data.metadata && typeof payload.data.metadata === 'object' ? payload.data.metadata : {}
+             const stored = window.sessionStorage.getItem(pendingStorageKey)
+             if (stored !== null) {
+@@ -406,7 +420,7 @@
+                 setError('An earlier save still needs confirmation. Retry pending save to recover it; your draft is kept.')
+             } else {
+                 productMetadataRef.current = payload.data.metadata && typeof payload.data.metadata === 'object' ? payload.data.metadata : {}
+-                applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
++                applySnapshot(acknowledgedProduct.current)
+                 try {
+                     const raw = window.sessionStorage.getItem(draftStorageKey)
+                     if (raw) setRecoveredDraft(readUnsavedProduct(raw, requestScope))
+@@ -635,7 +649,8 @@
+         if (!productConflict || !Number.isInteger(productConflict.version) || Number(productConflict.version) <= 0) return
+         try { forgetEditIntent() } catch { setError('The pending save could not be cleared. Keep this page open and retry.'); return }
+         productMetadataRef.current = productConflict.metadata && typeof productConflict.metadata === 'object' && !Array.isArray(productConflict.metadata) ? productConflict.metadata as Record<string, unknown> : {}
+-        applySnapshot(normalizeProductSnapshot(productConflict))
++        acknowledgedProduct.current = normalizeProductSnapshot(productConflict)
++        applySnapshot(acknowledgedProduct.current)
+         setProductVersion(Number(productConflict.version))
+         loadedScope.current = scopeKey
+         setProductConflict(null)
+@@ -715,16 +730,22 @@
+                 setProductVersion(payload.data.version)
+                 loadedScope.current = requestScope
+                 forgetEditIntent(intent)
++                const acknowledged = normalizeProductSnapshot(payload.data as Record<string, unknown>)
++                acknowledgedProduct.current = acknowledged
+                 const newerDraft = intent?.signature !== latestSignature.current
+                 if (!newerDraft) {
+                     productMetadataRef.current = payload.data.metadata && typeof payload.data.metadata === 'object' ? payload.data.metadata : {}
+-                    applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
++                    applySnapshot(acknowledged)
+                 } else {
+-                    setSavedSignature(intent?.signature ?? currentSignature)
++                    const rebased = rebaseProductInventoryAfterSave(latestProductDraft.current, JSON.parse(intent!.signature) as ProductFormSnapshot, acknowledged)
++                    setQuantity(rebased.quantity)
++                    setQuantityBaseline(rebased.quantityBaseline)
++                    setQuantityNeedsReview(rebased.quantityNeedsReview)
++                    setSavedSignature(createFormSignature(acknowledged))
+                     if (intent?.variantSignature === JSON.stringify(latestVariants.current)) {
+                         setVariantMatrix(normalizeApiVariants(payload.data.variants))
+                     } else {
+-                        setVariantMatrix(previous => rebaseVariantFacts(previous, payload.data.variants))
++                        setVariantMatrix(rebaseVariantFacts(rebased.variantMatrix, payload.data.variants))
+                         if (intent?.hasNewVariants) void checkLatestProduct()
+                     }
+                 }
+@@ -854,7 +875,8 @@
+                 <Button onClick={() => {
+                     const baseline = savedSignature
+                     const importerDetails = currentSnapshot.importerDetails
+-                    applySnapshot({ ...recoveredDraft.snapshot, importerDetails })
++                    const retained = isEditing && acknowledgedProduct.current ? restoreProductInventory(recoveredDraft.snapshot, acknowledgedProduct.current) : recoveredDraft.snapshot
++                    applySnapshot({ ...retained, importerDetails })
+                     setSavedSignature(baseline)
+                     setRecoveredDraft(null)
+                 }}>Restore draft</Button>
+@@ -868,6 +890,16 @@
+                     try { window.sessionStorage.removeItem(draftStorageKey); setDraftReadBlocked(false); setDraftStorageError(null) }
+                     catch { setDraftStorageError('The retained draft could not be removed. Keep this page open.') }
+                 }}>Discard retained draft</Button>
++            </Banner>}
++
++            {isEditing && (quantityNeedsReview || variantMatrix.some(row => row.id && row.stockNeedsReview)) && <Banner variant="warning" title="Review retained inventory">
++                <p>These retained quantities may predate a purchase or an earlier editor. Keep current inventory to save your other changes, or confirm the quantities you intend to change.</p>
++                <Button disabled={saving || editIntent.current?.scope === scopeKey || !acknowledgedProduct.current} onClick={() => {
++                    if (!acknowledgedProduct.current || editIntent.current?.scope === scopeKey) return
++                    const baseline = savedSignature
++                    applySnapshot(keepCurrentProductInventory(currentSnapshot, acknowledgedProduct.current))
++                    setSavedSignature(baseline)
++                }}>Keep current inventory</Button>
+             </Banner>}
+ 
+             {error && (
+@@ -1054,7 +1086,13 @@
+                                         type="number"
+                                         min="0"
+                                         value={quantity}
+-                                        onChange={(event) => setQuantity(event.target.value)}
++                                        onChange={(event) => {
++                                            setQuantity(event.target.value)
++                                            if (quantityNeedsReview || quantityBaseline === undefined) {
++                                                setQuantityBaseline(acknowledgedProduct.current?.quantity)
++                                                setQuantityNeedsReview(false)
++                                            }
++                                        }}
+                                     />
+                                     <CheckboxControl checked={sellWhenOos} onChange={setSellWhenOos}>
+                                         Continue selling when out of stock
+@@ -1303,7 +1341,13 @@
+                                                             placeholder="0"
+                                                             value={row.stock}
+                                                             aria-label={`Stock for ${row.title}`}
+-                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? { ...r, stock: e.target.value } : r))}
++                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? {
++                                                                ...r, stock: e.target.value,
++                                                                ...((r.stockNeedsReview || r.stockBaseline === undefined) && r.id ? {
++                                                                    stockBaseline: acknowledgedProduct.current?.variantMatrix.find(saved => saved.id === r.id)?.stock,
++                                                                    stockNeedsReview: !acknowledgedProduct.current?.variantMatrix.some(saved => saved.id === r.id),
++                                                                } : {}),
++                                                            } : r))}
+                                                             className="w-[64px] rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]"
+                                                         />
+                                                     </td>
+--- before/apps/merchant/web/src/components/products/product-conflict.test.tsx
++++ apps/merchant/web/src/components/products/product-conflict.test.tsx
+@@ -252,7 +252,7 @@
+         const body=JSON.parse(String(init.body));calls.push(body)
+         if(receipts.has(body.idempotency_key))return json(receipts.get(body.idempotency_key))
+         current={...current,...body,version:current.version+6,variants:body.variants.map((item:Record<string,any>)=>({
+-            ...item,id:item.id??addedId,option1:item.options.Size,inventory_qty:item.stock,
++            ...item,id:item.id??addedId,option1:item.options.Size,inventory_qty: item.stock ?? current.variants.find((saved: { id: string; inventory_qty: number }) => saved.id === item.id)?.inventory_qty ?? 0,
+         }))};receipts.set(body.idempotency_key,current)
+         if(calls.length===1)throw new TypeError('Synthetic new-variant response lost')
+         return json(current)
+@@ -719,7 +719,7 @@
+ function acceptVariantWrite(current: Record<string, unknown>, body: Record<string, unknown>, version = 13): Record<string, unknown> {
+     return { ...current, ...body, version, variants: variantRows(body).map((item, index) => {
+         const saved = item.id ? variantRows(current).find(candidate => candidate.id === item.id) : undefined
+-        return { ...saved, ...item, id: item.id ?? (index === 0 ? variantId : secondVariantId), option1: (item.options as Record<string, unknown>).Size, inventory_qty: item.stock }
++        return { ...saved, ...item, id: item.id ?? (index === 0 ? variantId : secondVariantId), option1: (item.options as Record<string, unknown>).Size, inventory_qty: Object.hasOwn(item, 'stock') ? item.stock : saved?.inventory_qty ?? 0 }
+     }) }
+ }
+ function variantScope(container: HTMLElement, identity = variantId) {
+@@ -919,7 +919,7 @@
+         const saved = item.id ? variantRows(current).find(candidate => candidate.id === item.id) : undefined
+         const options = item.options as Record<string, string>
+         return { ...saved, ...item, id: item.id ?? `77777777-7777-4777-8777-${String(index + 1).padStart(12, '0')}`,
+-            option1: options[names[0]] ?? null, option2: options[names[1]] ?? null, option3: options[names[2]] ?? null, inventory_qty: item.stock }
++            option1: options[names[0]] ?? null, option2: options[names[1]] ?? null, option3: options[names[2]] ?? null, inventory_qty: Object.hasOwn(item, 'stock') ? item.stock : saved?.inventory_qty ?? 0 }
+     }) }
+ }
+ async function addAxisThroughForm(h: Awaited<ReturnType<typeof mount>>, name: string, value: string) {
+@@ -947,7 +947,7 @@
+         variantRows(calls[0]).forEach((item, index) => {
+             const original = variantRows(initial)[index]
+             assert.deepEqual(item.options, { Width: original.option1, Finish: 'Natural' })
+-            assert.equal(item.price, original.price); assert.equal(item.stock, original.inventory_qty); assert.equal(item.sku, original.sku)
++            assert.equal(item.price, original.price); assert.equal(Object.hasOwn(item, 'stock'), false); assert.equal(variantRows(current)[index].inventory_qty, original.inventory_qty); assert.equal(item.sku, original.sku)
+             assert.equal(Object.hasOwn(item, 'metadata'), false, 'unchanged inline facts are omitted instead of cleared')
+             assert.deepEqual(variantRows(current)[index].metadata, original.metadata)
+         })
+@@ -1139,7 +1139,7 @@
+         if (init?.method !== 'PATCH') return json(current)
+         const body = JSON.parse(String(init.body)) as Record<string, unknown>
+         calls.push({ body, headers: new Headers(init.headers) })
+-        current = { ...current, ...body, version: 13, variants: variantRows(body).map(item => ({ ...variantRows(current).find(previous => previous.id === item.id), ...item, option1: (item.options as Record<string, string>).Edition, inventory_qty: item.stock })) }
++        current = { ...current, ...body, version: 13, variants: variantRows(body).map(item => ({ ...variantRows(current).find(previous => previous.id === item.id), ...item, option1: (item.options as Record<string, string>).Edition, inventory_qty: Object.hasOwn(item, 'stock') ? item.stock : variantRows(current).find(previous => previous.id === item.id)?.inventory_qty ?? 0 })) }
+         return json(current)
+     })
+     try {
+@@ -1159,7 +1159,8 @@
+         for (const variant of variantRows(body)) assert.equal(ProductEditVariantSchema.safeParse(variant).success, true)
+         assert.deepEqual(body.product_options, [{ name: 'Edition', position: 0, values: ['Marathi spiral edition', 'Hindi paperback'] }])
+         assert.equal(changed.title, 'Marathi spiral edition'); assert.deepEqual(changed.options, { Edition: 'Marathi spiral edition' })
+-        assert.equal(changed.stock, 3); assert.equal(untouched.stock, 4); assert.equal(body.stock, 7)
++        assert.equal(Object.hasOwn(changed, 'stock'), false); assert.equal(Object.hasOwn(untouched, 'stock'), false); assert.equal(Object.hasOwn(body, 'stock'), false)
++        assert.deepEqual(variantRows(current).map(item => item.inventory_qty), [3, 4]); assert.equal(current.stock, 7)
+         assert.equal(changed.price, 690); assert.equal(changed.compare_price, 700); assert.equal(changed.sku, 'SAME-SKU')
+         assert.deepEqual(changed.metadata, { books: { kind: 'book', authors: ['Revised catalogue author'], language: 'Marathi', format: 'spiral-bound', pages: 224, dimensions_mm: { width: 156, height: 234 } }, food })
+         assert.equal(Object.hasOwn(untouched, 'metadata'), false)
+@@ -1239,7 +1240,7 @@
+         const body = JSON.parse(calls[2].body), variant = variantRows(body)[0]
+         assert.equal(body.version, 13); assert.notEqual(calls[2].key, calls[0].key)
+         assert.equal(variant.id, variantId); assert.equal(variant.title, 'XL'); assert.deepEqual(variant.options, { Size: 'XL' })
+-        assert.equal(variant.stock, 5); assert.equal(variant.price, 100); assert.equal(variant.sku, 'OLD-SKU')
++        assert.equal(Object.hasOwn(variant, 'stock'), false); assert.equal(variant.price, 100); assert.equal(variant.sku, 'OLD-SKU')
+         assert.deepEqual(variant.metadata, { toys: { finish: 'Newer green' } })
+     } finally { await h.close() }
+ })
+@@ -1259,7 +1260,7 @@
+         await h.setTitle('First scalar edit'); await h.click('Save product')
+         const first = JSON.parse(calls[0].body) as Record<string, unknown>
+         assert.equal(Object.hasOwn(first.metadata as object, 'apparel'), false)
+-        assert.deepEqual(first.metadata, metadata); assert.equal(first.stock, 12); assert.equal(first.version, 7)
++        assert.deepEqual(first.metadata, metadata); assert.equal(Object.hasOwn(first, 'stock'), false); assert.equal(current.stock, 12); assert.equal(first.version, 7)
+         await h.setTitle('Newer retained edit'); await h.remount()
+         await h.click('Retry pending save'); assert.deepEqual(calls[1], calls[0])
+         assert.equal(h.title().value, 'Newer retained edit')
+@@ -1267,7 +1268,7 @@
+         const next = JSON.parse(calls[2].body) as Record<string, unknown>
+         assert.deepEqual(next.metadata, metadata); assert.equal(Object.hasOwn(next.metadata as object, 'apparel'), false)
+         assert.equal(next.version, 13); assert.notEqual(calls[2].key, calls[0].key)
+-        assert.equal(next.stock, 12); assert.equal(next.price, 640)
++        assert.equal(Object.hasOwn(next, 'stock'), false); assert.equal(current.stock, 12); assert.equal(next.price, 640)
+         await h.remount(); assert.equal(h.title().value, 'Newer retained edit')
+     } finally { await h.close() }
+ })
+@@ -1300,9 +1301,203 @@
+         await editGarment('Fit description', ''); await editGarment('Fabric composition', ''); await editGarment('Care instructions', '')
+         await h.click('Remove size M'); await h.click('Save product')
+         assert.deepEqual(calls[2].metadata, { ...metadata, apparel: ApparelFactsSchema.parse({}) })
+-        assert.equal(variantRows(calls[2])[0].id, variantId); assert.equal(variantRows(calls[2])[0].stock, 5)
++        assert.equal(variantRows(calls[2])[0].id, variantId); assert.equal(Object.hasOwn(variantRows(calls[2])[0], 'stock'), false); assert.equal(variantRows(current)[0].inventory_qty, 5)
+         await h.remount()
+         const fieldLabel = [...h.container.querySelectorAll('label')].find(item => item.textContent?.trim() === 'Fit description')!
+         assert.equal((document.getElementById(fieldLabel.htmlFor) as HTMLTextAreaElement).value, '')
+     } finally { await h.close() }
+ })
++
++test('metadata-only editor Save omits stale product and variant stock after server consumption', async () => {
++    let server = { ...row(), stock: 4, variants: [{ ...row().variants[0], inventory_qty: 4 }] }
++    const calls: Record<string, unknown>[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(server)
++        const body = JSON.parse(String(init.body)) as Record<string, unknown>; calls.push(body)
++        server = acceptVariantWrite(server, body) as typeof server
++        return json(server)
++    })
++    try {
++        // An independent accepted purchase occurred after the editor's read.
++        server = { ...server, stock: 2, variants: [{ ...server.variants[0], inventory_qty: 2 }] }
++        await h.setTitle('After purchase facts')
++        await h.click('Save product')
++        assert.equal(calls.length, 1)
++        assert.equal(Object.hasOwn(calls[0], 'stock'), false)
++        assert.ok(variantRows(calls[0]).every(item => !Object.hasOwn(item, 'stock')))
++        assert.equal(server.stock, 2)
++        assert.equal(variantRows(server)[0].inventory_qty, 2)
++        await h.remount()
++        assert.equal(h.title().value, 'After purchase facts')
++    } finally { await h.close() }
++})
++
++function quantityControl(container: HTMLElement) {
++    const label = [...container.querySelectorAll('label')].find(item => item.textContent?.trim() === 'Quantity')
++    assert.ok(label)
++    const input = document.getElementById(label.htmlFor) as HTMLInputElement | null
++    assert.ok(input); return input
++}
++function stockControl(container: HTMLElement, title = 'M') {
++    const input = container.querySelector(`[aria-label="Stock for ${title}"]`) as HTMLInputElement | null
++    assert.ok(input); return input
++}
++
++test('unsent metadata draft restored after purchase adopts consumed quantities without a stock write', async () => {
++    let current: Record<string, unknown> = row()
++    const calls: Record<string, unknown>[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        const body = JSON.parse(String(init.body)) as Record<string, unknown>; calls.push(body)
++        current = acceptVariantWrite(current, body); return json(current)
++    })
++    try {
++        await h.setTitle('Retained after purchase')
++        current = { ...current, stock: 2, variants: [{ ...variantRows(current)[0], inventory_qty: 2 }] }
++        await h.remount(); await h.click('Restore draft')
++        assert.equal(h.title().value, 'Retained after purchase')
++        assert.equal(quantityControl(h.container).value, '2'); assert.equal(stockControl(h.container).value, '2')
++        await h.click('Save product')
++        assert.equal(calls.length, 1); assert.equal(Object.hasOwn(calls[0], 'stock'), false)
++        assert.equal(Object.hasOwn(variantRows(calls[0])[0], 'stock'), false)
++        assert.equal(current.stock, 2); assert.equal(variantRows(current)[0].inventory_qty, 2)
++    } finally { await h.close() }
++})
++
++test('stale explicit stock draft is kept and blocked until inventory review, without discarding catalogue fields', async () => {
++    let current: Record<string, unknown> = row()
++    const calls: Record<string, unknown>[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        const body = JSON.parse(String(init.body)) as Record<string, unknown>; calls.push(body)
++        current = acceptVariantWrite(current, body); return json(current)
++    })
++    try {
++        await h.setTitle('Keep this non-inventory draft')
++        await h.setInput(quantityControl(h.container), '0'); await h.setInput(stockControl(h.container), '0')
++        current = { ...current, stock: 2, variants: [{ ...variantRows(current)[0], inventory_qty: 2 }] }
++        await h.remount(); await h.click('Restore draft')
++        assert.match(h.container.textContent!, /Review retained inventory/)
++        assert.equal(quantityControl(h.container).value, '0'); assert.equal(stockControl(h.container).value, '0')
++        await h.click('Save product'); assert.equal(calls.length, 0)
++        assert.equal(window.sessionStorage.getItem(`letbuyy.product-edit.v1:${actorId}:alpha:${id}`), null)
++        const retained = JSON.parse(window.sessionStorage.getItem(`letbuyy.product-edit.v1:${actorId}:alpha:${id}:unsaved`)!)
++        assert.equal(retained.snapshot.quantity, '0'); assert.equal(retained.snapshot.title, 'Keep this non-inventory draft')
++        await h.click('Keep current inventory')
++        assert.equal(h.title().value, 'Keep this non-inventory draft')
++        assert.equal(quantityControl(h.container).value, '2')
++        await h.click('Save product'); assert.equal(calls.length, 1)
++        assert.equal(Object.hasOwn(calls[0], 'stock'), false); assert.equal(Object.hasOwn(variantRows(calls[0])[0], 'stock'), false)
++        assert.equal(current.stock, 2); assert.equal(variantRows(current)[0].inventory_qty, 2)
++    } finally { await h.close() }
++})
++
++test('legacy retained inventory requires review and can be deliberately changed to zero through normal controls', async () => {
++    let current: Record<string, unknown> = row()
++    const calls: Record<string, unknown>[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        const body = JSON.parse(String(init.body)) as Record<string, unknown>; calls.push(body)
++        current = acceptVariantWrite(current, body); return json(current)
++    })
++    try {
++        await h.setTitle('Legacy non-inventory fields are kept')
++        const key = `letbuyy.product-edit.v1:${actorId}:alpha:${id}:unsaved`
++        const retained = JSON.parse(window.sessionStorage.getItem(key)!) as { snapshot: ProductFormSnapshot }
++        delete retained.snapshot.quantityBaseline
++        for (const row of retained.snapshot.variantMatrix) delete row.stockBaseline
++        window.sessionStorage.setItem(key, JSON.stringify(retained))
++        current = { ...current, stock: 2, variants: [{ ...variantRows(current)[0], inventory_qty: 2 }] }
++        await h.remount(); await h.click('Restore draft')
++        assert.equal(h.title().value, 'Legacy non-inventory fields are kept')
++        assert.equal(quantityControl(h.container).value, '5')
++        await h.click('Save product'); assert.equal(calls.length, 0)
++        await h.setInput(quantityControl(h.container), '0'); await h.setInput(stockControl(h.container), '0')
++        await h.click('Save product'); assert.equal(calls.length, 1)
++        assert.equal(calls[0].stock, 0); assert.equal(variantRows(calls[0])[0].stock, 0)
++        assert.equal(current.stock, 0); assert.equal(variantRows(current)[0].inventory_qty, 0)
++        await h.remount(); await h.setTitle('Later facts only'); await h.click('Save product')
++        assert.equal(Object.hasOwn(calls[1], 'stock'), false); assert.equal(Object.hasOwn(variantRows(calls[1])[0], 'stock'), false)
++    } finally { await h.close() }
++})
++
++test('tracking toggle omits unchanged inventory while explicit normal zero controls still write stock', async () => {
++    let current: Record<string, unknown> = row()
++    const calls: Record<string, unknown>[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        const body = JSON.parse(String(init.body)) as Record<string, unknown>; calls.push(body)
++        current = acceptVariantWrite(current, body); return json(current)
++    })
++    try {
++        const label = [...h.container.querySelectorAll('label')].find(item => item.textContent?.trim() === 'Track quantity')
++        assert.ok(label); const checkbox = label.querySelector('input') as HTMLInputElement
++        assert.ok(checkbox); await act(async () => checkbox.click())
++        await h.click('Save product')
++        assert.equal(calls[0].track_inventory, false)
++        assert.equal(Object.hasOwn(calls[0], 'stock'), false); assert.equal(Object.hasOwn(variantRows(calls[0])[0], 'stock'), false)
++        assert.equal(current.stock, 5); assert.equal(variantRows(current)[0].inventory_qty, 5)
++        await act(async () => checkbox.click())
++        await h.setInput(quantityControl(h.container), '0'); await h.setInput(stockControl(h.container), '0')
++        await h.click('Save product')
++        assert.equal(calls[1].stock, 0); assert.equal(variantRows(calls[1])[0].stock, 0)
++    } finally { await h.close() }
++})
++
++test('lost metadata-only save and remount retry keep exact body and key without reintroducing consumed stock', async () => {
++    let current: Record<string, unknown> = row()
++    const calls: { body: string; key: string | null }[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        calls.push({ body: String(init.body), key: new Headers(init.headers).get('X-Idempotency-Key') })
++        const body = JSON.parse(String(init.body)) as Record<string, unknown>
++        if (calls.length === 1) {
++            current = { ...current, stock: 2, variants: [{ ...variantRows(current)[0], inventory_qty: 2 }] }
++            current = acceptVariantWrite(current, body)
++            throw new TypeError('Synthetic response lost after accepted metadata save')
++        }
++        if (calls.length > 2) current = acceptVariantWrite(current, body, 19)
++        return json(current)
++    })
++    try {
++        await h.setTitle('Earlier metadata'); await h.click('Save product')
++        await h.setTitle('Newer metadata')
++        await h.remount(); await h.click('Retry pending save')
++        assert.deepEqual(calls[1], calls[0])
++        assert.equal(h.title().value, 'Newer metadata')
++        assert.equal(quantityControl(h.container).value, '2'); assert.equal(stockControl(h.container).value, '2')
++        await h.click('Save product')
++        assert.notEqual(calls[2].key, calls[0].key)
++        for (const call of calls) {
++            const body = JSON.parse(call.body) as Record<string, unknown>
++            assert.equal(Object.hasOwn(body, 'stock'), false); assert.equal(Object.hasOwn(variantRows(body)[0], 'stock'), false)
++        }
++        assert.equal(current.stock, 2); assert.equal(variantRows(current)[0].inventory_qty, 2)
++    } finally { await h.close() }
++})
++
++test('pending explicit stock save retries unchanged while a newer reverted quantity remains a deliberate next edit', async () => {
++    let current: Record<string, unknown> = row()
++    const calls: { body: string; key: string | null }[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        calls.push({ body: String(init.body), key: new Headers(init.headers).get('X-Idempotency-Key') })
++        if (calls.length !== 2) current = acceptVariantWrite(current, JSON.parse(String(init.body)), 7 + calls.length * 6)
++        if (calls.length === 1) throw new TypeError('Synthetic response lost after accepted explicit zero')
++        return json(current)
++    })
++    try {
++        await h.setInput(quantityControl(h.container), '0'); await h.setInput(stockControl(h.container), '0')
++        await h.click('Save product')
++        await h.setInput(quantityControl(h.container), '5'); await h.setInput(stockControl(h.container), '5')
++        await h.setTitle('Newer title')
++        await h.remount(); await h.click('Retry pending save')
++        assert.deepEqual(calls[1], calls[0]); assert.equal(current.stock, 0)
++        assert.equal(quantityControl(h.container).value, '5'); assert.equal(stockControl(h.container).value, '5')
++        await h.click('Save product')
++        const next = JSON.parse(calls[2].body) as Record<string, unknown>
++        assert.equal(next.version, 13); assert.notEqual(calls[2].key, calls[0].key)
++        assert.equal(next.stock, 5); assert.equal(variantRows(next)[0].stock, 5)
++        assert.equal(current.stock, 5); assert.equal(variantRows(current)[0].inventory_qty, 5)
++    } finally { await h.close() }
++})
+--- before/apps/merchant/web/src/lib/variant-facts-draft.test.ts
++++ apps/merchant/web/src/lib/variant-facts-draft.test.ts
+@@ -3,7 +3,7 @@
+ import { ProductVariantMetadataSchema, VARIANT_NICHE_FACT_SCHEMAS } from '@letbuyy/commerce-core';
+ import { isVariantFactsNamespace, readVariantFactsDraft, updateVariantFactsDraft, validateVariantFactsDraft, VARIANT_FACT_NAMESPACES } from './variant-facts-draft';
+ import { editVariantFacts, hydrateVariantFacts, rebaseVariantFacts, variantFactsBaselineKnown, variantFactsCommand, variantFactsValue } from './variant-facts-draft';
+-import { appendVariantOptionValue, buildProductFormFields, buildVariantMatrix, defaultProductSnapshot, normalizeApiVariants, readUnsavedProduct, restoreProductEdit, type VariantRow } from './product-form-state';
++import { appendVariantOptionValue, buildProductFormFields, buildVariantMatrix, defaultProductSnapshot, normalizeApiVariants, keepCurrentProductInventory, readUnsavedProduct, restoreProductEdit, type VariantRow } from './product-form-state';
+ 
+ test('raw variant drafts keep partial invalid fields and contain no product defaults', () => {
+   const input = { food: { netQuantity: { value: '', unit: 'g' } }, toys: { finish: 'Blue' } };
+@@ -163,9 +163,12 @@
+   const intent = { scope: 'scope', key: '55555555-5555-4555-8555-555555555555', version: 7, signature, variantSignature, hasNewVariants: false, payload };
+   const draft = { ...legacy, variantMatrix: [editVariantFacts(hydrateVariantFacts(row(), {}), { toys: { warnings: [{ text: '' }] } })] };
+   const restored = restoreProductEdit(JSON.stringify({ ...intent, draftSignature: JSON.stringify(draft) }), 'scope');
+-  assert.deepEqual(restored.intent, intent); assert.deepEqual(restored.draft, draft);
++  assert.deepEqual(restored.intent, intent); assert.deepEqual(restored.draft, { ...draft, quantityNeedsReview: true, variantMatrix: draft.variantMatrix.map(row => ({ ...row, stockNeedsReview: true })) });
+   const old = readUnsavedProduct(JSON.stringify({ scope: 'scope', version: 7, updatedAt: Date.now(), snapshot: legacy }), 'scope');
+   assert.equal(Object.hasOwn(old.snapshot.variantMatrix[0], 'factsMetadataBaseline'), false);
+-  assert.deepEqual(buildProductFormFields(old.snapshot, undefined, true).variants[0].id, rowId);
+-  assert.equal(Object.hasOwn(buildProductFormFields(old.snapshot, undefined, true).variants[0], 'metadata'), false);
++  assert.throws(() => buildProductFormFields(old.snapshot, undefined, true), /Review retained inventory/);
++  const reviewed = keepCurrentProductInventory(old.snapshot, legacy);
++  assert.deepEqual(buildProductFormFields(reviewed, undefined, true).variants[0].id, rowId);
++  assert.equal(Object.hasOwn(buildProductFormFields(reviewed, undefined, true).variants[0], 'metadata'), false);
++  assert.equal(Object.hasOwn(buildProductFormFields(reviewed, undefined, true).variants[0], 'stock'), false);
+ });
+--- before/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts
++++ apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts
+@@ -0,0 +1,152 @@
++import { planProductMutation } from '@letbuyy/commerce-core'
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import { buildProductFormFields, normalizeProductSnapshot, readUnsavedProduct, restoreProductEdit, restoreProductInventory, keepCurrentProductInventory, rebaseProductInventoryAfterSave } from './product-form-state'
++
++const first = '22222222-2222-4222-8222-222222222222'
++const second = '66666666-6666-4666-8666-666666666666'
++const product = (stock = 4) => normalizeProductSnapshot({ name: 'Bound book', price: 590, stock,
++    product_options: [{ name: 'Edition', values: ['English', 'Hindi'] }],
++    variants: [{ id: first, title: 'English', option1: 'English', price: 590, inventory_qty: stock },
++        { id: second, title: 'Hindi', option1: 'Hindi', price: 420, inventory_qty: stock }] })
++const owns = (value: object, field: string) => Object.hasOwn(value, field)
++
++test('metadata-only EDIT loaded at four omits stock and preserves server-consumed two', () => {
++    const draft = { ...product(), title: 'Later title', price: '690', nicheFacts: '{"books":{"kind":"book"}}' }
++    const body = buildProductFormFields(draft, { books: { kind: 'book' } }, true)
++    assert.equal(owns(body, 'stock'), false)
++    assert.ok(body.variants.every(item => !owns(item, 'stock')))
++    const serverStock = owns(body, 'stock') ? body.stock : 2
++    assert.equal(serverStock, 2)
++})
++
++test('reordered sparse EDIT emits only a changed existing quantity and new rows including zero', () => {
++    const draft = product()
++    draft.variantMatrix = [{ ...draft.variantMatrix[1], stock: '0' }, draft.variantMatrix[0],
++        { ...draft.variantMatrix[0], id: undefined, title: 'New', option1: 'New', stock: '0' }]
++    const body = buildProductFormFields(draft, undefined, true)
++    assert.equal(owns(body, 'stock'), false)
++    assert.deepEqual(body.variants.map(item => [item.id, owns(item, 'stock'), item.stock]), [
++        [second, true, 0], [first, false, undefined], [undefined, true, 0],
++    ])
++    assert.equal(buildProductFormFields({ ...product(), quantity: '0' }, undefined, true).stock, 0)
++})
++
++test('tracking-only EDIT preserves quantities, CREATE still supplies all quantities', () => {
++    const draft = { ...product(), trackInventory: false }
++    const edit = buildProductFormFields(draft, undefined, true)
++    assert.equal(edit.track_inventory, false)
++    assert.equal(owns(edit, 'stock'), false)
++    assert.ok(edit.variants.every(item => !owns(item, 'stock')))
++    const create = buildProductFormFields({ ...draft, quantity: '0' }, undefined, false)
++    assert.equal(create.stock, 0)
++    assert.deepEqual(create.variants.map(item => item.stock), [4, 4])
++    assert.ok(create.variants.every(item => !owns(item, 'id')))
++})
++
++const retain = (snapshot: ReturnType<typeof product>) => readUnsavedProduct(JSON.stringify({ scope: 'actor:store:product', version: 7, updatedAt: Date.now(), snapshot }), 'actor:store:product').snapshot
++
++test('untouched retained quantities rebase by UUID after purchase without hidden inventory intent', () => {
++    const draft = product()
++    draft.title = 'Retained catalogue title'
++    draft.variantMatrix.reverse()
++    const rawFacts = { books: { kind: 'book', language: 'Hindi', format: 'paperback' }, privateSibling: 'KEEP' }
++    draft.variantMatrix[0].factsMetadataDraft = structuredClone(rawFacts)
++    draft.variantMatrix[0].factsMetadataBaseline = structuredClone(rawFacts)
++    const original = structuredClone(draft), current = product(2)
++    const recovered = restoreProductInventory(retain(draft), current)
++    assert.equal(recovered.quantity, '2')
++    assert.deepEqual(recovered.variantMatrix.map(row => [row.id, row.stock, row.stockBaseline]), [[second, '2', '2'], [first, '2', '2']])
++    assert.deepEqual(recovered.variantMatrix[0].factsMetadataDraft, draft.variantMatrix[0].factsMetadataDraft)
++    assert.equal(recovered.title, draft.title)
++    assert.deepEqual(draft, original)
++    const body = buildProductFormFields(recovered, undefined, true)
++    assert.equal(owns(body, 'stock'), false)
++    assert.ok(body.variants.every(row => !owns(row, 'stock')))
++})
++
++test('explicit retained zero survives when baseline is current; changed server inventory requires review', () => {
++    const draft = { ...product(), quantity: '0' }
++    draft.variantMatrix[1].stock = '0'
++    const same = restoreProductInventory(retain(draft), product())
++    assert.equal(buildProductFormFields(same, undefined, true).stock, 0)
++    assert.equal(buildProductFormFields(same, undefined, true).variants[1].stock, 0)
++    const stale = restoreProductInventory(retain(draft), product(2))
++    assert.equal(stale.quantity, '0'); assert.equal(stale.quantityNeedsReview, true)
++    assert.equal(stale.variantMatrix[1].stock, '0'); assert.equal(stale.variantMatrix[1].stockNeedsReview, true)
++    assert.throws(() => buildProductFormFields(stale, undefined, true), /Review retained inventory/)
++    const reviewed = keepCurrentProductInventory({ ...stale, price: '690' }, product(2))
++    assert.equal(reviewed.price, '690')
++    assert.equal(owns(buildProductFormFields(reviewed, undefined, true), 'stock'), false)
++    assert.ok(buildProductFormFields(reviewed, undefined, true).variants.every(row => !owns(row, 'stock')))
++})
++
++test('legacy drafts retain their fields and require review instead of inferring stock intent', () => {
++    const legacy = product()
++    delete legacy.quantityBaseline
++    for (const row of legacy.variantMatrix) delete row.stockBaseline
++    const retained = retain(legacy), restored = restoreProductInventory(retained, product(2))
++    assert.equal(restored.quantity, '4'); assert.equal(restored.quantityNeedsReview, true)
++    assert.equal(restored.variantMatrix[0].stock, '4'); assert.equal(restored.variantMatrix[0].stockNeedsReview, true)
++    assert.throws(() => buildProductFormFields(restored, undefined, true), /Review retained inventory/)
++    const key = '55555555-5555-4555-8555-555555555555', signature = JSON.stringify(legacy)
++    const intent = { scope: 'actor:store:product', key, version: 7, payload: JSON.stringify({ stock: 4, version: 7, idempotency_key: key }), signature, variantSignature: JSON.stringify(legacy.variantMatrix), hasNewVariants: false }
++    const recovered = restoreProductEdit(JSON.stringify({ ...intent, draftSignature: signature }), intent.scope)
++    assert.deepEqual(recovered.intent, intent)
++    assert.equal(recovered.draft.quantityNeedsReview, true)
++    assert.throws(() => buildProductFormFields(recovered.draft, undefined, true), /Review retained inventory/)
++    const acknowledged = rebaseProductInventoryAfterSave(recovered.draft, legacy, product(4))
++    assert.equal(owns(buildProductFormFields(acknowledged, undefined, true), 'stock'), false)
++})
++
++test('unreadable inventory evidence is refused and missing UUIDs cannot inherit another row baseline', () => {
++    const wrong = { ...product(), quantityBaseline: 4 }
++    assert.throws(() => retain(wrong as unknown as ReturnType<typeof product>), /unreadable/)
++    const rows = product(); rows.variantMatrix[0].stockNeedsReview = 'false' as unknown as boolean
++    assert.throws(() => retain(rows), /unreadable/)
++    const draft = product(); const current = product(2); current.variantMatrix.shift()
++    const restored = restoreProductInventory(draft, current)
++    assert.equal(restored.variantMatrix[0].id, first)
++    assert.equal(restored.variantMatrix[0].stockNeedsReview, true)
++    assert.equal(keepCurrentProductInventory(restored, current).variantMatrix[0].stockNeedsReview, true)
++    assert.throws(() => buildProductFormFields(restored, undefined, true), /Review retained inventory/)
++})
++
++test('acknowledgement clears only sent stock intent and retains newer zero or reverted quantities by UUID', () => {
++    const sent = { ...product(), quantity: '0' }
++    sent.variantMatrix[0].stock = '0'
++    const acknowledged = product(0)
++    acknowledged.variantMatrix[1].stock = '2'; acknowledged.variantMatrix[1].stockBaseline = '2'
++    const metadataOnly = rebaseProductInventoryAfterSave({ ...sent, title: 'Newer title' }, sent, acknowledged)
++    const omitted = buildProductFormFields(metadataOnly, undefined, true)
++    assert.equal(owns(omitted, 'stock'), false); assert.ok(omitted.variants.every(row => !owns(row, 'stock')))
++    const newer = { ...sent, quantity: '4', variantMatrix: [{ ...sent.variantMatrix[1], stock: '0' }, { ...sent.variantMatrix[0], stock: '4' }, { ...sent.variantMatrix[0], id: undefined, stock: '0' }] }
++    const rebased = rebaseProductInventoryAfterSave(newer, sent, acknowledged)
++    const body = buildProductFormFields(rebased, undefined, true)
++    assert.equal(body.stock, 4)
++    assert.deepEqual(body.variants.map(row => [row.id, row.stock]), [[second, 0], [first, 4], [undefined, 0]])
++    assert.equal(rebased.variantMatrix[2].id, undefined, 'new UUIDs are not guessed from tuple or index')
++})
++
++test('an omitted pending command rebases old untouched quantities to acknowledgement, preserving newer facts', () => {
++    const sent = product(), draft = { ...sent, title: 'Newer metadata' }, acknowledged = product(2)
++    const rebased = rebaseProductInventoryAfterSave(draft, sent, acknowledged)
++    assert.equal(rebased.quantity, '2'); assert.equal(rebased.title, 'Newer metadata')
++    const body = buildProductFormFields(rebased, undefined, true)
++    assert.equal(owns(body, 'stock'), false); assert.ok(body.variants.every(row => !owns(row, 'stock')))
++    const ambiguous = { ...draft, quantity: '0', quantityBaseline: undefined, quantityNeedsReview: true }
++    assert.throws(() => buildProductFormFields(rebaseProductInventoryAfterSave(ambiguous, sent, acknowledged), undefined, true), /Review retained inventory/)
++})
++
++test('the canonical edit schema and planner retain omitted stock, explicit zero and idless new stock', () => {
++    const draft = product()
++    draft.variantMatrix.push({ ...draft.variantMatrix[0], id: undefined, title: 'New', option1: 'New', stock: '0' })
++    const fields = buildProductFormFields(draft, undefined, true)
++    const plan = planProductMutation({ ...fields, version: 7, idempotency_key: '55555555-5555-4555-8555-555555555555' })
++    assert.equal(owns(plan.mutation, 'stock'), false)
++    assert.ok(plan.mutation.variants!.slice(0, 2).every(row => !owns(row, 'stock')))
++    assert.equal(plan.mutation.variants![2].stock, 0)
++    const zero = planProductMutation({ ...buildProductFormFields({ ...draft, quantity: '0' }, undefined, true), version: 7, idempotency_key: '55555555-5555-4555-8555-555555555555' })
++    assert.equal(zero.mutation.stock, 0)
++    assert.doesNotMatch(JSON.stringify(plan.mutation), /stockBaseline|stockNeedsReview|quantityBaseline|quantityNeedsReview/)
++})

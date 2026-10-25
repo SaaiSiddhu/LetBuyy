@@ -1,0 +1,30 @@
+{
+  "extends": "../../../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "composite": false,
+    "baseUrl": "../../../..",
+    "paths": {
+      "@letbuyy/commerce-core": [
+        "packages/commerce-core/src/index.ts"
+      ],
+      "@letbuyy/shared-types": [
+        "packages/shared-types/src/index.ts"
+      ]
+    }
+  },
+  "files": [
+    "../../../../packages/checkout-core/src/index.ts"
+  ],
+  "include": [],
+  "references": []
+}

@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-25T00:18:48.771670+00:00",
+  "failure": "Exclusive capture refused replacing existing preliminary03 inventory after vendor completeness expansion. Existing inventory archived unchanged before recapture.",
+  "nativeOrAppModulesExecuted": 0,
+  "sourceOrSqlBodiesChangedForFailure": false
+}

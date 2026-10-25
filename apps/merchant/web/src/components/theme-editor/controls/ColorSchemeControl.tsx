@@ -10,10 +10,12 @@
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
+import { CircleAlert } from 'lucide-react'
 import { useId } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-import { MaterialIcon } from '@letbuyy/ui'
+import { resolveFieldOptions } from '@letbuyy/theme-engine'
+
 import styles from './controls.module.css'
 
 // Default scheme names (used when field.options is absent).
@@ -22,17 +24,14 @@ const DEFAULT_COLOR_SCHEMES = ['default', 'primary', 'accent', 'soft', 'dark', '
 
 interface ColorSchemeControlProps {
     field: ExtendedSchemaField
-    value: string
-    onChange: (v: string) => void
-}
-
-function schemeLabel(name: string): string {
-    return name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' ')
+    value: unknown
+    onChange: (v: string | number | boolean) => void
 }
 
 export function ColorSchemeControl({ field, value, onChange }: ColorSchemeControlProps) {
     const id = useId()
-    const options = field.options && field.options.length > 0 ? field.options : DEFAULT_COLOR_SCHEMES
+    const options = resolveFieldOptions({ options: field.options?.length ? field.options : DEFAULT_COLOR_SCHEMES })
+    const selected = options.findIndex(option => Object.is(option.value, value))
     const error = validateFieldValue(field, value)
     const helpText = field.info || field.description
 
@@ -49,15 +48,16 @@ export function ColorSchemeControl({ field, value, onChange }: ColorSchemeContro
                 <select
                     id={id}
                     className="te-field-select"
-                    value={value || options[0]}
-                    onChange={(e) => onChange(e.target.value)}
+                    value={selected < 0 ? '' : String(selected)}
+                    onChange={(e) => { const option = options[Number(e.target.value)]; if (e.target.value !== '' && option) onChange(option.value) }}
                     aria-required={field.required ? 'true' : undefined}
                     aria-invalid={error ? 'true' : undefined}
                     aria-describedby={error ? `${id}-error` : helpText ? `${id}-help` : undefined}
                 >
-                    {options.map((opt) => (
-                        <option key={opt} value={opt}>
-                            {schemeLabel(opt)}
+                    <option value="" disabled>Choose a color scheme</option>
+                    {options.map((option, index) => (
+                        <option key={index} value={String(index)}>
+                            {option.label}
                         </option>
                     ))}
                 </select>
@@ -65,7 +65,7 @@ export function ColorSchemeControl({ field, value, onChange }: ColorSchemeContro
 
             {error ? (
                 <p id={`${id}-error`} className={styles.fieldError} role="alert">
-                    <MaterialIcon name="error" size={12} aria-hidden />
+                    <CircleAlert size={12} aria-hidden />
                     {' '}{error}
                 </p>
             ) : null}

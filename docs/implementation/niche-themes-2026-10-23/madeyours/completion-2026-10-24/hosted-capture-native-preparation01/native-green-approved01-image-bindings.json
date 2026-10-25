@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-25 01:57:22 UTC",
+  "inspection": {
+    "chunk_id": "f5ad41",
+    "wall_time_seconds": 0.000006834,
+    "exit_code": 0,
+    "original_token_count": 36,
+    "output": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea\nsha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e\n"
+  },
+  "postgres": {
+    "tag": "postgres:16-alpine",
+    "id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"
+  },
+  "postgrest": {
+    "tag": "public.ecr.aws/supabase/postgrest:v16.2",
+    "id": "sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e"
+  },
+  "pullAllowed": false,
+  "scope": "Single GREEN fresh owned resources only"
+}

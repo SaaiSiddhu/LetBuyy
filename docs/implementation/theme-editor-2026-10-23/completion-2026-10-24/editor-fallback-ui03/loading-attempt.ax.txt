@@ -1,0 +1,9 @@
+Browser tab: 5, Title: "LetBuyy Admin", URL: "http://localhost:9001/snaz/online-store/themes/letbuyy-dawn/editor".
+0 AXWebArea LetBuyy Admin, URL: localhost:9001/snaz/online-store/themes/letbuyy-dawn/editor
+	1 container Loading theme editor
+		2 text Theme workspace
+		3 heading Loading theme editor, Value: 1, ID: theme-editor-loading-title
+			4 text Loading theme editor
+		5 text Preparing your workspace and saved draft.
+
+The focused UI element is 0 AXWebArea LetBuyy Admin, URL: localhost:9001/snaz/online-store/themes/letbuyy-dawn/editor

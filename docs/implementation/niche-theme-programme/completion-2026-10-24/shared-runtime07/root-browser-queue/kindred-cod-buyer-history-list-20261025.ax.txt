@@ -1,0 +1,66 @@
+- generic: Kindred Runtime07 A — thoughtful gifts, clearly described
+- link:
+  - /url: ""
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - button "Search":
+    - generic: Search
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 0 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "0"
+    - text: )
+- heading "Your orders" [level=1]
+- paragraph: Find past orders from this store placed with your verified LetBuyy email.
+- button "Find past orders"
+- list:
+  - link "#ORD-20261025-10007 pending_cod INR 1,120.00":
+    - /url: /store/syn-threadline-ui-ae3f0477/account/orders/79023a7b-628b-49e1-aef4-491e51eaacd2
+    - generic: "#ORD-20261025-10007"
+    - generic: pending_cod
+    - generic: INR 1,120.00
+  - link "#ORD-20261024-10006 confirmed INR 1,820.00":
+    - /url: /store/syn-threadline-ui-ae3f0477/account/orders/c2991cb7-d637-4f11-86d4-fe02252dfc7f
+    - generic: "#ORD-20261024-10006"
+    - generic: confirmed
+    - generic: INR 1,820.00
+  - link "#ORD-20261024-10005 confirmed INR 1,220.00":
+    - /url: /store/syn-threadline-ui-ae3f0477/account/orders/ef2ec85f-4f88-4a81-8d50-c6d3c16ba3cb
+    - generic: "#ORD-20261024-10005"
+    - generic: confirmed
+    - generic: INR 1,220.00
+  - link "#ORD-20261024-10004 confirmed INR 8,920.00":
+    - /url: /store/syn-threadline-ui-ae3f0477/account/orders/c65a6d67-a933-43f2-9c8b-391e7c15dcaf
+    - generic: "#ORD-20261024-10004"
+    - generic: confirmed
+    - generic: INR 8,920.00
+  - link "#ORD-20261024-10003 confirmed INR 580.00":
+    - /url: /store/syn-threadline-ui-ae3f0477/account/orders/5b7e729e-46dd-4bfd-b040-fcd44a534e9d
+    - generic: "#ORD-20261024-10003"
+    - generic: confirmed
+    - generic: INR 580.00
+  - link "#ORD-20261024-10002 confirmed INR 200.00":
+    - /url: /store/syn-threadline-ui-ae3f0477/account/orders/d79f15fb-bbd6-4084-b391-1a7586294023
+    - generic: "#ORD-20261024-10002"
+    - generic: confirmed
+    - generic: INR 200.00
+  - link "#ORD-20261024-10001 confirmed INR 2,510.00":
+    - /url: /store/syn-threadline-ui-ae3f0477/account/orders/422fb669-9db5-4da6-bffc-7fcea4c31f8d
+    - generic: "#ORD-20261024-10001"
+    - generic: confirmed
+    - generic: INR 2,510.00
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

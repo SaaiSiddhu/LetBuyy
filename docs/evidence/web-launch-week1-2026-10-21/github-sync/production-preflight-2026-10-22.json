@@ -1,0 +1,151 @@
+{
+  "date": "2026-10-22",
+  "status": "BLOCKED_PROVIDER_ADMIN_CATALOG_FENCE",
+  "release_authorized": true,
+  "ci_billing_deferral_explicitly_authorized": true,
+  "source_revision_at_report": "503367ed7806fc0fab294e67eef0e0f31cd47b6c",
+  "hosted_mutations": {
+    "database_migrations": false,
+    "worker_deployments": false,
+    "vercel_deployments": false,
+    "branch_promotions": false
+  },
+  "accounts": {
+    "github": "SaaiSiddhu/LetBuyy",
+    "cloudflare": {
+      "account": "Letbuyy Store",
+      "id": "c399939d2521d1b4bc581112b6c6c57f"
+    },
+    "vercel": "letbuyy-store-s-projects",
+    "supabase": {
+      "staging": "yhhhjeaprrpjglriazad",
+      "production": "qtrzgnnqnvboifoqntfi",
+      "region": "ap-south-1",
+      "postgres": "17.6"
+    }
+  },
+  "hosted_schema": {
+    "public_tables": 236,
+    "public_routines": 104,
+    "app_tenant_exists": false,
+    "recorded_migrations": [
+      "20260101000176",
+      "20260101000177",
+      "20260101000178",
+      "20260101000183",
+      "20260101000186"
+    ],
+    "recorded_bodies_match_current_sql_tokens": true,
+    "production_counts": {
+      "sites": 1,
+      "users_custom": 1,
+      "orders": 5,
+      "products": 1,
+      "outbox_events": 18
+    }
+  },
+  "backup": {
+    "archive": "/Volumes/Developer Tools/Backups/LetBuyy/2026-10-21/production-full.pgdump.enc",
+    "sha256": "72131dd9f20c302e416ab68846ed6c26b12ea7a42042829882d2c846277e8d70",
+    "bytes": 20197072,
+    "format": "encrypted pg_dump custom archive",
+    "dump_exit": 0,
+    "encryption_exit": 0,
+    "restore_exit": 0,
+    "restore_network": "none",
+    "restored_counts_match": true,
+    "text_data_export": "FAILED restore; marked unusable in private manifest"
+  },
+  "blockers": [
+    {
+      "migration": "347_free_subscription_checkout_receipts.sql",
+      "reason": "CREATE FUNCTION custom SET requires privilege missing from hosted postgres; direct SET does not grant function-binding privilege",
+      "hosted_can_bind_version_parameter": false,
+      "owned_non_superuser_reproduction": true
+    },
+    {
+      "migration": "360_subscription_tax_quote_snapshot.sql",
+      "reason": "Explicit postgres rolsuper requirement and system-catalog locks are incompatible with verified hosted role; source review, not executed beyond blocked 347"
+    }
+  ],
+  "local_checks": {
+    "typecheck": {
+      "tasks": 81,
+      "cached": 0,
+      "status": "pass",
+      "revision": "e710c884"
+    },
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "not_applicable": 1,
+      "revision": "e710c884"
+    },
+    "theme_tests": 1916,
+    "gateway_units": 1628,
+    "contracts": 340,
+    "theme_rls": 23,
+    "auth_tests": 21,
+    "session_verifier": 10,
+    "merchant_browser_journeys": 10,
+    "storefront_native_browser": {
+      "status": "pass",
+      "run": "57856f957794"
+    },
+    "reconciliation_prepared2": {
+      "tests": 11,
+      "status": "pass",
+      "run": "13657cec2020"
+    },
+    "operations_behavior": {
+      "tests": 5,
+      "status": "pass",
+      "run": "fca79b9ff0b6"
+    }
+  },
+  "rehearsal": {
+    "backup_restore_verified": true,
+    "bootstrap_000_not_replayed": true,
+    "five_existing_migrations_skipped_only_after_token_comparison": true,
+    "first_search_path_difference": "311 guard passes with canonical public/extensions search path; guard preserved",
+    "first_hosted_privilege_failure": "347",
+    "no_real_provider_payments_or_customer_messages": true
+  },
+  "remaining": [
+    "Provider-supported administrator installation of the reviewed native catalog-lock helper",
+    "Exact final source gate including concurrent lifecycle test repair",
+    "Rehearse complete corrected upgrade and prove retained order/user/product/outbox conservation",
+    "Correct Vercel legacy Git repository/root mappings and missing console/staging deployment contexts",
+    "Populate compatible private runtime secrets and validate Cloudflare bindings",
+    "Promote develop -> staging -> main with recorded owner CI exception",
+    "Deploy and perform signed-in hosted theme/media/merchant/buyer acceptance"
+  ],
+  "financial_compatibility_repair_authorized": true,
+  "compatibility_repair_evidence": "supabase-compatibility-2026-10-22/README.md",
+  "local_compatibility_checks": {
+    "managed_role": 15,
+    "financial_conservation": 15,
+    "rollback_admission": 1,
+    "rollback_writer": 1,
+    "payment_ownership": 10,
+    "independent_native_mechanism": 70,
+    "typecheck_tasks": 81,
+    "uncached": true,
+    "owned_lane_governance": 14,
+    "populated_upgrade_pending_migrations": 304,
+    "no_original_core_records_missing": true,
+    "original_order_tenant_key_backfill": "migration108; money fields unchanged",
+    "legacy_demo_seed": "migration100 adds one demo identity; requires production review",
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "not_applicable": 1,
+      "branch_history_advisories": "missing local integration refs in isolated clone; no promotion proof"
+    }
+  },
+  "provider_support_request": {
+    "status": "submitted and confirmed",
+    "evidence": "supabase-compatibility-2026-10-22/support-submission.json",
+    "installation": "pending"
+  }
+}

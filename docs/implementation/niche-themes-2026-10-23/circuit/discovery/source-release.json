@@ -1,0 +1,45 @@
+{
+  "status": "qualified-and-released",
+  "ownedDbRun": "0d6117b8e98f",
+  "sourcePaths": {
+    "packages/commerce-core/src/storefront-discovery.ts": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4",
+    "packages/commerce-core/test/storefront-discovery.test.ts": "638fdb9afb5b8745f08cf350f1346ebd10360b859513aace2e38b8d1890437b4",
+    "packages/commerce-core/src/index.ts": "7c06340f34b813346ec5a786318ee575b445de4ad507838aa88ce6a2ea37cdad",
+    "packages/commerce-core/src/apparel.ts": "2d8833f58ac431a0f0acf4e348906476758240606f2d5ddb7014be7426040b3e",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "87705315461c3095df91f28a2b05064451aefb1907a1591c59ff6da236ab8b96",
+    "services/api-gateway/src/__tests__/storefront-discovery.test.ts": "c6c308594df83573e6310905bb0c3c3e09e51bf647443a8bf3a5c709d22cf86a",
+    "services/api-gateway/src/routes/storefront.ts": "04a3f8a26f6b63e1b8aa84664494caa5944d84f5d73c82f0ed8c076f6fad8a49",
+    "services/api-gateway/src/routes/storefront/public-routes.ts": "21a7e4e2ffc46c1d50305a8b08360ddbac86edd06058b921a6ff06729a37163c",
+    "services/api-gateway/src/__tests__/owned-db/storefront-discovery.postgres.test.ts": "ae2ff3195ee38c54a39dae4ef3a1873a360db75974b1725349aebdaf26114643",
+    "services/api-gateway/src/__tests__/storefront-product-detail.test.ts": "41132519775e75757c71830654b633489f635dfd17edbecfc2408dd1fbc24303",
+    "packages/typescript/api-client/src/index.ts": "f3f8d9cdb8c8fb2d0bccff032e9eb195154529ee6c9e795fa14611367542f3ce",
+    "packages/typescript/api-client/tsconfig.json": "6afb5f69699b2541c846236563c2e60932c057aa4485dc45b47ef1496a72b47a",
+    "scripts/governance/run-executable-suites.mjs": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213",
+    "scripts/governance/owned-database-provision.mjs": "e537a426bf0284a32d49728f31ea55d5d265f1dc5562ccb527a36c55eaaa0db7",
+    "tests/governance/storefront-discovery-migration-ceiling.test.mjs": "4b9e5fdf5afbba8a71070da188e11aa83e9a9c0a69ccadabc191e43aa524ed21",
+    "tests/governance/gateway-db-lane.test.mjs": "be7a9cb413a2842cd84cc5a8c8ab1696a7753558813772d13b6c8abe4bb1630e",
+    "database/supabase/migrations/386_storefront_discovery.sql": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+    "database/supabase/rollback/386_storefront_discovery.rollback.sql": "775db15081b25b1eeaa2d646fcb4695ec520f9d7ab470035cb40f8c979fdd2b5"
+  },
+  "validation": {
+    "ownedPostgres": 11,
+    "coreGatewayContract": 10,
+    "sdkTransport": 3,
+    "adjacentContracts": 25,
+    "runnerGovernance": 23,
+    "typechecks": [
+      "commerce-core",
+      "api-client",
+      "api-gateway"
+    ],
+    "diffCheck": "pass"
+  },
+  "resources": {
+    "db": "released, no resources remain",
+    "browser": "none",
+    "build": "none"
+  },
+  "separateIntegrationDefect": "Core default editor load\u2192save schema mismatch; owned-db-attempt-03.log",
+  "frontendOwner": "Trailmark",
+  "commonDemoOwner": "Marketplace"
+}

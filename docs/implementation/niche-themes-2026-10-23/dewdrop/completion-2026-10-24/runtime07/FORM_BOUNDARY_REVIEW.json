@@ -1,0 +1,56 @@
+{
+  "recordedAtUtc": "2026-10-24T20:16:03.503154+00:00",
+  "classification": "FINITE_CURRENT_CONTACT_NEWSLETTER_BOUNDARY_REVIEW_SOURCE_ONLY",
+  "runId": "49ada80bc494",
+  "sourcePins": [
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/services/api-gateway/src/routes/contacts.ts",
+      "sha256": "7d8a38ac18ce11a54a93100908bbddc8fc3c505cc1de5cbb67a758bfddad5d0d"
+    },
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/services/api-gateway/src/middleware/security.ts",
+      "sha256": "c9018ef6b5abf73d009dc5db497192e723a04a3b4213a65c8bd1936e6400c30c"
+    },
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/services/api-gateway/src/lib/public-errors.ts",
+      "sha256": "dd95aa7264f8e9241668e3a2e62c904f5fc2aa4acfd4c37b0510f25d61fa9597"
+    },
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/services/api-gateway/src/index.ts",
+      "sha256": "2e09544758421094c564d6629ef89b2abed4210b7a4a2f0d7743109521debb19"
+    },
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/apps/commerce/web/src/proxy.ts",
+      "sha256": "5a03c59a8d72c32b7a8e9437515ae0232138d51b5fb53a331ac191bbfd9f24a8"
+    },
+    {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    }
+  ],
+  "DD-FIND-007": {
+    "priorClaim": "Contacts route returns raw error.message on DB_ERROR and was described as a source security defect. No actual client leak was induced.",
+    "correctedDisposition": "Route body still contains raw message, but current worker globally registers errorResponseSanitizer before APIroutes. It processes JSONresponses with status>=400, uses sanitizePublicErrorPayload, fixes DB_ERROR message to Database operation failed and removes debug fields. External leakage is not established by the route body alone.",
+    "status": "PUBLIC_LEAK_CLAIM_NOT_ESTABLISHED_GLOBAL_CANONICAL_GUARD_PRESENT",
+    "implementationFixApplied": false,
+    "requiredRemaining": "If an owned failure cohort is admitted, observe actual mounted gateway/contact response and sanitized diagnostics; do not infer live security acceptance from this source trace.",
+    "rule": "Reuse/complete existing canonical public-error boundary; do not add a parallel sanitizer or duplicate route."
+  },
+  "DD-FIND-006": {
+    "status": "SOURCE_FORM_CONTRACT_MISMATCH_RETAINED_LIVE_NOT_RUN",
+    "form": "Inherited newsletter POST/contact provides email only",
+    "proxy": "handleContactSubmit requires name and email orphone before canonical POST/v1/contacts",
+    "resultClaim": "No actualPOST/status/subscription/emaildelivery is claimed.",
+    "authority": "Canonical consent ledger/identity plus existing API owner must resolve subscription semantics; acontactlead is not marketingconsent. Do not synthesize name or weakenguard."
+  },
+  "operations": {
+    "MainWrites": 0,
+    "candidateWrites": 0,
+    "browser": 0,
+    "HTTP": 0,
+    "DB": 0,
+    "nativeOrBuild": 0,
+    "provider": 0
+  },
+  "newBrowserPasses": 0
+}

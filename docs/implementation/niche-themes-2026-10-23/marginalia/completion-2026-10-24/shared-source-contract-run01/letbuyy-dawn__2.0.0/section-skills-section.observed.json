@@ -1,0 +1,162 @@
+{
+  "id": "section-skills-section",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "skills-section",
+    "group": "template",
+    "firstId": "section-459a2ff5-334a-4e20-98f8-81593bd1a527",
+    "finalId": "section-5c57f090-d3f2-4e20-9956-3614e6b48c83",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "skills-section",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-b13cf1f9-3120-4e3f-a3c0-a0b6403b1234": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-2759d2f0-15b1-49f5-b095-9eff5ef8d43e": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-b13cf1f9-3120-4e3f-a3c0-a0b6403b1234",
+            "block-2759d2f0-15b1-49f5-b095-9eff5ef8d43e"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "skills-section",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-2759d2f0-15b1-49f5-b095-9eff5ef8d43e": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-b13cf1f9-3120-4e3f-a3c0-a0b6403b1234": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-2759d2f0-15b1-49f5-b095-9eff5ef8d43e",
+            "block-b13cf1f9-3120-4e3f-a3c0-a0b6403b1234"
+          ],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "skills-section",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-2759d2f0-15b1-49f5-b095-9eff5ef8d43e": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-b13cf1f9-3120-4e3f-a3c0-a0b6403b1234": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-2759d2f0-15b1-49f5-b095-9eff5ef8d43e",
+            "block-b13cf1f9-3120-4e3f-a3c0-a0b6403b1234"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "skills-section",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {
+            "block-064fba7c-4960-44e2-870b-dc1aca36625c": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-59b2ad4f-5179-4b62-adf9-02000d21aa40": {
+              "type": "skill",
+              "settings": {
+                "name": "Source fixture name",
+                "level": 0
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-064fba7c-4960-44e2-870b-dc1aca36625c",
+            "block-59b2ad4f-5179-4b62-adf9-02000d21aa40"
+          ],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "releasedAt": "2026-10-24T03:51:50.526900+00:00",
+  "status": "SOURCE_RELEASED_WAITING_ROOT_INDEPENDENT_ADMISSION_CONTROLLED_REBUILD_EDITOR_LIVE_RETEST",
+  "authorization": "Themes coordinator bounded existing canonical merchant axis-NAME rename allocation following actual Editor936 Dewdrop O03 read-only name blocker. Only page/state and adjacent focused tests. No live work allocated here.",
+  "sourceEpoch": "2fe61eef68cd2c30bb2b378bd3acb21da0bb8d469810879d3470c3e4498068d9",
+  "scope": "Normal existing option axis NAME rename retaining physical position/values and every variant row/UUID; deliberate existing shadeOptionName select rebinding, parent Save/reload via unchanged canonical writer.",
+  "changedFiles": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "3d0c279d6ccb7344abf3801f7bda0e53d892a9e76057e5494e0b9211ddd22306",
+      "bytes": 34028
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "d092e9e2859b61e3cfdf1f9f54bc670fe8c9ffc757e486b1abad5612d1882877",
+      "bytes": 92137
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "63dfaea142b13d4eb765bc17851c835054dd3afbabca910db9454195aa83dd71",
+      "bytes": 111192
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-name.test.ts",
+      "sha256": "78a5b4d6eca011d02246125b6e3b0e6c0915412f98b8720d59e9207781866174",
+      "bytes": 8044
+    }
+  ],
+  "releasedSnapshotRoot": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/released",
+  "behavior": [
+    "Existing per-axis Rename opens existing DS modal as name intent; trim/nonblank/100-character/distinct-name validation, keyboard/Cancel/Escape/IME/focus and context guard retained.",
+    "Only the selected axis name changes. Variant rows are never regenerated: IDs/SKU/prices/stock/fact draft baselines remain unchanged; serializer naturally emits the renamed option key.",
+    "Named beauty binding remains visible and invalid until merchant deliberately selects the renamed axis using existing Shade product option control. Canonical planner rejects stale shade references; metadata namespaces and shade entries are not silently dropped or rewritten.",
+    "Reserved __proto__ setter key refused in this new rename helper after genuine RED demonstrated existing serializer cannot emit it safely; serializer/schema/API untouched.",
+    "Unchanged parent/existing-variant stock remains omitted; explicit zero/create/new intent retained. Pending retry payload/key/signatures remain exact and newer edits remain separate."
+  ],
+  "validation": {
+    "focusedTotalPass": 51,
+    "newTests": 12,
+    "existingRelatedTests": 39,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0,
+    "genuineRedCount": 3,
+    "merchantNoEmitExit": 0,
+    "lintErrors": 0,
+    "introducedLintMessages": 0,
+    "existingLintWarnings": 11,
+    "full124OrNative19Repeated": false
+  },
+  "conservation": {
+    "existingStateBodiesByteExact": true,
+    "oldMountedTestsByteExact": true,
+    "protectedFilesExact": true,
+    "a483Exact": true,
+    "productionChangedFileCount": 2,
+    "noDomainApiSqlChanges": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/before-pins.json",
+      "sha256": "dab39dc9e206ca70bd9f252ffe34f09bfa75973c44c4af7b4cb7d8b3d01d70aa",
+      "bytes": 1705
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/source.patch",
+      "sha256": "55fc2accd63b623b4600f4610353895f4fa24b691e83aa75f43161ad9a4f814a",
+      "bytes": 28487
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/conservation.json",
+      "sha256": "f1ffb89e28397fffba3f9bd5df42988c4efd080c2f1edbaccb201d09554916a0",
+      "bytes": 1511
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/verification-results.json",
+      "sha256": "635814839f85b2a8f974ccc81140f6b6bf141ea90fb54c4ac41abe33b0389979",
+      "bytes": 1777
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/red.tap",
+      "sha256": "a097c75295fee7404a5b7cbce77b8ad4cc2af99e92457b2b357bd790d82fe2b7",
+      "bytes": 2063
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/reserved-name-red.tap",
+      "sha256": "df81642e5d872147b6292916d2c1a8c4b524b2a936fd4d7d7b78e2c2ea5448e5",
+      "bytes": 1015
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/first-mounted.tap",
+      "sha256": "a896d9226f8a112f9e27343c299a3e904b98424e716b91b40d7af84004ed7006",
+      "bytes": 656
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/axis-name-first.tap",
+      "sha256": "a3bb515f6552492d05b80f5b5189a75ed10ed413a3ceb16828c08630c69d2355",
+      "bytes": 2734
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/related-pure.tap",
+      "sha256": "4c8488ae20665921776ac795c7c283a8964dba2ed38026be9e0e9ad4e3c071b8",
+      "bytes": 8446
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/related-mounted.tap",
+      "sha256": "f267f7a6fee62a32da0ff65be37d5662a570667140c7a532d2efcf223c9fc1a6",
+      "bytes": 4994
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/merchant-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/baseline-eslint.json",
+      "sha256": "37966d0e56637c1800fc96b5ebb36ff21cabb5b07d63a91daab4e8be1ff50ae7",
+      "bytes": 114286
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/scoped-eslint.json",
+      "sha256": "cebba41abde65da987c2da37673f1751d21d56eb6a5267e9faa89ee38b01f253",
+      "bytes": 122201
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/scoped-eslint.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-rename/lint-comparison.json",
+      "sha256": "64113108a7547ee789036cfc0355d1b9c294a32f582a105963d12867bc0999e0",
+      "bytes": 149
+    }
+  ],
+  "installedProof": {
+    "current936PatchedHere": false,
+    "normalLiveAxisNameSaveReload": "NOT_RUN",
+    "DewdropO03": "NOT_RUN_HERE",
+    "MarginaliaCases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "NOT_RUN": 16
+    },
+    "MGProductCartOrderBindings": null,
+    "MGActiveLease": false
+  },
+  "nextOwnerActions": [
+    "Themes independent source admission and controlled isolated proper client rebuild/copy, optionally combined with separately owned admitted font fix. No external copy/restart of current936 by Marginalia.",
+    "Editor allocated normal axis name rename Shade name→Renamed shade option, explicit Shade product option binding update, Save/full reload with actual same UUID/values/facts/prices/stock readback.",
+    "Separate fresh named Marginalia16 binding-slice grant after predecessor/time assessment; historical reservation is not a data/browser lease."
+  ],
+  "sourceLeaseHandedBack": true,
+  "furtherSourceEditsRequireFreshAllocation": true
+}

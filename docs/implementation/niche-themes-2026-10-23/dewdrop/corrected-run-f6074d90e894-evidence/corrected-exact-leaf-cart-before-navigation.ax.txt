@@ -1,0 +1,46 @@
+Browser tab: 18, Title: "Cart | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart".
+0 AXWebArea Cart | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+	1 container
+		2 text Dewdrop shared header f6074d90e894
+		3 link syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+		8 link Description: Cart ( 2 ), Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		9 heading Your cart, Value: 1
+			10 text Your cart
+		11 container
+			12 content list
+				13 container
+					14 text Fixture Soft Colour Shade name: Pink Clay · पैक आकार: एक इकाई Saved options
+Shade name: Pink Clay
+पैक आकार: एक इकाई
+
+Care details
+Routine stage: colour
+Product format: Lip tint
+Per-item net quantity: 6 ml
+Selected shade: Pink Clay
+Shade code: PC02
+Supplied colour reference: #a36a65
+Product ingredient statement: Common tint v1: fixture oil and wax; see named shade ingredients.
+Selected-shade ingredients: Pink Clay v1: fixture oil, CI 77492.
+Directions: Fixture directions v1: use as supplied.
+Warnings: Fixture warning v1: external use only.
+					15 button Decrease quantity of Fixture Soft Colour, Shade name: Pink Clay · पैक आकार: एक इकाई
+					16 text 2
+					17 button Increase quantity of Fixture Soft Colour, Shade name: Pink Clay · पैक आकार: एक इकाई
+					18 button Remove Fixture Soft Colour, Shade name: Pink Clay · पैक आकार: एक इकाई
+			19 text Subtotal ₹1,120 Total ₹1,120
+			20 link Description: Proceed to checkout, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/checkout
+		21 heading Threadline, Value: 3
+			22 text Threadline
+		23 text Dewdrop shared footer f6074d90e894
+		24 heading CONTACT, Value: 4
+			25 text CONTACT
+		26 link Description: Contact us, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/contact
+		27 text © Threadline. All rights reserved.
+		28 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 0 AXWebArea Cart | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T21:15:38.261070+00:00",
+  "id": "TM-R07-SEQUENCE-01",
+  "classification": "CONTROLLER_OBSERVED_EXECUTION_SEQUENCE_DEVIATION_NOT_A_PROVIDER_OR_PRODUCT_FAULT",
+  "status": "CONFIRMED_TEST_INCH_CONSUMPTION_ORIGINAL_STOCK_PRECONDITION_REQUIRES_ALLOCATOR_DISPOSITION",
+  "runId": "49ada80bc494",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "productId": "22446d70-4e10-41f0-97f0-55662eeea763",
+  "planned": "Separate urgent Test purchase on COMMON so original INCH stock4 remains available for localCOD4to3.",
+  "observed": "Controller selected INCH26.5in/80g, normal cart recovered exact facts, hostedquote1820; actual Testpayment in progress as of cursor109.",
+  "controllerMessage": {
+    "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "messageId": "msg_0c467e4fedfaeb11016add1f4ecc3c819182a5e3ed901dc04f",
+    "cursor": "51712cb0-c119-4027-97c5-69539082064e:109"
+  },
+  "plannedRequestAtObservation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_CONTROLLER_REQUEST.json",
+    "sha256": "4e9cd5229b61328d17cff9c7b56b79d3f3dd85aee5a8af2983ccaade923516d6"
+  },
+  "beforeStockReceipt": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-before-stock.json",
+    "sha256": "c00b505b131a9c9df838300c9972dcda6ab706ef4cb064f37ce6f0b0367e1143"
+  },
+  "beforeStock": {
+    "INCH": {
+      "id": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+      "stock": 4,
+      "inventoryQty": 4
+    },
+    "COMMON": {
+      "id": "69729510-82e4-44fa-8892-19bbd9d59700",
+      "stock": 4,
+      "inventoryQty": 4
+    }
+  },
+  "uiEvidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-26inch-selected.png",
+      "sha256": "8943a76a7d26f819ce7993d41483d0a3866f8a366dded7a0dd34cb5b2d31fc6e"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-recovery-required.png",
+      "sha256": "0a4061734e85d1373b34dbf27a88e4a45eab72e92f558af124b19913e02690fd"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-restored.png",
+      "sha256": "ac57c5708c1c8589bc0ee3f4845f24372a02bea37a3f061231190aadde7fbcc9"
+    }
+  ],
+  "currentPaymentOutcome": "CONFIRMED_PAID_RAZORPAY_TEST_ORDER_10006",
+  "originalCaseImplications": [
+    "If Testcapture consumes INCH4to3, original futureO01INCH4to3 and C01stock4 preconditions are no longer untouched on the sameUUID. Keep original expectation and actualdelta separate; do not call future3to2 the original4to3.",
+    "Do not refill/reset stock, invent a COMMON order, create a replacement variant, replay payment or make another purchase to repair sequencing. Existing valid actualTest purchase may still supply its genuine payment clauses.",
+    "H01/H02 Testorder immutable snapshot must be audited against the actual acceptedINCH facts if captured; plannedCOMMON67.5cm order was not executed. OriginalCODorder remains independentlyrequired.",
+    "Record exactorder/stock/reservations at readback. No failure of canonicalstockenforcement is inferred from this test-sequencing deviation."
+  ],
+  "dispositionRequested": "Current solecontroller/allocator to qualify remaining original cases using actual conserved inventory and preserve the originalstockprecondition gap. No new directthemeowner runtime access is requested or granted.",
+  "reportPrivacy": "No capability, cookie, credential, buyercontact or privateSupplier value retained.",
+  "newSourceEdits": [],
+  "newRuntimeActionsByOwner": [],
+  "updatedAt": "2026-10-24T21:26:10.548735+00:00",
+  "actualOrderId": "c2991cb7-d637-4f11-86d4-fe02252dfc7f",
+  "actualAfterStockReceipt": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-after-stock.json",
+    "sha256": "f0d92410cf3fce662dae5c3dbd58055f93081b3b0f7c98b2abd65c8de0961d0d"
+  },
+  "authorizedFinancialReceipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/TRAILMARK_ORDER_10006_READONLY_CORRELATION.json",
+    "sha256": "2cd3c02939d845128a3ac1cc78eb3be6a9efc53a862077498c34a0555ba32c8f"
+  },
+  "actualAfterStock": {
+    "INCH": 3,
+    "COMMON": 4
+  }
+}

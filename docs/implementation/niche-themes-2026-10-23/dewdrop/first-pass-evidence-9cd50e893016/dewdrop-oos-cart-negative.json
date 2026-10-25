@@ -1,0 +1,14 @@
+{
+  "classification": "ACTUAL_ANONYMOUS_GATEWAY_NEGATIVE_NOT_UI_CART",
+  "runId": "9cd50e893016",
+  "productId": "f5c6ac15-926c-4cb1-a9c5-c9f4912881df",
+  "variantId": "df8fd727-ebee-4466-8e37-1630fef93ef3",
+  "quantity": 1,
+  "status": 409,
+  "error": {
+    "code": "INSUFFICIENT_INVENTORY",
+    "message": "The combined quantity for a selected product exceeds current availability."
+  },
+  "requestId": null,
+  "responseSha256": "dc052ee27d92c2d159484eb4bb2847c415e6676d60ae206a0479f4c8b7d1bcba"
+}

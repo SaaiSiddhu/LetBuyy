@@ -44,7 +44,7 @@
  *   onSelect(url) emits the CDN URL only; never touches section_definitions.
  *
  * ── Design ratchet ────────────────────────────────────────────────────────────
- *   Uses @letbuyy/ui (Button, Input, MaterialIcon).
+ *   Uses @letbuyy/ui (Button, Input; Lucide icons).
  *   --lb-* design tokens only (no raw px / rounded-[Npx]).
  *   Mobile-first 2-column grid, scales to 3+ on wider panels.
  *   en-IN locale for file-size display.
@@ -52,8 +52,9 @@
  *   No unsafe inner HTML injection; no Supabase direct.
  */
 
+import { CircleAlert, CirclePlay, CloudOff, Images, LoaderCircle, Search, Upload, X } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
-import { Button, Input, MaterialIcon } from '@letbuyy/ui'
+import { Button, Input } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -487,13 +488,13 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                         aria-label="Close media library"
                         onClick={onClose}
                     >
-                        <MaterialIcon name="close" size={18} aria-hidden />
+                        <X  size={18} aria-hidden />
                     </Button>
                 </div>
 
                 {/* Search */}
                 <div className={styles.mediaLibrarySearch}>
-                    <MaterialIcon name="search" size={15} aria-hidden className={styles.searchIcon} />
+                    <Search size={15} aria-hidden className={styles.searchIcon} />
                     <Input
                         unstyled
                         type="search"
@@ -510,11 +511,13 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                     <label
                         className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''} ${styles.mediaUploadBtn}`}
                     >
-                        <MaterialIcon
-                            name={isUploading ? 'hourglass_top' : 'cloud_upload'}
+                        {isUploading ? <LoaderCircle
+
                             size={15}
-                            aria-hidden
-                        />
+                            aria-hidden /> : <Upload
+
+                            size={15}
+                            aria-hidden />}
                         {isUploading ? 'Uploading…' : 'Upload new'}
                         <Input
                             unstyled
@@ -548,7 +551,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                     {/* Upload error */}
                     {uploadError ? (
                         <p className={styles.mediaUploadError} role="alert">
-                            <MaterialIcon name="error" size={12} aria-hidden />
+                            <CircleAlert size={12} aria-hidden />
                             {' '}{uploadError}
                         </p>
                     ) : null}
@@ -557,7 +560,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* NOT-CONNECTED badge */}
                 {isNotConnected ? (
                     <div className={styles.mediaNotConnected} aria-live="polite">
-                        <MaterialIcon name="cloud_off" size={13} aria-hidden />
+                        <CloudOff size={13} aria-hidden />
                         <span>
                             NOT-CONNECTED — media library gateway route not yet deployed.
                             Upload works; browsing existing media will be available once
@@ -569,7 +572,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* Loading state */}
                 {loadState === 'loading' ? (
                     <div className={styles.mediaLibraryStatus} aria-live="polite">
-                        <MaterialIcon name="hourglass_top" size={16} aria-hidden />
+                        <LoaderCircle size={16} aria-hidden />
                         Loading media…
                     </div>
                 ) : null}
@@ -577,7 +580,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* Error state */}
                 {loadState === 'error' ? (
                     <div className={`${styles.mediaLibraryStatus} ${styles.mediaLibraryStatusError}`} aria-live="assertive">
-                        <MaterialIcon name="error" size={16} aria-hidden />
+                        <CircleAlert size={16} aria-hidden />
                         {loadError ?? 'Failed to load media'}
                     </div>
                 ) : null}
@@ -585,7 +588,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* Empty state */}
                 {loadState === 'loaded' && items.length === 0 && !isNotConnected ? (
                     <div className={styles.mediaLibraryStatus} aria-live="polite">
-                        <MaterialIcon name="photo_library" size={20} aria-hidden />
+                        <Images size={20} aria-hidden />
                         <span>
                             {search ? 'No media matches your search.' : 'No media uploaded yet.'}
                         </span>
@@ -633,7 +636,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                                 {/* Thumbnail */}
                                 {item.media_type === 'video' ? (
                                     <div className={styles.mediaThumbVideo}>
-                                        <MaterialIcon name="play_circle" size={24} aria-hidden />
+                                        <CirclePlay size={24} aria-hidden />
                                     </div>
                                 ) : (
                                     // eslint-disable-next-line @next/next/no-img-element

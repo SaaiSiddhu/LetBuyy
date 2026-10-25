@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-23T09:02:44.903Z",
+  "classification": "IN_PROCESS_RENDER_FORMDATA_CANONICAL_QUERY_ONLY_NOT_SQL_BROWSER_OR_INSTALLED_ACCEPTANCE",
+  "networkCalls": 0,
+  "sources": [
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863"
+    },
+    {
+      "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+      "sha256": "87705315461c3095df91f28a2b05064451aefb1907a1591c59ff6da236ab8b96"
+    }
+  ],
+  "observations": [
+    {
+      "route": "collection",
+      "check": "apply/sort/search preservation",
+      "canonicalKeys": [
+        "page",
+        "limit",
+        "search",
+        "category",
+        "country_of_origin",
+        "sort",
+        "collection_id",
+        "size",
+        "color",
+        "min_price",
+        "max_price",
+        "age_band",
+        "interest",
+        "electronics_kind",
+        "connector",
+        "power_input_w",
+        "power_output_w",
+        "power_capacity_w",
+        "pass_through_output_w",
+        "data_rate_mbps",
+        "length_mm",
+        "pack_size",
+        "material",
+        "finish",
+        "max_width_cm",
+        "max_depth_cm",
+        "occasion",
+        "recipient",
+        "personalization_method",
+        "routine_stage",
+        "format",
+        "shade",
+        "activity",
+        "equipment_type",
+        "length_value",
+        "length_unit",
+        "books_kind",
+        "books_author",
+        "books_subject",
+        "books_language",
+        "books_format",
+        "books_ruling"
+      ],
+      "connector": [
+        "usb-c",
+        "hdmi"
+      ],
+      "status": "pass"
+    },
+    {
+      "route": "collection",
+      "check": "independent clear and pagination",
+      "filters": 38,
+      "status": "pass"
+    },
+    {
+      "route": "collection",
+      "check": "empty matches",
+      "suppliedGiftChoices": 0,
+      "status": "pass"
+    },
+    {
+      "route": "search",
+      "check": "apply/sort/search preservation",
+      "canonicalKeys": [
+        "page",
+        "limit",
+        "search",
+        "category",
+        "country_of_origin",
+        "sort",
+        "collection_id",
+        "size",
+        "color",
+        "min_price",
+        "max_price",
+        "age_band",
+        "interest",
+        "electronics_kind",
+        "connector",
+        "power_input_w",
+        "power_output_w",
+        "power_capacity_w",
+        "pass_through_output_w",
+        "data_rate_mbps",
+        "length_mm",
+        "pack_size",
+        "material",
+        "finish",
+        "max_width_cm",
+        "max_depth_cm",
+        "occasion",
+        "recipient",
+        "personalization_method",
+        "routine_stage",
+        "format",
+        "shade",
+        "activity",
+        "equipment_type",
+        "length_value",
+        "length_unit",
+        "books_kind",
+        "books_author",
+        "books_subject",
+        "books_language",
+        "books_format",
+        "books_ruling"
+      ],
+      "connector": [
+        "usb-c",
+        "hdmi"
+      ],
+      "status": "pass"
+    },
+    {
+      "route": "search",
+      "check": "independent clear and pagination",
+      "filters": 38,
+      "status": "pass"
+    },
+    {
+      "route": "search",
+      "check": "empty matches",
+      "suppliedGiftChoices": 0,
+      "status": "pass"
+    },
+    {
+      "check": "existing sanitizer boundary",
+      "source": "DOMPurify SAFE_FOR_XML rejects closing script tags in attribute values",
+      "status": "unchanged"
+    }
+  ]
+}

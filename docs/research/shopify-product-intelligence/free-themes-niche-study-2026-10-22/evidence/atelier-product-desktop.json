@@ -1,0 +1,573 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "\"Red Hat Text\", sans-serif",
+    "fontSize": "12px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD TO CART",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ADD TO CART",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "BUY IT NOW",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "DESCRIPTION",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CARE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "DESIGN",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Learn",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Connect",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 13.1953125,
+      "line": "13.2px",
+      "size": "12px",
+      "tag": "H3",
+      "text": "Monolit",
+      "weight": "400",
+      "width": 284.0625,
+      "x": 497.59375,
+      "y": 1050.59375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 52.796875,
+      "line": "52.8px",
+      "size": "48px",
+      "tag": "H1",
+      "text": "Monolit",
+      "weight": "200",
+      "width": 400,
+      "x": 866,
+      "y": 124
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "You may also like",
+      "weight": "200",
+      "width": 780,
+      "x": 330,
+      "y": 5358
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Sign up for our newsletter",
+      "weight": "200",
+      "width": 240.859375,
+      "x": 992,
+      "y": 5973.7265625
+    }
+  ],
+  "links": [
+    {
+      "text": "SKIP TO CONTENT",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186#MainContent"
+    },
+    {
+      "text": "NEW IN",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/sera-mia-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/monolit-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/neo-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-bordeaux"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-black"
+    },
+    {
+      "text": "BAGS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/mini-bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/shoulder-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/tote-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/crossbody-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/clutches-pouches"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/sera-mia-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/neo-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/pandora"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/atlas"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-her"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-him"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-earth"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-cappuccino"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/business-bag-bordeaux"
+    },
+    {
+      "text": "SHOES",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/shoes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/flats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/heels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-south-america"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-black-gray"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/louise-slide-sandal-denim"
+    },
+    {
+      "text": "ACCESSORIES",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/wallets-small-leather-goods"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/belts"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/naomi-mini-wallet-duck-green"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/naomi-mini-wallet-scuba"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/products/naomi-mini-wallet-bordeaux"
+    },
+    {
+      "text": "",
+      "url": "https://theme-atelier-demo.myshopify.com/"
+    },
+    {
+      "text": "SKIP TO PRODUCT INFORMATION",
+      "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186#ProductInformation-template--26420035879210__main"
+    },
+    {
+      "text": "NEW THIS SEASON",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/whats-new"
+    },
+    {
+      "text": "ACCESSORIES",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "ALL BAGS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/bags-1"
+    },
+    {
+      "text": "GIFTS",
+      "url": "https://theme-atelier-demo.myshopify.com/collections/gifts-for-her"
+    },
+    {
+      "text": "SHIPPING",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "RETURNS",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "BLOG",
+      "url": "https://theme-atelier-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "ABOUT US",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "CONTACT US",
+      "url": "https://theme-atelier-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Atelier",
+      "url": "https://theme-atelier-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035879210__main",
+      "rect": {
+        "height": 5310,
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "DIV",
+      "text": "Monolit\n$475.00\nADD TO CART\nSKIP TO PRODUCT INFORMATION\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL S"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26420035879210__product_recommendations_iK4dxB",
+      "rect": {
+        "height": 587.7265625,
+        "width": 1440,
+        "x": 0,
+        "y": 5310
+      },
+      "tag": "DIV",
+      "text": "You may also like"
+    }
+  ],
+  "title": "Monolit – Atelier",
+  "url": "https://theme-atelier-demo.myshopify.com/products/monolit-patent-brown?variant=50126916518186",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "product-information__grid product-information--media-left product-information__grid--half product-information__grid--limit-details",
+      "columns": "40px 680px 680px 40px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 5236,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "media-gallery__grid list-unstyled",
+      "columns": "708px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 5310,
+      "tag": "UL",
+      "width": 708
+    },
+    {
+      "className": "resource-list resource-list--grid",
+      "columns": "328px 328px 328px 328px",
+      "display": "grid",
+      "gap": "16px",
+      "height": 437.328125,
+      "tag": "DIV",
+      "width": 1360
+    }
+  ],
+  "images": [
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 120,
+      "rect": {
+        "height": 52,
+        "width": 52
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 885,
+        "width": 708
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 885,
+        "width": 708
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 885,
+        "width": 708
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 885,
+        "width": 708
+      }
+    },
+    {
+      "alt": "Monolit",
+      "complete": true,
+      "naturalWidth": 668,
+      "rect": {
+        "height": 885,
+        "width": 708
+      }
+    }
+  ],
+  "bodyText": "SKIP TO CONTENT\nNEW IN\nBAGS\nSHOES\nACCESSORIES\nTotal items in cart: 0\nMonolit\n$475.00\nADD TO CART\nSKIP TO PRODUCT INFORMATION\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nOPEN IMAGE IN FULL SCREEN\nMonolit\n$475.00\nADD TO CART\nBUY IT NOW\n\nThis is a demonstration store. You can purchase products like this from mlouye\n\nDESCRIPTION\nCARE\nDESIGN\nYou may also like\nShop\nNEW THIS SEASON\nACCESSORIES\nALL BAGS\nGIFTS\nLearn\nSHIPPING\nRETURNS\nBLOG\nABOUT US\nConnect\nFACEBOOK\nINSTAGRAM\nTIKTOK\nCONTACT US\nSign up for our newsletter\nEmail\n© 2026 Atelier, Powered by Shopify"
+}

@@ -1,0 +1,29 @@
+{
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "files": [
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "sha256": "bd8f89f7e856c681b8e1997b1855da90ad7018e2289f5372e1126fd675247d48"
+    },
+    {
+      "path": "packages/typescript/ui/src/layout.tsx",
+      "sha256": "05adaa7921dbaf244f3e32162a4d9df409979a0f57c24bcf8296a6bd37697a62"
+    },
+    {
+      "path": "packages/typescript/ui/src/feedback.tsx",
+      "sha256": "062890759247c33fc1414206284d7cdf069eb213aa6251a04d34d139054da313"
+    },
+    {
+      "path": "packages/typescript/ui/src/productivity.tsx",
+      "sha256": "76aca7e89c9866a9609b4c0a0cb187c1488820e015a8f8d1f26b7bfaefae4e4b"
+    },
+    {
+      "path": "apps/merchant/web/src/app/globals.css",
+      "sha256": "2318c085dcd07f50e4f8ab47005bc4453c07bbd91c03793537350fe2ad929da6"
+    },
+    {
+      "path": "apps/merchant/web/src/components/settings/SettingsPane.tsx",
+      "sha256": "5a0689e3ece6f55e5797dc2ace68e940466a57bcad94e19c6b3cddc2c760746c"
+    }
+  ]
+}

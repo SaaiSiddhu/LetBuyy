@@ -1,0 +1,577 @@
+{
+  "classification": "PURE_SCHEMA_AND_PRESENTATION_EXPECTATIONS_NOT_EXECUTED_RUNTIME",
+  "runtimeStatus": "NOT_RUN",
+  "syntacticBindingsAreNotRuntimeIds": true,
+  "products": {
+    "sports": {
+      "commonDisplay": {
+        "length": "67.5 cm",
+        "weight": "85 g",
+        "dimensions": "67.5 × 26 × 2 cm"
+      },
+      "variants": {
+        "26.5 in": {
+          "display": {
+            "length": "26.5 in",
+            "weight": "80 g",
+            "dimensions": "26.5 × 10 in"
+          },
+          "priceMajor": 1800,
+          "available": true
+        },
+        "Common size": {
+          "display": {
+            "length": "67.5 cm",
+            "weight": "85 g",
+            "dimensions": "67.5 × 26 × 2 cm"
+          },
+          "priceMajor": 1800,
+          "available": true
+        }
+      }
+    },
+    "sportsWitness": {
+      "commonDisplay": {
+        "length": "67.5 cm",
+        "weight": "85 g",
+        "dimensions": "67.5 × 26 × 2 cm"
+      },
+      "variants": {
+        "Small frame S": {
+          "display": {
+            "length": "67.5 cm",
+            "weight": "84 g",
+            "dimensions": "67.5 × 26 × 2 cm"
+          },
+          "priceMajor": 500,
+          "available": true
+        },
+        "Medium frame M": {
+          "display": {
+            "length": "700 mm",
+            "weight": "90 g",
+            "dimensions": "700 × 270 mm"
+          },
+          "priceMajor": 1000,
+          "available": true
+        },
+        "Unavailable frame L": {
+          "display": {
+            "length": "254 mm",
+            "weight": "75 g",
+            "dimensions": "67.5 × 26 × 2 cm"
+          },
+          "priceMajor": 400,
+          "available": false
+        }
+      }
+    },
+    "sportsNoLength": {
+      "commonDisplay": {
+        "weight": "120 g",
+        "grip": "84 mm",
+        "dimensions": "50 × 20 × 15 cm"
+      },
+      "variants": {}
+    }
+  },
+  "snapshots": {
+    "sports.26.5 in": {
+      "snapshotContent": {
+        "version": 1,
+        "facts": {
+          "sports": {
+            "version": 1,
+            "activity": "Badminton",
+            "equipmentType": "racket",
+            "length": {
+              "value": 26.5,
+              "unit": "in"
+            },
+            "weight": {
+              "value": 80,
+              "unit": "g"
+            },
+            "dimensions": {
+              "length": 26.5,
+              "width": 10,
+              "unit": "in"
+            },
+            "compatibility": {
+              "status": "unconfirmed"
+            }
+          }
+        },
+        "selected_options": [
+          {
+            "name": "Length",
+            "value": "26.5 in"
+          }
+        ]
+      },
+      "summarySections": [
+        {
+          "id": "selected-options",
+          "title": "Saved options",
+          "rows": [
+            {
+              "label": "Length",
+              "value": "26.5 in"
+            }
+          ]
+        },
+        {
+          "id": "sports",
+          "title": "Equipment details",
+          "rows": [
+            {
+              "label": "Activity",
+              "value": "Badminton"
+            },
+            {
+              "label": "Equipment type",
+              "value": "racket"
+            },
+            {
+              "label": "Length",
+              "value": "26.5 in"
+            },
+            {
+              "label": "Weight",
+              "value": "80 g"
+            },
+            {
+              "label": "Dimensions",
+              "value": "Length 26.5 in · Width 10 in"
+            },
+            {
+              "label": "Materials",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Contents",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Use conditions",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Compatibility status",
+              "value": "Unconfirmed."
+            },
+            {
+              "label": "Compatibility reference",
+              "value": "Not recorded with this order."
+            }
+          ]
+        }
+      ]
+    },
+    "sports.Common size": {
+      "snapshotContent": {
+        "version": 1,
+        "facts": {
+          "sports": {
+            "version": 1,
+            "activity": "Badminton",
+            "equipmentType": "racket",
+            "length": {
+              "value": 67.5,
+              "unit": "cm"
+            },
+            "weight": {
+              "value": 85,
+              "unit": "g"
+            },
+            "dimensions": {
+              "length": 67.5,
+              "width": 26,
+              "height": 2,
+              "unit": "cm"
+            },
+            "compatibility": {
+              "status": "unconfirmed"
+            }
+          }
+        },
+        "selected_options": [
+          {
+            "name": "Length",
+            "value": "Common size"
+          }
+        ]
+      },
+      "summarySections": [
+        {
+          "id": "selected-options",
+          "title": "Saved options",
+          "rows": [
+            {
+              "label": "Length",
+              "value": "Common size"
+            }
+          ]
+        },
+        {
+          "id": "sports",
+          "title": "Equipment details",
+          "rows": [
+            {
+              "label": "Activity",
+              "value": "Badminton"
+            },
+            {
+              "label": "Equipment type",
+              "value": "racket"
+            },
+            {
+              "label": "Length",
+              "value": "67.5 cm"
+            },
+            {
+              "label": "Weight",
+              "value": "85 g"
+            },
+            {
+              "label": "Dimensions",
+              "value": "Length 67.5 cm · Width 26 cm · Height 2 cm"
+            },
+            {
+              "label": "Materials",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Contents",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Use conditions",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Compatibility status",
+              "value": "Unconfirmed."
+            },
+            {
+              "label": "Compatibility reference",
+              "value": "Not recorded with this order."
+            }
+          ]
+        }
+      ]
+    },
+    "sportsWitness.Small frame S": {
+      "snapshotContent": {
+        "version": 1,
+        "facts": {
+          "sports": {
+            "version": 1,
+            "activity": "Badminton",
+            "equipmentType": "racket",
+            "length": {
+              "value": 67.5,
+              "unit": "cm"
+            },
+            "weight": {
+              "value": 84,
+              "unit": "g"
+            },
+            "dimensions": {
+              "length": 67.5,
+              "width": 26,
+              "height": 2,
+              "unit": "cm"
+            },
+            "compatibility": {
+              "status": "unconfirmed"
+            }
+          }
+        },
+        "selected_options": [
+          {
+            "name": "Size",
+            "value": "S"
+          }
+        ]
+      },
+      "summarySections": [
+        {
+          "id": "selected-options",
+          "title": "Saved options",
+          "rows": [
+            {
+              "label": "Size",
+              "value": "S"
+            }
+          ]
+        },
+        {
+          "id": "sports",
+          "title": "Equipment details",
+          "rows": [
+            {
+              "label": "Activity",
+              "value": "Badminton"
+            },
+            {
+              "label": "Equipment type",
+              "value": "racket"
+            },
+            {
+              "label": "Length",
+              "value": "67.5 cm"
+            },
+            {
+              "label": "Weight",
+              "value": "84 g"
+            },
+            {
+              "label": "Dimensions",
+              "value": "Length 67.5 cm · Width 26 cm · Height 2 cm"
+            },
+            {
+              "label": "Materials",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Contents",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Use conditions",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Compatibility status",
+              "value": "Unconfirmed."
+            },
+            {
+              "label": "Compatibility reference",
+              "value": "Not recorded with this order."
+            }
+          ]
+        }
+      ]
+    },
+    "sportsWitness.Medium frame M": {
+      "snapshotContent": {
+        "version": 1,
+        "facts": {
+          "sports": {
+            "version": 1,
+            "activity": "Badminton",
+            "equipmentType": "racket",
+            "length": {
+              "value": 700,
+              "unit": "mm"
+            },
+            "weight": {
+              "value": 90,
+              "unit": "g"
+            },
+            "dimensions": {
+              "length": 700,
+              "width": 270,
+              "unit": "mm"
+            },
+            "compatibility": {
+              "status": "unconfirmed"
+            }
+          }
+        },
+        "selected_options": [
+          {
+            "name": "Size",
+            "value": "M"
+          }
+        ]
+      },
+      "summarySections": [
+        {
+          "id": "selected-options",
+          "title": "Saved options",
+          "rows": [
+            {
+              "label": "Size",
+              "value": "M"
+            }
+          ]
+        },
+        {
+          "id": "sports",
+          "title": "Equipment details",
+          "rows": [
+            {
+              "label": "Activity",
+              "value": "Badminton"
+            },
+            {
+              "label": "Equipment type",
+              "value": "racket"
+            },
+            {
+              "label": "Length",
+              "value": "700 mm"
+            },
+            {
+              "label": "Weight",
+              "value": "90 g"
+            },
+            {
+              "label": "Dimensions",
+              "value": "Length 700 mm · Width 270 mm"
+            },
+            {
+              "label": "Materials",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Contents",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Use conditions",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Compatibility status",
+              "value": "Unconfirmed."
+            },
+            {
+              "label": "Compatibility reference",
+              "value": "Not recorded with this order."
+            }
+          ]
+        }
+      ]
+    },
+    "sportsNoLength.simple": {
+      "snapshotContent": {
+        "version": 1,
+        "facts": {
+          "sports": {
+            "version": 1,
+            "activity": "Badminton",
+            "equipmentType": "storage",
+            "weight": {
+              "value": 120,
+              "unit": "g"
+            },
+            "gripCircumference": {
+              "value": 84,
+              "unit": "mm"
+            },
+            "dimensions": {
+              "length": 50,
+              "width": 20,
+              "height": 15,
+              "unit": "cm"
+            },
+            "compatibility": {
+              "status": "unconfirmed"
+            }
+          }
+        }
+      },
+      "summarySections": [
+        {
+          "id": "sports",
+          "title": "Equipment details",
+          "rows": [
+            {
+              "label": "Activity",
+              "value": "Badminton"
+            },
+            {
+              "label": "Equipment type",
+              "value": "storage"
+            },
+            {
+              "label": "Weight",
+              "value": "120 g"
+            },
+            {
+              "label": "Grip circumference",
+              "value": "84 mm"
+            },
+            {
+              "label": "Dimensions",
+              "value": "Length 50 cm · Width 20 cm · Height 15 cm"
+            },
+            {
+              "label": "Materials",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Contents",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Use conditions",
+              "value": "Not recorded with this order."
+            },
+            {
+              "label": "Compatibility status",
+              "value": "Unconfirmed."
+            },
+            {
+              "label": "Compatibility reference",
+              "value": "Not recorded with this order."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "afterRecordedOrderEdit": {
+    "runtimeStatus": "NOT_RUN",
+    "currentCommonDisplay": {
+      "length": "70 cm",
+      "weight": "90 g",
+      "dimensions": "70 × 27 × 3 cm"
+    },
+    "currentInchVariantDisplay": {
+      "length": "27 in",
+      "weight": "82 g",
+      "dimensions": "27 × 11 in"
+    },
+    "currentSelectedOptions": {
+      "Length": "27 in"
+    },
+    "currentProductPriceMajor": 2100,
+    "currentVariantPriceMajor": 2100,
+    "historicalSnapshotContentMustStay": {
+      "version": 1,
+      "facts": {
+        "sports": {
+          "version": 1,
+          "activity": "Badminton",
+          "equipmentType": "racket",
+          "length": {
+            "value": 26.5,
+            "unit": "in"
+          },
+          "weight": {
+            "value": 80,
+            "unit": "g"
+          },
+          "dimensions": {
+            "length": 26.5,
+            "width": 10,
+            "unit": "in"
+          },
+          "compatibility": {
+            "status": "unconfirmed"
+          }
+        }
+      },
+      "selected_options": [
+        {
+          "name": "Length",
+          "value": "26.5 in"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "purpose": "Rendered HTML and final screenshot digests",
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid/collection.html",
+      "bytes": 44034,
+      "sha256": "b6bddd8c0f8d165ad626db7d3a6b427f7bce2ea42b2b491ceb77c3644edcdd1a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid/empty.html",
+      "bytes": 40974,
+      "sha256": "7609c678575b845dfd89fd46a2b883091eb5a67b096c0f9bdf76ec2d5bd0c3d1"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid/home.html",
+      "bytes": 45990,
+      "sha256": "28568d7844a33d6a8b885b3dec98639e2d0eb2ca997aa4c64ce93783d22e726a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid/invalid.html",
+      "bytes": 43608,
+      "sha256": "d7cb988b0d41b66d41a7eb72057dd28b1379d2e227dcd0d27784ca5c4ff1c722"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid/missing.html",
+      "bytes": 43608,
+      "sha256": "b1f04f049b19e9e7ccdca976b551898cf731c15142fb0e447d3282ed1b3ebc4a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid/product.html",
+      "bytes": 48431,
+      "sha256": "92effbcc98f1a1b5ff54c7525b21a318489ad293243f84dade1bc487388dd77e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/collection-desktop.png",
+      "bytes": 406431,
+      "sha256": "b47f30d2c6fd76a886314e54125a56a64e148cfd499ca38eb90c2dd33e6097a2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/collection-mobile-text2x.png",
+      "bytes": 278820,
+      "sha256": "0f064e68cdac296d3433abb66a288af03f208142900afb31c1c618b0ce8691ea"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/collection-mobile.png",
+      "bytes": 167443,
+      "sha256": "564c0c5737f5025c80a63d8d82026ace2c1b7f94a12ed89e616d415e668dd1d3"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/collection-narrow.png",
+      "bytes": 150989,
+      "sha256": "ff05aa0ffc25b9fac5c81e67d757abbe8a6c0bef498b370a8edc867fdc857a97"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/collection-tablet.png",
+      "bytes": 503365,
+      "sha256": "e1cdf6f05f6ce2a0a9324fb2686b7e27911675365f0346d3598bf42300e255f7"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/empty-desktop.png",
+      "bytes": 69394,
+      "sha256": "3c4fb92ffe6793e4c0c575a23126d4fc5b5e3065257de1becdf5e9129432752d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/empty-mobile.png",
+      "bytes": 53696,
+      "sha256": "081142b416bed2cb38e1331817444b578cb28fe615f43f0718213e130004e934"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/empty-narrow.png",
+      "bytes": 52470,
+      "sha256": "5593a21e6071d2aafaabe1c4a42bee2b670609d1475012fc3d8462b07a520865"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/empty-tablet.png",
+      "bytes": 61548,
+      "sha256": "5d2e7f00365db46b7ce575c5b8b22fbb6961413cfc8037f9e4e3817acf718d5f"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/home-desktop.png",
+      "bytes": 632118,
+      "sha256": "488798ce789a7e550a9c86df8ad840fe6e7774e012c2b1c81220173246781ae6"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/home-mobile-text2x.png",
+      "bytes": 914154,
+      "sha256": "8503f6479918f1a6daec9dc0a1c60a81ced2ac165d15f809b5975c57ecab6208"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/home-mobile.png",
+      "bytes": 380109,
+      "sha256": "513bd837fb86414fc6718d2e221521a2de83d45a40763e26c0d4ca86b0a79f48"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/home-narrow.png",
+      "bytes": 548714,
+      "sha256": "29b9421aac9245fe706505cbdc776d4e4e7c8452ff97b39048be999e56de2228"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/home-tablet.png",
+      "bytes": 707943,
+      "sha256": "22911e832ed0a3ee69ceeb7cadf581a33f02e4f4a36490de07eb3151f7951093"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/invalid-desktop.png",
+      "bytes": 92132,
+      "sha256": "dec73b813193b9a28c154f2161943df78cbc4dc7138fa52eadf7d4994d84aafa"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/invalid-mobile.png",
+      "bytes": 74001,
+      "sha256": "4834e1aaf9a398f53129d7a58ca262ea1819218ee0e0bd79c74214e2b3e36ed2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/invalid-narrow.png",
+      "bytes": 73666,
+      "sha256": "e6fcded02b0800bd9a9b58bf58ececa912bbfb29dfd90d4746f6174478d98ea0"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/invalid-tablet.png",
+      "bytes": 84517,
+      "sha256": "fa52d84f40bc580b1d31560798100032f55f108d7758910dd30214c1ddb7a078"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/missing-desktop.png",
+      "bytes": 92132,
+      "sha256": "dec73b813193b9a28c154f2161943df78cbc4dc7138fa52eadf7d4994d84aafa"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/missing-mobile.png",
+      "bytes": 74001,
+      "sha256": "4834e1aaf9a398f53129d7a58ca262ea1819218ee0e0bd79c74214e2b3e36ed2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/missing-narrow.png",
+      "bytes": 73666,
+      "sha256": "e6fcded02b0800bd9a9b58bf58ececa912bbfb29dfd90d4746f6174478d98ea0"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/missing-tablet.png",
+      "bytes": 84517,
+      "sha256": "fa52d84f40bc580b1d31560798100032f55f108d7758910dd30214c1ddb7a078"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/product-desktop.png",
+      "bytes": 713117,
+      "sha256": "75bc52f201740b8bd21f973f6cfbb56fe809b5670fe0d4baca4da7edc0327449"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/product-mobile-text2x.png",
+      "bytes": 926074,
+      "sha256": "5ad5d9d287de2090516caf15c55bc59a2fd78172e0a7d2d7b148f7b66d174e74"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/product-mobile.png",
+      "bytes": 412028,
+      "sha256": "8159e4f3d170785fb7cc5c1ac20478ef8b44c2836dd17dbc1d7070dee4f2dd0b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/product-narrow.png",
+      "bytes": 513325,
+      "sha256": "c14ec2d0559c8d9887effa358d762b4a84a80cc865614279cfb28c43241f2074"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/actual-liquid-review/product-tablet.png",
+      "bytes": 680018,
+      "sha256": "65288f0ba1a25551e4fbf127ef35582fb955c9beada9689b67a482a4059cdfe9"
+    }
+  ]
+}

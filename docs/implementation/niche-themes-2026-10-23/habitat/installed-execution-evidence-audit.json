@@ -1,0 +1,68 @@
+{
+  "recordedAt": "2026-10-23T16:36:40.173255+00:00",
+  "runId": "9cd50e893016",
+  "executorReceipt": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+  "executorReceiptSha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+  "sourceExecutorReceipt": "docs/implementation/theme-editor-2026-10-23/evidence/habitat-browser-diagnostics.json",
+  "uniqueCaseIds": 26,
+  "expectedLifecycleIds": 17,
+  "expectedQueryIds": 9,
+  "totals": {
+    "PASS": 0,
+    "FAIL": 1,
+    "PARTIAL": 7,
+    "NOT_RUN": 18
+  },
+  "lifecycleTotals": {
+    "PASS": 0,
+    "FAIL": 1,
+    "PARTIAL": 7,
+    "NOT_RUN": 9
+  },
+  "queryTotals": {
+    "PASS": 0,
+    "FAIL": 0,
+    "PARTIAL": 0,
+    "NOT_RUN": 9
+  },
+  "allIdsAccountedFor": true,
+  "allCasesExecuted": false,
+  "installedAccepted": false,
+  "candidateSourceManifestMatchesExecutorReceipt": true,
+  "listedEvidenceFilesExist": true,
+  "actualInstalledBinding": {
+    "slug": "letbuyy-craft",
+    "status": "active",
+    "version": "2.0.0",
+    "packageId": "fcce393b-10c4-4bde-a552-4f304a3c6f14",
+    "instanceId": "f043270c-8b2f-4a3f-a865-234956e22173",
+    "draftRevision": 9,
+    "currentDraftId": "2a6c848a-7f45-42ef-9b7b-30315b6c2647",
+    "activeReleaseId": "b5bcba43-2bcb-48cc-bba4-7b4c11bb6a03",
+    "catalogChecksum": null,
+    "packageVersionId": "eb37fa9d-73a0-4912-a77d-16e03c22b265",
+    "installedBundleVersion": "2.0.0",
+    "installedConfigSqlSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06",
+    "capturedPackageManifestSqlSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384",
+    "hashAlgorithmNote": "SqlSha256 fields hash PostgreSQL jsonb::text UTF8 bytes; they are not the differently serialized fixture-release JSON.stringify hash."
+  },
+  "publicationCycleAudit": {
+    "AHashEqualsRestoredA": true,
+    "BHashEqualsReappliedB": true,
+    "AAndBDistinct": true,
+    "allFourAnonymousReadbacksHttp200": true,
+    "activeReleaseMatchesReappliedB": true,
+    "ordersCreated": 0
+  },
+  "hashLimitation": "Actual catalogChecksum is SQLNULL. SQL SHA256 hashes PostgreSQL jsonb::text UTF8, so they are not asserted equal to JSON.stringify release/factory/distribution checksums.",
+  "priorFreeBaseline": {
+    "path": "installed-first-pass-before-enterprise.json",
+    "sha256": "e8c26962e65f6dd9ba143f4778124ac56fb6f928b57a3a0dc224a9b733e7ef1b"
+  },
+  "notClaimed": [
+    "expanded four-variant Finish/OOS cohort or probes created",
+    "full Habitat buyer/cart/order acceptance",
+    "working editor preview or responsive acceptance",
+    "all26 cases complete"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "recordedAt": "2026-10-24T06:28:02.568950+00:00",
+  "allTenAccepted": false,
+  "mockups": {
+    "PNGs": 405,
+    "boards": 135,
+    "milestone": "PASSED"
+  },
+  "currentWorkAllocation": {
+    "recordedAt": "2026-10-24T06:28:02.568950+00:00",
+    "editorSoleController": true,
+    "runId": "936e5f577646",
+    "current": "Circuit NONORDER CL01-13, CL24 inert demo, CL25 actual model search, plus B00 publish/recovery. Trailmark NONORDER follows after Circuit checkpoint and packet.",
+    "dewdrop": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3,
+      "wholeThemeAccepted": false,
+      "audit": "../niche-themes-2026-10-23/dewdrop/remaining-controls-final-audit-936e5f577646.json",
+      "currentM05RuntimePreFix": true
+    },
+    "habitat": {
+      "PASS": 21,
+      "PARTIAL": 1,
+      "NOT_RUN": 4,
+      "fullTableInvariant": "19 of22 exact; only declared inventory_adjustments/inventory_levels/outbox setup changes",
+      "audit": "../niche-themes-2026-10-23/habitat/run936-final-addenda-audit.json",
+      "cartAndPurchaseQueued": true
+    },
+    "pantry": {
+      "PASS": 9,
+      "FAIL": 1,
+      "NOT_RUN": 3,
+      "orderCreated": false,
+      "preservedCart": "6284 / Lentils q2 / INR360 / accepted17",
+      "heldCheckoutTab": 53,
+      "sourceDiagnosis": "Session payment_intent/COD/unconfirmed. Browser re-enters contact; current planner rejects backwards step. Exact failed HTTP step was unobserved.",
+      "retryBudget": "Two normal attempts done; no further retry/cart/session workaround before qualified runtime."
+    },
+    "sourceWork": {
+      "Threadline": "393 exact statement source emitted; current continuous publisher8PASS on defaultLATEST393. No393 application to936.",
+      "Circuit": "Count operation applied; actual direct counts/paging/security tests reached final HTTP assertion. Private strict503-alert assertion correction requested; no rerun yet.",
+      "MadeYours": "Private checkout CAS/reentry implementation10 focused tests; Root requested converted-cart same-claim acknowledgement recovery and current buyer binding regressions. No Main/runtime/native grant.",
+      "Trailmark": "Validator correction source admitted with11 independent isolated tests/full validator0; nonorder execution packet assigned.",
+      "Root": "Dependency classifier6PASS/fullvalidator0 and Marketplace dark-toggle validator5 independentPASS/fullDS0 source admitted; no runtime changes."
+    },
+    "jointNative": {
+      "runId": "999176baae6b",
+      "status": "PUBLISHER8PASS_COUNT_PARENT_FAILED_FINAL_HTTP_TELEMETRY_ASSERTION",
+      "tests": 9,
+      "pass": 8,
+      "fail": 1,
+      "skip": 0,
+      "resultSHA": "2a66ee2427570c63db9a1934e829c8a750d3f8e5c65316cb1f2a6117ec2844ca",
+      "resultPath": "/private/tmp/circuit-count-native-candidate-20261024-v1/native-runs/01/result.json",
+      "cleanupEmpty": true,
+      "sourceMigrationMaximum": 393,
+      "sourceMigrationCount": 322,
+      "sourceMigrationCeiling": null,
+      "failure": "The expected503 request emitted one request metric plus one canonical sev2 error-alert metric. The assertion allowed only one metric. Strict test-helper correction proposed privately; no production logging/count/ACL change or rerun allocated.",
+      "countFullAcceptance": false
+    },
+    "allTenAccepted": false,
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "originalBuyerAndCheckout": "50494/50497 unchanged; supplemental clients58090/58091 active."
+  },
+  "persistentMarketplace": "http://themes.letbuyy-local.localhost:9015/themes",
+  "kindred": "KQA-01P2 remains under human source/artifact freeze",
+  "standingBoundaries": "No merge/push/deploy/realPSP/fulfillment/global reaping/backup deletion."
+}

@@ -1,0 +1,159 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "spotlight",
+  "group": "template",
+  "originalId": "section-071c25ff-71a3-4f0d-9b4f-e8bdf7ba235f",
+  "finalId": "section-4127a495-cd5e-4d98-a7bf-4974c3006203",
+  "sectionFieldsExercised": [
+    "heading",
+    "subheading"
+  ],
+  "effectiveBlockFieldsExercised": [
+    "badge.label"
+  ],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-2fcdbc29-49e9-4acb-8a3a-179204cae242",
+          "block-3df2f963-6f58-45e9-a0e9-eb19c19aa0ad"
+        ],
+        "blocks": {
+          "block-2fcdbc29-49e9-4acb-8a3a-179204cae242": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-3df2f963-6f58-45e9-a0e9-eb19c19aa0ad": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading"
+        },
+        "disabled": true,
+        "block_order": [
+          "block-3df2f963-6f58-45e9-a0e9-eb19c19aa0ad",
+          "block-2fcdbc29-49e9-4acb-8a3a-179204cae242"
+        ],
+        "blocks": {
+          "block-3df2f963-6f58-45e9-a0e9-eb19c19aa0ad": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-2fcdbc29-49e9-4acb-8a3a-179204cae242": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-3df2f963-6f58-45e9-a0e9-eb19c19aa0ad",
+          "block-2fcdbc29-49e9-4acb-8a3a-179204cae242"
+        ],
+        "blocks": {
+          "block-3df2f963-6f58-45e9-a0e9-eb19c19aa0ad": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-2fcdbc29-49e9-4acb-8a3a-179204cae242": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "heading": "Circuit source heading",
+          "subheading": "Circuit source subheading"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-892d9cbb-4091-4ee3-ba78-c73e085e8bdc",
+          "block-d9d6d70b-50b1-4a2b-9d6c-27a020a8e6e5"
+        ],
+        "blocks": {
+          "block-892d9cbb-4091-4ee3-ba78-c73e085e8bdc": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-d9d6d70b-50b1-4a2b-9d6c-27a020a8e6e5": {
+            "type": "badge",
+            "settings": {
+              "label": "Circuit source label"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

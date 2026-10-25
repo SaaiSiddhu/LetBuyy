@@ -1,0 +1,50 @@
+{
+  "generationProvenance": "../../../research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/generation-prompts.json",
+  "assets": [
+    {
+      "file": "apps/commerce/web/public/theme-assets/trailmark/v2/activity.webp",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/assets/activity.png",
+      "width": 1600,
+      "height": 900,
+      "bytes": 211914,
+      "sha256": "ff3b2ff68312d9bf72a72cbfad433d77d19ab988d30744c55f0c1e55f08faab1",
+      "method": "Resize/encode approved original only; no compositional editing"
+    },
+    {
+      "file": "apps/commerce/web/public/theme-assets/trailmark/v2/racket.webp",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/assets/racket.png",
+      "width": 1000,
+      "height": 750,
+      "bytes": 27026,
+      "sha256": "cf388c9a1eb9b50185a909f3644169b7ccce28c86a2a3f619f3e881b1ebd4191",
+      "method": "Resize/encode approved original only; no compositional editing"
+    },
+    {
+      "file": "apps/commerce/web/public/theme-assets/trailmark/v2/shuttles.webp",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/assets/shuttles.png",
+      "width": 1000,
+      "height": 750,
+      "bytes": 33334,
+      "sha256": "013159e774dba4952c2dfa34769cd75a2fda28659c0c12ed444dab8b1614afd6",
+      "method": "Resize/encode approved original only; no compositional editing"
+    },
+    {
+      "file": "apps/commerce/web/public/theme-assets/trailmark/v2/sleeve.webp",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/assets/sleeve.png",
+      "width": 1000,
+      "height": 750,
+      "bytes": 43548,
+      "sha256": "7918bbbd4990ed6063dfa4dcbc507380c2e91916f516103c34720c615b2c65b3",
+      "method": "Resize/encode approved original only; no compositional editing"
+    },
+    {
+      "file": "apps/commerce/web/public/theme-assets/trailmark/v2/accessories.webp",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/trailmark-storybook/assets/accessories.png",
+      "width": 1000,
+      "height": 667,
+      "bytes": 45968,
+      "sha256": "67d89159d2af0a3252d8f14fe9dbaf814933f1fbb09a714c5c68b78c6d22b83c",
+      "method": "Resize/encode approved original only; no compositional editing"
+    }
+  ]
+}

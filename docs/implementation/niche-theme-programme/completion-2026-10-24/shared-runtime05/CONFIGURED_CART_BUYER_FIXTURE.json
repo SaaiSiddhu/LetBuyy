@@ -1,0 +1,10 @@
+{
+  "runId": "7773182e24de",
+  "buyerId": "97dcb53d-48a6-4a6e-845e-293302200efd",
+  "createdAt": "2026-10-24T18:42:00.807Z",
+  "classification": "Owned synthetic existing buyer for normal login and configured cart; not UI signup or email verification evidence",
+  "canonicalTable": "buyer_accounts",
+  "credentialsPrinted": false,
+  "credentialsPrivateFileMode": "0600",
+  "existingAccountsModified": false
+}

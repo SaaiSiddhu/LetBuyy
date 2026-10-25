@@ -1,0 +1,17 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "native-normalization",
+  "value": {
+    "manufacturer": "மாதிரி",
+    "value": "மாதிரி",
+    "normalized": "மாதிரி",
+    "frontendKey": "மாதிரி",
+    "matchedId": "20bbdc18-bb5a-4cc8-8895-9ffa7d3459ba",
+    "facet": {
+      "key": "electronics_manufacturer",
+      "value": "மாதிரி",
+      "label": "மாதிரி",
+      "count": 1
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-23T09:43:11.063737+00:00",
+  "path": "services/api-gateway/src/__tests__/owned-db/storefront-measurement-discovery.postgres.test.ts",
+  "sha256": "fac993e6f6a527a1045e54c4133e894be1ba6af71f631b4f3f4b74acaae2ae0d",
+  "status": "PREPARED_TYPECHECKED_NOT_EXECUTED",
+  "groups": 10,
+  "requires": "Fresh owned runner through388 with root allocation after N7/Marketplace387; no389/390 active migration insertion",
+  "databaseStartedOrSqlApplied": false,
+  "centralSuiteInventoryEdited": false,
+  "typecheck": {
+    "command": "pnpm --filter @letbuyy/api-gateway exec tsc --noEmit",
+    "exitCode": 0
+  },
+  "negativeRoleFixture": "app_tenant native inherited grant requires temporarily removing D4 reverse edge in disposable cluster; finally restores both membership directions/options and positive role controls; no live/held cluster touched",
+  "limitations": "No PostgreSQL syntax/runtime/ACL/catalog/performance/HTTP result is claimed before the allocated owned run"
+}

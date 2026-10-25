@@ -1,0 +1,1033 @@
+{
+  "body": {
+    "background": "rgb(244, 244, 244)",
+    "color": "rgba(43, 44, 45, 0.75)",
+    "font": "Jost, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Default Title",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "United States | USD $",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "English",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "27px",
+      "size": "21px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 1,
+      "x": 91,
+      "y": 599
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "27px",
+      "size": "21px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 1,
+      "x": 91,
+      "y": 682
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": -106.5
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 40.5,
+      "line": "40.5px",
+      "size": "31.5px",
+      "tag": "H1",
+      "text": "Your cart is empty",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 166
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 27,
+      "line": "27px",
+      "size": "21px",
+      "tag": "H2",
+      "text": "More industry favorites",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 309.9456787109375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 16.1953125,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Baby Washcloth",
+      "weight": "500",
+      "width": 119,
+      "x": 35,
+      "y": 587.5870971679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.390625,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Basket Weave Wool Rug",
+      "weight": "500",
+      "width": 119,
+      "x": 200,
+      "y": 587.6886596679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.390625,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Berber Pillow Cover",
+      "weight": "500",
+      "width": 119,
+      "x": 365,
+      "y": 587.6339721679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 16.1953125,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Birch Sham Set",
+      "weight": "500",
+      "width": 119,
+      "x": 530,
+      "y": 587.7902221679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 16.1953125,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Birch Sham Set",
+      "weight": "500",
+      "width": 119,
+      "x": 695,
+      "y": 587.8917846679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 16.1953125,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Bluff Nightstand",
+      "weight": "500",
+      "width": 119,
+      "x": 860,
+      "y": 587.5870971679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.390625,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Bluff Nightstand with Drawer",
+      "weight": "500",
+      "width": 119,
+      "x": 1025,
+      "y": 587.7902221679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.390625,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Bluff Oval Wood Bench",
+      "weight": "500",
+      "width": 119,
+      "x": 1190,
+      "y": 587.6886596679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.390625,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Bluff Papercord Woven Bench",
+      "weight": "500",
+      "width": 119,
+      "x": 1355,
+      "y": 587.6886596679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.390625,
+      "line": "16.2px",
+      "size": "12.6px",
+      "tag": "H3",
+      "text": "Botanical Bedspread",
+      "weight": "500",
+      "width": 119,
+      "x": 1520,
+      "y": 587.5636596679688
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 21.59375,
+      "line": "21.6px",
+      "size": "16.8px",
+      "tag": "H2",
+      "text": "Ordering",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 892.7421875
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 21.59375,
+      "line": "21.6px",
+      "size": "16.8px",
+      "tag": "H2",
+      "text": "Resources",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1109.921875
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 21.59375,
+      "line": "21.6px",
+      "size": "16.8px",
+      "tag": "H2",
+      "text": "About",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1327.1015625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 187.328125,
+      "x": 39.5234375,
+      "y": 1564.0859375
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Language",
+      "weight": "400",
+      "width": 103.625,
+      "x": 246.8515625,
+      "y": 1564.0859375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 143.8046875,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 212.6171875,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 138.5234375,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 138.5234375,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 145.109375,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 257.453125,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 204.0703125,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 45.890625,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 261,
+      "x": 93.5,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 22.9453125,
+      "line": "22.95px",
+      "size": "17.85px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 185.6015625,
+      "x": 93.5,
+      "y": 48
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-trade-demo.myshopify.com/cart#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/furniture"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/tableware"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/rugs"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/decorative-pillows"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/bath-towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/wash-cloths"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/hand-towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/robes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/slippers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/clothing"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/sheets"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/duvet-covers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/pillowcases-shams"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/collections/duvets-blankets"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Continue shopping",
+      "url": "https://theme-trade-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Baby Washcloth",
+      "url": "https://theme-trade-demo.myshopify.com/products/baby-washcloth"
+    },
+    {
+      "text": "Basket Weave Wool Rug",
+      "url": "https://theme-trade-demo.myshopify.com/products/basket-weave-wool-rug"
+    },
+    {
+      "text": "Berber Pillow Cover",
+      "url": "https://theme-trade-demo.myshopify.com/products/berber-pillow-cover"
+    },
+    {
+      "text": "Birch Sham Set",
+      "url": "https://theme-trade-demo.myshopify.com/products/birch-sham-set-1"
+    },
+    {
+      "text": "Birch Sham Set",
+      "url": "https://theme-trade-demo.myshopify.com/products/birch-sham-set"
+    },
+    {
+      "text": "Bluff Nightstand",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-oval-nightstand"
+    },
+    {
+      "text": "Bluff Nightstand with Drawer",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-oval-nightstand-with-drawer"
+    },
+    {
+      "text": "Bluff Oval Wood Bench",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-oval-wood-bench"
+    },
+    {
+      "text": "Bluff Papercord Woven Bench",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-paper-cord-woven-bench"
+    },
+    {
+      "text": "Botanical Bedspread",
+      "url": "https://theme-trade-demo.myshopify.com/products/botanical-bedspread"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-trade-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-trade-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "Returns",
+      "url": "https://theme-trade-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-trade-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Marketing resources",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Become a wholesale partner",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-trade-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-trade-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-trade-demo",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/baby-washcloth"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/basket-weave-wool-rug"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/birch-sham-set-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/birch-sham-set"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-oval-nightstand"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-oval-nightstand-with-drawer"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-oval-wood-bench"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/bluff-paper-cord-woven-bench"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/botanical-bedspread"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715910717462__cart-items",
+      "rect": {
+        "height": 192.5,
+        "width": 390,
+        "x": 0,
+        "y": 91
+      },
+      "tag": "DIV",
+      "text": "Your cart is empty\nContinue shopping"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715910717462__cart-footer",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 283.5
+      },
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715910717462__featured-collection",
+      "rect": {
+        "height": 542.2421875,
+        "width": 390,
+        "x": 0,
+        "y": 283.5
+      },
+      "tag": "SECTION",
+      "text": "More industry favorites\nBaby Washcloth\nRegular price\n$9.00 USD\nChoose options\nBasket Weave Wool Rug\nRegular price\nFrom $289.00 USD\nChoose options\nBerber Pillow Cover\nRegular price\n"
+    }
+  ],
+  "title": "Your Shopping Cart – theme-trade-demo",
+  "url": "https://theme-trade-demo.myshopify.com/cart",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "grid product-grid contains-card contains-card--product grid--5-col-desktop grid--2-col-tablet-down slider slider--desktop slider--tablet grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "6px",
+      "height": 392.2421875,
+      "tag": "UL",
+      "width": 390
+    }
+  ],
+  "images": [
+    {
+      "alt": "Baby Washcloth",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.75,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Basket Weave Wool Rug",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.8515625,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Berber Pillow Cover",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.796875,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Birch Sham Set",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.953125,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Birch Sham Set",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 175.0546875,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Bluff Nightstand",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.75,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Bluff Nightstand with Drawer",
+      "complete": false,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.953125,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Bluff Oval Wood Bench",
+      "complete": false,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.8515625,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Bluff Papercord Woven Bench",
+      "complete": false,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.8515625,
+        "width": 135
+      }
+    },
+    {
+      "alt": "Botanical Bedspread",
+      "complete": false,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 174.7265625,
+        "width": 135
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree towel display with orders over $2,500\n\nCart\nYour cart is empty\nContinue shopping\nMore industry favorites\nBaby Washcloth\nRegular price\n$9.00 USD\nChoose options\nBasket Weave Wool Rug\nRegular price\nFrom $289.00 USD\nChoose options\nBerber Pillow Cover\nRegular price\n$99.00 USD\nDecrease quantity for Default Title\nIncrease quantity for Default Title\nBirch Sham Set\nRegular price\nFrom $89.00 USD\nChoose options\nBirch Sham Set\nRegular price\nFrom $89.00 USD\nChoose options\nBluff Nightstand\nRegular price\n$399.00 USD\nChoose options\nBluff Nightstand with Drawer\nRegular price\n$749.00 USD\nChoose options\nBluff Oval Wood Bench\nRegular price\n$649.00 USD\nChoose options\nBluff Papercord Woven Bench\nRegular price\n$749.00 USD\nChoose options\nBotanical Bedspread\nRegular price\nFrom $299.00 USD\nChoose options\n1\n/\nof\n9\nOrdering\nShop all\nShipping\nReturns\nResources\nFAQ\nMarketing resources\nBecome a wholesale partner\nAbout\nAbout us\nContact\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nCountry/region\nUnited States | USD $\nLanguage\nEnglish\nPayment methods\n© 2026, theme-trade-demo Powered by Shopify"
+}

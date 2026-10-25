@@ -1,0 +1,17 @@
+{
+  "createdAt": "2026-10-23T08:50:09.251896+00:00",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "50b0bc0ae6482b95862ef547cbe0bc30c76786f1721383b8c832d5a3575d0e41"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    },
+    {
+      "path": "packages/theme-engine/test/trailmark.test.ts",
+      "sha256": "6e4c8d4dbe813ea00637c2059e3595f80ca93162337353c9ff56c316001a0477"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+- generic: Circuit Runtime07 A — precise technology
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - search:
+    - generic: Search products, models and connectors
+    - searchbox "Search products, models and connectors"
+    - button "Search"
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 0 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "0"
+    - text: )
+- navigation "Breadcrumb":
+  - link "Home /":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - link "Shop /":
+    - /url: /store/syn-threadline-ui-ae3f0477/products
+  - generic: Circuit lifecycle hub
+- heading "Circuit lifecycle hub" [level=1]
+- generic: INR 1,200.00
+- heading "Device compatibility" [level=2]
+- paragraph:
+  - strong: Unconfirmed.
+  - text: Check your exact device model and host requirements before choosing. A connector match alone does not establish compatibility.
+- link "Read specifications and requirements":
+  - /url: "#circuit-specifications"
+- generic: Quantity
+- spinbutton "Quantity": "1"
+- button "Add to cart"
+- generic "Add Circuit lifecycle hub to wishlist":
+  - button "Connect store account to use wishlist":
+  - status
+- generic "Description"
+- region "Electronics specifications":
+  - heading "Know the model. Read the limits." [level=2]
+  - table "Merchant-stated specifications · normalized units":
+    - caption: Merchant-stated specifications · normalized units
+    - rowgroup:
+      - row "Manufacturer Synthetic Lab":
+        - rowheader "Manufacturer"
+        - cell "Synthetic Lab"
+      - row "Model Synthetic H1":
+        - rowheader "Model"
+        - cell "Synthetic H1"
+      - row "Power input maximum 65 W":
+        - rowheader "Power input maximum"
+        - cell "65 W"
+      - row "Power output maximum 45 W":
+        - rowheader "Power output maximum"
+        - cell "45 W"
+      - row "Laptop pass-through maximum 60 W":
+        - rowheader "Laptop pass-through maximum"
+        - cell "60 W"
+      - row "power-input 1 × usb-c":
+        - rowheader "power-input"
+        - cell "1 × usb-c"
+      - row "power-output 2 × usb-c":
+        - rowheader "power-output"
+        - cell "2 × usb-c"
+      - row "data 1 × usb-a":
+        - rowheader "data"
+        - cell "1 × usb-a"
+  - paragraph: Power input and laptop pass-through are different measurements. Missing values are not inferred from another field. Maxima are merchant statements, not guaranteed simultaneous output.
+  - heading "Host requirements" [level=3]
+  - paragraph: Host requirements not supplied.
+  - heading "What is included" [level=3]
+  - list:
+    - listitem: 1 × Hub
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

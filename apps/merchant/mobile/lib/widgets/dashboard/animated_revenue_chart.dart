@@ -11,12 +11,18 @@ class AnimatedRevenueChart extends StatefulWidget {
   final double totalRevenue;
   final List<double> revenueData;
   final String currency;
+  final List<DateTime> revenueDates;
+  final String period;
+  final ValueChanged<String>? onPeriodChanged;
 
   const AnimatedRevenueChart({
     super.key,
     this.totalRevenue = 0,
     this.revenueData = const [],
     this.currency = '₹',
+    this.revenueDates = const [],
+    this.period = '30d',
+    this.onPeriodChanged,
   });
 
   @override
@@ -25,7 +31,8 @@ class AnimatedRevenueChart extends StatefulWidget {
 
 class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
     with SingleTickerProviderStateMixin {
-  int _selectedPeriod = 1;
+  int get _selectedPeriod =>
+      const ['7d', '30d', '90d', '12m'].indexOf(widget.period).clamp(0, 3);
   final List<String> _periods = ['7D', '30D', '90D', '1Y'];
   late AnimationController _chartController;
   late Animation<double> _chartAnimation;
@@ -47,47 +54,10 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
     'Nov',
     'Dec',
   ];
-  static const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  // X-axis labels for different periods - dynamic based on current date
-  List<String> get _xLabels {
-    final now = DateTime.now();
-
-    switch (_selectedPeriod) {
-      case 0: // 7 Days - Last 7 days from today
-        return List.generate(7, (i) {
-          final day = now.subtract(Duration(days: 6 - i));
-          return _days[day.weekday - 1];
-        });
-
-      case 1: // 30 Days - Date ranges from current date backwards
-        final labels = <String>[];
-        for (int i = 4; i >= 0; i--) {
-          final endDay = now.subtract(Duration(days: i * 6));
-          final startDay = endDay.subtract(const Duration(days: 5));
-          // Show "Dec\n11-16" format
-          labels.add(
-            '${_months[startDay.month - 1]}\n${startDay.day}-${endDay.day}',
-          );
-        }
-        return labels;
-
-      case 2: // 90 Days - Last 3 months
-        return List.generate(3, (i) {
-          final month = DateTime(now.year, now.month - 2 + i);
-          return _months[month.month - 1];
-        });
-
-      case 3: // 1 Year - Last 12 months
-        return List.generate(12, (i) {
-          final month = DateTime(now.year, now.month - 11 + i);
-          return _months[month.month - 1];
-        });
-
-      default:
-        return _days;
-    }
-  }
+  List<String> get _xLabels => widget.revenueDates
+      .map((day) => '${day.day} ${_months[day.month - 1]}')
+      .toList(growable: false);
 
   @override
   void initState() {
@@ -114,141 +84,147 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.glassMedium,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
-            alpha: 0.2,
+    return Semantics(
+      label: 'Daily revenue history, ${widget.revenueData.length} days',
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colors.glassMedium,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+              alpha: 0.2,
+            ),
+            width: 1,
           ),
-          width: 1,
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Compact Header Row
-          Row(
-            children: [
-              // Icon
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                      Color(0xFFA78BFA),
-                    ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Compact Header Row
+            Row(
+              children: [
+                // Icon
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                        Color(0xFFA78BFA),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  borderRadius: BorderRadius.circular(8),
+                  child: const Icon(
+                    Icons.show_chart_rounded,
+                    color: Colors.white,
+                    size: 12,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.show_chart_rounded,
-                  color: Colors.white,
-                  size: 12,
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Title + Value
-              Expanded(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${widget.currency}${_formatNumber(widget.totalRevenue.toInt())}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: colors.textPrimary,
+                const SizedBox(width: 8),
+                // Title + Value
+                Expanded(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          '${widget.currency}${_formatNumber(widget.totalRevenue.toInt())}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: colors.textPrimary,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: mobile_tokens.LetbuyyColorTokens.brandPrimary
-                              .withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.payments_outlined,
-                              color:
-                                  mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                              size: 10,
-                            ),
-                            const SizedBox(width: 2),
-                            Flexible(
-                              child: Text(
-                                'Live total',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w700,
-                                  color: mobile_tokens
-                                      .LetbuyyColorTokens
-                                      .brandPrimary,
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                                .withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.payments_outlined,
+                                color: mobile_tokens
+                                    .LetbuyyColorTokens
+                                    .brandPrimary,
+                                size: 10,
+                              ),
+                              const SizedBox(width: 2),
+                              Flexible(
+                                child: Text(
+                                  'Live total',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    color: mobile_tokens
+                                        .LetbuyyColorTokens
+                                        .brandPrimary,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              // Period Selector
-              _buildPeriodSelector(),
-            ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // High/Low Row
-          Row(
-            children: [
-              Text(
-                'vs last ${_periods[_selectedPeriod].toLowerCase()}',
-                style: TextStyle(fontSize: 10, color: colors.textSecondary),
-              ),
-              const Spacer(),
-              Text(
-                _currentData.isEmpty
-                    ? 'Revenue history unavailable'
-                    : 'Recorded history',
-                style: TextStyle(fontSize: 10, color: colors.textSecondary),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Chart - Increased height
-          SizedBox(
-            height: 200,
-            child: _currentData.length < 2
-                ? _buildEmptyHistory()
-                : AnimatedBuilder(
-                    animation: _chartAnimation,
-                    builder: (context, child) {
-                      return LineChart(_buildChartData(_chartAnimation.value));
-                    },
+                    ],
                   ),
-          ),
-        ],
+                ),
+                // Period Selector
+                _buildPeriodSelector(),
+              ],
+            ),
+
+            const SizedBox(height: 10),
+
+            // High/Low Row
+            Row(
+              children: [
+                Text(
+                  'vs last ${_periods[_selectedPeriod].toLowerCase()}',
+                  style: TextStyle(fontSize: 10, color: colors.textSecondary),
+                ),
+                const Spacer(),
+                Text(
+                  _currentData.isEmpty
+                      ? 'Revenue history unavailable'
+                      : 'Recorded history',
+                  style: TextStyle(fontSize: 10, color: colors.textSecondary),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Chart - Increased height
+            SizedBox(
+              height: 200,
+              child: _currentData.length < 2
+                  ? _buildEmptyHistory()
+                  : AnimatedBuilder(
+                      animation: _chartAnimation,
+                      builder: (context, child) {
+                        return LineChart(
+                          _buildChartData(_chartAnimation.value),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -429,9 +405,14 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
         children: List.generate(_periods.length, (index) {
           final isSelected = _selectedPeriod == index;
           return GestureDetector(
+            key: ValueKey(
+              'revenue-period-${const ['7d', '30d', '90d', '12m'][index]}',
+            ),
             onTap: () {
               HapticFeedback.selectionClick();
-              setState(() => _selectedPeriod = index);
+              widget.onPeriodChanged?.call(
+                const ['7d', '30d', '90d', '12m'][index],
+              );
               _chartController.reset();
               _chartController.forward();
             },
@@ -466,11 +447,10 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
 
   LineChartData _buildChartData(double animationValue) {
     final data = _currentData;
-    final maxY = (data.reduce(math.max) * 1.3).ceilToDouble();
+    final maxY = math.max(1.0, (data.reduce(math.max) * 1.3).ceilToDouble());
     final labels = _xLabels;
 
     // Calculate interval for x-axis labels
-    final labelInterval = (data.length / 7).ceil().toDouble();
 
     return LineChartData(
       gridData: FlGridData(
@@ -501,7 +481,7 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: Text(
-                  '${value.toInt()}K',
+                  _formatNumber(value.toInt()),
                   style: TextStyle(
                     color: colors.textSecondary,
                     fontSize: 10,
@@ -640,15 +620,7 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
     final index = value.toInt();
     final data = _currentData;
 
-    // Show limited labels based on data length
-    int showEvery;
-    if (data.length <= 7) {
-      showEvery = 1;
-    } else if (data.length <= 12) {
-      showEvery = 2;
-    } else {
-      showEvery = 3;
-    }
+    final showEvery = math.max(1, (data.length / 5).ceil());
 
     if (index % showEvery != 0 && index != data.length - 1) {
       return const SizedBox.shrink();

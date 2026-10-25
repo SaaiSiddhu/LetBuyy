@@ -608,7 +608,8 @@ export default function CustomerDetailPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="customers"
+                    recipe="record"
                     eyebrow="Relationships"
                     title="Customer"
                     breadcrumbs={[
@@ -636,7 +637,8 @@ export default function CustomerDetailPage() {
     if (error || !customer) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="customers"
+                    recipe="record"
                     eyebrow="Relationships"
                     title="Customer"
                     breadcrumbs={[
@@ -671,7 +673,8 @@ export default function CustomerDetailPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="customers"
+                recipe="record"
                 eyebrow="Relationships"
                 title={customer.display_name || email}
                 description={customer.display_name !== email ? email : undefined}

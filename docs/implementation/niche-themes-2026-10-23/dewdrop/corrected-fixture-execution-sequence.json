@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-23T17:28:28.879518+00:00",
+  "classification": "CONTINUATION_PLAN_ONLY_NO_NEW_CASE_EXECUTION",
+  "requestedBy": "Main direct continuation coordination",
+  "oldRunId": "9cd50e893016",
+  "newRunId": null,
+  "newFixtureBindings": null,
+  "sourceAdmission": "docs/implementation/niche-theme-programme/dependent-latest392-native-admission.json",
+  "controller": "Editor sole controller unless main explicitly reallocates",
+  "verifier": "Dewdrop read-only/evidence",
+  "cases": [
+    {
+      "sequence": 1,
+      "id": "B00",
+      "stage": "baseline",
+      "action": "Bind only the newly allocated run/origins/site/owner and exact source/candidate receipts. Install Dewdrop2.0 via normal merchant UI. Prove template and shared announcement save/reload, parent preview, public A/B, restore A and retained B reapply.",
+      "oracle": "Exact installed package/instance/release/draft/hash and positive public content; old9cd failures remain archived.",
+      "prerequisite": "Fresh candidate admitted; trusted certificate selected; normal browser HTTPS positive.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 2,
+      "id": "M01",
+      "stage": "authoring",
+      "action": "Edit Cloud common care facts in normal merchant UI, save, leave and reload; read canonical persisted data. Restore exact v1 purchase facts if a checkpoint marker changed them.",
+      "oracle": "Actual normal Save succeeds; all6 common fields persist; sibling private metadata preserved by owned read-only digest/boolean, not public DTO inference.",
+      "prerequisite": "Admitted running origin fix and normal owner login.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 3,
+      "id": "M02",
+      "stage": "authoring",
+      "action": "Use normal merchant UI to create/edit tint options and variant rows; save/reload durable UUIDs. Keep v1 fixture values for primary purchase.",
+      "oracle": "Shade name and Hindi pack option exact; Rose/Pink distinct UUIDs/sameRGB; prices520/560/590, stock4/4/0; common shade codesRW01/PC02/TC03; no variant beauty field.",
+      "prerequisite": "M01 normal mutation positive.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 4,
+      "id": "M03",
+      "stage": "authoring-negative",
+      "action": "Owner-authorized authenticated canonical negative: existing variant metadata.beauty routine/format override.",
+      "oracle": "Actual400 validation; before/after product/version/options/inventory equal. Source-only parsing is supplementary.",
+      "prerequisite": "Finite authenticated control allocated; no browser session injection.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 5,
+      "id": "M04",
+      "stage": "authoring-negative",
+      "action": "Exercise nonexistent named-option shade and duplicate shade through actual form recovery and canonical validation; then stale version; separately replay identical valid variant mutation/key.",
+      "oracle": "Actual inline/400 errors and409 stale conflict with draft recovery; no partial writes; exact replay does not duplicate variant UUIDs.",
+      "prerequisite": "Current product/version and authorized authenticated/replay mechanism.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 6,
+      "id": "M05",
+      "stage": "collections",
+      "action": "Create three actual merchant collections and explicitly save memberships2/1/1. In Dewdrop index Routine pathways select Stage1/2/3 collection resources and publish. Open each link.",
+      "oracle": "Actual create/save/reload receipts and bound collection IDs; category-grid collection1/collection2/collection3 target correct handles; empty control returns0 rather than all products. Seeded memberships alone do not pass.",
+      "prerequisite": "Normal collection UI and current editor CAS; use actual new IDs, never old run UUIDs.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 7,
+      "id": "D01",
+      "stage": "discovery",
+      "action": "Open ordinary installed products listing; browse all4 beauty records including unknown Palm Wash.",
+      "oracle": "Honest routine grouping; Palm missing-image/ingredient guidance and no invented facts/medical claim.",
+      "prerequisite": "Dewdrop live and v1 product baseline intact.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 8,
+      "id": "D02",
+      "stage": "discovery",
+      "action": "Observe same-response capability/facets; submit only supplied routine/format/shade values. Observe actual absent-capability basic browse and allocated malformed-capability branch.",
+      "oracle": "Exact value transport/label display; independent chooser availability; honest unavailable recovery with no fabricated chooser/count.",
+      "prerequisite": "Permitted actual malformed-capability mechanism still requires owner allocation; no network interception assumption.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 9,
+      "id": "D03",
+      "stage": "discovery",
+      "action": "Use both actual Colour collection and search to choose colour, Lip tint, Pink Clay. Capture same-response witness.",
+      "oracle": "One bound tint and exact matching Pink UUID/560 witness; record base product row520 separately.",
+      "prerequisite": "M05 actual Colour ID; supplied facet values from current response.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 10,
+      "id": "D04",
+      "stage": "discovery",
+      "action": "Search Fixture with limit1/categoryCare/countryIndia; change all5 sorts, then Next and Previous.",
+      "oracle": "Actual URL/FormData carriers preserved, sort page reset1, next/prev retain active query.",
+      "prerequisite": "Positive results and actual controls.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 11,
+      "id": "D05",
+      "stage": "discovery",
+      "action": "Submit repeated connector usb-c and hdmi, sort, clear each chip independently.",
+      "oracle": "Both repeated values retained; one clear removes only chosen value; honest0/0/restored beauty results with real current counts.",
+      "prerequisite": "Current real query values and clear URLs.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 12,
+      "id": "D06",
+      "stage": "discovery",
+      "action": "Submit Retired shade/Retired format, sort and clear one at a time.",
+      "oracle": "No products found; stale values retained; independent recovery; no automatic first option or fallback.",
+      "prerequisite": "No catalog mutation.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 13,
+      "id": "D07",
+      "stage": "discovery-security",
+      "action": "Submit exact planned closing-script query </script><script>fixtureAttack()</script>; record normal UI and all relevant SSR input attributes.",
+      "oracle": "No executable injection/raw unsafe form value. Distinguish suppressed search input from safely HTML-escaped hidden carrier; do not claim fabricated400 or universal removal.",
+      "prerequisite": "Actual normal navigation; original closing-FORM first-pass remains distinct evidence.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 14,
+      "id": "P01",
+      "stage": "product",
+      "action": "Keyboard/select Rosewater then Pink Clay and expand its ingredients.",
+      "oracle": "SameRGB never identity; exact Pink UUID/PC02/560/6ml/common and CI77492 selected ingredients; Hindi option remains.",
+      "prerequisite": "V1 product baseline.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 15,
+      "id": "P02",
+      "stage": "product-negative",
+      "action": "Select Terracotta in UI and attempt canonical cart add with exact owned UUID; capture owned effects before and after.",
+      "oracle": "Disabled unavailable UI; actual409 INSUFFICIENT_INVENTORY; no cart line/reservation/order/inventory change; no fallback.",
+      "prerequisite": "Before/after cart/reservation observation allocated before attempt.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 16,
+      "id": "P03",
+      "stage": "product-negative",
+      "action": "Actual omitted and unknown/foreign variant requests; establish real foreign-site/cart positive then attempt that token against owned site.",
+      "oracle": "409 VARIANT_REQUIRED;400 VARIANT_NOT_FOUND; wrong-site token denied with no data/effects. No invented foreign UUID.",
+      "prerequisite": "Real foreign site/cart binding and private token retained by owner.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 17,
+      "id": "C02",
+      "stage": "cart-negative",
+      "action": "Reject price/niche_snapshot/raw snapshot extras; separately accept an allowed properties shade-spoof control with Pink UUID in a separate cart.",
+      "oracle": "Actual strict400 for authority extras; allowed properties cannot alter exact accepted options/code/ingredients/price/snapshot; no private fields.",
+      "prerequisite": "Separate control cart; never replace primary cart or accept client authority.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 18,
+      "id": "C01",
+      "stage": "primary-cart",
+      "action": "Normal PDP adds quantity2 Pink Clay, await actual server acknowledgement, open cart and full same-host reload; read canonical cart through an authorized capability handling path.",
+      "oracle": "Exact bound UUID/options,2x560=1120, approved v1 snapshot and source version/fingerprint reference; no local-only persistence claim.",
+      "prerequisite": "Keep this primary cart separate from spoof and later stale controls.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 19,
+      "id": "A01",
+      "stage": "identity",
+      "action": "Normal Buyer A register/login, consent and return to own store; full account reload and normal session read.",
+      "oracle": "Positive correct buyer/site/account content with actual emailVerified value; no injected session; BuyerB separate context.",
+      "prerequisite": "Identity and buyer cookie context allocated by sole controller.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 20,
+      "id": "H01",
+      "stage": "primary-checkout",
+      "action": "From primary cart click Checkout through actual handoff; contact, Bengaluru560001 delivery, real flat20 rate, COD intent, confirm.",
+      "oracle": "Server1120+20=1140INR, tax0/discount0, quantity2, pending_cod/paymentpending; actual order ID and private buyer link; capture original confirm in existing owner observer.",
+      "prerequisite": "Ordinary browser trusted HTTPS positive; before-purchase owned order/inventory proof; no API-created primary order.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 21,
+      "id": "C03",
+      "stage": "stale-source",
+      "action": "After primary successful purchase and before O03 edits, accept separate1Pink control cart while v1 current and pause checkout. After O03 attempt old checkout.",
+      "oracle": "Actual CART_FACTS_CHANGED/review rejection with no second order/unintended reservation; original confirmed order unaffected.",
+      "prerequisite": "Primary purchase FIRST; separate cart accepted BEFORE O03; do not change primary quantity.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 22,
+      "id": "H02",
+      "stage": "confirmation",
+      "action": "Replay captured identical successful confirm using its original key/command; then authorized altered-command same-key negative.",
+      "oracle": "Same order/one effect for exact replay; actual worker conflict for altered command. Selector-only400 is not worker conflict.",
+      "prerequisite": "Successful H01 capture and finite altered-command mechanism allocated; no arbitrary body/order factory.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 23,
+      "id": "O01",
+      "stage": "history-positive",
+      "action": "Buyer A reloads actual private order BFF and installed Liquid order page.",
+      "oracle": "Saved v1 title/order number;2x560=1120/receipt1140; Shade name Pink Clay, Hindi pack, PC02, selected/common v1 text and peritem6ml; private/raw snapshot absent.",
+      "prerequisite": "Real H01 order and positive Buyer A session.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 24,
+      "id": "O02",
+      "stage": "history-positive",
+      "action": "Normal merchant opens/reloads actual order page; canonical order read; keyboard saved-details disclosure.",
+      "oracle": "Same v1 money/options/facts, actual SDK/page; no current-product authority for history.",
+      "prerequisite": "Real H01 order and normal owner context.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 25,
+      "id": "O03",
+      "stage": "history-edit",
+      "action": "Use current normal merchant version to rename title to Fixture Soft Colour — changed later, base999/Pink899, care/Changed format v2/8ml/v2text, Shade name to Renamed shade option, Pink Clay to New Clay name, PC99/#112233. Retain exact variant UUIDs/current stock. Reload current PDP and all history.",
+      "oracle": "Current product changes; original order remains v1 PC02/Pink Clay/6ml/560/1120; exact persisted order-item snapshot digest conserved. Execute paused C03 now.",
+      "prerequisite": "Separate v1 stale cart accepted; before-edit order snapshot digest captured; current CAS/idempotency.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 26,
+      "id": "O04",
+      "stage": "history-archive",
+      "action": "Archive/deactivate current tint with canonical normal merchant action; reload public product and prior order.",
+      "oracle": "Appropriate unavailable catalog; saved historical title/options/facts/money remain; snapshot digest conserved; no hard delete.",
+      "prerequisite": "O03 comparisons captured before archive.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 27,
+      "id": "O05",
+      "stage": "history-isolation",
+      "action": "Reconfirm BuyerA and merchant positives, then BuyerB, missing buyer session, actual foreign signed store/site, and unavailable buyer context.",
+      "oracle": "Actual401/403/404/unavailable statuses and no saved v1 content/raw snapshot leak; no empty/sign-in page counted as preceding positive.",
+      "prerequisite": "Actual BuyerB/foreign positive controls, separate normal browser context handled solely by Editor.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 28,
+      "id": "S01",
+      "stage": "stored-security",
+      "action": "Author hostile ingredients and hostile format/facet label through merchant in isolated owned security product, then load actual PDP/discovery and any separately captured security order.",
+      "oracle": "Literal inert text; no injected img[src=x]/handler/script/attack request; unsafe value suppression documented; exact identity remains; primary order never polluted.",
+      "prerequisite": "M01 normal mutation works; isolated product/collection and approved observer only.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 29,
+      "id": "S02",
+      "stage": "legacy-history",
+      "action": "Read explicitly allocated legacy control order missing approved niche snapshot through actual buyer/Liquid/merchant consumers.",
+      "oracle": "Product details were not recorded with this order; no current metadata fallback/invented facts/zero quantity. Label legacy setup separately.",
+      "prerequisite": "Owned deliberate legacy order and valid identity link prepared by owner; never primary UI purchase substitute.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    },
+    {
+      "sequence": 30,
+      "id": "R01",
+      "stage": "report-release",
+      "action": "Seal actual percase request/status/UI/durable receipts and first-failure+retest history, verify privacy, report totals, release only newly allocated resources through owner.",
+      "oracle": "30 unique actual dispositions; no goalComplete/full acceptance while required case remains incomplete; no capability/password exposure/unrelated cleanup.",
+      "prerequisite": "All evidence collected; shared-fixture owner controls teardown/retention.",
+      "status": "NOT_RUN_IN_CORRECTED_FIXTURE"
+    }
+  ],
+  "primaryOracle": {
+    "quantity": 2,
+    "shade": "Pink Clay",
+    "unitINR": 560,
+    "subtotalINR": 1120,
+    "shippingINR": 20,
+    "totalINR": 1140,
+    "netQuantity": "6ml per item",
+    "paymentMethod": "cod",
+    "expectedOrderState": "pending_cod"
+  },
+  "orderingInvariants": [
+    "Primary hosted UI purchase precedes second stale cart.",
+    "Separate stale cart accepted while v1 current, before O03.",
+    "Positive owned order history before isolation denials.",
+    "History snapshot digest captured before edit/archive.",
+    "All security/legacy fixtures explicitly labelled; primary order remains actual UI order.",
+    "No failed9cd receipt overwritten or reclassified as repaired by source/native checks."
+  ]
+}

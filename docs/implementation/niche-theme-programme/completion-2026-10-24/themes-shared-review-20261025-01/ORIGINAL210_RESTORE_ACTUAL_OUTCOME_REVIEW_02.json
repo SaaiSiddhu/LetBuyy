@@ -1,0 +1,100 @@
+{
+  "recordedAt": "2026-10-25T05:47:13.796155+00:00",
+  "status": "ACTUAL_CORRECTED_RESTORE02_NONPASS_PRE_TAP_NEW_PROTECTED_RESOURCES_RETAINED",
+  "humanAuthority": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/NATIVE_RESTORE_HUMAN_APPROVAL_20261025_06.json",
+    "sha256": "6548ce9364a0e240d34677f61859c0887b4616df80c8cdee0337379e15c78cc6",
+    "actualReadThreadHumanMessage": "01a17196-1a7f-7d50-87da-19bee5da38c4",
+    "actualTurn": "01a17154-7dd6-7232-9712-c912d5d93e7e",
+    "questionId": "call_d155d799eec54e628600f0974546ec46",
+    "answer": "Approve one corrected restore test (Recommended)"
+  },
+  "run": {
+    "runId": "63e975c7e742",
+    "runnerPid": 2168,
+    "containerBase": "letbuyy-exec-2168-mvnel3nx-67d337"
+  },
+  "terminal": {
+    "finishedAt": "2026-10-25T05:44:50.765928+00:00",
+    "runnerPid": 2168,
+    "terminalExit": 71,
+    "wholeParentSeconds": 7.106666708,
+    "deadlineExceeded": false,
+    "supervisionFailureClass": null,
+    "maxAttempts": 1,
+    "signals": [],
+    "originalRuntimeActions": 0,
+    "cleanup": "Read actual canonical result and durable checkpoint receipt; this monitor never reaps or removes resources. Any failure requires retained protected resources and independent review, never automatic retry."
+  },
+  "actualResultSummary": {
+    "tests": 0,
+    "failedSuites": 1,
+    "reaped": [],
+    "status": "PRESERVED_RESOURCES_RETAINED_NO_VERIFIED_EXIT_ARCHIVE",
+    "cleanup": {
+      "failures": [
+        "remaining letbuyy-exec-2168-mvnel3nx-67d337",
+        "remaining letbuyy-exec-63e975c7e742-1-net",
+        "remaining letbuyy-exec-63e975c7e742-1-data"
+      ],
+      "remaining": {
+        "containers": [
+          "letbuyy-exec-2168-mvnel3nx-67d337"
+        ],
+        "networks": [
+          "letbuyy-exec-63e975c7e742-1-net"
+        ],
+        "volumes": [
+          "letbuyy-exec-63e975c7e742-1-data"
+        ]
+      }
+    },
+    "primaryFailure": {
+      "phase": "restore",
+      "code": "RESTORE_FAILED"
+    },
+    "checkpointFailure": {
+      "phase": "checkpoint",
+      "code": "COMPLETE_DATA_WITNESS"
+    },
+    "execution": {
+      "restore": "ATTEMPTED_NOT_VERIFIED",
+      "rest": "NOT_STARTED",
+      "ownership": "NOT_VERIFIED",
+      "suite": "NOT_ATTEMPTED",
+      "checkpoint": "FAILED"
+    }
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/future-restore-rehearsal02/whole-parent-start.json",
+      "sha256": "0134fa42208eb0efaf686b6927081cbc59552f3e6ca86cf55bdaa8061576d63f"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/future-restore-rehearsal02/whole-parent-owner.json",
+      "sha256": "798282166fcb6308c68f3568c17dba1665b0d918da6ff39a21e2a77ffe6aa230"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/future-restore-rehearsal02/run-receipt.json",
+      "sha256": "0d8066ecdc61db212b1fa883299d1f6fe5b53afc091ebe36f8a5307c14e75781"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/future-restore-rehearsal02/whole-parent-terminal.json",
+      "sha256": "88ad59a89cdea910361818ae25f2fd4878f3fe72fd6f7e1779587c69235f91af"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/future-restore-rehearsal02/result.json",
+      "sha256": "1ebb0aae570926f17f1bcd5310fc068e5d69b890a5f4be6adc544038a3bd21a8"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/future-restore-rehearsal02/whole-parent.log",
+      "sha256": "f062dafb42a76b48a60cf2808ce25514073db375ad5ad73a9dcda902637b907a"
+    }
+  ],
+  "interpretation": "Source02now preservesseparateprimaryrestorefailureandcheckpointfailureinrealnonpassreport. RestoreATTEMPTED_NOT_VERIFIED; REST/suite notstarted. Noactualparity/migrations/application/provider/certificationcredit. Underlyingpg_restorecauseUNDETERMINEDuntilRootsafereadonlydiagnosis; donotinferarchivecorruption orsamepubliccause.",
+  "preservation": "CurrentnewprotectedPG/network/volumeleftintact. Priorfailedb762andoriginalPG/volume/55109notactedonbyThemes. No rawprivatePGlog/SQL/keys/archivecontentsreadbyThemes.",
+  "budget": "Approval06max1attempt consumed;04three+05one+06one=5observedphysicalcohorts, active0afterterminal. No automaticretry/reuse/adopt/reap. Rootalonecanreadselected-runoperator-evidence safely.",
+  "next": "Rootredacteddiagnosis, thenonlypreciselyallocatedsource/commandwork necessary. Anyfurtheractualattemptrequiresnewreviewedinputsanddirecthumanpermission.",
+  "actualDockerDbProcessPrivateKeyActionsByThemes": 0,
+  "fullThemeCertificates": 0
+}

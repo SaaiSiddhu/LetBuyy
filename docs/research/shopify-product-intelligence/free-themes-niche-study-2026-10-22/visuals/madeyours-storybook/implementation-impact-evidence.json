@@ -1,0 +1,768 @@
+{
+  "date": "2026-10-23",
+  "scope": "Read-only implementation preparation; no production source/runtime/database mutation",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "dirtyBaseline": "Concurrent user/Threadline/merchant changes preserved; hashes are observation-time evidence, not an integration baseline",
+  "lcis": {
+    "localhost3334": "connection unavailable",
+    "localhost3333": "connection unavailable",
+    "localGraphLoader": "ENOENT",
+    "fallback": "bounded actual-source inspection; no generator/server startup"
+  },
+  "catalogFactoryProbe": {
+    "method": "Read-only createFirstPartyCatalogBundle/firstPartyThemeListings evaluation; no DB query",
+    "presetId": "nova",
+    "slug": "letbuyy-nova",
+    "uuid": "7b669c70-0000-4000-8000-000000000009",
+    "name": "Nova",
+    "category": "General",
+    "version": "1.0.0",
+    "publishedLiveState": "not established; package fixture release_status is not deployment evidence"
+  },
+  "migrationMaxObserved": 383,
+  "migrationNumberReserved": null,
+  "facts": [
+    {
+      "id": "MY-F1",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "anchor": "function lineId(",
+      "lines": [
+        148
+      ]
+    },
+    {
+      "id": "MY-F1b",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "anchor": "const existingIndex = items.findIndex",
+      "lines": [
+        170
+      ]
+    },
+    {
+      "id": "MY-F2",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "anchor": "Object.fromEntries(Object.entries(line.properties).filter",
+      "lines": [
+        121
+      ]
+    },
+    {
+      "id": "MY-F3",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "packages/checkout-core/src/index.ts",
+      "anchor": "export function canonicalCheckoutCartBinding",
+      "lines": [
+        556
+      ]
+    },
+    {
+      "id": "MY-F4",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "anchor": "function checkoutOrderItems",
+      "lines": [
+        199
+      ]
+    },
+    {
+      "id": "MY-F5",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "packages/checkout-core/src/index.ts",
+      "anchor": "export function normalizeOrderItemRecord",
+      "lines": [
+        1696
+      ]
+    },
+    {
+      "id": "MY-F5b",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts",
+      "anchor": "const fields = ['id','product_id'",
+      "lines": [
+        378
+      ]
+    },
+    {
+      "id": "MY-F6",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "anchor": "export function isFirstPartyCoreBundleSlug",
+      "lines": [
+        39
+      ]
+    },
+    {
+      "id": "MY-F7",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "anchor": "lb-settings__email-display",
+      "lines": [
+        1602,
+        1676
+      ]
+    },
+    {
+      "id": "MY-F7b",
+      "classification": "VERIFIED_REPOSITORY_FACT",
+      "path": "services/api-gateway/src/routes/storefront/buyer-account-routes.ts",
+      "anchor": "full_name/phone ONLY",
+      "lines": [
+        102
+      ]
+    }
+  ],
+  "sourceReferences": [
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/branding.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "df60079eee4264607ebf925b14a583059624cebbbcf2e4111f2222d00e8181bf",
+      "lineCount": 345
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/account/orders/[id]/order-detail-client.tsx",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "4294032a75f45591de6e1f3c587e5f64ba057f63af9428da31fe4d6f29fd4f0b",
+      "lineCount": 115
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2c03e5a030eb890a63ba248d56f7447305565858a49f3b0ee1e67b53fee18baa",
+      "lineCount": 1563
+    },
+    {
+      "path": "apps/commerce/web/src/app/theme-preview/[slug]/page.tsx",
+      "line": 35,
+      "exists": true,
+      "kind": "file",
+      "sha256": "4e29a900bad7795fe310a332eb000e26d9928c61a04a3c5415ba97777dbb90ec",
+      "lineCount": 40
+    },
+    {
+      "path": "apps/commerce/web/src/components/CatalogPreviewFrame.tsx",
+      "line": 5,
+      "exists": true,
+      "kind": "file",
+      "sha256": "fd16bc77cfd9aa091babcf342639e8605651995cbe909e25f97d839d0f9de3ff",
+      "lineCount": 25
+    },
+    {
+      "path": "apps/commerce/web/src/context/cart-context.tsx",
+      "line": 299,
+      "exists": true,
+      "kind": "file",
+      "sha256": "3c2ef0ebdd7a0fcacb5dcf7c9f2c9b4adb4db53cdd5d3f01b66149a786daf898",
+      "lineCount": 349
+    },
+    {
+      "path": "apps/commerce/web/src/lib/buyer-order-drop.ts",
+      "line": 144,
+      "exists": true,
+      "kind": "file",
+      "sha256": "80005ebbdeeb1498e1f4f30d0cbd6f340a92f3c598d13f002c644fd6bc3bc239",
+      "lineCount": 196
+    },
+    {
+      "path": "apps/commerce/web/src/lib/customer-drop.ts",
+      "line": 201,
+      "exists": true,
+      "kind": "file",
+      "sha256": "325066f5e1655a5c463a9254a124df9636e46010eb522b8c533ffc0bc41cae53",
+      "lineCount": 251
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3",
+      "lineCount": 233
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "line": 215,
+      "exists": true,
+      "kind": "file",
+      "sha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3",
+      "lineCount": 233
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "line": 278,
+      "exists": true,
+      "kind": "file",
+      "sha256": "bdc509e3f1bc91e8422cb52d893ba56d2912c8de9e84450513f408f87b1e6b86",
+      "lineCount": 904
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "ce2cdc4d6bb618996600ecf9417ca980fa893732ac98060ce223ea4e8158c656",
+      "lineCount": 159
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "cc7144356922dc1d3c51c5d52d7f681d3deadd19cbde3f36c9b7af9fadafacec",
+      "lineCount": 79
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "line": 102,
+      "exists": true,
+      "kind": "file",
+      "sha256": "c2b710113e412ba7d4b2d4349718a50983af6ce69b2103cb912c6f6951cdbf8f",
+      "lineCount": 2407
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "line": 1520,
+      "exists": true,
+      "kind": "file",
+      "sha256": "c2b710113e412ba7d4b2d4349718a50983af6ce69b2103cb912c6f6951cdbf8f",
+      "lineCount": 2407
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "line": 1599,
+      "exists": true,
+      "kind": "file",
+      "sha256": "c2b710113e412ba7d4b2d4349718a50983af6ce69b2103cb912c6f6951cdbf8f",
+      "lineCount": 2407
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "line": 168,
+      "exists": true,
+      "kind": "file",
+      "sha256": "c2b710113e412ba7d4b2d4349718a50983af6ce69b2103cb912c6f6951cdbf8f",
+      "lineCount": 2407
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "line": 462,
+      "exists": true,
+      "kind": "file",
+      "sha256": "c2b710113e412ba7d4b2d4349718a50983af6ce69b2103cb912c6f6951cdbf8f",
+      "lineCount": 2407
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/theme_service.dart",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "e8db30bbfffe4c5be21d4a39915bc1fa968346a4e1a0f0af813082b2033edeee",
+      "lineCount": 1165
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+      "line": 123,
+      "exists": true,
+      "kind": "file",
+      "sha256": "aeb5a14d86f94e85b617a3c1385353fd40ecfe45efb5d20ab28cb5ea499bd446",
+      "lineCount": 709
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+      "line": 453,
+      "exists": true,
+      "kind": "file",
+      "sha256": "aeb5a14d86f94e85b617a3c1385353fd40ecfe45efb5d20ab28cb5ea499bd446",
+      "lineCount": 709
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/[productId]/page.tsx",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "8bb91993b68cdf4833083c47b2bc3a24535e235aa5932e779f67564cf4fbe612",
+      "lineCount": 1
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "line": 907,
+      "exists": true,
+      "kind": "file",
+      "sha256": "361e52083c5de29a8483d334114d5a462a5a36cb001317c838aae02c3facc580",
+      "lineCount": 1761
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07",
+      "lineCount": 116
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/ThemeWorkspace.tsx",
+      "line": 141,
+      "exists": true,
+      "kind": "file",
+      "sha256": "964845ea2261b2694b35980a6a5962c7ff84b72caffb1da6d153461e8ca6df47",
+      "lineCount": 143
+    },
+    {
+      "path": "apps/platform/identity/src/app/buyer/authorize/authorize-client.tsx",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2dde0d20974c75a1ef76e5a9dfd4ef3800a95bfb9b5502baa5b77f6d93e4e98e",
+      "lineCount": 225
+    },
+    {
+      "path": "database/supabase/migrations/166_d6_checkout_handoff_inventory.sql",
+      "line": 250,
+      "exists": true,
+      "kind": "file",
+      "sha256": "60b323563e1bc348d01ea63835a5efd3f48d20f13d7ac0f83dcb8b5b9445c164",
+      "lineCount": 338
+    },
+    {
+      "path": "database/supabase/migrations/166_d6_checkout_handoff_inventory.sql",
+      "line": 8,
+      "exists": true,
+      "kind": "file",
+      "sha256": "60b323563e1bc348d01ea63835a5efd3f48d20f13d7ac0f83dcb8b5b9445c164",
+      "lineCount": 338
+    },
+    {
+      "path": "database/supabase/migrations/234_checkout_loyalty_tender.sql",
+      "line": 33,
+      "exists": true,
+      "kind": "file",
+      "sha256": "8b6ecf8b175c62c9043ecb3ee69b4411b397ed4d6fc6944cd1fd64bcd3d0fdf5",
+      "lineCount": 718
+    },
+    {
+      "path": "database/supabase/migrations/267_authenticated_checkout_order_ownership.sql",
+      "line": 7,
+      "exists": true,
+      "kind": "file",
+      "sha256": "1ecabee0dd348cf58ac03a2c1d49e2f720025e2ec1601c1a62b88859b336f466",
+      "lineCount": 107
+    },
+    {
+      "path": "database/supabase/migrations/281_storefront_checkout_shipping_rate_binding.sql",
+      "line": 4,
+      "exists": true,
+      "kind": "file",
+      "sha256": "888aa38c7086a43c8607c2ebdb703fd063233675244706704983c824e5f350a6",
+      "lineCount": 138
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "line": 1696,
+      "exists": true,
+      "kind": "file",
+      "sha256": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f",
+      "lineCount": 2079
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "line": 41,
+      "exists": true,
+      "kind": "file",
+      "sha256": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f",
+      "lineCount": 2079
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "line": 492,
+      "exists": true,
+      "kind": "file",
+      "sha256": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f",
+      "lineCount": 2079
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "line": 556,
+      "exists": true,
+      "kind": "file",
+      "sha256": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f",
+      "lineCount": 2079
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "line": 601,
+      "exists": true,
+      "kind": "file",
+      "sha256": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f",
+      "lineCount": 2079
+    },
+    {
+      "path": "packages/checkout-core/test/checkout-core.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "241ab801663e0c259eabf14eb7c3d9fae07f8aebc114b91859ef2f779dd7cf40",
+      "lineCount": 329
+    },
+    {
+      "path": "packages/commerce-core/src/apparel.ts",
+      "line": 41,
+      "exists": true,
+      "kind": "file",
+      "sha256": "0afb1cf478a8279f3fa709403560b55c70f39d9c58f22c52f4a1e7bb4ac8b786",
+      "lineCount": 45
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "line": 1262,
+      "exists": true,
+      "kind": "file",
+      "sha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984",
+      "lineCount": 1278
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "line": 34,
+      "exists": true,
+      "kind": "file",
+      "sha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984",
+      "lineCount": 1278
+    },
+    {
+      "path": "packages/commerce-core/test",
+      "line": null,
+      "exists": true,
+      "kind": "directory"
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362",
+      "lineCount": 5035
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "line": 4665,
+      "exists": true,
+      "kind": "file",
+      "sha256": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362",
+      "lineCount": 5035
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "line": 42,
+      "exists": true,
+      "kind": "file",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+      "lineCount": 337
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "line": 39,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2a735a06458b23db335bf1374496a5be1985fe05ce0c6e0fa7a0768bf321be25",
+      "lineCount": 48
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "b8101bfdbf5f9563f7cdbb7c5de0fb0a06828f941b3880ec150ec4fed6011df8",
+      "lineCount": 1395
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "line": 43,
+      "exists": true,
+      "kind": "file",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94",
+      "lineCount": 111
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "line": 39,
+      "exists": true,
+      "kind": "file",
+      "sha256": "d3a358df585edcebdba95706028117a784ffc46876d9160c5d90e0eda82ada42",
+      "lineCount": 99
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "line": 334,
+      "exists": true,
+      "kind": "file",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "lineCount": 651
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/cart.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2d737def0b72dd7326204f15fe19815c4dffa9ae5b5261ebe56843443be89a84",
+      "lineCount": 39
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/authenticated-checkout.postgres.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "4d1b12587f701b3a5c44c592978af7a902fca9fbc7d5cd7e26ee582eac8651dd",
+      "lineCount": 291
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gateway-harness.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "8ea080a22eda42ad030a849c9aed109d2224ad52a346081d3a0466c1f8b648f7",
+      "lineCount": 305
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "43706928a59c6642428ca4af236b58826855e0a1f47a73bd9268f4f38ecd76c5",
+      "lineCount": 606
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-order-detail-authority.postgres.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2450e62114627bf3d278bed943221cac1c008052c19d46b72a8026a6859ddfed",
+      "lineCount": 33
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-buyer-orders.postgres.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "dd2cd4fd714e962301d50c56c431c46a7fb539d9bfaed0f5817dab47d0178a3d",
+      "lineCount": 186
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "fe356cc4d073538e9bb9e650bb9799fd09d3b2d0cf1a223d2bd7a6e21add365e",
+      "lineCount": 155
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-lifecycle.postgres.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "9dc5a362da88d411243e4064715d2d53420f6a28ccc898d25c03f04953204bfa",
+      "lineCount": 141
+    },
+    {
+      "path": "services/api-gateway/src/execution/order-execution.adapter.ts",
+      "line": 78,
+      "exists": true,
+      "kind": "file",
+      "sha256": "66ed2803ef4367bad664b87bf73a6b91e9eb62c398a4bfec1273d48a6effa3cf",
+      "lineCount": 442
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae",
+      "lineCount": 1969
+    },
+    {
+      "path": "services/api-gateway/src/lib/order-read-compat.ts",
+      "line": 152,
+      "exists": true,
+      "kind": "file",
+      "sha256": "171bd0145b034142a11c6cc2ed12fd102f7de7011dbdc42c8a96ed659ca57a6d",
+      "lineCount": 203
+    },
+    {
+      "path": "services/api-gateway/src/lib/public-product-view.ts",
+      "line": 126,
+      "exists": true,
+      "kind": "file",
+      "sha256": "4989ca6f90bc7d3af54d660fe841f7da46e2d9c7e2fbfd3aa67e514d0562ec5b",
+      "lineCount": 151
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "line": 199,
+      "exists": true,
+      "kind": "file",
+      "sha256": "328ecff89e333d512fe68a0a80036dc19cc68f6ec7408b60a154e2ece8ba6f23",
+      "lineCount": 1478
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "line": 313,
+      "exists": true,
+      "kind": "file",
+      "sha256": "328ecff89e333d512fe68a0a80036dc19cc68f6ec7408b60a154e2ece8ba6f23",
+      "lineCount": 1478
+    },
+    {
+      "path": "services/api-gateway/src/routes/orders.ts",
+      "line": 762,
+      "exists": true,
+      "kind": "file",
+      "sha256": "0c2a02631c136c5e54bb406f611f95c833195e2d6f7fda0db1f10602249a3d38",
+      "lineCount": 1304
+    },
+    {
+      "path": "services/api-gateway/src/routes/products.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2b7c02e074499856a27a7b767702141c44aae3b3ba2e5ad56e2d01e3a5c54176",
+      "lineCount": 1130
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront.ts",
+      "line": 604,
+      "exists": true,
+      "kind": "file",
+      "sha256": "36e48fdbbc7a64e47848bc14d6f92bc471ea3c4047b47471f7855a0b9f85b469",
+      "lineCount": 1440
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-account-routes.ts",
+      "line": 486,
+      "exists": true,
+      "kind": "file",
+      "sha256": "f2df7f84fcb4180e42adec63f4db85e0267613e5b85d573a213b403224325e38",
+      "lineCount": 540
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-order-routes.ts",
+      "line": 55,
+      "exists": true,
+      "kind": "file",
+      "sha256": "0aceb52671a428d2f5eda8036771fa53fa609a61e0c446cc9db0dfbd3a47f546",
+      "lineCount": 207
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts",
+      "line": 370,
+      "exists": true,
+      "kind": "file",
+      "sha256": "b9d71a6a0572a9f8fe7c627e2e733d99a4e30bc20aabc72c7965a01b73e75818",
+      "lineCount": 803
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "line": 148,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2c18fa503468d8642438e4b349078d5a6afc014ae1409f77483b4bf844c3a82d",
+      "lineCount": 854
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "line": 230,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2c18fa503468d8642438e4b349078d5a6afc014ae1409f77483b4bf844c3a82d",
+      "lineCount": 854
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "line": 687,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2c18fa503468d8642438e4b349078d5a6afc014ae1409f77483b4bf844c3a82d",
+      "lineCount": 854
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "line": 929,
+      "exists": true,
+      "kind": "file",
+      "sha256": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e",
+      "lineCount": 1462
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d",
+      "lineCount": 1137
+    },
+    {
+      "path": "tests/contracts/server-side-cart.test.ts",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "2aa7a695078e2b0d99b7f05d34952741f27e6eab3d3e51a7e740e67c9294f153",
+      "lineCount": 65
+    },
+    {
+      "path": "tests/executable/checkout-idempotency-advisory-lock-postgres.test.mjs",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "35c0d5b209f67f4a635109edca0a0aab119865c5cfbb4d7c7a12619498d8fb41",
+      "lineCount": 300
+    },
+    {
+      "path": "tests/executable/checkout-order-concurrency-postgres.test.mjs",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "559e5283adfbe73d4f3a13528591c588ac449344ed659f0fb1aa472de3317f87",
+      "lineCount": 374
+    },
+    {
+      "path": "tests/governance/checkout-order-definition-lineage.test.mjs",
+      "line": null,
+      "exists": true,
+      "kind": "file",
+      "sha256": "779fdbd28c8286dcfed1ff73d55961bad6d16cf783df9250a73d8714316c0221",
+      "lineCount": 188
+    }
+  ],
+  "targetContractsStatus": "TARGET_IMPLEMENTATION; not authored or applied",
+  "testsStatus": "Targeted plan only; no production test/build/DB/browser executed for this inventory",
+  "sourceLinkAudit": {
+    "references": 78,
+    "allExist": true,
+    "citedLinesInRange": true
+  },
+  "profileCorrection": {
+    "source": "services/api-gateway/src/routes/storefront/buyer-account-routes.ts",
+    "method": "PATCH /buyer/profile",
+    "mutableFields": [
+      "full_name",
+      "phone"
+    ],
+    "emailMutable": false,
+    "classification": "VERIFIED_REPOSITORY_FACT",
+    "mockupScene": "12-profile",
+    "recaptureStatus": "completed_three_exact_viewports; DOM assertions passed; coordinator follow-up review pending"
+  },
+  "readOnlyBindingProbe": {
+    "executed": true,
+    "method": "existing canonicalCheckoutCartBinding called with synthetic otherwise-identical cart lines and Asha/Kabir nested properties",
+    "sameBindingAfterTextOnlyChange": true,
+    "textIncludedInBinding": false,
+    "scopeLimit": "Pure contract probe; no worker/DB/handoff verification or production change"
+  }
+}

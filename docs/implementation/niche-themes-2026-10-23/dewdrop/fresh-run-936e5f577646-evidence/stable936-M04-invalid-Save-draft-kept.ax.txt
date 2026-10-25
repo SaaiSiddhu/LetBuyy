@@ -1,0 +1,387 @@
+Browser tab: 50, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products/f04c5a94-8f0c-48ae-a450-e2374caa5c7e".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products/f04c5a94-8f0c-48ae-a450-e2374caa5c7e
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/online-store
+						43 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			44 text Apps
+			45 container Apps
+				46 content list
+					47 link Description: Add, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/apps
+		48 container Settings navigation
+			49 content list
+				50 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/settings
+	51 container admin-page-scroll
+		369 heading Edit product, Value: 1
+			370 text Edit product
+		385 container
+			386 heading Product needs attention, Value: 3
+				387 text Product needs attention
+			388 text Check product facts (beauty → shades → 1 → value): Each shade option value must appear once.
+		57 container
+			58 heading Details, Value: 2
+				59 text Details
+			60 text Name and describe the product as shoppers will see it. Title
+			61 text field (settable) Title, Value: Fixture Soft Colour
+			62 text Description
+			63 text entry area (settable) Description, Value: Synthetic owned beauty lifecycle fixture only.
+		64 container
+			65 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				66 text Apparel fit, fabric and care (optional)
+			67 container Product-specific facts
+				68 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				69 text Product facts category
+				70 pop up button (collapsed, settable) Product facts category, Value: Beauty and care, Secondary Actions: Expand
+					71 menu
+						72 (disabled) Choose product information to edit
+						73 Toys and activities
+						74 Electronics
+						75 Food and pantry
+						76 Furniture
+						77 Ready-made gifts
+						78 Text personalization
+						79 (selected) Beauty and care
+						80 Sports equipment
+						81 Books and stationery
+				266 container
+					267 button (expanded) Care ingredients and named shades (optional) — Review 1 issue, Secondary Actions: Collapse
+						268 text Care ingredients and named shades (optional)
+						371 text  — Review 
+						372 text 1
+						373 text issue
+					269 container Care ingredients and named shades (optional) — Review 1 issue
+						270 text Add information supplied for this product. Missing ingredients, directions and warnings remain unknown.
+						374 container
+							375 text Review the care facts before saving. Your draft is kept.
+							376 content list
+								377 container
+									378 AXListMarker • 
+									379 text Shade 2 name :  Each shade option value must appear once.
+						271 text Routine stage
+						272 pop up button (collapsed, settable) Routine stage, Value: Colour, Secondary Actions: Expand
+							273 menu
+								274 Not supplied
+								275 Cleanse
+								276 Care
+								277 (selected) Colour
+						278 text Product format
+						279 text field (settable) Product format, Value: Lip tint
+						280 text Use the product’s format, such as gel cleanser. Leave blank if unknown.
+						281 container Net quantity (optional)
+							282 text Net quantity (optional)
+							283 text Net quantity amount
+							284 stepper (settable, integer) Net quantity amount, Value: 6
+							285 text Net quantity unit
+							286 pop up button (collapsed, settable) Net quantity unit, Value: Millilitres (ml), Secondary Actions: Expand
+								287 menu
+									288 Not supplied
+									289 Grams (g)
+									290 (selected) Millilitres (ml)
+							291 button Clear net quantity
+						292 text Ingredients
+						293 text entry area (settable) Ingredients, Value: Common tint v1: fixture oil and wax; see named shade ingredients.
+						294 text Directions
+						295 text entry area (settable) Directions, Value: Fixture directions v1: use as supplied.
+						296 text Warnings
+						297 text entry area (settable) Warnings, Value: Fixture warning v1: external use only.
+						298 container Named shade references (optional)
+							299 text Named shade references (optional)
+							300 text Choose an existing product option and its exact values. A colour reference never replaces a shade name or purchase variant. Two named shades may have the same RGB value.
+							301 text Shade product option
+							302 pop up button (collapsed, settable) Shade product option, Value: Shade name, Secondary Actions: Expand
+								303 menu
+									304 Choose an existing product option
+									305 (selected) Shade name
+									306 पैक आकार
+							307 container Shade 1 · Rosewater
+								308 container
+									309 text Shade  1  · Rosewater
+								310 text Shade 1 name
+								311 pop up button (collapsed, settable) Shade 1 name, Value: Rosewater, Secondary Actions: Expand
+									312 menu
+										313 Choose an existing shade value
+										314 (selected) Rosewater
+										315 Pink Clay
+										316 Terracotta
+								317 text Shade 1 code
+								318 text field (settable) Shade 1 code, Value: RW01
+								319 text Shade 1 RGB reference
+								320 text field (settable) Shade 1 RGB reference, Value: #a36a65
+								321 text Optional six-digit hex value. Names keep shades distinct.
+								322 text Shade 1 ingredients
+								323 text entry area (settable) Shade 1 ingredients, Value: Rosewater v1: fixture oil, CI 77491.
+								324 button Remove shade 1
+									325 text Remove shade 
+									326 text 1
+							327 container Shade 2 · Rosewater
+								328 container
+									329 text Shade  2  · Rosewater
+								330 text Shade 2 name
+								331 pop up button (collapsed, settable) Shade 2 name, Value: Rosewater, Secondary Actions: Expand
+									332 menu
+										333 Choose an existing shade value
+										334 (selected) Rosewater
+										335 Pink Clay
+										336 Terracotta
+								380 text Each shade option value must appear once.
+								337 text Shade 2 code
+								338 text field (settable) Shade 2 code, Value: PC02
+								339 text Shade 2 RGB reference
+								340 text field (settable) Shade 2 RGB reference, Value: #a36a65
+								341 text Optional six-digit hex value. Names keep shades distinct.
+								342 text Shade 2 ingredients
+								343 text entry area (settable) Shade 2 ingredients, Value: Pink Clay v1: fixture oil, CI 77492.
+								344 button Remove shade 2
+									345 text Remove shade 
+									346 text 2
+							347 container Shade 3 · Terracotta
+								348 container
+									349 text Shade  3  · Terracotta
+								350 text Shade 3 name
+								351 pop up button (collapsed, settable) Shade 3 name, Value: Terracotta, Secondary Actions: Expand
+									352 menu
+										353 Choose an existing shade value
+										354 Rosewater
+										355 Pink Clay
+										356 (selected) Terracotta
+								357 text Shade 3 code
+								358 text field (settable) Shade 3 code, Value: TC03
+								359 text Shade 3 RGB reference
+								360 text field (settable) Shade 3 RGB reference, Value: #89534a
+								361 text Optional six-digit hex value. Names keep shades distinct.
+								362 text Shade 3 ingredients
+								363 text entry area (settable) Shade 3 ingredients
+								364 button Remove shade 3
+									365 text Remove shade 
+									366 text 3
+							367 button Add named shade
+						368 button Clear all care facts
+			84 heading Media, Value: 2
+				85 text Media
+			86 text Upload images that help shoppers inspect the product.
+			87 container
+				88 image Product media 1
+				89 button Remove product media 1
+				90 button (disabled) Move product media 1 earlier
+				91 button (disabled) Move product media 1 later
+			92 button Upload more media
+		93 container
+			94 heading Category, Value: 2
+				95 text Category
+			96 text Add category metadata for tax, discovery, and reporting. Category
+			97 text field (settable) Category, Value: Care
+			98 text Determines tax rates and adds product metadata.
+		99 container
+			100 heading Pricing, Value: 2
+				101 text Pricing
+			102 text Set the customer-facing price and internal product cost. Price
+			103 stepper (settable, integer) Price, Value: 520
+			104 text Compare-at price
+			105 stepper (settable) Compare-at price
+			106 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			107 text Cost per item
+			108 stepper (settable) Cost per item
+			109 text Customers will not see this.
+		110 container
+			111 heading Inventory, Value: 2
+				112 text Inventory
+			113 text Track SKU, barcode, and sell-through behavior.
+			114 checkbox (settable, integer) Description: Track quantity, Value: 1
+			115 text Quantity
+			116 stepper (settable, integer) Quantity, Value: 8
+			117 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			118 text SKU (Stock Keeping Unit)
+			119 text field (settable) SKU (Stock Keeping Unit), Value: SYN-BEAUTY-TINT-936e5f577646
+			120 text Barcode (ISBN, UPC, GTIN)
+			121 text field (settable) Barcode (ISBN, UPC, GTIN)
+		122 container
+			123 heading Shipping, Value: 2
+				124 text Shipping
+			125 text Collect fulfillment and customs information for physical products.
+			126 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			127 text Weight
+			128 stepper (settable, float) Weight, Value: 0.10000000149011612, Details: 0.1
+			129 text Unit
+			130 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				131 menu
+					132 (selected) kg
+					133 g
+					134 lb
+					135 oz
+			136 text Importer details (for imported products)
+			137 text entry area (settable) Importer details (for imported products)
+			138 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			139 text field (settable) Country/Region of origin, Value: India
+			140 text HS (Harmonized System) code
+			141 text field (settable) HS (Harmonized System) code
+		142 container
+			143 heading Variants, Value: 2
+				144 text Variants
+			145 text Add options like size, color, or material.
+			146 text Shade name
+			147 button Delete
+			148 text Rosewater
+			149 button Rename Shade name value Rosewater
+			150 button Remove Rosewater
+			151 text Pink Clay
+			152 button Rename Shade name value Pink Clay
+			153 button Remove Pink Clay
+			154 text Terracotta
+			155 button Rename Shade name value Terracotta
+			156 button Remove Terracotta
+			157 button Add values
+			158 text पैक आकार
+			159 button Delete
+			160 text एक इकाई
+			161 button Rename पैक आकार value एक इकाई
+			162 button Remove एक इकाई
+			163 button Add values
+			164 button Add option
+			165 heading Variant combinations, Value: 2
+				166 text Variant combinations
+			167 text Edit price, SKU, and stock for each combination.
+			168 table
+				169 row
+					170 cell
+						171 text Variant
+					172 cell
+						173 text Price
+					174 cell
+						175 text Compare
+					176 cell
+						177 text SKU
+					178 cell
+						179 text Stock
+				180 row
+					181 cell
+						182 text Fixture shade SKU
+					183 cell
+						184 stepper (settable, integer) Description: Price for Fixture shade SKU, Value: 520
+					185 cell
+						186 stepper (settable) Compare-at price for Fixture shade SKU
+					187 cell
+						188 text field (settable) Description: SKU for Fixture shade SKU, Value: SYN-BEAUTY-ROSE-936e5f577646
+					189 cell
+						190 stepper (settable, integer) Description: Stock for Fixture shade SKU, Value: 4
+					191 cell
+						192 button Remove variant Fixture shade SKU
+				193 row
+					194 cell
+						195 text Fixture shade SKU
+					196 cell
+						197 stepper (settable, integer) Description: Price for Fixture shade SKU, Value: 560
+					198 cell
+						199 stepper (settable) Compare-at price for Fixture shade SKU
+					200 cell
+						201 text field (settable) Description: SKU for Fixture shade SKU, Value: SYN-BEAUTY-PINK-936e5f577646
+					202 cell
+						203 stepper (settable, integer) Description: Stock for Fixture shade SKU, Value: 2
+					204 cell
+						205 button Remove variant Fixture shade SKU
+				206 row
+					207 cell
+						208 text Fixture shade SKU
+					209 cell
+						210 stepper (settable, integer) Description: Price for Fixture shade SKU, Value: 590
+					211 cell
+						212 stepper (settable) Compare-at price for Fixture shade SKU
+					213 cell
+						214 text field (settable) Description: SKU for Fixture shade SKU, Value: SYN-BEAUTY-TERRA-936e5f577646
+					215 cell
+						216 stepper (settable, integer) Description: Stock for Fixture shade SKU, Value: 0
+					217 cell
+						218 button Remove variant Fixture shade SKU
+			219 button (collapsed) Facts for Fixture shade SKU, Secondary Actions: Expand
+				220 text Facts for 
+				221 text Fixture shade SKU
+			222 button (collapsed) Facts for Fixture shade SKU, Secondary Actions: Expand
+				223 text Facts for 
+				224 text Fixture shade SKU
+			225 button (collapsed) Facts for Fixture shade SKU, Secondary Actions: Expand
+				226 text Facts for 
+				227 text Fixture shade SKU
+		228 container
+			229 heading Search engine listing, Value: 2
+				230 text Search engine listing
+			231 text Control how this product may appear in search results. syn-threadline-ui-6815276b .letbuyy.com/products/ syn-soft-colour-936e5f577646 Fixture Soft Colour Synthetic owned beauty lifecycle fixture only. Page title
+			232 text field (settable) Page title
+			233 text 0 of 70 characters used Meta description
+			234 text entry area (settable) Meta description
+			235 text 0 of 160 characters used URL handle
+			236 text field (settable) URL handle, Value: syn-soft-colour-936e5f577646
+		237 container
+			238 container
+				239 heading Status, Value: 2
+					240 text Status
+				241 text Product status
+				242 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					243 menu
+						244 (selected) Active
+						245 Draft
+						246 Archived
+				247 text Visible on storefront
+			248 container
+				249 heading Publishing, Value: 2
+					250 text Publishing
+				251 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			252 container
+				253 heading Product organization, Value: 2
+					254 text Product organization
+				255 text Use consistent metadata to keep catalog management fast. Product type
+				256 text field (settable) Product type
+				257 text Vendor
+				258 text field (settable) Vendor
+				259 text Tags
+				260 text field (settable) Tags
+				261 text Separate tags with commas.
+			262 container
+				263 heading Catalog readiness, Value: 2
+					264 text Catalog readiness
+				265 text Save product details, media, pricing, and inventory from one guided form.
+		381 container
+			382 text Unsaved changes
+			383 button Discard
+			384 button Save product
+	389 container
+		390 text Could not save product Check product facts (beauty → shades → 1 → value): Each shade option value must appear once.
+		391 button Dismiss notification
+
+The focused UI element is 384 button Save product

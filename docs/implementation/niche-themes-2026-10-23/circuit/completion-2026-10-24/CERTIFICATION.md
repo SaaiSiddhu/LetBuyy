@@ -1,0 +1,13 @@
+# Circuit certification pending
+
+The latest explicit human resume is verified. No full certificate is issued: LOCAL_E2E_VERIFIED, RAZORPAY_TEST_VERIFIED, REVIEW_ACCEPTED and FULL_THEME_CERTIFIED remain false. Production is NOT_REQUESTED.
+
+Circuit ORD-20261024-10005 is preserved: one no-variant hub at1200 plus20 shipping, actual Razorpay Test Mode total1220INR, processed signed callbacks, one balanced122000minor capture and stock7to6. Its22 controller artifacts were rehashed. This is the actual hubQ1 slice; the original hubQ2-plus-Graphite-charger recipe, COD, later-edit histories and other retained requirements remain separate. The false hosted capture flag is an open shared metadata discrepancy, despite the real ledger capture.
+
+The facet functional gate already passed8phases/9assertions. The performance amendment is independently accepted as source preparation:36pure tests and strict checking pass. The next contained source copy and finite module/qualification plan are sealed in performance-native-source01/SEALED_SOURCE_HANDOFF.json:6555 code/data inputs,477 modules,5430 export edges,6037 installed-dependency files, full SQL sets, seven negative guards and zero strict diagnostics. No actual module or native performance run has executed.
+
+MadeYours holds the next native lane for the two capture-metadata cohorts. Circuit awaits independent source/plan acceptance and a later exact exclusive180s module-preflight activation; a separate600s qualification grant follows only accepted actual terminal evidence. Root alone backs up and coordinates runtime recovery. No prior source/resource grant is revived by the human resume; current source grants ended at their first seal.
+
+The retained local editor cycle is reconciled in runtime07-queue-preparation/EDITOR_LOCAL_CYCLE02_RECONCILIATION.json:21 artifacts rehashed,9 accessibility records read and4 screenshots visually checked. One shipping-text requirement and three current210 root/label/direct-child requirements have demonstrated partial components. The original field and temporary tree were restored and published clean. Private live preview, grandchildren, other parent/template contexts and exact installed descriptor lineage remain open. No new whole-case pass is claimed.
+
+Historical original25-case results remain10PASS/5PARTIAL/10NOT_RUN. The288 expanded rows now contain1PARTIAL/287NOT_RUN; the separate15 current210 requirements have an operational overlay of3PARTIAL/12NOT_RUN, preserving the sealed source addendum. Every mandatory applicable case and independent acceptance remain required. Native execution is held behind the capture-owner preflight approval rejection consolidated by the coordinator.

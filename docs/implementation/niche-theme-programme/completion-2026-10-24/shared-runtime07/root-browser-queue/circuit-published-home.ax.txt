@@ -1,0 +1,178 @@
+- generic: Circuit Runtime07 A — precise technology
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - search:
+    - generic: Search products, models and connectors
+    - searchbox "Search products, models and connectors"
+    - button "Search"
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 0 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "0"
+    - text: )
+- paragraph: Electronics, made legible
+- heading "What do you need to connect?" [level=1]
+- paragraph: Start with the task. Finish with the right model.
+- link "Care Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/019bb5fc-e33b-48f0-8f42-4fc2b34e2817
+  - heading "Care" [level=3]
+  - paragraph: Explore collection →
+- link "Cleanse Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/f196d855-c5cf-4928-bee1-c8995e6abbd5
+  - heading "Cleanse" [level=3]
+  - paragraph: Explore collection →
+- link "Colour Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/8bcd4abc-51df-4014-9b9f-352c20ecb06b
+  - heading "Colour" [level=3]
+  - paragraph: Explore collection →
+- link "Easy Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/b355524f-3f5b-4f57-a2e5-9e65b692eb76
+  - heading "Easy" [level=3]
+  - paragraph: Explore collection →
+- link "Lifecycle accessories Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/fd7366c5-295d-4593-ab8f-5266cb6b91b2
+  - heading "Lifecycle accessories" [level=3]
+  - paragraph: Explore collection →
+- link "Lifecycle activities Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/2a036ab7-acde-44ef-a48a-463f1147aff9
+  - heading "Lifecycle activities" [level=3]
+  - paragraph: Explore collection →
+- link "Lifecycle books Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/53ec603e-df18-43f0-a033-6563ba36a135
+  - heading "Lifecycle books" [level=3]
+  - paragraph: Explore collection →
+- link "Lifecycle furniture Explore collection →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/539fd48e-2b99-4ffd-8861-5d0f90f683a1
+  - heading "Lifecycle furniture" [level=3]
+  - paragraph: Explore collection →
+- paragraph: Featured model
+- heading "Find the right connection." [level=2]
+- paragraph: Read the model, connector roles and required features before choosing.
+- link "Explore accessories":
+  - /url: /store/syn-threadline-ui-ae3f0477/products
+- heading "Small details. Better decisions." [level=2]
+- article:
+  - link "Product image not supplied":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/22446d70-4e10-41f0-97f0-55662eeea763
+    - generic: Product image not supplied
+  - heading "Trailmark lifecycle racket" [level=3]:
+    - link "Trailmark lifecycle racket":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/22446d70-4e10-41f0-97f0-55662eeea763
+  - paragraph: Technical facts not supplied
+  - strong: INR 1,800.00
+  - link "Choose options →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/22446d70-4e10-41f0-97f0-55662eeea763
+  - paragraph: Available
+- article:
+  - link "Fixture Cloud Rinse":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+    - img "Fixture Cloud Rinse"
+  - heading "Fixture Cloud Rinse" [level=3]:
+    - link "Fixture Cloud Rinse":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+  - paragraph: Technical facts not supplied
+  - strong: INR 640.00
+  - link "View product →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/42f2f82a-2822-46ed-96a5-c3825205f96d
+  - paragraph: Available
+- article:
+  - link "Fixture Daily Veil":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+    - img "Fixture Daily Veil"
+  - heading "Fixture Daily Veil" [level=3]:
+    - link "Fixture Daily Veil":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+  - paragraph: Technical facts not supplied
+  - strong: INR 880.00
+  - link "View product →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+  - paragraph: Available
+- article:
+  - link "The Everyday Cotton Dress":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+    - img "The Everyday Cotton Dress"
+  - heading "The Everyday Cotton Dress" [level=3]:
+    - link "The Everyday Cotton Dress":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+  - paragraph: Technical facts not supplied
+  - strong: INR 3,990.00
+  - link "Choose options →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+  - paragraph: Available
+- article:
+  - link "Fixture Soft Colour":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/5dd7adcb-50c2-4453-9602-a669139b4270
+    - img "Fixture Soft Colour"
+  - heading "Fixture Soft Colour" [level=3]:
+    - link "Fixture Soft Colour":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/5dd7adcb-50c2-4453-9602-a669139b4270
+  - paragraph: Technical facts not supplied
+  - strong: INR 520.00
+  - link "Choose options →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/5dd7adcb-50c2-4453-9602-a669139b4270
+  - paragraph: Available
+- article:
+  - link "Product image not supplied":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/643b76eb-5e75-4ff1-8472-14df4192d815
+    - generic: Product image not supplied
+  - heading "Pantry lifecycle rice" [level=3]:
+    - link "Pantry lifecycle rice":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/643b76eb-5e75-4ff1-8472-14df4192d815
+  - paragraph: Technical facts not supplied
+  - strong: INR 220.00
+  - link "View product →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/643b76eb-5e75-4ff1-8472-14df4192d815
+  - paragraph: Available
+- article:
+  - link "Marginalia lifecycle lined notebook":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/7f870fd9-5e72-423a-8e76-1cf7b6c5ae9c
+    - img "Marginalia lifecycle lined notebook"
+  - heading "Marginalia lifecycle lined notebook" [level=3]:
+    - link "Marginalia lifecycle lined notebook":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/7f870fd9-5e72-423a-8e76-1cf7b6c5ae9c
+  - paragraph: Technical facts not supplied
+  - strong: INR 320.00
+  - link "View product →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/7f870fd9-5e72-423a-8e76-1cf7b6c5ae9c
+  - paragraph: Available
+- article:
+  - link "Product image not supplied":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/802e1d1c-7aad-4293-a7f4-442618f60f30
+    - generic: Product image not supplied
+  - heading "Pantry lifecycle red lentils" [level=3]:
+    - link "Pantry lifecycle red lentils":
+      - /url: /store/syn-threadline-ui-ae3f0477/product/802e1d1c-7aad-4293-a7f4-442618f60f30
+  - paragraph: Technical facts not supplied
+  - strong: INR 180.00
+  - link "Choose options →":
+    - /url: /store/syn-threadline-ui-ae3f0477/product/802e1d1c-7aad-4293-a7f4-442618f60f30
+  - paragraph: Available
+- heading "Same connector. Different capabilities." [level=2]
+- paragraph: Connector shape alone does not establish device compatibility.
+- article:
+  - text: "01"
+  - heading "Find the exact model" [level=3]
+  - paragraph: Use the complete device model identifier.
+- article:
+  - text: "02"
+  - heading "Check the required feature" [level=3]
+  - paragraph: Display, data and power are separate capabilities.
+- article:
+  - text: "03"
+  - heading "Read the reference" [level=3]
+  - paragraph: No model reference means compatibility is unconfirmed.
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

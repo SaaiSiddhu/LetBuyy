@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-25T05:44:29.925483+00:00",
+  "expiresAt": "2026-10-25T06:14:29.925483+00:00",
+  "status": "HUMAN_APPROVED_ONE_FRESH_PRESERVED_REHEARSAL",
+  "humanEvidence": {
+    "source": "Direct latest human Root reply",
+    "questionItemId": "[\"request_user_input_async\",\"call_d155d799eec54e628600f0974546ec46\",0]",
+    "answer": "Approve one corrected restore test (Recommended)"
+  },
+  "commandPath": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/RESTORE_REHEARSAL_COMMAND02.json",
+  "commandSha256": "5ad4cfa97c47c6c3e81358f910f4e12c141061e93ea6f857bf383e3e7f6e3585",
+  "monitorPath": "/private/tmp/letbuyy-original210-restore-monitor02.py",
+  "monitorSha256": "951f414dbf5151574dfb4107d0ca758aac2bb5a4014acdb1e1ae2c53eb919e80",
+  "commandReviewPath": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_COMMAND_SOURCE_REVIEW_03.json",
+  "commandReviewSha256": "660be8af4152e42015a812cb6726f0f2622d89fd33d4c3e5cf6b44a7a7f8f9db",
+  "maxAttempts": 1,
+  "wholeParentBudgetSeconds": 600,
+  "scope": "One NEW protected PostgreSQL/PostgREST restore-only cohort. Same verified original archive; no original data/app/keys/public callback changes, no apps/builds/payments. Failed b762 copy not adopted, retried or reaped.",
+  "executor": "Root only",
+  "priorAllowances": "04 three and05 one consumed; this06 is one additional exact corrected attempt, not automatic retry.",
+  "actualServingOrProviderAuthority": false
+}

@@ -1,0 +1,28 @@
+TAP version 13
+# Subtest: normal first Finish value preserves bound Width IDs, sibling facts and commercial fields through save and reload
+not ok 1 - normal first Finish value preserves bound Width IDs, sibling facts and commercial fields through save and reload
+  ---
+  duration_ms: 448.67625
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/apps/merchant/web/src/components/products/product-conflict.test.tsx:2:55555'
+  failureType: 'testCodeFailure'
+  error: 'the explicit first value extends the existing row'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/components/products/product-conflict.test.tsx:942:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2090.386458

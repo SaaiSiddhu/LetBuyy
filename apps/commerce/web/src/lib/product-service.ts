@@ -1,6 +1,7 @@
 import { cache } from 'react';
-import type { ProductModel } from '@letbuyy/commerce-core';
+import { readApparelFacts, readProductNicheFacts, type ProductModel } from '@letbuyy/commerce-core';
 import type { Product as SharedProduct } from '@letbuyy/shared-types';
+import type { StorefrontProductQuery } from '@letbuyy/api-client';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
     getUrbanKicksDemoProduct as getUrbanKicksDemoProductFixture,
@@ -8,6 +9,8 @@ import {
 } from './demo/urban-kicks-demo';
 import { mapPublicProductPriceHistory } from './product-price-history';
 import { mapPublicProductVariants } from './product-variants';
+import { discoveryRouteQuery, StorefrontDiscoveryQueryError } from './theme-engine/discovery-route-query';
+import { validateDiscoveryProductPage, StorefrontDiscoveryUnsupportedError, type StorefrontDiscoveryProductPage } from './theme-engine/storefront-discovery';
 
 const PRODUCT_LIST_REVALIDATE_SECONDS = 60;
 const PRODUCT_DETAIL_REVALIDATE_SECONDS = 30;
@@ -35,6 +38,19 @@ export class StorefrontCatalogueError extends Error {
 }
 
 export const ProductService = {
+    async getProductPage(subdomain: string, query: StorefrontProductQuery, previewToken?: string): Promise<StorefrontDiscoveryProductPage> {
+        const parsed = discoveryRouteQuery(query);
+        try {
+            const client = createStorefrontApiClient(previewToken ? { cache: 'no-store' } : storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:${subdomain}:products`]));
+            const page = previewToken ? await client.storefront.themePreviewProductPage(subdomain, previewToken, parsed)
+                : await client.storefront.listProducts(subdomain, parsed);
+            return validateDiscoveryProductPage({ ...page, data: page.data.map(mapStorefrontProduct) }, parsed);
+        } catch (error) {
+            if (error instanceof StorefrontDiscoveryQueryError || error instanceof StorefrontDiscoveryUnsupportedError) throw error;
+            // A signed preview failure may contain its capability URL. Never retain/emit that cause.
+            throw new StorefrontCatalogueError('getProductPage', new Error('Product discovery unavailable'));
+        }
+    },
     async getUrbanKicksDemoProducts(productIds?: string[]): Promise<ProductModel[]> {
         return getUrbanKicksDemoProductsFixture(productIds);
     },
@@ -47,7 +63,7 @@ export const ProductService = {
     async getProductsByIds(
         productIds: string[],
         subdomain?: string,
-        query: { category?: string; search?: string; country_of_origin?: string; page?: number } = {},
+        query: StorefrontProductQuery = {},
     ): Promise<ProductModel[]> {
         if (!productIds || productIds.length === 0) return [];
 
@@ -60,7 +76,7 @@ export const ProductService = {
                     `storefront:${subdomain}:products:selected`,
                 ]),
             ).storefront.productsByIds(subdomain, productIds, { query });
-            return products.map(mapWorkerProduct);
+            return products.map(mapStorefrontProduct);
         } catch (error) {
             console.error('[ProductService] Worker by-ids fetch failed:', error);
             throw new StorefrontCatalogueError('getProductsByIds', error);
@@ -69,13 +85,13 @@ export const ProductService = {
 
     async getProductsByStoreSubdomain(
         subdomain: string,
-        query: { category?: string; search?: string; country_of_origin?: string; page?: number } = {},
+        query: StorefrontProductQuery = {},
     ): Promise<ProductModel[]> {
         try {
             const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:${subdomain}:products`]),
             ).storefront.listProducts(subdomain, { limit: 100, ...query });
-            return products.data.map(mapWorkerProduct);
+            return products.data.map(mapStorefrontProduct);
         } catch (error) {
             console.error('[ProductService] Worker store fetch failed:', error);
             throw new StorefrontCatalogueError('getProductsByStoreSubdomain', error);
@@ -90,12 +106,20 @@ export const ProductService = {
                 subdomain, token, selectedIds.length ? selectedIds.slice(0, 100) : undefined,
             );
             if (!Array.isArray(products)) throw new Error('Invalid preview catalog response');
-            return products.map(mapWorkerProduct);
+            return products.map(mapStorefrontProduct);
         } catch {
             // A failed fetch can contain the capability URL; never emit that object.
             console.error('[ProductService] Preview catalog is unavailable');
             throw new StorefrontCatalogueError('getPreviewProducts', new Error('Preview catalog unavailable'));
         }
+    },
+
+    async getCollectionProducts(subdomain: string, collectionId: string, previewToken?: string): Promise<ProductModel[]> {
+        const client = createStorefrontApiClient({ cache: 'no-store' });
+        const products = previewToken
+            ? await client.storefront.themePreviewProducts(subdomain, previewToken, undefined, { query: { collection_id: collectionId } })
+            : (await client.storefront.getCollectionWithProducts(subdomain, collectionId)).products;
+        return products.map(mapStorefrontProduct);
     },
 
     // Search products for the storefront /search route. Callers should catch: a failed search
@@ -112,7 +136,7 @@ export const ProductService = {
         const products = await createStorefrontApiClient(
             storefrontReadInit(30, [`storefront:${subdomain}:search`]),
         ).storefront.listProducts(subdomain, { search: searchTerm, limit: 50, ...filters });
-        return products.data.map(mapWorkerProduct);
+        return products.data.map(mapStorefrontProduct);
     },
 
     // Get all products for a store
@@ -121,7 +145,7 @@ export const ProductService = {
             const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:store:${storeId}:products`]),
             ).storefront.listProductsByStoreId(storeId, { limit: 100 });
-            return products.data.map(mapWorkerProduct);
+            return products.data.map(mapStorefrontProduct);
         } catch (error) {
             console.error('[ProductService] Worker store-id fetch failed:', error);
             throw new StorefrontCatalogueError('getProductsByStoreId', error);
@@ -139,7 +163,7 @@ export const ProductService = {
                     `storefront:${subdomain}:product:${productId}`,
                 ]),
             ).storefront.getProduct(subdomain, productId);
-            return mapWorkerProduct(product);
+            return mapStorefrontProduct(product);
         } catch (error) {
             // `null` from this method means "no such product" and the caller renders
             // a 404. A FETCH FAILURE is a different fact, so it must not reuse that
@@ -159,7 +183,7 @@ export const ProductService = {
 
 // ============= HELPER FUNCTIONS =============
 
-function mapWorkerProduct(product: SharedProduct): ProductModel {
+export function mapStorefrontProduct(product: SharedProduct | Record<string, unknown>): ProductModel {
     return mapSupabaseToProduct(product as unknown as Record<string, unknown>);
 }
 
@@ -197,16 +221,18 @@ function mapSupabaseToProduct(data: Record<string, unknown>): ProductModel {
         countryOfOrigin: data.country_of_origin as string | undefined,
         importerDetails: data.importer_details as string | undefined,
         tags: (data.tags as string[]) || [],
+        apparel: readApparelFacts(data.metadata),
+        ...readProductNicheFacts(data.metadata),
         ...mapPublicProductVariants(data, priceHistory.variants),
-        stock: stockValue === undefined || stockValue === null ? 999 : Number(stockValue),
+        stock: stockValue === undefined || stockValue === null ? 0 : Number(stockValue),
         seoTitle: data.seo_title as string,
         seoDescription: data.seo_description as string,
         // T2a/W4 — the gateway's product-list endpoint omits both `is_active` and `status` entirely
         // (confirmed via a direct curl of /v1/storefront/{sub}/products), so the old
         // `data.is_active ?? data.status === 'active'` silently collapsed to `false` whenever a
         // product simply lacked those fields — inventing a "Sold out" badge for genuinely
-        // in-stock, active products. Only treat a product as inactive when a field explicitly
-        // says so; a listing that omits both stays optimistic, matching the `stock` fallback above.
+        // in-stock, active products. Product visibility follows the scoped public query;
+        // stock remains unavailable when the payload does not supply an actual quantity.
         isActive: data.is_active === false ? false : typeof data.status === 'string' ? data.status === 'active' : true,
         isFeatured: (data.is_featured as boolean) ?? false,
         rating: data.avg_rating ? Number(data.avg_rating) : undefined,

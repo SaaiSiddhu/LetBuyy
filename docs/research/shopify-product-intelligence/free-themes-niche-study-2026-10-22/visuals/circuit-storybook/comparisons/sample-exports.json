@@ -1,0 +1,182 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "file": "comparisons/sample-01-home-top-desktop.png",
+    "width": 1440,
+    "height": 1324,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "bytes": 381216,
+    "sha256": "45b1759798e7950d9cc88a8cf33178c01ccf29cfde96b440609f451184d0041b",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "file": "comparisons/sample-01-home-top-mobile.png",
+    "width": 390,
+    "height": 2174,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "bytes": 241816,
+    "sha256": "ac2f03f467a3c34217d60ecb6041dda3afddec43c8c89456e2c0778199452621",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "03-collection",
+    "device": "desktop",
+    "file": "comparisons/sample-03-collection-desktop.png",
+    "width": 1440,
+    "height": 1621,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "bytes": 451624,
+    "sha256": "8b8751507b0ab272ec746cf4e20282ccf8a679b91d71fdf893119060c3b9d12d",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "03-collection",
+    "device": "mobile",
+    "file": "comparisons/sample-03-collection-mobile.png",
+    "width": 390,
+    "height": 2526,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "bytes": 211008,
+    "sha256": "334d7c8216b1f5e7f66732c52a950b6f0cb49ea184ffc2b7e3dce0131b0c1646",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "desktop",
+    "file": "comparisons/sample-04-product-main-desktop.png",
+    "width": 1440,
+    "height": 1370,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "bytes": 631130,
+    "sha256": "40fa5eeec744bd5f9804bd5c9f0648a62a7876c7c49acc9d6c634f25048ad6d2",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "04-product-main",
+    "device": "mobile",
+    "file": "comparisons/sample-04-product-main-mobile.png",
+    "width": 390,
+    "height": 2254,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "bytes": 260497,
+    "sha256": "303196dc79f9dde728392151d609fe80d5c3cae26d23bcfddfbf940dbeb0e953",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "file": "comparisons/sample-09-checkout-review-desktop.png",
+    "width": 1440,
+    "height": 1106,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "bytes": 147359,
+    "sha256": "4971aaf6aeae8528b5b4761382d119d7e6e2e8bf5d9b1f5cad2dae9db6cd5dfa",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "file": "comparisons/sample-09-checkout-review-mobile.png",
+    "width": 390,
+    "height": 1671,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "bytes": 126430,
+    "sha256": "bd38dd1c25687dc8de8d798f1cf6de1acdf6b3efbb746cf830a7d265e695fa6e",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "11-create-account",
+    "device": "desktop",
+    "file": "comparisons/sample-11-create-account-desktop.png",
+    "width": 1440,
+    "height": 1401,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "bytes": 104233,
+    "sha256": "d80c0dfdb95de9f3b89941990a707004cdf3a7e9ce5e773180837d68e502163a",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "11-create-account",
+    "device": "mobile",
+    "file": "comparisons/sample-11-create-account-mobile.png",
+    "width": 390,
+    "height": 1413,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "bytes": 89857,
+    "sha256": "1d6b162736c53e118be6d60424cf99c87f7930507fac637ab5a9c6d6c2aff72e",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "file": "comparisons/sample-15-addresses-desktop.png",
+    "width": 1440,
+    "height": 1573,
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "bytes": 162981,
+    "sha256": "e004767e45782df75bedadcc15f66ea56ffe036dc884d17ed6dedae2fbf64be1",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "file": "comparisons/sample-15-addresses-mobile.png",
+    "width": 390,
+    "height": 2610,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "bytes": 138512,
+    "sha256": "7a1aacfbe06e4d282d6f689c411bbab5a6a4de63802f4fb8b3bb0f43550217e0",
+    "method": "Playwright 1.60 fresh isolated Chromium; native PNG fullPage; no resizing"
+  }
+]

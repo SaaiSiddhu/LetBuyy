@@ -16,6 +16,7 @@
 // bootstrap's search_path (which puts `extensions` on it, as Supabase does) is re-applied to every clone.
 
 import { readFileSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
 import { RUN_ID_PATTERN, dockerAsync } from './executable-pg-fixture.mjs';
@@ -24,9 +25,16 @@ export const GATEWAY_TEMPLATE_DATABASE = 'letbuyy_tpl_gateway';
 
 const stripUnsupportedPg17Guc = (sql) => sql.replace(/^SET transaction_timeout = 0;\s*$/m, '');
 
-export function listMigrations(repoRoot) {
+export function parseMigrationCeiling(raw) {
+    if (raw === undefined) return undefined;
+    if (typeof raw !== 'string' || !/^[1-9]\d{0,5}$/.test(raw)) throw new Error('--through-migration must be a positive integer from 1 to 999999');
+    return Number(raw);
+}
+
+export function listMigrations(repoRoot, { throughMigration } = {}) {
+    if (throughMigration !== undefined && (!Number.isInteger(throughMigration) || throughMigration < 1 || throughMigration > 999999)) throw new Error('Invalid migration ceiling');
     return readdirSync(join(repoRoot, 'database/supabase/migrations'))
-        .filter((name) => name.endsWith('.sql'))
+        .filter((name) => name.endsWith('.sql') && (throughMigration === undefined || parseInt(name, 10) <= throughMigration))
         .sort((a, b) => {
             const na = parseInt(a.match(/^(\d+)/)?.[1] ?? '0', 10);
             const nb = parseInt(b.match(/^(\d+)/)?.[1] ?? '0', 10);
@@ -53,14 +61,14 @@ const quoted = (identifier) => `"${String(identifier).replaceAll('"', '""')}"`;
  * Builds the pristine template once per cluster: faithful bootstrap, every migration in numeric order, with the REST
  * layer's roles established first, then the fixture schema. Returns the seconds it took.
  */
-export async function buildGatewayTemplate(cluster, { repoRoot, restPassword }) {
+export async function buildGatewayTemplate(cluster, { repoRoot, restPassword, throughMigration, templateDatabase = GATEWAY_TEMPLATE_DATABASE }) {
     // The password is written into SQL text, so it is checked to be what the runner generates (hex), nothing else.
     if (!/^[0-9a-f]{32,}$/.test(restPassword)) throw new Error('the REST role password must be a hex string');
     const started = Date.now();
-    await psqlScript(cluster, 'postgres', `CREATE DATABASE ${quoted(GATEWAY_TEMPLATE_DATABASE)};`, 'creating the template database');
-    await psqlScript(cluster, GATEWAY_TEMPLATE_DATABASE, SUPABASE_FAITHFUL_BOOTSTRAP_SQL, 'the faithful bootstrap');
+    await psqlScript(cluster, 'postgres', `CREATE DATABASE ${quoted(templateDatabase)};`, 'creating the template database');
+    await psqlScript(cluster, templateDatabase, SUPABASE_FAITHFUL_BOOTSTRAP_SQL, 'the faithful bootstrap');
     // REST transport memberships must exist before migrations freeze their authority profile.
-    await psqlScript(cluster, GATEWAY_TEMPLATE_DATABASE, `
+    await psqlScript(cluster, templateDatabase, `
         DO $role$
         BEGIN
           IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticator') THEN
@@ -72,15 +80,18 @@ export async function buildGatewayTemplate(cluster, { repoRoot, restPassword }) 
         GRANT anon, authenticated, service_role TO authenticator;
 
     `, 'the REST roles');
-    for (const name of listMigrations(repoRoot)) {
+    cluster.migrationEvidence = { throughMigration: throughMigration ?? null, applied: [] };
+    for (const name of listMigrations(repoRoot, { throughMigration })) {
+        const source = readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8');
         await psqlScript(
             cluster,
-            GATEWAY_TEMPLATE_DATABASE,
-            stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')),
+            templateDatabase,
+            stripUnsupportedPg17Guc(source),
             `migration ${name}`,
         );
+        cluster.migrationEvidence.applied.push({ name, prefix: parseInt(name, 10), sha256: createHash('sha256').update(source).digest('hex') });
     }
-    await psqlScript(cluster, GATEWAY_TEMPLATE_DATABASE, `
+    await psqlScript(cluster, templateDatabase, `
 
         -- The run's identity, readable through the REST layer: schema letbuyy_fixture is exposed only by this lane's
         -- sidecar, and only the service role may call it.
@@ -91,14 +102,14 @@ export async function buildGatewayTemplate(cluster, { repoRoot, restPassword }) 
         GRANT EXECUTE ON FUNCTION letbuyy_fixture.run_id() TO service_role;
     `, 'the fixture schema');
     // Nobody connects to a template while it is cloned; keeping connections off makes that a rule and not a habit.
-    await psqlScript(cluster, 'postgres', `ALTER DATABASE ${quoted(GATEWAY_TEMPLATE_DATABASE)} WITH ALLOW_CONNECTIONS false;`, 'sealing the template');
+    await psqlScript(cluster, 'postgres', `ALTER DATABASE ${quoted(templateDatabase)} WITH ALLOW_CONNECTIONS false;`, 'sealing the template');
     return Math.round((Date.now() - started) / 100) / 10;
 }
 
 /** One suite's database, cloned from the template and marked as this run's. */
-export async function createSuiteDatabase(cluster, database, runId) {
+export async function createSuiteDatabase(cluster, database, runId, { templateDatabase = GATEWAY_TEMPLATE_DATABASE } = {}) {
     if (!RUN_ID_PATTERN.test(runId)) throw new Error('the run id must be 12 hex characters');
-    await psqlScript(cluster, 'postgres', `CREATE DATABASE ${quoted(database)} TEMPLATE ${quoted(GATEWAY_TEMPLATE_DATABASE)};`, 'cloning the template');
+    await psqlScript(cluster, 'postgres', `CREATE DATABASE ${quoted(database)} TEMPLATE ${quoted(templateDatabase)};`, 'cloning the template');
     await psqlScript(cluster, 'postgres', `ALTER DATABASE ${quoted(database)} SET search_path = public, extensions;`, 'setting the search_path');
     await psqlScript(cluster, 'postgres', `ALTER DATABASE ${quoted(database)} SET letbuyy.fixture_run_id = '${runId}';`, 'marking the database');
 }

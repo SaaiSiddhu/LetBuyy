@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-24T03:18:14.010675+00:00",
+  "status": "SOURCE_ONLY_MINIMAL_PUBLISHER_ACL_AND_SEQUENTIAL393_394_PROPOSAL_NO_ALLOCATION_SQL_OR_RUNTIME_CHANGE",
+  "proposal": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/publisher-acl-393-order-proposal/PROPOSAL.md",
+    "sha256": "640730c701bf1e31e270676819757f6dffa81e4c37f4faa9baadcf97860d2988",
+    "bytes": 13404
+  },
+  "receipt": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/publisher-acl-393-order-proposal/proposal-receipt.json",
+    "sha256": "e090256720e23801c3c03f4da895eee14f0def08459966f1f8923c03020df433",
+    "bytes": 12086
+  },
+  "allocationChanged": false,
+  "sqlProduced": false,
+  "newTestsOrRuntimeActions": false,
+  "rollbackDisposition": "ROOT_RESOLVED_EXISTING_MIG_R3_EXACT_INVERSE_OWNED_ONLY_NO_NEW_POLICY_OR_APPROVAL_GATE"
+}

@@ -1,0 +1,1052 @@
+{
+  "date": "2026-10-23",
+  "mode": "READ_ONLY_IMPLEMENTATION_IMPACT_INVENTORY",
+  "scope": "Playfield design review passed individually; full405 portfolio gate open; no production writer allocated",
+  "coordinator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "checkout": {
+    "branch": "letbuyy/theme-release-performance-resume",
+    "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+    "dirtyBaselinePreserved": true,
+    "liveDatabaseInspected": false
+  },
+  "discovery": {
+    "lcisAttemptedFirst": true,
+    "lcisError": "graphify-out/graph.json missing",
+    "fallback": "Scoped direct source reads + pure catalog factory metadata evaluation",
+    "buildsOrTestsRun": false
+  },
+  "identity": {
+    "presetId": "bloom",
+    "slug": "letbuyy-bloom",
+    "catalogId": "7b669c70-0000-4000-8000-000000000008",
+    "sourceFactoryVersion": "1.0.0",
+    "sourceFactoryName": "Bloom",
+    "sourceIndustry": "pet",
+    "targetName": "Playfield",
+    "proposedVersion": "2.0.0",
+    "versionAllocation": "pending coordinator + persisted-version check",
+    "preserveExistingPetInstancesDraftsReleases": true,
+    "newMarketedPresetAdded": false
+  },
+  "minimalContracts": {
+    "namespace": "metadata.toys (proposed)",
+    "authority": "commerce-core Zod/public export; shared-types remains product authority",
+    "fields": [
+      "schemaVersion",
+      "ageBands",
+      "ageStatement",
+      "interests",
+      "productType",
+      "contents[{label,quantity}]",
+      "dimensions{length,width,height,unit}",
+      "materials",
+      "care",
+      "warnings[{text,sourceLabel,editionLabel?}]"
+    ],
+    "discovery": [
+      "age_band",
+      "interest",
+      "product_type only if advertised",
+      "existing page/limit/search/category/price/sort/collection scope"
+    ],
+    "acceptance": "Age AND interest; clear-one preserves the other; unknown age never inferred/matched by active age; authoritative count/page/sort",
+    "queryPlan": "Extend/generalize canonical product browsing with one shared owner; SQL evolution/migration unallocated",
+    "cart": "Existing SKU/variant/quantity/server totals; no toy cart/order authority"
+  },
+  "currentGaps": [
+    "Only Sense dispatches to a distinct versioned niche package",
+    "Core compatibility predicate only exempts Sense>=2",
+    "Public metadata projection permits apparel only",
+    "No typed toy facts/editor/model/Liquid drop",
+    "Age/interest omitted by query schemas, SDK and route allowlists",
+    "Preview fixture selection special-cases Threadline; other samples use Urban Kicks",
+    "Variant-specific facts and immutable historical toy facts not proven",
+    "No Playfield installed/draft/preview/release/commerce/account acceptance"
+  ],
+  "existingFiles": [
+    {
+      "path": "packages/commerce-core/src/apparel.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Current one ProductMetadataSchema and bounded apparel/query pattern; shared owner extends facts validation",
+      "sha256": "0afb1cf478a8279f3fa709403560b55c70f39d9c58f22c52f4a1e7bb4ac8b786",
+      "evidenceLines": {
+        "ProductMetadataSchema": 41,
+        "StorefrontApparelQuerySchema": 22
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Canonical domain exports/create-update schemas/normalized ProductModel",
+      "sha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984",
+      "evidenceLines": {
+        "CreateProductSchema": 34,
+        "UpdateProductSchema": 76,
+        "apparel?:": 582
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Canonical cross-runtime Product; reuse existing metadata shape unless deliberately extended",
+      "sha256": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362",
+      "evidenceLines": {
+        "export const ProductSchema": 1362
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/routes/products.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Mounted product writes through existing validation/tenant/authorization",
+      "sha256": "2b7c02e074499856a27a7b767702141c44aae3b3ba2e5ad56e2d01e3a5c54176",
+      "evidenceLines": {
+        "router.post('/',": 978,
+        "router.patch('/:id'": 1005
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/lib/public-product-view.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Allowlisted public metadata currently contains only validated apparel",
+      "sha256": "4989ca6f90bc7d3af54d660fe841f7da46e2d9c7e2fbfd3aa67e514d0562ec5b",
+      "evidenceLines": {
+        "if (key === 'metadata')": 130
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Canonical storefront query transport needs bounded toy fields",
+      "sha256": "41224133f1b318b5a77575a0742d5a818edc24006e22386b91407eeb0b981894",
+      "evidenceLines": {
+        "export interface StorefrontProductQuery": 2873,
+        "themePreviewProductPage:": 5572,
+        "listProducts:": 4944,
+        "getCollectionWithProducts:": 5659
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Canonical query execution; apparel RPC path today",
+      "sha256": "36e48fdbbc7a64e47848bc14d6f92bc471ea3c4047b47471f7855a0b9f85b469",
+      "evidenceLines": {
+        "async function queryPublicProducts(": 1130,
+        "browse_storefront_apparel_v1": 1134
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Public/preview/collection query validation and actual count",
+      "sha256": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e",
+      "evidenceLines": {
+        "router.get('/:subdomain/products'": 928,
+        "const parsedFilters = StorefrontApparelQuerySchema": 1198
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Typed product normalization and page transport",
+      "sha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3",
+      "evidenceLines": {
+        "async getProductPage": 39,
+        "export function mapStorefrontProduct": 177,
+        "apparel: readApparelFacts": 215
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Typed query validation and section-owned data plan",
+      "sha256": "ce2cdc4d6bb618996600ecf9417ca980fa893732ac98060ce223ea4e8158c656",
+      "evidenceLines": {
+        "StorefrontApparelQuerySchema.safeParse": 120,
+        "dataBySectionId.set": 151
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Safe product Liquid drop; no raw metadata",
+      "sha256": "bdc509e3f1bc91e8422cb52d893ba56d2912c8de9e84450513f408f87b1e6b86",
+      "evidenceLines": {
+        "function productToLiquidDrop": 278,
+        "apparel: product.apparel": 303
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/apparel-route-query.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Current route allowlist omits age/interest",
+      "sha256": "cfa5e2963e8cd41ae0768a0315681b3ae42f7a374b2b6ce56bcda9cc23741a71",
+      "evidenceLines": {
+        "export function apparelRouteQuery": 2
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/collection-discovery.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Canonical collection browse adapter",
+      "sha256": "1725803e36700627812c220855b86a6fc93c16ca302f7ca87c43dc68f9d66afc",
+      "evidenceLines": {
+        "export async function loadCollectionDiscovery": 6,
+        "export async function loadCollectionPage": 20
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/products/page.tsx",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Preserve discovery keys on all-products route",
+      "sha256": "9d5ade3bac9fd9ed2cb9b8d738bae9393d1fc83ad8771570a28cf33ffac192ed",
+      "evidenceLines": {
+        "apparelRouteQuery": 1
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/shop/page.tsx",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Existing shop alias consumes discovery keys",
+      "sha256": "0c1aec075ad6b01a335e880721ed4890d6091dcdb89c14503a0260e7586c996c",
+      "evidenceLines": {
+        "apparelRouteQuery": 1
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/collections/[slug]/page.tsx",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Collection ID scope plus query round-trip",
+      "sha256": "38a80310f7a6a8a8b28789f0d74176c785592ac735b0fd10a015cf47dfddcaad",
+      "evidenceLines": {
+        "apparelRouteQuery": 1,
+        "collection_id: slug": 83
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Shared create/edit fact inputs, drafts/conflicts and sibling metadata merge",
+      "sha256": "361e52083c5de29a8483d334114d5a462a5a36cb001317c838aae02c3facc580",
+      "evidenceLines": {
+        "apparelFacts: JSON.stringify": 312,
+        "const garmentFacts": 907,
+        "<ApparelFactsEditor": 1231
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/[productId]/page.tsx",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Edit reuses the same product page",
+      "sha256": "8bb91993b68cdf4833083c47b2bc3a24535e235aa5932e779f67564cf4fbe612",
+      "evidenceLines": {
+        "export { default }": 1
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Existing UI pattern only; do not relabel garment fields as toy facts",
+      "sha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba",
+      "evidenceLines": {
+        "export function ApparelFactsEditor": 18
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/products/route.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Existing product gateway boundary",
+      "sha256": "e6f57b4eb096fc20cf43394c07053e771bd2d66520f5cc0e5aa62d88bcdfacbe",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/products/[productId]/route.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Existing edit transport boundary",
+      "sha256": "392d179c493550a7f6639f6d19b57396956d07196e4d2c1b562a4ef953e8fb11",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "status": "observed_existing",
+      "classification": "B/C",
+      "role": "Stable Bloom identity + versioned package dispatch",
+      "sha256": "2a735a06458b23db335bf1374496a5be1985fe05ce0c6e0fa7a0768bf321be25",
+      "evidenceLines": {
+        "bloom: '7b669c70": 15,
+        "createFirstPartyCatalogBundle": 35
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "status": "observed_existing",
+      "classification": "B/C",
+      "role": "Current Bloom pet positioning; version-aware transition needed",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "evidenceLines": {
+        "id: 'bloom'": 313,
+        "industry: 'pet'": 317
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "status": "observed_existing",
+      "classification": "B/C",
+      "role": "Current pet composition; new selected version must retain old captures",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68",
+      "evidenceLines": {
+        "const BLOOM_COMPOSITIONS": 279
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Existing theme resolution owner; verify compatibility",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "status": "observed_existing",
+      "classification": "B/C",
+      "role": "Existing public export owner",
+      "sha256": "b8101bfdbf5f9563f7cdbb7c5de0fb0a06828f941b3880ec150ec4fed6011df8",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Version-aware Core-repair gate currently exempts Sense>=2 only",
+      "sha256": "d3a358df585edcebdba95706028117a784ffc46876d9160c5d90e0eda82ada42",
+      "evidenceLines": {
+        "export function isFirstPartyCoreBundleSlug": 39
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Consumes Core-repair gate when converting saved documents",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+      "evidenceLines": {
+        "isFirstPartyCoreBundleSlug(base.package.slug, base.package.version)": 328
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Canonical shared section settings registry if bounded variants need extension",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Canonical type-to-Liquid mapping",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94",
+      "evidenceLines": {
+        "productDetail:": 43,
+        "categoryGrid:": 52
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "status": "observed_existing",
+      "classification": "A/C",
+      "role": "Bundle schema, base canonical sections/islands/persistence",
+      "sha256": "27c6a778e76c190ea25d6dffc940804c9f741488b908f0d960f6285644fc8e25",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Existing versioned package pattern; reuse mechanics, preserve source",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "evidenceLines": {
+        "THREADLINE_VERSION": 7,
+        "createThreadlineTheme": 25
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "status": "observed_existing",
+      "classification": "B/C",
+      "role": "Current Threadline special case; generic previews otherwise use sneaker sample",
+      "sha256": "79d1ab50703aa3ac2e258b512e035c7cd0a509990e84550c741b9c61891800b3",
+      "evidenceLines": {
+        "const isThreadlineDemo": 371
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/theme-preview/[slug]/page.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Actual catalog package preview entry",
+      "sha256": "4e29a900bad7795fe310a332eb000e26d9928c61a04a3c5415ba97777dbb90ec",
+      "evidenceLines": {
+        "CatalogThemePreview": 11,
+        "CatalogPreviewFrame": 6
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/components/CatalogPreviewFrame.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Measured desktop/tablet/mobile frame composition",
+      "sha256": "fd16bc77cfd9aa091babcf342639e8605651995cbe909e25f97d839d0f9de3ff",
+      "evidenceLines": {
+        "export default function CatalogPreviewFrame": 5
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/threadline-demo.ts",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Existing isolated sample fixture pattern; preserve it",
+      "sha256": "a7202d4a41ed2c90869e0fa1923eb2b8d247499073622be1d98f2c713fb15dc0",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/ThemeWorkspace.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Existing marketplace/library/install/version/preview UI",
+      "sha256": "964845ea2261b2694b35980a6a5962c7ff84b72caffb1da6d153461e8ca6df47",
+      "evidenceLines": {
+        "export function ThemeWorkspace": 17
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Existing reviewed style/composition application",
+      "sha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Canonical package-version/install/draft/release/restore authority",
+      "sha256": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes.ts",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Mounted theme API owner",
+      "sha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/lib/theme-release-bundle.ts",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Published immutable artifact resolver",
+      "sha256": "e7c2023c7b7706fcad832a44c120567ee5bfbf9d21d592b21da742fae4003f59",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "scripts/liquid-parity/build-first-party-catalog.mjs",
+      "status": "observed_existing",
+      "classification": "B/C",
+      "role": "Shared historical distribution generator; no write here",
+      "sha256": "6234cd40055fe75931336ee47e262da61ccf59ffb780b1dc56ba8b2ffea1f49d",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "scripts/liquid-parity/build-threadline-catalog.mjs",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "New versioned promotion/rollback pattern; read-only reference",
+      "sha256": "8d1942f3c16059e7d8af880de05e7b501949e99344be025040ef12d8c1c30360",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "database/supabase/migrations/383_storefront_apparel_discovery.sql",
+      "status": "observed_existing",
+      "classification": "C",
+      "role": "Current apparel query SQL reference; never edit applied migration",
+      "sha256": "2231fc7137df40cc65422760f47d1bf40da6d1c9ae520f9d83adae5bee404855",
+      "evidenceLines": {
+        "browse_storefront_apparel_v1": 4
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "database/supabase/rollback/383_storefront_apparel_discovery.rollback.sql",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Paired rollback reference; no migration number reserved",
+      "sha256": "e999bfc20bd07ed3a5eba855ca89eef3d033b4922f77eb73b24d8e8d306656a7",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/theme_service.dart",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Real mobile catalog/instance/editor transport",
+      "sha256": "e8db30bbfffe4c5be21d4a39915bc1fa968346a4e1a0f0af813082b2033edeee",
+      "evidenceLines": {
+        "Future<ThemeCatalogResponse> fetchThemes": 559
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/customize/theme_screen.dart",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Mobile store-theme library and context checks",
+      "sha256": "19ed5ab4bf613590b25bd082366ff5119867f92aa8680606f6d14205062eddad",
+      "evidenceLines": {
+        "class ThemeScreen": 17,
+        "themeService.fetchThemes": 66
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/mobile/lib/models/theme_editor_models.dart",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Existing Dart contract export boundary",
+      "sha256": "3a53f88ac233afd5e8a9db6d663e00f75afbdc9550c89289c270ecd75b26e784",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/dart/models/lib/merchant_contracts.dart",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Canonical Dart merchant contracts consumed by theme model barrel",
+      "sha256": "ce3e697bb541fd3ce1f99381ee227ab22a9e66a78ff9822e626b0eddca652bcb",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Existing variant/quantity/cart island authority; verify only",
+      "sha256": "2504907f5e4f060969685bcfebe1d850c8db38726b923c9b1e1c3b390f50776c",
+      "evidenceLines": {
+        "registerLiquidHydrationIslands": 524
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/branding.ts",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Approved data branding only; no theme checkout fork",
+      "sha256": "df60079eee4264607ebf925b14a583059624cebbbcf2e4111f2222d00e8181bf",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Canonical hosted checkout UI; actual server quote/eligibility",
+      "sha256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout-handoff/route.ts",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Existing cart-bound checkout handoff",
+      "sha256": "e7bb0d555a6409ce430af2e77f9d1429f1c5c6775295c6a083989dd972de4149",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/platform/identity/src/app/buyer/authorize/authorize-client.tsx",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Canonical email/password/session/explicit Continue flow; no changes proposed",
+      "sha256": "2dde0d20974c75a1ef76e5a9dfd4ef3800a95bfb9b5502baa5b77f6d93e4e98e",
+      "evidenceLines": {
+        "export function BuyerAuthorize": 28,
+        "async function continueToStore": 60
+      },
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/register/route.ts",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Canonical identity-issued session after registration",
+      "sha256": "1c8c3997c1390f1889670f6bb8a983d0405c4d440f242aa7ef53d6325e68c7e6",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/platform/identity/src/app/layout.tsx",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Canonical Geist/admin-light credential identity; no changes proposed",
+      "sha256": "bd676dd33ec159752cdb4c4b08c4558356ad14e9c8900eb5fa2d83afd103e3e1",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer-auth/start/route.ts",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Canonical scoped buyer identity entry",
+      "sha256": "845fa0f8008e5d75f65b4e48afb8e6cc8b2fa63d3ed5184a620a5f1550bfa251",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer-auth/callback/route.ts",
+      "status": "observed_existing",
+      "classification": "A",
+      "role": "Validated buyer return and store linkage",
+      "sha256": "fcab3c4285496e7d8942a707fca92d99e7a992551402e05af14ae896124dabf4",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/account/(hub)/page.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Existing buyer overview",
+      "sha256": "3a6bcc0636e51c442e44ad011a77233addb6693ecf976c83c276b7b2d211caea",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/account/orders/(list)/page.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Owned order list",
+      "sha256": "b9a81bca40fc27a090eb5cf4f8af0ff18df8f376c50b62014c2e3add269120b0",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/account/orders/[id]/page.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Direct owned order detail",
+      "sha256": "0bd3d5e056d90041615afabfb6c9a1ae4bfb9ba805b54d0977529057d93fa9d7",
+      "evidenceLines": {},
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/account/addresses/page.tsx",
+      "status": "observed_existing",
+      "classification": "A/B",
+      "role": "Existing saved address lifecycle",
+      "sha256": "c889973f92608b5abd878899d8c27f1f57899457c9d1d2a2ad1ccb1c5c5c48bf",
+      "evidenceLines": {},
+      "writeAllocated": false
+    }
+  ],
+  "proposedFiles": [
+    {
+      "path": "packages/commerce-core/src/toys.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "shared domain writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/commerce-core/test/toys.test.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "shared domain writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "theme package writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "theme package writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "theme/query coordinated writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "packages/theme-engine/test/playfield.test.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "theme package writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/ToyFactsEditor.tsx",
+      "status": "proposed_not_created",
+      "ownerBoundary": "shared merchant editor writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/playfield-demo.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "shared preview dispatch writer",
+      "writeAllocated": false
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield-lifecycle.postgres.test.ts",
+      "status": "proposed_not_created",
+      "ownerBoundary": "assigned integration/owned-DB writer",
+      "writeAllocated": false
+    }
+  ],
+  "existingTestsAndFixtures": [
+    {
+      "path": "packages/commerce-core/test/apparel.test.ts",
+      "sha256": "13051f35f4d60c087f3cf26a8573a2dafcb25893e625668f0d3442bb7809e8f0",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "packages/theme-engine/test/threadline.test.ts",
+      "sha256": "cf4f03fd08fd5939d75709346c020884794a617638819ee539655c1396cfcbc4",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "packages/theme-engine/test/theme-presets.test.ts",
+      "sha256": "2eb97c484dd72e59340bd37d3fdc7416aaa65a8729c893c7966546510d8f2430",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "packages/theme-engine/test/experience-compositions.test.ts",
+      "sha256": "44c683f294241017c6e58073cf7d9db570fa18529a0e108906f0d8981337345a",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "packages/theme-engine/test/liquid-s1-w5-adversarial-security.test.ts",
+      "sha256": "eafd50b1fc7083e63dbfc406698f2409151e6fe42a70ea3e763cea00252923fb",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "packages/theme-engine/test/liquid-s3-render-parity-closure.test.ts",
+      "sha256": "587b8f80be3528cad50670b016b738492071ee892784a6cb8535bad8c39a6bf3",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/threadline-public-facts.test.ts",
+      "sha256": "07838394e68f3e3834c08693422ba94568f8887d9b3f42c13f46d8f9dc023934",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/storefront-product-detail.test.ts",
+      "sha256": "5e59305f288bf401eb2009a8c23a448f39d4b125d3c5953e2f22c18639ec1d18",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-lifecycle.postgres.test.ts",
+      "sha256": "9dc5a362da88d411243e4064715d2d53420f6a28ccc898d25c03f04953204bfa",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "c64c5b054a4104b87fe94704cbd162abedbb3e03f63b3104f38eaca312af1af7",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "6f0e6bd8c7fa325b947211f959406e1d56cfcee9766ee2db83a22956f7e256a9",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+      "sha256": "fe356cc4d073538e9bb9e650bb9799fd09d3b2d0cf1a223d2bd7a6e21add365e",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/authenticated-checkout.postgres.test.ts",
+      "sha256": "4d1b12587f701b3a5c44c592978af7a902fca9fbc7d5cd7e26ee582eac8651dd",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "sha256": "43706928a59c6642428ca4af236b58826855e0a1f47a73bd9268f4f38ecd76c5",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-buyer-orders.postgres.test.ts",
+      "sha256": "dd2cd4fd714e962301d50c56c431c46a7fb539d9bfaed0f5817dab47d0178a3d",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-buyer-data.postgres.test.ts",
+      "sha256": "091896e8f0ec1afb9ac13cab9547dd1f4677f7b7f6b55a7b7688fa3c712127ca",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/identity-buyer-browser.postgres.test.ts",
+      "sha256": "203c0d9ac47fc9ae616d8ed56effc14b7f9497629d771fbc4a734bd7d286939a",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/README.md",
+      "sha256": "3c4ef8d0999b5c76a8fc444caca3eb83b388a46984d081ac1b596bc3f2e60a82",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "tests/security/theme-tenant-isolation.test.mjs",
+      "sha256": "818eac79b766ecdc820ad91754ecfdf91ef6186148cd733e9923b0fcc75b0ab1",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "tests/contracts/public-product-exposure-contract.test.ts",
+      "sha256": "3464a690284bd890ff73194bed7ba5cb70454a0f4a03519c6209ad6c4394d23b",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "tests/theme-engine/first-party-liquid-portability.test.mjs",
+      "sha256": "0069de6f98030f89a7eb0ab076c06ce412acd68e6b3737a3636cf44f8214fee2",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "tests/theme-engine/liquid-hydration-islands-parity.test.mjs",
+      "sha256": "014532b2d58df0561daea84cd3b9b0ff569325adde1999ee3ad3f44d5b1f114a",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "apps/merchant/web/tests/theme-draft-rollback-recovery.test.mjs",
+      "sha256": "00c07967e66ec1253f2808abd369df5edd6e80543e49cbba1228bbb4a3592867",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "1b73e2bed0a5a8c92aae47da6c7eb87e44fa001706cdfbad83feb5d9e00914cc",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+      "sha256": "cc7144356922dc1d3c51c5d52d7f681d3deadd19cbde3f36c9b7af9fadafacec",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-address-island.test.ts",
+      "sha256": "7415f6e0ecc00038c406d7ea1f53533532041a084b6722484a0e57be9ca0df3f",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/branding.test.ts",
+      "sha256": "fdbdea056c84beeab037a2b3cc0f9ecebf80bda1128026125a3c367dde6dabd7",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "apps/merchant/mobile/test/theme_catalog_assets_test.dart",
+      "sha256": "2dc5973232ae7be8803da5b2355b4babac19ee97ffcbb4161a8fffc2fae67801",
+      "status": "reference_only_not_run_in_inventory"
+    },
+    {
+      "path": "apps/merchant/mobile/test/theme_draft_restart_test.dart",
+      "sha256": "c21ae258caf45a062144b1308614dee9ea009d2b6cdfea40a1676b7aea7ac893",
+      "status": "reference_only_not_run_in_inventory"
+    }
+  ],
+  "frozenApprovedMockups": {
+    "individualPNGs": 45,
+    "boards": 15,
+    "pngHashesMatchCaptureEvidence": true,
+    "boardHashesMatchManifest": true,
+    "sha256": {
+      "source/01-home-top.html": "5b8a61cfd8961c9e77d7693753b3f830f59e351c0018453dd7533b72e5ddeb52",
+      "source/02-home-bottom.html": "85ca349b869c7596c1553fd1ca44f0ce6aa31f4a7aa78cfdc1be9029a96a732c",
+      "source/03-collection.html": "c06c42879e2dd67ebcd49d9054d14b47661f0af9433b812793983801f31087ff",
+      "source/04-product-main.html": "e6285aa0f0fc103ba971fe66e7ef914a74ec8a792158c5c392519652e4a16651",
+      "source/05-product-contents.html": "7bc29e367a3b994060196d0ce478cf7b0769fb181c5eb56d620c4d5a5b1d5f00",
+      "source/06-product-continuation.html": "55f96b1d7876005013bec434655a21e1f58600a4c9f862366a44c0980c44dc9c",
+      "source/07-cart.html": "709cffbea281ecbf6896810b07e7ac85e5cfcc45d1527717805bdef8f15cff36",
+      "source/08-checkout-address.html": "0f5fa49ca5f0d62307604d0eb6bc6cd91880f3a78680a35b434e238357b63be9",
+      "source/09-checkout-review.html": "4f62d12d9c16791ee0626d7e228be0333a57208ae2e6c4eb76b4649d13975561",
+      "source/10-sign-in.html": "50863a688041a74289c67e8f5740e61e66fd729017bce4251bac3f7cec5ddd81",
+      "source/11-sign-up.html": "3ee27e8453fed1e6b6030bc3f850f269ac5db0578d346502de0ab9169ba021ea",
+      "source/12-profile.html": "c8d2e2cec65a2a840890d5ae54ff790bdf389fa693005224b16145d7e934ff06",
+      "source/13-orders.html": "9abfecf7c41d62a68ab09266b1c87b93b1a1c9be77e9745517b013f4f271bdfe",
+      "source/14-order-detail.html": "205640c696f53ec2946c34ea44132a46dcff06940cb20fa8bbd547175c9da950",
+      "source/15-addresses.html": "83c18b5aa1cbe9fb1a1ceb45f231255c420fae383012d897200e32e0c688c879",
+      "source/build-gallery.py": "b448306d0b0709e8336a44a20e83ed220596383fc5ac857e95b71474deac1e4b",
+      "source/build-storybook.py": "f5791884d028de002f576af6828a4a93c09d5553ec527df15ce7a83fe6bde63b",
+      "source/capture.mjs": "1d7ddd3dd9d60dbdc905d0193b10481a9d0b1b2c5e481195bfd0fa2084da0a53",
+      "source/fixtures.json": "edb0c4071eb7ba5390eb58967f72e1598bc926a6fc34188e9275fd0137c685f3",
+      "source/icons.json": "bdb75cf7467620f3a309057c05900233eb78c68f971d0af586eeeda2af508e52",
+      "source/identity.css": "242fd19ef820fe57bf51929bbc3ec33d7ed23c183092fba4cdeeea1c68eebd4a",
+      "source/interactions.js": "90afd21ffcf9366914f8aeafdaf04432ddc68623a919d855b79a26c1450d6e7b",
+      "source/package-storybook.py": "16c7b04844c8f926669a21a663a4d398c921a381d6b70f77047a98d285ec70b2",
+      "source/review-gallery.mjs": "8eca58036e92ccc94eb0f22d44c463a89ccb86b3895de09c44838b27bc2b2236",
+      "source/review-identity.mjs": "1f1f2df30b52d247e07556e19f6a3398e9217cb7082cbfc2c495136a70ce7880",
+      "source/stress-check.mjs": "54d205909085c6761d0807dd59df957b58e5988380d63236a9bac688970bbc34",
+      "source/styles.css": "a13a544deccbeb74cec387ef67c204c0fc0a56d607bd13222a17f904540c8be5",
+      "source/validate-storybook.py": "b8a6cf69646591a01302805b1b040360e8065df4f9454d317adeec132543ccea",
+      "assets/GEIST-OFL-LICENSE.txt": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+      "assets/Inter-OFL.txt": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
+      "assets/activity-hero.png": "a2d9880edbafee7b077014a0ef219e140c1dd41bd6638c2e61a35a83100707a3",
+      "assets/arch-paths.png": "5c4b1b57b9800cd810f76a0d8e58808822672dcb46920184cd1ec30821129971",
+      "assets/font-downloads.json": "fcc33f95fb5dc81ab2c554f9e0659dac3fdef31bbf5c0c5e53d98549b52e4e34",
+      "assets/font-source.css": "e1984b56bab2598be2ef50a7f313bff28a766959cb5358f5663c37d8f21520b1",
+      "assets/geist-sans-latin.woff2": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8",
+      "assets/inter-0.ttf": "1b08e7fc267a5c7e1d614100f604b83e7e8a0be241f0f288faa2b3ac93a683ba",
+      "assets/inter-1.ttf": "8c883f63b2c4157d997319f2c8bc6995ed4357ef371940d31ca159004a4aae63",
+      "assets/inter-2.ttf": "e7a1aaf7eda9f2fad4131725fa556265ec75ca7b2d756260173a040363e8d4f7",
+      "assets/inter-3.ttf": "b37284b5701b6b168dfc770aa1a4ac492106422fd3ba76bc7641e37434e8019c",
+      "assets/inter-4.ttf": "eec66af7f2337bd34fe6e801cf92ededcb57a20c0d7bc40a61d4eefcbe3dd40c",
+      "assets/letbuyy-logo.svg": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+      "assets/manifest.json": "090cc70de401cb4ffb954b4ae43ef16e4e26213ea36e29b51304bdc968449597",
+      "assets/paper-play.png": "cc904f7dcc1e47f873601d4458a6b2a82b95c8732f77337fea1da874b80e2df6",
+      "assets/pattern-studio.png": "aa1df2a6ed2625bd21fa8c4701033f9da8ce2af7bedc5d23a1c2652ca4cb3e20",
+      "images/01-home-top-desktop.png": "a49ef7429230b48cd4c53cc0171a101641e49cf484a6c73410b8136b3e79d309",
+      "images/01-home-top-mobile.png": "a933f48b3db73574e6be05e5007586cb4b6b7f71ff28dc06d10bd3c3cd7859f4",
+      "images/01-home-top-tablet.png": "81c5c915a61c50570f5f838a7f012fa41e3de63cd987be4d812ae4e57709fe54",
+      "images/02-home-bottom-desktop.png": "c9c2f4a3975a8051d4f878bbac07313c86e790409f00c7b9f4b044fbb3c4cfeb",
+      "images/02-home-bottom-mobile.png": "825b38c2ef337b02f7bc87db1fe0e0a03d67ef7ed17c0d6abf7f90a2d25e6585",
+      "images/02-home-bottom-tablet.png": "dc32e9a4dcd6a6893681b1537cac90efc1607adce9ae5cd1bced771fc8b607d9",
+      "images/03-collection-desktop.png": "3093d61192da4851cffebedeccaa62760a4655fe182dffe46f5c66770053e9de",
+      "images/03-collection-mobile.png": "5ae8d1b3298f5a4ecb5f5afcfe984ff0435473423405263bcefdf79aef259d3e",
+      "images/03-collection-tablet.png": "b6b711311e8eea54ce5639081f573f6d8e708dcf267da5a542020d5e5c35e4fa",
+      "images/04-product-main-desktop.png": "b5db23304ca301629a88fe1a225c9146015f18b607f8268b781616ad82b6f84e",
+      "images/04-product-main-mobile.png": "43fca052a36f00b983fa9854c81b5f05be4a22e03e285d662f32ac3f7c4388b8",
+      "images/04-product-main-tablet.png": "7d0ecafd4e34fd9768d1aaa22cacef1729ee538a40b924a76dcaecf21e3d57fb",
+      "images/05-product-contents-desktop.png": "556dc9ed3e1d75028916f1a5e7e9f17b89197064807ee2975266537b6ac7a74b",
+      "images/05-product-contents-mobile.png": "105176be581176bbc055d703e9c8d4b2958208fa04da21653ac15d1584407813",
+      "images/05-product-contents-tablet.png": "c23941cd10b70ad83a401d96a8a4413ab28e7dbe9786cc6953e3baa80b9bc02d",
+      "images/06-product-continuation-desktop.png": "1c503ddebe3df9effda3076a853f7bcb5cbdec21c6a73b967b4fdd4aefa88992",
+      "images/06-product-continuation-mobile.png": "a37b38181f8bb04fef53ce15deb9110ffe3012ef20e84bc5379d8ca419034964",
+      "images/06-product-continuation-tablet.png": "de3c1285337759c05c7aab5dc998ba0cb221a5eac9b9231d19fc7b4fd685c27c",
+      "images/07-cart-desktop.png": "1c17cc6aa926e22ba758975219a25d75ef106301b64ed368b42ca67674bc79b0",
+      "images/07-cart-mobile.png": "72f2ea5852fc1d8c2ea4042f9e3eae79a818554f4c21736dda8907edb8232ce4",
+      "images/07-cart-tablet.png": "e0b63e8f48e0742448e87c603295c3c842427a1ecbd2cd2cf24677043e89967c",
+      "images/08-checkout-address-desktop.png": "e36e0eac425d28c217fe6c447572fa3f47ae8f04b5daf5ea696062736189d8a3",
+      "images/08-checkout-address-mobile.png": "1af2be4749d4e4624b5e6f192c52b396ad78cd7761844349a759f1b08cae9e3f",
+      "images/08-checkout-address-tablet.png": "f86cc9db120afb7f8f8630265194a334e489eb6bab6514f6db613e296374a415",
+      "images/09-checkout-review-desktop.png": "cda73646bc64445287725979965591c010cc10914baab2eb2f74e86121c3f47c",
+      "images/09-checkout-review-mobile.png": "393bb95a6b6809f8ee100b093eef087d581d4f1d79bad12484096eb848cbe90d",
+      "images/09-checkout-review-tablet.png": "2d041eee9dd6c9a857e468ab5d34c55459ca78824ba2ac02eb9dd465e1239c19",
+      "images/10-sign-in-desktop.png": "8adedc668db89bc1fe461585ae625998814c38374da03ab40db6ead20345abed",
+      "images/10-sign-in-mobile.png": "a84cf2b49e648136df4f9a6efa978641a1ea32de7afd9716dc80e65463450670",
+      "images/10-sign-in-tablet.png": "69388e0336eeb04d54fab599222294a15846ea988fad240d8de40d48e976666a",
+      "images/11-sign-up-desktop.png": "fbf06a7847c64827d3d2588db8a29bf878473cded52093d37a57dc3b20eccb9a",
+      "images/11-sign-up-mobile.png": "ac790f99c69daf450b1270acc3ef629466239593adb00f26645dd9c79a6d6d4f",
+      "images/11-sign-up-tablet.png": "1d1b7a9ed0a1946edc854c83fde922788ea66dcac072f751e6e58e9bba60cf94",
+      "images/12-profile-desktop.png": "4bc95e51dbce710866c33306b0e4e4ded441a0076b08c8814b47807043456ea0",
+      "images/12-profile-mobile.png": "f29633a22771ba5a52407a68cb38bd11667af85d327f950dbf7b7bf59dfa455d",
+      "images/12-profile-tablet.png": "18ea1397bef7dce776d05f00ea811d4187cfcc98a12c8fe6628948fa435fe390",
+      "images/13-orders-desktop.png": "e1707e175445376e4e2d8f002e05cac1dc0663cc7656020b0f8d932858ec3bb6",
+      "images/13-orders-mobile.png": "0045b99aa3bb6c3a552b44b507048fb6121867dc8cde60abb570947da0b1a4ac",
+      "images/13-orders-tablet.png": "9b8a8c520969e1baf4397197805f80ca1aa69a0936053dffaa19d1e226dc51d7",
+      "images/14-order-detail-desktop.png": "2e903093f4daa2aa9bc09f6c7e99be898937484ddbbf23deea04b5d642e4894a",
+      "images/14-order-detail-mobile.png": "507bd5411ca5a6e2cc3b46a77bda955417103a2c274488041d6c6f67e78e1ec2",
+      "images/14-order-detail-tablet.png": "082e9febb7fa2b6e62b9646c3e3dc910ef3718319d038f910cb332e17e89c76c",
+      "images/15-addresses-desktop.png": "e8bcdfbf3f8a319546ee14370be362f26b7f3380961b0b463b4fc1197f420911",
+      "images/15-addresses-mobile.png": "7e7a03606cb22a16ac7fe4372a390a33b081d854dadaf03cb6cde4eb1a7d270d",
+      "images/15-addresses-tablet.png": "6fe17e2fcd57dc7f5ffcbb309a8cee731ea09e6ed1b406ce7fb2b6b0faf097fc",
+      "boards/01-home-top.png": "90b9b65bdace1282495b908321106a2a276a89769272bc22e6d7df3cd79db98b",
+      "boards/02-home-bottom.png": "21621850fd182f3d16fa7a4c0ddfc8de5a490e59ed775ed00d9fc42d7b8b46f9",
+      "boards/03-collection.png": "f9e9e10a8242817de7152b93f4321efe2a85a4b41a3f66669fb34710e57571ac",
+      "boards/04-product-main.png": "f5bdfea03c47070d4245853c2f9e1f9844be00d1a550dcfd26e7ab534b2716e4",
+      "boards/05-product-contents.png": "ee689bf3f72243f0c218b368f2c8ea7d2f16d09d3e96252df5183cedf7ed4435",
+      "boards/06-product-continuation.png": "327bed20d2446a14b4065f3f766dc3fd94b7c200250c68c1782500b0e3282eeb",
+      "boards/07-cart.png": "07faa6005bf992367d2fc3895bc8395bdc5ade86bccbc44cd8db09e5b5863025",
+      "boards/08-checkout-address.png": "7b68ee2a9362c7dade9d1b0fe6aa070d25ddbd036b0c41fb2c6f5c095882c6c2",
+      "boards/09-checkout-review.png": "5d362dcc243683c1669cdf1dabf5fa95c4b4cdfec187fe0d2df8f0676448439e",
+      "boards/10-sign-in.png": "72da4ec69cc7cc39b1ec1e24ddcb9af8d1eb1dfb5ffd86ccc3d371a7347d5019",
+      "boards/11-sign-up.png": "1dbd513e106a4c15c5c77c3db64d8553803520dfb643ccd6f56d58a57f37d123",
+      "boards/12-profile.png": "44cc56254fd443d397e4f2c6effddecfc98151c24b2f9ff8f1dafc8f43c1c97e",
+      "boards/13-orders.png": "1d3a41961ad6b4ca0cf4aefd8a51f593229532b39af068ac904cd666ec6508e5",
+      "boards/14-order-detail.png": "c6fde9dee2c86f11219b9b6a498d45e8f617b48586336921ce3d7af9d201d081",
+      "boards/15-addresses.png": "53fd6822a4cc2c37833571fdad0c853b3a31a5679f3b70b69a88a4c5bf63d497",
+      "boards/manifest.json": "917be791c99f3c7516f988649831016898e88a67d67cb9e1cb9fad1cef777936",
+      "README.md": "9850e54c39f1c0b649ec7372810b48bb8889a6d7c64ebe06f51c1eb6003be8ee",
+      "index.html": "f25347a15c6c46cfbf0a6b74ccb385d9bb8c64fb0e9ddf3cce44064bbea37e77",
+      "prototype-index.html": "586d1a2ce1888f8749ff0c70fbccbfa8a18488f90e829c21af7ed803be9bd73a",
+      "scenes.json": "1dfc245ed81ce1a2fe17c0ada471e5f6dd96aadde53ec5ae1560409d8c96c5fc",
+      "exports.json": "24cc7110e8e426653a447bfaaa4a7565ac488d530d7ac39cb48668d1fdbe8b04",
+      "responsive-audit.json": "76ef0a6d2393c02d12363b504f995c5a5d3179de1658212a69b2431c83a97d5d",
+      "generation-prompts.json": "0c08318aee93e793582a5917a7e20c60e7ac042af46dbd61ae7d2abfd41b5efe",
+      "Playfield-45-mockups.zip": "2651e0b8f979d8454190f864cfbd97fccdac6be5d55ba50195a86456e5a817fb"
+    }
+  },
+  "resourceUse": {
+    "browserControl": false,
+    "portsOpened": false,
+    "databaseWrites": false,
+    "sourceMutations": false,
+    "externalTransactions": false
+  },
+  "nextStep": "Coordinator closes portfolio gate and assigns exact shared/theme files; only then implementation begins"
+}

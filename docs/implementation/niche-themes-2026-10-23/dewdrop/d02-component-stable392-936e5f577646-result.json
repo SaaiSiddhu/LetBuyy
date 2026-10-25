@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T03:09:06.436171+00:00",
+  "classification": "EXISTING_COMPONENT_CONTRACT_SUITE_NOT_LIVE_BROWSER_BRANCH",
+  "runContext": "936e5f577646",
+  "commandReceipt": {
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/d02-component-stable392-936e5f577646-command.json",
+    "sha256": "0edac274236ab948c6305b49e29b0c1a2c3ba2a1d1ad467ca8fb375d6a5cbeea"
+  },
+  "command": [
+    "/opt/homebrew/bin/node",
+    "--import",
+    "tsx",
+    "--test",
+    "src/lib/theme-engine/storefront-discovery-frontend.test.tsx"
+  ],
+  "cwd": "/private/tmp/theme-editor-stable392-20261024-02/apps/commerce/web",
+  "exitCode": 0,
+  "attempts": 1,
+  "completeTapSummary": {
+    "tests": 20,
+    "suites": 0,
+    "pass": 20,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 6606.340125
+  },
+  "exactTestNames": [
+    "canonical route parser retains all query keys and repeated connectors; invalid scalar repeats/unknowns fail explicitly",
+    "actual ProductService→SDK forwards arrays/all niche values and preserves response metadata and persisted price",
+    "signed discovery uses only token-scoped no-store endpoint; failure never retries public or retains capability",
+    "binder preserves exact empty/past-end pages and page metadata, never selected-product/catalog fallback",
+    "missing capability stays hidden, selected unsupported niche filters and malformed responses fail closed",
+    "same response builds real facets/counts, array-preserving pagination and paired length/individual filter clearing",
+    "actual binder→compositor consumes one page for collection/search and exposes matching witnesses without replacing price",
+    "actual nine Liquid collection sections and depth4 preserve supplied toy row values/labels/count/selection",
+    "trusted demo stays no-network with exact/intentional-empty membership; typed unsupported arrays cannot broaden it",
+    "Editor scalar selected collection survives dedicated typed query and conflicts fail closed",
+    "actual named collection loader uses exact response scope; private summary then SAME signed product page, with no public retry",
+    "actual products/shop/search/named route adapters retain multivalues through binder→SDK and preserve exact response page",
+    "actual signed route bodies and metadata retain private store authority; absent private store never falls back public",
+    "toy individual capabilities require supplied options, never selected query defaults or zero-count synthetic rows",
+    "canonical all-three measurement metadata survives public/private SDK transport and projects unchanged without unit facets",
+    "malformed present measurement metadata fails through ProductService with sanitized errors and no private public-retry",
+    "zero cohort rejects any available measurement leaf; positive-cohort empty/past-end pages retain capabilities",
+    "transport→binder→compositor→Liquid depth4 enables independent required length pair and preserves arrays/query values",
+    "false/absent responses supersede prior availability; zero-result selected pairs remain recovery only on collection/search",
+    "legacy unit facets and active length selection never create canonical measurement availability"
+  ],
+  "sourceAfter": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery-frontend.test.tsx",
+      "sha256": "a5284f4407c5273ce23811bdf66390f5fa74818bbca4f40e43673c618a37f7a5"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "sha256": "2e30286b89c982dfd25aa52cc1bd92a40a958437fa178d24d0ff11c207d20a6b"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/collection-discovery.ts",
+      "sha256": "9179764eb080ed2902c74e7c2aafad3bb258607578892008b66b1ce9e3a4316b"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "sha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47"
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+    },
+    {
+      "path": "apps/commerce/web/package.json",
+      "sha256": "e20e2f225259e33bf3cca93461e5edcdc65d576b2c5b94ab459b25f5f1a1b40b"
+    }
+  ],
+  "trackedSourcePinsUnchanged": true,
+  "trackedSourcePinCount": 8,
+  "sourceEdits": false,
+  "tap": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/d02-component-stable392-936e5f577646.tap",
+    "sha256": "c9d2c5c5cd047a5d1e05fb3bae053e63c1d57aa047daed066d3be2c35cd56c8f",
+    "bytes": 6067
+  },
+  "stderr": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/d02-component-stable392-936e5f577646.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "targetCompatibilityCase": "missing capability stays hidden, selected unsupported niche filters and malformed responses fail closed",
+  "proofLimit": "Existing injected-transport component/contract execution; not an actual fresh missing/malformed Worker response or browser branch. Whole D02 remains unaccepted until actual runtime scope and explicit unexecuted-branch limits are recorded.",
+  "wholeD02Accepted": false,
+  "liveBuyerOrStoreBindingsUsed": false,
+  "browserNetworkOrDatabaseAction": false,
+  "furtherSuiteExecutionAuthorizedOrPerformed": false
+}

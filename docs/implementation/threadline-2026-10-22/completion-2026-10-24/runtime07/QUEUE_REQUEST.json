@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T19:59:57.067459+00:00",
+  "classification": "FINITE_OWNER_QUEUE_REQUEST_ON_ADMITTED_RUNTIME07_NOT_BROWSER_EXECUTION",
+  "ownerThreadId": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "allocatorReviewer": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "existingSharedQueue": "docs/implementation/niche-theme-programme/capture-schedule.json:buyerQueue position1; EditorcontrolsserialorderandmaybatchactualthemeTestpurchasesfirst",
+  "authority": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025.json",
+    "sha256": "e7cc69390865d45e4d5623555c39a6c0d3c1e931a143866aee1822f15f033d4b"
+  },
+  "readinessGate": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+    "sha256": "4ade007d9b12f9694f73c540bc331c404f7474c01a0934885d38cb8895c66ffb"
+  },
+  "runtime": {
+    "runId": "49ada80bc494",
+    "identityOrigin": "http://accounts.threadline-49ada80bc494.localhost:64593",
+    "merchantOrigin": "http://admin.threadline-49ada80bc494.localhost:64594",
+    "commerceOrigin": "http://syn-threadline-ui-ae3f0477.localhost:64595",
+    "checkoutOrigin": "https://checkout.localhost:64597",
+    "apiOrigin": "http://127.0.0.1:64598",
+    "site": {
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+      "subdomain": "syn-threadline-ui-ae3f0477",
+      "tag": "threadline-ui"
+    },
+    "recordedAt": "2026-10-24T19:39:09.961820+00:00",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runnerPid": 54685,
+    "localReceiver": "http://127.0.0.1:65314/razorpay",
+    "privateStatePath": "/private/tmp/threadline-49ada80bc494-state.json",
+    "credentialsBound": true,
+    "secretReused": true,
+    "injectedPaymentAdapter": false,
+    "status": "ACTUAL_NORMAL_UI_AND_PROVIDER_PAYMENT_QUALIFIED_SINGLE_EXECUTION_ENVIRONMENT",
+    "normalOsTrustedCheckoutTLS": true,
+    "protectedUserAppsTouched": false,
+    "qualifiedAt": "2026-10-24T19:50:01.620384+00:00"
+  },
+  "target": {
+    "slug": "letbuyy-sense",
+    "version": "2.1.0",
+    "actualInstallAndChecksum": "Controllerrecordsfromnormalimmutablemanifestandmatchesqualifiedcapturebeforecredit; neverreuse201bc530hashas210."
+  },
+  "deadline": {
+    "existingPublicHTTPSExpiryUTC": "2026-10-24T22:20:00Z",
+    "IST": "2026-10-25 03:50 IST",
+    "extendExposure": false
+  },
+  "firstBatch": [
+    {
+      "stepId": "TL-R07-01",
+      "caseIds": [
+        "TL-NEXT-01",
+        "TL-NEXT-02",
+        "TL-ADD-LINEAGE-01",
+        "TL-ADD-PRESERVE-01"
+      ],
+      "action": "Atcurrentadmittedorigins, record normalThreadline2.1.0catalogue/version/capture/package checksum and normalAdd/privateinstance. Ifalreadyinstalledadoptonlythematchingownedprivateinstanceandlabelreuse; repeatAddcannotduplicate. Recordsource/build/install/schema/revision andbeforecart/order/stock/release baseline. Preserve allotherdrafts/releases and existingpaid sharedorder.",
+      "requiredEvidence": [
+        "Actualcatalogue/packageVersion/manifest/checksum/privateinstallationidentity",
+        "Run49ada80bc494andexplicit2.1.0bindbeforecasecredit",
+        "Existingprotectedapps/userdrafts untouched;syntheticcurrentcartownedandempty-or-preserved"
+      ],
+      "stopIf": "Wrongrun/version/tenant, expiredreceiver/dead runner, currentcartcontainsanotherqueuedintent, unknownresourceownership."
+    },
+    {
+      "stepId": "TL-R07-02",
+      "caseIds": [
+        "TL-NEXT-05",
+        "TL-NEXT-06",
+        "TL-NEXT-07",
+        "TL-ED-FIELD-section/category-grid/subtitle"
+      ],
+      "action": "UsecanonicalnormalEditorforThreadline210. Makeoneclearlysyntheticlocalcopy marker incategorydescription andsave withacknowledgedrevision;fullreloadconfirmsit. PreviewthenPublishandnormalpublicreadbackmustshowThreadlineapparelpresentationandmarker. Keepfullall-template/header/footer/nestedmoduleclausespendingunlessactuallyexecuted.",
+      "requiredEvidence": [
+        "NormalEditorprivateinstance/version andcurrentdescriptor",
+        "Saveack/fullreload/preview/publishrevision+release/currentpublicmarker",
+        "PriorMadeYoursreleaseandallunrelateddraftspreserved"
+      ],
+      "stopIf": "Wronginstance/unsupportedcontrol/failedsave/preview/publication; recordrealerrorandrequestallocatedcorrection, noAPIinjector."
+    },
+    {
+      "stepId": "TL-R07-03",
+      "caseIds": [
+        "TL-NEXT-09",
+        "TL-NEXT-10",
+        "TL-NEXT-12",
+        "TL-NEXT-14",
+        "TL-NEXT-15",
+        "TL-ADD-CART-01"
+      ],
+      "action": "ThroughactualpublishedThreadlinebuyerUI, discoverTheEverydayLinenShirt (oractualownedcanonicalapparelproductwithfit/fabric/care/measurements if fixture differs). Recordactualproduct/variantUUID;chooseOat/M, quantity1onlyifavailable. Inspectfitguide/backretainsM wherepresent, thenAdd/cart/fullreloadwithexactsize/colorUUIDandcanonicalserveramounts. Do notuseCircuit hub orMadeYoursnotebook asThreadlineintendedpurchase.",
+      "requiredEvidence": [
+        "ActualapparelPDPandselectedcompletecolor/size tuple+UUID",
+        "Canonicalgarmentfacts/measurementsorhonestmissingdata",
+        "Stock/amountbefore;acknowledgedcartlineandreloadsamevariant"
+      ],
+      "stopIf": "Apparelproduct/variant/facts unavailable orMoutofstock; reportboundedfixtureprerequisite, noSQLproduct/order setup orstockrefill."
+    },
+    {
+      "stepId": "TL-R07-04",
+      "caseIds": [
+        "TL-NEXT-20",
+        "TL-ADD-CHECKOUT-01",
+        "TL-ADD-RAZORPAY-01"
+      ],
+      "action": "Before22:20UTCexistingreceiverexpiry, normalcart->trustedHTTPScheckout->actualRazorpayTEST withcurrentadmittedsyntheticbuyer/contact/address andserverquote. Useonecanonicalintent, oneproviderflow. AfterbankchoiceinspectactualprovidercreatedProcessingpopup;clickSuccessonlyonexplicitdemoBankSuccess/Failurepage. ObserveparentOrderConfirmed. NormalexistingbuyerSSOdoesnotcloseTL-NEXT-16/signup.",
+      "requiredEvidence": [
+        "NormalHTTPSnavigation/nointerstitial andThreadlinebranding",
+        "Serverquotedamount/currencyandactualproviderorder/payment binding",
+        "ActualbankSuccessandparentconfirmedorder screenshot/receipt"
+      ],
+      "stopIf": "Expiredlease/dead runner/wrongprovider/live mode/uncertaincommit. Preserveoriginalintent/key; nosecondcharge/fakecallback/injectedstate or exposureextension."
+    },
+    {
+      "stepId": "TL-R07-05",
+      "caseIds": [
+        "TL-ADD-RAZORPAY-01",
+        "TL-NEXT-22",
+        "TL-ADD-LINEAGE-01"
+      ],
+      "action": "Useexistingadmittedobservations/reviewerreadbacktolinkthisThreadlineorder/product/variant/buyertotheactualsignature-validauthorized/capturedcallback200events, durableprocessedclaims, exactlyonepaid/confirmedorder and balancedcanonicalcaptureledger. Readnormalbuyerorders/detail/reloadandmerchantOrdersforMATCHINGorder,size/color/totals. Buyerconvertedcartempty; consumedstockdeltaexactly1notreplenished;priorpaidorderunchanged.",
+      "requiredEvidence": [
+        "Ownproviderpayment/orderIDs andHMACeventIDs/rawbodyhash/status/durablestatus",
+        "Exactlyoneorder+capturetransaction;debitMinor==creditMinor==verifiedprovideramount",
+        "Ownbuyerandmerchantreadback+INR/tax/shipping/snapshot/variant/currency/cart0/stock effect"
+      ],
+      "stopIf": "Missingcallback/order/ledgerorwrongamount/tenant/variant. Reconcilethroughcanonicalexistingowner; nohand-editedorder or mockevidence."
+    }
+  ],
+  "effectsBudget": {
+    "normalThreadlineprivateinstallation": "Atmostone newownedinstance; preserveidempotentexistinginstance",
+    "normalDraftAndPublication": "Oneboundedmarkerreferencecycle;retainpreviousimmutablecapture/releaseandunrelateddrafts",
+    "actualProviderPrimaryPurchase": "OneThreadlineintendedapparelorder,quantity1,canonicalintent; no secondcharge onuncertaincommit",
+    "COD": "Separatelaternormalbrowsercase,notproviderpasssubstitute",
+    "sameUUIDCatalogueEdit": "Laterseparateimmutablehistoryslice,noinventoryrefill"
+  },
+  "resultLocation": "Sameownedruntime07folder; appendactualperstepcase/operationresults/evidence/runtime/package/actor/order/providercorrelations. NoPASSuntilactualexecution.",
+  "all26OriginalRequirements": [
+    {
+      "caseId": "TL-NEXT-01",
+      "title": "Marketplace/catalog demo",
+      "originalRequirementUnchanged": "Normal Fashion listing, advertised Threadline2.0.0, actual package preview and desktop/tablet/mobile; demo never mutates real cart.",
+      "runtime07Applicability": "Current210listing/installclausesexecute now; immutable200capture/exact200specificclausesremainseparatelabelledrequirements.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-02",
+      "title": "Install/private ownership",
+      "originalRequirementUnchanged": "Normal Add on fresh own site creates one private instance; repeat Add is one installation and does not change live release; bind catalog/package/version IDs.",
+      "runtime07Applicability": "Current210listing/installclausesexecute now; immutable200capture/exact200specificclausesremainseparatelabelledrequirements.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-03",
+      "title": "Editor template/group tree",
+      "originalRequirementUnchanged": "Load all21 actual templates and complete header/footer groups; exact duplicate/nested selection, typed fields, text/document undo, section add/remove/reorder and schema-valid layout change.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-04",
+      "title": "Real resources and niche facts",
+      "originalRequirementUnchanged": "Pick actual collections/products, including page-two resource results; normal merchant Save/reload of validated apparel fit/fabric/care/measurements, with absent/private facts kept honest.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-05",
+      "title": "Header/footer save and full reload",
+      "originalRequirementUnchanged": "Change canonical header announcement/footer and local content; acknowledge revision; full-page reload preserves all; omitted groups preserve saved values and unselected pages/alternates.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-06",
+      "title": "Private preview and no draft leak",
+      "originalRequirementUnchanged": "Saved private draft renders correct tenant template/device; preview errors/retry recover; anonymous live page never exposes unpublished marker.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-07",
+      "title": "Publish A/public readback",
+      "originalRequirementUnchanged": "Publish saved A through normal UI; bind acknowledged revision/release/snapshot; anonymous actual store HTML shows exact header/footer/local markers and immutable version.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-08",
+      "title": "Publish B/recovery/draft preservation",
+      "originalRequirementUnchanged": "Publish B, restore A through reviewed recovery, preserve newer private draft B, reapply B; stale/concurrent/retry behavior preserves exact pointer/snapshot and audit semantics.",
+      "runtime07Applicability": "Current210A/Bpublicationrecoverycanexecute onownedinstance;200-to210versionupdate/historyprerequisitesseparate.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-09",
+      "title": "Home/navigation/editorial assets",
+      "originalRequirementUnchanged": "Announcement once; reversible mobile menu/search/account/cart, meaningful categories and CTA targets; outfit links separately priced; images loaded on store host with correct geometry/alternatives.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-10",
+      "title": "Apparel discovery/filter/back state",
+      "originalRequirementUnchanged": "Real category/collection scope, same available variant for size/color, price/sort/paging/count; empty results recover; return from PDP preserves selected size; no unsupported measurements/electronics facets.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-11",
+      "title": "Predictive/full search",
+      "originalRequirementUnchanged": "Canonical store host returns real garments; ArrowDown/Enter and keyboard focus work; full-search navigation and unavailable/empty/error state remain truthful.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-12",
+      "title": "PDP fit/selection/stock race",
+      "originalRequirementUnchanged": "Choose M, visit fit guide/back and retain M; inspect actual garment units/fit/fabric/care; unavailable selection cannot submit; stock/price race returns inline server error without losing color.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-13",
+      "title": "Modal cart at320/390",
+      "originalRequirementUnchanged": "Native click/Enter opens; useful initial focus, background excluded, Escape/Close restores opener; populated controls retain useful focus and modal fits measured viewport.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-14",
+      "title": "Variant cart mutations/reload",
+      "originalRequirementUnchanged": "Exact size/color witness and distinct same-product variants remain distinct; normal quantity/remove/reload, server stock bounds/overstock denial and recoverable errors; preserve agreed test baseline.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-15",
+      "title": "Full cart/server amounts",
+      "originalRequirementUnchanged": "Full cart and reload retain variant lines and canonical totals/tax/shipping; empty state returns to apparel discovery; responsive totals and checkout transition use same server cart.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-16",
+      "title": "Public browser signup/email handoff",
+      "originalRequirementUnchanged": "Normal new-buyer UI credentials, challenge/CSRF, check-email/verification when required, explicit consent and site-bound callback; distinguish prior API registration from browser completion.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-17",
+      "title": "Buyer sign-in/consent/callback",
+      "originalRequirementUnchanged": "Normal existing-password auth/S256PKCE/state/registered callback and consent; retain exact storefront return; denial/replay cases remain separate HTTP/security evidence.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-18",
+      "title": "Profile/addresses",
+      "originalRequirementUnchanged": "Normal profile and address create/edit/reload with exact buyer/site ownership and truthful errors; no copied owner session or hidden API setup substitutes.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-19",
+      "title": "Independent sessions/logout",
+      "originalRequirementUnchanged": "Same profile merchant and buyer reload independently; store-only logout leaves merchant live; reconsent restores buyer; immediate signed-out UI and post-reload authority both checked.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-20",
+      "title": "Normal trusted hosted checkout",
+      "originalRequirementUnchanged": "Navigate actual HTTPS checkout.localhost without warning; theme branding, contact/delivery/address/shipping/COD eligibility validation; server-authoritative totals and realm/site handoff.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-21",
+      "title": "Browser COD/confirmation/idempotency",
+      "originalRequirementUnchanged": "Submit normal checkout once, confirm exactly one owned order/stock/cart effect and matching server receipt; exact retry one effect. No API-created setup order earns browser checkout credit.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-22",
+      "title": "Orders/history/detail/reload",
+      "originalRequirementUnchanged": "The browser-created order appears only for its buyer, with exact size/color, INR line/subtotal/GST/shipping/total, pending-COD timeline and stable reload; empty/unknown states honest.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-23",
+      "title": "Buyer B/foreign cart/legacy isolation",
+      "originalRequirementUnchanged": "Use only separately allocated bounded existing fixture controls for independentBuyerB, foreigncart and legacy controls; prove real negative and positive controls without primary-order substitute.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-24",
+      "title": "Same-key altered-command denial",
+      "originalRequirementUnchanged": "Only final source-admitted observer/control selector may observe strict same-key changed-command conflict; retain baseline and actual negative evidence; no ad-hoc harness, API purchase, retries or weakened guards.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-25",
+      "title": "Responsive/font/language/accessibility",
+      "originalRequirementUnchanged": "Actual320/390 plus desktop/tablet; keyboard/focus/error/status semantics, rendered contrast, missing media/fonts, long/Indian-script content, 200%zoom, reduced motion and screen-reader walkthrough with unsupported branches labelled.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "caseId": "TL-NEXT-26",
+      "title": "Performance/rollback/evidence closure",
+      "originalRequirementUnchanged": "Separate actual device/network/navigation/media/mutation budgets from unthrottled HTTP diagnostics; preserve source/release/tenant/run evidence, rollback safety and own-run cleanup; no source/native/visual pass substituted for full lifecycle.",
+      "runtime07Applicability": "Current210 source-equivalent behavior, actualUIexecutionrequired; preserveoriginalversionlabels.",
+      "status": "NOT_RUN",
+      "evidence": []
+    }
+  ],
+  "retained318Coverage": "../COVERAGE.json; everyapplicableoperationstillrequired",
+  "remainingAfterPaymentBatch": [
+    "All21templates+header/footer andeveryactualdeclaredsection/block/field/media/resource/control fulloperation lifecycle andundo/recovery",
+    "All11Threadlinenestedcontexts actual210UI/output; shared103nativecontextsnotfullUIpass",
+    "Normalnewbuyer signup/emailverification/consent/callback andstorecustomer/profile/addresses/logout/realm/isolation",
+    "Actualapparelsearch/filter/sort/pagination/samevariant; OOS/overstock/stalequote/servererror/selection/focus/responsive320/390",
+    "NormalCOD+oneeffect/retry; sameUUIDnoninventorycatalogueeditandunchangedoldCOD/Testorders/history; keep200/updatecasesseparate",
+    "Providercancel/decline/originalintent/no duplicate andsharedadversarialcohortexplicitapplicability",
+    "Actualsecurity/recovery/quality/accessibility/language/font/media/performance andindependentreview"
+  ],
+  "status": "READY_FOR_EDITOR_SERIAL_EXECUTION",
+  "executedByOwner": false,
+  "LOCAL_E2E_VERIFIED": "NOT_RUN",
+  "RAZORPAY_TEST_VERIFIED": "NOT_RUN",
+  "REVIEW_ACCEPTED": "PENDING",
+  "FULL_THEME_CERTIFIED": false,
+  "preservation": "Nocandidaterewrite/sourceMainwrite/newstack/DBdirectmutation/providersecretread/ownbrowser; apps9001/9015/9022,oldfixtures,snapshots,variantUUIDs,orders,drafts/data retained."
+}

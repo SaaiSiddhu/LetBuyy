@@ -1,0 +1,727 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "\"Instrument Sans\", sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Availability",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Price",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "99.00",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Color",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Sort",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Default",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom out",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Help",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects#MainContent"
+    },
+    {
+      "text": "Uplevel your office with new decor",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects"
+    },
+    {
+      "text": "",
+      "url": "https://theme-tinker-demo.myshopify.com/"
+    },
+    {
+      "text": "Organizers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/the-gather-collection"
+    },
+    {
+      "text": "Productivity",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/the-analog-system"
+    },
+    {
+      "text": "Chargers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/chargers"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects"
+    },
+    {
+      "text": "Skip to results list",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects#ResultsList"
+    },
+    {
+      "text": "Craighill Venn Puzzle",
+      "url": "https://theme-tinker-demo.myshopify.com/products/craighill-venn-puzzle-stainless-steel?variant=51204750934319"
+    },
+    {
+      "text": "Craighill Ripple Bottle Opener",
+      "url": "https://theme-tinker-demo.myshopify.com/products/craighill-ripple-bottle-opener-stainless-steel?variant=51204750115119"
+    },
+    {
+      "text": "Craighill Cal Bookend (Black)",
+      "url": "https://theme-tinker-demo.myshopify.com/products/craighill-cal-bookend?variant=51204727865647"
+    },
+    {
+      "text": "Craighill Jack Puzzle",
+      "url": "https://theme-tinker-demo.myshopify.com/products/craighill-jack-puzzle?variant=51204727341359"
+    },
+    {
+      "text": "Craft Design Technology Stapler",
+      "url": "https://theme-tinker-demo.myshopify.com/products/craft-design-technology-stapler-white?variant=51204637950255"
+    },
+    {
+      "text": "Pen Pouch (Black)",
+      "url": "https://theme-tinker-demo.myshopify.com/products/pen-pouch-black?variant=51204609245487"
+    },
+    {
+      "text": "HMM Mugr",
+      "url": "https://theme-tinker-demo.myshopify.com/products/hmm-mugr-cloud?variant=51204538499375"
+    },
+    {
+      "text": "Craighill Desk Knife Plinth",
+      "url": "https://theme-tinker-demo.myshopify.com/products/craighill-desk-knife-plinth-slate?variant=51204531355951"
+    },
+    {
+      "text": "Craighill Press Vessel",
+      "url": "https://theme-tinker-demo.myshopify.com/products/craighill-press-vessel-black?variant=51204530503983"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-tinker-demo.myshopify.com/search"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Organizers",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/the-gather-collection"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-tinker-demo.myshopify.com/collections/objects"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Policies",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/policies"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-tinker-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Our story",
+      "url": "https://theme-tinker-demo.myshopify.com/pages/our-story-2"
+    },
+    {
+      "text": "Tinker",
+      "url": "https://theme-tinker-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26058348757295__section",
+      "rect": {
+        "height": 143.1953125,
+        "width": 1440,
+        "x": 0,
+        "y": 118.390625
+      },
+      "tag": "DIV",
+      "text": "Decor\n\nAn exclusive collection of essential objects for the refined home office."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--26058348757295__main",
+      "rect": {
+        "height": 850.375,
+        "width": 1440,
+        "x": 0,
+        "y": 261.5859375
+      },
+      "tag": "DIV",
+      "text": "Skip to results list\nAvailability\nPrice\nColor\n9 items\nSort\nColumn grid\nCraighill Venn Puzzle\nAdd\nCraighill Venn Puzzle\n$98.00\nCraighill Ripple Bottle Opener\nSale\nAdd\nCraighill Ripp"
+    }
+  ],
+  "title": "Decor – Tinker",
+  "url": "https://theme-tinker-demo.myshopify.com/collections/objects",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "",
+    "Column grid",
+    "\n    \n      Column grid\n    \n\n    \n      \n        \n        \n\n\n\n      \n\n      \n        \n        \n\n\n\n\n\n\n      \n\n    \n  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Black\n                      \n                    \n                  "
+  ],
+  "grids": [
+    {
+      "className": "section product-grid-container color-scheme-1",
+      "columns": "40px 1360px 40px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 850.375,
+      "tag": "RESULTS-LIST",
+      "width": 1440
+    },
+    {
+      "className": "collection-wrapper grid gap-style",
+      "columns": "0px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 0px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 786.375,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "facets__inputs-list list-unstyled",
+      "columns": "none",
+      "display": "flex",
+      "gap": "11.2px",
+      "height": 43.1953125,
+      "tag": "UL",
+      "width": 99.953125
+    },
+    {
+      "className": "facets__inputs-list list-unstyled facets__inputs-list--swatches",
+      "columns": "94.4062px",
+      "display": "grid",
+      "gap": "11.2px",
+      "height": 28,
+      "tag": "UL",
+      "width": 94.40625
+    },
+    {
+      "className": "\n    grid main-collection-grid\n\n\n    spacing-style\n  ",
+      "columns": "0px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 0px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 718.375,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "product-grid product-grid--template--26058348757295__main product-grid--grid ",
+      "columns": "259.195px 259.203px 259.195px 259.203px 259.203px",
+      "display": "grid",
+      "gap": "16px",
+      "height": 718.375,
+      "tag": "UL",
+      "width": 1360
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.203125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.1953125
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 351.1875,
+      "tag": "DIV",
+      "width": 259.203125
+    }
+  ],
+  "images": [
+    {
+      "alt": "Craighill Venn Puzzle",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Venn Puzzle",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Venn Puzzle",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Venn Puzzle",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Venn Puzzle",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Ripple Bottle Opener",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Ripple Bottle Opener",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Ripple Bottle Opener",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Ripple Bottle Opener",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Ripple Bottle Opener",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Cal Bookend (Black)",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    },
+    {
+      "alt": "Craighill Cal Bookend (Black)",
+      "complete": true,
+      "naturalWidth": 259,
+      "rect": {
+        "height": 260,
+        "width": 260
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nUplevel your office with new decor\n\nUplevel your office with new decor\nOrganizers\nProductivity\nChargers\nDecor\nTotal items in cart: 0\n\nDecor\n\nAn exclusive collection of essential objects for the refined home office.\n\nSkip to results list\nAvailability\nPrice\nColor\n9 items\nSort\nColumn grid\nCraighill Venn Puzzle\nAdd\nCraighill Venn Puzzle\n$98.00\nCraighill Ripple Bottle Opener\nSale\nAdd\nCraighill Ripple Bottle Opener\nSale price \n$35.00 \nRegular price \n$60.00\nCraighill Cal Bookend (Black)\nSale\nAdd\nCraighill Cal Bookend (Black)\nSale price \n$99.00 \nRegular price \n$120.00\nCraighill Jack Puzzle\nAdd\nCraighill Jack Puzzle\n$98.00\nCraft Design Technology Stapler\nSale\nAdd\nCraft Design Technology Stapler\nSale price \n$19.00 \nRegular price \n$25.00\nPen Pouch (Black)\nSale\nAdd\nPen Pouch (Black)\nSale price \n$20.00 \nRegular price \n$25.00\nHMM Mugr\nSale\nAdd\nHMM Mugr\nSale price \n$29.00 \nRegular price \n$45.00\nCraighill Desk Knife Plinth\nAdd\nCraighill Desk Knife Plinth\n$38.00\nCraighill Press Vessel\nAdd\nCraighill Press Vessel\n$49.00\n\nJoin our Newsletter — Get Updates, Offers and Invites.\n\nEmail\nShop\nSearch\nBestsellers\nOrganizers\nDecor\nHelp\nFAQ\nPolicies\nContact us\nAbout\nJournal\nOur story\n\nStay Connected\n\n© 2026 Tinker, Powered by Shopify"
+}

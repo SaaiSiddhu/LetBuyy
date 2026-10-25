@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-10-24T18:18:09.316Z",
+  "runId": "20b861608061",
+  "classification": "OPERATOR_RECONCILIATION_USING_AUTHENTICATED_PROVIDER_READ_AND_EXISTING_CANONICAL_WRITER;notwebhookorbrowserqualification",
+  "paymentId": "pay_TrpVkfPZLoSlVJ",
+  "providerOrderId": "order_TrpJDOVcB9cQHv",
+  "orderId": "35bfdfcf-6268-48ed-b9e2-691ea1213b5a",
+  "providerStatus": "captured",
+  "amountMinor": 122000,
+  "currency": "INR",
+  "httpStatus": 200,
+  "captureOutcome": null,
+  "fulfillable": null,
+  "after": {
+    "orderStatus": "confirmed",
+    "balanceMinor": 0,
+    "captureCount": 1,
+    "paymentStatus": "paid"
+  },
+  "secretsPersisted": false
+}

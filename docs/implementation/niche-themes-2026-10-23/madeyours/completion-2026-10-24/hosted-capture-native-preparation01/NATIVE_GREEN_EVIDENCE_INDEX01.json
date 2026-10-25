@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-25T01:59:54.480520+00:00",
+  "status": "ACTUAL_GREEN_25_PASS_CLEANUP_COMPLETE_READY_FOR_INDEPENDENT_REVIEW",
+  "runId": "0c9598fabf75",
+  "refs": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_GREEN_ACTUAL_REPORT01.json",
+      "sha256": "6ebb4739494f9317d5806f7c8eafe23a3d2ddbbeb6db40d8d68ccde37e7f7853"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_GREEN_CAUSAL_WITNESSES01.json",
+      "sha256": "f310cec42dabd72ab50637f1f495bb077caf9d0a03a57913ba33c02accfe8598"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_GREEN_POSTRUN_PINS01.json",
+      "sha256": "e4dc2e41ab1f32bc12474cdc322546f1cc2728e839e07b8077750e6f289a87fd"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_GREEN_ACTUAL_REPORT01.md",
+      "sha256": "a7f7e7f96baaf1dea9e27772c5184273136a67e6c763b32f24d1739495ae7472"
+    }
+  ]
+}

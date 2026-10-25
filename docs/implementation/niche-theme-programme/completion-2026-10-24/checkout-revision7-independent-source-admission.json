@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T09:23:21.138453+00:00",
+  "classification": "INDEPENDENT_FIXTURE_ONLY07_SOURCE_ADMISSION",
+  "sourceFilesVerified": 1127,
+  "receiptHashesVerified": 13,
+  "dependencyLinksVerified": 1087,
+  "vendorMetadataVerified": 769,
+  "vendorRuntimeFilesVerified": 489,
+  "changedFiles": [
+    "services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts"
+  ],
+  "exactChange": "Only test fixture UUID is sliced to16characters; no harness or business assertion change",
+  "unchangedProductionFiles": 10,
+  "existing15NativeProofReusable": true,
+  "mismatches": [],
+  "runtimeExportProbe": "NEXT",
+  "nativeRun": "WAIT_FOR_CATALOGUE_LANE_RELEASE",
+  "browser": false,
+  "providerCalls": 0,
+  "admission": "PASS_SOURCE_ONLY"
+}

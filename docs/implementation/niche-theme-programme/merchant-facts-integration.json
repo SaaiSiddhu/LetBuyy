@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-23",
+  "stage": "shared_form_connected_media_binding_followup_open",
+  "source": [
+    "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+    "apps/merchant/web/src/components/products/NicheFactsEditor.tsx",
+    "apps/merchant/web/src/lib/product-facts-draft.ts",
+    "apps/merchant/web/src/lib/product-form-state.ts"
+  ],
+  "baseline": "/private/tmp/letbuyy-niche-merchant-form-before-20261023.tsx",
+  "baselineSha256": "361e52083c5de29a8483d334114d5a462a5a36cb001317c838aae02c3facc580",
+  "behavior": [
+    "all9controllededitorsmountedsharedcreate/editform",
+    "rawpartialdraftsinexistingrecoverysnapshot",
+    "knownnamespaceclearremoveskeyprivatesiblingspreserved",
+    "olderdraftemptystringmeanspreservelatestfactnamespaces",
+    "newinvaliddraftcannotblockearlierimmutablecommandrecovery",
+    "existingpureUIstatehelpers extracted verbatim andextended; page reduced1761\u21921482lines"
+  ],
+  "validation": {
+    "command": "node --import tsx --test src/components/products/product-conflict.test.tsx src/lib/product-facts-draft.test.ts",
+    "cwd": "apps/merchant/web",
+    "passed": 21,
+    "failed": 0,
+    "skipped": 0,
+    "boundary": "realmountedform+syntheticHTTP; no realDB persistenceclaim"
+  },
+  "remaining": [
+    "giftmediaimageidentitybindingthroughimagechanges/recovery(fullmetadataresendmustnotretainwrongindices)",
+    "fivevariantfacteditors/parentmetadatareadback",
+    "ownedPG385suite",
+    "browsercreate/edit/save/reload/conflict/preview/commerceacceptance"
+  ]
+}

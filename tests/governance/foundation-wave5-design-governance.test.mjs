@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -103,4 +103,63 @@ test('identity-platform stays light-only: the validator refuses an unforced layo
     assert.match(toggleFailures[0], /login\/page\.tsx: wires a theme control/);
 
     assert.deepEqual(lightOnlyFailures(committedLayout, '// setTheme( and useAuthTheme were removed\n' + quietPage), []);
+});
+
+test('Marketplace reachability accepts the real shared toggle and rejects a removed or bespoke control', () => {
+    const scratch = mkdtempSync(join(tmpdir(), 'letbuyy-marketplace-toggle-gate-'));
+    const navbarRelative = 'apps/frozen/theme-store/src/components/layout/navbar.tsx';
+    const navbarPath = join(scratch, navbarRelative);
+    const layoutRelative = 'apps/frozen/theme-store/src/app/layout.tsx';
+    const layoutPath = join(scratch, layoutRelative);
+    const validator = join(scratch, 'scripts/validators/validate-design-system.mjs');
+    const navbar = readFileSync(join(ROOT, navbarRelative), 'utf8');
+    const layout = readFileSync(join(ROOT, layoutRelative), 'utf8');
+    try {
+        for (const relative of [
+            'scripts/validators/validate-design-system.mjs',
+            'scripts/validators/governance-common.mjs',
+            'scripts/validators/design-system-baseline.json',
+            'packages/typescript/ui/src/theme-toggle-button.tsx',
+            'apps/frozen/theme-store/src/app/layout.tsx',
+        ]) {
+            const destination = join(scratch, relative);
+            mkdirSync(dirname(destination), { recursive: true });
+            copyFileSync(join(ROOT, relative), destination);
+        }
+        mkdirSync(dirname(navbarPath), { recursive: true });
+        const marketplaceFailures = (contents, providerLayout = layout) => {
+            writeFileSync(navbarPath, contents);
+            writeFileSync(layoutPath, providerLayout);
+            const result = spawnSync(process.execPath, [validator], { cwd: scratch, encoding: 'utf8' });
+            assert.match(result.stdout, /Design-system governance/, 'the actual dependency-free gate must execute');
+            // Other surfaces are deliberately absent in this source-only fixture.
+            return result.stderr.split('\n').filter(line => line.includes('theme-marketplace:'));
+        };
+
+        assert.deepEqual(marketplaceFailures(navbar), [], 'the actual Marketplace canonical toggle must satisfy its gate');
+        const removed = navbar.replace(/<ThemeToggleButton\b[^>]*\/>/, '');
+        assert.notEqual(removed, navbar, 'remove the rendered control while retaining its import');
+        assert.match(marketplaceFailures(removed).join('\n'), /dark mode must be reachable through the canonical provider toggle/);
+
+        const bespoke = "function ThemeToggle() { const { setTheme } = useTheme(); return <button onClick={() => setTheme('dark')}>Theme</button>; }";
+        assert.match(marketplaceFailures(bespoke).join('\n'), /dark mode must be reachable through the canonical provider toggle/);
+        assert.match(marketplaceFailures('<button aria-label="Toggle color theme" />').join('\n'), /dark mode must be reachable through the canonical provider toggle/);
+
+        const withoutProvider = layout.replace(/<LetbuyyThemeProvider\b[^>]*>/, '').replace('</LetbuyyThemeProvider>', '');
+        assert.notEqual(withoutProvider, layout, 'remove the mounted provider while retaining its import');
+        assert.match(marketplaceFailures(navbar, withoutProvider).join('\n'), /dark mode must be reachable through the canonical provider toggle/);
+
+        unlinkSync(navbarPath);
+        const missing = spawnSync(process.execPath, [validator], { cwd: scratch, encoding: 'utf8' });
+        assert.match(missing.stderr, /theme-marketplace: dark mode must be reachable through the canonical provider toggle/);
+        writeFileSync(navbarPath, navbar);
+        unlinkSync(layoutPath);
+        const missingLayout = spawnSync(process.execPath, [validator], { cwd: scratch, encoding: 'utf8' });
+        assert.match(missingLayout.stderr, /theme-marketplace: dark mode must be reachable through the canonical provider toggle/);
+        unlinkSync(navbarPath);
+        const missingBoth = spawnSync(process.execPath, [validator], { cwd: scratch, encoding: 'utf8' });
+        assert.match(missingBoth.stderr, /theme-marketplace: dark-mode reachability target file is missing/);
+    } finally {
+        rmSync(scratch, { recursive: true, force: true });
+    }
 });

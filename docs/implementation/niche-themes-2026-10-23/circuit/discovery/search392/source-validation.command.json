@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/source-contract.test.mjs",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/validator-boundaries.test.mjs"
+  ],
+  "environment": {
+    "TSX_TSCONFIG_PATH": "apps/commerce/web/tsconfig.json",
+    "NODE_PATH": "apps/commerce/web/node_modules"
+  },
+  "exitCode": 0,
+  "durationSeconds": 0.406,
+  "nativeExecuted": false,
+  "nativeSuiteSha256": "c75705b8d13c909286930140462530f11fcbe9192815e2ada9949151acdff407"
+}

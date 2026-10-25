@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-10-23T19:56:17.179291+00:00",
+  "classification": "READ_ONLY_AUDIT_OF_ACTUAL_EDITOR_UI_AND_SAVED_CANONICAL_RECEIPTS",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "caseId": "P06",
+  "status": "PASS",
+  "independentlyCheckedSavedArtifacts": {
+    "realPulsesOnlyLentilsAndRiceOnlyRiceNativeCollections": true,
+    "actualAnonymousCanonicalDiscovery200AndSavedBodyHashesMatch": true,
+    "positivePack250FacetAndExactProductVariantUuidWitness": true,
+    "zeroRepeatedConnectorsPage2Limit1EmptyFacetsNoInventedChoices": true,
+    "settledSortResetsDefaultPage1AndPreservesAllUneditedFields": true,
+    "sixActualClearUrlsPreciselyAuditedInPriorComponentReceipt": true,
+    "nativePlatformOriginApplyAndClearActualUrlsPreserveBothConnectorsPackScopeLimitSearchCategorySort": true,
+    "nativeFullReloadKeepsSameClearedQuery": true,
+    "noDuplicateScalarFields": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-discovery-actual-results.json",
+      "sha256": "84c6e3955a94d6f1950399eb4686f9e6944a1131011300097c4224a6dc7bc8a4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-discovery-positive-public-response.json",
+      "sha256": "3bab8943285f0c67112a1f31a37a61f34acad84e958e000a10f86e1648fcfb06"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-discovery-zero-connectors-public-response.json",
+      "sha256": "a14fafcb3a1994a7ccf573b2cba8673861bceee9f8bad64447e2a06b8ccacd42"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-pulses-collection.ax.txt",
+      "sha256": "e0a7f3f16ea6016c85200ca407d0a41d6100b9c5491b925d54170b383462f379"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-rice-collection.ax.txt",
+      "sha256": "ecfba68a5f0502452307ecd946e9ad1ead8a438aee2ef6503e36d58cfc04ff09"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-platform-origin-apply-settled.ax.txt",
+      "sha256": "0e52a060fefc5175fd58c08fb916e5991909065cf43d8b22ef795d00c25b5638"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-platform-origin-clear-settled.ax.txt",
+      "sha256": "4815db2148dab95c95cd26b069d6989933b8483cbaaa6571e15c937ea1417e38"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-query-reload.ax.txt",
+      "sha256": "4815db2148dab95c95cd26b069d6989933b8483cbaaa6571e15c937ea1417e38"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-sort-apply-navigation-addendum.json",
+      "sha256": "38c3326625dc393729994984c3aaf17fdc553f9c7027819554cb64e92f4fe880"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-clear-actual-results.json",
+      "sha256": "ebc67c6561edbf7d798a7a817f224863be0631e66f84cc2d13325a9e4fe04abf"
+    }
+  ],
+  "limits": [
+    "Earlier pre-navigation page2/sortprice-asc JSON is preserved as a sampling error; actual settled sortname/pageomitted supersedes it.",
+    "First category-clear wait-helper error happened after navigation; actual saved destination independently compared, not a product failure.",
+    "Audited saved owner requests/responses/native state; no Pantry network/browser reexecution or metadata fabrication."
+  ],
+  "sourceChangesByPantry": [],
+  "priorQueryClearComponentAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p06-query-clear-audit.json",
+    "sha256": "e3768b1980a86f26e736a44a8457c90f5686ef47f7fcccd81e3d0f31fc352fb8"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-23T16:43:46.201143+00:00",
+  "status": "ROOT_SOURCE_REVIEWED_INDEPENDENT36PASS_NEXT_CANDIDATE_ONLY",
+  "issue": "PANTRY-P06-PLATFORM-ORIGIN-HREF-01",
+  "release": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/platform-origin-control-repair/source-release.json",
+    "sha256": "a403a7672972964b72319119232fff7e942dc43524c1bb8347934a96365c6f6a"
+  },
+  "files": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/platform-control-markup.ts",
+      "baselineSha256": "2c7a5e05ab25c7ef29e6e96e9cbc238bdbd1f5805a6c7d01f1cdfd8f89abd413",
+      "releasedSha256": "a027ff3967b24f7219b8847446f5b77fdd7991eb9fd77b54dce6fcf8ebafa21d",
+      "bytes": 2913,
+      "frozenFinal02Sha256": "2c7a5e05ab25c7ef29e6e96e9cbc238bdbd1f5805a6c7d01f1cdfd8f89abd413",
+      "frozenFinal02StillBaseline": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-origin-filter.test.tsx",
+      "baselineSha256": "9dccc95b2a6af23ad8432d94e8fa4c61035627c6f5f15ce724c29cd049ee6c42",
+      "releasedSha256": "73b79dead521ef5a9a4533e93ed269e51a47f28600de26a28f531cea8843acb3",
+      "bytes": 12010,
+      "frozenFinal02Sha256": "9dccc95b2a6af23ad8432d94e8fa4c61035627c6f5f15ce724c29cd049ee6c42",
+      "frozenFinal02StillBaseline": true
+    }
+  ],
+  "independentChecks": {
+    "path": "docs/implementation/niche-theme-programme/m2-platform-origin-query-independent.tap",
+    "sha256": "cd6a6500b461af5d53b37df29660aeb989c1ba0ac8897cbe95ac496f4eeae4a7",
+    "pass": 36,
+    "fail": 0,
+    "skip": 0
+  },
+  "review": [
+    "ExistingcanonicalrouteDiscoveryQuery/clearStorefrontDiscoveryFilterUrlsharefulltypedstatefornormalGETformhiddenfieldsandClearhref",
+    "Allotherfilters/search/category/sort/limit/repeatedfacets/collectionscopepreserved;countrychangeorclearresetscanonicalpage1",
+    "LocalpathandXSSguards/editoromissionretained;collectionpaginationbyteunchanged",
+    "NoSDK/core/schema/SQL/themeartifactsoractualruntimeedits"
+  ],
+  "currentFinal02TwoFilesStillBaseline": true,
+  "notClaimed": [
+    "Current9cdplatformApply/ClearPASS",
+    "PantryP06wholecaseaccepted",
+    "PantryP12executed"
+  ],
+  "next": "Editor includesexacta027/73b7files in controlledcorrectedcandidate; normalApply/Clear/repeatedfacetstateandfullP06retest."
+}

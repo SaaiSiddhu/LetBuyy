@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-25T04:49:50.552047+00:00",
+  "status": "ACTUAL_RETAINED_NEW_COPY_READONLY_DIAGNOSIS",
+  "runId": "b76298981446",
+  "container": "letbuyy-exec-69357-mvncjmuk-c34f6c",
+  "protectionLabel": "preserved-runtime07",
+  "metadata": {
+    "roles": [
+      "anon",
+      "app_tenant",
+      "authenticated",
+      "authenticator",
+      "pg_checkpoint",
+      "pg_create_subscription",
+      "pg_database_owner",
+      "pg_execute_server_program",
+      "pg_monitor",
+      "pg_read_all_data",
+      "pg_read_all_settings",
+      "pg_read_all_stats",
+      "pg_read_server_files",
+      "pg_signal_backend",
+      "pg_stat_scan_tables",
+      "pg_use_reserved_connections",
+      "pg_write_all_data",
+      "pg_write_server_files",
+      "postgres",
+      "service_role"
+    ],
+    "databaseExists": true,
+    "database": {
+      "marker": null,
+      "schemas": null,
+      "nonSystemRelations": 0
+    }
+  },
+  "sanitizedPostgresErrorHeaders": [
+    "schema \"public\" does not exist"
+  ],
+  "privateRawLog": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-restore-b76298981446-raw-private-postgres.log",
+    "sha256": "109d2eb0c141674f5f95bdf25302532cdaf3e11d3449b82e38b4a49b8e37dd75",
+    "bytes": 8159,
+    "mode": "0600"
+  },
+  "rawSqlOrCredentialsPrinted": false,
+  "writesOrRetryOrAdoptionOrCleanupOrOriginalResourceActions": 0,
+  "scope": "Only the separately approved failed new restore cohort; original PG/apps/volume untouched. No owned-guard bypass or further restore."
+}

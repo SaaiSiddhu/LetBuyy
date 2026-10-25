@@ -1,0 +1,82 @@
+{
+  "checkedAt": "2026-10-23T13:06:52.154489+00:00",
+  "scope": "PURE_PLUS_ACTUAL_NATIVE_SQL_AND_MOUNTED_WORKER_HTTP",
+  "pureChecks": {
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "tap": "contract-checks.log"
+  },
+  "targetFunction": "public.browse_storefront_products_v1(uuid,jsonb,uuid[])",
+  "baselineBodyMd5": "9af9d5e2e51052a874ffad94fc8088d6",
+  "expandedBodyMd5": "95cda4d15f36172c5457ad5045600cde",
+  "equipmentOnlyBodyMd5": "d754946fdac247295acd267c81e1031e",
+  "equipmentOnlyArchiveVerified": true,
+  "historical13Receipt": "revisions/02-three-capabilities-before-effective-role-guard/conservation-report.json",
+  "originalBrowseTextAfterRemovingOnlyNewCTEsAndResultField": "byte-identical to qualified386",
+  "downDefinition": "byte-identical to qualified386",
+  "bothLegsGrantorAdmission": "explicit owner grantor required in every pre/post helper profile",
+  "bothLegsEffectiveDenial": [
+    "anon",
+    "authenticated",
+    "app_tenant",
+    "authenticator"
+  ],
+  "bothLegsCatalogConservationStructure": [
+    "pg_proc all fields except prosrc",
+    "rawACL/grantor/options",
+    "owner/signature/defaults/search_path/security flags",
+    "comment",
+    "direct dependencies",
+    "shared dependencies"
+  ],
+  "sqlParsedOrExecuted": true,
+  "databaseCatalogConservationExecuted": true,
+  "runtimeUiOrPerformanceQualified": "finite native performance smoke and real mounted HTTP qualified; live UI/browser pending",
+  "drafts": [
+    {
+      "path": "390_measurement_discovery.up.draft.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    {
+      "path": "390_measurement_discovery.down.draft.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    }
+  ],
+  "acceptedCapabilities": [
+    "equipment_length",
+    "max_width_cm",
+    "max_depth_cm"
+  ],
+  "collectionProjection": "measurement_capabilities forwarded unchanged; direct leaf consumption",
+  "parentOptionalWhenPresentAllThreeRequired": true,
+  "plannedRegressionCases": 49,
+  "nativeQualification": "native-qualification.json",
+  "defaultAstFormattingCorrection": {
+    "checkedAt": "2026-10-23T12:59:06.047703+00:00",
+    "nativeDiagnostic": "native-runs/04-red-default-ast-diagnostic/suite.tap",
+    "onlyChangedField": "proargdefaults",
+    "baselineLocations": [
+      103,
+      138
+    ],
+    "unfixedReplacementLocations": [
+      104,
+      139
+    ],
+    "fix": "Remove single leading newline from dynamically executed DDL in both legs; exact defaultAST and every prosrc-only guard retained",
+    "revisionArchive": "revisions/03-before-default-ast-text-position-fix",
+    "drafts": [
+      {
+        "path": "390_measurement_discovery.up.draft.sql",
+        "beforeSha256": "3b5274c6257976f28f952afbacf86569e4df782e162ce19c218aca741b5c4ed2",
+        "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+      },
+      {
+        "path": "390_measurement_discovery.down.draft.sql",
+        "beforeSha256": "eb1d4886fd3c3f5fdb968eb1c134e92a1d4b550c77dea2fce5a8009d5d99af30",
+        "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+      }
+    ]
+  }
+}

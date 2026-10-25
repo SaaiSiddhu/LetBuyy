@@ -876,6 +876,7 @@
 
 .btn-primary::before {
   content: '';
+  pointer-events: none;
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);

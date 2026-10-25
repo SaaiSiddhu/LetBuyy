@@ -1,0 +1,8 @@
+{
+  "status": "SUPERSEDED",
+  "files": [
+    "sample-audit.json",
+    "sample-exports.json"
+  ],
+  "note": "Initial subset retained as process evidence. Current responsive-audit.json and exports.json define final target renders; sample files do not certify final screenshots."
+}

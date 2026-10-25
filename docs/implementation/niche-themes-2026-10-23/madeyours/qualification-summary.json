@@ -1,0 +1,151 @@
+{
+  "generatedAt": "2026-10-23T09:41:09.197754+00:00",
+  "classification": "LOCAL_SOURCE_AND_OWNED_POSTGRES_QUALIFIED_NOT_INSTALLED_BROWSER_OR_PRODUCTION_ACCEPTANCE",
+  "currentStatus": "STATUS.md",
+  "serverReport": "SERVER-INTEGRATION.md",
+  "independentReview": "../kindred/review-388-followup-results.json",
+  "migration388": [
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "sha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b"
+    }
+  ],
+  "ownedPostgres": {
+    "relevantSuites": {
+      "runId": "2250e55744bb",
+      "receipt": "final-gate-results.json",
+      "passed": 59,
+      "failed": 0,
+      "suites": [
+        {
+          "name": "authenticated-checkout.postgres",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "name": "cart-order-fact-snapshots.postgres",
+          "passed": 23,
+          "failed": 0
+        },
+        {
+          "name": "hosted-checkout-buyer-ownership.postgres",
+          "passed": 15,
+          "failed": 0
+        },
+        {
+          "name": "payment-refund-reconciliation.postgres",
+          "passed": 11,
+          "failed": 0
+        }
+      ],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "scheduledLedger": {
+      "runId": "68fc2c08fd36",
+      "receipt": "n7-isolated-results.json",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "reportedCount": "10 subtests plus parent",
+      "profile": "--prepared-transactions 2",
+      "candidate": "n7-candidate-receipt.json",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "originalReceiptPreserved": "The first receipt has an additional N7 launcher refusal before ledger assertions. The later separate green N7 run closes that gate; the original receipt is not represented as all-green.",
+    "databaseLaneReleased": true
+  },
+  "focusedSource": {
+    "themeDomain": 22,
+    "collectionSearchQuery": 7,
+    "actualEditorWireTemplates": 21,
+    "sharedContracts": 51,
+    "gatewayFocused": 28,
+    "sdkReviewProducer": 3,
+    "existingBrowserFetchWrapper": 1,
+    "countsAreOverlappingSeparateReceipts": true
+  },
+  "acceptedStorybook": {
+    "freeze": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/post-profile-freeze.json",
+    "verifiedFiles": 103,
+    "changed": []
+  },
+  "remainingProgrammeAcceptance": [
+    "Installed/hydrated browser and full theme lifecycle",
+    "Authorized buyer/merchant readback journeys",
+    "Final responsive/accessibility/performance qualification at programme source snapshot"
+  ],
+  "resourcesHeld": [],
+  "productionReleasePublished": false,
+  "installedBuyerPreparation": {
+    "classification": "PREPARED_STATIC_DATA_ONLY_ALL23_RUNTIME_CASES_NOT_RUN",
+    "preparedAt": "2026-10-23T12:57:11.264264+00:00",
+    "matrix": "installed-buyer-lifecycle-matrix.md",
+    "plan": "installed-buyer-fixture.plan.json",
+    "validation": "installed-buyer-fixture-validation.json",
+    "staticDataChecks": 18,
+    "runtimeCases": 23,
+    "runtimePassed": 0,
+    "observations": [],
+    "sharedFixtureSourceEdited": false,
+    "resourcesStarted": [],
+    "frozenSourceFilesVerified": 15,
+    "files": [
+      {
+        "path": "installed-buyer-lifecycle-matrix.md",
+        "sha256": "2e4f9e28d9f2a92efed75fd1696bc594f650edbba5f3c3389d2c440932adf573"
+      },
+      {
+        "path": "installed-buyer-fixture.plan.json",
+        "sha256": "c3045d3295669dd9c38dea65339857ccd7fb2e63e349b611aa98b1dbad89fd3d"
+      },
+      {
+        "path": "validate-installed-buyer-fixture.ts",
+        "sha256": "16830a63724e727eefe9e65435b1ffa7e2a1a915ccf659d870c67c3c3350b710"
+      },
+      {
+        "path": "installed-buyer-fixture.tsconfig.json",
+        "sha256": "d0f4ab9815de911d01c9ecc47935bd3587822677f2e477080a98b8bb8fcc3602"
+      },
+      {
+        "path": "installed-buyer-fixture-validation.json",
+        "sha256": "be01599b627160565c586b2a076ebeb9b4f5147fc6ebcd5f602c5188a1be62fa"
+      },
+      {
+        "path": "installed-buyer-fixture-incorporation.json",
+        "sha256": "790fd8b2ce57cd5ae2bb7ce5666a20fe0da5f9ec49ca3b0d0f4584f8db9e3fd7"
+      },
+      {
+        "path": "installed-buyer-ui-setup.plan.json",
+        "sha256": "8b9878127d6aa0df7fde23f2f2f577c673d6b9c34a0200cc806e6c8ca2b0bae7"
+      },
+      {
+        "path": "installed-buyer-runtime-results.json",
+        "sha256": "74cade64811b1a60472ca87b76a46c03721c906c99f8b628dba8683d4549a172"
+      }
+    ],
+    "updatedAt": "2026-10-23T13:16:24.492588+00:00",
+    "runtimeLedger": "installed-buyer-runtime-results.json",
+    "executionAmendment": "installed-buyer-ui-setup.plan.json",
+    "incorporation": "installed-buyer-fixture-incorporation.json",
+    "currentSetupMethod": "NORMAL_MERCHANT_UI_AFTER_EXPLICIT_SHARED_FIXTURE_ALLOCATION",
+    "sharedFixtureAllocated": false
+  }
+}

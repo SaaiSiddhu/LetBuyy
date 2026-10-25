@@ -1,0 +1,300 @@
+[
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "requested": {
+      "id": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1030,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/hero.png",
+        "complete": true,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "hero",
+        "columns": "617.391px 660.594px"
+      }
+    ],
+    "headings": [
+      "Good things.Your words."
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "screenshot": {
+      "width": 1440,
+      "height": 1030,
+      "format": "PNG"
+    },
+    "capturedAt": "2026-10-22T18:40:41.311Z"
+  },
+  {
+    "scene": "05-product-specify",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2896,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "workspace",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "Make space for your words.",
+      "Your engraving text"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "screenshot": {
+      "width": 390,
+      "height": 2896,
+      "format": "PNG"
+    },
+    "capturedAt": "2026-10-22T18:40:41.416Z"
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "tablet",
+    "requested": {
+      "id": "tablet",
+      "width": 834,
+      "height": 1112
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2064,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "checkout-grid",
+        "columns": "710px"
+      }
+    ],
+    "headings": [
+      "One last look.",
+      "Deliver to",
+      "Payment",
+      "Your configuration"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "screenshot": {
+      "width": 834,
+      "height": 2064,
+      "format": "PNG"
+    },
+    "capturedAt": "2026-10-22T18:40:41.479Z"
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "mobile",
+    "requested": {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2867,
+    "fonts": {
+      "family": "Inter, \"Noto Sans Devanagari\", \"Noto Sans Tamil\", system-ui, sans-serif",
+      "inter": true,
+      "status": "loaded",
+      "faces": [
+        {
+          "family": "Inter",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "500",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter",
+          "weight": "700",
+          "status": "loaded"
+        }
+      ]
+    },
+    "brokenImages": [],
+    "images": [
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      },
+      {
+        "source": "../assets/block.png",
+        "complete": true,
+        "naturalWidth": 1254,
+        "naturalHeight": 1254
+      }
+    ],
+    "gridColumns": [
+      {
+        "class": "wrap section account-layout",
+        "columns": "350px"
+      }
+    ],
+    "headings": [
+      "The words you ordered.",
+      "Accepted item configurations",
+      "Delivery details",
+      "Order total",
+      "Need help with this order?"
+    ],
+    "clippedText": [],
+    "reducedMotion": true,
+    "screenshot": {
+      "width": 390,
+      "height": 2867,
+      "format": "PNG"
+    },
+    "capturedAt": "2026-10-22T18:40:41.555Z"
+  }
+]

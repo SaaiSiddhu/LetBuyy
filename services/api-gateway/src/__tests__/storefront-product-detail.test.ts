@@ -127,6 +127,7 @@ type FakePostgrest = {
 function installFakePostgrest(
     tables: TableFixtures,
     failWith?: (table: string, params: URLSearchParams) => FailureResponse | null,
+    rpcResponse?: (name: string, parameters: Row) => unknown,
 ): FakePostgrest {
     const originalFetch = globalThis.fetch;
     const requests: CapturedRequest[] = [];
@@ -139,10 +140,20 @@ function installFakePostgrest(
         const headers = new Headers(init?.headers);
         const single = headers.get('accept') === 'application/vnd.pgrst.object+json';
         requests.push({ table, params: new URLSearchParams(url.search), single });
-
         const failure = failWith?.(table, url.searchParams) ?? null;
-        if (failure) {
-            return new Response(JSON.stringify(failure.body), { status: failure.status, headers: { 'Content-Type': 'application/json' } });
+        if (failure) return new Response(JSON.stringify(failure.body), { status: failure.status, headers: { 'Content-Type': 'application/json' } });
+        if (table.startsWith('rpc/')) {
+            const request = input instanceof Request ? input : new Request(input, init);
+            const parameters = await request.json() as Row;
+            if (rpcResponse) return Response.json(rpcResponse(table.slice(4), parameters));
+            if (table === 'rpc/browse_storefront_products_v1') {
+                // This projection fixture supplies transport data only. The owned
+                // PostgreSQL suite proves the real filtering/paging algorithm.
+                const products = (tables.products ?? []).filter(row => row.store_id === parameters.p_store_id
+                    && (!Array.isArray(parameters.p_product_ids) || parameters.p_product_ids.includes(row.id)));
+                return Response.json({ data: products, count: products.length, facets: [], matches: products.map(row => ({ product_id: row.id, price: Number(row.price), variant_ids: [] })) });
+            }
+            return Response.json([]);
         }
 
         const rows = tables[table] ?? [];
@@ -349,7 +360,7 @@ test('public lists and assigned collections fail closed when every product query
         sites: [SITE_A],
         collections: [{ id: collectionId, store_id: STORE_A_ID, title: 'Summer', is_active: true, deleted_at: null }],
         collection_products: [{ collection_id: collectionId, product_id: PRODUCT_A.id }],
-    }, table => table === 'products' ? {
+    }, table => table === 'products' || table === 'rpc/browse_storefront_products_v1' ? {
         status: 503,
         body: { code: 'XX000', message: 'relation "private_failure_detail" does not exist' },
     } : null);
@@ -541,6 +552,7 @@ test('F5: storefront list, assigned collection, and by-id reads apply exact case
         name: 'India Tote from another store',
     };
     const collectionId = 'cccccccc-0000-4000-8000-000000000001';
+    let discoveryCalls = 0;
     const postgrest = installFakePostgrest({
         sites: [SITE_A],
         products: [india, japan, foreignStoreIndiaTote],
@@ -550,6 +562,19 @@ test('F5: storefront list, assigned collection, and by-id reads apply exact case
             { collection_id: collectionId, product_id: india.id, position: 0 },
             { collection_id: collectionId, product_id: japan.id, position: 1 },
         ],
+    }, undefined, (name, parameters) => {
+        if (name === 'product_price_reference_window') return [];
+        assert.equal(name, 'browse_storefront_products_v1');
+        assert.equal(parameters.p_store_id, STORE_A_ID);
+        const query = parameters.p_query as Row;
+        const expected = [
+            { page: 1, limit: 20, sort: 'display_order', country_of_origin: 'india', category: 'clothing', search: 'Tote' },
+            { page: 1, limit: 100, sort: 'display_order', country_of_origin: 'INDIA' },
+            { page: 1, limit: 20, sort: 'display_order', country_of_origin: 'India', collection_id: collectionId },
+        ][discoveryCalls++];
+        assert.deepEqual(query, expected, 'exact canonical query is forwarded to the sole discovery RPC');
+        assert.deepEqual(parameters.p_product_ids, discoveryCalls === 2 ? [india.id, japan.id, foreignStoreIndiaTote.id] : null);
+        return { data: [india], count: 1, facets: [], matches: [{ product_id: india.id, price: Number(india.price), variant_ids: [] }] };
     });
     t.after(() => postgrest.restore());
 
@@ -568,6 +593,7 @@ test('F5: storefront list, assigned collection, and by-id reads apply exact case
     assert.deepEqual(collectionPayload.data.products.map((product) => product.id), [india.id]);
     assert.equal(collectionPayload.data.total, 1);
 
+    assert.equal(discoveryCalls, 3, 'list, subset and collection share the same RPC');
     const invalid = await app.request(`/storefront/snaz/products?country_of_origin=${'x'.repeat(101)}`, undefined, env());
     assert.equal(invalid.status, 400);
 });

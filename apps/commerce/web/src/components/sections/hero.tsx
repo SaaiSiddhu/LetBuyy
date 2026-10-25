@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine/theme-settings';
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import { ArrowRight } from '@letbuyy/ui';
 import BannerCarousel from './banner-carousel';

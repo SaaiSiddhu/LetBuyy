@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "classification": "FIXTURE_ONLY07_READY_FOR_ONE_REVIEWER_CORRECTED7_NATIVE_RUN",
+  "candidate": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-07",
+  "immutableBoundary": {
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-07/packaging-receipts/sealed-boundary07.json",
+    "sha256": "8d19ca2e46fa4c360b1db70c848c83314710ed38308faa27d6bfbb041705f3ed"
+  },
+  "sourceManifest": {
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-07/packaging-receipts/source-input-closure07.json",
+    "sha256": "f61a58b7c3be453a4b9615417e9372155ddc272a57c6071dc52c1535bcbd1fd1"
+  },
+  "dependencyLinks": {
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-07/packaging-receipts/dependency-links07.json",
+    "sha256": "2b43e3ff7579342193908e4594fe92b42aa29bef890725a17f14efae79f44015"
+  },
+  "nativeCommand": {
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-07/packaging-receipts/native-command07.json",
+    "sha256": "ab190ca808b39b76cfe9bdcc9bf22ca94df04aa0db16d7206608522e42d6b38c"
+  },
+  "delta": {
+    "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts",
+    "beforeSha256": "e9b5e485a8f43ebc64e29f91c858c61d08e13ae0134e8917990fd31e5a2459fd",
+    "afterSha256": "b405b6c3ccaa1fa5ca59eb7eb0993a0a7345c793ba9acc5f4049ebc959287ce3"
+  },
+  "change": "Only test fixture label: reentry- plus first16 UUID characters yields24 instead of44. Canonical harness guard, generated buyer UUID, all business assertions and ten production overlays unchanged.",
+  "pureLabelProof": {
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-07/packaging-receipts/label-contract.json",
+    "sha256": "f11e6cfa5427474b7e914c73d562696a30a5cdbd8166afbce87d7378cc0ea321"
+  },
+  "pureLabelChecks": {
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "nativeOrDatabase": false
+  },
+  "native06Actual": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native06-run01/runner.json",
+    "sha256": "e99d85b0879cc61d49cd5aab04ea9804b69606030a51134d70b6ab64b427aa05",
+    "runId": "34adae829d85",
+    "tests": 22,
+    "pass": 15,
+    "fail": 7,
+    "skipped": 0,
+    "cancelled": 0,
+    "new7StoppedBeforeCheckout": true,
+    "cleanup": "GREEN_NO_REMAINING_OWNED_RESOURCES",
+    "reaped": []
+  },
+  "reusable15Suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+    "sha256": "a695fc3315cee62b9ef96c8dc280948a61f357c09f5cf1ff3f1adb79040da5f1"
+  },
+  "next": "Independent reviewer verifies07 boundary and runs ONLY corrected7 in existing single lane. Actual7 checkout outcomes still unqualified; preserve failures.",
+  "mainNativeBrowserProviderActionsByThisChat": 0,
+  "madeYoursBrowserCasesRun": 0
+}

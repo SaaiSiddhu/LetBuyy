@@ -276,7 +276,8 @@ export default function ProjectsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Projects"
                     description="Add portfolio work and case studies to showcase your results."
                     breadcrumbs={[{ label: 'Portfolio' }, { label: 'Projects' }]}
@@ -292,7 +293,8 @@ export default function ProjectsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Projects"
                 description="Add portfolio work and case studies to showcase your results."
                 breadcrumbs={[{ label: 'Portfolio' }, { label: 'Projects' }]}

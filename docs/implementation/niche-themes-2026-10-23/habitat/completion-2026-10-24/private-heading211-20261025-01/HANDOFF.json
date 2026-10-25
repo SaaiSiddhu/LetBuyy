@@ -1,0 +1,71 @@
+{
+  "recordedAt": "2026-10-24T20:51:17.014197+00:00",
+  "status": "SEALED_PRIVATE_FOUR_THEME211_SOURCE_READY_FOR_REVIEW_NATIVE_NOT_RUN",
+  "owner": "01a164ba-c402-7212-990d-ed4792274b37",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "privateRoot": "/private/tmp/letbuyy-order-heading211-prep-20261025-01",
+  "affected": {
+    "letbuyy-craft": "Habitat",
+    "letbuyy-dawn": "Marginalia",
+    "letbuyy-nova": "MadeYours",
+    "letbuyy-summit": "Kindred"
+  },
+  "version": "2.1.1",
+  "versionNumber": 6,
+  "seal": {
+    "path": "SEALED_ARTIFACTS.json",
+    "sha256": "fcd41b2239735755c1aceb83e2e49b57335cee2a10a3d71ae452b61acca60393"
+  },
+  "overlays": "OVERLAY_MANIFEST.json",
+  "qualification": "QUALIFICATION.json",
+  "sourceTests": {
+    "PASS": 61,
+    "FAIL": 0,
+    "skipped": 0,
+    "new": 22,
+    "retained": 39
+  },
+  "preserved": "All37 prior raw factory fingerprints and all92 affected default-template/layout comparisons; all200/210 captures and six unaffected themes.",
+  "newPackageHashes": [
+    {
+      "id": "7b669c70-0000-4000-8000-000000000004",
+      "slug": "letbuyy-craft",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "69aaa1eb1216cc8566c655c664755d034863a7bcbec6dd9606811bb1457de038",
+      "previousBundleSha256": "95fd3f0fbfa026183a63a1fa111fa34fbf07b9492550752c96dd907a83785313"
+    },
+    {
+      "id": "7b669c70-0000-4000-8000-000000000007",
+      "slug": "letbuyy-dawn",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "c0ff68be44608f192dbbefc77adb48fefc475dd2742ae6c52bcb4199b892649c",
+      "previousBundleSha256": "7b71abe8023049bc62e9229b68ac9d81e6c973225ac32291e06092b02fcfdf37"
+    },
+    {
+      "id": "7b669c70-0000-4000-8000-000000000009",
+      "slug": "letbuyy-nova",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "1c65162929a55eca8714fba1c6142b675503fdfa1eb7ff9b1536ad3fb665fca0",
+      "previousBundleSha256": "03595a3edf8eab4389ff9a62968633b9a51b04eb867d971dd909e7a7716f1e7a"
+    },
+    {
+      "id": "7b669c70-0000-4000-8000-000000000010",
+      "slug": "letbuyy-summit",
+      "version": "2.1.1",
+      "prior": "2.1.0",
+      "bundleSha256": "e9abc22e1add95f65aecf178ceb1fbacee0f937d9e97c76d9aa0865a1379ed49",
+      "previousBundleSha256": "1ae69b1ffb425510cd4e5e075bc6ef99be592066bdc6df014e4237e211acdbd4"
+    }
+  ],
+  "nativeSource": "NATIVE_SOURCE_PREPARATION.json",
+  "nativeStatus": "NOT_RUN_NOT_GRANTED",
+  "MainOrRuntime": "NOT_APPLIED_CURRENT200_210_AND_RUNTIME07_UNCHANGED",
+  "independentReview": "PENDING",
+  "sourceAllocationDisposition": "First sealed file handoff ends private preparation. No Main/native/build/browser/DB/provider permission is inferred.",
+  "original26AndActualTest": "Current210 original requirements remain separate. Root is temporary sole browser controller; current two-variant desk Test purchase is not the four-variant original matrix.",
+  "coordination": "Latest Editor continuation dispatch rejected by auto-review citing superseded pause. No retry/workaround; own sealed files are available for already-authorized review retrieval and cause no execution.",
+  "FULL_THEME_CERTIFIED": false
+}

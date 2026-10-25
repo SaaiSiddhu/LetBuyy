@@ -1,0 +1,4534 @@
+{
+  "classification": "SOURCE_DATA_CONTRACT_ONLY_NOT_UI_RESOURCE_OR_INSTALLED_ACCEPTANCE",
+  "identity": {
+    "slug": "letbuyy-craft",
+    "version": "2.0.0",
+    "bundleSha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d"
+  },
+  "inputBundleSha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d",
+  "normalizedSourceBundleSha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d",
+  "templateKey": "index",
+  "pass": 47,
+  "fail": 0,
+  "cases": [
+    {
+      "id": "section-customer-orders",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-orders",
+        "group": "template",
+        "firstId": "section-81f11c34-1dad-4f0d-adb4-1f5bd45b4d7d",
+        "finalId": "section-09f33f55-2800-4e6a-aa8c-740150f4f110",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-orders",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-orders",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-orders",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-orders",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-customer-order-detail",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-order-detail",
+        "group": "template",
+        "firstId": "section-353c78c3-700b-4fa8-a5a7-ca07af347026",
+        "finalId": "section-1f9d3364-bee2-4b0e-9fa2-18e36c79a6e7",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-order-detail",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-order-detail",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-order-detail",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-order-detail",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-customer-account",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-account",
+        "group": "template",
+        "firstId": "section-f8725944-b5b6-49ea-9387-794cf7b5aa9d",
+        "finalId": "section-ad4c3d34-a256-40c9-af8f-6f61075037cd",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-account",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-account",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-account",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-account",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-customer-login",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-login",
+        "group": "template",
+        "firstId": "section-84de107b-45d5-42b4-87bf-df3af091dea9",
+        "finalId": "section-b31d6d3f-03d9-426c-9401-59125b4620c6",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-login",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-login",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-login",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-login",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-customer-register",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-register",
+        "group": "template",
+        "firstId": "section-8a551982-0d6c-4c8b-8c87-cf46578b6895",
+        "finalId": "section-27ecb1ed-e336-4ec7-b5dc-4778ec87255e",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-register",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-register",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-register",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-register",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-customer-settings",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-settings",
+        "group": "template",
+        "firstId": "section-81057e8d-210f-43b4-a912-ca5488aba3a3",
+        "finalId": "section-bee130fa-8ac3-4cd1-8d77-eca248089162",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-settings",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-settings",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-settings",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-settings",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-customer-wishlist",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-wishlist",
+        "group": "template",
+        "firstId": "section-5feaba50-e11d-4b28-8f1a-8ca1f230bfd6",
+        "finalId": "section-6941c228-1c2e-41e6-a3ce-732a36ed9419",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-wishlist",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-wishlist",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-wishlist",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-wishlist",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-customer-addresses",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "customer-addresses",
+        "group": "template",
+        "firstId": "section-7b034bb1-ed05-471d-aa1e-bd3228d3e72d",
+        "finalId": "section-9123649c-19f6-4250-a948-6499af926247",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "customer-addresses",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "customer-addresses",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "customer-addresses",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "customer-addresses",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-policy-content",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "policy-content",
+        "group": "template",
+        "firstId": "section-2f3fcbac-e3bb-4710-9f61-a32b44070301",
+        "finalId": "section-e9af2f13-8265-4b69-8a61-d77f2648865f",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "policy-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "policy-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "policy-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "policy-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-cart-summary",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "cart-summary",
+        "group": "template",
+        "firstId": "section-e1922609-c3bb-453e-b4d6-ea06e2d795fe",
+        "finalId": "section-26f4e463-2310-4866-933d-9352bc63c275",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "cart-summary",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "cart-summary",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "cart-summary",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "cart-summary",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-search-box",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "search-box",
+        "group": "template",
+        "firstId": "section-1234e280-066f-4c67-965e-c0f53ca93a78",
+        "finalId": "section-7a8a1194-d30f-4872-8977-5dd74c755c62",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Source fixture placeholder"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Source fixture placeholder"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Source fixture placeholder"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Source fixture placeholder"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-collection-banner",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "collection-banner",
+        "group": "template",
+        "firstId": "section-315160d1-ec8c-4113-bf16-69caa44f49df",
+        "finalId": "section-b0c0339f-a8cf-43f0-b629-cb49fc1bace8",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "collection-banner",
+              "settings": {
+                "showDescription": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "collection-banner",
+              "settings": {
+                "showDescription": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "collection-banner",
+              "settings": {
+                "showDescription": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "collection-banner",
+              "settings": {
+                "showDescription": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-collection-product-list",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "collection-product-list",
+        "group": "template",
+        "firstId": "section-909784d1-c3a0-4f5e-931b-16499ab3151b",
+        "finalId": "section-b88061d4-58c7-441f-977a-049f0e4a57e1",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-blog-listing",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "blog-listing",
+        "group": "template",
+        "firstId": "section-ac4784fc-56ff-4147-a133-4821d6ac0623",
+        "finalId": "section-5b62f06d-fb65-42ef-b395-73e6774aa53a",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "blog-listing",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "blog-listing",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "blog-listing",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "blog-listing",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-article-content",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "article-content",
+        "group": "template",
+        "firstId": "section-b19489e1-9e9d-46e9-be42-f04842b2108b",
+        "finalId": "section-dc289b2c-362c-495e-a527-ab3f6a1ed9da",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "article-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "article-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "article-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "article-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-page-content",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "page-content",
+        "group": "template",
+        "firstId": "section-cd838acc-59a6-4959-bf13-19ccdc7b2aa0",
+        "finalId": "section-09a897b1-d34b-471a-b621-147277d0d178",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "page-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "page-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "page-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "page-content",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-404-page",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "404-page",
+        "group": "template",
+        "firstId": "section-e88fd222-b282-4872-a832-f298b17f90d9",
+        "finalId": "section-d07c2732-4de3-46f2-9226-5b6b14304859",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "404-page",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "404-page",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "404-page",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "404-page",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-password-gate",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "password-gate",
+        "group": "template",
+        "firstId": "section-09df1c98-e031-4075-bd0b-2af433dc0279",
+        "finalId": "section-43fd22f9-6637-443c-b457-f1ef06c73bdd",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "password-gate",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "password-gate",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "password-gate",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "password-gate",
+              "settings": {
+                "heading": "Source fixture heading"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-announcement-bar",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "announcement-bar",
+        "group": "template",
+        "firstId": "section-05ba2d19-9430-41bf-9cac-da4301be55df",
+        "finalId": "section-3960aa42-1d4d-4dec-8263-c2866a04f31c",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "announcement-bar",
+              "settings": {
+                "text": "Source fixture text",
+                "linkLabel": "Source fixture linkLabel",
+                "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "announcement-bar",
+              "settings": {
+                "text": "Source fixture text",
+                "linkLabel": "Source fixture linkLabel",
+                "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "announcement-bar",
+              "settings": {
+                "text": "Source fixture text",
+                "linkLabel": "Source fixture linkLabel",
+                "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "announcement-bar",
+              "settings": {
+                "text": "Source fixture text",
+                "linkLabel": "Source fixture linkLabel",
+                "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-about-section",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "about-section",
+        "group": "template",
+        "firstId": "section-251b35b3-b759-4994-aaae-d4bae70e0352",
+        "finalId": "section-04133c8c-6b24-4cf2-8111-c2ddf7724737",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "about-section",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "content": "Source fixture content",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "linkLabel": "Source fixture linkLabel",
+                "linkUrl": "https://example.invalid/theme-source/linkUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "about-section",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "content": "Source fixture content",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "linkLabel": "Source fixture linkLabel",
+                "linkUrl": "https://example.invalid/theme-source/linkUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "about-section",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "content": "Source fixture content",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "linkLabel": "Source fixture linkLabel",
+                "linkUrl": "https://example.invalid/theme-source/linkUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "about-section",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "content": "Source fixture content",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "linkLabel": "Source fixture linkLabel",
+                "linkUrl": "https://example.invalid/theme-source/linkUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-banner-carousel",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "banner-carousel",
+        "group": "template",
+        "firstId": "section-e51aed03-9500-4faf-b91b-3b1c1ea6fa88",
+        "finalId": "section-13e277fd-55b5-40ba-a458-1dc057dd62f8",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "banner-carousel",
+              "settings": {
+                "title": "Source fixture title",
+                "autoplay": false
+              },
+              "blocks": {
+                "block-a86f7dac-4d19-49a8-9dc0-16009a86600e": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-bce23521-96a9-46a5-80e8-a6ed00da362d": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-a86f7dac-4d19-49a8-9dc0-16009a86600e",
+                "block-bce23521-96a9-46a5-80e8-a6ed00da362d"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "banner-carousel",
+              "settings": {
+                "title": "Source fixture title",
+                "autoplay": false
+              },
+              "blocks": {
+                "block-bce23521-96a9-46a5-80e8-a6ed00da362d": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-a86f7dac-4d19-49a8-9dc0-16009a86600e": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-bce23521-96a9-46a5-80e8-a6ed00da362d",
+                "block-a86f7dac-4d19-49a8-9dc0-16009a86600e"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "banner-carousel",
+              "settings": {
+                "title": "Source fixture title",
+                "autoplay": false
+              },
+              "blocks": {
+                "block-bce23521-96a9-46a5-80e8-a6ed00da362d": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-a86f7dac-4d19-49a8-9dc0-16009a86600e": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-bce23521-96a9-46a5-80e8-a6ed00da362d",
+                "block-a86f7dac-4d19-49a8-9dc0-16009a86600e"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "banner-carousel",
+              "settings": {
+                "title": "Source fixture title",
+                "autoplay": false
+              },
+              "blocks": {
+                "block-d72a6d17-b6bb-4413-9e80-bf60f23dd9dd": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-3cd6ab01-9a08-48fe-ab05-7a955c2f2f53": {
+                  "type": "slide",
+                  "settings": {
+                    "heading": "Source fixture heading",
+                    "image": "https://example.invalid/theme-source/image.webp",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-d72a6d17-b6bb-4413-9e80-bf60f23dd9dd",
+                "block-3cd6ab01-9a08-48fe-ab05-7a955c2f2f53"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-brand-marquee",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "brand-marquee",
+        "group": "template",
+        "firstId": "section-b4405186-5945-48a0-b687-294481312abd",
+        "finalId": "section-e5694254-bbab-4823-bc11-4dfc3ca5854a",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "brand-marquee",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-fd9d74d6-356b-4c6c-a92e-0d68c84da9f9": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-90d4db16-fd8f-426a-b5f9-6d060b92cb67": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-fd9d74d6-356b-4c6c-a92e-0d68c84da9f9",
+                "block-90d4db16-fd8f-426a-b5f9-6d060b92cb67"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "brand-marquee",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-90d4db16-fd8f-426a-b5f9-6d060b92cb67": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-fd9d74d6-356b-4c6c-a92e-0d68c84da9f9": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-90d4db16-fd8f-426a-b5f9-6d060b92cb67",
+                "block-fd9d74d6-356b-4c6c-a92e-0d68c84da9f9"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "brand-marquee",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-90d4db16-fd8f-426a-b5f9-6d060b92cb67": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-fd9d74d6-356b-4c6c-a92e-0d68c84da9f9": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-90d4db16-fd8f-426a-b5f9-6d060b92cb67",
+                "block-fd9d74d6-356b-4c6c-a92e-0d68c84da9f9"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "brand-marquee",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-6254395d-4ec3-4f6a-bbee-53e124619a3a": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-0cd56538-9c28-42a0-9d7a-376bc4c7648d": {
+                  "type": "brand",
+                  "settings": {
+                    "name": "Source fixture name"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-6254395d-4ec3-4f6a-bbee-53e124619a3a",
+                "block-0cd56538-9c28-42a0-9d7a-376bc4c7648d"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-category-grid",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "category-grid",
+        "group": "template",
+        "firstId": "section-a10b7f98-a0ba-4a2d-a576-c016dba9cd2b",
+        "finalId": "section-154155d9-7f14-4679-9627-839f1604c9d5",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "category-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "category-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "category-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "category-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-collection-filter",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "collection-filter",
+        "group": "template",
+        "firstId": "section-652c0640-a4e2-47f9-b366-aa7ded0b1ea1",
+        "finalId": "section-8069553c-fec6-4e10-9d1a-2a55ababb8ff",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "collection-filter",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "collection-filter",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "collection-filter",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "collection-filter",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "showDimensionFilters": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-contact-form",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "contact-form",
+        "group": "template",
+        "firstId": "section-6a1f56dd-5399-4652-9174-8a7be6b79de4",
+        "finalId": "section-a5758fd8-62f1-4bbf-b08d-70449b8955c3",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "contact-form",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "showPhone": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "contact-form",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "showPhone": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "contact-form",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "showPhone": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "contact-form",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "showPhone": false
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-cta-section",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "cta-section",
+        "group": "template",
+        "firstId": "section-da770983-f9e1-4d8d-bb76-121a67456657",
+        "finalId": "section-24bcf7fe-42d5-4139-a36e-a7228ab025e0",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "cta-section",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "cta-section",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "cta-section",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "cta-section",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-featured-products",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "featured-products",
+        "group": "template",
+        "firstId": "section-2dd348d5-15f0-4946-a7fd-fd12ea13fd7f",
+        "finalId": "section-dc79273f-e40f-4cf9-8c50-c828d3476e82",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "featured-products",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "requireSelection": false,
+                "product1": "22222222-2222-4222-8222-222222222222",
+                "product2": "22222222-2222-4222-8222-222222222222",
+                "product3": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "featured-products",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "requireSelection": false,
+                "product1": "22222222-2222-4222-8222-222222222222",
+                "product2": "22222222-2222-4222-8222-222222222222",
+                "product3": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "featured-products",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "requireSelection": false,
+                "product1": "22222222-2222-4222-8222-222222222222",
+                "product2": "22222222-2222-4222-8222-222222222222",
+                "product3": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "featured-products",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "requireSelection": false,
+                "product1": "22222222-2222-4222-8222-222222222222",
+                "product2": "22222222-2222-4222-8222-222222222222",
+                "product3": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-experience-timeline",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "experience-timeline",
+        "group": "template",
+        "firstId": "section-851f152e-27a5-4972-82a2-b37a3a9d3153",
+        "finalId": "section-fb85a9ae-d8e9-4238-b7fb-d76957d35025",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "experience-timeline",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-066c4dd8-6ff5-48e9-994f-d221ee4cd7cb": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-abffd093-195d-4ea1-8b1d-4803dac1eba7": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-066c4dd8-6ff5-48e9-994f-d221ee4cd7cb",
+                "block-abffd093-195d-4ea1-8b1d-4803dac1eba7"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "experience-timeline",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-abffd093-195d-4ea1-8b1d-4803dac1eba7": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-066c4dd8-6ff5-48e9-994f-d221ee4cd7cb": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-abffd093-195d-4ea1-8b1d-4803dac1eba7",
+                "block-066c4dd8-6ff5-48e9-994f-d221ee4cd7cb"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "experience-timeline",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-abffd093-195d-4ea1-8b1d-4803dac1eba7": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-066c4dd8-6ff5-48e9-994f-d221ee4cd7cb": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-abffd093-195d-4ea1-8b1d-4803dac1eba7",
+                "block-066c4dd8-6ff5-48e9-994f-d221ee4cd7cb"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "experience-timeline",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-570f9573-122c-4ce6-bbad-0bf38c81e520": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-238b8aaa-505d-4060-930e-ac638cd0b969": {
+                  "type": "experience",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "company": "Source fixture company",
+                    "period": "Source fixture period"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-570f9573-122c-4ce6-bbad-0bf38c81e520",
+                "block-238b8aaa-505d-4060-930e-ac638cd0b969"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-faq-accordion",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "faq-accordion",
+        "group": "template",
+        "firstId": "section-c02c9080-9640-4cbc-bfa6-270be19689d1",
+        "finalId": "section-852a6eef-3e0f-4583-a9bc-eb8a9921c718",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "faq-accordion",
+              "settings": {
+                "title": "Source fixture title",
+                "allowMultipleOpen": false
+              },
+              "blocks": {
+                "block-2a3fda1b-acd6-4de6-9ecc-89dcbcaaa12a": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-6e802b00-bd94-46de-b4a7-697dadb793ab": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-2a3fda1b-acd6-4de6-9ecc-89dcbcaaa12a",
+                "block-6e802b00-bd94-46de-b4a7-697dadb793ab"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "faq-accordion",
+              "settings": {
+                "title": "Source fixture title",
+                "allowMultipleOpen": false
+              },
+              "blocks": {
+                "block-6e802b00-bd94-46de-b4a7-697dadb793ab": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-2a3fda1b-acd6-4de6-9ecc-89dcbcaaa12a": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-6e802b00-bd94-46de-b4a7-697dadb793ab",
+                "block-2a3fda1b-acd6-4de6-9ecc-89dcbcaaa12a"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "faq-accordion",
+              "settings": {
+                "title": "Source fixture title",
+                "allowMultipleOpen": false
+              },
+              "blocks": {
+                "block-6e802b00-bd94-46de-b4a7-697dadb793ab": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-2a3fda1b-acd6-4de6-9ecc-89dcbcaaa12a": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-6e802b00-bd94-46de-b4a7-697dadb793ab",
+                "block-2a3fda1b-acd6-4de6-9ecc-89dcbcaaa12a"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "faq-accordion",
+              "settings": {
+                "title": "Source fixture title",
+                "allowMultipleOpen": false
+              },
+              "blocks": {
+                "block-8ca7da6f-bccf-4d1c-8da0-3f4f991236f9": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-780e4374-3d2f-4d58-bcf6-5ca9ae895d16": {
+                  "type": "faq-item",
+                  "settings": {
+                    "question": "Source fixture question",
+                    "answer": "Source fixture answer"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-8ca7da6f-bccf-4d1c-8da0-3f4f991236f9",
+                "block-780e4374-3d2f-4d58-bcf6-5ca9ae895d16"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-footer",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "footer",
+        "group": "footer",
+        "firstId": "footer-default",
+        "finalId": "footer-default",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "footer",
+              "settings": {
+                "storeName": "Source fixture storeName",
+                "tagline": "Source fixture tagline",
+                "contactEmail": "Source fixture contactEmail",
+                "contactPhone": "Source fixture contactPhone",
+                "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+                "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+                "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+              },
+              "blocks": {
+                "block-7d9edcaa-558a-4fe1-a4a8-8ec1367b2bdf": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-de21e359-edcf-4fb0-9ae3-bad54891e797": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-7d9edcaa-558a-4fe1-a4a8-8ec1367b2bdf",
+                "block-de21e359-edcf-4fb0-9ae3-bad54891e797"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "footer",
+              "settings": {
+                "storeName": "Source fixture storeName",
+                "tagline": "Source fixture tagline",
+                "contactEmail": "Source fixture contactEmail",
+                "contactPhone": "Source fixture contactPhone",
+                "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+                "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+                "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+              },
+              "blocks": {
+                "block-de21e359-edcf-4fb0-9ae3-bad54891e797": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-7d9edcaa-558a-4fe1-a4a8-8ec1367b2bdf": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-de21e359-edcf-4fb0-9ae3-bad54891e797",
+                "block-7d9edcaa-558a-4fe1-a4a8-8ec1367b2bdf"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "footer",
+              "settings": {
+                "storeName": "Source fixture storeName",
+                "tagline": "Source fixture tagline",
+                "contactEmail": "Source fixture contactEmail",
+                "contactPhone": "Source fixture contactPhone",
+                "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+                "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+                "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+              },
+              "blocks": {
+                "block-de21e359-edcf-4fb0-9ae3-bad54891e797": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-7d9edcaa-558a-4fe1-a4a8-8ec1367b2bdf": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-de21e359-edcf-4fb0-9ae3-bad54891e797",
+                "block-7d9edcaa-558a-4fe1-a4a8-8ec1367b2bdf"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": true
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "footer",
+              "settings": {
+                "storeName": "Source fixture storeName",
+                "tagline": "Source fixture tagline",
+                "contactEmail": "Source fixture contactEmail",
+                "contactPhone": "Source fixture contactPhone",
+                "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+                "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+                "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+              },
+              "blocks": {
+                "block-0fa901e1-b022-4447-b2d0-c1ad62106747": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-6119e689-f042-4531-996e-b85df9b6a8dd": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-0fa901e1-b022-4447-b2d0-c1ad62106747",
+                "block-6119e689-f042-4531-996e-b85df9b6a8dd"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-header",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "header",
+        "group": "header",
+        "firstId": "header-default",
+        "finalId": "header-default",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "header",
+              "settings": {
+                "showSearch": false,
+                "showCart": false,
+                "behavior": "static",
+                "storeName": "Source fixture storeName",
+                "menu": "footer_menu",
+                "layout": "centered"
+              },
+              "blocks": {
+                "block-00115db7-43af-46a8-99d1-39c9ff12ea0f": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-6d881633-bdfb-4111-a04c-658a05381a51": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-00115db7-43af-46a8-99d1-39c9ff12ea0f",
+                "block-6d881633-bdfb-4111-a04c-658a05381a51"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "header",
+              "settings": {
+                "showSearch": false,
+                "showCart": false,
+                "behavior": "static",
+                "storeName": "Source fixture storeName",
+                "menu": "footer_menu",
+                "layout": "centered"
+              },
+              "blocks": {
+                "block-6d881633-bdfb-4111-a04c-658a05381a51": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-00115db7-43af-46a8-99d1-39c9ff12ea0f": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-6d881633-bdfb-4111-a04c-658a05381a51",
+                "block-00115db7-43af-46a8-99d1-39c9ff12ea0f"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "header",
+              "settings": {
+                "showSearch": false,
+                "showCart": false,
+                "behavior": "static",
+                "storeName": "Source fixture storeName",
+                "menu": "footer_menu",
+                "layout": "centered"
+              },
+              "blocks": {
+                "block-6d881633-bdfb-4111-a04c-658a05381a51": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-00115db7-43af-46a8-99d1-39c9ff12ea0f": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-6d881633-bdfb-4111-a04c-658a05381a51",
+                "block-00115db7-43af-46a8-99d1-39c9ff12ea0f"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": true
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "header",
+              "settings": {
+                "showSearch": false,
+                "showCart": false,
+                "behavior": "static",
+                "storeName": "Source fixture storeName",
+                "menu": "footer_menu",
+                "layout": "centered"
+              },
+              "blocks": {
+                "block-92ff5854-7136-4009-a3bd-fa1dfc926e2c": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-232be17f-1c84-4dc4-a7a6-165d4ced9c29": {
+                  "type": "link",
+                  "settings": {
+                    "label": "Source fixture label",
+                    "href": "https://example.invalid/theme-source/href.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-92ff5854-7136-4009-a3bd-fa1dfc926e2c",
+                "block-232be17f-1c84-4dc4-a7a6-165d4ced9c29"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-hero-banner",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "hero-banner",
+        "group": "template",
+        "firstId": "section-3e91a4d4-50fb-454d-8f37-169cf10cac80",
+        "finalId": "section-ccfe33f8-4e83-4361-9185-2a04a72965ae",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "hero-banner",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "roomIndexLabel": "Source fixture roomIndexLabel",
+                "collection1": "22222222-2222-4222-8222-222222222222",
+                "collection2": "22222222-2222-4222-8222-222222222222",
+                "collection3": "22222222-2222-4222-8222-222222222222",
+                "collection4": "22222222-2222-4222-8222-222222222222",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "caption": "Source fixture caption",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+                "guideText": "Source fixture guideText",
+                "guideLink": "https://example.invalid/theme-source/guideLink.webp",
+                "imageFocus": "top"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "hero-banner",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "roomIndexLabel": "Source fixture roomIndexLabel",
+                "collection1": "22222222-2222-4222-8222-222222222222",
+                "collection2": "22222222-2222-4222-8222-222222222222",
+                "collection3": "22222222-2222-4222-8222-222222222222",
+                "collection4": "22222222-2222-4222-8222-222222222222",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "caption": "Source fixture caption",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+                "guideText": "Source fixture guideText",
+                "guideLink": "https://example.invalid/theme-source/guideLink.webp",
+                "imageFocus": "top"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "hero-banner",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "roomIndexLabel": "Source fixture roomIndexLabel",
+                "collection1": "22222222-2222-4222-8222-222222222222",
+                "collection2": "22222222-2222-4222-8222-222222222222",
+                "collection3": "22222222-2222-4222-8222-222222222222",
+                "collection4": "22222222-2222-4222-8222-222222222222",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "caption": "Source fixture caption",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+                "guideText": "Source fixture guideText",
+                "guideLink": "https://example.invalid/theme-source/guideLink.webp",
+                "imageFocus": "top"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "hero-banner",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "roomIndexLabel": "Source fixture roomIndexLabel",
+                "collection1": "22222222-2222-4222-8222-222222222222",
+                "collection2": "22222222-2222-4222-8222-222222222222",
+                "collection3": "22222222-2222-4222-8222-222222222222",
+                "collection4": "22222222-2222-4222-8222-222222222222",
+                "image": "https://example.invalid/theme-source/image.webp",
+                "imageAlt": "Source fixture imageAlt",
+                "caption": "Source fixture caption",
+                "ctaText": "Source fixture ctaText",
+                "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+                "guideText": "Source fixture guideText",
+                "guideLink": "https://example.invalid/theme-source/guideLink.webp",
+                "imageFocus": "top"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-marquee",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "marquee",
+        "group": "template",
+        "firstId": "section-cbc3d205-48d0-424e-9d08-d1014c0160f0",
+        "finalId": "section-ea297258-b49a-4810-aa7d-81bfe9a09670",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "marquee",
+              "settings": {
+                "text": "Source fixture text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "marquee",
+              "settings": {
+                "text": "Source fixture text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "marquee",
+              "settings": {
+                "text": "Source fixture text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "marquee",
+              "settings": {
+                "text": "Source fixture text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-portfolio-grid",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "portfolio-grid",
+        "group": "template",
+        "firstId": "section-3ddc2636-74e2-42ee-a38b-a32ae1f479b5",
+        "finalId": "section-4b2a5ff7-74b2-4b9c-b56f-31a1b195b3a7",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "portfolio-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-03550d03-dfc9-4ad4-a3e7-1d288a09619c": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-bf8733ce-729a-45f6-96d2-ca174599d4c7": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-03550d03-dfc9-4ad4-a3e7-1d288a09619c",
+                "block-bf8733ce-729a-45f6-96d2-ca174599d4c7"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "portfolio-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-bf8733ce-729a-45f6-96d2-ca174599d4c7": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-03550d03-dfc9-4ad4-a3e7-1d288a09619c": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-bf8733ce-729a-45f6-96d2-ca174599d4c7",
+                "block-03550d03-dfc9-4ad4-a3e7-1d288a09619c"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "portfolio-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-bf8733ce-729a-45f6-96d2-ca174599d4c7": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-03550d03-dfc9-4ad4-a3e7-1d288a09619c": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-bf8733ce-729a-45f6-96d2-ca174599d4c7",
+                "block-03550d03-dfc9-4ad4-a3e7-1d288a09619c"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "portfolio-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-7eb42c8a-4d8b-4941-ab21-5a490b194c20": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-770607e4-8abe-468f-8d97-a46b8a03b542": {
+                  "type": "project",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "summary": "Source fixture summary",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-7eb42c8a-4d8b-4941-ab21-5a490b194c20",
+                "block-770607e4-8abe-468f-8d97-a46b8a03b542"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-product-detail",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "product-detail",
+        "group": "template",
+        "firstId": "section-915193cb-138e-4279-a83e-020631bf23d1",
+        "finalId": "section-2d1c875b-4c51-4738-a073-6f3ddf138f10",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "product-detail",
+              "settings": {
+                "showGallery": false,
+                "showDescription": false,
+                "showReviews": false,
+                "showBuyNow": false,
+                "showFurnitureFacts": false,
+                "showDimensionDiagram": false,
+                "showRoomContext": false,
+                "factsHeading": "Source fixture factsHeading",
+                "contextMediaIndex": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "product-detail",
+              "settings": {
+                "showGallery": false,
+                "showDescription": false,
+                "showReviews": false,
+                "showBuyNow": false,
+                "showFurnitureFacts": false,
+                "showDimensionDiagram": false,
+                "showRoomContext": false,
+                "factsHeading": "Source fixture factsHeading",
+                "contextMediaIndex": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "product-detail",
+              "settings": {
+                "showGallery": false,
+                "showDescription": false,
+                "showReviews": false,
+                "showBuyNow": false,
+                "showFurnitureFacts": false,
+                "showDimensionDiagram": false,
+                "showRoomContext": false,
+                "factsHeading": "Source fixture factsHeading",
+                "contextMediaIndex": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "product-detail",
+              "settings": {
+                "showGallery": false,
+                "showDescription": false,
+                "showReviews": false,
+                "showBuyNow": false,
+                "showFurnitureFacts": false,
+                "showDimensionDiagram": false,
+                "showRoomContext": false,
+                "factsHeading": "Source fixture factsHeading",
+                "contextMediaIndex": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-product-grid",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "product-grid",
+        "group": "template",
+        "firstId": "section-90383ac1-f33f-4639-9e17-45ad242b4f3c",
+        "finalId": "section-736c6d85-622f-4d85-a938-062ecc6829ee",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "product-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "collectionId": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "product-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "collectionId": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "product-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "collectionId": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "product-grid",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "collectionId": "22222222-2222-4222-8222-222222222222",
+                "productLimit": 1
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-rich-content",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "rich-content",
+        "group": "template",
+        "firstId": "section-270268d7-37b3-4b30-9bd7-78da118f4bf3",
+        "finalId": "section-e69d35eb-4ce0-4622-a976-42e236cfaffe",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "rich-content",
+              "settings": {
+                "title": "Source fixture title",
+                "body": "Source fixture body"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "rich-content",
+              "settings": {
+                "title": "Source fixture title",
+                "body": "Source fixture body"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "rich-content",
+              "settings": {
+                "title": "Source fixture title",
+                "body": "Source fixture body"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "rich-content",
+              "settings": {
+                "title": "Source fixture title",
+                "body": "Source fixture body"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-services-grid",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "services-grid",
+        "group": "template",
+        "firstId": "section-3bb6fde3-1881-4be0-b5d6-42accbf4a1eb",
+        "finalId": "section-aa7a80e1-6186-474d-8cd5-cda9dcc76c20",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "services-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-80c90262-0fe9-4a49-96fe-560240498b0c": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-0cd2c392-adc7-4a53-a1bb-da7c98e8be81": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-80c90262-0fe9-4a49-96fe-560240498b0c",
+                "block-0cd2c392-adc7-4a53-a1bb-da7c98e8be81"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "services-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-0cd2c392-adc7-4a53-a1bb-da7c98e8be81": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-80c90262-0fe9-4a49-96fe-560240498b0c": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-0cd2c392-adc7-4a53-a1bb-da7c98e8be81",
+                "block-80c90262-0fe9-4a49-96fe-560240498b0c"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "services-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-0cd2c392-adc7-4a53-a1bb-da7c98e8be81": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-80c90262-0fe9-4a49-96fe-560240498b0c": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-0cd2c392-adc7-4a53-a1bb-da7c98e8be81",
+                "block-80c90262-0fe9-4a49-96fe-560240498b0c"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "services-grid",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-2d2c792e-c429-4fa1-a911-a526a7fac034": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-e8f8df2a-31a4-460a-b7e1-dd4985523a8a": {
+                  "type": "service",
+                  "settings": {
+                    "title": "Source fixture title",
+                    "description": "Source fixture description",
+                    "link": "https://example.invalid/theme-source/link.webp"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-2d2c792e-c429-4fa1-a911-a526a7fac034",
+                "block-e8f8df2a-31a4-460a-b7e1-dd4985523a8a"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-skills-section",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "skills-section",
+        "group": "template",
+        "firstId": "section-52eeeb7f-f3db-49be-8cf1-cab515b1b056",
+        "finalId": "section-5bbd217d-1c6a-4d8f-9215-223520ea9db4",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "skills-section",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-4e1cecc4-f78b-4a01-a235-d06560cfb2e7": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-aba4b02a-a4b3-435e-9ca4-3459d269f9ea": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-4e1cecc4-f78b-4a01-a235-d06560cfb2e7",
+                "block-aba4b02a-a4b3-435e-9ca4-3459d269f9ea"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "skills-section",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-aba4b02a-a4b3-435e-9ca4-3459d269f9ea": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-4e1cecc4-f78b-4a01-a235-d06560cfb2e7": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-aba4b02a-a4b3-435e-9ca4-3459d269f9ea",
+                "block-4e1cecc4-f78b-4a01-a235-d06560cfb2e7"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "skills-section",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-aba4b02a-a4b3-435e-9ca4-3459d269f9ea": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-4e1cecc4-f78b-4a01-a235-d06560cfb2e7": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-aba4b02a-a4b3-435e-9ca4-3459d269f9ea",
+                "block-4e1cecc4-f78b-4a01-a235-d06560cfb2e7"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "skills-section",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-9ba4612b-bedc-43e8-a02a-f245da3c1708": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-80053608-e4ab-47d8-9496-d20aabcd89b8": {
+                  "type": "skill",
+                  "settings": {
+                    "name": "Source fixture name",
+                    "level": 0
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-9ba4612b-bedc-43e8-a02a-f245da3c1708",
+                "block-80053608-e4ab-47d8-9496-d20aabcd89b8"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-testimonials",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "testimonials",
+        "group": "template",
+        "firstId": "section-aa0a804e-a241-41a1-8149-2535a510daf2",
+        "finalId": "section-2338db56-0e66-4adb-873d-1d416da05a82",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "testimonials",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-fc98c18a-44fc-4bae-b37e-62440c722d5e": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-3978df89-7e5d-43cd-85b2-7008be64425f": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-fc98c18a-44fc-4bae-b37e-62440c722d5e",
+                "block-3978df89-7e5d-43cd-85b2-7008be64425f"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "testimonials",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-3978df89-7e5d-43cd-85b2-7008be64425f": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-fc98c18a-44fc-4bae-b37e-62440c722d5e": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-3978df89-7e5d-43cd-85b2-7008be64425f",
+                "block-fc98c18a-44fc-4bae-b37e-62440c722d5e"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "testimonials",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-3978df89-7e5d-43cd-85b2-7008be64425f": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-fc98c18a-44fc-4bae-b37e-62440c722d5e": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-3978df89-7e5d-43cd-85b2-7008be64425f",
+                "block-fc98c18a-44fc-4bae-b37e-62440c722d5e"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "testimonials",
+              "settings": {
+                "title": "Source fixture title"
+              },
+              "blocks": {
+                "block-9ac50a31-3101-42ef-9950-c83ebf9359ab": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-8e95f8a0-19da-4299-9577-2fb8e06e0ac6": {
+                  "type": "testimonial",
+                  "settings": {
+                    "quote": "Source fixture quote",
+                    "author": "Source fixture author"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-9ac50a31-3101-42ef-9950-c83ebf9359ab",
+                "block-8e95f8a0-19da-4299-9577-2fb8e06e0ac6"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-trust-badges",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "trust-badges",
+        "group": "template",
+        "firstId": "section-fc3bc8bb-0bca-452e-99e8-22951884cb4f",
+        "finalId": "section-81ff1a15-bc67-4c0b-885b-bae228f6a67e",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "trust-badges",
+              "settings": {
+                "dimensionsText": "Source fixture dimensionsText",
+                "assemblyText": "Source fixture assemblyText",
+                "deliveryText": "Source fixture deliveryText"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "trust-badges",
+              "settings": {
+                "dimensionsText": "Source fixture dimensionsText",
+                "assemblyText": "Source fixture assemblyText",
+                "deliveryText": "Source fixture deliveryText"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "trust-badges",
+              "settings": {
+                "dimensionsText": "Source fixture dimensionsText",
+                "assemblyText": "Source fixture assemblyText",
+                "deliveryText": "Source fixture deliveryText"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "trust-badges",
+              "settings": {
+                "dimensionsText": "Source fixture dimensionsText",
+                "assemblyText": "Source fixture assemblyText",
+                "deliveryText": "Source fixture deliveryText"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-newsletter-signup",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "newsletter-signup",
+        "group": "template",
+        "firstId": "section-7770617e-c9f2-4620-9083-68bf1e1f966d",
+        "finalId": "section-5d06aae4-3917-4ad2-a4d0-6087ae08bb5d",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "newsletter-signup",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "buttonLabel": "Source fixture buttonLabel"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "newsletter-signup",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "buttonLabel": "Source fixture buttonLabel"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "newsletter-signup",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "buttonLabel": "Source fixture buttonLabel"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "newsletter-signup",
+              "settings": {
+                "title": "Source fixture title",
+                "subtitle": "Source fixture subtitle",
+                "buttonLabel": "Source fixture buttonLabel"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-spotlight",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "spotlight",
+        "group": "template",
+        "firstId": "section-482fd593-2349-401c-8d1e-b993fb96524e",
+        "finalId": "section-a580c53d-3c5f-4045-9115-2023ecea0d24",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "spotlight",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading"
+              },
+              "blocks": {
+                "block-9ac07dfa-33ec-4f6b-8693-581775c492cc": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-39cd737c-b721-4c99-aeec-def8347633b2": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-9ac07dfa-33ec-4f6b-8693-581775c492cc",
+                "block-39cd737c-b721-4c99-aeec-def8347633b2"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "spotlight",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading"
+              },
+              "blocks": {
+                "block-39cd737c-b721-4c99-aeec-def8347633b2": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-9ac07dfa-33ec-4f6b-8693-581775c492cc": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": true,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-39cd737c-b721-4c99-aeec-def8347633b2",
+                "block-9ac07dfa-33ec-4f6b-8693-581775c492cc"
+              ],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "spotlight",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading"
+              },
+              "blocks": {
+                "block-39cd737c-b721-4c99-aeec-def8347633b2": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-9ac07dfa-33ec-4f6b-8693-581775c492cc": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-39cd737c-b721-4c99-aeec-def8347633b2",
+                "block-9ac07dfa-33ec-4f6b-8693-581775c492cc"
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "spotlight",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading"
+              },
+              "blocks": {
+                "block-7fe300bf-b96d-4007-898d-ea3ce6428e4f": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                },
+                "block-0d570d1c-6027-4acd-bb2e-47a5205c6f80": {
+                  "type": "badge",
+                  "settings": {
+                    "label": "Source fixture label"
+                  },
+                  "disabled": false,
+                  "blocks": {},
+                  "block_order": []
+                }
+              },
+              "block_order": [
+                "block-7fe300bf-b96d-4007-898d-ea3ce6428e4f",
+                "block-0d570d1c-6027-4acd-bb2e-47a5205c6f80"
+              ],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-video-hero",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "video-hero",
+        "group": "template",
+        "firstId": "section-fb9c31fb-9389-4127-bd4f-d1b7f01ab6f0",
+        "finalId": "section-1c74e13d-bfe1-496f-8d92-f3232a23cbf9",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "video-hero",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "video-hero",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "video-hero",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "video-hero",
+              "settings": {
+                "heading": "Source fixture heading",
+                "subheading": "Source fixture subheading",
+                "videoUrl": "https://example.invalid/theme-source/videoUrl.webp"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "section-habitat-measurement-guide",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "type": "habitat-measurement-guide",
+        "group": "template",
+        "firstId": "section-d636befb-f194-4653-9f60-0f7d5fc63814",
+        "finalId": "section-411d9407-de88-4134-93ec-f92140304200",
+        "phases": [
+          {
+            "phase": "edited",
+            "data": {
+              "type": "habitat-measurement-guide",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "description": "Source fixture description",
+                "step1Title": "Source fixture step1Title",
+                "step1Text": "Source fixture step1Text",
+                "step2Title": "Source fixture step2Title",
+                "step2Text": "Source fixture step2Text",
+                "step3Title": "Source fixture step3Title",
+                "step3Text": "Source fixture step3Text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "hidden-reordered",
+            "data": {
+              "type": "habitat-measurement-guide",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "description": "Source fixture description",
+                "step1Title": "Source fixture step1Title",
+                "step1Text": "Source fixture step1Text",
+                "step2Title": "Source fixture step2Title",
+                "step2Text": "Source fixture step2Text",
+                "step3Title": "Source fixture step3Title",
+                "step3Text": "Source fixture step3Text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": true
+            }
+          },
+          {
+            "phase": "shown",
+            "data": {
+              "type": "habitat-measurement-guide",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "description": "Source fixture description",
+                "step1Title": "Source fixture step1Title",
+                "step1Text": "Source fixture step1Text",
+                "step2Title": "Source fixture step2Title",
+                "step2Text": "Source fixture step2Text",
+                "step3Title": "Source fixture step3Title",
+                "step3Text": "Source fixture step3Text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          },
+          {
+            "phase": "removed",
+            "pinnedGroupSectionRetained": false
+          },
+          {
+            "phase": "readded",
+            "data": {
+              "type": "habitat-measurement-guide",
+              "settings": {
+                "eyebrow": "Source fixture eyebrow",
+                "title": "Source fixture title",
+                "description": "Source fixture description",
+                "step1Title": "Source fixture step1Title",
+                "step1Text": "Source fixture step1Text",
+                "step2Title": "Source fixture step2Title",
+                "step2Text": "Source fixture step2Text",
+                "step3Title": "Source fixture step3Title",
+                "step3Text": "Source fixture step3Text"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        ],
+        "actualUICallbacksExecuted": false,
+        "resourceAuthorityProved": false
+      }
+    },
+    {
+      "id": "protected-seams",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "protectedSectionTypes": [
+          "app-block-slot"
+        ],
+        "appInstancesGenerated": 0,
+        "nestedPermissionInferenceMade": false
+      }
+    },
+    {
+      "id": "theme-settings",
+      "status": "PASS_SOURCE_DATA_CONTRACT",
+      "observed": {
+        "fields": {
+          "primaryColor": "#1E4060",
+          "secondaryColor": "#1E4060",
+          "accentColor": "#1E4060",
+          "backgroundColor": "#1E4060",
+          "textColor": "#1E4060",
+          "surfaceColor": "#1E4060",
+          "headingFontFamily": "Playfair Display",
+          "bodyFontFamily": "Lato",
+          "borderRadius": 0,
+          "metaDescription": "Source fixture metaDescription",
+          "socialImageUrl": "https://example.invalid/theme-source/socialImageUrl.webp",
+          "faviconUrl": "https://example.invalid/theme-source/faviconUrl.webp"
+        },
+        "renderedFontOrControlAcceptance": false
+      }
+    }
+  ],
+  "fieldCoverage": {
+    "edited": [
+      "block/banner-carousel/slide/heading",
+      "block/banner-carousel/slide/image",
+      "block/banner-carousel/slide/link",
+      "block/brand-marquee/brand/name",
+      "block/experience-timeline/experience/company",
+      "block/experience-timeline/experience/period",
+      "block/experience-timeline/experience/title",
+      "block/faq-accordion/faq-item/answer",
+      "block/faq-accordion/faq-item/question",
+      "block/footer/link/href",
+      "block/footer/link/label",
+      "block/header/link/href",
+      "block/header/link/label",
+      "block/portfolio-grid/project/link",
+      "block/portfolio-grid/project/summary",
+      "block/portfolio-grid/project/title",
+      "block/services-grid/service/description",
+      "block/services-grid/service/link",
+      "block/services-grid/service/title",
+      "block/skills-section/skill/level",
+      "block/skills-section/skill/name",
+      "block/spotlight/badge/label",
+      "block/testimonials/testimonial/author",
+      "block/testimonials/testimonial/quote",
+      "section/about-section/content",
+      "section/about-section/eyebrow",
+      "section/about-section/image",
+      "section/about-section/imageAlt",
+      "section/about-section/linkLabel",
+      "section/about-section/linkUrl",
+      "section/about-section/title",
+      "section/announcement-bar/linkHref",
+      "section/announcement-bar/linkLabel",
+      "section/announcement-bar/text",
+      "section/banner-carousel/autoplay",
+      "section/banner-carousel/title",
+      "section/blog-listing/heading",
+      "section/brand-marquee/title",
+      "section/cart-summary/heading",
+      "section/category-grid/subtitle",
+      "section/category-grid/title",
+      "section/collection-banner/showDescription",
+      "section/collection-filter/eyebrow",
+      "section/collection-filter/showDimensionFilters",
+      "section/collection-filter/title",
+      "section/collection-product-list/showDimensionFilters",
+      "section/collection-product-list/title",
+      "section/contact-form/showPhone",
+      "section/contact-form/subtitle",
+      "section/contact-form/title",
+      "section/cta-section/ctaLink",
+      "section/cta-section/ctaText",
+      "section/cta-section/heading",
+      "section/cta-section/subheading",
+      "section/customer-account/heading",
+      "section/customer-addresses/heading",
+      "section/customer-login/heading",
+      "section/customer-order-detail/heading",
+      "section/customer-orders/heading",
+      "section/customer-register/heading",
+      "section/customer-settings/heading",
+      "section/customer-wishlist/heading",
+      "section/experience-timeline/title",
+      "section/faq-accordion/allowMultipleOpen",
+      "section/faq-accordion/title",
+      "section/featured-products/product1",
+      "section/featured-products/product2",
+      "section/featured-products/product3",
+      "section/featured-products/productLimit",
+      "section/featured-products/requireSelection",
+      "section/featured-products/subtitle",
+      "section/featured-products/title",
+      "section/footer/contactEmail",
+      "section/footer/contactPhone",
+      "section/footer/facebookUrl",
+      "section/footer/instagramUrl",
+      "section/footer/storeName",
+      "section/footer/tagline",
+      "section/footer/twitterUrl",
+      "section/habitat-measurement-guide/description",
+      "section/habitat-measurement-guide/eyebrow",
+      "section/habitat-measurement-guide/step1Text",
+      "section/habitat-measurement-guide/step1Title",
+      "section/habitat-measurement-guide/step2Text",
+      "section/habitat-measurement-guide/step2Title",
+      "section/habitat-measurement-guide/step3Text",
+      "section/habitat-measurement-guide/step3Title",
+      "section/habitat-measurement-guide/title",
+      "section/header/behavior",
+      "section/header/layout",
+      "section/header/menu",
+      "section/header/showCart",
+      "section/header/showSearch",
+      "section/header/storeName",
+      "section/hero-banner/caption",
+      "section/hero-banner/collection1",
+      "section/hero-banner/collection2",
+      "section/hero-banner/collection3",
+      "section/hero-banner/collection4",
+      "section/hero-banner/ctaLink",
+      "section/hero-banner/ctaText",
+      "section/hero-banner/eyebrow",
+      "section/hero-banner/guideLink",
+      "section/hero-banner/guideText",
+      "section/hero-banner/heading",
+      "section/hero-banner/image",
+      "section/hero-banner/imageAlt",
+      "section/hero-banner/imageFocus",
+      "section/hero-banner/roomIndexLabel",
+      "section/hero-banner/subheading",
+      "section/marquee/text",
+      "section/newsletter-signup/buttonLabel",
+      "section/newsletter-signup/subtitle",
+      "section/newsletter-signup/title",
+      "section/password-gate/heading",
+      "section/portfolio-grid/title",
+      "section/product-detail/contextMediaIndex",
+      "section/product-detail/factsHeading",
+      "section/product-detail/showBuyNow",
+      "section/product-detail/showDescription",
+      "section/product-detail/showDimensionDiagram",
+      "section/product-detail/showFurnitureFacts",
+      "section/product-detail/showGallery",
+      "section/product-detail/showReviews",
+      "section/product-detail/showRoomContext",
+      "section/product-grid/collectionId",
+      "section/product-grid/productLimit",
+      "section/product-grid/subtitle",
+      "section/product-grid/title",
+      "section/rich-content/body",
+      "section/rich-content/title",
+      "section/search-box/placeholder",
+      "section/services-grid/title",
+      "section/skills-section/title",
+      "section/spotlight/heading",
+      "section/spotlight/subheading",
+      "section/testimonials/title",
+      "section/trust-badges/assemblyText",
+      "section/trust-badges/deliveryText",
+      "section/trust-badges/dimensionsText",
+      "section/video-hero/heading",
+      "section/video-hero/subheading",
+      "section/video-hero/videoUrl",
+      "theme/accentColor",
+      "theme/backgroundColor",
+      "theme/bodyFontFamily",
+      "theme/borderRadius",
+      "theme/faviconUrl",
+      "theme/headingFontFamily",
+      "theme/metaDescription",
+      "theme/primaryColor",
+      "theme/secondaryColor",
+      "theme/socialImageUrl",
+      "theme/surfaceColor",
+      "theme/textColor"
+    ],
+    "retainedReadOnly": [],
+    "informational": []
+  },
+  "inputUnchanged": true,
+  "nestedPermissionInferenceMade": false,
+  "actualUICallbacksExecuted": 0,
+  "resourceOwnershipProved": false
+}

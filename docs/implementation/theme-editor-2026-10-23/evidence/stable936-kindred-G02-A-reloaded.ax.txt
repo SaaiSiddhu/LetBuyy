@@ -1,0 +1,234 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-summit/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-summit/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Kindred Draft theme
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Kindred gift discovery, Secondary Actions: Expand
+				13 menu
+					14 (selected) Kindred gift discovery
+					15 Kindred gift product
+					16 Kindred occasion collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 Kindred gift search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Kindred gift discovery, Value: 2
+				41 text Kindred gift discovery
+			42 text v2
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selected) Gift discovery opening Toggle Gift discovery opening visibility Move Gift discovery opening up Move Gift discovery opening down Remove Gift discovery opening
+							53 button Gift discovery opening
+							203 checkbox Description: Toggle Gift discovery opening visibility, Value: 1
+							204 button (disabled) Move Gift discovery opening up
+							205 button Move Gift discovery opening down
+							206 button Remove Gift discovery opening
+						54 row (selectable) Occasion collections
+							55 button Occasion collections
+						56 row (selectable) Curated gift gallery
+							57 button Curated gift gallery
+						58 row (selectable) Packaging and contents editorial
+							59 button Packaging and contents editorial
+						60 row (selectable) Gift help and merchant policies
+							61 button Gift help and merchant policies
+					62 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						63 menu
+							64 (selected) Marquee
+							65 404 Not Found
+							66 Spotlight
+							67 Gift search
+							68 Video Hero
+							69 Call to Action
+							70 Gift discovery opening
+							71 Blog Listing
+							72 Cart
+							73 Contact Form
+							74 Page Content
+							75 Curated gift gallery
+							76 Rich Content
+							77 Testimonials
+							78 Gift help and merchant policies
+							79 Packaging and contents editorial
+							80 Brand Marquee
+							81 Occasion collections
+							82 FAQ Accordion
+							83 Password Gate
+							84 Services Grid
+							85 App Block Slot
+							86 Customer Login
+							87 Policy Content
+							88 Portfolio Grid
+							89 Product Detail
+							90 Skills Section
+							91 Article Content
+							92 Banner Carousel
+							93 Order History
+							94 Announcement Bar
+							95 Customer Account
+							96 Collection Banner
+							97 Occasion, recipient and budget
+							98 Customer Register
+							99 Account Settings
+							100 Wishlist
+							101 Independent related gifts
+							102 Newsletter Signup
+							103 Addresses
+							104 Experience Timeline
+							105 Order Detail
+							106 Gift results
+					107 button Add
+				108 container
+					109 text FOOTER
+					110 button Footer
+		111 container Live theme preview
+			112 text Live preview
+			113 text syn-threadline-ui-6815276b . localhost  -  1440 px
+			114 container Preview device
+				115 checkbox Desktop, Value: 1
+				116 checkbox Tablet, Value: 0
+				117 checkbox Mobile, Value: 0
+			118 container
+				119 text syn-threadline-ui-6815276b . localhost
+				120 checkbox Description: Inspect preview, Value: 1
+				121 container syn-threadline-ui-6815276b storefront preview
+					122 AXWebArea LetBuyy Store, URL: localhost:58091/preview?[query-redacted]
+						123 container
+							124 checkbox Description: Select announcement-bar section, Value: 0
+								125 text Ready-made gifts. A little more considered.
+								126 link localhost:58091/preview?[query-redacted]
+							127 checkbox Description: Select header section, Value: 0
+								128 container Description: Primary, ID: lb-nav-panel-header-default
+								129 link Description: Threadline, Value: localhost:58091/store/syn-threadline-ui-6815276b
+								130 button (collapsed) Description: Search, Secondary Actions: Expand
+								131 link Description: Log in, Value: localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+								132 link Description: Cart ( 0 ), Value: localhost:58091/store/syn-threadline-ui-6815276b/cart
+							133 checkbox Description: Select hero-banner section, Value: 1
+								134 text THE GIFT IS IN THE THOUGHT
+								135 heading Kindred saved heading A 936e5f577646, Value: 1
+									136 text Kindred saved heading A 936e5f577646
+								137 text Something for their moment, their kind of day.
+								138 heading Who’s on your mind?, Value: 2
+									139 text Who’s on your mind?
+								140 container
+									141 text Search this store
+									142 search text field (settable) Search this store
+									143 button Search products →
+								144 link Description: Browse every gift →, Value: localhost:58091/store/syn-threadline-ui-6815276b/products
+							145 checkbox Description: Select category-grid section, Value: 0
+								146 heading Mark their moment., Value: 2
+									147 text Mark their moment.
+								148 link Description: All collections →, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections
+								149 link Description: 1 Care → Synthetic theme acceptance setup only., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/d2005c42-10c1-4bf4-af35-5fcf33be5af9
+								150 link Description: 2 Circuit lifecycle intentional empty → Known empty collection; must not broaden to all products., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/b7d740f6-24e3-4bf3-8e82-4f7a14ee2784
+								151 link Description: 3 Cleanse → Synthetic theme acceptance setup only., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/2deb16a5-cac9-4df9-b8a6-635d25fbaae2
+								152 link Description: 4 Colour → Synthetic theme acceptance setup only., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/310a7230-7390-4b87-ba67-08c38f35b838
+							153 checkbox Description: Select product-grid section, Value: 0
+								154 text READY-MADE, NEVER RANDOM
+								155 heading Small boxes. Thoughtful combinations., Value: 2
+									156 text Small boxes. Thoughtful combinations.
+								157 text Look inside before you choose.
+								158 container
+									159 link Description: The Everyday Cotton Dress Contents not supplied INR 3,990.00 The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									160 text Color: Rust Size: S, M, L, XL
+									161 link Description: See what’s inside →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+								162 container
+									163 link Description: Product image not supplied Contents not supplied INR 690.00 MadeYours lifecycle notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									164 text Cover: Moss, Oat
+									165 link Description: See what’s inside →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+								166 container
+									167 link Description: Fixture Cloud Rinse Contents not supplied INR 640.00 Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									168 link Description: See what’s inside →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+								169 container
+									170 link Description: Product image not supplied Contents not supplied INR 1,400.00 Habitat width-only shelf, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+									171 link Description: See what’s inside →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+								172 container
+									173 link Description: Product image not supplied Contents not supplied INR 400.00 Circuit lifecycle one metre cable, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+									174 link Description: See what’s inside →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+								175 container
+									176 link Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09, Description: Marginalia lifecycle lined notebook Contents not supplied INR 320.00 Marginalia lifecycle lined notebook
+									177 link Description: See what’s inside →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+								178 container Product pages
+							179 checkbox Description: Select about-section section, Value: 0
+							180 checkbox Description: Select trust-badges section, Value: 0
+								181 heading A little gift help., Value: 2
+									182 text A little gift help.
+								183 container
+									184 heading Think of their everyday., Value: 3
+										185 text Think of their everyday.
+									186 text Look for something they will enjoy using. Check the exact included contents before choosing.
+								187 container
+									188 heading Check the practical things., Value: 3
+										189 text Check the practical things.
+									190 text Shipping options and charges are shown at checkout. Read the merchant’s current policy before ordering.
+							191 checkbox Description: Select footer section, Value: 0
+								192 heading Threadline, Value: 3
+									193 text Threadline
+								194 heading CONTACT, Value: 4
+									195 text CONTACT
+								196 link Description: Contact us, Value: localhost:58091/store/syn-threadline-ui-6815276b/contact
+								197 text © Threadline. All rights reserved.
+								198 link Description: Powered by LetBuyy, Value: letbuyy.com/
+		199 container Theme properties
+			200 text Selected section
+			201 heading Gift discovery opening, Value: 2
+				202 text Gift discovery opening
+			207 container
+				208 container Smart defaults
+					209 button (collapsed) Smart defaults, Secondary Actions: Expand
+						210 text Smart defaults
+				211 text Gift photograph
+				212 text field (settable) Gift photograph image URL
+				213 container
+					214 text Upload image
+					215 button Upload image file
+				216 button Browse media library for Gift photograph
+				217 container
+					218 text Eyebrow
+					219 text field (settable) Eyebrow, Value: THE GIFT IS IN THE THOUGHT
+				220 container
+					221 text Heading
+					222 text field (settable) Heading, Value: Kindred saved heading A 936e5f577646
+				223 container
+					224 text Image description
+					225 text field (settable) Image description
+				226 container
+					227 text Description
+					228 text field (settable) Description, Value: Something for their moment, their kind of day.
+				229 container
+					230 text Finder heading
+					231 text field (settable) Finder heading, Value: Who’s on your mind?
+				232 text BLOCKS
+
+The focused UI element is 53 button Gift discovery opening

@@ -1,0 +1,701 @@
+{
+  "body": {
+    "background": "rgb(249, 248, 246)",
+    "color": "rgb(0, 0, 0)",
+    "font": "\"Red Hat Display\", sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "White",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "White",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Orange",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Grey",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Navy",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SUBSCRIBE",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Trirong, serif",
+      "height": 1,
+      "line": "88px",
+      "size": "88px",
+      "tag": "H1",
+      "text": "Vessel",
+      "weight": "200",
+      "width": 1,
+      "x": -1,
+      "y": -1
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 176,
+      "line": "88px",
+      "size": "88px",
+      "tag": "H1",
+      "text": "Enrich the\neveryday",
+      "weight": "200",
+      "width": 858,
+      "x": 40,
+      "y": 576
+    },
+    {
+      "font": "\"Red Hat Display\", sans-serif",
+      "height": 15.3984375,
+      "line": "15.4px",
+      "size": "14px",
+      "tag": "H3",
+      "text": "OUR BESTSELLERS",
+      "weight": "600",
+      "width": 130.2421875,
+      "x": 654.875,
+      "y": 848
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-vessel-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-vessel-demo.myshopify.com/"
+    },
+    {
+      "text": "NEW IN",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "COFFEE & TEA",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/coffee-tea"
+    },
+    {
+      "text": "DRINKWARE",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/mugs-cups"
+    },
+    {
+      "text": "KITCHENWARE",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/kitchenware"
+    },
+    {
+      "text": "ACCENTS",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/accents"
+    },
+    {
+      "text": "",
+      "url": "https://theme-vessel-demo.myshopify.com/collections"
+    },
+    {
+      "text": "White Day Off Tumbler",
+      "url": "https://theme-vessel-demo.myshopify.com/products/white-day-off-tumbler?variant=44476572237881"
+    },
+    {
+      "text": "Yellow Day Off Tumbler",
+      "url": "https://theme-vessel-demo.myshopify.com/products/beige-day-off-tumbler-copy?variant=44476530819129"
+    },
+    {
+      "text": "Pink Day Off Tumbler",
+      "url": "https://theme-vessel-demo.myshopify.com/products/pink-day-off-tumbler?variant=44476555755577"
+    },
+    {
+      "text": "Khaki Day Off Tumbler",
+      "url": "https://theme-vessel-demo.myshopify.com/products/pink-day-off-tumbler-copy?variant=44476560801849"
+    },
+    {
+      "text": "Dark Grey Day Off Tumbler",
+      "url": "https://theme-vessel-demo.myshopify.com/products/dark-grey-day-off-tumbler?variant=44476565258297"
+    },
+    {
+      "text": "Beige Day Off Tumbler",
+      "url": "https://theme-vessel-demo.myshopify.com/products/day-off-tumbler?variant=44476524494905"
+    },
+    {
+      "text": "Orange Day Off Tumbler",
+      "url": "https://theme-vessel-demo.myshopify.com/products/orange-day-off-tumbler?variant=44477137387577"
+    },
+    {
+      "text": "Kakomi IH Donabe 2.5L",
+      "url": "https://theme-vessel-demo.myshopify.com/products/us-25192?variant=44459717656633"
+    },
+    {
+      "text": "SCS Stacking Mug",
+      "url": "https://theme-vessel-demo.myshopify.com/products/27657?variant=44459951128633"
+    },
+    {
+      "text": "Alfresco Wine Glass",
+      "url": "https://theme-vessel-demo.myshopify.com/products/20736?variant=44459943034937"
+    },
+    {
+      "text": "SCS Mug Large",
+      "url": "https://theme-vessel-demo.myshopify.com/products/us-27639?variant=44459899125817"
+    },
+    {
+      "text": "Sepia Cup & Saucer",
+      "url": "https://theme-vessel-demo.myshopify.com/products/us-21742?variant=44459927240761"
+    },
+    {
+      "text": "Unitea Cup",
+      "url": "https://theme-vessel-demo.myshopify.com/products/us-8292?variant=44459905122361"
+    },
+    {
+      "text": "Drinkware",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/mugs-cups"
+    },
+    {
+      "text": "Kitchenware",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/kitchenware"
+    },
+    {
+      "text": "Coffee & Tea",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/coffee-tea"
+    },
+    {
+      "text": "SHOP ALL",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "BESTSELLERS",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "LAST CHANCE",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/last-chance"
+    },
+    {
+      "text": "ABOUT OUR BRAND",
+      "url": "https://theme-vessel-demo.myshopify.com/pages/about-our-brand"
+    },
+    {
+      "text": "JOURNAL",
+      "url": "https://theme-vessel-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "CONTACT US",
+      "url": "https://theme-vessel-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Vessel",
+      "url": "https://theme-vessel-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562311737__hero_irjTFL",
+      "rect": {
+        "height": 800,
+        "width": 1440,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "SECTION",
+      "text": "Enrich the\neveryday"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562311737__product_list_x9Yaab",
+      "rect": {
+        "height": 524.9453125,
+        "width": 1440,
+        "x": 0,
+        "y": 800
+      },
+      "tag": "DIV",
+      "text": "OUR BESTSELLERS\n\nLet your day be filled with what inspires you.\n\nWhite Day Off Tumbler\nAdd\nYellow Day Off Tumbler\nAdd\nPink Day Off Tumbler\nAdd\nKhaki Day Off Tumbler\nAdd\nDark Grey D"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562311737__featured_product_yEF9dK",
+      "rect": {
+        "height": 785.40625,
+        "width": 1440,
+        "x": 0,
+        "y": 1324.9453125
+      },
+      "tag": "DIV",
+      "text": "Kakomi IH Donabe 2.5L\n\nKAKOMI IH DONABE 2.5L\n\n$162.50\nChoose"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562311737__featured_product_kAzr6f",
+      "rect": {
+        "height": 785.40625,
+        "width": 1440,
+        "x": 0,
+        "y": 2110.3515625
+      },
+      "tag": "DIV",
+      "text": "SCS Stacking Mug\n\nSCS STACKING MUG\n\n$19.00\nChoose"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562311737__product_list_nQbyNK",
+      "rect": {
+        "height": 622.2890625,
+        "width": 1440,
+        "x": 0,
+        "y": 2895.7578125
+      },
+      "tag": "DIV",
+      "text": "Functional everyday essentials\nAlfresco Wine Glass\nChoose\nALFRESCO WINE GLASS\n$12.00\nSCS Mug Large\nChoose\nSCS MUG LARGE\n$10.00\nSepia Cup & Saucer\nAdd\nSEPIA CUP & SAUCER\n$28.80\nUnit"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562311737__collection_list_bGtkjG",
+      "rect": {
+        "height": 696,
+        "width": 1440,
+        "x": 0,
+        "y": 3518.046875
+      },
+      "tag": "DIV",
+      "text": "Drinkware\n\nDRINKWARE\n\nKitchenware\n\nKITCHENWARE\n\nCoffee & Tea\n\nCOFFEE & TEA"
+    }
+  ],
+  "title": "Vessel",
+  "url": "https://theme-vessel-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "",
+    ""
+  ],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "1440px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 800,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 328.75,
+      "tag": "DIV",
+      "width": 262.3984375
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 328.75,
+      "tag": "DIV",
+      "width": 262.3984375
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 328.75,
+      "tag": "DIV",
+      "width": 262.3984375
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 328.75,
+      "tag": "DIV",
+      "width": 262.3984375
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 328.75,
+      "tag": "DIV",
+      "width": 262.3984375
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 328.75,
+      "tag": "DIV",
+      "width": 262.3984375
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 328.75,
+      "tag": "DIV",
+      "width": 262.3984375
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 785.40625,
+      "tag": "DIV",
+      "width": 720
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 785.40625,
+      "tag": "DIV",
+      "width": 720
+    },
+    {
+      "className": "\n    resource-list\n    \n    \n    resource-list--grid\n  ",
+      "columns": "322px 322px 322px 322px",
+      "display": "grid",
+      "gap": "12px 24px",
+      "height": 461.4921875,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 461.4921875,
+      "tag": "DIV",
+      "width": 322
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 461.4921875,
+      "tag": "DIV",
+      "width": 322
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 461.4921875,
+      "tag": "DIV",
+      "width": 322
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 461.4921875,
+      "tag": "DIV",
+      "width": 322
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1229,
+      "rect": {
+        "height": 800,
+        "width": 1440
+      }
+    },
+    {
+      "alt": "White Day Off Tumbler",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 328.75,
+        "width": 263
+      }
+    },
+    {
+      "alt": "Yellow Day Off Tumbler",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 328.75,
+        "width": 263
+      }
+    },
+    {
+      "alt": "Pink Day Off Tumbler",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 328.75,
+        "width": 263
+      }
+    },
+    {
+      "alt": "Khaki Day Off Tumbler",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 328.75,
+        "width": 263
+      }
+    },
+    {
+      "alt": "Dark Grey Day Off Tumbler",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 328.75,
+        "width": 263
+      }
+    },
+    {
+      "alt": "Beige Day Off Tumbler",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 328.75,
+        "width": 263
+      }
+    },
+    {
+      "alt": "Orange Day Off Tumbler",
+      "complete": true,
+      "naturalWidth": 276,
+      "rect": {
+        "height": 328.75,
+        "width": 263
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1000,
+      "rect": {
+        "height": 785.40625,
+        "width": 720
+      }
+    },
+    {
+      "alt": "Photo of KAKOMI IH donabe 2.5L / 84oz ( white ) [ KINTO USA ] [ ]",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 640,
+        "width": 640
+      }
+    },
+    {
+      "alt": "Photo of KAKOMI IH donabe 2.5L / 84oz ( black ) [ KINTO USA ] [ ]",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Photo of SCS Stacking Mug 320ml ( Grey ) [ KINTO ] [ Coffee Cups ]",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 640,
+        "width": 640
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nVessel\nNEW IN\nCOFFEE & TEA\nDRINKWARE\nKITCHENWARE\nACCENTS\nTotal items in cart: 0\nEnrich the\neveryday\nOUR BESTSELLERS\n\nLet your day be filled with what inspires you.\n\nWhite Day Off Tumbler\nAdd\nYellow Day Off Tumbler\nAdd\nPink Day Off Tumbler\nAdd\nKhaki Day Off Tumbler\nAdd\nDark Grey Day Off Tumbler\nAdd\nBeige Day Off Tumbler\nAdd\nOrange Day Off Tumbler\nAdd\nKakomi IH Donabe 2.5L\n\nKAKOMI IH DONABE 2.5L\n\n$162.50\nChoose\nSCS Stacking Mug\n\nSCS STACKING MUG\n\n$19.00\nChoose\nFunctional everyday essentials\nAlfresco Wine Glass\nChoose\nALFRESCO WINE GLASS\n$12.00\nSCS Mug Large\nChoose\nSCS MUG LARGE\n$10.00\nSepia Cup & Saucer\nAdd\nSEPIA CUP & SAUCER\n$28.80\nUnitea Cup\nAdd\nUNITEA CUP\n$10.00\nDrinkware\n\nDRINKWARE\n\nKitchenware\n\nKITCHENWARE\n\nCoffee & Tea\n\nCOFFEE & TEA\n\nSHOP ALL\nBESTSELLERS\nLAST CHANCE\nABOUT OUR BRAND\nJOURNAL\nCONTACT US\n\nGET YOUR SEAT AT THE TABLE\n\nEmail\nSUBSCRIBE\n© 2026 Vessel, Powered by Shopify"
+}

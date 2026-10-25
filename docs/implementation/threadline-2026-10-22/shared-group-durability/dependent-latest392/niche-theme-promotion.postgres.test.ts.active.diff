@@ -1,0 +1,194 @@
+--- a/services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts
++++ b/services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts
+@@ -64,6 +64,79 @@
+ const measurementDown = read(measurementDocs + '390_measurement_discovery.down.draft.sql');
+ assert.equal(sha256(measurementUp), '6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027');
+ assert.equal(sha256(measurementDown), '1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a');
++
++// Root-qualified392 dependency: inert until its exact receipt and revised source
++// are explicitly root-admitted. Never infer qualification from a draft.
++const search392Signature = 'public.browse_storefront_products_v1(uuid,jsonb,uuid[])';
++const search390Body = '95cda4d15f36172c5457ad5045600cde';
++const search392Body = 'bdaec8db8f836e94294e4bdd9c449346';
++const editor391Signature = 'public.mutate_owned_theme_draft_v1(uuid,uuid,text,text,integer,text,text,jsonb,jsonb,uuid,text,jsonb)';
++const editor384Body = '2a6e74135720d0557ba921d517e88a13';
++const editor391Body = 'f14f2252157119e56f6614decef4c4aa';
++function qualified392Dependency(consumerPath: string) {
++  const pin = z.string().regex(/^[a-f0-9]{64}$/);
++  const admission = z.object({
++    status: z.literal('ROOT_QUALIFIED392_DEPENDENT_CONSUMER_SOURCE_ADMITTED'), migration: z.literal(392),
++    qualifiedRunId: z.literal('3273631a2c5b'),
++    upPath: z.literal('docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.up.draft.sql'), downPath: z.literal('docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.down.draft.sql'),
++    upSha256: z.literal('f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171'), downSha256: z.literal('b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e'),
++    rootNativeReceiptPath: z.literal('docs/implementation/niche-theme-programme/circuit-search392-native-admission.json'),
++    rootNativeReceiptSha256: z.literal('1238543d37f951a0402f05ee94e7dca85284e3dc6bfb149073da387de95673cc'),
++    rootNativeReceiptStatus: z.literal('ROOT_NATIVE392_THROUGH391_QUALIFIED_SOURCE_AND_RAW_PROOFS_VERIFIED'),
++    rootQualificationPath: z.literal('docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-qualification.json'), rootQualificationSha256: z.literal('b44f4d9ad37798dcdca3c31ad30dfeb93bebbf60fd0c843274da18945d342aa2'),
++    historicalSuitePins: z.object({ 'services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts': z.literal('d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c'), 'services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts': z.literal('c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739') }).strict(),
++    revisedSuitePins: z.object({ 'services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts': pin, 'services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts': pin }).strict(),
++  }).strict().parse(JSON.parse(read('docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/admission.json')));
++  const up = read(admission.upPath), down = read(admission.downPath);
++  assert.equal(sha256(up), admission.upSha256); assert.equal(sha256(down), admission.downSha256);
++  const nativeBytes = read(admission.rootNativeReceiptPath); assert.equal(sha256(nativeBytes), admission.rootNativeReceiptSha256);
++  const native = record(JSON.parse(nativeBytes)); assert.equal(native.status, admission.rootNativeReceiptStatus);
++  assert.equal(native.runId, admission.qualifiedRunId); assert.equal(native.pass, 8); assert.equal(native.fail, 0); assert.equal(native.skip, 0);
++  const qualificationRef = record(native.qualification);
++  assert.equal(qualificationRef.path, admission.rootQualificationPath); assert.equal(qualificationRef.sha256, admission.rootQualificationSha256);
++  const qualificationBytes = read(admission.rootQualificationPath); assert.equal(sha256(qualificationBytes), admission.rootQualificationSha256);
++  const qualification = record(JSON.parse(qualificationBytes)); assert.equal(qualification.runId, admission.qualifiedRunId);
++  assert.equal(qualification.pass, 8); assert.equal(qualification.fail, 0); assert.equal(qualification.skip, 0);
++  const resultRef = record(qualification.result); assert.equal(resultRef.path, 'docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/result.json');
++  assert.equal(resultRef.sha256, '4c5a8c703244f682049fbbaacf794eb93439c295694b117b0bbe10b590d7e17c');
++  const resultBytes = read(String(resultRef.path)); assert.equal(sha256(resultBytes), resultRef.sha256);
++  const result = record(JSON.parse(resultBytes)); assert.equal(result.runId, admission.qualifiedRunId);
++  assert.equal(result.tests, 8); assert.equal(result.assertionsPassed, 8); assert.equal(result.assertionsFailed, 0); assert.equal(result.skipped, 0); assert.equal(result.failedSuites, 0);
++  assert.deepEqual(result.cleanup, { failures: [], remaining: { containers: [], networks: [], volumes: [] } });
++  const revisedPins: Record<string, string> = admission.revisedSuitePins;
++  assert.equal(sha256(readFileSync(new URL(import.meta.url), 'utf8')), revisedPins[consumerPath], 'new source requires its own root-qualified392 admission; old receipts remain immutable');
++  return { admission, up, down };
++}
++function search392Profile(withoutBrowseBody = false) {
++  return owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object(
++    'row',CASE WHEN ${withoutBrowseBody ? 'true' : 'false'} AND p.oid=${q(search392Signature)}::regprocedure THEN to_jsonb(p)-'prosrc' ELSE to_jsonb(p) END,
++    'comment',obj_description(p.oid,'pg_proc'),
++    'dependencies',(SELECT coalesce(jsonb_agg(to_jsonb(d) ORDER BY to_jsonb(d)::text),'[]') FROM pg_depend d WHERE d.classid='pg_proc'::regclass AND d.objid=p.oid),
++    'sharedDependencies',(SELECT coalesce(jsonb_agg(to_jsonb(d) ORDER BY to_jsonb(d)::text),'[]') FROM pg_shdepend d WHERE d.classid='pg_proc'::regclass AND d.objid=p.oid AND d.dbid=(SELECT oid FROM pg_database WHERE datname=current_database()))) ORDER BY p.proname),'[]')
++    FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND(p.proname LIKE 'storefront_discovery_%_v1' OR p.proname IN('browse_storefront_products_v1','browse_storefront_apparel_v1'));`);
++}
++function fullEditor391Profile() {
++  return owned.psql(`SELECT jsonb_build_object('row',to_jsonb(p),'comment',obj_description(p.oid,'pg_proc'),
++    'dependencies',(SELECT coalesce(jsonb_agg(to_jsonb(d) ORDER BY to_jsonb(d)::text),'[]') FROM pg_depend d WHERE d.classid='pg_proc'::regclass AND d.objid=p.oid),
++    'sharedDependencies',(SELECT coalesce(jsonb_agg(to_jsonb(d) ORDER BY to_jsonb(d)::text),'[]') FROM pg_shdepend d WHERE d.classid='pg_proc'::regclass AND d.objid=p.oid AND d.dbid=(SELECT oid FROM pg_database WHERE datname=current_database())))
++    FROM pg_proc p WHERE p.oid=${q(editor391Signature)}::regprocedure;`);
++}
++function dependent392Rows() {
++  const tables = ['products','product_variants','product_options','inventory_levels','collections','collection_products',
++    'orders','order_items','carts','themes','theme_packages','theme_package_versions','theme_schema_manifests','theme_renderer_manifests',
++    'sites','store_themes','theme_instances','theme_instance_drafts','theme_editor_drafts','theme_draft_patches','theme_releases',
++    'idempotency_keys','audit_activity_events','outbox_events'];
++  return owned.psql(`SELECT md5(jsonb_build_object(${tables.flatMap(table => [q(table), `(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),'[]') FROM public.${table} t)`]).join(',')})::text);`);
++}
++function assertActual392Emission(dependency: { up: string; down: string }) {
++  for (const [directory, expected] of [['migrations', dependency.up], ['rollback', dependency.down]] as const) {
++    const prefix = `database/supabase/${directory}/`;
++    const files = readdirSync(new URL(prefix, root)).filter(name => /^392_[^/]+\.sql$/.test(name));
++    assert.equal(files.length, 1, 'known392 entry must name the exact paired emitted source, never guess a later migration');
++    assert.equal(read(prefix + files[0]), expected);
++  }
++}
++
+ let gateway: Gateway, proxy: OwnedPooledSqlProxy, evidenceDirectory: string;
+ after(async () => { await gateway?.settle(); await closePooledSqlClients(); await proxy?.stop(); });
+ 
+@@ -195,20 +268,22 @@
+ function refusal(mutation: string, script: string, expected: RegExp) {
+   assert.equal(script.match(/^BEGIN;$/gm)?.length, 1); assert.equal(script.match(/^COMMIT;$/gm)?.length, 1);
+   const inner = script.replace(/^BEGIN;$/m, '').replace(/^COMMIT;$/m, '');
+-  const before = fullState(), profile = discoveryProfile();
++  const before = fullState(), profile = discoveryProfile(), shared391 = fullEditor391Profile();
+   const error = owned.psqlScriptExpectError(`BEGIN;${mutation}\n${inner}\nROLLBACK;`);
+   assert.match(error, expected, 'specific real refusal, not an unrelated setup error');
+   assert.equal(fullState(), before, 'refused whole proposal/mutant leaves exact catalog/captures/merchant state');
+-  assert.equal(discoveryProfile(), profile);
++  assert.equal(discoveryProfile(), profile); assert.equal(fullEditor391Profile(), shared391);
+ }
+ 
+ test('admitted disk-loaded nine-theme389 promotion composes with exact390 and preserves immutable merchant history', async t => {
++  let preservedEditor391Profile = "";
+   const stage = async (name: string, work: () => void | Promise<void>) => {
+     let passed = false;
+-    await t.test(name, async () => { await work(); passed = true; });
++    await t.test(name, async () => { await work(); assert(preservedEditor391Profile); assert.equal(fullEditor391Profile(), preservedEditor391Profile, 'full391 body/raw catalog remains exact through every promotion phase'); passed = true; });
+     assert(passed, `Stopped dependent qualification after failed phase: ${name}`);
+   };
+   const { admission, proposal, pair } = loadAdmittedProposal();
++  const dependency392 = qualified392Dependency('services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts');
+   evidenceDirectory = mkdtempSync(join(tmpdir(), `letbuyy-niche389-${owned.runId}-`));
+   assert.equal(owned.psql("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='carts' AND column_name='fact_acceptance_version');"), 't', 'reviewed388 baseline is required');
+   const frozenIds = readFrozenCatalog(), initialRows = catalog(); assert.equal(initialRows.length, 10);
+@@ -217,7 +292,13 @@
+   const protectedSql = read('database/supabase/migrations/382_threadline_catalog_v2.sql');
+   const protectedPayload = record(JSON.parse(protectedSql.match(/\$liquidbundle\$([\s\S]*?)\$liquidbundle\$::jsonb/)![1]));
+   assert.equal(canonicalJson(record(initialRows.find(row => row.slug === 'letbuyy-sense')).default_template), canonicalJson(protectedPayload.document));
+-  const entryBody = bodyHash(); assert([baselineBody, expandedBody].includes(entryBody), 'unknown discovery state refuses before DDL');
++  const entryBody = bodyHash(); assert([baselineBody, expandedBody, search392Body].includes(entryBody), 'unknown discovery state refuses before DDL');
++  const editorEntryBody = owned.psql(`SELECT md5(prosrc) FROM pg_proc WHERE oid=${q(editor391Signature)}::regprocedure;`);
++  assert([editor384Body, editor391Body].includes(editorEntryBody), 'unknown editor body refuses before DDL');
++  if (entryBody === search392Body) { assert.equal(editorEntryBody, editor391Body); assertActual392Emission(dependency392); }
++  preservedEditor391Profile = fullEditor391Profile();
++  const entryDiscovery392Profile = search392Profile(), entryDiscoveryNonBody = search392Profile(true);
++  const entryDependency392Rows = dependent392Rows();
+   const promoted = proposal.artifacts.map(artifact => {
+     const row = initialRows.find(row => row.slug === artifact.slug); assert(row);
+     if (row.version === artifact.previousCatalogVersion) return false;
+@@ -229,9 +310,14 @@
+   assert(promoted.every(Boolean) || promoted.every(value => !value), 'partially applied389 is not a valid regression entry');
+   const latestEntry = promoted.every(Boolean);
+   assert(latestEntry || entryBody === baselineBody, '390 without admitted389 is not a reviewed entry');
+-  proof('entry', { runId: owned.runId, manifestSha256: admission.manifestSha256, mode: latestEntry ? 'LATEST_EXACT389_OR389_390_REGRESSION' : 'THROUGH388_QUALIFICATION', body: entryBody, catalog: initialRows, captureDigest: captures(), merchantDigest: merchants() });
+-  if (entryBody === expandedBody) owned.script(measurementDown);
+-  if (latestEntry) owned.scriptLarge(pair.down);
++  proof('entry', { runId: owned.runId, manifestSha256: admission.manifestSha256, mode: entryBody === search392Body ? 'LATEST_EXACT_ROOT_QUALIFIED392' : latestEntry ? 'LATEST_EXACT389_OR389_390_REGRESSION' : 'THROUGH388_QUALIFICATION', body: entryBody, catalog: initialRows, captureDigest: captures(), merchantDigest: merchants(), full391Profile: JSON.parse(preservedEditor391Profile), discoveryProfileBefore392Down: JSON.parse(entryDiscovery392Profile) });
++  if (entryBody === search392Body) {
++    owned.script(dependency392.down); assert.equal(bodyHash(), expandedBody);
++    assert.equal(search392Profile(true), entryDiscoveryNonBody); assert.equal(fullEditor391Profile(), preservedEditor391Profile);
++    assert.equal(dependent392Rows(), entryDependency392Rows);
++  }
++  if (entryBody === expandedBody || entryBody === search392Body) { owned.script(measurementDown); assert.equal(fullEditor391Profile(), preservedEditor391Profile); }
++  if (latestEntry) { owned.scriptLarge(pair.down); assert.equal(fullEditor391Profile(), preservedEditor391Profile); }
+   assert.equal(bodyHash(), baselineBody);
+   for (const artifact of proposal.artifacts) assert.equal(catalog().find(row => row.slug === artifact.slug)?.version, artifact.previousCatalogVersion);
+ 
+@@ -272,12 +358,12 @@
+ 
+   await stage('389 applies/replays exact disk artifacts and captures real provenance before any installation', () => {
+     const beforeMerchants = merchants(), profile = discoveryProfile();
+-    owned.scriptLarge(pair.up); assert.equal(merchants(), beforeMerchants); assert.equal(discoveryProfile(), profile);
++    owned.scriptLarge(pair.up); assert.equal(fullEditor391Profile(), preservedEditor391Profile); assert.equal(merchants(), beforeMerchants); assert.equal(discoveryProfile(), profile);
+     proof('promoted-before-install', proposal.artifacts.map(provenance));
+     for (const artifact of proposal.artifacts) assert.equal(assertCapture(artifact).packageId, priorPackageIds.get(artifact.slug));
+     assert.deepEqual(catalog().map(row => ({ id: row.id, slug: row.slug, preset: row.theme_preset_id, alias: record(row.config).preset_id })), stableIdentity);
+     assert.equal(threadline(), initialThreadline);
+-    const after = fullState(); owned.scriptLarge(pair.up); assert.equal(fullState(), after, 'UP replay is a true no-op');
++    const after = fullState(); owned.scriptLarge(pair.up); assert.equal(fullEditor391Profile(), preservedEditor391Profile); assert.equal(fullState(), after, 'UP replay is a true no-op');
+   });
+ 
+   await stage('all nine install/load/unchanged wire-save/reload/retry/publish use exact immutable versions', async () => {
+@@ -370,7 +456,7 @@
+       return readStorefrontDiscoveryPayload(parse(`SELECT public.browse_storefront_products_v1(${q(a.siteId)},${json(query)});`), query);
+     };
+     const oldProfile = discoveryProfile(), oldResults = queries.map(browse), immutable = captures(), merchantState = merchants();
+-    assert.equal(bodyHash(), baselineBody); owned.script(measurementUp); assert.equal(bodyHash(), expandedBody);
++    assert.equal(bodyHash(), baselineBody); owned.script(measurementUp); assert.equal(fullEditor391Profile(), preservedEditor391Profile); assert.equal(bodyHash(), expandedBody);
+     const upgradedProfile = discoveryProfile(), upgradedResults = queries.map(browse);
+     assert.equal(upgradedResults[1].count, 1); assert.equal(upgradedResults[1].discovery.measurement_capabilities?.equipment_length.available, true);
+     assert.equal(upgradedResults[2].discovery.measurement_capabilities?.max_width_cm.available, true);
+@@ -432,15 +518,23 @@
+       assert.equal(current.install_count, activeInstallCounts[String(row.id)], 'operational counter equals exact canonical active installations');
+       return { ...row, install_count: current.install_count };
+     });
+-    owned.scriptLarge(pair.down); assert.equal(discoveryProfile(), upgradedProfile); assert.deepEqual(queries.map(browse), upgradedResults);
++    owned.scriptLarge(pair.down); assert.equal(fullEditor391Profile(), preservedEditor391Profile); assert.equal(discoveryProfile(), upgradedProfile); assert.deepEqual(queries.map(browse), upgradedResults);
+     assert.equal(captures(), immutable); assert.equal(merchants(), merchantState); assert.deepEqual(catalog(), expectedPriorCatalog); assert.equal(threadline(), initialThreadline);
+-    const afterDown = fullState(); owned.scriptLarge(pair.down); assert.equal(fullState(), afterDown, 'DOWN replay preserves captured data');
+-    owned.scriptLarge(pair.up); for (const artifact of proposal.artifacts) assertCapture(artifact);
++    const afterDown = fullState(); owned.scriptLarge(pair.down); assert.equal(fullEditor391Profile(), preservedEditor391Profile); assert.equal(fullState(), afterDown, 'DOWN replay preserves captured data');
++    owned.scriptLarge(pair.up); assert.equal(fullEditor391Profile(), preservedEditor391Profile); for (const artifact of proposal.artifacts) assertCapture(artifact);
+     assert.deepEqual(catalog(), promotedCatalog, 'UP restores exact promoted metadata while preserving installation counts');
+     assert.equal(discoveryProfile(), upgradedProfile); assert.deepEqual(queries.map(browse), upgradedResults);
+-    owned.script(measurementDown); assert.equal(bodyHash(), baselineBody); assert.equal(discoveryProfile(), oldProfile); assert.deepEqual(queries.map(browse), oldResults);
+-    owned.script(measurementUp); assert.equal(bodyHash(), expandedBody); assert.equal(discoveryProfile(), upgradedProfile); assert.deepEqual(queries.map(browse), upgradedResults);
++    owned.script(measurementDown); assert.equal(fullEditor391Profile(), preservedEditor391Profile); assert.equal(bodyHash(), baselineBody); assert.equal(discoveryProfile(), oldProfile); assert.deepEqual(queries.map(browse), oldResults);
++    owned.script(measurementUp); assert.equal(fullEditor391Profile(), preservedEditor391Profile); assert.equal(bodyHash(), expandedBody); assert.equal(discoveryProfile(), upgradedProfile); assert.deepEqual(queries.map(browse), upgradedResults);
+     assert.equal(captures(), immutable); assert.equal(merchants(), merchantState); assert.equal(threadline(), initialThreadline);
++    if (entryBody === search392Body) {
++      const rows = dependent392Rows(); assert.equal(fullEditor391Profile(), preservedEditor391Profile);
++      owned.script(dependency392.up); assert.equal(bodyHash(), search392Body);
++      assert.equal(search392Profile(), entryDiscovery392Profile); assert.equal(fullEditor391Profile(), preservedEditor391Profile);
++      assert.equal(dependent392Rows(), rows); assert.deepEqual(queries.map(browse), upgradedResults);
++      proof('dependent392-restoration', { runId: owned.runId, fullOriginalDiscoveryProfileRestored: true,
++        rootQualified392Run: dependency392.admission.qualifiedRunId, conservedBusinessDigest: rows, preservedFull391Profile: true });
++    }
+     proof('qualified-composition', { runId: owned.runId, manifestSha256: proposal.manifestSha256, oldProfile, upgradedProfile, upgradedResults, protectedThreadline: readThreadlinePin(), immutableCaptureDigest: immutable, merchantDigest: merchantState, entryMode: latestEntry ? 'latest-regression' : 'through388' });
+   });
+   console.info('NICHE389_390_OWNED_QUALIFICATION', JSON.stringify({ runId: owned.runId, manifestSha256: proposal.manifestSha256, artifacts: proposal.artifacts.length, entry: latestEntry ? 'latest-regression' : 'through388', evidenceDirectory, scope: 'native SQL and real mounted gateway; no browser/provider acceptance' }));

@@ -15,10 +15,11 @@
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
+import { CircleAlert, Clapperboard, LoaderCircle, Video } from 'lucide-react'
 import { useState, useId, useCallback, type ChangeEvent } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue, isUnsafeUrl } from '@/lib/theme-schemas'
-import { Button, Input, MaterialIcon } from '@letbuyy/ui'
+import { Button, Input } from '@letbuyy/ui'
 import { MediaLibrary } from './MediaLibrary'
 import styles from './controls.module.css'
 
@@ -134,7 +135,7 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
                 />
 
                 <label className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''}`}>
-                    <MaterialIcon name={isUploading ? 'hourglass_top' : 'video_call'} size={16} aria-hidden />
+                    {isUploading ? <LoaderCircle size={16} aria-hidden /> : <Video size={16} aria-hidden />}
                     {isUploading ? 'Uploading…' : 'Upload video'}
                     <Input
                         unstyled
@@ -156,14 +157,14 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
                         onClick={() => setIsLibraryOpen(true)}
                         aria-label={`Browse media library for ${field.label}`}
                     >
-                        <MaterialIcon name="video_library" size={15} aria-hidden />
+                        <Clapperboard size={15} aria-hidden />
                         Browse library
                     </Button>
                 ) : null}
 
                 {error ? (
                     <p id={`${id}-error`} className={styles.fieldError} role="alert">
-                        <MaterialIcon name="error" size={12} aria-hidden />
+                        <CircleAlert size={12} aria-hidden />
                         {' '}{error}
                     </p>
                 ) : null}

@@ -1,0 +1,85 @@
+{
+  "recordedAt": "2026-10-23T20:57:21.091599+00:00",
+  "status": "ROOT_ACTUAL_MERCHANT_STOCK_OMISSION_AND_OLD_ORDER_HISTORY_COMPONENTS_PASS",
+  "runId": "f6074d90e894",
+  "merchantOrigin": "http://admin.threadline-f6074d90e894.localhost:49943",
+  "runtimeAdmission": "supplemental-recovery-runtime-admission.json",
+  "sourceEpoch": "c0bfcfa9dc6055989c3c3c1f79c8fdb4dcc4d2f69e8e958d64625336e67b3403",
+  "actualVersion": {
+    "expected": 31,
+    "returned": 34,
+    "opaqueNotArithmetic": true
+  },
+  "normalUiSave": "ONE_ACKNOWLEDGED_SAVE_AND_FULL_RELOAD",
+  "stockOmission": "Actual persisted canonical product.update.v1 mutation, not raw HTTP interception: no top-level/fields/existing-variant stock",
+  "canonicalConservation": {
+    "allFourUuidStockPairsExact": true,
+    "productStockExact": true,
+    "inventoryBusinessExact": true,
+    "optionRowsExact": true,
+    "preEditCartDigestExactAcrossEdit": true,
+    "purchasedVariantAvailable": 2,
+    "purchasedVariantReserved": 0
+  },
+  "oldOrder": {
+    "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+    "number": "ORD-20261023-10000",
+    "originalUnitPriceINR": 8900,
+    "totalINR": 17820,
+    "fullOrderAndPrivateSnapshotHashesExact": true,
+    "bothNormalBuyerAndMerchantHistoryReloadsObserved": true,
+    "buyerUiMoney": "Line total17800 and order total17820; unit8900 independently in canonical row and merchant UI",
+    "preliminaryVerifierCorrection": "Root initially required unit8900 text in buyer AX, which exposes the line total instead. Rechecked actual buyer17800/17820, merchant8900 and exact canonical unit price; no application failure inferred."
+  },
+  "staleCartControl": {
+    "normalOriginalCart": "3877932f-b20c-437d-91d7-524cbba72011",
+    "oneNormalCodConfirmation": "UI_REJECTED_WITH_GENERIC_CHECKOUT_ERROR",
+    "siteOrdersAfter": 1,
+    "exactHttpStatusAndBackendCode": "NOT_CAPTURED_NO409_OR_CAUSE_CLAIM",
+    "retry": "NOT_AUTHORIZED_OR_NEEDED_FOR_THIS_CONTROL",
+    "wholeGuardContractAccepted": false
+  },
+  "scope": "Shared live merchant inventory/history components only. No automatic full HI16 or all26 acceptance; owner reconciles exact case requirements and missing diagnostics. Cart recovery/Pantry/other themes remain separate.",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-hi16-before-readback.json",
+      "sha256": "ddd71c36ca9a117b787a220d77327d0ff5304c69e512626eece7a8d617943928"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-hi16-after-readback.json",
+      "sha256": "11dc7db0f020cb07c59490a1b217b279e6b47ba5b4b1578775a9ee693ef08a50"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-canonical-edit-receipt.json",
+      "sha256": "46727764948b7169cfd06c910d434fa17bcd69bae18ad9f604eb2472bd043e31"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-order-before-edit-readback.json",
+      "sha256": "cb7b279bc38e183548ae2ed19ccbdf99403157d4bb25a2fe1d7b73d3d6f76529"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-order-after-stale-confirm-readback.json",
+      "sha256": "8101cbecfbde18a86f151c482ab5da626e69347d95f25f23a9c5128d58d3be8b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-old-order-buyer-after-edit.ax.txt",
+      "sha256": "e3420073d07da328a170693c82dca87101e0d2a83017c464bd2163f78e8a034a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-old-order-merchant-after-edit.ax.txt",
+      "sha256": "1443e59d3098c5ad1ebd4151eaa9c6c5460bbc64cf18514df44741b653012380"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-stale-COD-confirm-rejected.ax.txt",
+      "sha256": "dacc3f9eef5b3e560a173a33c004ccd230580a566c7e1440e5424357e7392186"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-new-client-before-edit.ax.txt",
+      "sha256": "5d40f9f6052dcea8be8647d40cdfccc092ed07d805ac90c7c6b1f6435f9b07e0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-HI16-later-edit-reloaded.ax.txt",
+      "sha256": "250d1b96a17aa609464cefad597a2b10d19c4053aba5a35b90367c3e84baa2c2"
+    }
+  ]
+}

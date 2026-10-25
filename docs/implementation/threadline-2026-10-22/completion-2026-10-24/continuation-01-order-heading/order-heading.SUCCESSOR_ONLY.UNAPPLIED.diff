@@ -1,0 +1,11 @@
+--- packages/theme-engine/src/theme-bundle.ts
++++ packages/theme-engine/src/theme-bundle.ts.SUCCESSOR_VERSION_ONLY_UNAPPLIED
+@@ -3087,7 +3087,7 @@
+           '<section class="lb-order-detail" data-section-id="{{ section.id }}">',
+           '  {% if buyer_unavailable %}<p class="lb-order-detail__error" role="alert">This order is temporarily unavailable. Please try again.</p>{% elsif buyer %}',
+           '  {% if order %}',
+-          '  <h1>Order #{{ order.number }}</h1>',
++          '  <h1>{{ section.settings.heading | strip | default: "Order" }} #{{ order.number }}</h1>',
+           '  <p class="lb-order-detail__status">Status: {{ order.status }}</p>',
+           '  <ul class="lb-order-detail__items">{% for item in order.line_items %}<li><span class="lb-order-detail__title">{{ item.title }}</span><span class="lb-order-detail__qty">{{ item.quantity }}</span><span class="lb-order-detail__line">{{ item.line_price | money_with_currency: order.currency }}</span></li>{% endfor %}</ul>',
+           '  <p class="lb-order-detail__total">Total: {{ order.total | money_with_currency: order.currency }}</p>',

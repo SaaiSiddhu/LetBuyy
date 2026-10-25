@@ -1,0 +1,42 @@
+{
+  "reviewedAt": "2026-10-23T07:38:08.844212+00:00",
+  "capturedSnapshotPassed": true,
+  "currentSharedSourceAcceptance": false,
+  "screenshots": 45,
+  "measuredCases": 41,
+  "additionalNativeInteractionStates": 4,
+  "sourceHashDriftAfterCapture": [
+    "packages/theme-engine/src/first-party-theme-catalog.ts",
+    "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx"
+  ],
+  "driftReason": "Expected concurrent shared integration after capture: bounded fact carriers and selected-variant hydration transferred by the coordinator to Pantry; shared catalog registration also changed. Captured hashes remain preserved. Coordinator requests no full recapture while integration is in progress.",
+  "badMeasuredCases": 0,
+  "fontGate": {
+    "heading": true,
+    "body": true
+  },
+  "hindiFallback": "Kohinoor Devanagari (system font, observed glyphs)",
+  "sampledMinimumTextContrast": 5.99,
+  "keyboardPassed": true,
+  "rawMedia": "browser-captures/",
+  "reviewBoards": "browser-review/",
+  "scopeAndLimits": "browser-review.md",
+  "liveServiceEffects": 0,
+  "browserClosed": true,
+  "serverClosed": true,
+  "portVerifiedNoListener": "127.0.0.1:43277",
+  "slotReleaseSentToCoordinator": true,
+  "fullAppLifecycleCertified": false,
+  "nextAcceptance": "Allocated real-browser measurement of the new panel; final released actual registration DOM behavior passes.",
+  "postCaptureDomCheckpoint": {
+    "passed": true,
+    "tests": 5,
+    "actualRegisterEntry": true,
+    "finalSharedReleaseMatched": true,
+    "sourcesStableThroughoutRun": true,
+    "evidence": "selected-edition-validation.json",
+    "browserLaunched": false,
+    "currentSourceBrowserAcceptance": false
+  }
+}

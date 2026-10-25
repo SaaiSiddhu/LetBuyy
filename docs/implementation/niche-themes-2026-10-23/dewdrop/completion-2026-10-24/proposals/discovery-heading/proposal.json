@@ -1,0 +1,39 @@
+{
+  "status": "PRIVATE_SOURCE_QUALIFIED_NOT_APPLIED_RUNTIME_NOT_VERIFIED",
+  "finding": "DD-FIND-004",
+  "scope": "Dewdrop discovery Heading control with preserved fresh default visible output",
+  "source": {
+    "packages/theme-engine/src/dewdrop-discovery.ts": {
+      "beforeSha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+      "proposedSourceSha256": "4b98f40f414c4950c6ecddc9a77fa08346b1cb007d9fd11f22346927bcef98f8"
+    },
+    "packages/theme-engine/src/dewdrop-theme.ts": {
+      "beforeSha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+      "proposedSourceSha256": "d3e5fadca7c289c6f539b9859d2714274b002b74909658a71147af72be601010"
+    }
+  },
+  "patch": "proposed.patch",
+  "testOnlyImportRebinding": "Private factory imports canonical bundle/style paths absolutely; its discovery import resolves the private candidate. Only proposed.patch is production diff.",
+  "requires": "Allocator writer/versioned artifact admission; no immutable2.0.0 overwrite or existing merchant config normalization",
+  "notChanged": [
+    "Canonical query/server price/stock authority",
+    "Existing saved documents/releases/data",
+    "M1/design source",
+    "Shared renderer/editor/provider"
+  ],
+  "qualification": {
+    "evidence": "evidence/result.json",
+    "current": {
+      "pass": 2,
+      "fail": 3
+    },
+    "proposal": {
+      "pass": 5,
+      "fail": 0
+    },
+    "skipped": 0,
+    "canonicalSourcesUnchanged": true,
+    "browserOrProviderProof": false
+  },
+  "visibleDefaultPreservation": "New blank default uses real collection/search title; merchant nonblank title becomes authoritative. Existing merchant docs and immutable package2.0.0 are never rewritten. Versioned successor must be admitted by allocator."
+}

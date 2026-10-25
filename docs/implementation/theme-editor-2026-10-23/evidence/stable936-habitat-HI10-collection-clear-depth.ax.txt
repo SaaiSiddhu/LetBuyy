@@ -1,0 +1,75 @@
+Browser tab: 63, Title: "Lifecycle furniture | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&category=Furniture&country_of_origin=India&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db&max_width_cm=122".
+1 AXWebArea Lifecycle furniture | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&category=Furniture&country_of_origin=India&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db&max_width_cm=122
+	2 container
+		3 text Habitat 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&category=Furniture&country_of_origin=India&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db&max_width_cm=122
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				14 button Apply filter
+				15 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&category=Furniture&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db&max_width_cm=122
+		16 container Breadcrumb
+			17 link Description: Home, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+			18 text Lifecycle furniture
+		19 text A SPACE TO SLOW DOWN
+		20 heading Lifecycle furniture, Value: 1
+			21 text Lifecycle furniture
+		22 text Synthetic theme acceptance setup only.
+		23 container Furniture collections
+		24 container
+			25 text Search furniture
+			26 search text field (settable) Search furniture, Value: Habitat lifecycle desk
+			27 text Maximum assembled width (cm)
+			28 stepper (settable, integer) Maximum assembled width (cm), Value: 122
+			29 text Maximum assembled depth (cm)
+			30 stepper (settable) Maximum assembled depth (cm)
+			31 text Material
+			32 pop up button (collapsed, settable) Material, Value: Any material, Secondary Actions: Expand
+				33 menu
+					34 (selected) Any material
+					35 Wood
+			36 text Finish
+			37 pop up button (collapsed, settable) Finish, Value: Any finish, Secondary Actions: Expand
+				38 menu
+					39 (selected) Any finish
+					40 Natural
+			41 text Sort
+			42 pop up button (collapsed, settable) Sort, Value: Price: high to low, Secondary Actions: Expand
+				43 menu
+					44 Featured
+					45 Price: low to high
+					46 (selected) Price: high to low
+					47 Newest
+					48 Name
+			49 button Apply
+			50 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db
+		51 container Applied filters
+			52 link Description: Remove Category: Furniture, Value: syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&country_of_origin=India&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db&max_width_cm=122
+			53 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&category=Furniture&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db&max_width_cm=122
+			54 link Description: Remove Maximum width (cm): 122, Value: syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&category=Furniture&country_of_origin=India&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db
+		55 text 1 pieces
+		56 text Assembled measurements describe room fit. Check separate package measurements for access.
+		57 container
+			58 link Description: Product photograph not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+			59 heading Habitat lifecycle desk, Value: 3
+				60 link Description: Habitat lifecycle desk, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+			61 text INR 8,900.00 120 W × 60 D × 75 H cm Natural
+			62 link Description: View dimensions & options, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+		63 container Product pages
+			64 text Page 1
+		65 heading Threadline, Value: 3
+			66 text Threadline
+		67 text Habitat 936 B footer saved
+		68 heading CONTACT, Value: 4
+			69 text CONTACT
+		70 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		71 text © Threadline. All rights reserved.
+		72 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle furniture | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?limit=20&search=Habitat+lifecycle+desk&category=Furniture&country_of_origin=India&sort=price-desc&collection_id=ff302898-894c-4f35-9157-987ced4231db&max_width_cm=122

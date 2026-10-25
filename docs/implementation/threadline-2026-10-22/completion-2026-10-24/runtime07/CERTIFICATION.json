@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-24T21:03:08.917266+00:00",
+  "classification": "CURRENT_ENGINEERING_ACCEPTANCE_NOT_PROVIDER_ENDORSEMENT",
+  "theme": "Threadline",
+  "slug": "letbuyy-sense",
+  "version": "2.1.0",
+  "runId": "49ada80bc494",
+  "LOCAL_E2E_VERIFIED": "PARTIAL",
+  "RAZORPAY_TEST_VERIFIED": "PARTIAL",
+  "REVIEW_ACCEPTED": "PENDING_FULL_THEME",
+  "FULL_THEME_CERTIFIED": false,
+  "ACTUAL_INTENDED_TEST_PURCHASE_FINANCIAL_FLOW": "PASS_REVIEWED",
+  "coverageCounts": {
+    "PARTIAL": 23,
+    "NOT_RUN": 293,
+    "FAIL": 1,
+    "PASS": 1
+  },
+  "positiveCase": "TL-ADD-RAZORPAY-01",
+  "evidence": "THREADLINE_PAYMENT_EVIDENCE.json",
+  "remaining": [
+    "Allpartial/notrun/failedmandatoryclausesfrom26originaland318matrix",
+    "OwnTemplatebuyerfactsdisplay",
+    "Apparelprovenance/snapshot/summarysource+SQLandexplicitnewversion/native/UIqualification",
+    "Captureflagmetadataownerdisposition",
+    "Normalverification,negative/recovery/COD/historyafteredit/quality/performance,finalindependentreview"
+  ],
+  "PRODUCTION_DEPLOYED": "NOT_REQUESTED",
+  "updatedAt": "2026-10-24T21:21:15.458171+00:00",
+  "currentCoverageCounts": {
+    "PARTIAL": 18,
+    "NOT_RUN": 298,
+    "FAIL": 1,
+    "PASS": 1
+  },
+  "recordsRetained": 318,
+  "actualRequiredCasesPassed": 1,
+  "privateSourceRepair": "Sealed private02 preparation only;8overlays, pairedSQL and nativeCASE_SOURCE NOT applied or run",
+  "privateHandoff": "runtime07/private-apparel-provenance02/HANDOFF.json",
+  "residualQueue": "runtime07/RESIDUAL_CONTROLLER_QUEUE02.json",
+  "goalTracker": "Existing tracker remains paused; explicit human resume work continues. Tools cannot set active or replace unfinished goal; no false completion or new duplicate."
+}

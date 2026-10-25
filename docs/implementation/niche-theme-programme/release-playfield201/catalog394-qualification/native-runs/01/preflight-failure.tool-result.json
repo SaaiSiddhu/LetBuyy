@@ -1,0 +1,8 @@
+{
+  "source": "Literal exec_command result copied from this task tool transcript; not a runner-generated receipt",
+  "chunk_id": "26f768",
+  "exit_code": 1,
+  "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 27, in <module>\nAssertionError\n",
+  "failedAssertion": "assert any(f[\"path\"]==\"scripts/governance/supabase-faithful-bootstrap.mjs\" for f in closure[\"files\"])",
+  "previousAssertions": "All1089 bound-file hashes and complete UP/DOWN/deploy file-set equality were checked earlier in the inline preflight; no successful preflight receipt was written."
+}

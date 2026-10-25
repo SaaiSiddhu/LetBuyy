@@ -1,0 +1,294 @@
+{
+  "recordedAt": "2026-10-25T00:48:10.553110+00:00",
+  "runId": "49ada80bc494",
+  "theme": "Dewdrop",
+  "slug": "letbuyy-aura",
+  "phase": "temporary-readded",
+  "classification": "BOUNDED_READONLY_ACTIVE_EDITOR_INSTANCE_DRAFT_RELEASE_BINDING",
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "labelsAndRunMarkerVerified": true,
+    "originalOwnerPid": 54685
+  },
+  "binding": {
+    "draft": {
+      "id": "18b2775d-594a-4886-8c94-61adf56943c0",
+      "status": "active",
+      "version": 17,
+      "updatedAt": "2026-10-25T00:48:03.328854+00:00",
+      "workingManifestSha256": "29e78c8b815b11909586e3fb9380ac02e729d8193b670f80b7e5b5ec7f9e31a2",
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "aura-service-information-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0",
+          "idField": "block-8f34c427-c4de-4073-8971-7926b98f922a",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary root A",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/0",
+          "idField": "block-225c778b-5054-48b7-bbe7-2f790dae7183",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child B",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/1",
+          "idField": "block-017b10a2-f8eb-46d6-9c89-884e0df39565",
+          "mapKey": null,
+          "type": "badge",
+          "order": 20,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index/blocks/block-8f34c427-c4de-4073-8971-7926b98f922a",
+          "idField": null,
+          "mapKey": "block-8f34c427-c4de-4073-8971-7926b98f922a",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary root A",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index/blocks/block-8f34c427-c4de-4073-8971-7926b98f922a/blocks/block-017b10a2-f8eb-46d6-9c89-884e0df39565",
+          "idField": null,
+          "mapKey": "block-017b10a2-f8eb-46d6-9c89-884e0df39565",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index/blocks/block-8f34c427-c4de-4073-8971-7926b98f922a/blocks/block-225c778b-5054-48b7-bbe7-2f790dae7183",
+          "idField": null,
+          "mapKey": "block-225c778b-5054-48b7-bbe7-2f790dae7183",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child B",
+          "title": null
+        },
+        {
+          "path": "/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "release": {
+      "id": "940e5ca2-fca0-49bd-b8db-60865744d424",
+      "createdAt": "2026-10-25T00:48:03.194181+00:00",
+      "snapshotSha256": "29e78c8b815b11909586e3fb9380ac02e729d8193b670f80b7e5b5ec7f9e31a2",
+      "sourceDraftVersion": 15,
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "aura-service-information-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0",
+          "idField": "block-8f34c427-c4de-4073-8971-7926b98f922a",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary root A",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/0",
+          "idField": "block-225c778b-5054-48b7-bbe7-2f790dae7183",
+          "mapKey": null,
+          "type": "badge",
+          "order": 0,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child B",
+          "title": null
+        },
+        {
+          "path": "/sections/template/4/blocks/0/children/1",
+          "idField": "block-017b10a2-f8eb-46d6-9c89-884e0df39565",
+          "mapKey": null,
+          "type": "badge",
+          "order": 20,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index/blocks/block-8f34c427-c4de-4073-8971-7926b98f922a",
+          "idField": null,
+          "mapKey": "block-8f34c427-c4de-4073-8971-7926b98f922a",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary root A",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index/blocks/block-8f34c427-c4de-4073-8971-7926b98f922a/blocks/block-017b10a2-f8eb-46d6-9c89-884e0df39565",
+          "idField": null,
+          "mapKey": "block-017b10a2-f8eb-46d6-9c89-884e0df39565",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child A2",
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index/blocks/block-8f34c427-c4de-4073-8971-7926b98f922a/blocks/block-225c778b-5054-48b7-bbe7-2f790dae7183",
+          "idField": null,
+          "mapKey": "block-225c778b-5054-48b7-bbe7-2f790dae7183",
+          "type": "badge",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": "Dewdrop temporary child B",
+          "title": null
+        },
+        {
+          "path": "/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "instance": {
+      "id": "e2a48dbe-a923-4ac3-a3b4-8ef55d6cb01a",
+      "slug": "letbuyy-aura",
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "packageId": "e7156379-b950-4317-a184-277982c34e49",
+      "updatedAt": "2026-10-25T00:48:03.328854+00:00",
+      "currentDraftId": "18b2775d-594a-4886-8c94-61adf56943c0",
+      "instanceStatus": "active",
+      "activeReleaseId": "940e5ca2-fca0-49bd-b8db-60865744d424",
+      "packageVersionId": "8a596351-b950-459e-a9f5-c20c675c8e10"
+    },
+    "siteCurrentTheme": {
+      "slug": "letbuyy-aura",
+      "releaseId": "940e5ca2-fca0-49bd-b8db-60865744d424"
+    }
+  },
+  "nodeScope": "Only actual trust-badges hosts and uniquely labelled owned temporary nodes; schema declarations excluded. IDs and map keys are raw stored values, not inferred UUIDs.",
+  "browserActions": 0,
+  "businessMutations": 0,
+  "fullThemeCertified": false
+}

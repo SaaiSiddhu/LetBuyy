@@ -1,0 +1,58 @@
+{
+  "id": "section-policy-content",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "policy-content",
+    "group": "template",
+    "firstId": "section-2f3fcbac-e3bb-4710-9f61-a32b44070301",
+    "finalId": "section-e9af2f13-8265-4b69-8a61-d77f2648865f",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "policy-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "policy-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "policy-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "policy-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

@@ -1,0 +1,147 @@
+- main:
+  - link "Back to themes":
+    - /url: /syn-threadline-ui-ae3f0477/online-store/themes
+  - button "Toggle navigation panel" [pressed]:
+  - button "Sections":
+  - button "Theme settings":
+  - button "Theme styles":
+  - button "Versions":
+  - generic: Kindred
+  - text: Draft theme
+  - generic "Draft changes save automatically. Publishing updates the storefront.": Saved
+  - generic "Template":
+    - combobox "Template":
+      - option "Kindred gift discovery" [selected]
+      - option "Kindred gift product"
+      - option "Kindred occasion collection"
+      - option "Page"
+      - option "LetBuyy Core cart"
+      - option "Blog"
+      - option "Article"
+      - option "Policy page"
+      - option "Kindred gift search"
+      - option "Contact"
+      - option "Password"
+      - option "404 Not Found"
+      - option "Login"
+      - option "Order detail"
+      - option "Order history"
+      - option "All collections"
+      - option "Account"
+      - option "Register"
+      - option "Account settings"
+      - option "Wishlist"
+      - option "Addresses"
+  - button "Undo" [disabled]:
+  - button "Redo" [disabled]:
+  - button "Save" [disabled]:
+    - text: Save
+  - button "Publish":
+    - text: Publish
+  - complementary "Theme editor navigation":
+    - heading "Kindred gift discovery" [level=2]
+    - text: v2
+    - tree "Theme sections":
+      - paragraph: Header
+      - treeitem "Announcement Bar Toggle Announcement Bar visibility" [level=1] [selected]:
+        - button "Announcement Bar":
+          - generic: Announcement Bar
+        - button "Toggle Announcement Bar visibility" [pressed]:
+      - treeitem "Header" [level=1]:
+        - button "Header":
+          - generic: Header
+      - paragraph: Template
+      - group "Template sections":
+        - treeitem "Gift discovery opening" [level=1]:
+          - button "Gift discovery opening":
+            - generic: Gift discovery opening
+        - treeitem "Occasion collections" [level=1]:
+          - button "Occasion collections":
+            - generic: Occasion collections
+        - treeitem "Curated gift gallery" [level=1]:
+          - button "Curated gift gallery":
+            - generic: Curated gift gallery
+        - treeitem "Packaging and contents editorial" [level=1]:
+          - button "Packaging and contents editorial":
+            - generic: Packaging and contents editorial
+        - treeitem "Gift help and merchant policies" [level=1]:
+          - button "Gift help and merchant policies":
+            - generic: Gift help and merchant policies
+      - combobox:
+        - option "Marquee" [selected]
+        - option "404 Not Found"
+        - option "Spotlight"
+        - option "Gift search"
+        - option "Video Hero"
+        - option "Call to Action"
+        - option "Gift discovery opening"
+        - option "Blog Listing"
+        - option "Cart"
+        - option "Contact Form"
+        - option "Page Content"
+        - option "Curated gift gallery"
+        - option "Rich Content"
+        - option "Testimonials"
+        - option "Gift help and merchant policies"
+        - option "Packaging and contents editorial"
+        - option "Brand Marquee"
+        - option "Occasion collections"
+        - option "FAQ Accordion"
+        - option "Password Gate"
+        - option "Services Grid"
+        - option "App Block Slot"
+        - option "Customer Login"
+        - option "Policy Content"
+        - option "Portfolio Grid"
+        - option "Product Detail"
+        - option "Skills Section"
+        - option "Article Content"
+        - option "Banner Carousel"
+        - option "Order History"
+        - option "Announcement Bar"
+        - option "Customer Account"
+        - option "Collection Banner"
+        - option "Occasion, recipient and budget"
+        - option "Customer Register"
+        - option "Account Settings"
+        - option "Wishlist"
+        - option "Independent related gifts"
+        - option "Newsletter Signup"
+        - option "Addresses"
+        - option "Experience Timeline"
+        - option "Order Detail"
+        - option "Gift results"
+      - button "Add":
+        - text: Add
+      - paragraph: Footer
+      - treeitem "Footer" [level=1]:
+        - button "Footer":
+          - generic: Footer
+  - region "Live theme preview":
+    - strong: Live preview
+    - generic: syn-threadline-ui-ae3f0477.localhost - 1440px
+    - group "Preview device":
+      - button "Desktop" [pressed]:
+        - text: Desktop
+      - button "Tablet":
+        - text: Tablet
+      - button "Mobile":
+        - text: Mobile
+    - generic: syn-threadline-ui-ae3f0477.localhost
+    - button "Inspect preview" [pressed]:
+      - text: Inspect
+    - iframe
+  - complementary "Theme properties":
+    - paragraph: Selected section
+    - heading "Announcement Bar" [level=2]
+    - group "Smart defaults":
+      - generic "Smart defaults"
+    - generic: Message
+    - textbox "Message": Kindred Runtime07 A — thoughtful gifts, clearly described
+    - generic: Link URL
+    - textbox "Link URL":
+      - /placeholder: https://…
+    - generic: Link label
+    - textbox "Link label"
+    - paragraph: Blocks
+- alert

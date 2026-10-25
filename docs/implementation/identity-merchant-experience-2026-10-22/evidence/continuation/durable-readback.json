@@ -1,0 +1,8 @@
+{
+  "classification": "read-only SQL readback of normal browser mutations; not a replacement for authorization tests",
+  "checks": {
+    "settingsTaglineRestored": true,
+    "draftCount": 1
+  },
+  "fixture": "Existing synthetic account-owned store; no seed/reset, source account identifiers omitted"
+}

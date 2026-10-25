@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-23T17:22:59.369840+00:00",
+  "classification": "READ_ONLY_OS_CERTIFICATE_TRUST_CHECK_NOT_BROWSER_ACCEPTANCE",
+  "publicLeaf": "/private/tmp/letbuyy-owned-checkout-manual-501/cert.pem",
+  "privateKeyRead": false,
+  "trustSettingsChangedHere": false,
+  "browserStarted": false,
+  "runtimeStarted": false,
+  "currentFixtureHttpsAccepted": false,
+  "status": "OWNER_TRUST_SETUP_NOT_YET_VERIFIED",
+  "osTrustVerified": false,
+  "verifyCommand": [
+    "/usr/bin/security",
+    "verify-cert",
+    "-c",
+    "/private/tmp/letbuyy-owned-checkout-manual-501/cert.pem",
+    "-p",
+    "ssl",
+    "-n",
+    "checkout.localhost",
+    "-L",
+    "-q"
+  ],
+  "verifyExitCode": 1,
+  "verifyStdout": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n",
+  "verifyStderr": "",
+  "publicCertificateSha256": "94a3b7f4e9e5bb819ae5560a9e85fcecd5299f9115a1ad2a14acf437ca0f9762",
+  "publicCertificateMode": "0o600",
+  "publicCertificateDetails": "subject= /O=mkcert development certificate/OU=saai_mithra@Saais-MacBook-Pro.local (Saai Siddharth)\nissuer= /O=mkcert development CA/OU=saai_mithra@Saais-MacBook-Pro.local (Saai Siddharth)/CN=mkcert saai_mithra@Saais-MacBook-Pro.local (Saai Siddharth)\nnotBefore=Oct 23 17:21:29 2026 GMT\nnotAfter=Jan 23 17:21:29 2029 GMT\nSHA256 Fingerprint=ED:31:FA:12:CC:B5:9E:65:9D:02:B6:7C:7D:C5:B6:4D:88:90:6A:B3:00:BD:05:FF:F1:99:3F:AD:D0:F6:F3:0B\n",
+  "publicCertificateParseExitCode": 0,
+  "extensions": {
+    "Extended Key Usage": "TLS Web Server Authentication",
+    "Subject Alternative Name": "DNS:checkout.localhost"
+  }
+}

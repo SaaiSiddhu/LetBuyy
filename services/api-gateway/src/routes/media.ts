@@ -7,6 +7,7 @@ import { validate } from '../middleware/validation';
 import { ListMediaQuery } from '../schemas/media.schema';
 import { planSignedR2UploadIntent, type MediaAssetType } from '@letbuyy/infrastructure/storage-adapter';
 import { z } from 'zod';
+import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 
 const router = new Hono<{ Bindings: Env }>();
 type MediaContext = Context<{ Bindings: Env }>;
@@ -198,13 +199,19 @@ router.get('/', validate('query', ListMediaQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    const rows = data || [];
+    const rows = (data || []) as unknown as Array<{ id: string; url: string; created_at: string; [key: string]: unknown }>;
     const pageRows = rows.slice(0, q.limit);
+    const assets = pageRows.length ? await db.from('media_assets').select('public_url,object_key')
+        .eq('site_id', storeId).in('public_url', pageRows.map(row => row.url)).is('deleted_at', null)
+        : { data: [], error: null };
+    if (assets.error) return c.json({ error: { code: 'MEDIA_STORAGE_UNAVAILABLE', message: 'Unable to confirm media storage' } }, 503);
+    const objectKeys = new Map((assets.data || []).map(asset => [asset.public_url, asset.object_key]));
+    const withStorage = pageRows.map(row => ({ ...row, storage_key: objectKeys.get(row.url) || null }));
     const nextCursor = rows.length > q.limit
         ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, 'created_at')
         : null;
 
-    return c.json(cursorPaginated(pageRows, {
+    return c.json(cursorPaginated(withStorage, {
         page: q.page,
         limit: q.limit,
         total: q.withCount ? count || 0 : undefined,
@@ -333,7 +340,7 @@ router.post('/', async (c) => {
     }
 
     const mediaRow = data as { id: string; url?: string | null };
-    const objectKey = body.object_key || body.storage_path || objectKeyFromMediaUrl(mediaRow.url || body.url) || `${body.store_id}/${body.filename}`;
+    const objectKey = body.storage_key || body.object_key || body.storage_path || objectKeyFromMediaUrl(mediaRow.url || body.url) || `${body.store_id}/${body.filename}`;
     const asset = await recordProcessedMediaAsset(db, {
         siteId: body.store_id,
         filename: body.filename,
@@ -355,7 +362,7 @@ router.post('/', async (c) => {
         sizeBytes: body.size_bytes || 0,
     });
 
-    return c.json(success({ ...mediaRow, asset }), 201);
+    return c.json(success({ ...mediaRow, storage_key: objectKey, asset }), 201);
 });
 
 // PATCH /media/:id — Update media metadata
@@ -364,12 +371,13 @@ router.patch('/:id', async (c) => {
     const mediaId = c.req.param('id');
     const body = await c.req.json();
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('media')
         .select('store_id')
-        .eq('id', mediaId)
+        .eq('id', mediaId).in('store_id', storeIds)
         .single();
 
     const ownedMedia = existing as MediaOwnerRow | null;
@@ -390,7 +398,7 @@ router.patch('/:id', async (c) => {
     const { data, error } = await db
         .from('media')
         .update(updates)
-        .eq('id', mediaId)
+        .eq('id', mediaId).in('store_id', storeIds)
         .select()
         .single();
 
@@ -406,12 +414,13 @@ router.delete('/:id', async (c) => {
     const auth = c.get('auth');
     const mediaId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('media')
         .select('store_id, url')
-        .eq('id', mediaId)
+        .eq('id', mediaId).in('store_id', storeIds)
         .single();
 
     const ownedMedia = existing as MediaOwnerRow | null;
@@ -420,7 +429,7 @@ router.delete('/:id', async (c) => {
     }
 
     // Delete from database
-    const { error } = await db.from('media').delete().eq('id', mediaId);
+    const { error } = await db.from('media').delete().eq('id', mediaId).in('store_id', storeIds);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

@@ -1,0 +1,212 @@
+{
+  "recordedAt": "2026-10-25T03:57:01.487105+00:00",
+  "status": "SEALED_UNAPPLIED_HARNESS02_FIVE_P1_SOURCE_REPAIRS_NO_RESTORE_ADMISSION",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "privateRoot": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02",
+  "sourceContext": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeSha256": "c6559ed91cf2e48578fa1be36780a947773d3b660e5225301459a9168e11dd83",
+      "mutable": true,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "2960af9b57479eb9365ad3962239a44c406ab7d216d1e0f99d6357542f023f34",
+      "MainBeforeSha256": "e537a426bf0284a32d49728f31ea55d5d265f1dc5562ccb527a36c55eaaa0db7",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/owned-database-provision.mjs"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "beforeSha256": "e0e3f90a1555033ff2a01b60b71dfcc0df64e5cf170ee0c391cdede617764716",
+      "mutable": true,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "313e71fee08a772d3a15cb58db636c37ad501aedca0d15ed57ff4d4548f46662",
+      "MainBeforeSha256": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/run-executable-suites.mjs"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "beforeSha256": "099fbb429a40bef9d241ce7d66ef27d7abcd5071591cecb60db9d7135a485f74",
+      "mutable": false,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "099fbb429a40bef9d241ce7d66ef27d7abcd5071591cecb60db9d7135a485f74",
+      "MainBeforeSha256": "bbcdc3c02d382a8c7bf2ddca24dc5996d42495dde26e6722df28984cb83b7c74",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts"
+    },
+    {
+      "path": "scripts/governance/owned-next-production.mjs",
+      "beforeSha256": "d3a66eea5fff23d6815e020fe077f7fc1dacc673f1f4202f44fb42293d9f66bc",
+      "mutable": false,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "d3a66eea5fff23d6815e020fe077f7fc1dacc673f1f4202f44fb42293d9f66bc",
+      "MainBeforeSha256": "faca5a456437e6bc0979530cd28e712ad002d880e357215f2334aed7e5e68772",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/owned-next-production.mjs"
+    },
+    {
+      "path": "tests/owned-db/theme-completion-razorpay-browser.manual.ts",
+      "beforeSha256": "6db8685012ecceb81df4b2001bbb986c857c612e496621591c6504520c17478d",
+      "mutable": false,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "6db8685012ecceb81df4b2001bbb986c857c612e496621591c6504520c17478d",
+      "MainBeforeSha256": "2638469fe0f20eaa96d09bff79993ec1d945bcffb28288cc70b887a520d4c82b",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/tests/owned-db/theme-completion-razorpay-browser.manual.ts"
+    },
+    {
+      "path": "tests/governance/owned-preserved-runtime.test.mjs",
+      "beforeSha256": "dfd32dc358386020b0fa7607159f85119ba8718b912e1f010654a856a4ee0905",
+      "mutable": true,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "bf5e6594e7c2d96a52748e2a2651ddc7a3da1028ef2677a66e9b5dd88f6a1540",
+      "MainBeforeSha256": null,
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/tests/governance/owned-preserved-runtime.test.mjs"
+    },
+    {
+      "path": "tests/governance/owned-prebuilt-client.test.mjs",
+      "beforeSha256": "2a34295f4bedea4ab6694c8db86c3208a79cd36253aa8f5ec4d873db0235920c",
+      "mutable": false,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "2a34295f4bedea4ab6694c8db86c3208a79cd36253aa8f5ec4d873db0235920c",
+      "MainBeforeSha256": null,
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/tests/governance/owned-prebuilt-client.test.mjs"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/preserved-theme-runtime-restore-qualification.manual.ts",
+      "beforeSha256": "3c2a385b080d992569cce918d3d4f8c406d1fafd0a3d20b15fc03e2f21e96ca0",
+      "mutable": true,
+      "source": "Exactsealed01; existingMainpreimage preserved separately",
+      "afterSha256": "c1cfcf575fd1fff31da18d787c2753f79cb29ded1a799a5e5eb3406e32050e7d",
+      "MainBeforeSha256": null,
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/services/api-gateway/src/__tests__/owned-db/preserved-theme-runtime-restore-qualification.manual.ts"
+    },
+    {
+      "path": "scripts/governance/executable-pg-fixture.mjs",
+      "beforeSha256": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+      "mutable": true,
+      "source": "ActualcurrentMain beforehash; immutablecopybase only",
+      "afterSha256": "87ec35378879a1c0072e4b7f025d4be12a621c65e1938fc471108cc6c5af6fdc",
+      "MainBeforeSha256": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/executable-pg-fixture.mjs"
+    },
+    {
+      "path": "tests/governance/executable-reaper-selection.test.mjs",
+      "beforeSha256": "504f5cda8dd643977323271cd7b59186cc1033e2f24a0c9b70cbb1b5b71af671",
+      "mutable": true,
+      "source": "ActualcurrentMain beforehash; immutablecopybase only",
+      "afterSha256": "6f4acb030b76bd9029b3296a5eac0c26b6c43f62736476ad9ef49df828dc9dab",
+      "MainBeforeSha256": "504f5cda8dd643977323271cd7b59186cc1033e2f24a0c9b70cbb1b5b71af671",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/tests/governance/executable-reaper-selection.test.mjs"
+    }
+  ],
+  "sixMutableChanged": 6,
+  "fourFrozenUnchanged": 4,
+  "fourOrdinaryReadOnlyUnchanged": 4,
+  "grants": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_RUNTIME07_PRIVATE_HARNESS_AMENDMENT_02.json",
+      "sha256": "a50a293fda94ed46c9d95064857adce06985083a93cf4ff0f2cad562269886fa"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_HARNESS02_SOURCE_CONTINUATION_03.json",
+      "sha256": "881682ed500a314d40198ebb1296f8d84e5f24a0958e631d464187aa3f7053f7"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_HARNESS02_INTERNAL_TRIGGER_ADDENDUM_01.json",
+      "sha256": "15e524e2fb9c523145b22ea7e9d097bb7e7f12bcad124e9a572eaef2beda99bf"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/PRESERVED_HARNESS02_ROLE_SETTINGS_ADDENDUM_02.json",
+      "sha256": "b6ecc39cea0211e6a26ea4b76775024ca260c834cf6c9b28b7dbdb9524bc96c8"
+    }
+  ],
+  "evidencePins": [
+    {
+      "path": "FAILURE_AND_REUSE_HISTORY.json",
+      "sha256": "5a6ce6af943c92f3a1393091918f42a9340a7b24427e83375c74d432f15d963e",
+      "bytes": 1180
+    },
+    {
+      "path": "MATERIALIZATION02.json",
+      "sha256": "a7ead97f35c59db482e3b51a1a2d07b5fc2430eb7144e1aa9e8600567b891fd3",
+      "bytes": 1721765
+    },
+    {
+      "path": "RESTORE_AND_ORIGINAL210_RECOVERY_PLAN.json",
+      "sha256": "23b7053b475987b1dcb86928077be8a4c0b99dee877ed6fb0e86ba36330548fa",
+      "bytes": 5736
+    },
+    {
+      "path": "SCOPE_PROOF.json",
+      "sha256": "86235daefdfd005dd929ff39e8a4b13648c07cccd0e9170f2e14c1afcc57c728",
+      "bytes": 6716
+    },
+    {
+      "path": "UNAPPLIED.patch",
+      "sha256": "fc2af65abdbe243e557a6d7e512876a225b3ffd4dcd436093e689fbb8b5db28a",
+      "bytes": 150927
+    },
+    {
+      "path": "checkpoint-sequence-final.tap",
+      "sha256": "a40e2ca90c7ae5c92fdc5528dc4499333f2f608becd0396f348c145a1b15b609",
+      "bytes": 1136
+    },
+    {
+      "path": "checkpoint-sequence-first.tap",
+      "sha256": "3f79009bb0216f0eead50b3f75c180855277def16c193d8d3e2229c000b6b3ed",
+      "bytes": 1132
+    },
+    {
+      "path": "checkpoint-sequence-second.tap",
+      "sha256": "3692e322b3e43b7314ac734203b36026e363efaef0cf594cf53aeef3d03f82d5",
+      "bytes": 1136
+    },
+    {
+      "path": "fixture-types-02.json",
+      "sha256": "1c19d6ea0e37e38cfa96455127ba6a513ca5e3b4ce382ef30d6dee3edd527da8",
+      "bytes": 148
+    },
+    {
+      "path": "fixture-types-final.json",
+      "sha256": "1c19d6ea0e37e38cfa96455127ba6a513ca5e3b4ce382ef30d6dee3edd527da8",
+      "bytes": 148
+    },
+    {
+      "path": "reaper-final.tap",
+      "sha256": "5c6a9a0f59a70d87af04258c8efc5643d8c171ace50abfec3a2689ce8f5493f0",
+      "bytes": 1489
+    },
+    {
+      "path": "reaper-first.tap",
+      "sha256": "7d1f029947aff14d5749e2be741c4ad429545559a7a68ade58f32fade80e535a",
+      "bytes": 1493
+    },
+    {
+      "path": "role-parent-focused.tap",
+      "sha256": "ad3c5cebc9090d2f50f0b625c597691b4fe9df58561fa611dcdacccc0c1dcd38",
+      "bytes": 694
+    },
+    {
+      "path": "runtime-role-final.tap",
+      "sha256": "6776d146f724193c510535b39fe25b1fa0823c4e972b40ea9d3e6debc1ee744f",
+      "bytes": 2879
+    },
+    {
+      "path": "runtime-trigger-final.tap",
+      "sha256": "58bd76f0162466662989713e98672784ef4723fbca4704f7e79fa5a72784b514",
+      "bytes": 2597
+    }
+  ],
+  "validation": {
+    "runtimePureCases": 11,
+    "runtimeFail": 0,
+    "reaperSelectedCases": 5,
+    "reaperFail": 0,
+    "additionalParentRoleFocusedCases": 2,
+    "overlap": "Focused2 overlap11; reused unchanged old prebuilt/source evidence, no additive test claim.",
+    "compilerCurrent": "fixture-types-final.json:0actual/0introduced/0outsidebusinessleaks; prior five baseline diagnostics and intermediate failed context retained in frozen01 TYPECHECK_HISTORY.",
+    "syntax": "Three changed MJS files node --check passed; no whole build or actual PostgreSQL parser/restore credit.",
+    "nativeQualifier": "CASE SOURCE ONLY, six subtests under existing manual wrapper; NOT_RUN"
+  },
+  "sourceGrantEnds": "FIRST02SEAL_NOW; no further source mutation without new allocation",
+  "MainCandidateOld01Edits": 0,
+  "actualArchiveStateEnvKeyReadsOrKeygenDockerDBBuildNetworkBrowserProvider": 0,
+  "fullThemeCertified": false,
+  "next": "Independent review of5P1repairs and separate actual permission; no fourth PG cohort, old PID adoption/relabel/SIGCONT or fabricated witness. See minimal original210 plan, no artificial all211/performance gates."
+}

@@ -1,0 +1,219 @@
+{
+  "target": "main-leaf",
+  "key": "customers/order",
+  "bundleSha256": "23160a3c630a49e141de3da2b38bab49e157499d6ca95948f7bf92ad1b439e08",
+  "context": {
+    "shop": {
+      "name": "Synthetic Threadline"
+    },
+    "product": {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "title": "Synthetic linen shirt",
+      "price": 2490,
+      "currency": "INR",
+      "url": "/product/synthetic-shirt",
+      "available": true,
+      "images": [],
+      "options": [
+        {
+          "name": "Size",
+          "values": [
+            "M"
+          ]
+        }
+      ],
+      "variants": [],
+      "apparel": {
+        "fit": "Relaxed fit",
+        "unit": "cm",
+        "fabric": "Linen",
+        "care": "Cold wash",
+        "measurements": []
+      }
+    },
+    "collections": [
+      {
+        "id": "44444444-4444-4444-8444-444444444444",
+        "title": "Dresses",
+        "handle": "dresses"
+      }
+    ],
+    "collection": {
+      "title": "Dresses",
+      "products": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "title": "Synthetic linen shirt",
+          "price": 2490,
+          "currency": "INR",
+          "url": "/product/synthetic-shirt",
+          "available": true,
+          "images": [],
+          "options": [
+            {
+              "name": "Size",
+              "values": [
+                "M"
+              ]
+            }
+          ],
+          "variants": [],
+          "apparel": {
+            "fit": "Relaxed fit",
+            "unit": "cm",
+            "fabric": "Linen",
+            "care": "Cold wash",
+            "measurements": []
+          }
+        }
+      ]
+    },
+    "buyer": null,
+    "order": {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "number": "1042",
+      "status": "pending",
+      "currency": "INR",
+      "total": 249000,
+      "tax_total": 0,
+      "line_items": [
+        {
+          "title": "Synthetic linen shirt",
+          "quantity": 1,
+          "line_price": 249000
+        }
+      ],
+      "timeline": [
+        {
+          "label": "Pending",
+          "reached": true
+        }
+      ]
+    },
+    "buyer_unavailable": false,
+    "section_products": {
+      "sense-productGrid-index": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "title": "Synthetic linen shirt",
+          "price": 2490,
+          "currency": "INR",
+          "url": "/product/synthetic-shirt",
+          "available": true,
+          "images": [],
+          "options": [
+            {
+              "name": "Size",
+              "values": [
+                "M"
+              ]
+            }
+          ],
+          "variants": [],
+          "apparel": {
+            "fit": "Relaxed fit",
+            "unit": "cm",
+            "fabric": "Linen",
+            "care": "Cold wash",
+            "measurements": []
+          }
+        }
+      ],
+      "sense-featuredProducts-index": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "title": "Synthetic linen shirt",
+          "price": 2490,
+          "currency": "INR",
+          "url": "/product/synthetic-shirt",
+          "available": true,
+          "images": [],
+          "options": [
+            {
+              "name": "Size",
+              "values": [
+                "M"
+              ]
+            }
+          ],
+          "variants": [],
+          "apparel": {
+            "fit": "Relaxed fit",
+            "unit": "cm",
+            "fabric": "Linen",
+            "care": "Cold wash",
+            "measurements": []
+          }
+        }
+      ],
+      "sense-productGrid-collection": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "title": "Synthetic linen shirt",
+          "price": 2490,
+          "currency": "INR",
+          "url": "/product/synthetic-shirt",
+          "available": true,
+          "images": [],
+          "options": [
+            {
+              "name": "Size",
+              "values": [
+                "M"
+              ]
+            }
+          ],
+          "variants": [],
+          "apparel": {
+            "fit": "Relaxed fit",
+            "unit": "cm",
+            "fabric": "Linen",
+            "care": "Cold wash",
+            "measurements": []
+          }
+        }
+      ],
+      "sense-featuredProducts-product": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "title": "Synthetic linen shirt",
+          "price": 2490,
+          "currency": "INR",
+          "url": "/product/synthetic-shirt",
+          "available": true,
+          "images": [],
+          "options": [
+            {
+              "name": "Size",
+              "values": [
+                "M"
+              ]
+            }
+          ],
+          "variants": [],
+          "apparel": {
+            "fit": "Relaxed fit",
+            "unit": "cm",
+            "fabric": "Linen",
+            "care": "Cold wash",
+            "measurements": []
+          }
+        }
+      ]
+    },
+    "page": {
+      "title": "Synthetic page",
+      "body_html": "<p>Owned content</p>"
+    },
+    "article": {
+      "title": "Synthetic article",
+      "body_html": "<p>Owned article</p>"
+    },
+    "blog": {
+      "articles": []
+    }
+  },
+  "status": "rendered",
+  "warnings": [],
+  "htmlSha256": "df7c46af501fb1f0171df8555988926801aa625d7a6c3c6dc73a1c4e8636a74f"
+}

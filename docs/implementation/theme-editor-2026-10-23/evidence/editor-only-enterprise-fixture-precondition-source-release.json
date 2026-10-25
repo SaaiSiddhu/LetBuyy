@@ -1,0 +1,84 @@
+{
+  "recordedAt": "2026-10-23T17:29:40.464678+00:00",
+  "classification": "SOURCE_RELEASED_FOR_NEXT_CONTROLLED_EDITOR_FIXTURE_NOT_RUNTIME_ACCEPTANCE",
+  "source": {
+    "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+    "beforeSha256": "3cd5e06a69fe97d6094a0b5dda168b7a67908ba975166008f9638b1e42eae445",
+    "afterSha256": "8a58c5d250239434ab52cd63540e8d9ba1160c26df75168fc5b82ba207c24910",
+    "exactReviewedPatchApplied": true,
+    "allOtherBytesPreservedAgainstReviewedExpectedHash": true
+  },
+  "rootSourceLease": "Only reviewed Editor-only Enterprise startup precondition after LATEST19 freeze closed",
+  "validation": {
+    "focused": {
+      "command": "node --import tsx --test services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "log": "editor-only-enterprise-fixture-focused-node.tap"
+    },
+    "gatewayNoEmit": {
+      "exitCode": 0,
+      "log": "editor-only-enterprise-fixture-typecheck.log"
+    },
+    "diffCheckExitCode": 0,
+    "firstLaunch": {
+      "command": "pnpm exec tsx --test [same two files]",
+      "status": "ENVIRONMENT_LAUNCH_REFUSAL_EPRem_IPC_NO_TEST_EXECUTED",
+      "log": "editor-only-enterprise-fixture-focused.tap"
+    }
+  },
+  "scope": {
+    "profile": "editor only",
+    "syntheticOwnerAndSiteAssertion": true,
+    "eligibleExistingSubscriptionRefused": true,
+    "oneEnterpriseSubscription": true,
+    "paymentOperation": false,
+    "planOrLimitOrDefaultQaMutation": false,
+    "current9cdMutation": false
+  },
+  "runtimeQualification": "NOT_RUN; next Editor fixture must execute branch/read canonical allowance and actual normal ten-theme installation; these focused tests do not prove subscription SQL executed",
+  "nextManifestRequired": [
+    "localTestEntitlement.plan=enterprise",
+    "localTestEntitlement.paymentOperation=false",
+    "actualCanonicalAllowanceReadback",
+    "syntheticUserSiteBinding",
+    "actualSubscriptionId",
+    "notPaidUpgradeAcceptance"
+  ],
+  "uiSafeCheckpoint": {
+    "oldRunId": "9cd50e893016",
+    "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+    "sourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+    "sixTemplateCycles": [
+      "Dewdrop",
+      "Pantry",
+      "Habitat",
+      "Circuit",
+      "Playfield",
+      "Kindred"
+    ],
+    "exactOriginalTwoPinkRestored": true,
+    "orders": 0,
+    "currentPublicTheme": "Kindred saved heading B",
+    "allOldTabsDraftsEvidenceRetained": true,
+    "soleUi": "PAUSED_SAFE_FOR_CONTROLLED_CORRECTED_CANDIDATE",
+    "runnerSessionRetained": 1337,
+    "noRuntimeCleanupOrStartup": true
+  },
+  "artifacts": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/editor-only-enterprise-fixture-focused-node.tap",
+      "sha256": "6679335b948a5574d1e440ef89100d4a7e8f651b9b73a47e0922295da99d6411"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/editor-only-enterprise-fixture-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/editor-only-enterprise-fixture-precondition.proposed.patch",
+      "sha256": "218c14e38e7e79b86d9b72d04933687aa730f5a0fbc2476f33a0f02ca8601278"
+    }
+  ]
+}

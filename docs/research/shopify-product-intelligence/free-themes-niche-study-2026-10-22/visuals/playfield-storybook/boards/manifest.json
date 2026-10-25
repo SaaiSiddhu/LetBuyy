@@ -1,0 +1,122 @@
+[
+  {
+    "file": "boards/01-home-top.png",
+    "width": 2235,
+    "height": 1241,
+    "sha256": "90b9b65bdace1282495b908321106a2a276a89769272bc22e6d7df3cd79db98b",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/02-home-bottom.png",
+    "width": 2235,
+    "height": 3198,
+    "sha256": "21621850fd182f3d16fa7a4c0ddfc8de5a490e59ed775ed00d9fc42d7b8b46f9",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/03-collection.png",
+    "width": 2235,
+    "height": 2728,
+    "sha256": "f9e9e10a8242817de7152b93f4321efe2a85a4b41a3f66669fb34710e57571ac",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/04-product-main.png",
+    "width": 2235,
+    "height": 1896,
+    "sha256": "f5bdfea03c47070d4245853c2f9e1f9844be00d1a550dcfd26e7ab534b2716e4",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/05-product-contents.png",
+    "width": 2235,
+    "height": 2533,
+    "sha256": "ee689bf3f72243f0c218b368f2c8ea7d2f16d09d3e96252df5183cedf7ed4435",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/06-product-continuation.png",
+    "width": 2235,
+    "height": 2642,
+    "sha256": "327bed20d2446a14b4065f3f766dc3fd94b7c200250c68c1782500b0e3282eeb",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/07-cart.png",
+    "width": 2235,
+    "height": 1643,
+    "sha256": "07faa6005bf992367d2fc3895bc8395bdc5ade86bccbc44cd8db09e5b5863025",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/08-checkout-address.png",
+    "width": 2235,
+    "height": 1715,
+    "sha256": "7b68ee2a9362c7dade9d1b0fe6aa070d25ddbd036b0c41fb2c6f5c095882c6c2",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/09-checkout-review.png",
+    "width": 2235,
+    "height": 1532,
+    "sha256": "5d362dcc243683c1669cdf1dabf5fa95c4b4cdfec187fe0d2df8f0676448439e",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/10-sign-in.png",
+    "width": 2235,
+    "height": 1042,
+    "sha256": "72da4ec69cc7cc39b1ec1e24ddcb9af8d1eb1dfb5ffd86ccc3d371a7347d5019",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/11-sign-up.png",
+    "width": 2235,
+    "height": 1293,
+    "sha256": "1dbd513e106a4c15c5c77c3db64d8553803520dfb643ccd6f56d58a57f37d123",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/12-profile.png",
+    "width": 2235,
+    "height": 1738,
+    "sha256": "44cc56254fd443d397e4f2c6effddecfc98151c24b2f9ff8f1dafc8f43c1c97e",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/13-orders.png",
+    "width": 2235,
+    "height": 1582,
+    "sha256": "1d3a41961ad6b4ca0cf4aefd8a51f593229532b39af068ac904cd666ec6508e5",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/14-order-detail.png",
+    "width": 2235,
+    "height": 2087,
+    "sha256": "c6fde9dee2c86f11219b9b6a498d45e8f617b48586336921ce3d7af9d201d081",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  },
+  {
+    "file": "boards/15-addresses.png",
+    "width": 2235,
+    "height": 1879,
+    "sha256": "53fd6822a4cc2c37833571fdad0c853b3a31a5679f3b70b69a88a4c5bf63d497",
+    "scale": 0.8,
+    "role": "Additional comparison board; individual device PNGs are unscaled captures"
+  }
+]

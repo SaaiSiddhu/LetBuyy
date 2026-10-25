@@ -312,12 +312,15 @@ class StoreAuthService extends ChangeNotifier {
         );
   }
 
-  Future<void> resetPassword(String email) async {
+  Future<void> resetPassword(String email, {String? turnstileToken}) async {
     final csrf = await _fetchCsrfCookie();
     final response = await _postIdentityJson(
       '/api/auth/send-reset',
       csrf: csrf,
-      body: {'email': email.trim().toLowerCase()},
+      body: {
+        'email': email.trim().toLowerCase(),
+        'turnstileToken': await _requireTurnstileToken(turnstileToken),
+      },
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(_errorMessage(response, 'Unable to send reset email'));
@@ -330,7 +333,14 @@ class StoreAuthService extends ChangeNotifier {
     );
   }
 
+  Future<void> Function()? beforeSignOut;
+
   Future<void> signOut() async {
+    try {
+      await beforeSignOut?.call();
+    } catch (_) {
+      debugPrint('Notification cleanup unavailable during sign-out.');
+    }
     final token = _session?.token;
     if (token != null && token.isNotEmpty) {
       try {

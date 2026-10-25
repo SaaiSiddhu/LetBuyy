@@ -40,6 +40,7 @@ export const ignoredDirectoryNames = new Set([
   ".analysis",
   ".tmp",
   "node_modules",
+  "storybook-static",
   ".next",
   ".turbo",
   ".dart_tool",
@@ -286,7 +287,7 @@ export const deprecatedTrackedPrefixes = [
 ];
 
 export const generatedArtifactPattern =
-  /(^|\/)(\.next(?:-session-runtime-[a-zA-Z0-9-]+)?|dist|build|coverage|\.turbo|\.cache|node_modules|\.dart_tool|\.wrangler|\.vercel|Pods|\.symlinks)(\/|$)|(^|\/)tsconfig\.tsbuildinfo$|\.tsbuildinfo$|(^|\/)\.DS_Store$|\.dill$|\.track\.dill$|\.apk$|\.aab$|\.ipa$|\.tar\.zst$/;
+  /(^|\/)(\.next(?:-session-runtime-[a-zA-Z0-9-]+)?|storybook-static|dist|build|coverage|\.turbo|\.cache|node_modules|\.dart_tool|\.wrangler|\.vercel|Pods|\.symlinks)(\/|$)|(^|\/)tsconfig\.tsbuildinfo$|\.tsbuildinfo$|(^|\/)\.DS_Store$|\.dill$|\.track\.dill$|\.apk$|\.aab$|\.ipa$|\.tar\.zst$/;
 
 export const debugArtifactPattern =
   /(^|\/)(firebase-debug|firestore-debug|ui-debug|storage-debug|pubsub-debug)\.log$|(^|\/)[^/]*debug[^/]*\.log$|\.trace(\.json)?$|^docs\/architecture\/validation(\/|$)/;
@@ -408,6 +409,8 @@ export function listWorkspaceDirectories(startDirs = [
   return directories.sort();
 }
 
+// Storybook static exports are ignored delivery output, not runtime caches to delete.
+// They remain excluded from source scans and forbidden in the tracked-file validator.
 export function listLocalArtifactDirectories(startDirs = ["apps", "packages", "services"]) {
   const artifactDirectoryNames = new Set([
     "node_modules",

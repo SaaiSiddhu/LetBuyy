@@ -1,0 +1,102 @@
+{
+  "createdAt": "2026-10-23T09:37:20.975458+00:00",
+  "classification": "SOURCE_TRANSPORT_PROJECTION_LIQUID_FORMDATA_ONLY_NOT_SQL_BROWSER_OR_INSTALLED_ACCEPTANCE",
+  "lease": "RELEASED_TO_THEMES_COORDINATOR",
+  "canonicalContractRelease": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/measurement390/source-release.json",
+  "canonicalSourceHashes": {
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "packages/commerce-core/test/storefront-discovery.test.ts": "21e36c3e88b80400907d492ea449ebcdd0d49d4390d9dbcd12de454ea9cb0f63",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "services/api-gateway/src/__tests__/storefront-discovery.test.ts": "fe138aed7ca8e8b924b569366c9d187d702b131e904e6e1fb3429418bd514b82"
+  },
+  "source": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "beforeSha256": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863",
+      "sha256": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery-frontend.test.tsx",
+      "beforeSha256": "9dc59daa7073b5ba2dd2a72a10971387ff6a6636e03f1db904160a97231622ba",
+      "sha256": "a5284f4407c5273ce23811bdf66390f5fa74818bbca4f40e43673c618a37f7a5"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "beforeSha256": "1c32fd22424a209556694e1f34748ab49b9f95875dcd34389a9e512c4638e14d",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+    },
+    {
+      "path": "packages/theme-engine/test/trailmark.test.ts",
+      "beforeSha256": "6e4c8d4dbe813ea00637c2059e3595f80ca93162337353c9ff56c316001a0477",
+      "sha256": "1f6f59857460321700791d15b8ed03a9bea953473328fabf8b1031397b3c14b3"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts",
+      "beforeSha256": "ce730c621dcd576211c27c4ed2d454ef33db26b395164dcc2800ab568e45ca1f",
+      "sha256": "28add4679ffdc46d98cb37bc380089dbf016bc60b96679ba0b72dc22d5970d92"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/measurement390/source-probe.mjs",
+      "sha256": "8e37dc207dd949d648526fe78e1a7079e45f537f0d89dff5b4f89bc10dce2393",
+      "new": true
+    }
+  ],
+  "bundleSha256": "127a261320b208ec845277abe51c176921767934988f98a2ce73188bfa95c224",
+  "contract": [
+    "Canonical whole measurement_capabilities remains optional for old386; present all3 children validated only by the canonical schema.",
+    "Exact admitted object is copied to collection.measurement_capabilities unchanged; absence stays absent. Per-axis leaves remain independent for Habitat.",
+    "Any available measurement leaf with total0 is inconsistent and fails sanitized unavailable; positive-total empty/past-end pages may retain availability.",
+    "Trailmark length form reads equipment_length.available + allowed_units independently of sports categorical facets, old unit facets, current selections or local unit constants.",
+    "Selected zero-result/old-response length pairs remain hidden in Apply/sort and labelled in active chips with paired canonical clear; no chooser or unit capability is inferred."
+  ],
+  "checks": {
+    "frontend": {
+      "pass": 20,
+      "fail": 0,
+      "skip": 0,
+      "newCases": 6,
+      "command": "node --import tsx --test src/lib/theme-engine/storefront-discovery-frontend.test.tsx",
+      "cwd": "apps/commerce/web"
+    },
+    "formsAndTheme": {
+      "forms": 9,
+      "theme": 11,
+      "pass": 20,
+      "fail": 0,
+      "skip": 0,
+      "command": "node --import tsx --test docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts packages/theme-engine/test/trailmark.test.ts"
+    },
+    "fullCommerceNoEmit": {
+      "exitCode": 0,
+      "command": "node_modules/.bin/tsc --noEmit --incremental false -p apps/commerce/web/tsconfig.json"
+    },
+    "focusedFormsFactoryAndTestsNoEmit": {
+      "exitCode": 0,
+      "command": "node_modules/.bin/tsc --noEmit -p docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/typecheck.json"
+    },
+    "actualRegistryEditorJsonWire": {
+      "templates": 21,
+      "failed": 0,
+      "baselineIssues": [],
+      "baselineWireIssues": []
+    }
+  },
+  "testScope": "Actual ProductService and real SDK with synthetic in-process fetch \u2192 real binder/compositor projection \u2192 real Liquid sandbox depth4 \u2192 native JSDOM FormData and canonical parser. No live SQL/candidate witness behavior is certified here.",
+  "frozenOutsideLease": "No ProductService implementation, other commerce routes/binder/compositor, SDK, Core/gateway, SQL, shared index/schema/renderer or other theme source changed by this scope. Circuit released hashes rechecked unchanged.",
+  "earlierCheckpoints": "Original14 frontend,26 adjacent,9 form and frozen visual receipts remain dated checkpoints. Form fixtures now use canonical measurement metadata, not fictitious unit facets. The new20 frontend cohort includes the original14 cases.",
+  "remaining": [
+    "Habitat own per-axis consumer handoff; final combined coordinator consumer/source checks.",
+    "Canonical390 owned-PG same-witness/normalization/tenant/security/rollback/ACL qualification before activation.",
+    "Final389 proposal, installed/published storefront and browser/full lifecycle qualification."
+  ],
+  "notPerformed": [
+    "DB",
+    "build",
+    "browser",
+    "provider",
+    "publish",
+    "push",
+    "merge",
+    "deploy"
+  ]
+}

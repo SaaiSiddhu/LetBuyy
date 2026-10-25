@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-10-23T19:34:51.723774+00:00",
+  "classification": "ACTUAL_VARIANT_ENTER_SAVE_RELOAD_CLEAR_RELOAD_COMPONENT_AUDIT",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "caseId": "P02",
+  "componentStatus": "PASS_SAME_UUID_ENTER_750_CLEAR_TO_UNKNOWN_OTHER_UUID_FACTS_CONSERVED",
+  "fullCaseStatus": "NOT RUN_PENDING_REQUIRED_TITLE_OR_SKU_EDIT_AND_FINAL_OWNER_PACKET",
+  "checks": {
+    "allThreeServerUuidsStable": true,
+    "labelOnlyVariantFoodNullThenExplicit750gThenNull": true,
+    "known250gAnd500gVariantRowsExactlyUnchanged": true,
+    "nativeReloadsAgreeWithReadbacks": true,
+    "originalLentilsWhitelistedDataRestoredExcludingExpectedVersionIncrement": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-common-restored-readback.json",
+      "sha256": "a51259d0a448cb76a80b21d9774a1c36c06d3af18ba2c57d563dcbd383bcb995"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-entered-readback.json",
+      "sha256": "00e938137055d5982d073b9cd28c8f7aec34224dc3e52463e2dc358af237fe8b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-cleared-readback.json",
+      "sha256": "fe8d5b5a912bdaa2c0905132baba34f5b1f47344a40580857cdc5a16f2bd05c7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-temporary-750-reloaded.ax.txt",
+      "sha256": "7930ec75320834b3d510bc2dafc97ed3df4a7aece85e9bf609ea73c6b058c609"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-cleared-reloaded.ax.txt",
+      "sha256": "13ccc22403274694c863fddfe8c821ce640326caa172b0c0150b1ce3e84748d0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-250g-merchant-reloaded.ax.txt",
+      "sha256": "444789450f16e0b19e4291a4bce396d015c83da89257af21f48e6ffdc559d89e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-500g-merchant-reloaded.ax.txt",
+      "sha256": "f7087604da208b45a7b0f40d8cd16d8d1e4ae2610c4918b095687847748ddd4c"
+    }
+  ],
+  "limits": [
+    "Required title/SKU identity-edit branch not yet evidenced. Known rows included in parent save/readback but separate per-row mutation not claimed.",
+    "No actual parent command body captured independently; explicit-clear UI action is owner reported, cleared canonical result and native reload independently audited.",
+    "No full P02 acceptance or P12 credit."
+  ],
+  "sourceChangesByPantry": []
+}

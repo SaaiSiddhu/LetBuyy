@@ -1,0 +1,725 @@
+{
+  "classification": "ACTUAL_MAIN_TOUCHED_SOURCE_ESLINT_EXISTING_COMMERCE_POLICY",
+  "epoch": "before",
+  "counts": {
+    "errors": 4,
+    "warnings": 53
+  },
+  "rows": [
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "errors": 2,
+      "warnings": 0,
+      "messages": [
+        {
+          "ruleId": "@letbuyy/ui/no-hardcoded-hex",
+          "severity": 2,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a hardcoded hex color.",
+          "line": 187,
+          "column": 64,
+          "nodeType": "Literal",
+          "messageId": "hardcodedHex",
+          "endLine": 187,
+          "endColumn": 73
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-hardcoded-hex",
+          "severity": 2,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a hardcoded hex color.",
+          "line": 188,
+          "column": 63,
+          "nodeType": "Literal",
+          "messageId": "hardcodedHex",
+          "endLine": 188,
+          "endColumn": 72
+        }
+      ]
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "errors": 2,
+      "warnings": 0,
+      "messages": [
+        {
+          "ruleId": "@letbuyy/ui/no-hardcoded-hex",
+          "severity": 2,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a hardcoded hex color.",
+          "line": 1411,
+          "column": 24,
+          "nodeType": "Literal",
+          "messageId": "hardcodedHex",
+          "endLine": 1411,
+          "endColumn": 33
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-hardcoded-hex",
+          "severity": 2,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a hardcoded hex color.",
+          "line": 1412,
+          "column": 23,
+          "nodeType": "Literal",
+          "messageId": "hardcodedHex",
+          "endLine": 1412,
+          "endColumn": 32
+        }
+      ]
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "errors": 0,
+      "warnings": 1,
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 1,
+          "message": "'_source' is defined but never used.",
+          "line": 217,
+          "column": 64,
+          "nodeType": "Identifier",
+          "messageId": "unusedVar",
+          "endLine": 217,
+          "endColumn": 71
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+      "errors": 0,
+      "warnings": 51,
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 1,
+          "message": "'setDeliveryOption' is assigned a value but never used.",
+          "line": 216,
+          "column": 28,
+          "nodeType": "Identifier",
+          "messageId": "unusedVar",
+          "endLine": 216,
+          "endColumn": 45
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-color-functions",
+          "severity": 1,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a raw rgb()/hsl() color.",
+          "line": 249,
+          "column": 26,
+          "nodeType": "Literal",
+          "messageId": "rawColorFunction",
+          "endLine": 249,
+          "endColumn": 59
+        },
+        {
+          "ruleId": "react-hooks/exhaustive-deps",
+          "severity": 1,
+          "message": "React Hook useEffect has a missing dependency: 'checkoutOrigin'. Either include it or remove the dependency array.",
+          "line": 349,
+          "column": 8,
+          "nodeType": "ArrayExpression",
+          "endLine": 349,
+          "endColumn": 107,
+          "suggestions": [
+            {
+              "desc": "Update the dependencies array to be: [subdomain, cartTotal, formData.pincode, formData.state, formData.stateCode, shippingQuoteRevision, checkoutOrigin]",
+              "fix": {
+                "range": [
+                  13661,
+                  13760
+                ],
+                "text": "[subdomain, cartTotal, formData.pincode, formData.state, formData.stateCode, shippingQuoteRevision, checkoutOrigin]"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 1,
+          "message": "'itemCount' is assigned a value but never used.",
+          "line": 359,
+          "column": 11,
+          "nodeType": "Identifier",
+          "messageId": "unusedVar",
+          "endLine": 359,
+          "endColumn": 20
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-color-functions",
+          "severity": 1,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a raw rgb()/hsl() color.",
+          "line": 814,
+          "column": 37,
+          "nodeType": "Literal",
+          "messageId": "rawColorFunction",
+          "endLine": 814,
+          "endColumn": 54
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-color-functions",
+          "severity": 1,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a raw rgb()/hsl() color.",
+          "line": 900,
+          "column": 28,
+          "nodeType": "Literal",
+          "messageId": "rawColorFunction",
+          "endLine": 900,
+          "endColumn": 45
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 945,
+          "column": 35,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 945,
+          "endColumn": 129
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 966,
+          "column": 39,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 966,
+          "endColumn": 94
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-color-functions",
+          "severity": 1,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a raw rgb()/hsl() color.",
+          "line": 1008,
+          "column": 75,
+          "nodeType": "Literal",
+          "messageId": "rawColorFunction",
+          "endLine": 1008,
+          "endColumn": 112
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1018,
+          "column": 40,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1018,
+          "endColumn": 137
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1032,
+          "column": 48,
+          "nodeType": "TemplateElement",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1032,
+          "endColumn": 130
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1042,
+          "column": 131,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1042,
+          "endColumn": 143
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-color-functions",
+          "severity": 1,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a raw rgb()/hsl() color.",
+          "line": 1115,
+          "column": 91,
+          "nodeType": "Literal",
+          "messageId": "rawColorFunction",
+          "endLine": 1115,
+          "endColumn": 124
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1136,
+          "column": 201,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1136,
+          "endColumn": 222
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1140,
+          "column": 82,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1140,
+          "endColumn": 109
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1151,
+          "column": 202,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1151,
+          "endColumn": 223
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1155,
+          "column": 83,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1155,
+          "endColumn": 110
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1167,
+          "column": 198,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1167,
+          "endColumn": 219
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1171,
+          "column": 79,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1171,
+          "endColumn": 106
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-form-controls",
+          "severity": 1,
+          "message": "Use @letbuyy/ui Textarea instead of raw <textarea> to preserve tokens, focus states, labels, and a11y defaults.",
+          "line": 1178,
+          "column": 53,
+          "nodeType": "JSXOpeningElement",
+          "messageId": "rawFormControl",
+          "endLine": 1184,
+          "endColumn": 55,
+          "suggestions": [
+            {
+              "desc": "Replace <textarea> with <Textarea> from @letbuyy/ui.",
+              "fix": {
+                "range": [
+                  57393,
+                  57401
+                ],
+                "text": "Textarea"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1182,
+          "column": 216,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1182,
+          "endColumn": 237
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1186,
+          "column": 81,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1186,
+          "endColumn": 108
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1196,
+          "column": 192,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1196,
+          "endColumn": 213
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1199,
+          "column": 82,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1199,
+          "endColumn": 109
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-form-controls",
+          "severity": 1,
+          "message": "Use @letbuyy/ui Select instead of raw <select> to preserve tokens, focus states, labels, and a11y defaults.",
+          "line": 1203,
+          "column": 53,
+          "nodeType": "JSXOpeningElement",
+          "messageId": "rawFormControl",
+          "endLine": 1212,
+          "endColumn": 54,
+          "suggestions": [
+            {
+              "desc": "Replace <select> with <Select> from @letbuyy/ui.",
+              "fix": {
+                "range": [
+                  59708,
+                  59714
+                ],
+                "text": "Select"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1211,
+          "column": 193,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1211,
+          "endColumn": 214
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1218,
+          "column": 83,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1218,
+          "endColumn": 110
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1229,
+          "column": 195,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1229,
+          "endColumn": 216
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1232,
+          "column": 85,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1232,
+          "endColumn": 112
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1290,
+          "column": 55,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1290,
+          "endColumn": 159
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1366,
+          "column": 187,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1366,
+          "endColumn": 219
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1373,
+          "column": 71,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1373,
+          "endColumn": 90
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1375,
+          "column": 89,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1375,
+          "endColumn": 106
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1384,
+          "column": 253,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1384,
+          "endColumn": 283
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1392,
+          "column": 71,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1392,
+          "endColumn": 89
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1394,
+          "column": 84,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1394,
+          "endColumn": 100
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1406,
+          "column": 68,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1406,
+          "endColumn": 166
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1421,
+          "column": 55,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1421,
+          "endColumn": 186
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-color-functions",
+          "severity": 1,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a raw rgb()/hsl() color.",
+          "line": 1422,
+          "column": 97,
+          "nodeType": "Literal",
+          "messageId": "rawColorFunction",
+          "endLine": 1422,
+          "endColumn": 113
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-raw-color-functions",
+          "severity": 1,
+          "message": "Use a @letbuyy/ui token or --lb-* CSS variable instead of a raw rgb()/hsl() color.",
+          "line": 1422,
+          "column": 116,
+          "nodeType": "Literal",
+          "messageId": "rawColorFunction",
+          "endLine": 1422,
+          "endColumn": 131
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1459,
+          "column": 91,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1459,
+          "endColumn": 119
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1466,
+          "column": 56,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1466,
+          "endColumn": 93
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1483,
+          "column": 56,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1483,
+          "endColumn": 154
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1485,
+          "column": 62,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1485,
+          "endColumn": 100
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1486,
+          "column": 62,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1486,
+          "endColumn": 86
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1495,
+          "column": 59,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1495,
+          "endColumn": 118
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1517,
+          "column": 63,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1517,
+          "endColumn": 147
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1523,
+          "column": 74,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1523,
+          "endColumn": 96
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1531,
+          "column": 74,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1531,
+          "endColumn": 95
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1535,
+          "column": 68,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1535,
+          "endColumn": 88
+        },
+        {
+          "ruleId": "@letbuyy/ui/no-tailwind-default-color",
+          "severity": 1,
+          "message": "Use a token-backed utility (e.g. bg-[var(--lb-color-surface)]) instead of a Tailwind default-palette color class; default-palette colors bypass --lb-* tokens and do not theme.",
+          "line": 1539,
+          "column": 70,
+          "nodeType": "Literal",
+          "messageId": "tailwindDefaultColor",
+          "endLine": 1539,
+          "endColumn": 92
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/orders/route.ts",
+      "errors": 0,
+      "warnings": 1,
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 1,
+          "message": "'VerifiedCartLine' is defined but never used.",
+          "line": 11,
+          "column": 6,
+          "nodeType": "Identifier",
+          "messageId": "unusedVar",
+          "endLine": 11,
+          "endColumn": 22
+        }
+      ]
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    }
+  ]
+}

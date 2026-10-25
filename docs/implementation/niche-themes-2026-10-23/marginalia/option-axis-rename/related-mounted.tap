@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: legacy retained image roles require deliberate current-image review and preserve raw facts
+ok 1 - legacy retained image roles require deliberate current-image review and preserve raw facts
+  ---
+  duration_ms: 1043.280041
+  type: 'test'
+  ...
+# Subtest: legacy retained existing rows require explicit latest review for facts and never invent a known-empty baseline
+ok 2 - legacy retained existing rows require explicit latest review for facts and never invent a known-empty baseline
+  ---
+  duration_ms: 551.808583
+  type: 'test'
+  ...
+# Subtest: normal first Finish value preserves bound Width IDs, sibling facts and commercial fields through save and reload
+ok 3 - normal first Finish value preserves bound Width IDs, sibling facts and commercial fields through save and reload
+  ---
+  duration_ms: 577.389
+  type: 'test'
+  ...
+# Subtest: option rename opens an explicit keyboard dialog before changing the retained variant
+ok 4 - option rename opens an explicit keyboard dialog before changing the retained variant
+  ---
+  duration_ms: 97.600666
+  type: 'test'
+  ...
+# Subtest: option rename sends the same book UUIDs with edited facts, sibling metadata and post-order stock intact
+ok 5 - option rename sends the same book UUIDs with edited facts, sibling metadata and post-order stock intact
+  ---
+  duration_ms: 433.43825
+  type: 'test'
+  ...
+# Subtest: option rename validation, keyboard Save, Escape and Cancel preserve the original draft until committed
+ok 6 - option rename validation, keyboard Save, Escape and Cancel preserve the original draft until committed
+  ---
+  duration_ms: 380.210583
+  type: 'test'
+  ...
+# Subtest: option rename survives draft recovery and preserves immutable retry bytes while a newer rename stays bound to its UUID
+ok 7 - option rename survives draft recovery and preserves immutable retry bytes while a newer rename stays bound to its UUID
+  ---
+  duration_ms: 322.699167
+  type: 'test'
+  ...
+# Subtest: metadata-only editor Save omits stale product and variant stock after server consumption
+ok 8 - metadata-only editor Save omits stale product and variant stock after server consumption
+  ---
+  duration_ms: 71.163208
+  type: 'test'
+  ...
+# Subtest: unsent metadata draft restored after purchase adopts consumed quantities without a stock write
+ok 9 - unsent metadata draft restored after purchase adopts consumed quantities without a stock write
+  ---
+  duration_ms: 142.838459
+  type: 'test'
+  ...
+# Subtest: stale explicit stock draft is kept and blocked until inventory review, without discarding catalogue fields
+ok 10 - stale explicit stock draft is kept and blocked until inventory review, without discarding catalogue fields
+  ---
+  duration_ms: 288.638167
+  type: 'test'
+  ...
+# Subtest: legacy retained inventory requires review and can be deliberately changed to zero through normal controls
+ok 11 - legacy retained inventory requires review and can be deliberately changed to zero through normal controls
+  ---
+  duration_ms: 182.861833
+  type: 'test'
+  ...
+# Subtest: tracking toggle omits unchanged inventory while explicit normal zero controls still write stock
+ok 12 - tracking toggle omits unchanged inventory while explicit normal zero controls still write stock
+  ---
+  duration_ms: 126.591917
+  type: 'test'
+  ...
+# Subtest: lost metadata-only save and remount retry keep exact body and key without reintroducing consumed stock
+ok 13 - lost metadata-only save and remount retry keep exact body and key without reintroducing consumed stock
+  ---
+  duration_ms: 120.109625
+  type: 'test'
+  ...
+# Subtest: pending explicit stock save retries unchanged while a newer reverted quantity remains a deliberate next edit
+ok 14 - pending explicit stock save retries unchanged while a newer reverted quantity remains a deliberate next edit
+  ---
+  duration_ms: 111.223
+  type: 'test'
+  ...
+# Subtest: axis name normal rename keeps shade facts explicit and every UUID/stock through Save and reload
+ok 15 - axis name normal rename keeps shade facts explicit and every UUID/stock through Save and reload
+  ---
+  duration_ms: 303.51275
+  type: 'test'
+  ...
+# Subtest: axis name dialog validation, Cancel, Escape and IME preserve the form before explicit keyboard save
+ok 16 - axis name dialog validation, Cancel, Escape and IME preserve the form before explicit keyboard save
+  ---
+  duration_ms: 311.858166
+  type: 'test'
+  ...
+# Subtest: axis name draft restore and newer rename preserve immutable pending body/key and UUID mapping
+ok 17 - axis name draft restore and newer rename preserve immutable pending body/key and UUID mapping
+  ---
+  duration_ms: 346.631416
+  type: 'test'
+  ...
+# Subtest: axis name modal from an old store cannot change the newly loaded store draft
+ok 18 - axis name modal from an old store cannot change the newly loaded store draft
+  ---
+  duration_ms: 205.724
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8477.542083

@@ -1,0 +1,961 @@
+{
+  "recordedAt": "2026-10-25T00:30:24.902819+00:00",
+  "classification": "CURRENT_ALL26_EVIDENCE_ACCOUNTING_NOT_CERTIFICATION",
+  "authority": "runtime07-20261025/EXPLICIT_RESUME_20261025_02.json",
+  "currentCounts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "PARTIAL": 2,
+    "NOT_RUN": 24
+  },
+  "cases": [
+    {
+      "id": "HI-01",
+      "status": "PARTIAL",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/0",
+      "action": "Bind current source/catalog/tenant/instance/release, normal merchant login and buyer ownership.",
+      "acceptance": "Actual installed Habitat2.0.0 in its assigned fresh store; no alias, old instance or demo preview. Preserve private binding proof and sanitized hashes/UUID aliases.",
+      "evidence": [
+        "runtime07-20261025/ROOT_CURRENT_TEST_APPLICABILITY.json",
+        "runtime07-20261025/EDITOR_STRUCTURAL_REVIEW_20261025_01.json"
+      ],
+      "outstanding": [
+        "Complete actual package/instance/release/source and normal actor/buyer ownership binding receipt; original200/current210 labels remain distinct"
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-02",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/1",
+      "action": "Read the original planned furniture record, then integrate the exact expanded plan and probes through the existing workflow.",
+      "acceptance": "Acknowledged create/edit and readback; one primary DESK identity, actual four variant UUIDs and stock. If data cannot be prepared through that workflow, leave dependent rows unrun; no seed fallback.",
+      "evidence": [],
+      "outstanding": [
+        "Read the original planned furniture record, then integrate the exact expanded plan and probes through the existing workflow."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-03",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/2",
+      "action": "Merchant common and variant facts save/reload; deliberate incomplete unit/value correction in the existing form.",
+      "acceptance": "Canonical validation blocks invalid measurements; valid saves persist exact whole groups/units/options and current version. No null furniture product namespace or accidental copied common overrides.",
+      "evidence": [],
+      "outstanding": [
+        "Merchant common and variant facts save/reload; deliberate incomplete unit/value correction in the existing form."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-04",
+      "status": "PARTIAL",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/3",
+      "action": "Editor's existing save/reload/preview/publishA, editB/publishB/restoreA/draftB/reapply sequence.",
+      "acceptance": "Each acknowledged local release/readback matches selected version/content; anonymous public page cannot show unpublished draft. Rollback cannot lose the saved later draft. No production publication is authorized here.",
+      "evidence": [
+        "runtime07-20261025/ROOT_CURRENT_TEST_APPLICABILITY.json",
+        "runtime07-20261025/EDITOR_STRUCTURAL_REVIEW_20261025_01.json"
+      ],
+      "outstanding": [
+        "PublishB/restoreA/draftB/reapply and all original seven-check isolation/recovery assertions"
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-05",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/4",
+      "action": "Persist real collections; exercise HQ-01/HQ-02 in actual collection/search forms.",
+      "acceptance": "Correct record membership and real normalized facet values with supplied labels; URL/query/response/FormData agree. Category/country/search/limit/sort survive apply.",
+      "evidence": [],
+      "outstanding": [
+        "Persist real collections; exercise HQ-01/HQ-02 in actual collection/search forms."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-06",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/5",
+      "action": "Open DESK without full selection; select only Finish; then unmatched Width48in+FinishBlack.",
+      "acceptance": "Incomplete/unknown state restores common facts and blocks purchase. Unknown combination text is `No variant matches these options. Common product facts are shown.` No first-variant UUID or earlier selected facts leak.",
+      "evidence": [],
+      "outstanding": [
+        "Open DESK without full selection; select only Finish; then unmatched Width48in+FinishBlack."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-07",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/6",
+      "action": "Select A's two actual options and then navigate/reload normally.",
+      "acceptance": "Exact A current facts above, selected UUID, price and enabled valid purchase. Display original inches while discovery comparisons normalize through canonical server facts. No mixed inherited cm within A's groups.",
+      "evidence": [],
+      "outstanding": [
+        "Select A's two actual options and then navigate/reload normally."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-08",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/7",
+      "action": "Select B then D then A.",
+      "acceptance": "Each actual UUID supplies its own resolved facts; D remains width-only. B material/Black care never survives into D/A. Named comparison rows stay scoped to DESK; no another-PDP state leak.",
+      "evidence": [],
+      "outstanding": [
+        "Select B then D then A."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-09",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/8",
+      "action": "Run HQ-03..HQ-07 through actual collection/search URLs/forms.",
+      "acceptance": "Current server witnesses exactly match the query table, no cross-variant conjunction or C fallback. Capture actual response/matching IDs; a local filter or screenshot alone cannot establish result semantics.",
+      "evidence": [],
+      "outstanding": [
+        "Run HQ-03..HQ-07 through actual collection/search URLs/forms."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-10",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/9",
+      "action": "HQ-04 zero result; use each real independent clear link separately; sort/apply with active axes.",
+      "acceptance": "Width/depth/query carriers remain exact; each clear retains the other axis and every unrelated active value, resets page1 and yields the table's real recovery. No capability inferred from selected numeric rows.",
+      "evidence": [],
+      "outstanding": [
+        "HQ-04 zero result; use each real independent clear link separately; sort/apply with active axes."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-11",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/10",
+      "action": "Open probes and actual HQ-08/HQ-09; repeat supported request at a past-end page.",
+      "acceptance": "Real per-axis capability controls independent of categorical facts; honest missing-axis state; positive cohort retains capability off-page. Legacy absence is unsupported, not invented true.",
+      "evidence": [],
+      "outstanding": [
+        "Open probes and actual HQ-08/HQ-09; repeat supported request at a past-end page."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-12",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/11",
+      "action": "Compare A's current package/assembled rows and HQ-05.",
+      "acceptance": "Distinct source groups/units visible. A passes assembled bounds despite larger package width; missing package height stays absent. Common schematic does not masquerade as selected facts or access guarantee.",
+      "evidence": [],
+      "outstanding": [
+        "Compare A's current package/assembled rows and HQ-05."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-13",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/12",
+      "action": "Select unavailable C.",
+      "acceptance": "C's common inherited facts remain visible with `data-lb-variant-facts-state=\"unavailable\"`, C UUID and unavailable status; Add remains disabled. No fake DOM click to bypass stock.",
+      "evidence": [],
+      "outstanding": [
+        "Select unavailable C."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-14",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/13",
+      "action": "Select A, quantity2, Add; inspect canonical cart GET/readback/reload. Then request total quantity5 and restore2.",
+      "acceptance": "Accepted cart line A UUID, unit\u20b98,900, quantity2, subtotal\u20b917,800; server-created frozen furniture snapshot/guard. Overstock returns409 `INSUFFICIENT_INVENTORY`; no committed quantity5/order/reservation or false success. Fresh GET still agrees with valid state; normal retry restores2 before checkout. OOS button is not proof of409 server handling.",
+      "evidence": [],
+      "outstanding": [
+        "Select A, quantity2, Add; inspect canonical cart GET/readback/reload. Then request total quantity5 and restore2."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-15",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/14",
+      "action": "Signed-in buyer follows existing cart Checkout handoff and hosted contact/delivery/COD/confirm UI.",
+      "acceptance": "One **new** local COD order for A count2 acknowledged through canonical path, same ID on the exact idempotent retry. Unit/line\u20b98,900/\u20b917,800; shipping, tax, discount, status and total equal the server quote/order receipt. No invented grand total, provider payment or fixture pre-created order as proof.",
+      "evidence": [],
+      "outstanding": [
+        "Signed-in buyer follows existing cart Checkout handoff and hosted contact/delivery/COD/confirm UI."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-16",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/15",
+      "action": "Save the planned later merchant update after the new order, preserving real UUIDs/current inventory; reload current PDP and old buyer/merchant order.",
+      "acceptance": "Current title becomes `Habitat lifecycle desk revised`, A price\u20b99,900, A assembled100W\u00d750D\u00d770H cm, Birch/Revised natural/revised care. Old order retains old title, A UUID, exact saved Width48in/FinishNatural, original inch groups/package/missing package height, Wood/11.5kg/A tool/care, count2 and all old money/totals/status. Compare persisted snapshot/fingerprint and actual history after reload; no current-product history lookup.",
+      "evidence": [],
+      "outstanding": [
+        "Save the planned later merchant update after the new order, preserving real UUIDs/current inventory; reload current PDP and old buyer/merchant order."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HI-17",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/16",
+      "action": "Only if an existing assigned historical record has absent/malformed snapshot, inspect its order detail.",
+      "acceptance": "Explicit unknown facts and no synthesized present-day furniture. Do not corrupt a saved order or add a historical fixture to manufacture this case. Otherwise leave NOT_RUN.",
+      "evidence": [],
+      "outstanding": [
+        "Only if an existing assigned historical record has absent/malformed snapshot, inspect its order detail."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-01",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/17",
+      "action": {
+        "id": "HQ-01",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "material": "wood",
+          "finish": "natural"
+        },
+        "expectedMatchingVariantAliases": [
+          "A",
+          "D"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-01",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "material": "wood",
+          "finish": "natural"
+        },
+        "expectedMatchingVariantAliases": [
+          "A",
+          "D"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-02",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/18",
+      "action": {
+        "id": "HQ-02",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "material": "metal",
+          "finish": "black"
+        },
+        "expectedMatchingVariantAliases": [
+          "B"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-02",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "material": "metal",
+          "finish": "black"
+        },
+        "expectedMatchingVariantAliases": [
+          "B"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-03",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/19",
+      "action": {
+        "id": "HQ-03",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "material": "wood",
+          "finish": "black"
+        },
+        "expectedMatchingVariantAliases": [],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-03",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "material": "wood",
+          "finish": "black"
+        },
+        "expectedMatchingVariantAliases": [],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-04",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/20",
+      "action": {
+        "id": "HQ-04",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 122,
+          "max_depth_cm": 61
+        },
+        "expectedMatchingVariantAliases": [],
+        "runtimeStatus": "NOT_RUN",
+        "expectedIndependentClear": {
+          "clear_width": [
+            "B"
+          ],
+          "clear_depth": [
+            "A",
+            "D"
+          ],
+          "preserve": [
+            "search",
+            "category",
+            "country_of_origin",
+            "limit",
+            "sort"
+          ],
+          "reset_page": 1
+        }
+      },
+      "acceptance": {
+        "id": "HQ-04",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 122,
+          "max_depth_cm": 61
+        },
+        "expectedMatchingVariantAliases": [],
+        "runtimeStatus": "NOT_RUN",
+        "expectedIndependentClear": {
+          "clear_width": [
+            "B"
+          ],
+          "clear_depth": [
+            "A",
+            "D"
+          ],
+          "preserve": [
+            "search",
+            "category",
+            "country_of_origin",
+            "limit",
+            "sort"
+          ],
+          "reset_page": 1
+        }
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-05",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/21",
+      "action": {
+        "id": "HQ-05",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 122,
+          "max_depth_cm": 77
+        },
+        "expectedMatchingVariantAliases": [
+          "A"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-05",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 122,
+          "max_depth_cm": 77
+        },
+        "expectedMatchingVariantAliases": [
+          "A"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-06",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/22",
+      "action": {
+        "id": "HQ-06",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 121.92,
+          "max_depth_cm": 76.2
+        },
+        "expectedMatchingVariantAliases": [
+          "A"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-06",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 121.92,
+          "max_depth_cm": 76.2
+        },
+        "expectedMatchingVariantAliases": [
+          "A"
+        ],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-07",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/23",
+      "action": {
+        "id": "HQ-07",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 121.9199,
+          "max_depth_cm": 76.2
+        },
+        "expectedMatchingVariantAliases": [],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-07",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat lifecycle desk",
+          "category": "Furniture",
+          "country_of_origin": "India",
+          "max_width_cm": 121.9199,
+          "max_depth_cm": 76.2
+        },
+        "expectedMatchingVariantAliases": [],
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-08",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/24",
+      "action": {
+        "id": "HQ-08",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat dimensions-only stand",
+          "category": "Habitat dimensional controls",
+          "country_of_origin": "India"
+        },
+        "productKey": "furniture-dimensions-only",
+        "expectedCapabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": true
+          }
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-08",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat dimensions-only stand",
+          "category": "Habitat dimensional controls",
+          "country_of_origin": "India"
+        },
+        "productKey": "furniture-dimensions-only",
+        "expectedCapabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": true
+          }
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    },
+    {
+      "id": "HQ-09",
+      "status": "NOT_RUN",
+      "requirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/25",
+      "action": {
+        "id": "HQ-09",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat width-only shelf",
+          "category": "Habitat dimensional controls",
+          "country_of_origin": "India"
+        },
+        "productKey": "furniture-width-only",
+        "expectedCapabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      "acceptance": {
+        "id": "HQ-09",
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "search": "Habitat width-only shelf",
+          "category": "Habitat dimensional controls",
+          "country_of_origin": "India"
+        },
+        "productKey": "furniture-width-only",
+        "expectedCapabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        },
+        "runtimeStatus": "NOT_RUN"
+      },
+      "evidence": [],
+      "outstanding": [
+        "Execute the exact actual query, capture response/IDs/capabilities, and independently review against specification."
+      ],
+      "independentReview": "PENDING",
+      "executionScope": "Dated run49ada80bc494/current letbuyy-craft2.1.0; no frozen200 equivalence or fresh runtime pass inferred"
+    }
+  ],
+  "historical936Only": {
+    "PASS": 21,
+    "FAIL": 0,
+    "PARTIAL": 1,
+    "NOT_RUN": 4,
+    "allNineQueries": "PASS_HISTORICAL_ONLY"
+  },
+  "coordination": {
+    "Themes": "Sealed private02 read-only review delivered successfully",
+    "Editor": "All26 execution queue/applicability handoff delivered successfully; existing sole browser queue preserved",
+    "currentController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "actualClaimResolvedAt": "2026-10-25T00:25:13.342Z",
+    "sourceReceipts": [
+      "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/BROWSER_HANDOFF_TO_EDITOR_20261025_02.json",
+      "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/CURRENT_BROWSER_HANDOFF.json"
+    ],
+    "runtime": "Root reported originals54685/55109 SIGSTOPped parent-first01:21:53Z after final saved fence/backup. API/checkout/parentREST unavailable; actual restored acceptanceNOT_RUN; no health or current UI claim inferred.",
+    "publicReceiver": "OFFLINE_EXPIRED_PENDING_USER_RENEWAL",
+    "noSourceRuntimeNativeDbBuildBrowserProviderActionsByHabitat": true,
+    "runnerLivenessCorrection": {
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNNER_LIVENESS_CORRECTION_03.json",
+      "sha256": "ba0f9f04826c9d627bde6b64b8d573c48e1bd6a70ac5b920830012ab5ecb16a9",
+      "runnerAlive": true,
+      "guardChangesAllowed": false
+    },
+    "preservationPlan": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/CONTROLLED_INTEGRATION_PLAN_20261025_02.json",
+    "preservationPlanSha256": "eea28c2b6a2e29c798db889a5602c1788aab1b2a698e306ec08f9b2c0adefbf8",
+    "source03Review": "SEALED03_DELIVERED_THEMES_SUCCESSFULLY",
+    "originalCaseAdmissionFollowup": "Delivered Themes request for exact unaffected installed210 original26 scope/data-effect binding, or precise structural-only/backup-fence/restored-run blocker; not tied by default to unrelated successor native.",
+    "sharedNativeApprovalHold": {
+      "source": "Themes compact wait revision233",
+      "action": "MadeYours shared RED native before process creation",
+      "status": "SEPARATE_PREFLIGHTS_PASS_RED_ONE_RUN_ACTIVATED_GREEN_HELD_FOR_RED_REVIEW",
+      "reason": "Earlier pause and missing escalation authorization",
+      "specificApprovalAlreadyPendingElsewhere": false,
+      "HabitatNativeStarted": false,
+      "original26BlanketBlockInferred": false,
+      "historicalStatus": "AUTOMATIC_APPROVAL_REJECTED_EXTERNAL_OWNER_REPORT",
+      "nativeExecutionResult": "NOT_OBSERVED_OR_REVIEWED_BY_HABITAT"
+    },
+    "browserFence": "Editor BACKUP_FENCE_ACK_20261025_01.json; no browser mutation until explicit preserved-runtime handoff",
+    "original26ScopeDisposition": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/HABITAT_ORIGINAL26_SCOPE_DISPOSITION_01.json",
+    "originalCaseNextStep": "Root must admit preserved-runtime handoff and exact original26 product/variant/stock/COD data-effect slice; private source/native work is a separate lane, not a manufactured dependency for original cases.",
+    "HabitatNativeResource": "Still NOT_GRANTED; source packet40 artifacts delivered, not execution",
+    "original210Independence": "Root minimal original210 recovery excludes unactivated211/producer writes; original26 remains independent from this source acceptance"
+  },
+  "sourceFreeze": {
+    "frozenVersion": "2.0.0",
+    "checkedOwnedFiles": [
+      {
+        "path": "packages/theme-engine/src/habitat-theme.ts",
+        "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+        "matchesFrozen": true
+      },
+      {
+        "path": "packages/theme-engine/src/habitat-styles.ts",
+        "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+        "matchesFrozen": true
+      },
+      {
+        "path": "packages/theme-engine/src/habitat-discovery.ts",
+        "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+        "matchesFrozen": true
+      },
+      {
+        "path": "packages/theme-engine/test/habitat.test.ts",
+        "sha256": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+        "matchesFrozen": true
+      },
+      {
+        "path": "packages/commerce-core/src/habitat-facts.ts",
+        "sha256": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+        "matchesFrozen": true
+      },
+      {
+        "path": "packages/commerce-core/test/habitat-facts.test.ts",
+        "sha256": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+        "matchesFrozen": true
+      },
+      {
+        "path": "apps/commerce/web/src/lib/demo/habitat-demo.ts",
+        "sha256": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+        "matchesFrozen": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.tsx",
+        "sha256": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+        "matchesFrozen": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.test.tsx",
+        "sha256": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+        "matchesFrozen": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.tsx",
+        "sha256": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+        "matchesFrozen": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.test.tsx",
+        "sha256": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea",
+        "matchesFrozen": true
+      }
+    ],
+    "sealed01": "PRESERVED",
+    "current210": "UNCHANGED"
+  },
+  "private211SourceRepair": {
+    "path": "private-heading211-20261025-02/HANDOFF.json",
+    "status": "ACCEPTED_PRIVATE02_SOURCE_CORRECTIONS_NATIVE_UNQUALIFIED",
+    "independentReview": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORDER_HEADING211_PRIVATE_REVIEW_02.json",
+    "sourceChecks": {
+      "newPurePASS": 31,
+      "retainedDatedPASS": 61,
+      "rerun": false
+    },
+    "nativeSourcePreparation": {
+      "path": "private-heading211-native-source-20261025-03/HANDOFF.json",
+      "status": "SEALED03_FULL_VENDOR_TOOL_SOURCE_PREFLIGHT_READY_NATIVE_NOT_RUN",
+      "sealSha256": "b542054838c2bb4147b5b2bf01e150738f1fa2ddf2444392976fa97f9ec3c564",
+      "sealedFilesVerified": 25,
+      "filePins": 7936,
+      "packages": 99,
+      "negativeInventoryControlsPASS": 10,
+      "sourcePreflightExit": 0,
+      "independentReview": "PENDING_THEMES"
+    },
+    "native": "NOT_RUN_NOT_ADMITTED",
+    "resourcePreflight": "NOT_RUN_NOT_GRANTED",
+    "MainIntegration": "NOT_APPLIED",
+    "sourceAllocations": "Both ended at respective first sealed handoff",
+    "doesNotCloseInstalled210Heading": true
+  },
+  "separateCurrentTest": {
+    "id": "HAB-RZP-DESK-01",
+    "orderNumber": "ORD-20261024-10004",
+    "orderId": "c65a6d67-a933-43f2-9c8b-391e7c15dcaf",
+    "quantity": 1,
+    "unitINR": 8900,
+    "deliveryINR": 20,
+    "totalINR": 8920,
+    "financialPositiveChecks": "10/10PASS_DATED",
+    "browserArtifactHashes": 24,
+    "providerEventRecords": 2,
+    "evidence": "runtime07-20261025/CURRENT_TEST_FINANCIAL_OWNER_REVIEW.json",
+    "openFinding": "R07-HOSTED-CAPTURE-FLAG-01",
+    "notOriginalFourVariantOrCODQty2": true,
+    "notFullProviderCertificate": true
+  },
+  "failuresAndOpenFindings": [
+    {
+      "scope": "Current210 source",
+      "finding": "Configured customer-order-detail.heading remains inert in installed210; original failed source test retained",
+      "evidence": "runtime07-20261025/ORDER_HEADING_FINDING.json",
+      "status": "OPEN_UNTIL_QUALIFIED_SUCCESSOR_INSTALLED_AND_UI_RETESTED"
+    },
+    {
+      "scope": "Private01 independent review",
+      "finding": "HEADING211-R01 checkpoint and R02 HTTP telemetry conservation required correction",
+      "evidence": "runtime07-20261025/SOURCE_REVIEW_FEEDBACK_20261025_02.json",
+      "status": "R01_R02_SOURCE_CORRECTIONS_ACCEPTED_NATIVE_NOT_RUN"
+    },
+    {
+      "scope": "Actual current Test purchase",
+      "finding": "capture_posted_to_ledger=false despite exactly one balanced canonical capture",
+      "evidence": "runtime07-20261025/CURRENT_TEST_FINANCIAL_OWNER_REVIEW.json",
+      "status": "OPEN_SHARED_OWNER_REPAIR"
+    },
+    {
+      "scope": "Actual current editor preview",
+      "finding": "Initial loading failure preserved; ordinary Retry recovered real iframe",
+      "evidence": "runtime07-20261025/ROOT_CURRENT_TEST_APPLICABILITY.json",
+      "status": "RECOVERED_OBSERVATION_COMPLETE_HI04_NOT_RUN"
+    },
+    {
+      "scope": "Focused source type program",
+      "finding": "Five unchanged unrelated/context diagnostics remain",
+      "evidence": "private-heading211-20261025-02/TYPE_COMPARISON.json",
+      "status": "NOT_FULL_PROJECT_GREEN"
+    },
+    {
+      "scope": "Earlier separate catalogue394 native",
+      "finding": "3PASS/2FAIL; actual previewHTTP500; later phases5-8NOT_RUN retained in earlier report",
+      "evidence": "FRESH_26_CURRENT_STATUS_20261024_02.json#/sharedNativeFailureSeparate",
+      "status": "HISTORICAL_SEPARATE_NO_CURRENT_CREDIT"
+    }
+  ],
+  "expanded339": {
+    "PARTIAL": 11,
+    "NOT_RUN": 328
+  },
+  "notRunExplicit": [
+    "HI02-HI03 and HI05-HI17; all HQ01-HQ09",
+    "Complete HI01 binding and HI04 A/B/restore/draft/reapply cycle",
+    "Original four-variant normal merchant setup, newCODqty2/exact retry, later sameUUID edit/history",
+    "Genuine assigned absent/malformed whole historical snapshot control forHI17; never manufacture one",
+    "Private211 native qualification, combined integration, actual successor UI acceptance",
+    "Remaining provider negatives/recovery/final review"
+  ],
+  "FULL_THEME_CERTIFIED": false,
+  "RAZORPAY_TEST_VERIFIED": false,
+  "updatedAt": "2026-10-25T04:15:50.599761+00:00",
+  "five211PrivateSource": {
+    "path": "private-five-theme211-20261025-01/HANDOFF.json",
+    "status": "ACCEPTED_EXACT_SOURCE_ONLY_NATIVE_G1_NOT_RUN",
+    "review": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/FIVE_THEME211_PRIVATE_SOURCE_REVIEW_01.json",
+    "sourceTests": {
+      "focusedPASS": 28,
+      "pureSqlModelPASS": 17,
+      "FAIL": 0,
+      "skipped": 0
+    },
+    "focusedTypeDiagnostics": 0,
+    "old37AndFour211Exact": true,
+    "sourceGrantEnded": true,
+    "nativeCasePreparationGrant": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/FIVE_THEME211_NATIVE_CASE_SOURCE_PREPARATION_ALLOCATION_02.json",
+    "actualNative": "NOT_RUN_NOT_ADMITTED",
+    "nativeCasePreparation": {
+      "path": "private-five-theme211-native-source-20261025-02/HANDOFF.json",
+      "status": "ACCEPTED_SOURCE_ONLY_NATIVE_NOT_RUN_NOT_GRANTED",
+      "sealSha256": "37d71a31c0003d9dda22a3f240a2b1ad14a215f21eec7931d037ab4890a213d4",
+      "sealedFiles": 40,
+      "sourceClosureFiles": 1086,
+      "vendorToolPins": 7943,
+      "pureSourcePredicatesPASS": 23,
+      "closureNegativePASS": 3,
+      "inventoryNegativePASS": 10,
+      "newCaseTypeErrors": 0,
+      "unchangedExternalFocusedDiagnostics": 5,
+      "actualNative": "NOT_RUN_NOT_ADMITTED",
+      "resourcePreflight": "NOT_RUN_NOT_GRANTED",
+      "sourceGrantEnded": true,
+      "review": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/FIVE_THEME211_NATIVE_CASE_SOURCE_REVIEW_02.json",
+      "acceptanceReceipt": "runtime07-20261025/NATIVE_CASE_SOURCE_ACCEPTANCE_20261025_02.json",
+      "futureActivation": "Fresh explicit human Native budget and exact Root admission, no automatic preflight"
+    }
+  },
+  "editorStructuralCycle": "runtime07-20261025/EDITOR_STRUCTURAL_REVIEW_20261025_01.json",
+  "sharedCaptureRedSeparate": {
+    "review": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/HOSTED_CAPTURE_NATIVE_RED_REVIEW_01.json",
+    "reviewSha256": "8892e1eaf7a1451850691c357f201a9a16281675720169b96384db72c19a18aa",
+    "reviewStatus": "ACCEPT_ACTUAL_EXPECTED_RED_CAUSAL_PROOF_AND_COMPLETE_OWNER_CLEANUP_HANDBACK",
+    "runId": "487161ab7e7c",
+    "tests": 25,
+    "PASS": 18,
+    "FAIL": 7,
+    "skip": 0,
+    "failureAccounting": "Four metadata false failures after balanced captures; two deliberate old-query-filter assertions; one aggregate parent failure. Seven reported failures are not seven root causes.",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "GREEN": "Separately activated; no GREEN result reviewed here",
+    "notOriginal26OrNewPSPCredit": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "ax": "Browser tab: 11, Title: \"Habitat lifecycle desk | Threadline\", URL: \"http://syn-threadline-ui-d11a8917.localhost:57226/product/c44adb98-ed66-4ac4-a51e-3c1cc7f4d62d\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 19, 30, 32, 36, 39, 42, 45, 48, 51, 54\n+\t\t\t177 text ₹8,900\n~\t\t\t28 checkbox 48 in, Value: 1\n~\t\t\t31 container 48 in — selected variant facts.\n+\t\t\t\t178 text 48 in — selected variant facts.\n+\t\t\t\t\t179 text 48 W in\n+\t\t\t\t\t180 text 50 W × 25 D in\n+\t\t\t\t\t181 text Weight not supplied.\n+\t\t\t\t\t182 text Seat height not supplied.\n+\t\t\t\t\t183 text Wood\n+\t\t\t\t\t184 text Assembly information not supplied.\n+\t\t\t\t\t185 text Wipe dry.\n~\t\t\t59 button Add to cart\nThe focused UI element is 1 AXWebArea Habitat lifecycle desk | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/c44adb98-ed66-4ac4-a51e-3c1cc7f4d62d",
+  "carrier": [
+    {
+      "productId": "c44adb98-ed66-4ac4-a51e-3c1cc7f4d62d",
+      "state": "selected",
+      "variantId": "58d8de66-2f33-4595-9433-c7ef9909b751"
+    }
+  ]
+}

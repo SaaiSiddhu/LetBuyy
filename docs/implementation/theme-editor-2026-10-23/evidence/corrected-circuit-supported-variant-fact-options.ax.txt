@@ -1,0 +1,411 @@
+Browser tab: 37, Title: "LetBuyy Admin", URL: "http://admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/40c09bce-03ed-4c1f-8975-49aa8690192e".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/40c09bce-03ed-4c1f-8975-49aa8690192e
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/dashboard
+					15 link Description: Orders, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/online-store
+						43 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			44 text Apps
+			45 container Apps
+				46 content list
+					47 link Description: Add, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/apps
+		48 container Settings navigation
+			49 content list
+				50 link Description: Settings, Value: admin.threadline-f6074d90e894.localhost:54183/syn-threadline-ui-33be9d94/settings
+	51 container admin-page-scroll
+		52 container
+			53 heading Edit product, Value: 1
+				54 text Edit product
+			55 button Discard
+			56 button (disabled) Save product
+		57 container
+			58 heading Details, Value: 2
+				59 text Details
+			60 text Name and describe the product as shoppers will see it. Title
+			61 text field (settable) Title, Value: Circuit lifecycle finish charger
+			62 text Description
+			63 text entry area (settable) Description, Value: Synthetic owned Circuit supplemental acceptance fixture only.
+		64 container
+			65 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				66 text Apparel fit, fabric and care (optional)
+			67 container Product-specific facts
+				68 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				69 text Product facts category
+				70 pop up button (collapsed, settable) Product facts category, Value: Electronics, Secondary Actions: Expand
+					71 menu
+						72 (disabled) Choose product information to edit
+						73 Toys and activities
+						74 (selected) Electronics
+						75 Food and pantry
+						76 Furniture
+						77 Ready-made gifts
+						78 Text personalization
+						79 Beauty and care
+						80 Sports equipment
+						81 Books and stationery
+				82 container Electronics specifications (optional)
+					83 text Electronics specifications (optional)
+					84 text Supply product facts from a reliable product reference. Leave unknown values empty. A matching connector alone does not establish device compatibility.
+					85 text Manufacturer
+					86 text field (settable) Manufacturer, Value: Synthetic Lab
+					87 text Exact product model
+					88 text field (settable) Exact product model, Value: Synthetic C65
+					89 text Product kind
+					90 pop up button (collapsed, settable) Product kind, Value: Charger, Secondary Actions: Expand
+						91 menu
+							92 Not supplied
+							93 Hub
+							94 Adapter
+							95 (selected) Charger
+							96 Cable
+							97 Audio
+							98 Device
+							99 Other
+					100 container Power, data and length
+						101 text Power, data and length
+						102 text Enter watts (W), megabits per second (Mb/s) and millimetres (mm). For example, 5 Gb/s is 5000 Mb/s and 1 m is 1000 mm. Power input, output, cable capacity and laptop pass-through are separate facts.
+						103 text Power input maximum (W)
+						104 text field (settable) Power input maximum (W), Value: 70
+						105 text Power output maximum (W)
+						106 text field (settable) Power output maximum (W), Value: 65
+						107 text Cable power capacity maximum (W)
+						108 text field (settable) Cable power capacity maximum (W)
+						109 text Laptop pass-through maximum (W)
+						110 text field (settable) Laptop pass-through maximum (W)
+						111 text Data transfer maximum (Mb/s)
+						112 text field (settable) Data transfer maximum (Mb/s)
+						113 text Cable length (mm)
+						114 text field (settable) Cable length (mm)
+					115 container Connector roles
+						116 text Connector roles
+						117 text Count each connector kind and role once. Keep the host connection separate from the accessory ports.
+						118 container Connector 1
+							119 container
+								120 text Connector  1
+							121 text Connector 1 kind
+							122 pop up button (collapsed, settable) Connector 1 kind, Value: AC plug, Secondary Actions: Expand
+								123 menu
+									124 Choose connector
+									125 USB-C
+									126 USB-A
+									127 HDMI
+									128 DisplayPort
+									129 SD
+									130 microSD
+									131 3.5 mm audio
+									132 (selected) AC plug
+									133 Other
+							134 text Connector 1 role
+							135 pop up button (collapsed, settable) Connector 1 role, Value: Power input, Secondary Actions: Expand
+								136 menu
+									137 Choose role
+									138 Host connection
+									139 (selected) Power input
+									140 Power output
+									141 Data
+									142 Video
+									143 Card reader
+									144 Audio
+							145 text Connector 1 count
+							146 text field (settable) Connector 1 count, Value: 1
+							147 button Remove connector 1
+								148 text Remove connector 
+								149 text 1
+						150 container Connector 2
+							151 container
+								152 text Connector  2
+							153 text Connector 2 kind
+							154 pop up button (collapsed, settable) Connector 2 kind, Value: USB-C, Secondary Actions: Expand
+								155 menu
+									156 Choose connector
+									157 (selected) USB-C
+									158 USB-A
+									159 HDMI
+									160 DisplayPort
+									161 SD
+									162 microSD
+									163 3.5 mm audio
+									164 AC plug
+									165 Other
+							166 text Connector 2 role
+							167 pop up button (collapsed, settable) Connector 2 role, Value: Power output, Secondary Actions: Expand
+								168 menu
+									169 Choose role
+									170 Host connection
+									171 Power input
+									172 (selected) Power output
+									173 Data
+									174 Video
+									175 Card reader
+									176 Audio
+							177 text Connector 2 count
+							178 text field (settable) Connector 2 count, Value: 2
+							179 button Remove connector 2
+								180 text Remove connector 
+								181 text 2
+						182 button Add connector
+					183 container Video output maximum
+						184 text Video output maximum
+						185 text Supply all three values only when video output is documented. Do not infer video support from USB-C.
+						186 text Video width (px)
+						187 text field (settable) Video width (px)
+						188 text Video height (px)
+						189 text field (settable) Video height (px)
+						190 text Video refresh rate (Hz)
+						191 text field (settable) Video refresh rate (Hz)
+						192 button (disabled) Clear video specification
+					193 container Product dimensions
+						194 text Product dimensions
+						195 text Product length (mm)
+						196 text field (settable) Product length (mm)
+						197 text Product width (mm)
+						198 text field (settable) Product width (mm)
+						199 text Product height (mm)
+						200 text field (settable) Product height (mm)
+						201 button (disabled) Clear product dimensions
+					202 container Host requirements
+						203 text Host requirements
+						204 button Add host requirement
+					205 container Box contents
+						206 text Box contents
+						207 container Included item 1
+							208 container
+								209 text Included item  1
+							210 text Included item 1 label
+							211 text field (settable) Included item 1 label, Value: Charger
+							212 text Included item 1 quantity
+							213 text field (settable) Included item 1 quantity, Value: 1
+							214 button Remove included item 1
+								215 text Remove included item 
+								216 text 1
+						217 button Add included item
+					218 container Product fact-sheet source
+						219 text Product fact-sheet source
+						220 text A product fact sheet does not establish compatibility with an unnamed device.
+						221 text Product fact-sheet reference
+						222 text field (settable) Product fact-sheet reference
+						223 text Product fact-sheet source date
+						224 date field (settable) Product fact-sheet source date
+							225 container
+								226 stepper
+								227 stepper
+								228 stepper
+							229 pop up button Show date picker Show date picker
+						230 button (disabled) Clear product fact-sheet source
+					231 container Specific-device references
+						232 text Specific-device references
+						233 text Without a referenced exact device model, compatibility stays unconfirmed. These are merchant references, not platform certification. Do not use “all devices”.
+						234 button Add device reference
+					235 text Electronics notes
+					236 text entry area (settable) Electronics notes
+					237 button Clear all electronics facts
+			238 heading Media, Value: 2
+				239 text Media
+			240 text Upload images that help shoppers inspect the product.
+			241 heading No product media yet, Value: 3
+				242 text No product media yet
+			243 text Upload product images so shoppers can inspect materials, colors, and details before buying.
+			244 button Upload media
+		245 container
+			246 heading Category, Value: 2
+				247 text Category
+			248 text Add category metadata for tax, discovery, and reporting. Category
+			249 text field (settable) Category, Value: Accessories
+			250 text Determines tax rates and adds product metadata.
+		251 container
+			252 heading Pricing, Value: 2
+				253 text Pricing
+			254 text Set the customer-facing price and internal product cost. Price
+			255 stepper (settable, integer) Price, Value: 1900
+			256 text Compare-at price
+			257 stepper (settable) Compare-at price
+			258 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			259 text Cost per item
+			260 stepper (settable) Cost per item
+			261 text Customers will not see this.
+		262 container
+			263 heading Inventory, Value: 2
+				264 text Inventory
+			265 text Track SKU, barcode, and sell-through behavior.
+			266 checkbox (settable, integer) Description: Track quantity, Value: 1
+			267 text Quantity
+			268 stepper (settable, integer) Quantity, Value: 3
+			269 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			270 text SKU (Stock Keeping Unit)
+			271 text field (settable) SKU (Stock Keeping Unit)
+			272 text Barcode (ISBN, UPC, GTIN)
+			273 text field (settable) Barcode (ISBN, UPC, GTIN)
+		274 container
+			275 heading Shipping, Value: 2
+				276 text Shipping
+			277 text Collect fulfillment and customs information for physical products.
+			278 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			279 text Weight
+			280 stepper (settable) Weight
+			281 text Unit
+			282 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				283 menu
+					284 (selected) kg
+					285 g
+					286 lb
+					287 oz
+			288 text Importer details (for imported products)
+			289 text entry area (settable) Importer details (for imported products)
+			290 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			291 text field (settable) Country/Region of origin, Value: India
+			292 text HS (Harmonized System) code
+			293 text field (settable) HS (Harmonized System) code
+		294 container
+			295 heading Variants, Value: 2
+				296 text Variants
+			297 text Add options like size, color, or material.
+			298 text Finish
+			299 button Delete
+			300 text Graphite
+			301 button Rename Finish value Graphite
+			302 button Remove Graphite
+			303 text Silver
+			304 button Rename Finish value Silver
+			305 button Remove Silver
+			306 button Add values
+			307 button Add option
+			308 heading Variant combinations, Value: 2
+				309 text Variant combinations
+			310 text Edit price, SKU, and stock for each combination.
+			311 table
+				312 row
+					313 cell
+						314 text Variant
+					315 cell
+						316 text Price
+					317 cell
+						318 text Compare
+					319 cell
+						320 text SKU
+					321 cell
+						322 text Stock
+				323 row
+					324 cell
+						325 text Graphite
+					326 cell
+						327 stepper (settable, integer) Description: Price for Graphite, Value: 1900
+					328 cell
+						329 stepper (settable) Compare-at price for Graphite
+					330 cell
+						331 text field (settable) SKU for Graphite
+					332 cell
+						333 stepper (settable, integer) Description: Stock for Graphite, Value: 3
+					334 cell
+						335 button Remove variant Graphite
+				336 row
+					337 cell
+						338 text Silver
+					339 cell
+						340 stepper (settable, integer) Description: Price for Silver, Value: 1900
+					341 cell
+						342 stepper (settable) Compare-at price for Silver
+					343 cell
+						344 text field (settable) SKU for Silver
+					345 cell
+						346 stepper (settable, integer) Description: Stock for Silver, Value: 0
+					347 cell
+						348 button Remove variant Silver
+			393 container
+				394 button (expanded) Facts for Graphite, Secondary Actions: Collapse
+					395 text Facts for 
+					396 text Graphite
+				397 container Variant-specific facts
+					398 heading Variant-specific facts, Value: 3
+						399 text Variant-specific facts
+					400 text Edit supplied facts for this variant. Common product information is read-only context; missing or deliberately cleared facts follow each category’s rules. Changes are saved with the variant.
+					401 text Variant facts category
+					402 pop up button (collapsed, settable) Variant facts category, Value: Choose variant information to edit, Secondary Actions: Expand
+						403 menu
+							404 (selected) Choose variant information to edit
+							405 Toys and activities
+							406 Food net contents
+							407 Furniture measurements
+							408 Sports measurements
+							409 Books and stationery
+					410 button (disabled) Clear selected variant facts
+					411 button (disabled) Clear all variant fact overrides
+			352 button (collapsed) Facts for Silver, Secondary Actions: Expand
+				353 text Facts for 
+				354 text Silver
+		355 container
+			356 heading Search engine listing, Value: 2
+				357 text Search engine listing
+			358 text Control how this product may appear in search results. syn-threadline-ui-33be9d94 .letbuyy.com/products/ circuit-lifecycle-finish-charger Circuit lifecycle finish charger Synthetic owned Circuit supplemental acceptance fixture only. Page title
+			359 text field (settable) Page title
+			360 text 0 of 70 characters used Meta description
+			361 text entry area (settable) Meta description
+			362 text 0 of 160 characters used URL handle
+			363 text field (settable) URL handle, Value: circuit-lifecycle-finish-charger
+		364 container
+			365 container
+				366 heading Status, Value: 2
+					367 text Status
+				368 text Product status
+				369 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					370 menu
+						371 (selected) Active
+						372 Draft
+						373 Archived
+				374 text Visible on storefront
+			375 container
+				376 heading Publishing, Value: 2
+					377 text Publishing
+				378 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			379 container
+				380 heading Product organization, Value: 2
+					381 text Product organization
+				382 text Use consistent metadata to keep catalog management fast. Product type
+				383 text field (settable) Product type
+				384 text Vendor
+				385 text field (settable) Vendor
+				386 text Tags
+				387 text field (settable) Tags
+				388 text Separate tags with commas.
+			389 container
+				390 heading Catalog readiness, Value: 2
+					391 text Catalog readiness
+				392 text Save product details, media, pricing, and inventory from one guided form.
+
+The focused UI element is 394 button (expanded) Facts for Graphite, Secondary Actions: Collapse

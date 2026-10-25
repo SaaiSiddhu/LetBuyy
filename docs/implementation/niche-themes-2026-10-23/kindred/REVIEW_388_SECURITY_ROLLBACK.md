@@ -1,0 +1,52 @@
+# Independent 388 security / rollback review
+
+23 October 2026. Read-only production-source review by Kindred, at HEAD `85aac99043d8dc10469e12cbb810609a3b6f1b0d`. The nine overlapping captured sources matched MadeYours' `evidence.json` freeze of `2026-10-23T07:53:29.449589+00:00`. Full hashes and scope are in `review-388-manifest.json`; UP is `b3912985bf82dddb4466e39af2d62886036c909e4522871a554b2d6785345190`, DOWN is `192b37c447e2045be699c7342190d50c861487c7daf00f2a749f1eb2c6bdf912`. Production sources remained unchanged through completion. During review the owner updated the prepared test's386 file/hash locators; its original capture and that limited drift are recorded, without changing the relevant ACL oracle.
+
+**Four source-level findings require owner disposition and real PG checks. No migration, role, database, writer, schema or parent was changed or executed by this reviewer.** `review-388-pure-witnesses.json` records successful real canonical API calls; `review-388-static-checks.json` records mechanical body checks. Neither proves database execution.
+
+## F1 — P1, conditional catalog exposure: an unrecognized cart writer can forge accepted instructions
+
+`database/supabase/migrations/388_cart_order_fact_snapshots.sql:743` and `:758` close only PUBLIC / anon / authenticated / app_tenant (plus service_role on the lower writer). Effective-privilege checks at `:750` and `:777` examine the same named roles. A different direct grantee survives on both carts and the SECURITY DEFINER order entry point. The predecessor fence at `:41` checks body/owner/configuration, without checking that ACL population. The SQL trusts the marked cart's saved niche at `:220`; its digest is checked against the stored reference, rather than recomputed from the saved niche.
+
+**Concrete fixture:** before UP, create an additional non-bypass role inheriting app_tenant, with its own `SELECT, UPDATE` on carts and `EXECUTE` on `create_order_with_inventory_reservations`. Run UP. That role's direct grants are untouched, while the three checked untrusted roles can have no remaining writes. After a legitimate cart is accepted, the extra role can change only `items[0].niche_snapshot.personalization.text` to `Mallory`, retaining catalog provenance and both hashes, and call the lower order RPC with the original cart reference. The inspected checks permit that changed text to become the historical instruction. Exact catalog/attack statements are in `review-388-reproduction.sql`.
+
+This is **not an observed live role or an exploit by the ordinary named roles**. Repository migration164 explicitly defines app_tenant as NOLOGIN/NOBYPASSRLS and grants membership to postgres/service_role (`164_d4_tenant_role_guc.sql:11`, `:17`, `:21`); live `pg_auth_members` and effective grants were unavailable here. The finding is a missing fail-closed admission check for an unexpected deployment catalog.
+
+Smallest correction: reject unknown direct grantees and non-owner grantors on every affected function and cart table/column ACL before changing privileges, retaining the named effective-access checks. Preserve the reviewed backend roles explicitly. Do not silently redefine an unknown role's authority. The journal at `:746` / `:763` records no grantor; DOWN `:69` restores grants as its executing owner. Named-role checks already reject many surviving non-owner grants, so a separate silent non-owner-grant loss is **not proven**. Require owner-issued ACLs or explicitly journal/replay the original grantor graph.
+
+Required PG proof: baseline catalog succeeds; unknown table/column/function grantees and a delegated grantor each refuse UP atomically; real named roles remain denied; normal gateway acceptance succeeds. Compare pre-UP and post-DOWN **table ACL, column ACL, function ACL including grantor/grant option, owners and effective role memberships**, then reapply. The queued suite's `privilegeProfile()` (`cart-order-fact-snapshots.postgres.test.ts:51`) omits column ACLs and compares the installed profile after DOWN→UP, rather than asserting a captured pre-UP profile immediately after DOWN.
+
+## F2 — P2: marketplace checkout rejects two valid configurations of one variant
+
+The canonical cart accepts Asha and Kabir as different server configurations (`services/api-gateway/src/routes/storefront/cart-routes.ts:332`) while summing their shared stock at `:363`. The execution adapter chooses the marketplace RPC for marketplace carts (`services/api-gateway/src/execution/order-execution.adapter.ts:109`); the delivery wrapper also forwards to it (`279_marketplace_checkout_delivery_rate_binding.sql:88`). That RPC groups duplicates only by product/variant and raises at `278_marketplace_order_listing_binding.sql:93`–`:102`, before cart references are consumed.
+
+Reproduce: approved same listing/product/variant, stock ≥2; POST marketplace-cart with quantity1 Asha and quantity1 Kabir and valid current reviews; complete the normal hosted COD path. The two pure canonical preparations succeed with different configuration hashes in `review-388-pure-witnesses.json`, but the two order items have identical legacy duplicate-group keys. Expected: two instructions, shared stock reduced by2. Inspected SQL result: `marketplace checkout has duplicate product variants`.
+
+Required correction/proof: preserve the canonical configuration identity through the existing marketplace duplicate check and binding, with equal-config merge, distinct-config success, shared-stock overflow denial and one-effect retry. The prepared 388 suite contains no marketplace positive control.
+
+## F3 — P2: DOWN overlooks active products whose facts exist only on variants
+
+`388_cart_order_fact_snapshots.rollback.sql:53` tests only parent product metadata; `:54` separately tests accepted active carts. Valid variant-only facts need neither parent namespace nor an existing cart. The real canonical API accepts parent `{}` plus selected variant `{food:{netQuantity:{value:250,unit:'g'}}}` and freezes the 250g fact; see the pure witness.
+
+Reproduce in an isolated fixture: active parent metadata `{}`, sellable variant carrying that food fact, no accepted active cart; run DOWN. Both safety predicates are false, so the marker and the required writer behavior can be removed while the factful item stays sellable. Historical snapshots are retained, but subsequent old-writer orders lose those fulfillment facts.
+
+Required correction/proof: include active parents' variant facts and configured relational options in the rollback capability inventory, consistently with UP's `:226` reference-required rule. Test variant-only food/furniture/book facts and named options without carts; DOWN must refuse. Archive/retire the affected capability through the supported path, then prove DOWN succeeds without changing historical snapshots.
+
+## F4 — P2, concurrency reproduction pending: marketplace outer locks invert 388's order
+
+The outer marketplace writer takes product/site `FOR SHARE` at `278_marketplace_order_listing_binding.sql:126`–`:133` before calling the inner writer. 388 then locks inventory at `:127`, variants/options at `:129` / `:132`, and upgrades product to `FOR UPDATE` at `:135`. Two different carts/idempotency keys for the same approved product can both acquire the outer product SHARE lock: transaction A gets inventory then waits for B's product SHARE; B waits for A's inventory. The per-key advisory locks (`278:107`, `234_checkout_loyalty_tender.sql:85`) differ and do not serialize these buyers. PostgreSQL documents that SHARE conflicts with UPDATE and that inconsistent acquisition order permits deadlock ([official locking documentation](https://www.postgresql.org/docs/17/explicit-locking.html#LOCKING-ROWS)).
+
+Use two real marketplace RPC calls, one line each, distinct accepted carts and keys, same product and sufficient stock. Hold both after the existing outer SHARE acquisition, release together, and observe actual lock waits/SQLSTATE40P01. `review-388-reproduction.sql` supplies a deterministic first-lock setup. Reconcile the outer and inner lock order, including product-edit callers, then prove both purchases complete exactly once without weakening approval checks. **No deadlock was executed or observed by this reviewer.**
+
+## Reviewed controls and limits
+
+| Boundary | Source conclusion / required execution |
+| --- | --- |
+| Acceptance / mixed lines | Every submitted or retained line goes through private canonical preparation before `fact_acceptance_version=1` (`cart-routes.ts:329`, `:586`, `:597`); identity/discount mutations rebuild retained inputs (`:795`, `:817`). Invalid mixed requests return before persistence. DELETE empties the cart only. |
+| Token / site / line / catalog | Locked writer checks active cart, exact token/site, one line, quantity, product/variant/listing IDs, product version, reference hashes and exact raw facts/options/images (`388:199`–`:225`). No extra literal SQL cart mutator was found across migration sources; this is not a live SECURITY DEFINER call-graph audit. |
+| Snapshot API | Canonical API validates draft/revision/review, exact named options, private-field exclusion and frozen readback. Its previous 17-test acceptance stands; the two additional fixture calls succeeded. |
+| Replay | Existing234 takes the site/key advisory lock and returns a prior order before current catalog validation (`:85`–`:104`). The prepared suite tests same-key concurrency/replay. Different confirmation keys for one cart and changed-intent reuse still need explicit Worker/PG coverage; no new exactly-once claim is made. |
+| Events / PII | 388 order.created and checkout.completed payloads omit accepted text/full niche (`388:407`, `234:687`; `checkout.ts:385`). Existing cart events still contain buyer_email/cart_token (`cart-routes.ts:520`); these results do not establish PII-free telemetry or downstream consumer behavior. |
+| Rollback / dependencies | All four embedded prosrc MD5s match their paired guards. DOWN restores the166/385 bodies;385 DOWN refuses the changed388 body. Canonical386 UP/DOWN were promoted during review;386 DOWN explicitly refuses the388 marker/validator dependency. This is source evidence; native fences, ACL restoration and full down/reapply behavior await PG. |
+
+MadeYours owns fixes and PostgreSQL acceptance. This report does not certify deployability, runtime role denial, transaction races, historical order routes or provider effects. Only the owned report/evidence files were written.

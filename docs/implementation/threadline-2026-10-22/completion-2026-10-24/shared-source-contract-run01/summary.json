@@ -1,0 +1,16 @@
+{
+  "classification": "SERIAL_SOURCE_CONTRACT_BATCH_NOT_THEME_CERTIFICATION",
+  "inputs": [
+    {
+      "identity": {
+        "slug": "letbuyy-sense",
+        "version": "2.0.1",
+        "bundleSha256": "bc53034a4b715778036e80bebd24ead37babe9c0a86b1e6831d8c7933ea45ab2"
+      },
+      "pass": 46,
+      "fail": 0,
+      "scope": "SOURCE_DATA_CONTRACT_ONLY_NOT_UI_RESOURCE_OR_INSTALLED_ACCEPTANCE",
+      "sourcePinsExact": true
+    }
+  ]
+}

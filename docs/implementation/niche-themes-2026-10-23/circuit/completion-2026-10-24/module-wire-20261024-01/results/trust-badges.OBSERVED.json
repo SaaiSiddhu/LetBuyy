@@ -1,0 +1,74 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "trust-badges",
+  "group": "template",
+  "originalId": "section-af60c2f1-b4de-450e-803a-ee73fca8029b",
+  "finalId": "section-ae68d3a5-a2ea-4435-be3d-4fea12e73986",
+  "sectionFieldsExercised": [
+    "shippingText",
+    "returnsText",
+    "supportText"
+  ],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "shippingText": "Circuit source shippingText",
+          "returnsText": "Circuit source returnsText",
+          "supportText": "Circuit source supportText"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "shippingText": "Circuit source shippingText",
+          "returnsText": "Circuit source returnsText",
+          "supportText": "Circuit source supportText"
+        },
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "shippingText": "Circuit source shippingText",
+          "returnsText": "Circuit source returnsText",
+          "supportText": "Circuit source supportText"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "shippingText": "Circuit source shippingText",
+          "returnsText": "Circuit source returnsText",
+          "supportText": "Circuit source supportText"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

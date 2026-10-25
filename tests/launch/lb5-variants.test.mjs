@@ -46,7 +46,9 @@ test('LB-5a: new/page.tsx contains cartesian/matrix generation (buildVariantMatr
 });
 
 test('LB-5a: new/page.tsx sends real variants array from variantMatrix', () => {
-    const src = readFileSync(newProductPage, 'utf8');
+    const page = readFileSync(newProductPage, 'utf8');
+    assert.match(page, /buildProductFormFields\(currentSnapshot,/);
+    const src = readFileSync(path.join(repoRoot, 'apps/merchant/web/src/lib/product-form-state.ts'), 'utf8');
     // variantMatrix.map(...) must appear in the body sent to the API
     assert.match(
         src,
@@ -62,7 +64,11 @@ test('LB-5b: product-execution.adapter creates variants on create', () => {
         'utf8',
     );
     assert.match(src, /replaceProductVariants/, 'adapter must call replaceProductVariants on create');
-    assert.match(src, /planProductCreate/, 'adapter must use planProductCreate');
+    assert.match(src, /executeProductCreate\(this\.options\.mutationEnv, input, userId\)/);
+    const command = readFileSync(path.join(repoRoot, 'services/api-gateway/src/execution/product-mutation.adapter.ts'), 'utf8');
+    assert.match(command, /planProductCreate\(input\)/);
+    assert.match(command, /variants: plan[.]productVariants/);
+    assert.match(command, /sql[.]unsafe[(]APPLY_PRODUCT_EDIT_SQL/);
 });
 
 test('LB-5b: adapter diffs variants through the owned atomic product edit', () => {

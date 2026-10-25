@@ -1,0 +1,68 @@
+{
+  "recordedAt": "2026-10-24T09:27:23.029290+00:00",
+  "classification": "PRIVATE_SOURCE_CORRECTION_QUALIFIED_FOR_OWNER_REVIEW_NOT_APPLIED_OR_RELEASED",
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/heading-control-audit-20261024/PROPOSAL.patch",
+      "sha256": "647fef9e9aa4918bf13693a5c728396437465879ed1fed37e5c5746eee3a61f4",
+      "bytes": 12063
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/heading-control-audit-20261024/PRIVATE_DIRECT_FACTORY_PROBE.json",
+      "sha256": "3e560b909c2ff6cad293518ee2edb6145ff83c666f44df49a3f54a717ab652d8",
+      "bytes": 5990
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/heading-control-audit-20261024/PRIVATE_CATALOGUE_PROBE.json",
+      "sha256": "2208fe77d9954d9fc2aa745b6437ac9230fa4a63f4511f47941aa286306c69e3",
+      "bytes": 6305
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/heading-control-audit-20261024/PRIVATE_PROPOSAL_LOCATION.json",
+      "sha256": "9914d991b1172a6b19efd973159a715f95ad5daed37d8fbe5417e92839f8e629",
+      "bytes": 1301
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/heading-control-audit-20261024/PRIVATE_PROPOSAL_REVIEW.json",
+      "sha256": "c35645dbc5db90fa21b1abe74bbccb305bb9075798586e9270e7ce770ae83bbc",
+      "bytes": 4842
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/heading-control-audit-20261024/PRIVATE_PROPOSAL.md",
+      "sha256": "550c00f6191695cd1c9d085ccbc9447b187a3a8730756a79656a525e392bd72e",
+      "bytes": 2729
+    }
+  ],
+  "retainedPrivateFiles": [
+    {
+      "path": "/private/tmp/kindred-heading-controls-20261024-3wd4ew9u/PREPARATION.json",
+      "sha256": "9914d991b1172a6b19efd973159a715f95ad5daed37d8fbe5417e92839f8e629",
+      "bytes": 1301
+    },
+    {
+      "path": "/private/tmp/kindred-heading-controls-20261024-3wd4ew9u/probe.mjs",
+      "sha256": "bd8cee3800d37d5568e8d5b9f1011aa4d0954220c972e01dc5dc0b0c3efe866e",
+      "bytes": 8354
+    },
+    {
+      "path": "/private/tmp/kindred-heading-controls-20261024-3wd4ew9u/probe-catalogue.mjs",
+      "sha256": "7ba96ab0eb7b48ba7df487022ef9b510c0a73fb0031c891c4fc09632a43631c7",
+      "bytes": 8711
+    },
+    {
+      "path": "/private/tmp/kindred-heading-controls-20261024-3wd4ew9u/PROBE_RESULT.json",
+      "sha256": "3e560b909c2ff6cad293518ee2edb6145ff83c666f44df49a3f54a717ab652d8",
+      "bytes": 5990
+    },
+    {
+      "path": "/private/tmp/kindred-heading-controls-20261024-3wd4ew9u/PROBE_CATALOGUE_RESULT.json",
+      "sha256": "2208fe77d9954d9fc2aa745b6437ac9230fa4a63f4511f47941aa286306c69e3",
+      "bytes": 6305
+    },
+    {
+      "path": "/private/tmp/kindred-heading-controls-20261024-3wd4ew9u/PROPOSAL.patch",
+      "sha256": "647fef9e9aa4918bf13693a5c728396437465879ed1fed37e5c5746eee3a61f4",
+      "bytes": 12063
+    }
+  ]
+}

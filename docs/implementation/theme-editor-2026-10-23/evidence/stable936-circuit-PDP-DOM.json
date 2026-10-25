@@ -1,0 +1,38 @@
+{
+  "runId": "936e5f577646",
+  "actual": {
+    "hub": {
+      "addDisabled": false,
+      "images": [],
+      "pickerAttributes": null,
+      "selectedOptions": [],
+      "specifications": "Know the model. Read the limits.\nMerchant-stated specifications · normalized units\nManufacturer\tSynthetic Lab\nModel\tSynthetic H1\nPower input maximum\t65 W\nPower output maximum\t45 W\nLaptop pass-through maximum\t60 W\npower-input\t1 × usb-c\npower-output\t2 × usb-c\ndata\t1 × usb-a\n\nPower input and laptop pass-through are different measurements. Missing values are not inferred from another field. Maxima are merchant statements, not guaranteed simultaneous output.\n\nHost requirements\n\nHost requirements not supplied.\n\nWhat is included\n1 × Hub",
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    "cable": {
+      "addDisabled": false,
+      "images": [],
+      "pickerAttributes": null,
+      "selectedOptions": [],
+      "specifications": "Know the model. Read the limits.\nMerchant-stated specifications · normalized units\nManufacturer\tSynthetic Lab\nModel\tSynthetic L100\nCable power capacity maximum\t100 W\nData transfer maximum\t480 Mb/s\nCable length\t1000 mm\nhost\t1 × usb-c\ndata\t1 × usb-c\n\nPower input and laptop pass-through are different measurements. Missing values are not inferred from another field. Maxima are merchant statements, not guaranteed simultaneous output.\n\nHost requirements\n\nHost requirements not supplied.\n\nWhat is included\n1 × Cable",
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    "unknown": {
+      "addDisabled": false,
+      "images": [],
+      "pickerAttributes": null,
+      "selectedOptions": [],
+      "specifications": "Know the model. Read the limits.\n\nTechnical facts have not been supplied. Device compatibility remains unconfirmed.",
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-24T05:43:51.332Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "phase": "empty",
+  "actual": {
+    "id": "6e25118a-9f39-4ad9-8374-d0b5bf3e4e25",
+    "title": "Habitat dimensional controls",
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "productIds": []
+  },
+  "publicResponse": {
+    "status": 200,
+    "requestId": "c403cbdb-8d43-46bb-83b1-8be0d00e185b",
+    "meta": {
+      "page": 1,
+      "per_page": 20,
+      "total": 0,
+      "total_pages": 0,
+      "has_next": false,
+      "has_prev": false
+    },
+    "discovery": {
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "sort": "display_order",
+        "collection_id": "6e25118a-9f39-4ad9-8374-d0b5bf3e4e25"
+      },
+      "facets": [],
+      "matches": [],
+      "measurement_capabilities": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "max_width_cm": {
+          "available": false
+        },
+        "max_depth_cm": {
+          "available": false
+        }
+      }
+    },
+    "productIds": []
+  }
+}

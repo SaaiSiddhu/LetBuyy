@@ -1,0 +1,46 @@
+{
+  "runId": "936e5f577646",
+  "actual": [
+    {
+      "file": "stable936-habitat-HQ01-collection-applied.ax.txt",
+      "actualBrowserGETSubmitURL": "http://syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?search=Habitat+lifecycle+desk&max_width_cm=&max_depth_cm=&material=wood&finish=natural&sort=display_order&limit=20&category=Furniture&country_of_origin=India&collection_id=ff302898-894c-4f35-9157-987ced4231db",
+      "checks": {
+        "actualMaterial": true,
+        "actualFinish": true,
+        "singleScalars": true,
+        "actualSearchCategoryCountry": true
+      }
+    },
+    {
+      "file": "stable936-habitat-HQ02-collection-applied.ax.txt",
+      "actualBrowserGETSubmitURL": "http://syn-threadline-ui-6815276b.localhost:50494/collections/ff302898-894c-4f35-9157-987ced4231db?search=Habitat+lifecycle+desk&max_width_cm=&max_depth_cm=&material=metal&finish=black&sort=display_order&limit=20&category=Furniture&country_of_origin=India&collection_id=ff302898-894c-4f35-9157-987ced4231db",
+      "checks": {
+        "actualMaterial": true,
+        "actualFinish": true,
+        "singleScalars": true,
+        "actualSearchCategoryCountry": true
+      }
+    },
+    {
+      "file": "stable936-habitat-HQ01-search-applied.ax.txt",
+      "actualBrowserGETSubmitURL": "http://syn-threadline-ui-6815276b.localhost:50494/search?search=Habitat+lifecycle+desk&max_width_cm=&max_depth_cm=&material=wood&finish=natural&sort=display_order&limit=20&category=Furniture&country_of_origin=India",
+      "checks": {
+        "actualMaterial": true,
+        "actualFinish": true,
+        "singleScalars": true,
+        "actualSearchCategoryCountry": true
+      }
+    },
+    {
+      "file": "stable936-habitat-HQ02-search-applied.ax.txt",
+      "actualBrowserGETSubmitURL": "http://syn-threadline-ui-6815276b.localhost:50494/search?search=Habitat+lifecycle+desk&max_width_cm=&max_depth_cm=&material=metal&finish=black&sort=display_order&limit=20&category=Furniture&country_of_origin=India",
+      "checks": {
+        "actualMaterial": true,
+        "actualFinish": true,
+        "singleScalars": true,
+        "actualSearchCategoryCountry": true
+      }
+    }
+  ],
+  "evidenceClass": "Actual settled native GET form submission URLs joined to separatelycaptured canonicalquery/results; not a fabricated FormData object. FormData constructor unavailable in browser readonlyscope."
+}

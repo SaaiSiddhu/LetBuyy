@@ -1,0 +1,317 @@
+{
+  "body": {
+    "background": "rgb(244, 244, 244)",
+    "color": "rgba(43, 44, 45, 0.75)",
+    "font": "Jost, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "United States | USD $",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "English",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "United States | USD $",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "English",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "500",
+      "width": 1,
+      "x": 920.3125,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Language",
+      "weight": "500",
+      "width": 1,
+      "x": 1098.9140625,
+      "y": 48
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 282,
+      "x": 948,
+      "y": -99.296875
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 70.1953125,
+      "line": "70.2px",
+      "size": "54.6px",
+      "tag": "H1",
+      "text": "About us",
+      "weight": "500",
+      "width": 726,
+      "x": 357,
+      "y": 419
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "Ordering",
+      "weight": "500",
+      "width": 358.6640625,
+      "x": 170,
+      "y": 1169.9453125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "Resources",
+      "weight": "500",
+      "width": 358.671875,
+      "x": 540.6640625,
+      "y": 1169.9453125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "About",
+      "weight": "500",
+      "width": 358.6640625,
+      "x": 911.3359375,
+      "y": 1169.9453125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 187.328125,
+      "x": 170,
+      "y": 1476.328125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Language",
+      "weight": "400",
+      "width": 103.625,
+      "x": 367.328125,
+      "y": 1476.328125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-trade-demo.myshopify.com/pages/about-us#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    },
+    {
+      "text": "Marketing resources",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Become a wholesale partner",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-trade-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-trade-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "Returns",
+      "url": "https://theme-trade-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-trade-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Marketing resources",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Become a wholesale partner",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-trade-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-trade-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-trade-demo",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911110678__image_banner_QAYiHx",
+      "rect": {
+        "height": 280,
+        "width": 1440,
+        "x": 0,
+        "y": 99
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911110678__main",
+      "rect": {
+        "height": 714.9453125,
+        "width": 1440,
+        "x": 0,
+        "y": 379
+      },
+      "tag": "SECTION",
+      "text": "About us\n\nWelcome to Trade, your premier destination for high-quality homeware. As a wholesale supplier to like-minded businesses, we are committed to providing sustainable product"
+    }
+  ],
+  "title": "About us – theme-trade-demo",
+  "url": "https://theme-trade-demo.myshopify.com/pages/about-us",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [],
+  "images": [
+    {
+      "alt": "A living room scene with a fireplace, coffee table, couches, and shelving. The decor is light and airy. ",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 280,
+        "width": 1440
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree towel display with orders over $2,500\n\nShop\nMarketing resources\nBecome a wholesale partner\nCountry/region\nUnited States | USD $\nLanguage\nEnglish\nCart\nAbout us\n\nWelcome to Trade, your premier destination for high-quality homeware. As a wholesale supplier to like-minded businesses, we are committed to providing sustainable products that enhance your customers' living spaces.\n\nAt Trade, we understand the importance of creating a warm and inviting atmosphere in any home. That's why we offer a wide range of necessities for the bedroom, bathroom, living room, and beyond. No matter your style, we have the perfect thing to add a touch of elegance to any living space.\n\nFounded in 2023, Trade has quickly become a trusted name in the homeware industry. Our commitment to sustainability sets us apart from the competition. We believe that beautiful design should not come at the expense of the environment. That's why we prioritize eco-friendly materials and manufacturing processes in all our products.\n\nWhen you choose Trade, you can feel confident that you are making a responsible choice for your business and the planet. Our wholesale options make it easy for like-minded businesses to stock their shelves with sustainable homeware that their customers will love.\n\nThank you for choosing Trade as your homeware supplier. We look forward to helping you create beautiful, sustainable living spaces that leave a lasting impression.\n\nOrdering\nShop all\nShipping\nReturns\nResources\nFAQ\nMarketing resources\nBecome a wholesale partner\nAbout\nAbout us\nContact\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nCountry/region\nUnited States | USD $\nLanguage\nEnglish\nPayment methods\n© 2026, theme-trade-demo Powered by Shopify"
+}

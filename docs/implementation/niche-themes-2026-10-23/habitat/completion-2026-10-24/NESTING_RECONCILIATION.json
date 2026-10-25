@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:48:19.222381+00:00",
+  "classification": "CORRECTED_CANONICAL_APPLICABILITY_NOT_BROWSER_ACCEPTANCE",
+  "finding": "HAB-G06",
+  "previousInference": "No explicit child list was incorrectly treated as no supported children. That inference is withdrawn.",
+  "canonicalRule": {
+    "absent": "Unrestricted among known eligible installed first-party reusable types; do not equate omission to[]",
+    "explicitEmpty": "No children",
+    "explicitAllowlist": "Only named installed eligible reusable types; reject app/unknown/out-of-scope types"
+  },
+  "sourcePins": [
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+      "sha256": "14db22b041408abafd76494b36ba02c1b1845b847151bb924e81428a071b0542"
+    }
+  ],
+  "review": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/editor-child-contract-independent-review.json",
+    "sha256": "e24ccdc3bf947b629aba1a5619d26606547f37fdb1f304c0f86d76f032dbb163"
+  },
+  "allocation03": {
+    "path": "docs/implementation/niche-theme-programme/completion-editor-child-contract-allocation-20261024-03.json",
+    "sha256": "38e8c0d5eb5a10c59fae9ed541e7bca7c3617475c3628ab617c96599c99cda91"
+  },
+  "actualUnmodifiedHabitatReusableDefinition": {
+    "type": "badge",
+    "path": "blocks/badge.liquid",
+    "sourceSha256": "eb17e9a70ed037e2d92d2b070d702bb1d56afd20a4fe9761a590202a8d9b985f",
+    "schema": {
+      "name": "Badge",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Label",
+          "default": "New",
+          "id": "label"
+        }
+      ],
+      "presets": []
+    },
+    "runtimeStatus": "NOT_RUN"
+  },
+  "effectiveInlineParentPlacements": [
+    {
+      "sectionType": "banner-carousel",
+      "parentType": "slide",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "brand-marquee",
+      "parentType": "brand",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "experience-timeline",
+      "parentType": "experience",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "faq-accordion",
+      "parentType": "faq-item",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "footer",
+      "parentType": "link",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "header",
+      "parentType": "link",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "portfolio-grid",
+      "parentType": "project",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "services-grid",
+      "parentType": "service",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "skills-section",
+      "parentType": "skill",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "testimonials",
+      "parentType": "testimonial",
+      "eligibleKnownReusableChildren": [],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "SECTION_INLINE_PARENT_NO_RECURSION"
+    },
+    {
+      "sectionType": "spotlight",
+      "parentType": "badge",
+      "eligibleKnownReusableChildren": [
+        "badge"
+      ],
+      "sourceRule": "Omitted allowlist is unrestricted only for an installed reusable parent. Inline-only parent returns before canonical nested render; no invented recursion.",
+      "runtimeStatus": "NOT_RUN",
+      "renderModel": "INSTALLED_REUSABLE_PARENT"
+    }
+  ],
+  "requiredReusableChain": {
+    "section": "spotlight",
+    "rootType": "badge",
+    "childType": "badge",
+    "grandchildType": "badge",
+    "maxDepth": 3,
+    "depth4": "must be denied without mutation"
+  },
+  "requiredRuntimeChecks": [
+    "Actual normal add/edit/reorder/hide/show/delete/re-add of supported nested first-party instances",
+    "Two identical-label child blocks remain distinct by acknowledged UUID; untouched sibling exact",
+    "Supported undo/redo preserves acknowledged restored identity; normal re-add binds new identity",
+    "Save/full reload/preview/publish/public readback; nested data persistence alone is not rendered-child acceptance",
+    "App/unknown/depth/count/foreign context denial with no mutation; no frozen bundle definition edit to make a test pass"
+  ],
+  "sourceDisposition": "Existing Editor03 fixes the canonical absent/empty/list contract; inspect its sealed qualification before current admission. Do not reimplement it.",
+  "browserStatus": "NOT_RUN",
+  "productTestCasesPromoted": 0,
+  "updatedAt": "2026-10-24T11:38:47.427330+00:00",
+  "earlierOverbroadInference": "Boundary01 incorrectly generalized absent allowlist to all inline-only parents. Withdrawn; original record preserved.",
+  "currentSemantics": "Known reusable badge has unrestricted omitted allowlist and a declared spotlight root host. FAQ and other inline-only parent recursion is not supported by current renderer/controller; require honest restriction/preservation without fabricating a feature.",
+  "sharedEditor03": {
+    "handoff": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/CHILD_CONTRACT03_HANDOFF.json",
+      "sha256": "56013652d8378e38f6b7b9859c14ac9918f57de911a4520af0a08ad23eb39e62"
+    },
+    "sixCurrentSourceHashes": [
+      {
+        "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+        "recordedSha256": "39bf43e867e33fb397c643ec474ffadd30ea9fd9004c6441b0cb6286cc7fdf1b",
+        "currentSha256": "39bf43e867e33fb397c643ec474ffadd30ea9fd9004c6441b0cb6286cc7fdf1b",
+        "matches": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+        "recordedSha256": "48d66fbaf330959fa9bd86081eff102389c84264eb437f623ea687281c9e9156",
+        "currentSha256": "48d66fbaf330959fa9bd86081eff102389c84264eb437f623ea687281c9e9156",
+        "matches": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+        "recordedSha256": "4ce7dbb8853bdb4edcb380bc2ab6aded04dd3654878809b1da9695f14d530eba",
+        "currentSha256": "4ce7dbb8853bdb4edcb380bc2ab6aded04dd3654878809b1da9695f14d530eba",
+        "matches": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+        "recordedSha256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f",
+        "currentSha256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f",
+        "matches": true
+      },
+      {
+        "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts",
+        "recordedSha256": "3047fbaf6af9baab89a3bccb290c8ee52fd090f39637b5f383ca9fee237f284d",
+        "currentSha256": "3047fbaf6af9baab89a3bccb290c8ee52fd090f39637b5f383ca9fee237f284d",
+        "matches": true
+      },
+      {
+        "path": "apps/merchant/web/tests/theme-editor-block-actions.test.mjs",
+        "recordedSha256": "907026b659ff0ffb9adf31781ee63863baf559eb0426cd4d87ac4031cf11c75d",
+        "currentSha256": "907026b659ff0ffb9adf31781ee63863baf559eb0426cd4d87ac4031cf11c75d",
+        "matches": true
+      }
+    ],
+    "nineLogHashes": [
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-editor-regression-01.log",
+        "sha256": "c539196113e983f8d4d9bc9f4e494154e17abd0cd7f82a65ffe6abf0c4d8ea39",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-editor-regression-02.log",
+        "sha256": "d930acf84fd2c8536394cb103af21b43b86eb94bdf86d3e1b0055deb7574ec3c",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-merchant-typecheck-02.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-lint-02.log",
+        "sha256": "2a108d39cb1ab9f8f863af7fb2b947e58a6e14ffb4f01217df6890e2152e5a01",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-captured-probe-01.log",
+        "sha256": "3de7a525d1c789bd2075276b3a346b9fed7b4698f937a338b1c5192b360942ae",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-captured-probe-02.log",
+        "sha256": "0309af1834f03d60b34184cd04b054270dd1d21a7d859dfce7c37931bf779d7e",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-captured-probe-03.log",
+        "sha256": "38f24ca0335f04510464e3afb0c4578d4316243ad3d20dce9ae587f7e0542253",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-governance-02.log",
+        "sha256": "7544f16c21c2dba16c1d21509b3cfd2fb5e9a2d3afac98da8e92ea1555795f57",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-imports-02.log",
+        "sha256": "b3173f9591ddf6cb488128f4487368175f11d68fef0989e31fc14988e766b0cb",
+        "matches": true
+      }
+    ],
+    "reportedTests": {
+      "exitCode": 0,
+      "tests": 113,
+      "pass": 113,
+      "fail": 0,
+      "skip": 0,
+      "log": "theme-editor-child-contract-editor-regression-02.log",
+      "overlap": "Includes prior109/110 and12 document cases. These are not additive totals."
+    },
+    "capturedHabitatProof": {
+      "slug": "letbuyy-craft",
+      "version": "2.0.0",
+      "bundleSHA256": "b1e5ae539eefcb55afbf0f84e918d60985a632b094ead05de76cb73a75a6ae51",
+      "reusableDefinitions": [
+        {
+          "type": "badge",
+          "allowedChildTypes": "ABSENT_UNRESTRICTED"
+        }
+      ],
+      "proofs": [
+        {
+          "parentType": "badge",
+          "childType": "badge",
+          "semantics": "ABSENT_UNRESTRICTED",
+          "normalProductionAction": "PASS",
+          "canonicalCompileDocumentRoundtrip": "PASS",
+          "reloadedIdentityVisibility": "PASS",
+          "definitionUnchanged": true
+        }
+      ],
+      "installedFreshVerification": "NOT_RUN"
+    },
+    "sourceProofClass": "CAPTURED_CATALOG_SOURCE_ACTION_AND_CANONICAL_ROUNDTRIP_NOT_INSTALLED_OR_BROWSER",
+    "installedFreshVerification": "NOT_RUN",
+    "limits": "Captured bundle digest b1e5... and raw pure factory2a652... are distinct inputs; no claim that stored-action/roundtrip proof is rendered or current installed acceptance."
+  },
+  "newRenderedEffectFinding": {
+    "id": "HAB-G11",
+    "rawBadgeDoesNotEmitSubBlocks": true,
+    "failedBaseline": "nested-badge-render-20261024-01/OBSERVED.json",
+    "privateRemedy": "private-habitat-v201-02/QUALIFICATION.json",
+    "installedStatus": "NOT_RUN"
+  }
+}

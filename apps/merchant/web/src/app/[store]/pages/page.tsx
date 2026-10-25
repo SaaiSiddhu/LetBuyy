@@ -257,7 +257,8 @@ export default function PagesPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Pages"
                     description="Create and publish informational pages for this site."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Pages' }]}
@@ -273,7 +274,8 @@ export default function PagesPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Pages"
                 description="Create and publish informational pages for this site."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Pages' }]}

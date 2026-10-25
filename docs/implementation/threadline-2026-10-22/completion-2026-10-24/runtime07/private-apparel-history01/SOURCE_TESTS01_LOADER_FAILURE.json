@@ -1,0 +1,9 @@
+{
+  "classification": "PRIVATE_TEST_LOADER_SETUP_FAILURE_NOT_BUSINESS_FAILURE",
+  "firstRun": "source-tests01.tap",
+  "actualExistingRegressionExecutionsPass": 37,
+  "private8NotExecuted": "NamedESMimportfromprivate.tscompiledasCJSfailedbeforetestregistration",
+  "correction": "UseregisteredtsxCJSloaderforprivatehelperimports; no businesssourcechange",
+  "nextRun": "Onlyprivate8focusedcases; unchanged37regressionexecutionsnotrerun",
+  "counting": "Importedfixturetestsrepeatnames;37notclaimeduniqueorUIcases."
+}

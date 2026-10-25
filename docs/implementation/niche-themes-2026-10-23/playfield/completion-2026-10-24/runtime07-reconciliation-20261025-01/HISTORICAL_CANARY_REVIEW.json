@@ -1,0 +1,136 @@
+{
+  "recordedAt": "2026-10-24T20:14:35.563854+00:00",
+  "classification": "RETAINED_ROOT_PLAYFIELD210_CANARY_COMPONENT_RECONCILIATION_NOT_CURRENT07_PASS",
+  "actualExecutionRunId": "20b861608061",
+  "actualPackageLabel": "2.1.0",
+  "receipt": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime03/BROWSER_SMOKE.json",
+    "sha256": "61aa99c6bc8fcdd7fd260b6aa95a7008171997ca5617733f98a723603c32dc47"
+  },
+  "evidenceClass": "Controller case summary; raw per-step current07 responses/screenshots not supplied by this receipt.",
+  "exactInstalledChecksumInThisReceipt": null,
+  "runtime07Reuse": "PENDING_EXACT_RELEVANT_SOURCE_ARTIFACT_LINEAGE_AND_THEMES_INDEPENDENT_ACCEPTANCE",
+  "originalCaseAndOperationStatusesChanged": false,
+  "providerWebhookInThisReceipt": false,
+  "normalNewSignupInThisReceipt": false,
+  "componentMappings": [
+    {
+      "caseId": "PF-I02",
+      "components": [
+        {
+          "id": "PLAYFIELD_210_ADD",
+          "status": "PASS",
+          "evidence": "Normal Add creates one saved draft, original Core remains unpublished until deliberate Publish"
+        },
+        {
+          "id": "EDITOR_MANIFEST_PREVIEW",
+          "status": "PASS",
+          "evidence": "Actual installed manifest, controls, resource list and real Liquid preview load"
+        },
+        {
+          "id": "PUBLISH_AND_BUYER_OUTPUT",
+          "status": "PASS",
+          "evidence": "Editor Active; independent buyer sees root,inline,sibling/re-added labels and order; removed label absent"
+        }
+      ]
+    },
+    {
+      "caseId": "PF-B-standalone-badge",
+      "components": [
+        {
+          "id": "ROOT_AND_NESTED_CUSTOMIZATION",
+          "status": "PASS",
+          "evidence": "Normal root badge add/edit, nested add/edit, Save and full reload retain labels"
+        },
+        {
+          "id": "CHILD_REORDER_AND_HIDE_STATE",
+          "status": "PASS",
+          "evidence": "Keyboard activation reordered sibling and saved hidden flag; native checkbox0 observed"
+        },
+        {
+          "id": "CHILD_REMOVE_AND_READD",
+          "status": "PASS",
+          "evidence": "Normal confirmation removes targeted child, preserves sibling, re-add creates new child and saved label"
+        },
+        {
+          "id": "PUBLISH_AND_BUYER_OUTPUT",
+          "status": "PASS",
+          "evidence": "Editor Active; independent buyer sees root,inline,sibling/re-added labels and order; removed label absent"
+        }
+      ]
+    },
+    {
+      "caseId": "PF-X-210-BADGE-LIFECYCLE",
+      "components": [
+        {
+          "id": "ROOT_AND_NESTED_CUSTOMIZATION",
+          "status": "PASS",
+          "evidence": "Normal root badge add/edit, nested add/edit, Save and full reload retain labels"
+        },
+        {
+          "id": "CHILD_REORDER_AND_HIDE_STATE",
+          "status": "PASS",
+          "evidence": "Keyboard activation reordered sibling and saved hidden flag; native checkbox0 observed"
+        },
+        {
+          "id": "CHILD_REMOVE_AND_READD",
+          "status": "PASS",
+          "evidence": "Normal confirmation removes targeted child, preserves sibling, re-add creates new child and saved label"
+        },
+        {
+          "id": "PUBLISH_AND_BUYER_OUTPUT",
+          "status": "PASS",
+          "evidence": "Editor Active; independent buyer sees root,inline,sibling/re-added labels and order; removed label absent"
+        }
+      ]
+    },
+    {
+      "caseId": "PF-X-210-CHILD-header-link",
+      "components": [
+        {
+          "id": "INLINE_PARENT_CHILD",
+          "status": "PASS",
+          "evidence": "Header inline Link offers Badge only through qualified installed definitions; normal add/edit/save"
+        },
+        {
+          "id": "PUBLISH_AND_BUYER_OUTPUT",
+          "status": "PASS",
+          "evidence": "Editor Active; independent buyer sees root,inline,sibling/re-added labels and order; removed label absent"
+        }
+      ]
+    },
+    {
+      "caseId": "PF-I05",
+      "components": [
+        {
+          "id": "TOY_VARIANT_FACTS",
+          "status": "PASS",
+          "evidence": "Normal actual Inherited edition selects real UUID; displayed age/contents/dimensions/materials/warnings retained in cart"
+        }
+      ]
+    },
+    {
+      "caseId": "PF-X-RAZORPAY-THEME",
+      "components": [
+        {
+          "id": "RAZORPAY_PURCHASE",
+          "status": "PARTIAL",
+          "evidence": "Two normal real TestMode purchases confirmed with exactly1payment and1balanced capture each. Third Testcapture localpending after expired browserhandoff; actualcallback signatures still400. No provider certificate."
+        },
+        {
+          "id": "MERCHANT_ORDER_COUNTS_AND_PAID_FILTER",
+          "status": "PASS",
+          "evidence": "NormalRefresh shows3 total:2PaidConfirmed500INR each +1Pending1220INR. Paidfilter shows2 and exactconfirmedorder numbers. DBreconciliation matches. Screenshot merchant-paid-order-counts.png"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "PF-I05 covers only inherited edition in this canary; Unknown/Paper transitions and selected exactURL reload remain required",
+    "PF-I02 full A/B/rollback/recovery clause is not established by installation/publish summary",
+    "Root/child canary does not prove all10 current inline contexts or all136 fields",
+    "Old partial Test purchases and failed callback delivery cannot replace intended-product current07 payment/HMAC/history",
+    "Existing-buyer SSO is separate from normal signup/local verification"
+  ],
+  "newCurrent07CasePasses": 0
+}

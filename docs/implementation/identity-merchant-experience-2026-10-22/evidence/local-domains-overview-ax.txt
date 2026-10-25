@@ -1,0 +1,37 @@
+Browser tab: 8, Title: "LetBuyy Admin", URL: "http://localhost:9001/ux-audit-1022/settings/domains".
+0 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/settings/domains
+	1 container
+		3 link Description: LetBuyy dashboard, Value: localhost:9001/ux-audit-1022/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store UX Research Fixture, Secondary Actions: Expand
+			8 text UR
+			9 text UX Research Fixture
+	10 container admin-page-scroll
+		11 text Your site is in 
+		12 text draft
+		13 text  mode. It is not visible to visitors yet.
+		50 container
+			51 text UX Research Fixture ux-audit-1022 .letbuyy.com
+			52 link Description: Close settings, Value: localhost:9001/ux-audit-1022/dashboard
+			53 search text field (settable) Description: Search settings, Value: dns, ID: settings-search-desktop
+			54 container Settings
+				55 link Description: Dashboard, Value: localhost:9001/ux-audit-1022/settings
+				56 text STOREFRONT TRUST
+				57 link Description: Domains, Value: localhost:9001/ux-audit-1022/settings/domains
+			58 text User [email redacted]
+		14 container Domains
+			59 container
+				60 heading Domains, Value: 1
+					61 text Domains
+				62 button Connect existing domain
+				63 heading Use your own domain, Value: 3
+					64 text Use your own domain
+				65 text Connect a custom domain to give your store a professional, branded address with automatic HTTPS. Your LetBuyy address always stays live as a fallback.
+				66 text YOUR DOMAINS ux-audit-1022.localhost LetBuyy address · always available Default No custom domain yet Connect a domain you own to brand your storefront with automatic HTTPS.
+				67 button Connect domain
+				68 button Connect existing domain
+				69 button (collapsed) BUY A NEW DOMAIN, Secondary Actions: Expand
+
+The focused UI element is 57 link Description: Domains, URL: localhost:9001/ux-audit-1022/settings/domains

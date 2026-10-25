@@ -1,0 +1,243 @@
+{
+  "runId": "936e5f577646",
+  "correction": "Earlier PDP-DOM selected field captured the first static .tm-variant-facts reference. This addendum reads the actual labelled data-lb-selected-variant-facts panel; original AX and static references retained, no product defect inferred.",
+  "states": [
+    {
+      "name": "baseline-26.5 in",
+      "actual": {
+        "addDisabled": false,
+        "common": "Measure first. Choose second.\nMerchant-supplied product facts; variant measurements follow below\nActivity\tBadminton\nEquipment type\tracket\nOverall length\t67.5 cm\nWeight\t85 g\nDimensions\t67.5 × 26 × 2 cm\nMaterial\tNot supplied\nMeasurements for 26.5 in\n\nLength: 26.5 in\n\nWeight: 80 g\n\nDimensions: 26.5 × 10 in\n\nMeasurements for Common size\n\nLength: 67.5 cm\n\nWeight: 85 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nIncluded contents have not been supplied.\n\nCompatibility: unconfirmed.",
+        "selected": "26.5 in.\n\nEquipment facts\nLength\n26.5 in\nWeight\n80 g\nDimensions\n26.5 × 10 in",
+        "selectedAttributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "5dbce431-9870-4636-8b38-e65471737b52"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "f63aa9f6-d375-4633-aff6-74b35ba05992"
+          ],
+          [
+            "data-selection-state",
+            "selected"
+          ]
+        ],
+        "selectedOptions": [
+          {
+            "name": "Length",
+            "value": "26.5 in"
+          }
+        ],
+        "staticVariantReferences": [
+          "Measurements for 26.5 in\n\nLength: 26.5 in\n\nWeight: 80 g\n\nDimensions: 26.5 × 10 in",
+          "Measurements for Common size\n\nLength: 67.5 cm\n\nWeight: 85 g\n\nDimensions: 67.5 × 26 × 2 cm"
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "name": "baseline-Common size",
+      "actual": {
+        "addDisabled": false,
+        "common": "Measure first. Choose second.\nMerchant-supplied product facts; variant measurements follow below\nActivity\tBadminton\nEquipment type\tracket\nOverall length\t67.5 cm\nWeight\t85 g\nDimensions\t67.5 × 26 × 2 cm\nMaterial\tNot supplied\nMeasurements for 26.5 in\n\nLength: 26.5 in\n\nWeight: 80 g\n\nDimensions: 26.5 × 10 in\n\nMeasurements for Common size\n\nLength: 67.5 cm\n\nWeight: 85 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nIncluded contents have not been supplied.\n\nCompatibility: unconfirmed.",
+        "selected": "Common size.\n\nEquipment facts\nLength\n67.5 cm\nWeight\n85 g\nDimensions\n67.5 × 26 × 2 cm",
+        "selectedAttributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "5dbce431-9870-4636-8b38-e65471737b52"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "e39e309c-3aac-4a90-b6e8-31506e1c818c"
+          ],
+          [
+            "data-selection-state",
+            "selected"
+          ]
+        ],
+        "selectedOptions": [
+          {
+            "name": "Length",
+            "value": "Common size"
+          }
+        ],
+        "staticVariantReferences": [
+          "Measurements for 26.5 in\n\nLength: 26.5 in\n\nWeight: 80 g\n\nDimensions: 26.5 × 10 in",
+          "Measurements for Common size\n\nLength: 67.5 cm\n\nWeight: 85 g\n\nDimensions: 67.5 × 26 × 2 cm"
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "name": "witness-S",
+      "actual": {
+        "addDisabled": false,
+        "common": "Measure first. Choose second.\nMerchant-supplied product facts; variant measurements follow below\nActivity\tBadminton\nEquipment type\tracket\nOverall length\t67.5 cm\nWeight\t85 g\nDimensions\t67.5 × 26 × 2 cm\nMaterial\tNot supplied\nMeasurements for S\n\nLength: 67.5 cm\n\nWeight: 84 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nMeasurements for M\n\nLength: 700 mm\n\nWeight: 90 g\n\nDimensions: 700 × 270 mm\n\nMeasurements for L\n\nLength: 254 mm\n\nWeight: 75 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nIncluded contents have not been supplied.\n\nCompatibility: unconfirmed.",
+        "selected": "S.\n\nEquipment facts\nLength\n67.5 cm\nWeight\n84 g\nDimensions\n67.5 × 26 × 2 cm",
+        "selectedAttributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "364b5606-eaed-4699-98d6-f5f6249ebf48"
+          ],
+          [
+            "data-selection-state",
+            "selected"
+          ]
+        ],
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "S"
+          }
+        ],
+        "staticVariantReferences": [
+          "Measurements for S\n\nLength: 67.5 cm\n\nWeight: 84 g\n\nDimensions: 67.5 × 26 × 2 cm",
+          "Measurements for M\n\nLength: 700 mm\n\nWeight: 90 g\n\nDimensions: 700 × 270 mm",
+          "Measurements for L\n\nLength: 254 mm\n\nWeight: 75 g\n\nDimensions: 67.5 × 26 × 2 cm"
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "name": "witness-M",
+      "actual": {
+        "addDisabled": false,
+        "common": "Measure first. Choose second.\nMerchant-supplied product facts; variant measurements follow below\nActivity\tBadminton\nEquipment type\tracket\nOverall length\t67.5 cm\nWeight\t85 g\nDimensions\t67.5 × 26 × 2 cm\nMaterial\tNot supplied\nMeasurements for S\n\nLength: 67.5 cm\n\nWeight: 84 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nMeasurements for M\n\nLength: 700 mm\n\nWeight: 90 g\n\nDimensions: 700 × 270 mm\n\nMeasurements for L\n\nLength: 254 mm\n\nWeight: 75 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nIncluded contents have not been supplied.\n\nCompatibility: unconfirmed.",
+        "selected": "M.\n\nEquipment facts\nLength\n700 mm\nWeight\n90 g\nDimensions\n700 × 270 mm",
+        "selectedAttributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "103f0ff0-1bc5-46b2-be49-9553912124aa"
+          ],
+          [
+            "data-selection-state",
+            "selected"
+          ]
+        ],
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "M"
+          }
+        ],
+        "staticVariantReferences": [
+          "Measurements for S\n\nLength: 67.5 cm\n\nWeight: 84 g\n\nDimensions: 67.5 × 26 × 2 cm",
+          "Measurements for M\n\nLength: 700 mm\n\nWeight: 90 g\n\nDimensions: 700 × 270 mm",
+          "Measurements for L\n\nLength: 254 mm\n\nWeight: 75 g\n\nDimensions: 67.5 × 26 × 2 cm"
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "name": "witness-L",
+      "actual": {
+        "addDisabled": true,
+        "common": "Measure first. Choose second.\nMerchant-supplied product facts; variant measurements follow below\nActivity\tBadminton\nEquipment type\tracket\nOverall length\t67.5 cm\nWeight\t85 g\nDimensions\t67.5 × 26 × 2 cm\nMaterial\tNot supplied\nMeasurements for S\n\nLength: 67.5 cm\n\nWeight: 84 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nMeasurements for M\n\nLength: 700 mm\n\nWeight: 90 g\n\nDimensions: 700 × 270 mm\n\nMeasurements for L\n\nLength: 254 mm\n\nWeight: 75 g\n\nDimensions: 67.5 × 26 × 2 cm\n\nIncluded contents have not been supplied.\n\nCompatibility: unconfirmed.",
+        "selected": "L — unavailable. Purchase is unavailable for this option.\n\nEquipment facts\nLength\n254 mm\nWeight\n75 g\nDimensions\n67.5 × 26 × 2 cm",
+        "selectedAttributes": [
+          [
+            "data-lb-selected-variant-facts",
+            ""
+          ],
+          [
+            "data-product-id",
+            "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1"
+          ],
+          [
+            "aria-label",
+            "Selected variant facts"
+          ],
+          [
+            "data-variant-id",
+            "39740b91-60f6-4299-b4d4-dbad7e6a9dc7"
+          ],
+          [
+            "data-selection-state",
+            "unavailable"
+          ]
+        ],
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "L"
+          }
+        ],
+        "staticVariantReferences": [
+          "Measurements for S\n\nLength: 67.5 cm\n\nWeight: 84 g\n\nDimensions: 67.5 × 26 × 2 cm",
+          "Measurements for M\n\nLength: 700 mm\n\nWeight: 90 g\n\nDimensions: 700 × 270 mm",
+          "Measurements for L\n\nLength: 254 mm\n\nWeight: 75 g\n\nDimensions: 67.5 × 26 × 2 cm"
+        ],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "name": "no-length",
+      "actual": {
+        "addDisabled": false,
+        "common": "Measure first. Choose second.\nMerchant-supplied product facts; variant measurements follow below\nActivity\tBadminton\nEquipment type\tstorage\nOverall length\tNot supplied\nWeight\t120 g\nGrip circumference\t84 mm\nDimensions\t50 × 20 × 15 cm\nMaterial\tNot supplied\n\nIncluded contents have not been supplied.\n\nCompatibility: unconfirmed.",
+        "selectedAttributes": [],
+        "selectedOptions": [],
+        "staticVariantReferences": [],
+        "viewport": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    }
+  ]
+}

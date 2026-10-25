@@ -1,0 +1,218 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-ride/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-ride/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Trailmark Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Trailmark activity home, Secondary Actions: Expand
+				13 menu
+					14 (selected) Trailmark activity home
+					15 LetBuyy Core product
+					16 Trailmark equipment collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 Trailmark equipment search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Trailmark activity home, Value: 2
+				41 text Trailmark activity home
+			42 text v9
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 checkbox Description: Toggle Announcement Bar visibility, Value: 1
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selectable) Activity masthead
+							53 button Activity masthead
+						54 row (selectable) Activity pathways
+							55 button Activity pathways
+						56 row (selectable) Factual equipment cards
+							57 button Factual equipment cards
+						58 row (selectable) Equipment selection guide
+							59 button Equipment selection guide
+						60 row (selectable) Merchant service information
+							61 button Merchant service information
+					62 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						63 menu
+							64 (selected) Marquee
+							65 404 Not Found
+							66 Spotlight
+							67 Search
+							68 Video Hero
+							69 Call to Action
+							70 Activity masthead
+							71 Blog Listing
+							72 Cart
+							73 Contact Form
+							74 Page Content
+							75 Factual equipment cards
+							76 Rich Content
+							77 Testimonials
+							78 Merchant service information
+							79 Equipment selection guide
+							80 Brand Marquee
+							81 Activity pathways
+							82 FAQ Accordion
+							83 Password Gate
+							84 Services Grid
+							85 App Block Slot
+							86 Customer Login
+							87 Policy Content
+							88 Portfolio Grid
+							89 Product Detail
+							90 Skills Section
+							91 Article Content
+							92 Banner Carousel
+							93 Order History
+							94 Announcement Bar
+							95 Customer Account
+							96 Collection Banner
+							97 Equipment discovery controls
+							98 Customer Register
+							99 Account Settings
+							100 Wishlist
+							101 Independent court accessories
+							102 Newsletter Signup
+							103 Addresses
+							104 Experience Timeline
+							105 Order Detail
+							106 Activity equipment discovery
+					107 button Add
+				108 container
+					109 text FOOTER
+					110 button Footer
+		111 container Live theme preview
+			112 text Live preview
+			113 text syn-threadline-ui-6815276b . localhost  -  1440 px
+			114 container Preview device
+				115 checkbox Desktop, Value: 1
+				116 checkbox Tablet, Value: 0
+				117 checkbox Mobile, Value: 0
+			118 container
+				119 text syn-threadline-ui-6815276b . localhost
+				120 checkbox Description: Inspect preview, Value: 1
+				121 container syn-threadline-ui-6815276b storefront preview
+					122 AXWebArea LetBuyy Store, URL: localhost:58091/preview?[query-redacted]
+						123 container
+							124 checkbox Description: Select announcement-bar section, Value: 1
+								125 text Trailmark 936 B — saved recovery draft.
+								126 link localhost:58091/preview?[query-redacted]
+							127 checkbox Description: Select header section, Value: 0
+								128 container Description: Primary, ID: lb-nav-panel-header-default
+								129 link Description: THREADLINE, Value: localhost:58091/store/syn-threadline-ui-6815276b
+								130 button (collapsed) Description: Search, Secondary Actions: Expand
+								131 link Description: Log in, Value: localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+								132 link Description: Cart ( 0 ), Value: localhost:58091/store/syn-threadline-ui-6815276b/cart
+							133 checkbox Description: Select hero-banner section, Value: 0
+								134 text RECREATION / EVERYDAY MOVEMENT
+								135 heading Trailmark 936 B measured equipment, Value: 1
+									136 text Trailmark 936 B measured equipment
+								137 text Start with the activity. Find the gear. Check the measurements.
+								138 link Description: Find your equipment →, Value: localhost:58091/store/syn-threadline-ui-6815276b/products
+							139 checkbox Description: Select category-grid section, Value: 0
+								140 heading Find your kind of play, Value: 2
+									141 text Find your kind of play
+								142 link Description: Care ↗ Synthetic theme acceptance setup only., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/d2005c42-10c1-4bf4-af35-5fcf33be5af9
+								143 link Description: Circuit lifecycle intentional empty ↗ Known empty collection; must not broaden to all products., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/b7d740f6-24e3-4bf3-8e82-4f7a14ee2784
+								144 link Description: Cleanse ↗ Synthetic theme acceptance setup only., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/2deb16a5-cac9-4df9-b8a6-635d25fbaae2
+								145 link Description: Colour ↗ Synthetic theme acceptance setup only., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/310a7230-7390-4b87-ba67-08c38f35b838
+								146 link Description: Easy ↗, Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/32db8972-ce49-4b69-8c08-6f65d4de20b5
+								147 link Description: Habitat dimensional controls ↗ Synthetic owned Habitat measurement controls only., Value: localhost:58091/store/syn-threadline-ui-6815276b/collections/6e25118a-9f39-4ad9-8374-d0b5bf3e4e25
+							148 checkbox Description: Select product-grid section, Value: 0
+								149 heading A simple start. Proper details., Value: 2
+									150 text A simple start. Proper details.
+								151 container
+									152 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									153 heading The Everyday Cotton Dress, Value: 3
+										154 link Description: The Everyday Cotton Dress, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+									155 text Color: Rust Size: S, M, L, XL INR 3,990.00
+									156 link Description: View clothing →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+								157 container
+									158 link Description: Product image not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									159 heading MadeYours lifecycle notebook, Value: 3
+										160 link Description: MadeYours lifecycle notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+									161 text INR 690.00
+									162 link Description: View equipment →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+								163 container
+									164 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									165 heading Fixture Cloud Rinse, Value: 3
+										166 link Description: Fixture Cloud Rinse, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+									167 text INR 640.00
+									168 link Description: View equipment →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/1d743654-5039-41e9-931f-08bb4530dfc5
+								169 container
+									170 link Description: Product image not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+									171 heading Habitat width-only shelf, Value: 3
+										172 link Description: Habitat width-only shelf, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+									173 text INR 1,400.00
+									174 link Description: View equipment →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/29c731cc-8b16-4e08-8f50-11e219310844
+								175 container
+									176 link Description: Product image not supplied, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+									177 heading Circuit lifecycle one metre cable, Value: 3
+										178 link Description: Circuit lifecycle one metre cable, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+									179 text INR 400.00
+									180 link Description: View equipment →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+								181 container
+									182 link Description: Marginalia lifecycle lined notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+									183 heading Marginalia lifecycle lined notebook, Value: 3
+										184 link Description: Marginalia lifecycle lined notebook, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+									185 text INR 320.00
+									186 link Description: View equipment →, Value: localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+							187 checkbox Description: Select about-section section, Value: 0
+								188 text KNOW YOUR GEAR
+								189 heading Different kit. Different measurements., Value: 2
+									190 text Different kit. Different measurements.
+							191 checkbox Description: Select trust-badges section, Value: 0
+							192 checkbox Description: Select footer section, Value: 0
+								193 heading Threadline, Value: 3
+									194 text Threadline
+								195 text Trailmark 936 B footer saved
+								196 heading CONTACT, Value: 4
+									197 text CONTACT
+								198 link Description: Contact us, Value: localhost:58091/store/syn-threadline-ui-6815276b/contact
+								199 text © Threadline. All rights reserved.
+								200 link Description: Powered by LetBuyy, Value: letbuyy.com/
+		201 container Theme properties
+			202 text Selected section
+			203 heading Announcement Bar, Value: 2
+				204 text Announcement Bar
+			205 container Smart defaults
+				206 button (collapsed) Smart defaults, Secondary Actions: Expand
+					207 text Smart defaults
+			208 container
+				209 text Message
+				210 text field (settable) Message, Value: Trailmark 936 B — saved recovery draft.
+				211 text Link URL
+				212 text field (settable) Link URL
+				213 text Link label
+				214 text field (settable) Link label
+				215 text BLOCKS
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-ride/editor

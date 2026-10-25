@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-23T14:51:42.503629+00:00",
+  "heartbeat": "2026-10-23T14:50:54.167Z",
+  "status": "EDITOR_DIAGNOSTIC_ACCEPTANCE_IN_PROGRESS_KINDRED_LEASE_PENDING",
+  "coordinatorCursor": "07791e05-415a-455a-97a4-4cd2ae936928:340",
+  "scheduleSha256": "cc9ef33d33770eafa0d15fd8bdc100de42028453406209f48a1b2b78e7144d56",
+  "sharedRun": "9cd50e893016",
+  "fixtureAndBrowserOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "coordinatorReportedState": "Dewdrop installed/full Editor open; preview frame blocked and announcement save reverts after reload. Repairs being assigned; checking published diagnostic shopping path. Overall acceptance remains open.",
+  "kindredLease": null,
+  "kindredBindings": null,
+  "casesRun": 0,
+  "casesNotRun": 19,
+  "kqa01": "OPEN P2; qualified private correction remains unapplied",
+  "ownedResourcesStarted": [],
+  "sourceOrArtifactEdits": false,
+  "notification": "Suppressed: upstream diagnostic findings have assigned owners; no Kindred allocation or required user action"
+}

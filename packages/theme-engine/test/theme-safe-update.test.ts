@@ -7,6 +7,7 @@
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 
 import {
   planThemeSafeUpdate,
@@ -20,6 +21,7 @@ import {
 import {
   parseThemeDocument,
   toThemeDocumentV2,
+  fromThemeDocumentV2,
   THEME_DOCUMENT_VERSION,
   type ThemeDocument,
   type ThemeDocumentBlock,
@@ -35,6 +37,59 @@ import {
 } from '../src/theme-bundle.ts';
 
 import { isDynamicSourceDescriptor } from '../src/dynamic-source-binding.ts';
+
+// Exact immutable captures: package edition ordering is independent of schema epochs.
+const capturedPlayfield = (version: '2.0.0' | '2.0.1'): LiquidThemePackageBundle => {
+  const path = version === '2.0.0'
+    ? '../../../docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-bloom-2.0.0.json'
+    : '../../../docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/letbuyy-bloom-2.0.1.json';
+  return parseLiquidThemePackageBundle(JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8')).document.liquidBundle);
+};
+
+test('package-edition: exact captured Playfield200→201 with unchanged schema adopts target source and preserves merchant content', () => {
+  const current = toThemeDocumentV2(capturedPlayfield('2.0.0')), next = capturedPlayfield('2.0.1');
+  const heading = current.templates.find(t => t.key === 'index')!.sections.find(s => typeof s.settings.heading === 'string')!;
+  heading.settings.heading = 'Synthetic retained merchant heading';
+  const before = JSON.stringify(current), result = planThemeSafeUpdate({ currentDocument: current, nextBundle: next });
+  const output = fromThemeDocumentV2(result.updatedDoc);
+  assert.equal(output.package.version, '2.0.1'); assert.equal(output.package.version_number, 3);
+  assert.equal(output.sections['product-detail'].source, next.sections['product-detail'].source);
+  assert.match(JSON.stringify(output.templates.index), /Synthetic retained merchant heading/);
+  assert.equal(JSON.stringify(current), before); assert.notEqual(result.updatedDoc, current);
+  assert.deepEqual(computeThemeUpdateDiff(current, next), result.diff);
+  assert.notEqual(JSON.stringify(result.diff), JSON.stringify(computeThemeUpdateDiff(current, capturedPlayfield('2.0.0'))));
+});
+
+test('package-edition: same-schema downgrade is rejected by both preview and apply with no input mutation', () => {
+  const current = toThemeDocumentV2(capturedPlayfield('2.0.1')), next = capturedPlayfield('2.0.0'), before = JSON.stringify(current);
+  for (const operation of [() => computeThemeUpdateDiff(current, next), () => planThemeSafeUpdate({ currentDocument: current, nextBundle: next })])
+    assert.throws(operation, error => error instanceof UpdateDowngradeError && error.fromVersion === '2.0.1' && error.toVersion === '2.0.0');
+  assert.equal(JSON.stringify(current), before);
+});
+
+test('package-edition: a different package or reused ordinal with another label fails closed before merge', () => {
+  const current = toThemeDocumentV2(capturedPlayfield('2.0.0')), target = capturedPlayfield('2.0.1'), before = JSON.stringify(current);
+  for (const next of [{ ...target, package: { ...target.package, slug: 'another-package' } }, { ...target, package: { ...target.package, version_number: current.package.version_number } }]) {
+    assert.throws(() => computeThemeUpdateDiff(current, next), UpdateVersionRejectedError);
+    assert.throws(() => planThemeSafeUpdate({ currentDocument: current, nextBundle: next }), UpdateVersionRejectedError);
+  }
+  assert.equal(JSON.stringify(current), before);
+});
+
+test('package-edition: an advancing package ordinal cannot bypass a supported-schema downgrade', () => {
+  const current = toThemeDocumentV2(createV2BundleSameSections());
+  const next = createMinimalLiquidThemeBundleFixture();
+  next.package = {...next.package,slug:current.package.slug,version:'3.0.0',version_number:3};
+  assert.throws(() => computeThemeUpdateDiff(current,next), error => error instanceof UpdateDowngradeError && error.fromVersion === THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2);
+  assert.throws(() => planThemeSafeUpdate({currentDocument:current,nextBundle:next}), UpdateDowngradeError);
+});
+
+test('package-edition: display labels can be opaque while the existing catalog ordinal orders editions', () => {
+  const first=createMinimalLiquidThemeBundleFixture();first.package={...first.package,version:'Autumn launch',version_number:4};
+  const next=structuredClone(first);next.package={...next.package,version:'Festival edition',version_number:5};
+  const current=toThemeDocumentV2(first),result=planThemeSafeUpdate({currentDocument:current,nextBundle:next});
+  assert.equal(result.updatedDoc.package.version,'Festival edition');assert.equal(result.updatedDoc.bundle_schema_version,current.bundle_schema_version);
+});
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Fixture helpers
@@ -77,8 +132,9 @@ function createV2BundleSameSections(): LiquidThemePackageBundle {
     schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2,
     package: {
       ...v1.package,
-      slug: 'liquid-starter-v2',
+      slug: v1.package.slug,
       version: '2.0.0',
+      version_number: 2,
       compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
     },
     // Keep identical sections/blocks/locales/renderer/layout so the merge is clean.
@@ -107,10 +163,11 @@ function createV2BundleDifferentSections(): LiquidThemePackageBundle {
   return parseLiquidThemePackageBundle({
     schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2,
     package: {
-      slug: 'liquid-starter-v2-alt',
+      slug: v1.package.slug,
       name: 'Liquid Starter V2 Alt',
       description: 'V2 bundle with only promo-bar (no spotlight).',
       version: '2.0.0',
+      version_number: 2,
       compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
     },
     layout: v1.layout,
@@ -1027,10 +1084,11 @@ function createV2BundleSpotlightWithoutBadgeBlock(): LiquidThemePackageBundle {
   return parseLiquidThemePackageBundle({
     schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2,
     package: {
-      slug: 'liquid-starter-v2-no-badge',
+      slug: v1.package.slug,
       name: 'Liquid Starter V2 No Badge',
       description: 'V2 bundle with spotlight section but badge block removed.',
       version: '2.0.0',
+      version_number: 2,
       compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
     },
     layout: v1.layout,

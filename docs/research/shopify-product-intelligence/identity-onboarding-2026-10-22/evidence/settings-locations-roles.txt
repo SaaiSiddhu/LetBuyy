@@ -1,0 +1,24 @@
+- heading [level=1]: Locations
+- heading "Locations" [level=1]
+- heading "All locations" [level=2]:
+- link "Add location":
+- button "Search and filter results":
+- button "Sort the results":
+- table:
+- link "Shop location India":
+- paragraph:
+- paragraph:
+- heading "Point of Sale subscriptions" [level=2]:
+- link "Learn more":
+- paragraph:
+- button "Learn more about locations":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

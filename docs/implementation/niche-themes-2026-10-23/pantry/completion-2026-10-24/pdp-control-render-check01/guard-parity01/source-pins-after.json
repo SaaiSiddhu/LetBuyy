@@ -1,0 +1,32 @@
+[
+  {
+    "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-refresh-2.0.0.json",
+    "sha256": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9",
+    "actual": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9"
+  },
+  {
+    "path": "packages/theme-engine/src/theme-renderer.ts",
+    "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "actual": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+  },
+  {
+    "path": "packages/theme-engine/src/theme-bundle.ts",
+    "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "actual": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+  },
+  {
+    "path": "packages/theme-engine/src/theme-settings.ts",
+    "sha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00",
+    "actual": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00"
+  },
+  {
+    "path": "packages/commerce-core/src/product-fact-presentation.ts",
+    "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084",
+    "actual": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+  },
+  {
+    "path": "packages/commerce-core/src/pantry-facts.ts",
+    "sha256": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a",
+    "actual": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a"
+  }
+]

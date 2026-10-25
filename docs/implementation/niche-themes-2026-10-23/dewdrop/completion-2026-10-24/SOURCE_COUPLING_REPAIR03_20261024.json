@@ -1,0 +1,623 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T12:31:05.882Z",
+  "classification": "STATIC_ROOT_REPAIR03_DELTA_COUPLING_REVIEW_NOT_RUNTIME_ACCEPTANCE",
+  "comparisonBoundary": "Exact Root repair03 before snapshots versus current bytes; not a claim of full historical936/source393 equivalence.",
+  "results": [
+    {
+      "kind": "adapter",
+      "before": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/publication-preview-read-repair03/theme-execution.adapter.ts.before",
+        "sha256": "df46632ce72b129a0cda8137f29d64e9165aba468c9cf934968ebb3d2fda3f29",
+        "syntaxDiagnostics": [],
+        "entries": {
+          "<constructor>": {
+            "sha256": "16b1b23869f6346f5b7e402f5b460dcf9bd51fb224122d9d2224c5da4e4bd4b6",
+            "line": 287
+          },
+          "validateTemplateConfig": {
+            "sha256": "af30391a856444b89b30316adeaae3bd4113cbfb073536ec324e3076a0add570",
+            "line": 291
+          },
+          "verifyStoreOwner": {
+            "sha256": "7eb61427a05b468cc002f4714a6184e9d998334290304c70e3eee1188b2f12e7",
+            "line": 309
+          },
+          "verifyThemeEditorStore": {
+            "sha256": "a3d0e8081e8692f0ba5b6e12ba8589a49267221e04f020a3d560e785321b0e67",
+            "line": 334
+          },
+          "prepareCoreStoreTemplate": {
+            "sha256": "d2a663182eff960cc4bddda0e49d099499a7c58ee51b8d33a80bef49de5b29eb",
+            "line": 345
+          },
+          "getTheme": {
+            "sha256": "233cb2ec3f42e0e7a840b4cc3a6efcb552467e76cbf6f8096efa98cd0eb792d3",
+            "line": 367
+          },
+          "getEditableSchema": {
+            "sha256": "8dece103278f5cb31e3925317be8e71583e707ba66c7966ce83d036e06422fc0",
+            "line": 383
+          },
+          "ensureThemeInstance": {
+            "sha256": "3cf1e43581c9fe9a0d3d5ee857edaf2d91d457db97405724c5934aabd62e9dae",
+            "line": 410
+          },
+          "loadActiveInstanceDraft": {
+            "sha256": "ab5a7296edfddb2daeb572d2d838602277f532a3c8c15dc6009eeff022c2e282",
+            "line": 492
+          },
+          "finalizeInstanceRelease": {
+            "sha256": "407e764fdf8f5f9c17ec23f7fcf03029c8f952ed574471e499ff8a7b54647e4c",
+            "line": 539
+          },
+          "applySectionSchemaMigrations": {
+            "sha256": "4f4dfd1153c7998db0b4e20964244b4a3b353f83a3322967b2f7a08a8d86d79e",
+            "line": 573
+          },
+          "buildReleaseArtifacts": {
+            "sha256": "a13a4e1207d212ff09396ed05857991067c6deb5ce1d35a64714841f8080090f",
+            "line": 582
+          },
+          "enrichPublishedReleaseSnapshot": {
+            "sha256": "157e4f58fe625004edda35bcd7c0b657c5001be0bd0f3d14e4578be745e1ad0a",
+            "line": 631
+          },
+          "publishReleaseSnapshot": {
+            "sha256": "946b54419967793b997d882c6f5428f63aa1fce2dfa30a99f3219cf38c53e8d0",
+            "line": 653
+          },
+          "publishReleaseSnapshotFallback": {
+            "sha256": "48d241f2ae3e89c885ae28cc524ea518803c8d3098b1e69571d8ff379df13b78",
+            "line": 682
+          },
+          "installTheme": {
+            "sha256": "0b573eb7844de1f663afbfbd915aa69ebdf31a1d6ebdc45a5bd31f7648668800",
+            "line": 810
+          },
+          "loadEditorDraft": {
+            "sha256": "9b6cdb7867f1e23c90a9652783fc4b64271fb5a3a1576667bdbee4deeb92b2b1",
+            "line": 873
+          },
+          "draftRpc": {
+            "sha256": "245568d2e005d285e4d930c995a2dfe99aa62df4e6cb993cc6cbc9b5cde7c4b2",
+            "line": 902
+          },
+          "readOwnedDraft": {
+            "sha256": "a176bc4622779cfb8af44f2a5d569254e4b12adb14af28fd049e7875ca5f2ffd",
+            "line": 928
+          },
+          "draftRuntime": {
+            "sha256": "f79105ce142668a5006c5b2bc0d2ea1e567dc721e728e53a0d9ade2f9e37f309",
+            "line": 944
+          },
+          "loadEditor": {
+            "sha256": "eed36526846f72fe60400c9eeeac187660783bffcceda32631b44b6307c85294",
+            "line": 951
+          },
+          "saveDraft": {
+            "sha256": "6112959a2706f52744c6124de620230ffdac1bbe3b1f415031b76d0197a9ae73",
+            "line": 1033
+          },
+          "reorderDraft": {
+            "sha256": "e202425c4703590c16b3110787b943426dfabec3ca54963679ebbe11c01f61ae",
+            "line": 1047
+          },
+          "deleteDraft": {
+            "sha256": "aced593fb3fe6909d4be1e8bc401770848cb3112e44adf2848ef88bbcb275f77",
+            "line": 1063
+          },
+          "publish": {
+            "sha256": "a99b604a4c255488e45e4ab83339932d37301e4789309623baa7755f9d7359c2",
+            "line": 1074
+          },
+          "listReleases": {
+            "sha256": "34824736af10d1190d8a5258bb2a3ff4a2adf7ac550d4896e22de7809ff15b84",
+            "line": 1099
+          },
+          "rollbackRelease": {
+            "sha256": "3b1d4dcd83dfe4f2e3814bdbb1ffd4b73e603c31abc36ba3e9aedf7291bf33e5",
+            "line": 1126
+          },
+          "validateDocument": {
+            "sha256": "5df5f0bcb4bb345b01e0f259592bd0ca95806b28a1eb1b830ef83553fd17593b",
+            "line": 1156
+          },
+          "createPreviewSession": {
+            "sha256": "5a5b83395568436ba9e45d0ed41dbd7d3b7c4262b463e6c99645f66af5041254",
+            "line": 1197
+          },
+          "provisionSiteThemePackage": {
+            "sha256": "051704c55255241941eff3cd82764512bfeec1a9305bced5200359728969342a",
+            "line": 1288
+          },
+          "discardSiteThemeScaffold": {
+            "sha256": "a7965c89d0cb111550226ded3516e988666fa59c6ebe9be76c3aa6e45d477fdb",
+            "line": 1312
+          },
+          "listSiteThemes": {
+            "sha256": "8cca6cfc35684ff210c21d386e8a20ac68ccae2766aad3df507e9f069e3dd431",
+            "line": 1323
+          },
+          "privateThemeDefinition": {
+            "sha256": "ea51b62fd00bc1f2f9f8b35621c11b302207c24e5f1e69b50187ea2f93d603fa",
+            "line": 1403
+          },
+          "privateBlankThemeDefinition": {
+            "sha256": "3e8ba834192db87e53203990274191ef96ab50c287578ed24458c11d4ffb51e8",
+            "line": 1427
+          },
+          "createSiteTheme": {
+            "sha256": "b924c73b8f5a789f25065ff5d81a88712690626e7dba1fb16d2c4e8bb2bf493c",
+            "line": 1453
+          },
+          "duplicateSiteTheme": {
+            "sha256": "01615691124879e16135b4b371799a7e4b4b532c86f682e26aa301fdad1448e1",
+            "line": 1555
+          },
+          "renameSiteTheme": {
+            "sha256": "b34bfd6deed456f0db5a18e5ed3c3647101917a8f48fe714bf667c189d7abaa5",
+            "line": 1670
+          },
+          "archiveSiteTheme": {
+            "sha256": "edf7fc620a1aeb278c4daca0affc4eb37b425e9d232a0052f1b162a0ddbbf649",
+            "line": 1742
+          },
+          "deleteUnpublishedSiteTheme": {
+            "sha256": "b9b3ae1bfa9a35fd53790cbc6c87c0ddba42cf0c6dbea19a5b396a9946727154",
+            "line": 1806
+          },
+          "loadCurrentReleaseBundle": {
+            "sha256": "5a1fd7d8c931be6d23a366761c8dde1b2d9458d7d5cde6605ffaa6acc63f4e23",
+            "line": 1897
+          },
+          "validateUpdateTarget": {
+            "sha256": "afef59eaa4e693d648e44321bb3d667a70072641e72a1d99c24ec9df79907b1b",
+            "line": 1936
+          },
+          "loadTargetPackageVersionBundle": {
+            "sha256": "c75bbd42b1fecdd397b4f55d68228d7ee032e9f0ce97177d2cf3601743fa7818",
+            "line": 1958
+          },
+          "versionUpdateReceipt": {
+            "sha256": "6f2afb83663fd2a0392a987df76545489b7bcc5df663715427d0146a8697bf04",
+            "line": 1980
+          },
+          "findVersionUpdateReplay": {
+            "sha256": "6665136b53002de9aba3b094a8d18498b012a2e99377d525e07a38af1f956292",
+            "line": 1995
+          },
+          "withVersionUpdateTenant": {
+            "sha256": "e7c1eaa6280e4e46c4a2c6d69119a07f48555432683843b8321188e2a79cc5ec",
+            "line": 2004
+          },
+          "versionUpdateFailure": {
+            "sha256": "613a816f41c371bbf9ae530c5050597a76d93877a18fc0d195e1f044ef1991de",
+            "line": 2020
+          },
+          "publishVersionUpdateRelease": {
+            "sha256": "df39fe40205799df0a76367ccf7909626a7a3f50f5ff2348446346dd17ebbf2a",
+            "line": 2033
+          }
+        }
+      },
+      "current": {
+        "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+        "sha256": "dbd506e0dcb791f8daf7e152e8b1f4cad46aa59a16152501a3b555c179526aa8",
+        "syntaxDiagnostics": [],
+        "entries": {
+          "<constructor>": {
+            "sha256": "16b1b23869f6346f5b7e402f5b460dcf9bd51fb224122d9d2224c5da4e4bd4b6",
+            "line": 287
+          },
+          "validateTemplateConfig": {
+            "sha256": "af30391a856444b89b30316adeaae3bd4113cbfb073536ec324e3076a0add570",
+            "line": 291
+          },
+          "verifyStoreOwner": {
+            "sha256": "7eb61427a05b468cc002f4714a6184e9d998334290304c70e3eee1188b2f12e7",
+            "line": 309
+          },
+          "verifyThemeEditorStore": {
+            "sha256": "a3d0e8081e8692f0ba5b6e12ba8589a49267221e04f020a3d560e785321b0e67",
+            "line": 334
+          },
+          "prepareCoreStoreTemplate": {
+            "sha256": "d2a663182eff960cc4bddda0e49d099499a7c58ee51b8d33a80bef49de5b29eb",
+            "line": 345
+          },
+          "getTheme": {
+            "sha256": "233cb2ec3f42e0e7a840b4cc3a6efcb552467e76cbf6f8096efa98cd0eb792d3",
+            "line": 367
+          },
+          "getEditableSchema": {
+            "sha256": "8dece103278f5cb31e3925317be8e71583e707ba66c7966ce83d036e06422fc0",
+            "line": 383
+          },
+          "ensureThemeInstance": {
+            "sha256": "3cf1e43581c9fe9a0d3d5ee857edaf2d91d457db97405724c5934aabd62e9dae",
+            "line": 410
+          },
+          "loadActiveInstanceDraft": {
+            "sha256": "ab5a7296edfddb2daeb572d2d838602277f532a3c8c15dc6009eeff022c2e282",
+            "line": 492
+          },
+          "finalizeInstanceRelease": {
+            "sha256": "407e764fdf8f5f9c17ec23f7fcf03029c8f952ed574471e499ff8a7b54647e4c",
+            "line": 539
+          },
+          "applySectionSchemaMigrations": {
+            "sha256": "4f4dfd1153c7998db0b4e20964244b4a3b353f83a3322967b2f7a08a8d86d79e",
+            "line": 573
+          },
+          "buildReleaseArtifacts": {
+            "sha256": "a13a4e1207d212ff09396ed05857991067c6deb5ce1d35a64714841f8080090f",
+            "line": 582
+          },
+          "enrichPublishedReleaseSnapshot": {
+            "sha256": "157e4f58fe625004edda35bcd7c0b657c5001be0bd0f3d14e4578be745e1ad0a",
+            "line": 631
+          },
+          "publishReleaseSnapshot": {
+            "sha256": "946b54419967793b997d882c6f5428f63aa1fce2dfa30a99f3219cf38c53e8d0",
+            "line": 653
+          },
+          "publishReleaseSnapshotFallback": {
+            "sha256": "48d241f2ae3e89c885ae28cc524ea518803c8d3098b1e69571d8ff379df13b78",
+            "line": 682
+          },
+          "installTheme": {
+            "sha256": "0b573eb7844de1f663afbfbd915aa69ebdf31a1d6ebdc45a5bd31f7648668800",
+            "line": 810
+          },
+          "loadEditorDraft": {
+            "sha256": "9b6cdb7867f1e23c90a9652783fc4b64271fb5a3a1576667bdbee4deeb92b2b1",
+            "line": 873
+          },
+          "draftRpc": {
+            "sha256": "245568d2e005d285e4d930c995a2dfe99aa62df4e6cb993cc6cbc9b5cde7c4b2",
+            "line": 902
+          },
+          "readOwnedDraft": {
+            "sha256": "a176bc4622779cfb8af44f2a5d569254e4b12adb14af28fd049e7875ca5f2ffd",
+            "line": 928
+          },
+          "draftRuntime": {
+            "sha256": "f79105ce142668a5006c5b2bc0d2ea1e567dc721e728e53a0d9ade2f9e37f309",
+            "line": 944
+          },
+          "loadEditor": {
+            "sha256": "eed36526846f72fe60400c9eeeac187660783bffcceda32631b44b6307c85294",
+            "line": 951
+          },
+          "saveDraft": {
+            "sha256": "6112959a2706f52744c6124de620230ffdac1bbe3b1f415031b76d0197a9ae73",
+            "line": 1033
+          },
+          "reorderDraft": {
+            "sha256": "e202425c4703590c16b3110787b943426dfabec3ca54963679ebbe11c01f61ae",
+            "line": 1047
+          },
+          "deleteDraft": {
+            "sha256": "aced593fb3fe6909d4be1e8bc401770848cb3112e44adf2848ef88bbcb275f77",
+            "line": 1063
+          },
+          "publish": {
+            "sha256": "a99b604a4c255488e45e4ab83339932d37301e4789309623baa7755f9d7359c2",
+            "line": 1074
+          },
+          "listReleases": {
+            "sha256": "34824736af10d1190d8a5258bb2a3ff4a2adf7ac550d4896e22de7809ff15b84",
+            "line": 1099
+          },
+          "rollbackRelease": {
+            "sha256": "3b1d4dcd83dfe4f2e3814bdbb1ffd4b73e603c31abc36ba3e9aedf7291bf33e5",
+            "line": 1126
+          },
+          "validateDocument": {
+            "sha256": "5df5f0bcb4bb345b01e0f259592bd0ca95806b28a1eb1b830ef83553fd17593b",
+            "line": 1156
+          },
+          "createPreviewSession": {
+            "sha256": "5a5b83395568436ba9e45d0ed41dbd7d3b7c4262b463e6c99645f66af5041254",
+            "line": 1197
+          },
+          "provisionSiteThemePackage": {
+            "sha256": "051704c55255241941eff3cd82764512bfeec1a9305bced5200359728969342a",
+            "line": 1288
+          },
+          "discardSiteThemeScaffold": {
+            "sha256": "a7965c89d0cb111550226ded3516e988666fa59c6ebe9be76c3aa6e45d477fdb",
+            "line": 1312
+          },
+          "listSiteThemes": {
+            "sha256": "8cca6cfc35684ff210c21d386e8a20ac68ccae2766aad3df507e9f069e3dd431",
+            "line": 1323
+          },
+          "privateThemeDefinition": {
+            "sha256": "ea51b62fd00bc1f2f9f8b35621c11b302207c24e5f1e69b50187ea2f93d603fa",
+            "line": 1403
+          },
+          "privateBlankThemeDefinition": {
+            "sha256": "3e8ba834192db87e53203990274191ef96ab50c287578ed24458c11d4ffb51e8",
+            "line": 1427
+          },
+          "createSiteTheme": {
+            "sha256": "b924c73b8f5a789f25065ff5d81a88712690626e7dba1fb16d2c4e8bb2bf493c",
+            "line": 1453
+          },
+          "duplicateSiteTheme": {
+            "sha256": "01615691124879e16135b4b371799a7e4b4b532c86f682e26aa301fdad1448e1",
+            "line": 1555
+          },
+          "renameSiteTheme": {
+            "sha256": "b34bfd6deed456f0db5a18e5ed3c3647101917a8f48fe714bf667c189d7abaa5",
+            "line": 1670
+          },
+          "archiveSiteTheme": {
+            "sha256": "edf7fc620a1aeb278c4daca0affc4eb37b425e9d232a0052f1b162a0ddbbf649",
+            "line": 1742
+          },
+          "deleteUnpublishedSiteTheme": {
+            "sha256": "b9b3ae1bfa9a35fd53790cbc6c87c0ddba42cf0c6dbea19a5b396a9946727154",
+            "line": 1806
+          },
+          "loadCurrentReleaseBundle": {
+            "sha256": "5a1fd7d8c931be6d23a366761c8dde1b2d9458d7d5cde6605ffaa6acc63f4e23",
+            "line": 1897
+          },
+          "validateUpdateTarget": {
+            "sha256": "afef59eaa4e693d648e44321bb3d667a70072641e72a1d99c24ec9df79907b1b",
+            "line": 1936
+          },
+          "loadTargetPackageVersionBundle": {
+            "sha256": "d9170e8d3f577518971c09c8a028f39eb0a65162db69fcaff5d6d9bcb11ad363",
+            "line": 1958
+          },
+          "versionUpdateReceipt": {
+            "sha256": "6f2afb83663fd2a0392a987df76545489b7bcc5df663715427d0146a8697bf04",
+            "line": 1978
+          },
+          "findVersionUpdateReplay": {
+            "sha256": "6665136b53002de9aba3b094a8d18498b012a2e99377d525e07a38af1f956292",
+            "line": 1993
+          },
+          "withVersionUpdateTenant": {
+            "sha256": "e7c1eaa6280e4e46c4a2c6d69119a07f48555432683843b8321188e2a79cc5ec",
+            "line": 2002
+          },
+          "versionUpdateFailure": {
+            "sha256": "613a816f41c371bbf9ae530c5050597a76d93877a18fc0d195e1f044ef1991de",
+            "line": 2018
+          },
+          "publishVersionUpdateRelease": {
+            "sha256": "47432a1e37db2360ded899d9433957b509a8a5f3e44f0ce4140f3eda6cff4838",
+            "line": 2031
+          }
+        }
+      },
+      "changedOrAdded": [
+        {
+          "name": "loadTargetPackageVersionBundle",
+          "before": {
+            "sha256": "c75bbd42b1fecdd397b4f55d68228d7ee032e9f0ce97177d2cf3601743fa7818",
+            "line": 1958
+          },
+          "current": {
+            "sha256": "d9170e8d3f577518971c09c8a028f39eb0a65162db69fcaff5d6d9bcb11ad363",
+            "line": 1958
+          }
+        },
+        {
+          "name": "publishVersionUpdateRelease",
+          "before": {
+            "sha256": "df39fe40205799df0a76367ccf7909626a7a3f50f5ff2348446346dd17ebbf2a",
+            "line": 2033
+          },
+          "current": {
+            "sha256": "47432a1e37db2360ded899d9433957b509a8a5f3e44f0ce4140f3eda6cff4838",
+            "line": 2031
+          }
+        }
+      ],
+      "unchanged": [
+        "<constructor>",
+        "applySectionSchemaMigrations",
+        "archiveSiteTheme",
+        "buildReleaseArtifacts",
+        "createPreviewSession",
+        "createSiteTheme",
+        "deleteDraft",
+        "deleteUnpublishedSiteTheme",
+        "discardSiteThemeScaffold",
+        "draftRpc",
+        "draftRuntime",
+        "duplicateSiteTheme",
+        "enrichPublishedReleaseSnapshot",
+        "ensureThemeInstance",
+        "finalizeInstanceRelease",
+        "findVersionUpdateReplay",
+        "getEditableSchema",
+        "getTheme",
+        "installTheme",
+        "listReleases",
+        "listSiteThemes",
+        "loadActiveInstanceDraft",
+        "loadCurrentReleaseBundle",
+        "loadEditor",
+        "loadEditorDraft",
+        "prepareCoreStoreTemplate",
+        "privateBlankThemeDefinition",
+        "privateThemeDefinition",
+        "provisionSiteThemePackage",
+        "publish",
+        "publishReleaseSnapshot",
+        "publishReleaseSnapshotFallback",
+        "readOwnedDraft",
+        "renameSiteTheme",
+        "reorderDraft",
+        "rollbackRelease",
+        "saveDraft",
+        "validateDocument",
+        "validateTemplateConfig",
+        "validateUpdateTarget",
+        "verifyStoreOwner",
+        "verifyThemeEditorStore",
+        "versionUpdateFailure",
+        "versionUpdateReceipt",
+        "withVersionUpdateTenant"
+      ]
+    },
+    {
+      "kind": "transaction",
+      "before": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/publication-preview-read-repair03/tenant-transaction.ts.before",
+        "sha256": "536eb0b6020a94d8784930543707d91ca9c8e544f0a5b24c7be25384370789c2",
+        "syntaxDiagnostics": [],
+        "entries": {
+          "frameFor": {
+            "sha256": "2e37490c87dc94adcd50d1f25824564ae147d8714c3ebc20bdec61a6d0b97082",
+            "line": 14,
+            "exported": false
+          },
+          "assertContext": {
+            "sha256": "8f3e1d78d99d23493a0968060ff83973eabb345e2f5f5bbab3acd56c72ef4dad",
+            "line": 22,
+            "exported": false
+          },
+          "bindOwnedTenantActor": {
+            "sha256": "7aa6de1c10f1d91f304345d8b39321354678c0849ba7056c2cf86a1c7f2ea2be",
+            "line": 34,
+            "exported": true
+          },
+          "publisherProfile": {
+            "sha256": "35c07b8468648a8c961f128a05b3d50ae32548ff219ae8033b8bd337ee609f00",
+            "line": 44,
+            "exported": false
+          },
+          "publishThemeReleaseInTenantTx": {
+            "sha256": "5b5e4f101f6546b97560a67e5a4f57957b2302dd653a61cae1a981f4b41cb023",
+            "line": 77,
+            "exported": true
+          },
+          "withTenantTx": {
+            "sha256": "8ce515ef22f562224d7db786d10790c15cace8d62abba9d1535117cce526149b",
+            "line": 156,
+            "exported": true
+          }
+        }
+      },
+      "current": {
+        "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+        "sha256": "688528ed24f777061103094e286f239010d256fc27b2cbf031a960b672644e70",
+        "syntaxDiagnostics": [],
+        "entries": {
+          "frameFor": {
+            "sha256": "2e37490c87dc94adcd50d1f25824564ae147d8714c3ebc20bdec61a6d0b97082",
+            "line": 14,
+            "exported": false
+          },
+          "assertContext": {
+            "sha256": "8f3e1d78d99d23493a0968060ff83973eabb345e2f5f5bbab3acd56c72ef4dad",
+            "line": 22,
+            "exported": false
+          },
+          "bindOwnedTenantActor": {
+            "sha256": "7aa6de1c10f1d91f304345d8b39321354678c0849ba7056c2cf86a1c7f2ea2be",
+            "line": 34,
+            "exported": true
+          },
+          "publisherProfile": {
+            "sha256": "35c07b8468648a8c961f128a05b3d50ae32548ff219ae8033b8bd337ee609f00",
+            "line": 44,
+            "exported": false
+          },
+          "readThemeUpdateTargetInTenantTx": {
+            "sha256": "314e33c4c51111ef3f0425422a9e61a4a4711cd98b1b0ecff3286e07edb43999",
+            "line": 77,
+            "exported": true
+          },
+          "publishThemeReleaseInTenantTx": {
+            "sha256": "5b5e4f101f6546b97560a67e5a4f57957b2302dd653a61cae1a981f4b41cb023",
+            "line": 117,
+            "exported": true
+          },
+          "withTenantTx": {
+            "sha256": "8ce515ef22f562224d7db786d10790c15cace8d62abba9d1535117cce526149b",
+            "line": 196,
+            "exported": true
+          }
+        }
+      },
+      "changedOrAdded": [
+        {
+          "name": "readThemeUpdateTargetInTenantTx",
+          "before": null,
+          "current": {
+            "sha256": "314e33c4c51111ef3f0425422a9e61a4a4711cd98b1b0ecff3286e07edb43999",
+            "line": 77,
+            "exported": true
+          }
+        }
+      ],
+      "unchanged": [
+        "assertContext",
+        "bindOwnedTenantActor",
+        "frameFor",
+        "publishThemeReleaseInTenantTx",
+        "publisherProfile",
+        "withTenantTx"
+      ]
+    }
+  ],
+  "ordinaryMethods": [
+    {
+      "name": "installTheme",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    },
+    {
+      "name": "loadEditor",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    },
+    {
+      "name": "saveDraft",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    },
+    {
+      "name": "reorderDraft",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    },
+    {
+      "name": "deleteDraft",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    },
+    {
+      "name": "publish",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    },
+    {
+      "name": "rollbackRelease",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    },
+    {
+      "name": "createPreviewSession",
+      "existsInBoth": true,
+      "unchangedFromRepair03Before": true
+    }
+  ],
+  "limits": [
+    "Current shared source may change while Root owns repair03; revalidate hashes at admission.",
+    "Unchanged method text alone does not prove transitive runtime/data/security equivalence.",
+    "Does not waive compiled-source/security/smoke/TLS/actor/fault/network gates.",
+    "No Main source/native/build/browser/DB/provider action."
+  ],
+  "all30Complete": false,
+  "newBrowserPasses": 0
+}

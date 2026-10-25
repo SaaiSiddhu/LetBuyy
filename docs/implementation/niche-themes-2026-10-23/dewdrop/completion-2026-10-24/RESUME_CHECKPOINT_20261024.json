@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T11:31:51.043308+00:00",
+  "humanWorkStatus": "RESUMED_FOR_EXACT_TWELVE_BY_VERIFIED_HUMAN",
+  "platformGoalStatus": "paused",
+  "platformResumeControlAvailable": false,
+  "newGoalCreated": false,
+  "authority": {
+    "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "userMessageId": "01a16da6-891f-7691-b85f-cc5d9ae276e2",
+    "answer": "Resume all ten themes and both shared owners",
+    "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261024.json"
+  },
+  "originalTotals": {
+    "PASS": 26,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "expandedRows": {
+    "NOT_RUN": 291,
+    "operationObligations": 2396
+  },
+  "currentExecutionLeases": {
+    "source": null,
+    "native": null,
+    "browser": null
+  },
+  "expired936Revived": false,
+  "provider": {
+    "testAPIAuthentication": "HTTP200_VERIFIED_SHARED_RECEIPT",
+    "runtimeBinding": "NOT_VERIFIED",
+    "publicWebhookIngress": "NOT_VERIFIED",
+    "actualPayment": "NOT_RUN",
+    "independentCalls": false
+  },
+  "request": "Fresh versioned two-file Dewdrop successor allocation and subsequent Editor sole-controller queue requested from Themes",
+  "sourceInputs": [
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "sha256": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7"
+    }
+  ],
+  "certification": "NOT_CERTIFIED"
+}

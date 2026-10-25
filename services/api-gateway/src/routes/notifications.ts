@@ -90,6 +90,7 @@ async function emitNotificationEvent(
         eventType: input.eventType,
         payload: {
             site_id: input.siteId,
+            notification_id: input.logId,
             notification_log_id: input.logId,
             ...input.payload,
         },

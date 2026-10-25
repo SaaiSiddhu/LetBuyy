@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-24T06:50:13.419714+00:00",
+  "allCapturedMainInputsExact": 1083,
+  "candidateOverlayInputs": 6,
+  "sourceMigrationCount": 322,
+  "max": 393,
+  "canonical394Emitted": false,
+  "newManualPlacedInMain": false,
+  "movingPrivatePatchesAbsorbed": false,
+  "oldNativeAa26Sha256": "aa26dd41b09cbbb188b413b385acf80ad6e21f4e23bbdf789ebff68a8bc42782",
+  "rootPreviewLoginTabsTouched": false,
+  "nativeBrowserBuildExecuted": false
+}

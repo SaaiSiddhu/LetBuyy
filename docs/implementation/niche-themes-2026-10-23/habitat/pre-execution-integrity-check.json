@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-23T13:34:49.662801+00:00",
+  "classification": "READ_ONLY_PRE_EXECUTION_EXPECTATIONS_AND_HABITAT_SOURCE_GUARD",
+  "preparedExpectationsFiles": 5,
+  "preparedExpectationsChanged": [],
+  "HabitatReleasedInputs": 7,
+  "HabitatReleasedInputsChanged": [],
+  "passed": true,
+  "runtimeCasesExecuted": 0
+}

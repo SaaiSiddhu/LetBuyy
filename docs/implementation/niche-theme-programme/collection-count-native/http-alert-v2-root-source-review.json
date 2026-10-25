@@ -1,0 +1,76 @@
+{
+  "recordedAt": "2026-10-24T06:45:13.915378+00:00",
+  "status": "ROOT_SOURCE_REVIEWED_EXACT_SEVEN_FILE_TEST_ONLY_APPLY_GRANTED; NATIVE_NOT_GRANTED",
+  "candidateRoot": "/private/tmp/circuit-http-alert-assertion-v2-20261024",
+  "candidateFiles": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/collection-list-read.postgres.test.ts",
+      "existingMainSha256": "f7f3584c947b1b84ef643f530f4e9d9fa7230bd8ede3e5c177ea30aff7c49887",
+      "candidateSha256": "ff95aa6fb61dfd68df3ea2bfd1451e6923fa7d29faf33e493ff0e6212cb10e99"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/http-attribution-v2/http-request-delta.ts",
+      "existingMainSha256": null,
+      "candidateSha256": "9c60b61ba9e360538bc5c4db7d5b4e4b82d43081248305e67ab44d8f45fd6427"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/http-attribution-v2/http-request-delta.test.ts",
+      "existingMainSha256": null,
+      "candidateSha256": "21df0e03e972baf23eb772383f971c6e595f10221a0a71ce4c348139af895e1d"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/http-alert-repair/fixtures/native01-http-200-a.json",
+      "existingMainSha256": null,
+      "candidateSha256": "ae63f381e33886501b50f1d0e1148eabbce2de47441402c23f9a5de9107c6e53"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/http-alert-repair/fixtures/native01-http-200-b.json",
+      "existingMainSha256": null,
+      "candidateSha256": "44f6f162ddca9749dc2adaa4dcfb95384d58e314aa09bf0d28639ff984f3a385"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/http-alert-repair/fixtures/native01-http-403.json",
+      "existingMainSha256": null,
+      "candidateSha256": "881b34d8cd365dd92fcf8850a88ba2664b564cab627f72382b0ea0a68424ea0c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/http-alert-repair/fixtures/native01-http-503.json",
+      "existingMainSha256": null,
+      "candidateSha256": "b5e3980675bb0d134cbffbb7ba600b8955ee5ce650d5041b4f990fb116e132b6"
+    }
+  ],
+  "fullClosure": {
+    "path": "/private/tmp/circuit-http-alert-assertion-v2-20261024/source-input-closure.v2-overlay.candidate.json",
+    "sha256": "8cd611bca7eddc8696ec2ac6c3b80e9d9996e66509e08189a1f99336b8b4111e",
+    "files": 1076,
+    "allActualPinsChecked": true
+  },
+  "literalGraph": {
+    "path": "/private/tmp/circuit-http-alert-assertion-v2-20261024/literal-import-graph.v2-overlay.json",
+    "sha256": "47758ac4a1a6085e4a845f0eaff46c09b236fc5048f18e9f797b9aec9ab8ddd9",
+    "edges": 2018,
+    "runtimeEntries": 337,
+    "unresolved": 0,
+    "nonliteral": 0,
+    "appImports": 0
+  },
+  "rootIndependentReplay": {
+    "pass": 33,
+    "fail": 0,
+    "log": "/private/tmp/circuit-http-alert-assertion-v2-20261024/root-independent-replay.tap",
+    "sha256": "d8a3fadd7304816026df6deae5be99c28dfda6718b7b18aa6a7515f89d1c9684",
+    "priorCLISetupErrorPreserved": true
+  },
+  "ownerSemanticCheckLogBytes": 0,
+  "ownerTouchedFileLintErrors": 0,
+  "ownerTouchedFileLintWarnings": 0,
+  "review": "Extended assertion permits exactly one canonical same-request sev2 test-environment alert only for expected503. It preserves append-only prior records, every unclassified table hash, exact schema/context/times and per-row partition mirrors. Count native entry only rebinds helper and captures real response/REST resources before assertions. Qualified publisher helper and production are unchanged.",
+  "applyRule": "Only seven exact candidate files, guard original f7f count entry and six absent paths; all other inputs must remain exact. Capture source-only receipt and then await separate native allocation.",
+  "notClaimed": [
+    "Native count qualification",
+    "Raw503 response from failed run01",
+    "M05 browser retest",
+    "All-ten acceptance"
+  ],
+  "futureNative": "One official count-only suite after actual Main closure verification; no duplicate publisher run needed because its source graph is unchanged."
+}

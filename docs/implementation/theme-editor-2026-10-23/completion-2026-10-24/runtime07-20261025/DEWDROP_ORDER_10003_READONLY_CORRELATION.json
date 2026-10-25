@@ -1,0 +1,402 @@
+{
+  "recordedAt": "2026-10-24T20:34:51.434790+00:00",
+  "runId": "49ada80bc494",
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "ownerPid": 54685,
+    "labelsAndDatabaseRunMarkerVerified": true
+  },
+  "target": {
+    "theme": "Dewdrop",
+    "slug": "letbuyy-aura",
+    "number": "ORD-20261024-10003",
+    "id": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+    "product": "5dd7adcb-50c2-4453-9602-a669139b4270",
+    "variant": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+    "quantity": 1,
+    "totalMinor": 58000,
+    "beforeAvailableReportedByController": 4
+  },
+  "observed": {
+    "items": [
+      {
+        "id": "5793616e-157f-43c5-bc5e-0af795beaf76",
+        "name": "Fixture Soft Colour",
+        "price": 560.0,
+        "total": 560.0,
+        "quantity": 1,
+        "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+        "variantId": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+        "variantTitle": "Fixture shade SKU",
+        "snapshotSha256": "0d5c1d2b5ba1582e79857644a4553df4bcc69eb558729ba7947801c4f56097fb",
+        "productSnapshot": {
+          "sku": "SYN-BEAUTY-PINK-49ada80bc494",
+          "name": "Fixture Soft Colour",
+          "niche": {
+            "facts": {
+              "beauty": {
+                "format": "Lip tint",
+                "shades": [
+                  {
+                    "code": "RW01",
+                    "color": "#a36a65",
+                    "value": "Rosewater",
+                    "ingredients": "Rosewater v1: fixture oil, CI 77491."
+                  },
+                  {
+                    "code": "PC02",
+                    "color": "#a36a65",
+                    "value": "Pink Clay",
+                    "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+                  },
+                  {
+                    "code": "TC03",
+                    "color": "#89534a",
+                    "value": "Terracotta",
+                    "ingredients": null
+                  }
+                ],
+                "warnings": "Fixture warning v1: external use only.",
+                "directions": "Fixture directions v1: use as supplied.",
+                "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+                "netQuantity": {
+                  "unit": "ml",
+                  "value": 6
+                },
+                "routineStage": "colour",
+                "schemaVersion": 1,
+                "shadeOptionName": "Shade name"
+              }
+            },
+            "version": 1,
+            "selected_options": [
+              {
+                "name": "Shade name",
+                "value": "Pink Clay"
+              },
+              {
+                "name": "पैक आकार",
+                "value": "एक इकाई"
+              }
+            ]
+          },
+          "price": 560.0,
+          "total": 560.0,
+          "images": [
+            "http://syn-threadline-ui-ae3f0477.localhost:64595/theme-assets/dewdrop/v2/lip-tint.webp"
+          ],
+          "cart_id": "cc88aa3d-818f-46b4-843b-ac4ff32fdec9",
+          "quantity": 1,
+          "product_id": "5dd7adcb-50c2-4453-9602-a669139b4270",
+          "variant_id": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+          "cart_line_id": "5dd7adcb-50c2-4453-9602-a669139b4270:3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+          "variant_title": "Fixture shade SKU",
+          "product_version": 10,
+          "snapshot_fingerprint": "3e866181b47b3dff4bc8ea514a9f72dc8a6acc598fb123d1c2d282604bd40b68",
+          "configuration_fingerprint": null
+        }
+      }
+    ],
+    "order": {
+      "id": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+      "total": 580.0,
+      "status": "confirmed",
+      "currency": "INR",
+      "createdAt": "2026-10-24T20:32:08.441024+00:00",
+      "paymentId": "pay_TrsWOjFmQm62M0",
+      "orderNumber": "ORD-20261024-10003",
+      "paymentMethod": "razorpay",
+      "paymentStatus": "paid",
+      "themeReleaseId": null,
+      "themeInstanceId": null
+    },
+    "payments": [],
+    "inventoryNow": [
+      {
+        "id": "9d21be43-ef2e-497c-80e0-4da8ae0f5224",
+        "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+        "updatedAt": "2026-10-24T20:32:08.441024+00:00",
+        "variantId": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+        "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+        "onHandQuantity": 4,
+        "reservedQuantity": 0,
+        "availableQuantity": 3,
+        "committedQuantity": 1
+      }
+    ],
+    "inventoryEvents": [
+      {
+        "id": "aad1d0d0-8122-4530-8f8b-632677f8148a",
+        "orderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+        "createdAt": "2026-10-24T20:32:08.441024+00:00",
+        "eventType": "sale_committed",
+        "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+        "variantId": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+        "quantityDelta": -1,
+        "onHandQuantity": 4,
+        "reservedQuantity": 0,
+        "availableQuantity": 3,
+        "committedQuantity": 1
+      }
+    ],
+    "checkoutSessions": [
+      {
+        "id": "1c63b862-cd1b-495f-8cc4-2b51045ba48a",
+        "cartId": "cc88aa3d-818f-46b4-843b-ac4ff32fdec9",
+        "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+        "status": "completed",
+        "orderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+        "currency": "INR",
+        "subtotal": 0.0,
+        "taxTotal": 0.0,
+        "grandTotal": 0.0,
+        "confirmedAt": "2026-10-24T20:32:51.646+00:00",
+        "checkoutState": "completed",
+        "discountTotal": 0.0,
+        "paymentIntent": {
+          "mode": "sandbox",
+          "status": "requires_action",
+          "currency": "INR",
+          "provider": "razorpay",
+          "amountMinor": 58000,
+          "providerOrderId": "order_TrsW9LtFDH9nrZ"
+        },
+        "paymentMethod": "razorpay",
+        "shippingTotal": 0.0,
+        "capturePostedToLedger": false
+      },
+      {
+        "id": "14e86b39-450c-485a-a52c-bb02316cbacc",
+        "cartId": null,
+        "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+        "status": "completed",
+        "orderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+        "currency": "INR",
+        "subtotal": 560.0,
+        "taxTotal": 0.0,
+        "grandTotal": 580.0,
+        "confirmedAt": null,
+        "checkoutState": "contact",
+        "discountTotal": 0.0,
+        "paymentIntent": {},
+        "paymentMethod": "razorpay",
+        "shippingTotal": 20.0,
+        "capturePostedToLedger": null
+      }
+    ],
+    "captureTransactions": [
+      {
+        "id": "07a154ad-b802-4111-8428-125f30667dcc",
+        "entries": 2,
+        "currency": "INR",
+        "sourceId": "razorpay:pay_TrsWOjFmQm62M0",
+        "debitMinor": 58000,
+        "sourceType": "payment_capture",
+        "creditMinor": 58000,
+        "writerModule": "settlement"
+      }
+    ],
+    "durableWebhookEvents": [
+      {
+        "provider": "razorpay",
+        "eventType": "payment.authorized",
+        "processedAt": "2026-10-24T20:32:39.267+00:00",
+        "signatureValid": true,
+        "providerEventId": "payment.authorized:pay_TrsWOjFmQm62M0",
+        "processingStatus": "processed"
+      },
+      {
+        "provider": "razorpay",
+        "eventType": "payment.captured",
+        "processedAt": "2026-10-24T20:32:40.183+00:00",
+        "signatureValid": true,
+        "providerEventId": "payment.captured:pay_TrsWOjFmQm62M0",
+        "processingStatus": "processed"
+      }
+    ]
+  },
+  "checks": {
+    "oneOwnedConfirmedPaidOrder": true,
+    "oneIntendedProductVariantQuantity": true,
+    "oneSandboxHostedIntent": true,
+    "serverAmountMatches": true,
+    "exactlyOneBalancedCapture": true,
+    "completedConfirmedHostedCheckout": true,
+    "signedCapturedCallback200": true,
+    "durableCapturedSignatureProcessed": true,
+    "oneExactVariantSaleConsumption": true,
+    "currentStockMatchesControllerBaselineMinusPurchase": true
+  },
+  "redactedWebhookDeliveries": [
+    {
+      "runId": "49ada80bc494",
+      "receivedAt": "2026-10-24T20:32:39.280Z",
+      "event": "payment.authorized",
+      "paymentId": "pay_TrsWOjFmQm62M0",
+      "providerOrderId": "order_TrsW9LtFDH9nrZ",
+      "paymentStatus": "authorized",
+      "amount": 58000,
+      "currency": "INR",
+      "providerEventId": "TrsWgLiKweDSMn",
+      "signaturePresent": true,
+      "bodySha256": "a21960bcc96ffa67098a2cb15e5500429edb7026a773bc2e33018776929f027b",
+      "canonicalStatus": 200
+    },
+    {
+      "runId": "49ada80bc494",
+      "receivedAt": "2026-10-24T20:32:40.186Z",
+      "event": "payment.captured",
+      "paymentId": "pay_TrsWOjFmQm62M0",
+      "providerOrderId": "order_TrsW9LtFDH9nrZ",
+      "paymentStatus": "captured",
+      "amount": 58000,
+      "currency": "INR",
+      "providerEventId": "TrsWhOckhNMkw4",
+      "signaturePresent": true,
+      "bodySha256": "0e4e983e51625ca4494d534108fb82c33fc0853bba823b4d85bd56c833b15257",
+      "canonicalStatus": 200
+    }
+  ],
+  "deliveryLogSnapshot": {
+    "path": "/private/tmp/theme-completion-49ada80bc494-webhook-deliveries.json",
+    "sha256": "c6c867ac8d1e4d4b2e0b4c09e30b6417ab24cb6f42388a38f806d83fdea40cfb",
+    "bytes": 7327
+  },
+  "controllerBrowserEvidence": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-after-stock.json",
+      "sha256": "d8124f6fec570278507bbc01567a54c6e5282404d1d2f23fc00a3b4358b81317",
+      "bytes": 984
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-before-stock.json",
+      "sha256": "37738939c95a03804faf73f2f07c3ec4eee7076097fe97f3846b4b1180616f6b",
+      "bytes": 984
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.ax.txt",
+      "sha256": "c0e9f27f8d681777b08cefe53507be1b7e9c8a92756e71d15deb91146ea8f8a8",
+      "bytes": 1636
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.png",
+      "sha256": "c4964c278348ef31dc36b566a8e4913005f5b1e54b868cf9c37ac2ff5d274a1c",
+      "bytes": 64625
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-cart-reload-recovery-required.ax.txt",
+      "sha256": "6571f7fff2e5f8eeee3064f21b72f30aa1677eaa20576ffb1584f4ecb6b79608",
+      "bytes": 2045
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-cart-reload-recovery-required.png",
+      "sha256": "a1fe414df6d76eb1df3a1e9312cca2299e173123dff82037a05403ff720846b9",
+      "bytes": 59025
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-cart-restored.ax.txt",
+      "sha256": "203705d932b814d69872fdce45d885769332033066ae387a1cfc4c390ffdbc28",
+      "bytes": 1973
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-cart-restored.png",
+      "sha256": "1265bc27658be4356ded32606e6f3bcebdfbe035b63a943dee74e2a31c9e8dde",
+      "bytes": 54705
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-checkout-quote.ax.txt",
+      "sha256": "f9b2b8885c5fc90388b2176a5a1db73b46d0a987d554f24020b7afd0f6c7e859",
+      "bytes": 1558
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-checkout-quote.png",
+      "sha256": "3401698c2072f5f59919de995d17a8bcc79b6a3a92269048bc4e0f61b775555e",
+      "bytes": 58173
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-demo-bank.ax.txt",
+      "sha256": "60497899b8d075a364c24f7f9a82cce144dad3e7af526582f621dee85137509a",
+      "bytes": 238
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-demo-bank.png",
+      "sha256": "211d87098b3e8cbc2a64509f25c07bb6b4b62c2c6ed68530689aa857e8c82b64",
+      "bytes": 18022
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-editor-save-reload.ax.txt",
+      "sha256": "5ee62b1f0952b25fd2235f6495e2d378934b5b73ef7c110104c51bf5dbf9eb91",
+      "bytes": 4943
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-editor-save-reload.png",
+      "sha256": "1b6895ffdea8b018fc56b2b176fce72e23fa4f8a66f9bde9681fbc2536f46d6c",
+      "bytes": 68728
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-order-confirmed.ax.txt",
+      "sha256": "73b4d000251abbaeb0c95affa2d2fd9df42401cfdec89dabbf30fc336b202836",
+      "bytes": 711
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-order-confirmed.png",
+      "sha256": "2ed30a23afb582769bf6c37c64219d65a367ff9c66817075d4735c1690ebcecc",
+      "bytes": 33712
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-pink-clay-selected.ax.txt",
+      "sha256": "0c8c5eed5b80bdf5c94b860525ca82fc72f36d3c5d9737efd3fe31d8b2a10543",
+      "bytes": 2283
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-pink-clay-selected.png",
+      "sha256": "367aec32a9535d0b3c733acd9f05074d39083bcfda9b37f23465beb2541d33a7",
+      "bytes": 46991
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-published-home.ax.txt",
+      "sha256": "1397830859e55cd44e8953a4c9381a7e9cea282c230203c8d84397417825324f",
+      "bytes": 9795
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-published-home.png",
+      "sha256": "7c7c203086906f56ef51279bf5a829fa6b2b5e45bcfa87966ae68017bb83a192",
+      "bytes": 49330
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-terracotta-oos-ui.ax.txt",
+      "sha256": "85b97fcec7c373a74b9a6f933849a3fa107e37b5b24b0fc544744cbe1b9eb601",
+      "bytes": 2337
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-terracotta-oos-ui.png",
+      "sha256": "1314719bd8714465601b2c1162f8e39d4f7120382f13ef02ab63749a338e1079",
+      "bytes": 76758
+    }
+  ],
+  "browserEvidenceScope": "Root controller captures hashed as provenance. This reader executed no browser action; a controller-reported baseline is labelled as such.",
+  "sessionMetadataConsistency": {
+    "storedCapturePostedToLedger": false,
+    "actualCanonicalCaptureCount": 1,
+    "matchesCanonicalLedger": false,
+    "findingId": "R07-HOSTED-CAPTURE-FLAG-01"
+  },
+  "paymentsTableRows": 0,
+  "readerContract": {
+    "canonicalCaptureSource": "razorpay:pay_TrsWOjFmQm62M0",
+    "basis": "Existing hosted checkout contract checkout.ts:1459-1464, exact captured provider source and canonical ledger; completed cart-bound hosted session distinguished from order-basis compatibility session.",
+    "sqlSourceReaderSha256": "a2faea9a42d4543176559c339bb9f59f311f28ce28fe9f452af5c76db8419881"
+  },
+  "status": "FINANCIAL_CORRELATION_PASS_WITH_OPEN_SESSION_METADATA_DISCREPANCY",
+  "businessMutations": 0,
+  "browserActions": 0,
+  "providerCalls": 0,
+  "providerKeysOrSecretsRead": false,
+  "fullThemeCertified": false,
+  "limitations": [
+    "Original theme matrix, merchant facts UI and same-UUID later-edit/history preservation remain separate gates.",
+    "The absent payments row is explicit; existing hosted canonical ledger/session/provider evidence is not relabelled as a payments-table row.",
+    "Controller browser artifacts are provenance, not an independent live browser rerun."
+  ]
+}

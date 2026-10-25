@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-24T17:27:09.817870+00:00",
+  "runId": "20b861608061",
+  "status": "REAL_PROVIDER_SIGNING_KEY_MISMATCH_ISOLATED_CANONICAL_ROUTE_RESTORED",
+  "realProviderRequestsCompared": 2,
+  "signatureWellFormed": true,
+  "rawUtf8BytesPreserved": true,
+  "proxyAndCanonicalBodyHashesEqual": true,
+  "realMatchesConfiguredWebhookSecret": false,
+  "realMatchesAuthorizedTestApiSecret": false,
+  "knownConfiguredSecretSyntheticControlAccepted": true,
+  "providerAccepted": false,
+  "canonicalRoute": "http://127.0.0.1:55883",
+  "signatureBypassed": false,
+  "secretsOrSignaturesOrRawBodiesPersisted": false
+}

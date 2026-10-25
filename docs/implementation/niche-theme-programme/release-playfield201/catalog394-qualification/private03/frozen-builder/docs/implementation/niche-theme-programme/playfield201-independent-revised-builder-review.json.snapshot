@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-23T19:39:40.237Z",
+  "status": "ROOT_FRESH_IN_MEMORY_BUILDERS_MATCH20_HISTORICAL_BYTES_AND_EXACT_NEW201",
+  "oldOutputsVerified": 20,
+  "newPlayfieldVersion": "2.0.1",
+  "newSha256": "91dd7e6239aefa6a341dfc04ba5d8cc79d8136f1c4d46b48fda66799ecbbe9d7",
+  "wholePriorLayoutAndOrderSectionExact": true,
+  "persistedCaptureGenerated": false,
+  "networkOrDatabaseCalls": 0
+}

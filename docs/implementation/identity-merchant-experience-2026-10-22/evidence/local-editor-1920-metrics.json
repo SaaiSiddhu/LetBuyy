@@ -1,0 +1,193 @@
+{
+  "elements": [
+    {
+      "className": "theme-os-topbar",
+      "label": "LetBuyy CoreDraft themeSavedHome pagePro",
+      "rect": {
+        "height": 56,
+        "width": 1920,
+        "x": 0,
+        "y": 0
+      },
+      "styles": {
+        "bg": "rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "color": "rgb(17, 24, 39)",
+        "display": "grid",
+        "fontSize": "14px",
+        "gap": "12px",
+        "gridColumns": "234px 1377.98px 260.023px",
+        "gridRows": "39px",
+        "lineHeight": "20px",
+        "padding": "8px 12px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "className": "theme-os-workspace",
+      "label": "Home pagev1HeaderHeaderNavigation LinkNa",
+      "rect": {
+        "height": 1024,
+        "width": 1920,
+        "x": 0,
+        "y": 56
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "borderRadius": "0px",
+        "color": "rgb(17, 24, 39)",
+        "display": "grid",
+        "fontSize": "14px",
+        "gap": "4px",
+        "gridColumns": "300px 1608px",
+        "gridRows": "325.117px 686.883px",
+        "lineHeight": "20px",
+        "padding": "4px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "theme-os-sidebar",
+      "label": "Theme editor navigation",
+      "rect": {
+        "height": 325.1171875,
+        "width": 300,
+        "x": 4,
+        "y": 60
+      },
+      "styles": {
+        "bg": "rgb(255, 255, 255)",
+        "borderRadius": "12px",
+        "color": "rgb(17, 24, 39)",
+        "display": "grid",
+        "fontSize": "14px",
+        "gap": "normal",
+        "gridColumns": "298px",
+        "gridRows": "45px 278.117px",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "ASIDE"
+    },
+    {
+      "className": "",
+      "label": "Home page",
+      "rect": {
+        "height": 20,
+        "width": 74.2265625,
+        "x": 21,
+        "y": 73
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "borderRadius": "0px",
+        "color": "rgb(17, 24, 39)",
+        "display": "block",
+        "fontSize": "14px",
+        "gap": "normal",
+        "gridColumns": "none",
+        "gridRows": "none",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "className": "theme-os-preview-panel",
+      "label": "Live theme preview",
+      "rect": {
+        "height": 1016,
+        "width": 1608,
+        "x": 308,
+        "y": 60
+      },
+      "styles": {
+        "bg": "rgb(255, 255, 255)",
+        "borderRadius": "12px",
+        "color": "rgb(17, 24, 39)",
+        "display": "grid",
+        "fontSize": "14px",
+        "gap": "normal",
+        "gridColumns": "1606px",
+        "gridRows": "66px 948px",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "SECTION"
+    },
+    {
+      "className": "te-preview-iframe",
+      "label": "ux-audit-1022 storefront preview",
+      "rect": {
+        "height": 924.77490234375,
+        "width": 1278,
+        "x": 473,
+        "y": 208
+      },
+      "styles": {
+        "bg": "rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "color": "rgb(17, 24, 39)",
+        "display": "block",
+        "fontSize": "14px",
+        "gap": "normal",
+        "gridColumns": "none",
+        "gridRows": "none",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "IFRAME"
+    },
+    {
+      "className": "theme-os-properties",
+      "label": "Theme properties",
+      "rect": {
+        "height": 686.8828125,
+        "width": 300,
+        "x": 4,
+        "y": 389.1171875
+      },
+      "styles": {
+        "bg": "rgb(255, 255, 255)",
+        "borderRadius": "12px",
+        "color": "rgb(17, 24, 39)",
+        "display": "grid",
+        "fontSize": "14px",
+        "gap": "normal",
+        "gridColumns": "298px",
+        "gridRows": "65px 619.883px",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "ASIDE"
+    },
+    {
+      "className": "",
+      "label": "Header",
+      "rect": {
+        "height": 20,
+        "width": 87.640625,
+        "x": 21,
+        "y": 422.1171875
+      },
+      "styles": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "borderRadius": "0px",
+        "color": "rgb(17, 24, 39)",
+        "display": "block",
+        "fontSize": "14px",
+        "gap": "normal",
+        "gridColumns": "none",
+        "gridRows": "none",
+        "lineHeight": "20px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    }
+  ],
+  "viewport": {
+    "dpr": 1,
+    "height": 1080,
+    "width": 1920
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "path": "MANIFEST.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "NATIVE06_ACTUAL_FAILURE.json",
+      "sha256": "35824c813255ce91406668e4c5eae98ad47367a5c8cea28f0a2a3969de7b1d4f",
+      "bytes": 6575
+    },
+    {
+      "path": "PINS.json",
+      "sha256": "6b9f8bc4f1abddc4c9dd1b51be566486be35faf8b5129c029e5ae7d896d6635b",
+      "bytes": 2585
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "recordedAt": "2026-10-24T07:27:06.402791+00:00",
+  "status": "ROOT_REVIEWED_INTERRUPTED_PREFLIGHT_FAILURE; NOT_QUALIFIED",
+  "runId": "2af9d642a95f",
+  "runnerExitObserved": 130,
+  "completeQualificationResult": false,
+  "TAPTotals": null,
+  "partialPhasesObserved": [
+    1,
+    2
+  ],
+  "qualificationCredit": false,
+  "rootReviewGap": "Root independently verified1089 listed inputs but missed that the collector substituted three TypeScript declarations for runtime.mjs files. Runner incorrectly launched after failing preflight; scoped SIGINT stopped it.",
+  "runtimeFilesMissing": [
+    {
+      "declaration": "scripts/governance/executable-pg-fixture.d.mts",
+      "runtime": "scripts/governance/executable-pg-fixture.mjs",
+      "runtimeSHA": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+      "runtimePinned": false
+    },
+    {
+      "declaration": "scripts/governance/owned-next-directory.d.mts",
+      "runtime": "scripts/governance/owned-next-directory.mjs",
+      "runtimeSHA": "461eed7dcfa671e2f9bd9c1e8a854cd9afabe7a0bc66b1c7acf6e1230a902ad2",
+      "runtimePinned": false
+    },
+    {
+      "declaration": "scripts/governance/supabase-faithful-bootstrap.d.mts",
+      "runtime": "scripts/governance/supabase-faithful-bootstrap.mjs",
+      "runtimeSHA": "39c75abc670ba8907a9a48eb9be6ee9f100d23c99b175080a729d8e7fc022c87",
+      "runtimePinned": false
+    }
+  ],
+  "actualListed1089PinsAfterStopExact": true,
+  "rootIndependentExactRunResourceChecks": {
+    "containers": [],
+    "networks": [],
+    "volumes": [],
+    "allExitZero": true
+  },
+  "canonical394Emitted": false,
+  "candidateAndOldAdmissionsUnchanged": true,
+  "original936AndMarketplaceUntouched": true,
+  "completedAttemptFreeze": "RELEASED_AFTER_OWNED_CLEANUP_AND_SOURCE_PROOF",
+  "next": "Private inventory correction binding runtime implementations plus declarations and runtime dependencies; separate preflight tool call/exit0 required before any fresh authorized launch. Checkout production apply retains next slot once ready; no new catalog native grant.",
+  "interruptionReceipt": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/01/interruption-receipt.json",
+    "sha256": "5fefb99b788fe9cd4c9744ca2bc7018f77325fe76001292c5811508016cddf01"
+  },
+  "noGlobalReapOrManualRemoval": true
+}

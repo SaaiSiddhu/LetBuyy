@@ -1,0 +1,63 @@
+Browser tab: 53, Title: "Lifecycle pulses | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=20&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b&search=lentils&pack_size=g%3A250&min_price=&max_price=&sort=price-desc".
+1 AXWebArea Lifecycle pulses | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=20&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b&search=lentils&pack_size=g%3A250&min_price=&max_price=&sort=price-desc
+	2 container
+		3 text Pantry 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=20&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b&search=lentils&pack_size=g%3A250&min_price=&max_price=&sort=price-desc
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, ID: lb-product-origin-filter
+				14 button Apply filter
+		15 text CHOOSE A SHELF. READ THE DETAILS.
+		16 heading Lifecycle pulses, Value: 1
+			17 text Lifecycle pulses
+		18 text Synthetic theme acceptance setup only.
+		19 text 1 products
+		20 container
+			21 text Search products or ingredients
+			22 search text field (settable) Search products or ingredients, Value: lentils
+			23 text Pack size
+			24 pop up button (collapsed, settable) Pack size, Value: 250 g, Secondary Actions: Expand
+				25 menu
+					26 Any pack size
+					27 (selected) 250 g
+			28 text Minimum price
+			29 stepper (settable) Minimum price
+			30 text Maximum price
+			31 stepper (settable) Maximum price
+			32 text Sort
+			33 pop up button (collapsed, settable) Sort, Value: Price: high to low, Secondary Actions: Expand
+				34 menu
+					35 Featured
+					36 Price: low to high
+					37 (selected) Price: high to low
+					38 Newest
+					39 Name
+			40 button Apply
+			41 link Description: Remove Pack size: 250 g, Value: syn-threadline-ui-6815276b.localhost:50494/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=20&search=lentils&sort=price-desc&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b
+			42 link Description: Clear all filters, Value: syn-threadline-ui-6815276b.localhost:50494/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=20&search=lentils&sort=price-desc&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b
+		43 heading On this shelf, Value: 2
+			44 text On this shelf
+		45 container
+			46 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/c3740e30-8c62-45f8-9ba4-0d21caabafdf
+			47 heading Pantry lifecycle red lentils, Value: 3
+				48 link Description: Pantry lifecycle red lentils, Value: syn-threadline-ui-6815276b.localhost:50494/product/c3740e30-8c62-45f8-9ba4-0d21caabafdf
+			49 text Choose a pack to check its net quantity INR 180.00
+			50 link Description: Choose pack, Value: syn-threadline-ui-6815276b.localhost:50494/product/c3740e30-8c62-45f8-9ba4-0d21caabafdf
+		51 container Product pages
+			52 text Page 1
+		53 heading Threadline, Value: 3
+			54 text Threadline
+		55 text Pantry 936 B footer saved
+		56 heading CONTACT, Value: 4
+			57 text CONTACT
+		58 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		59 text © Threadline. All rights reserved.
+		60 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle pulses | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/collections/d03ce5fa-ece2-432a-8ead-27d7aed0e75b?limit=20&collection_id=d03ce5fa-ece2-432a-8ead-27d7aed0e75b&search=lentils&pack_size=g%3A250&min_price=&max_price=&sort=price-desc

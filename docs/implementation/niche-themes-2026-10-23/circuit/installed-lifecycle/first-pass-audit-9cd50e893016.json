@@ -1,0 +1,326 @@
+{
+  "classification": "INDEPENDENT_WHOLE_CASE_SCOPE_AUDIT_OF_CONTROLLER_FINITE_CHECKPOINT_NOT_FINAL_ACCEPTANCE",
+  "recordedAt": "2026-10-23T16:58:24.525636+00:00",
+  "runId": "9cd50e893016",
+  "controllerCheckpoint": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-browser-diagnostics.json",
+    "sha256": "2fc39be5a02c3590e744bbfd8d6ab813ca3d779c04c86ff7e0e59fbf41c4f663"
+  },
+  "requiredMatrix": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/installed-lifecycle-matrix.json",
+    "sha256": "540aafc86046df34b92502efcab1edcbee7247057c7268db5d5f2427b147af0c",
+    "all25IdsAndTitlesConserved": true
+  },
+  "acceptedCounts": {
+    "PARTIAL": 3,
+    "BLOCKED": 2,
+    "PASS": 1,
+    "NOT_RUN": 18,
+    "FAIL": 1
+  },
+  "acceptedWholePass": [
+    "CL-03 functional/assistive-technology baseline hub PDP only; responsive screenshot acceptance not claimed"
+  ],
+  "remainingRequiredCases": 24,
+  "caseDecisions": [
+    {
+      "id": "CL-01",
+      "status": "PARTIAL",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Actual normal AddCircuit4; installed2.0/editor21/source-manifest/site/origins/canonicalinstance-packagecapture IDs bound. Existinghub reused. Actual normal A/Bsave/fullreload/pub/restoreA/draftB/reapplyB exactsnapshot/publicmarkers pass. Buyer order ownership and current integer product version not established in this slice."
+      ]
+    },
+    {
+      "id": "CL-02",
+      "status": "BLOCKED",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Positive prerequisite normal existinghub Description-only Save product actually rejected This change must originate from this merchant app; retainedfrozen drafttab12. Supplemental charger/cable/unknown and4-product/emptycollection setup deferred, never API/seed substituted. Actual attempted edit is separate from unattempted creates."
+      ]
+    },
+    {
+      "id": "CL-03",
+      "status": "PASS",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Actual installedhubPDP shows independent65Winput/45Woutput/60Wpass; rows power-input1xusb-c/power-output2xusb-c/data1xusb-a andHub1; no variant picker or invented image/length/protocol/warranty. Compatibility remains unconfirmed and hostrequirements not supplied. Functional/AT scope; no responsive screenshot claim at0x0."
+      ]
+    },
+    {
+      "id": "CL-04",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+      ]
+    },
+    {
+      "id": "CL-05",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+      ]
+    },
+    {
+      "id": "CL-06",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+      ]
+    },
+    {
+      "id": "CL-07",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+      ]
+    },
+    {
+      "id": "CL-08",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+      ]
+    },
+    {
+      "id": "CL-09",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+      ]
+    },
+    {
+      "id": "CL-10",
+      "status": "PARTIAL",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Actual name search via native main collection form preserves original one-hub collection/category/country/limit and returns1knownhub; independentcanonicalHTTP200 agrees. FullplannedCircuitAll4/unmatched-string recovery not executed."
+      ]
+    },
+    {
+      "id": "CL-11",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required planned4-product cohort and expected400/600/1200/1900 ordering absent. Originalone-hub cohort cannot prove planned two-page/four-row order."
+      ]
+    },
+    {
+      "id": "CL-12",
+      "status": "PARTIAL",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Actual originalone-hubscope atpage2 withac-plug+usb-a/max2000/searchCircuit/category/country/limit1: normalNewestSort preservesbotharrays/scopeandresetspage; removeusb-a retainsac-plug+othersandzeroresults. ScalarHubserializesonevalue;Anyserializesoneemptyvalue(noduplicate), otherfilters/repeatedconnectorsretained. Planned4-productcohort semantics remain unrun."
+      ]
+    },
+    {
+      "id": "CL-13",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Intentionalempty/other-sitecollection setup and positiveboundforeign controls absent after normal setup-save blocker; no guessed foreignidentity test or all-catalog fallback credited."
+      ]
+    },
+    {
+      "id": "CL-14",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+      ]
+    },
+    {
+      "id": "CL-15",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+      ]
+    },
+    {
+      "id": "CL-16",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+      ]
+    },
+    {
+      "id": "CL-17",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+      ]
+    },
+    {
+      "id": "CL-18",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Circuit accepted-cart prerequisite absent, directhuman syntheticCOD approval pending, and actual common hostedTLS ERR_CERT_AUTHORITY_INVALID unresolved. No Circuit checkout/confirm/replay performed."
+      ]
+    },
+    {
+      "id": "CL-19",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Circuit accepted-cart prerequisite absent, directhuman syntheticCOD approval pending, and actual common hostedTLS ERR_CERT_AUTHORITY_INVALID unresolved. No Circuit checkout/confirm/replay performed."
+      ]
+    },
+    {
+      "id": "CL-20",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "No actual Circuit order or confirmation exists, so inventory/order/journal/history assertions deferred; no empty-result pass or precreatedorder substituted."
+      ]
+    },
+    {
+      "id": "CL-21",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "No actual Circuit order or confirmation exists, so inventory/order/journal/history assertions deferred; no empty-result pass or precreatedorder substituted."
+      ]
+    },
+    {
+      "id": "CL-22",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "No preceding actualCircuitorder/historypositive control; later realcatalogedit deferred. NormalmerchantSave also actuallyrejectsorigin. No historicalsnapshot mutation."
+      ]
+    },
+    {
+      "id": "CL-23",
+      "status": "NOT_RUN",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Required separateactivecartbeforeCL22 plusactualprimaryorder/lateredit missing; no stalequote acceptance test performed."
+      ]
+    },
+    {
+      "id": "CL-24",
+      "status": "BLOCKED",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "NormalPreviewCircuit modal advertises exactinteractiveURL tenantorigin/theme-preview/letbuyy-forge. Openedexactlink ->PageNotFound; independentunauthGET404. InertAdd/variant/cart/forgedcontext subcases notrun because trustedpreview didnotload. No alternateURLguess or securitybypass."
+      ]
+    },
+    {
+      "id": "CL-25",
+      "status": "FAIL",
+      "decision": "CONTROLLER_SCOPE_SUPPORTED_BY_RECORDED_EVIDENCE",
+      "observations": [
+        "Actual publishedCircuitcopy advertises models. Native mainform exactknownproductname returns1hub, while suppliedmodelSyntheticH1 sameexplicitonehubscope returns0/visibleempty. Independentexactcanonical2GETs200/200 confirmtotal1v0; fullplanned4-productcohortnotcreated, intrinsicbaseline modelsearchdefectobserved. Native392GREEN is separatefuturefix, notlive in9cd."
+      ]
+    }
+  ],
+  "independentChecks": [
+    "Exact Circuit2.0 installed instance/packageVersion/site/current release binding corroborated; original CL01 ownership/integer-product-version gaps remainpartial",
+    "A→B→restoreA→reapplyB exactsame-algorithm snapshot hashes and anonymous publicmarkers verified; not substituted for wholeCL01",
+    "CL03 actualpublichub1200/stock8/noimages/no variants,65/45/60W,connectorroles1/2/1,Hub1 and unknowncompatibility corroboratePDPAX; no screenshot claim",
+    "CL10 one-hubcollection positivequery and CL25 intrinsicmodelmiss corroborated byexact2HTTPGET200/200 total1/0; plannedfourproductscope notfabricated",
+    "CL12 recordedURLs preserve remainingexactscope/repeatedkind choices during sort/clear, resetpage1 andsingleHub/Any serialization; four-product semantics remainpartial",
+    "CL02 actualnormalSaveoriginrejection corroborated; no supplement creation/injectedfixture claimed",
+    "CL24 exactlinkedpreview404 corroborated; no inertguard/storage/network/cart subcase acceptance",
+    "All eighteen NOT_RUN cases retain missing positive controls/normalUIfixtures/cart-COD approval/trustedHTTPS/history prerequisites; isolatednativeproofdoesnotpromote them"
+  ],
+  "relatedNativeProof": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-qualification.json",
+    "runId": "3273631a2c5b",
+    "pass": 8,
+    "nativeFixLiveInCurrentFixture": false
+  },
+  "blockers": [
+    "Normalmerchantproductsaveoriginrepair must pass correctedcandidate retest before CL02 supplements/memberships",
+    "Canonical392must qualifydependentLATEST and reach separatelyadmittedfixture before liveCL25retest",
+    "Exactlinkedcatalogpreviewreturns404; canonicalentry mustload beforeCL24 inertguard tests",
+    "Automaticapprovalreview rejected Pantryunknowncartaddition for exceedingnarrowallocation; directhuman broadersyntheticcart/COD approval remainspending inEditor",
+    "Trustedhostedcheckoutcertificate setup pending; no securityinterstitial bypass",
+    "Required Circuit acceptedcart/order/history/lateredit/stalequote positive controls absent"
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-heading-A-reload.ax.txt",
+      "sha256": "1af860499a0a8d295e8a54e355a205fddad249714a66d127cfad6a654e8c6d98"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-publication-A-proof.json",
+      "sha256": "22b641e3fd1571da4e6e6736bcd1ec4d9ac56bd786b56a30d8a55fbfb6101e9c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-public-A-readback.json",
+      "sha256": "9aa202233d841bdf024d9317361be08d76c0cdf7327bd2729bee38354028fe2e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-publication-B-proof.json",
+      "sha256": "8b314b77143eb201788e0eb9a44b3ef08d08fa8f60f9b59a039a824387121b85"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-public-B-readback.json",
+      "sha256": "790d97180020ce0734ec80ddfc009ab8625833a97c59f31574b89da5af421993"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-restore-A-proof.json",
+      "sha256": "a341bde5338309d3d5f5b1e619cedb748ef7bd78d16eb89169c5badf38ef9302"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-restored-A-public-readback.json",
+      "sha256": "db48930fde5fe2e26e3083b2604ac5a896eee3bbbdee8caf263311d701f059f9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-draft-B-preserved.ax.txt",
+      "sha256": "dc1dba9fae86a40313e8fa97ec3be6330b87e5ea78e7e839e9bfd6352b61ca3a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-reapply-B-proof.json",
+      "sha256": "a2240c9c6dcf1a7b765a7c312a3a3f8b7dbf071a29f20e52cdb3fc0ad65cda44"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-reapplied-B-public-readback.json",
+      "sha256": "d0db47a60b4f6c31f01cf221592bd8318c0ba39d28d5fb6ea40bdd99114ede4c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/installed-bindings-first-four.json",
+      "sha256": "7329b2063cd20a05bf7dff0eeba1617127003a96dc89ca39e9c9b24322525491"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-merchant-origin-failure.ax.txt",
+      "sha256": "0daf55b16c551c298008edd2e57c8788aeb936fff9c69e980daa08063c3404a0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-hub-PDP.ax.txt",
+      "sha256": "9538d6879013b8a14744c53835b8713eed912effd1e45db183cb1d53a0398c4f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-actual-name-model-search.json",
+      "sha256": "532c81c03c41f100bf60e1b95e8d227d5f071e249567f56d25b56011c63d60d1"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-CL12-baseline-sort-clear.json",
+      "sha256": "270f6049a734af3d2c2f6e336be6ef4dfaf1cf2cdf3ecda90733d41109e8f6a2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-CL12-baseline-scalar-any.json",
+      "sha256": "27f10d9d27cc734712a99283ac93a1002d55a23793aa041787bf672efecfa56c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/circuit-demo-linked-route-observation.json",
+      "sha256": "6787fcca7b568b31c1849c7d15809d2b80ca706dcb62684ed0563fa6fb370163"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/current-circuit-query-witness-9cd50e893016/release.json",
+      "sha256": "df13d59e7232c896dea0b21e53fc1976757edf634b0ae441fc68d3fc91150f7c"
+    }
+  ],
+  "fixtureOrSourceMutationsByThisAudit": []
+}

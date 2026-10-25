@@ -1,0 +1,192 @@
+[
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-baseline-20261021.json",
+    "sha256": "5a3443d4433ed056f5e0a0c1444f8fbfcb57316fbc9eed8422b20d8948024aa2",
+    "runId": "1b8de0cc0193",
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Refused ambient .env; no browser acceptance"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-baseline-isolated-20261021.json",
+    "sha256": "76f58c1a3290459a9176abe036cb4b7089b2192cc8ca3c6cb1080798ab4ba9db",
+    "runId": "ce5372b5e013",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Original isolated production journey passed"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-profile-before-20261021.json",
+    "sha256": "49654b6af9bd1066d888f0331d9274cfa141a6a1c17dc96d42e8de577572caf8",
+    "runId": "b921f1e108c5",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Warm observations; no admitted cold-cache proof"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-profile-after-20261021.json",
+    "sha256": "8c55182c6558133a144738795ea860db7b07a08392c382951f3a853cad8e7417",
+    "runId": "e3abea6a8136",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Intermediate head candidate; ineffective registry experiment later reverted"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-profile-final-20261021.json",
+    "sha256": "50adf6b48edb1b2162d3a3a932508c0e76f6b55daddc105ddb346531b5fc8be7",
+    "runId": "2a897eb748b8",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Intermediate UI imports; cold labels invalid because CDP Network was not enabled"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-matched-before-20261021.json",
+    "sha256": "7110e7262da9372b88a52bd7cd2268fe4b394bc091553322d46e25187eddf470",
+    "runId": "d7bdc5ce1556",
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Admitted matched performance observations; later demo networkidle readiness failure"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-matched-after-20261021.json",
+    "sha256": "8bed2715ae0a33eaa627e83fc4ac6ce043e27132d4c95da214058f227527c5bb",
+    "runId": "e8ff9de0b4ec",
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "External network/Turnstile signup failure; no performance observations"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-matched-after-network-recovered-20261021.json",
+    "sha256": "1bf191a4756d19a8afec788d9ecb4887c6d6a60717cab984175816752e94040d",
+    "runId": "3f1f7e71a2fe",
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Admitted observations; later test expected core.product-detail instead of fixture productDetail"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-matched-after-corrected-20261021.json",
+    "sha256": "7efb86bba3bc74ee1465920b5a16721fe9a952d62d387ede8a09b64736ea75b0",
+    "runId": "e78b549ab5cb",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Admitted matched after-performance and complete native journey passed"
+  },
+  {
+    "receipt": "/private/tmp/letbuyy-storefront-catalog-matrix-20261022.json",
+    "sha256": "b042641451d920de3ff463737732496c8d65d2b41df27db9dbe8cb47ea0de8d5",
+    "runId": "4a196efd1f84",
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Expanded catalog test failed on ambiguous h1/h3 locator; corrected to primary heading"
+  }
+]

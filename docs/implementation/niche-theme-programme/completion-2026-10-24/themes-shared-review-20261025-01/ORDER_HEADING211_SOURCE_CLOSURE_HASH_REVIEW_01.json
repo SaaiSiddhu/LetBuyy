@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-24T23:59:33.523500+00:00",
+  "classification": "PHYSICAL_PRIVATE01_SOURCE_CLOSURE_HASH_CHECK_NOT_NATIVE",
+  "filesChecked": 1080,
+  "runtimeModulesRecorded": 477,
+  "edgesRecorded": 3730,
+  "mismatches": [],
+  "independentRecursiveRediscoveryExecuted": false,
+  "nativeExecuted": false,
+  "next": "Private02 amendment must provide refreshed closure. Existing physical01 hashes do not admit mutable02."
+}

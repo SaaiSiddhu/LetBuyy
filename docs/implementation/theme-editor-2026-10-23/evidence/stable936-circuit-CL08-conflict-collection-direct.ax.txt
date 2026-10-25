@@ -1,0 +1,54 @@
+Browser tab: 70, Title: "Lifecycle accessories | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&power_output_w=65".
+1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&power_output_w=65
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, ID: lb-product-origin-filter
+				16 button Apply filter
+		17 text THE CONNECTION DESK
+		18 heading Lifecycle accessories, Value: 1
+			19 text Lifecycle accessories
+		20 text 0 products
+		21 container
+			22 text Search products, models and connectors
+			23 search text field (settable) Search products, models and connectors, ID: ct-search-forge-discovery-collection
+			24 button Search
+		25 container
+			26 text Sort by
+			27 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-collection, Secondary Actions: Expand
+				28 menu
+					29 (selected) Featured
+					30 Price: low to high
+					31 Price: high to low
+					32 Newest
+					33 Name
+			34 button Sort
+		35 container Applied filters
+			36 link Description: Remove Power input (W): 65, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_output_w=65
+			37 link Description: Remove Power output (W): 65, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65
+		38 heading No products match this selection., Value: 2
+			39 text No products match this selection.
+		40 text Your query is kept above. Try another model or a broader category.
+		41 link Description: Explore all products, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+		42 container Product pages
+			43 text Page 1 of 0
+		44 heading Threadline, Value: 3
+			45 text Threadline
+		46 text Circuit 936 B footer saved
+		47 heading CONTACT, Value: 4
+			48 text CONTACT
+		49 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		50 text © Threadline. All rights reserved.
+		51 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&power_output_w=65

@@ -1,0 +1,52 @@
+{
+  "method": "Built-in image_gen; three original bitmap assets. Native HTML text, local fonts and Lucide React SVG output. No CLI/API image generation.",
+  "assets": [
+    {
+      "asset": "assets/field-notes-cover.png",
+      "slug": "product-mockup",
+      "prompt": "Use case: product-mockup. Asset type: original fictional book cover for Marginalia bookseller, not a UI screenshot. Primary request: create one flat front cover, portrait 2:3 proportions, full uncropped rectangle with all edges visible. Title verbatim: \"FIELD NOTES FOR A SLOWER CITY\". Author verbatim: \"MIRA SEN\". Small bottom line: \"MARGINALIA EDITIONS\". Style: sophisticated independent Indian literary nonfiction cover, ink drawing of a quiet doorway and single potted tree in an abstract urban courtyard, deep olive and warm cream with tiny ochre detail; ample clean typographic space, tactile uncoated paper. Typography understated serif title, clean author label. Flat artwork photographed straight-on, no perspective mockup, no background objects, no shadows, no badges or claims. Entire original composition, no reference to existing book design, no watermark.",
+      "output": "/Users/saai_mithra/.codex/generated_images/01a164bb-0749-7073-aef0-295ae3f64541/exec-2e8cb3a2-faa5-4ac5-b728-52320ad942a4.png"
+    },
+    {
+      "asset": "assets/small-thought-cover.png",
+      "slug": "product-mockup",
+      "prompt": "Use case: product-mockup. Asset type: original fictional portrait book cover, 2:3 full front, all edges visible, flat artwork without props or mockup perspective. Title verbatim: \"THE SHAPE OF A SMALL THOUGHT\". Author verbatim: \"DEV RAO\". Small publisher text: \"MARGINALIA EDITIONS\". Literary essays on observation and creativity. Original block-print abstraction of two terra-cotta vessels and a thin deep blue arc on a warm off-white field, russet, midnight blue and quiet cream. Refined typographic hierarchy, tactile printed paper, sophisticated Indian independent publisher aesthetic. No existing book or artist reference, no claims, badges or watermark. Crisp typography.",
+      "output": "/Users/saai_mithra/.codex/generated_images/01a164bb-0749-7073-aef0-295ae3f64541/exec-d2f7c277-c63b-4613-944f-da100589a042.png"
+    },
+    {
+      "asset": "assets/notebook.png",
+      "slug": "product-mockup",
+      "prompt": "Use case: product-mockup. Asset type: original stationery product photograph, square. Primary request: an A5 olive cloth-cover blank notebook and an open matching notebook showing cream unruled paper, on an off-white studio surface. One capped brown pencil laid alongside, no other props. Show complete objects with clear edges and readable physical paper texture, three-quarter overhead viewpoint. Soft daylight from upper left, understated independent Indian stationery shop styling, warm whites and olive binding, precise natural shadows. No typography, no logos, no measurements or certification marks, no watermark. This is an illustrative fictional catalog photo, not a test of paper performance.",
+      "output": "/Users/saai_mithra/.codex/generated_images/01a164bb-0749-7073-aef0-295ae3f64541/exec-13ed08a2-38ee-4e5a-b319-6800574196ff.png"
+    }
+  ],
+  "notes": "Notebook image shows the same fictional item open and closed. Only one notebook is supplied; pencil excluded. Image is illustrative; factual paper specifications come from fixture data, never inferred from photograph.",
+  "additionalAssets": [
+    {
+      "file": "assets/letbuyy-logo.svg",
+      "source": "apps/platform/identity/public/icons/letbuyy-logo-light.svg",
+      "role": "Canonical identity logo"
+    },
+    {
+      "file": "source/icons.json",
+      "source": "Threadline permitted reference, original render via installed lucide-react@0.562.0",
+      "role": "Governed Lucide icon output; Lucide license retained"
+    },
+    {
+      "file": "assets/geist-sans-latin.woff2",
+      "source": "packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+      "role": "Actual current identity font; local OFL retained"
+    },
+    {
+      "file": "assets/libre-regular.ttf",
+      "source": "Google Fonts public distribution; source/font-downloads.json",
+      "role": "Book storefront headings; OFL retained"
+    },
+    {
+      "file": "assets/source-regular.ttf",
+      "source": "Google Fonts Source Sans 3 public distribution; source/font-downloads.json",
+      "role": "Storefront body; explicit registry-mapping caveat in README"
+    }
+  ],
+  "identityCorrection": "23 October: source-grounded BuyerAuthorize email/password, explicit Continue state, admin/light brandInk800 primary and local Geist; historical purple/mandatory verify flow superseded before first capture."
+}

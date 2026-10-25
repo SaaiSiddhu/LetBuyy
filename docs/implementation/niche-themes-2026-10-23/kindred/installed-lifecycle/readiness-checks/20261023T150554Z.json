@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-23T15:06:52.488270+00:00",
+  "heartbeat": "2026-10-23T15:05:54.320Z",
+  "status": "EDITOR_DIAGNOSTIC_ACCEPTANCE_IN_PROGRESS_KINDRED_LEASE_PENDING",
+  "coordinatorCursor": "07791e05-415a-455a-97a4-4cd2ae936928:353",
+  "sharedRun": "9cd50e893016",
+  "kindredLease": null,
+  "runtimeBindings": null,
+  "casesRun": 0,
+  "casesNotRun": 19,
+  "observation": "Editor retains IAB/live fixture for Dewdrop30 diagnostics. New Dewdrop header/OOS/merchant-origin evidence exists, but no Kindred grant or buyer lease. Native-slot availability is not UI allocation.",
+  "kqa01": "OPEN P2; private correction remains unapplied",
+  "ownedResourcesStarted": [],
+  "sourceOrArtifactEdits": false,
+  "notification": "Suppressed: no actionable Kindred change"
+}

@@ -1,3 +1,4 @@
+import { buildGoogleFontsHref } from '@letbuyy/theme-engine';
 import type { CheckoutStorePresentation } from '@letbuyy/tenant-core';
 import { normalizeStoreRootDomain, buildTenantStorefrontUrl } from '@letbuyy/tenant-core';
 import type { Metadata } from 'next';
@@ -23,6 +24,7 @@ interface CheckoutSearchParams {
     expires_at?: string;
     cart_digest?: string;
     signature?: string;
+    buyer_binding?: string;
 }
 
 interface VerifiedHandoffLine {
@@ -80,6 +82,8 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         const value = params[key];
         if (typeof value === 'string' && value.length > 0) query.set(key, value);
     }
+
+    if (params.buyer_binding !== undefined) query.set('buyer_binding', params.buyer_binding);
 
     let response: Response;
     try {
@@ -166,6 +170,7 @@ export default async function CheckoutOriginPage({
 
     return (
         <div style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
+            {buildGoogleFontsHref([branding.bodyFontFamily, branding.headingFontFamily]) ? <link rel="stylesheet" href={buildGoogleFontsHref([branding.bodyFontFamily, branding.headingFontFamily])!} /> : null}
             <header className="border-b border-line px-4 py-3">
                 <div className="mx-auto flex max-w-5xl items-center justify-between">
                     <a

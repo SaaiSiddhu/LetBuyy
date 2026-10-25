@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
         ],
     },
     async headers() {
-        return [{ source: '/:path*', headers: createSecurityHeaders() }];
+        const frameSources = (process.env.APP_EMBED_ALLOWED_ORIGINS || '').split(/[,\s]+/).filter(Boolean);
+        return [{ source: '/:path*', headers: createSecurityHeaders({ frameSources }) }];
     },
 };
 

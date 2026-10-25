@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-24T15:57:19.319560+00:00",
+  "status": "FUNCTIONAL_NATIVE_FACET_GATE_PASS_SQL_NOT_CANONICALLY_EMITTED",
+  "runId": "786c7515c57a",
+  "phasesPassed": 8,
+  "assertionsPassed": 9,
+  "assertionsFailed": 0,
+  "skipped": 0,
+  "sourcePinsStillExact": 1074,
+  "provenanceReceiptsVerifiedAndCopied": 66,
+  "sourceRegressionTests": 17,
+  "sourceResult": "facet-unicode-repair04/source.tap",
+  "sqlUp": "facet-private-implementation-03/UNNUMBERED_circuit_facets.up.proposal.sql",
+  "sqlDown": "facet-private-implementation-03/UNNUMBERED_circuit_facets.down.proposal.sql",
+  "nativeIncludes": [
+    "Unicode manufacturer true product/facet round trips",
+    "real foreign collection denial",
+    "strict query and evidence semantics",
+    "same-candidate price/stock/UUID",
+    "all other theme fact filters",
+    "counts/caps/pagination",
+    "sanitized actual Worker fault",
+    "full all-table conservation across paired DOWN/replay",
+    "four attributed HTTP logs, four request metrics and exact one500alert including physical mirrors"
+  ],
+  "indexingAcceptance": false,
+  "productionScaleProof": false,
+  "independentPeerReview": "PENDING",
+  "installedBrowserFacetCases": "NOT_RUN",
+  "heldRuntime02HasSql": false,
+  "canonicalMigrationEmitted": false,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "allTenCertified": false
+}

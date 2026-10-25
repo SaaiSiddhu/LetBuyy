@@ -1,0 +1,260 @@
+{
+  "recordedAt": "2026-10-24T03:37:56.369276+00:00",
+  "status": "ACL393_SOURCE_CANDIDATES_AND_DEDICATED_NATIVE_SOURCE_READY_PENDING_ROOT_REVIEW_NO_NATIVE_ADMISSION_OR_EMISSION",
+  "allocation": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393-source-allocation.json",
+    "sha256": "e0e70d9145957272c33042f22f8a51bfe365a60a638a794704d04e425c22ea98",
+    "bytes": 2963
+  },
+  "manifest": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/manifest.json",
+    "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f",
+    "bytes": 3954
+  },
+  "candidates": [
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.up.candidate.sql",
+      "sha256": "b4fe24e45e1dc7c44f8ffb21acb128bc73e9622554c397948df9e972d88537f5",
+      "bytes": 14047
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.down.candidate.sql",
+      "sha256": "1d668472d0ee31d0cf5962533b7eec9b5c52142f9b384a96c30da10ff764ce59",
+      "bytes": 14141
+    }
+  ],
+  "newNativeSuite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+    "sha256": "24d1b0cc9e8b0ce76aa6a14adc9466420f52b1069a9ae0b3b885dbab1312a58a",
+    "bytes": 23914,
+    "parentTests": 1,
+    "orderedChildPhases": 7,
+    "expectedCompleteNativeTap": 8,
+    "executed": false
+  },
+  "sourceChecks": {
+    "pureAdmissionAndContracts": {
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "tap": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts-02-final.tap",
+        "sha256": "10c32105d94ba63394528683fb4b375d76a89b9879c2d0ee90e381cb13e9454f",
+        "bytes": 2236
+      },
+      "grantSimulatedInMemoryOnly": true,
+      "ownedNativeModuleImported": false,
+      "sqlExecuted": false
+    },
+    "fullGatewayNoEmit": {
+      "exitCode": 0,
+      "attempts": 1,
+      "log": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/gateway-noemit-01.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "sourceEpoch": "Before final native-only all-table SQL snapshot aggregation correction; no second full Gateway loop"
+    },
+    "exactFinalNativeSemanticNoEmit": {
+      "exitCode": 0,
+      "log": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-semantic-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "checker": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/check-native-types.mjs",
+        "sha256": "b745c5a3c37f8f55096ed78da8b725687e2ded6b186fb52b01f97e86a90db5b8",
+        "bytes": 1068
+      },
+      "scope": "One new native root + all transitive imports, same Gateway project options, no execution; other source unchanged"
+    },
+    "newNativeEslint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "report": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-source-eslint-final.json",
+        "sha256": "122bcc559ec1cd18b5c7261e02496ca2822487f795802f4f02f9d56cbe2906c6",
+        "bytes": 285
+      },
+      "stderr": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-source-eslint-final.stderr",
+        "sha256": "6ef9f5cb3da64c6db4927355030d85ef24be96b5e7f9786e8b384ddb573a5503",
+        "bytes": 215
+      }
+    }
+  },
+  "inputClosure": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+    "sha256": "3697c9d176e60eed801ea72529e387810b3c5e372d27c3a083e9232b85660262",
+    "bytes": 559275,
+    "files": 1071,
+    "literalEdges": 1998,
+    "nonliteralImports": 0,
+    "allInputHashesCurrentExact": true,
+    "migrationCount": 321,
+    "maximum": 392,
+    "thirdPartyBoundBy": "manifests and pnpm lock"
+  },
+  "securityContract": {
+    "oneFixedExistingFunction": "public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)",
+    "up": "Only direct app_tenant EXECUTE revoked; owner/service grants preserved",
+    "down": "Exact historical direct grant restored only in separately owned proof; finish re-UP denied",
+    "strictProfiles": "Known376 body/owner/ABI/defaults/search path/comments; known baseline or hardened ACL; no grant/inheritance relaxation",
+    "ordinaryDependencyPrecondition": "Exact source-defined namespace public + language plpgsql normal dependencies; raw OIDs resolved per database; no extra dependency accepted. Not yet observed by this new native suite.",
+    "onlySharedDelta": "Only target function ACL-role app_tenant dependency removal/restoration, count1 ->0 ->1; preserve all other shared and ordinary dependencies.",
+    "nativeObservationPending": true,
+    "newRolesPoliciesFunctionsOrSchema": false,
+    "bodyOrOwnerOrAbiChanged": false,
+    "directSqlCatalogEdits": false
+  },
+  "futureNativeWitnesses": [
+    "Full profile before parent/phase assertions and migration/mutant failure checks",
+    "All-table hash parity and unrelated catalog/roles/ACL conservation around UP/DOWN/replay",
+    "Positive own-row control in same app_tenant transaction before valid-payload direct publisher42501",
+    "Actual mounted service save/publish and reviewed release rollback, CAS/retry, preserved private draft, exact audit/outbox",
+    "Unknown attribute/grantee/grant-option/comment/dependency refusal in atomic rollback controls",
+    "Exact historical DOWN/replay; no tenant publisher/updater invocation while unsafe; final re-UP/replay/denial",
+    "Exact source rehash on completion; no skip or native mock routing"
+  ],
+  "conservation": {
+    "oldClosure1079FilesExact": true,
+    "oldClosure": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/source-input-closure.json",
+      "sha256": "5cdd2a350ceed9c63cdd09b26f445f07318ebdc496e782a76635e16c91d3335f",
+      "bytes": 565877
+    },
+    "oldNativeAa26Exact": true,
+    "oldAdmissionAndNativeFailuresChanged": false,
+    "oldCatalogFiveExact": true,
+    "factory61Exact": true,
+    "rtHeadExact": {
+      "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+      "sha256": "5652a08084dabc6f4d817f10222ae8ed908f53be49c3460c6b81e7088730297a",
+      "bytes": 23653
+    },
+    "rt1rt2rt7Changed": false,
+    "existingAppHelperEngineOldSqlChanged": false,
+    "migrationScanCount": 321,
+    "maximum": 392,
+    "393394Emitted": false,
+    "old19Or107TestsRerun": false,
+    "936EditorMarketplaceThreadlineResourcesTouched": false
+  },
+  "execution": {
+    "actualNewNativeAdmissionExists": false,
+    "nativeDatabaseDockerBrowserRuntimeActions": 0,
+    "newRoleGrantOrSqlExecution": false,
+    "candidateOnlyOutsideMigrationScan": true,
+    "invalidPendingTemplate": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/admission.template.json",
+      "sha256": "586a1a39da38a68753219bb2a890a09e1f50152f41b6f2606d170012f4d5dc75",
+      "bytes": 1047
+    },
+    "394GenerationOrNativeRefresh": false
+  },
+  "limits": [
+    "No PostgreSQL parse/run or native behavior acceptance yet. Strict ordinary dependency/profile expectations must succeed under an admitted fresh baseline; do not weaken on a failure.",
+    "Full RT1..RT9/callsite regression on default393 remains separately allocated after source emission; no inherited credit.",
+    "The later full catalog394/update capability restoration/audit/enrichment/concurrency qualification remains blocked pending393 security and a separate source grant.",
+    "Full Gateway compile happened once before native snapshot SQL aggregation correction; exact final native/import semantic compile passed; neither executes SQL."
+  ],
+  "handoff": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/SOURCE-RELEASE.md",
+    "sha256": "2a3d9056163759df3790be32dfe3fb112bd3f9ad5496132f906ed7d7de05429b",
+    "bytes": 7658
+  },
+  "next": "Independent Root exact source/manifest/closure review, actual admission and separately allocated fresh default392 + candidate393 owned run. No native run or emission is self-authorised.",
+  "artifacts": [
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.down.candidate.sql",
+      "sha256": "1d668472d0ee31d0cf5962533b7eec9b5c52142f9b384a96c30da10ff764ce59",
+      "bytes": 14141
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/393_publisher_tenant_execute.up.candidate.sql",
+      "sha256": "b4fe24e45e1dc7c44f8ffb21acb128bc73e9622554c397948df9e972d88537f5",
+      "bytes": 14047
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/SOURCE-RELEASE.md",
+      "sha256": "2a3d9056163759df3790be32dfe3fb112bd3f9ad5496132f906ed7d7de05429b",
+      "bytes": 7658
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/admission.template.json",
+      "sha256": "586a1a39da38a68753219bb2a890a09e1f50152f41b6f2606d170012f4d5dc75",
+      "bytes": 1047
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/capture-source-inputs.mjs",
+      "sha256": "56c766913e0093a951674b15183522a8851bab40445e744e0e15fdb1bfbbb769",
+      "bytes": 7001
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/check-native-types.mjs",
+      "sha256": "b745c5a3c37f8f55096ed78da8b725687e2ded6b186fb52b01f97e86a90db5b8",
+      "bytes": 1068
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/gateway-noemit-01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/manifest.json",
+      "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f",
+      "bytes": 3954
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-semantic-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-source-eslint-01.json",
+      "sha256": "122bcc559ec1cd18b5c7261e02496ca2822487f795802f4f02f9d56cbe2906c6",
+      "bytes": 285
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-source-eslint-01.stderr",
+      "sha256": "6ef9f5cb3da64c6db4927355030d85ef24be96b5e7f9786e8b384ddb573a5503",
+      "bytes": 215
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-source-eslint-final.json",
+      "sha256": "122bcc559ec1cd18b5c7261e02496ca2822487f795802f4f02f9d56cbe2906c6",
+      "bytes": 285
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-source-eslint-final.stderr",
+      "sha256": "6ef9f5cb3da64c6db4927355030d85ef24be96b5e7f9786e8b384ddb573a5503",
+      "bytes": 215
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts-01.tap",
+      "sha256": "d10ceb38d83962985d618ffa42501fd687b0a2d9f74f53bfb39f20a473959313",
+      "bytes": 2237
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts-02-final.tap",
+      "sha256": "10c32105d94ba63394528683fb4b375d76a89b9879c2d0ee90e381cb13e9454f",
+      "bytes": 2236
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts.test.mjs",
+      "sha256": "a32f6fbf2d8c1f2b3d02780533fd95205f718ffc7c90914a26e75d2a80169af3",
+      "bytes": 9345
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+      "sha256": "3697c9d176e60eed801ea72529e387810b3c5e372d27c3a083e9232b85660262",
+      "bytes": 559275
+    }
+  ]
+}

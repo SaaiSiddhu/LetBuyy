@@ -1,0 +1,13 @@
+--- sealed03/services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts
++++ proposed04/services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts
+@@ -47,8 +47,8 @@
+ type Product = { id: string; oat: string; navy: string; tenant: SyntheticTenant };
+ let gateway: Gateway, keys: IdentityKeys, pooled: OwnedPooledSqlProxy;
+ function evidence(name: string, data: unknown) { mkdirSync(out!, { recursive: true }); writeFileSync(resolve(out!, `${name}.json`), JSON.stringify(data, null, 2) + '\n', { flag: 'wx' }); }
+-function functions() { return JSON.parse(psql(`SELECT jsonb_agg((to_jsonb(p)-'proargdefaults') || jsonb_build_object('argument_defaults',pg_get_expr(p.proargdefaults,0),'signature','public.'||p.proname||'('||oidvectortypes(p.proargtypes)||')','definition',pg_get_functiondef(p.oid)) ORDER BY p.oid) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prokind='f';`)) as Array<Record<string, unknown>>; }
+-function tables() { return psql(`SELECT jsonb_agg(jsonb_build_object('name',c.oid::regclass::text,'owner',c.relowner,'acl',c.relacl,'rls',c.relrowsecurity,'force',c.relforcerowsecurity,'columns',(SELECT jsonb_agg(to_jsonb(a) ORDER BY a.attnum) FROM pg_attribute a WHERE a.attrelid=c.oid AND a.attnum>0)) ORDER BY c.oid) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p');`); }
++function functions() { return JSON.parse(owned.scriptLarge(`SELECT jsonb_agg((to_jsonb(p)-'proargdefaults') || jsonb_build_object('argument_defaults',pg_get_expr(p.proargdefaults,0),'signature','public.'||p.proname||'('||oidvectortypes(p.proargtypes)||')','definition',pg_get_functiondef(p.oid)) ORDER BY p.oid) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prokind='f';`)) as Array<Record<string, unknown>>; }
++function tables() { return owned.scriptLarge(`SELECT jsonb_agg(jsonb_build_object('name',c.oid::regclass::text,'owner',c.relowner,'acl',c.relacl,'rls',c.relrowsecurity,'force',c.relforcerowsecurity,'columns',(SELECT jsonb_agg(to_jsonb(a) ORDER BY a.attnum) FROM pg_attribute a WHERE a.attrelid=c.oid AND a.attnum>0)) ORDER BY c.oid) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p');`); }
+ /** Full public row multiset: count + SHA256 of sorted SHA256(row::jsonb) for every ordinary/partitioned relation.
+  * This is used at SQL-only boundaries after settling the Worker, never to erase legitimate HTTP telemetry. */
+ function fullPublicData(): Array<{ relation: string; count: number; sha256: string }> {

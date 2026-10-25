@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-25T05:57:59.855708+00:00",
+  "sourceContainer": "letbuyy-exec-54685-mvmssydy-fe81e9",
+  "databaseChecks": [
+    {
+      "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+      "publications": 0,
+      "subscriptions": 0,
+      "foreignServers": 0,
+      "nonSystemTables": 488,
+      "nonCoreExtensions": [],
+      "unloggedRelations": 0
+    },
+    {
+      "database": "letbuyy_executable",
+      "publications": 0,
+      "subscriptions": 0,
+      "foreignServers": 0,
+      "nonSystemTables": 0,
+      "nonCoreExtensions": [],
+      "unloggedRelations": 0
+    },
+    {
+      "database": "postgres",
+      "publications": 0,
+      "subscriptions": 0,
+      "foreignServers": 0,
+      "nonSystemTables": 0,
+      "nonCoreExtensions": [],
+      "unloggedRelations": 0
+    },
+    {
+      "database": "template1",
+      "publications": 0,
+      "subscriptions": 0,
+      "foreignServers": 0,
+      "nonSystemTables": 0,
+      "nonCoreExtensions": [],
+      "unloggedRelations": 0
+    }
+  ],
+  "originalDataOrConfigurationWrites": 0,
+  "nonConnectableDatabaseLimit": "template0 and sealed letbuyy_tpl_gateway are not enabled or modified. Candidate source has no CREATE/SET UNLOGGED in bootstrap/migrations. Actual catalogs in these nonconnectable databases are not claimed inspected; clone-side validation is still required."
+}

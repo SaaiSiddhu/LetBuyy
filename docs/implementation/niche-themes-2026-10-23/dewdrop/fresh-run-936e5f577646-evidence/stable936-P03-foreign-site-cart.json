@@ -1,0 +1,74 @@
+{
+  "recordedAt": "2026-10-24T03:49:32.611Z",
+  "classification": "APPROVED_NATIVE_SECURITY_FIXTURE_SETUP_AND_POSITIVE_FIRST_WRONG_SITE_CART_READ_NOT_BROWSER_OR_ORDER_PROOF",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "foreignSiteId": "b346088a-948f-445d-8522-47c97e0bb9a6",
+  "foreignSubdomain": "syn-editor-foreign-35060b8c",
+  "foreignOwnerId": "06e77d4d-3b48-4c52-b0b3-571c54a6e25e",
+  "foreignProductId": "83c61708-7b06-473e-b04c-8e7ab79b6f1a",
+  "foreignCartId": "3f7f16bd-f9b4-410e-af2d-d565bcd21bec",
+  "commandSha256": {
+    "product": "030b35e252aa986fece0d0e9ac7bc52e14c48f4e05b19ed5edf41a1f259abeb9",
+    "cart": "7d3dbd118b05d90ac84f9696f8146ce2e66d5a4279d7cc07a29a538c0ee4b14f"
+  },
+  "responses": {
+    "productCreate": {
+      "status": 201,
+      "requestId": "6a2aaf6d-86d7-4940-9617-470df82e316c"
+    },
+    "cartCreate": {
+      "status": 201,
+      "requestId": "df9c335a-0815-4807-abb3-e8e6b498728c"
+    },
+    "ownCartPositive": {
+      "status": 200,
+      "requestId": "7279e0ed-ed48-4b1c-9fb8-088904529f72"
+    },
+    "wrongSiteCartNegative": {
+      "status": 404,
+      "requestId": "a1cd5227-7feb-4597-899f-f1c495e2b816",
+      "code": "NOT_FOUND"
+    }
+  },
+  "checks": {
+    "distinctSite": true,
+    "distinctOwner": true,
+    "ownerBound": true,
+    "oneProduct": true,
+    "oneCart": true,
+    "noForeignOrder": true,
+    "ownCartPositive": true,
+    "wrongSiteDenied": true,
+    "wrongSiteNoIdentifiersLeaked": true,
+    "primaryExactlyUnchanged": true,
+    "primaryTwoExpectedOrders": true
+  },
+  "beforePrimary": {
+    "orders": 2,
+    "cartSha": "a564419a8a50f17b75a59fea04581b84d80fb366ae1b2b7292119bb076ce9e9d",
+    "siteSha": "05be29e30b5338dfc3ab542a5d9f994f1f20145dbc417e64fed908d8b324f453",
+    "itemsSha": "2bb2c78e6bbc03e39d4ca14d0f4fad860cc74f3ca30892989a6a2e2a61bf8700",
+    "ordersSha": "bcd82404e64e15593eb04637dcc41bffe42a00bc2f6b0c557844ae83780bb013",
+    "optionsSha": "e95cb04b7800e98b5f976ef704f4be07edce9e4271ea7107270910b49d510d15",
+    "productSha": "16a2a658560bacc76cf0e4bd7a2275c8a8ee89464eb52b04b048343c33779d0b",
+    "variantsSha": "d6422428e98ddb345f72d08319a9f02083033ea2513f1d322184d92c66ee5ff4",
+    "inventorySha": "0c5748d4c06e90e42093976cf44e56974870a82606f618777da9ff81c8854475",
+    "subscriptionsSha": "e92ed33f6331acb78d220712b27bf388e4841076f9dca5cb3179ccfb5e56d826"
+  },
+  "afterPrimary": {
+    "orders": 2,
+    "cartSha": "a564419a8a50f17b75a59fea04581b84d80fb366ae1b2b7292119bb076ce9e9d",
+    "siteSha": "05be29e30b5338dfc3ab542a5d9f994f1f20145dbc417e64fed908d8b324f453",
+    "itemsSha": "2bb2c78e6bbc03e39d4ca14d0f4fad860cc74f3ca30892989a6a2e2a61bf8700",
+    "ordersSha": "bcd82404e64e15593eb04637dcc41bffe42a00bc2f6b0c557844ae83780bb013",
+    "optionsSha": "e95cb04b7800e98b5f976ef704f4be07edce9e4271ea7107270910b49d510d15",
+    "productSha": "16a2a658560bacc76cf0e4bd7a2275c8a8ee89464eb52b04b048343c33779d0b",
+    "variantsSha": "d6422428e98ddb345f72d08319a9f02083033ea2513f1d322184d92c66ee5ff4",
+    "inventorySha": "0c5748d4c06e90e42093976cf44e56974870a82606f618777da9ff81c8854475",
+    "subscriptionsSha": "e92ed33f6331acb78d220712b27bf388e4841076f9dca5cb3179ccfb5e56d826"
+  },
+  "privateCredentialsAndToken0600": "/private/tmp/theme-editor-stable936-foreign-actual-bindings.json",
+  "noNewRuntimeOrIssuerOrBrowserInjection": true,
+  "noOrderOrPaymentOperation": true
+}

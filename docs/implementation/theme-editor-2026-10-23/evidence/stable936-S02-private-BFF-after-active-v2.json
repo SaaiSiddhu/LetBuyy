@@ -1,0 +1,12 @@
+{
+  "runId": "936e5f577646",
+  "stage": "Actual legacy read while current product ACTIVE v2 and selected v2 PDP positive captured",
+  "orderId": "36b89194-f491-49ab-b42c-401029a4a58c",
+  "total": 560,
+  "quantity": 1,
+  "rawSnapshotAbsent": true,
+  "approvedNicheAbsent": true,
+  "noInventedV2": true,
+  "noInventedV1": true,
+  "bodySha256": "4abc4569e50b5ebfe11e06e5eb30aba294e82d2f07654bcb5676273f177b9adb"
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "../../../../apps/commerce/web/tsconfig.json",
+  "compilerOptions": { "noEmit": true, "incremental": false, "rootDir": "../../../.." },
+  "include": [
+    "../../../../apps/commerce/web/next-env.d.ts",
+    "../../../../packages/theme-engine/test/playfield.test.ts",
+    "playfield-source-manifest.test.ts"
+  ],
+  "exclude": []
+}

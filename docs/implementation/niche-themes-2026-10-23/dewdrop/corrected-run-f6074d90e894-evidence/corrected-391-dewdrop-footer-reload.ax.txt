@@ -1,0 +1,321 @@
+Browser tab: 16, Title: "LetBuyy Admin", URL: "http://admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store/themes/letbuyy-aura/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store/themes/letbuyy-aura/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Dewdrop Draft theme
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Dewdrop home, Secondary Actions: Expand
+				13 menu
+					14 (selected) Dewdrop home
+					15 Dewdrop product
+					16 Dewdrop collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 Dewdrop search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Dewdrop home, Value: 2
+				41 text Dewdrop home
+			42 text v4
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selectable) Care introduction
+							53 button Care introduction
+						54 row (selectable) Routine pathways
+							55 button Routine pathways
+						56 row (selectable) Care routine shelves
+							57 button Care routine shelves
+						58 row (selectable) Care editorial
+							59 button Care editorial
+						60 row (selectable) Merchant service information
+							61 button Merchant service information
+					62 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						63 menu
+							64 (selected) Marquee
+							65 404 Not Found
+							66 Spotlight
+							67 Search
+							68 Video Hero
+							69 Call to Action
+							70 Care introduction
+							71 Blog Listing
+							72 Cart
+							73 Contact Form
+							74 Page Content
+							75 Care routine shelves
+							76 Rich Content
+							77 Testimonials
+							78 Merchant service information
+							79 Care editorial
+							80 Brand Marquee
+							81 Routine pathways
+							82 FAQ Accordion
+							83 Password Gate
+							84 Services Grid
+							85 App Block Slot
+							86 Customer Login
+							87 Policy Content
+							88 Portfolio Grid
+							89 Product Detail
+							90 Skills Section
+							91 Article Content
+							92 Banner Carousel
+							93 Order History
+							94 Announcement Bar
+							95 Customer Account
+							96 Collection Banner
+							97 Care discovery
+							98 Customer Register
+							99 Account Settings
+							100 Wishlist
+							101 Independently chosen products
+							102 Newsletter Signup
+							103 Addresses
+							104 Experience Timeline
+							105 Order Detail
+							106 Care product results
+					107 button Add
+				108 container
+					109 text FOOTER
+					110 button Footer
+					138 checkbox Description: Toggle Footer visibility, Value: 1
+		111 container Live theme preview
+			112 text Live preview
+			113 text syn-threadline-ui-33be9d94 . localhost  -  1440 px
+			114 container Preview device
+				115 checkbox Desktop, Value: 1
+				116 checkbox Tablet, Value: 0
+				117 checkbox Mobile, Value: 0
+			118 container
+				119 text syn-threadline-ui-33be9d94 . localhost
+				120 checkbox Description: Inspect preview, Value: 1
+				121 container syn-threadline-ui-33be9d94 storefront preview
+					139 AXWebArea LetBuyy Store, URL: localhost:62076/preview?[private-query-redacted]
+						140 container
+							141 checkbox Description: Select announcement-bar section, Value: 0
+								142 text Dewdrop shared header f6074d90e894
+								143 link localhost:62076/preview?[private-query-redacted]
+							144 checkbox Description: Select header section, Value: 0
+								145 container Description: Primary, ID: lb-nav-panel-header-default
+								146 link Description: Threadline, Value: localhost:62076/store/syn-threadline-ui-33be9d94
+								147 button (collapsed) Description: Search, Secondary Actions: Expand
+								148 link Description: Log in, Value: localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+								149 link Description: Cart ( 0 ), Value: localhost:62076/store/syn-threadline-ui-33be9d94/cart
+							150 checkbox Description: Select hero-banner section, Value: 0
+								151 text CARE, ON YOUR TERMS
+								152 heading Dewdrop saved heading A f6074d90e894, Value: 1
+									153 text Dewdrop saved heading A f6074d90e894
+								154 text Find your next everyday essential by use. Read the ingredients, directions and named shades before choosing.
+								155 link Description: Explore your routine →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/products
+							156 checkbox Description: Select category-grid section, Value: 0
+								157 heading Start where you are., Value: 2
+									158 text Start where you are.
+								159 text Each product is yours to choose.
+								160 text 01
+								161 heading Cleanse, Value: 3
+									162 text Cleanse
+								163 link Description: Explore Cleanse →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/products?routine_stage=cleanse
+								164 text 02
+								165 heading Care, Value: 3
+									166 text Care
+								167 link Description: Explore Care →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/products?routine_stage=care
+								168 text 03
+								169 heading Colour, Value: 3
+									170 text Colour
+								171 link Description: Explore Colour →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/products?routine_stage=colour
+							172 checkbox Description: Select product-grid section, Value: 0
+								173 text THE EVERYDAY SHELF
+								174 heading The everyday shelf, Value: 2
+									175 text The everyday shelf
+								176 text Browse by step. Each product is sold separately.
+								177 container Cleanse products
+									178 text 01
+									179 heading Cleanse, Value: 2
+										180 text Cleanse
+									181 container
+										182 link Description: Fixture Cloud Rinse, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/aa02e0ad-1151-4999-90b0-5fd61aa96260
+										183 text GEL CLEANSER
+										184 heading Fixture Cloud Rinse, Value: 3
+											185 link Description: Fixture Cloud Rinse, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/aa02e0ad-1151-4999-90b0-5fd61aa96260
+										186 text INR 640.00 150 ml
+										187 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/aa02e0ad-1151-4999-90b0-5fd61aa96260
+								188 container Care products
+									189 text 02
+									190 heading Care, Value: 2
+										191 text Care
+									192 container
+										193 link Description: Fixture Daily Veil, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/ddf882c4-d6e9-4c3e-8082-edfbcb4a2bc9
+										194 text FACE CREAM
+										195 heading Fixture Daily Veil, Value: 3
+											196 link Description: Fixture Daily Veil, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/ddf882c4-d6e9-4c3e-8082-edfbcb4a2bc9
+										197 text INR 880.00 50 g
+										198 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/ddf882c4-d6e9-4c3e-8082-edfbcb4a2bc9
+								199 container Colour products
+									200 text 03
+									201 heading Colour, Value: 2
+										202 text Colour
+									203 container
+										204 link Description: Fixture Soft Colour, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/2bcbdf71-270c-40ac-8819-82d8921e35f0
+										205 text LIP TINT
+										206 heading Fixture Soft Colour, Value: 3
+											207 link Description: Fixture Soft Colour, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/2bcbdf71-270c-40ac-8819-82d8921e35f0
+										208 text INR 520.00 6 ml 3 named shades
+										209 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/2bcbdf71-270c-40ac-8819-82d8921e35f0
+								210 container
+									211 heading More products, Value: 2
+										212 text More products
+									213 text Routine information not supplied.
+									214 link Description: Product image not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/084711bb-a989-4708-bb0a-11f6c9d4d3d5
+									215 heading Fixture Palm Wash, Value: 3
+										216 link Description: Fixture Palm Wash, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/084711bb-a989-4708-bb0a-11f6c9d4d3d5
+									217 text INR 460.00
+									218 text Ingredients not supplied
+									219 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/084711bb-a989-4708-bb0a-11f6c9d4d3d5
+									220 link Description: Product image not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/1682c90c-8888-483a-a1b5-3251a3e91737
+									221 heading Playfield lifecycle activity kit, Value: 3
+										222 link Description: Playfield lifecycle activity kit, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/1682c90c-8888-483a-a1b5-3251a3e91737
+									223 text INR 480.00
+									224 text Ingredients not supplied
+									225 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/1682c90c-8888-483a-a1b5-3251a3e91737
+									226 link Description: The Everyday Linen Shirt, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/3c7ffd00-5cf8-419a-80cd-00bb56918465
+									227 heading The Everyday Linen Shirt, Value: 3
+										228 link Description: The Everyday Linen Shirt, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/3c7ffd00-5cf8-419a-80cd-00bb56918465
+									229 text INR 2,490.00
+									230 text Ingredients not supplied
+									231 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/3c7ffd00-5cf8-419a-80cd-00bb56918465
+									232 link Description: Product image not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6
+									233 heading Habitat lifecycle desk, Value: 3
+										234 link Description: Habitat lifecycle desk, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6
+									235 text INR 8,900.00
+									236 text Ingredients not supplied
+									237 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/54301d6f-f54e-4209-95a0-4fbc32bcf8e6
+									238 link Description: Product image not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/592643bb-6a6c-4d51-8619-ffb743f49495
+									239 heading Marginalia lifecycle book, Value: 3
+										240 link Description: Marginalia lifecycle book, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/592643bb-6a6c-4d51-8619-ffb743f49495
+									241 text INR 420.00
+									242 text Ingredients not supplied
+									243 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/592643bb-6a6c-4d51-8619-ffb743f49495
+									244 link Description: Marginalia lifecycle lined notebook, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/6d9d5b54-f930-4382-b21c-958c7818ea0d
+									245 heading Marginalia lifecycle lined notebook, Value: 3
+										246 link Description: Marginalia lifecycle lined notebook, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/6d9d5b54-f930-4382-b21c-958c7818ea0d
+									247 text INR 320.00
+									248 text Ingredients not supplied
+									249 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/6d9d5b54-f930-4382-b21c-958c7818ea0d
+									250 link Description: Product image not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/895d7ee5-b618-4130-806d-f359f4adc492
+									251 heading MadeYours lifecycle notebook, Value: 3
+										252 link Description: MadeYours lifecycle notebook, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/895d7ee5-b618-4130-806d-f359f4adc492
+									253 text INR 690.00
+									254 text Ingredients not supplied
+									255 link Description: View product →, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/895d7ee5-b618-4130-806d-f359f4adc492
+									256 link Description: Product image not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b
+									257 heading Circuit lifecycle hub, Value: 3
+										258 link Description: Circuit lifecycle hub, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b
+									259 text INR 1,200.00
+									260 text Ingredients not supplied
+									261 link Description: View product →, Value: …
+									262 link Description: Tailored Straight Trouser, Value: …
+									263 heading Tailored Straight Trouser, Value: 3
+										264 link Description: Tailored Straight Trouser, Value: …
+									265 text INR 3,290.00
+									266 text Ingredients not supplied
+									267 link Description: View product →, Value: …
+									268 link Description: The Everyday Cotton Dress, Value: …
+									269 heading The Everyday Cotton Dress, Value: 3
+										270 link Description: The Everyday Cotton Dress, Value: …
+									271 text INR 3,990.00
+									272 text Ingredients not supplied
+									273 link Description: View product →, Value: …
+									274 link Description: Product image not supplied, Value: …
+									275 heading Trailmark lifecycle racket, Value: 3
+										276 link Description: Trailmark lifecycle racket, Value: …
+									277 text INR 1,800.00
+									278 text Ingredients not supplied
+									279 link Description: View product →, Value: …
+									280 link Description: Product image not supplied, Value: …
+									281 heading Pantry lifecycle red lentils, Value: 3
+										282 link Description: Pantry lifecycle red lentils, Value: …
+									283 text INR 180.00
+									284 text Ingredients not supplied
+									285 link Description: View product →, Value: …
+									286 link Description: Kindred lifecycle gift box, Value: …
+									287 heading Kindred lifecycle gift box, Value: 3
+										288 link Description: Kindred lifecycle gift box, Value: …
+									289 text INR 1,100.00
+									290 text Ingredients not supplied
+									291 link Description: View product →, Value: …
+									292 link Description: Product image not supplied, Value: …
+									293 heading Pantry lifecycle rice, Value: 3
+										294 link Description: Pantry lifecycle rice, Value: …
+									295 text INR 220.00
+									296 text Ingredients not supplied
+									297 link Description: View product →, Value: …
+								298 container Product pages
+							299 checkbox Description: Select about-section section, Value: 0
+							300 checkbox Description: Select trust-badges section, Value: 0
+							301 checkbox Description: Select footer section, Value: 1
+								302 heading Threadline, Value: 3
+									303 text Threadline
+								304 text Dewdrop shared footer f6074d90e894
+								305 heading CONTACT, Value: 4
+									306 text CONTACT
+								307 link Description: Contact us, Value: localhost:62076/store/syn-threadline-ui-33be9d94/contact
+								308 text © Threadline. All rights reserved.
+								309 link Description: Powered by LetBuyy, Value: letbuyy.com/
+		123 container Theme properties
+			124 text Selected section
+			125 heading Footer, Value: 2
+				126 text Footer
+			127 container Smart defaults
+				128 button (collapsed) Smart defaults, Secondary Actions: Expand
+					129 text Smart defaults
+			130 container
+				310 text Tagline
+				311 text field (settable) Tagline, Value: Dewdrop shared footer f6074d90e894
+				312 text Store name
+				313 text field (settable) Store name
+				314 text Twitter/X URL
+				315 text field (settable) Twitter/X URL
+				316 text Facebook URL
+				317 text field (settable) Facebook URL
+				318 text Contact email
+				319 text field (settable) Contact email
+				320 text Contact phone
+				321 text field (settable) Contact phone
+				322 text Instagram URL
+				323 text field (settable) Instagram URL
+				137 text BLOCKS
+				324 button Add Link
+					325 text Add 
+					326 text Link
+
+The focused UI element is 110 button Footer

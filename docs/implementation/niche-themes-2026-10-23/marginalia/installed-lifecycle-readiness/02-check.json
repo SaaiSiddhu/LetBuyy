@@ -1,0 +1,81 @@
+{
+  "checkedAt": "2026-10-23T14:09:00.095719+00:00",
+  "classification": "HEARTBEAT_DEPENDENCIES_UNCHANGED_NON_ACTIONABLE",
+  "previousCheck": "installed-lifecycle-readiness/01-check.json",
+  "qualification": {
+    "green": false,
+    "latestRun": "03",
+    "runId": "9c4d96d732fc",
+    "tests": 5,
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "result": {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/03/result.json",
+      "sha256": "314bb962391749c6de6071fa052c823e873a389283cb975b91a7b501ad4ee404"
+    },
+    "tap": {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/03/suite.tap",
+      "sha256": "9631707ee02681d245e800dc09de2a34b8012cb2f9bfb33c19afafdae5e34d16"
+    },
+    "application389": "Passed exact application/replay and nine-theme API loop",
+    "rollback389": "NOT_REACHED; same HTTP503 anonymous storefront gate",
+    "failureChanged": false,
+    "nativeOwnerStillInvestigating": true
+  },
+  "acceptedPair": {
+    "receipt": "docs/implementation/niche-theme-programme/release-v2/389-emission-receipt.json",
+    "receiptSha256": "9f833fd63f38b00ede22193225c35e49c31d0ed855141b90a5db8ab4b4f3427b",
+    "up": {
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+      "bytes": 5824537
+    },
+    "down": {
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+      "bytes": 2744
+    },
+    "admission": {
+      "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+      "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+    },
+    "allHashesExact": true
+  },
+  "sharedFixture": {
+    "ready": false,
+    "fixture": null,
+    "browserAccepted": false,
+    "record": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-lifecycle.json",
+    "recordSha256": "fa646a67caf9e18385abb919e3d419728030855d4cecabc64baf86d434dfe044",
+    "allocatedToMarginalia": false
+  },
+  "installedCases": {
+    "required": 16,
+    "allStatus": "NOT_RUN",
+    "matrixSha256": "f65557129858ac0906fd6f7dfd78fc00c6124e30fbd2a52187cb82b8913bed82",
+    "actualEvidence": null
+  },
+  "continuation": {
+    "automationId": "marginalia-installed-lifecycle-follow-up",
+    "status": "ACTIVE",
+    "intervalMinutes": 10,
+    "notificationRequired": false,
+    "reason": "Same qualification failure and absent final shared fixture; no new user action."
+  },
+  "sideEffects": {
+    "runtimeStarted": false,
+    "sharedResourceClaimed": false,
+    "sourceEdited": false,
+    "fixtureEdited": false,
+    "crossChatMessageSent": false
+  }
+}

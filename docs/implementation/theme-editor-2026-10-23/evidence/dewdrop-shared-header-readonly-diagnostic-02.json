@@ -1,0 +1,120 @@
+{
+  "runId": "9cd50e893016",
+  "theme": "letbuyy-aura",
+  "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+  "working": [
+    {
+      "fields": {
+        "compat_header": "A considered routine. Your own pace.",
+        "index_heading": "Dewdrop saved heading A 9cd50e893016",
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "draftStatus": "published",
+      "draftVersion": 5
+    },
+    {
+      "fields": {
+        "compat_header": "A considered routine. Your own pace.",
+        "index_heading": "Dewdrop saved heading B 9cd50e893016",
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "draftStatus": "published",
+      "draftVersion": 8
+    },
+    {
+      "fields": {
+        "compat_header": "A considered routine. Your own pace.",
+        "index_heading": "Dewdrop saved heading B 9cd50e893016",
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "draftStatus": "published",
+      "draftVersion": 10
+    },
+    {
+      "fields": {
+        "compat_header": "A considered routine. Your own pace.",
+        "index_heading": "Dewdrop saved heading B 9cd50e893016",
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "draftStatus": "active",
+      "draftVersion": 11
+    }
+  ],
+  "savedPatches": [
+    {
+      "fields": {
+        "compat_header": null,
+        "index_heading": null,
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "serverRevision": 1
+    },
+    {
+      "fields": {
+        "compat_header": "Dewdrop fixture A 9cd50e893016",
+        "index_heading": null,
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "serverRevision": 2
+    },
+    {
+      "fields": {
+        "compat_header": "Dewdrop fixture A 9cd50e893016",
+        "index_heading": null,
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "serverRevision": 3
+    },
+    {
+      "fields": {
+        "compat_header": "A considered routine. Your own pace.",
+        "index_heading": "Dewdrop saved heading A 9cd50e893016",
+        "template_header": [
+          "A considered routine. Your own pace."
+        ],
+        "embedded_bundle_header": [
+          "A considered routine. Your own pace."
+        ]
+      },
+      "serverRevision": 4
+    }
+  ],
+  "guardVerified": true,
+  "readOnly": true,
+  "incomingTransportPayload": "NOT_CAPTURED_NO_BROWSER_NETWORK_INTERCEPTION"
+}

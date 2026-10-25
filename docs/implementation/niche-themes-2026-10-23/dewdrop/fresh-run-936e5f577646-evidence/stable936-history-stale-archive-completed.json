@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-24T04:31:23.433136+00:00",
+  "runId": "936e5f577646",
+  "cases": [
+    "C03",
+    "O03",
+    "O04",
+    "S02"
+  ],
+  "status": "PASS_FUNCTIONAL_FINAL_CORRECTED_OUTCOME",
+  "checks": {
+    "sameVariantIDs": true,
+    "consumedStocksExact": true,
+    "bothOrdersByteExact": true,
+    "privateSiblingDigestExact": true,
+    "oneActualCapturedStaleFailure": true,
+    "correctedPink899": true,
+    "correctedRose520": true
+  },
+  "versions": {
+    "before": 15,
+    "firstMetadataEditWithControllerPriceError": 23,
+    "correctedNormalUIEdit": 27,
+    "archived": 29
+  },
+  "controllerError": "After option value rename changed the Pink row label, an AX helper chose Rose price; originalcanonicalcommand setRose899/Pink560. Server correctlyfollowedthatdata. Rootcancelledplatformpricebugdiagnosis. NormalexactSKUrowcorrectionrestoredRose520/Pink899, preservingallIDs/stocks/snapshots. Originalattemptsretained.",
+  "stockOmissionProof": [
+    "stable936-O03-canonical-normal-Save-receipt.json",
+    "stable936-O03-corrective-price-canonical-receipt.json"
+  ],
+  "staleFailure": {
+    "operation": "checkout-confirm",
+    "cartId": "6284ebe8-98d4-41db-9272-292417bd41e5",
+    "status": 409,
+    "responseCode": "CHECKOUT_PRODUCT_CHANGED",
+    "requestId": "b66c120f-97ce-4527-bbf1-939801fcaa58",
+    "commandSha256": "b3728af89bd22e37c1b680b47171b33ae4f0329eee124a5433b87f96e139f7f5",
+    "responseSha256": "915ceac02a5c6e30a4b06cf8486d894d72309e829672f2e31fff504f5829a94d"
+  },
+  "staleUI": "stable936-C03-actual-stale-confirm-rejected.ax.txt",
+  "effectLimit": "checkout_sessions and one actualcheckout.started outboxevent changed; no order/inventory/reservation/ledger effect, notall22invariant",
+  "currentReviewRecovery": [
+    "stable936-C03-corrected-price-review-reaccepted.ax.txt",
+    "stable936-cart-dewdrop-after-4.json"
+  ],
+  "immutableCurrentContrast": [
+    "stable936-O03-corrected-current-v2-PDP-selected.ax.txt",
+    "stable936-O03-corrected-v27-primary-buyer-history.ax.txt",
+    "stable936-O03-corrected-v27-primary-merchant-history.ax.txt",
+    "stable936-O03-corrected-v27-primary-private-BFF.json",
+    "stable936-S02-buyer-legacy-after-active-v2.ax.txt",
+    "stable936-S02-legacy-merchant-corrected-v27-settled.ax.txt",
+    "stable936-S02-private-BFF-after-active-v2.json"
+  ],
+  "archive": [
+    "stable936-O04-archive-state.json",
+    "stable936-O04-current-PDP-archived-unavailable.ax.txt",
+    "stable936-O04-primary-buyer-history-after-archive.ax.txt",
+    "stable936-O04-primary-merchant-history-after-archive.ax.txt",
+    "stable936-O04-primary-private-BFF-after-archive.json",
+    "stable936-O04-legacy-buyer-history-after-archive.ax.txt",
+    "stable936-O04-legacy-merchant-history-after-archive.ax.txt"
+  ],
+  "legacySetup": "Synthetic3rowhistorycontrol separately humanapproved/guarded; notsecondbrowserpurchase",
+  "baselineRecovery": "PENDING_ROOT_FINITE_NORMAL_UI_ALLOCATION"
+}

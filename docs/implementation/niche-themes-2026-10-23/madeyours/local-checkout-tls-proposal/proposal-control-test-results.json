@@ -1,0 +1,51 @@
+{
+  "classification": "V2_ADMITTED_SOURCE_CONTRACT_ONLY_NO_CRYPTO_OS_BROWSER_EXECUTION",
+  "passed": 8,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "Both unapplied TypeScript copies parse without syntax diagnostics",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    },
+    {
+      "name": "Current source hashes match proposal baseline",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    },
+    {
+      "name": "Native generation body remains byte-identical",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    },
+    {
+      "name": "Manual helper has no CA, issuer, trust-install or caller-selected tool/path/host seam",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    },
+    {
+      "name": "OS SSL verification uses exact hostname and immutable cert snapshot, no supplied anchor or allowed error",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    },
+    {
+      "name": "Preissued input files are never changed or deleted; cleanup targets only created verification directory",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    },
+    {
+      "name": "Manual opt-in is validated before fixture state/ports and supports only existing Editor profile",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    },
+    {
+      "name": "Original ownership and binding checks precede manual dispatch",
+      "result": "PASS",
+      "classification": "V2_SOURCE_CONTRACT_ONLY"
+    }
+  ],
+  "supersededV1StubResults": "revisions/issuance-v1/proposal-control-test-results.json",
+  "v1ChecksRecredited": 0,
+  "commandsExecuted": [],
+  "trustChanges": 0
+}

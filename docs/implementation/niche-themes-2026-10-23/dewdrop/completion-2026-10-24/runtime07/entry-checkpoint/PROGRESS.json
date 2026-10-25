@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "theme": "Dewdrop",
+  "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+  "goalStatus": "paused",
+  "phase": "PAUSED_SAFE_CHECKPOINT_FROZEN200_PLAN_READY_NO_FRESH_BROWSER_EXECUTION",
+  "recordedAtUtc": "2026-10-24T13:23:50.949808+00:00",
+  "originalTotals": {
+    "PASS": 26,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "newRequirements": {
+    "NOT_RUN": 291,
+    "operationsNotExecuted": 2396
+  },
+  "inventoryCounts": {
+    "templates": 23,
+    "declaredSectionTypes": 45,
+    "defaultSectionInstances": 32,
+    "sectionBlockAssociations": 14,
+    "uniqueInlineBlockTypes": 11,
+    "packageBlockDefinitions": 1,
+    "declaredFieldControlOccurrences": 143,
+    "fieldTypes": {
+      "text": 82,
+      "textarea": 7,
+      "image": 3,
+      "url": 16,
+      "toggle": 12,
+      "collection": 4,
+      "richtext": 2,
+      "product": 3,
+      "range": 3,
+      "select": 4,
+      "number": 1,
+      "color": 6
+    },
+    "mediaAssetsAndFonts": 7,
+    "declaredPortableFieldControlOccurrences": 139,
+    "runtimeGeneratedProtectedFieldOccurrences": 4
+  },
+  "newFinding": "DD-FIND-001 declared order Heading ignored by canonical markup; private minimal proposal only",
+  "firstExecutableSlice": "DD-SLICE-01 in RUNBOOK.md",
+  "communication": "Fresh versioned source and native/browser queue request sent to Themes under verified human authorization",
+  "helperActivationSnapshot": {
+    "themes": "ACTIVE_RESUMPTION_OBSERVED",
+    "editor": "ACTIVE_RESUMPTION_OBSERVED",
+    "marketplace": "NOT_RESUMED_PRESERVE_RUNNING_LOCAL_APP"
+  },
+  "activeBrowserLease": null,
+  "activeSharedWriter": null,
+  "requiredDependencies": [
+    "helper activation",
+    "proper candidate/controller lease",
+    "count02/checkout shared integration",
+    "safe actual fault/security observation lane",
+    "verified Test Mode+webhook ingress admission",
+    "independent reviewer",
+    "versioned Dewdrop heading writer/artifact admission",
+    "canonical shelf page-size binding owner",
+    "canonical newsletter/consent handler and contact-error shared owner"
+  ],
+  "certification": {
+    "LOCAL_E2E_VERIFIED": false,
+    "RAZORPAY_TEST_VERIFIED": false,
+    "REVIEW_ACCEPTED": false,
+    "FULL_THEME_CERTIFIED": false,
+    "production": "NOT_REQUESTED"
+  },
+  "noRuntimeBuildDataProviderAction": true,
+  "filesPreserved": true,
+  "previousGoalTurnClassification": "PROGRESS",
+  "latestEvidence": "PROJECT_PAUSE_CHECKPOINT_20261024_1321.json",
+  "sourceFindingDisposition": "Badge merge already connected; do not duplicate fix. Heading proposal remains private; add4 protected generated fields.",
+  "privateSourceQualification": {
+    "current": {
+      "PASS": 2,
+      "FAIL": 3
+    },
+    "proposal": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "scope": "Canonical Liquid engine only; no browser/API/provider acceptance",
+    "evidence": "proposals/discovery-heading/evidence/result.json"
+  },
+  "newFindings": [
+    "DD-FIND-004 heading source defect with private qualified fix",
+    "DD-FIND-005 missing page-size binding requires shared query owner",
+    "DD-FIND-006 newsletter/email-only handler mismatch",
+    "DD-FIND-007 raw DB error text in contact route"
+  ],
+  "newPASS": 0,
+  "runtimeEligibility": {
+    "observedClockUtc": "2026-10-24T08:52:13Z",
+    "observedClockLocal": "2026-10-24T14:22:13+05:30",
+    "old936CutoffUtc": "2026-10-24T08:50:00Z",
+    "old936LeasePastCutoff": true,
+    "freshOwnerAdmissionRequired": true,
+    "oldProcessOrDataStateProbed": false,
+    "noStopCleanupRestartOrDeadlineExtension": true
+  },
+  "privateOrderFragmentQualification": {
+    "current": {
+      "PASS": 3,
+      "FAIL": 2
+    },
+    "proposal": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "scope": "Exact heading Liquid fragment on canonical renderer+niche decorator; no shared factory compilation/browser/API/provider",
+    "evidence": "proposals/order-heading/evidence/result.json"
+  },
+  "canonicalSourcesApplied": true,
+  "liveCasesPromoted": 0,
+  "blockerAudit": "BLOCKED_AUDIT.json",
+  "helperResumePermissionMissing": false,
+  "humanWorkStatus": "PAUSED_BY_LATEST_PROJECT_WIDE_HUMAN_INSTRUCTION",
+  "platformGoalResumeUnavailable": true,
+  "canonicalSourceScope": "Exact two granted new opt-in successor files; frozen sources and catalogue untouched",
+  "sourceQualification": {
+    "PASS": 16,
+    "FAIL": 0,
+    "strictTypecheckDiagnostics": 0,
+    "lintErrors": 0,
+    "lintWarnings": 0
+  },
+  "sourceGrantEnded": true,
+  "rootCatalogueObservation": "ROOT_CATALOGUE_OBSERVATION_20261024.json",
+  "canonicalCatalogueSourceObservedIntegrated": true,
+  "rootComposedSourceCounts": {
+    "tests": 72,
+    "pass": 72,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "freshOriginal30": {
+    "NOT_RUN": 30,
+    "historicalTotals": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3
+    },
+    "acceptedReuse": 0
+  },
+  "activeNativeLease": null,
+  "currentCoordination": {
+    "Themes": "Separately preparing frozen original-matrix fixture proposal; catalogue native05 preview500 remains under repair.",
+    "Editor": "Authorized fallback UI work in protected user app9001; sole UI actor; app9001 explicitly not a fresh synthetic verification fixture.",
+    "sourceIdentityBoundary": "Fresh full browser fixture awaits exact TLS, synthetic actors, candidate/build and source seal; no private state adopted."
+  },
+  "freshFixtureAdmitted": false,
+  "mainCapacityStatus": "RECOVERY_TURN_ACTIVE_CURRENT_SETTINGS",
+  "native06CatalogueGatePassed": false,
+  "frozen200Decision": "CONDITIONALLY_ADMISSIBLE_INDEPENDENTLY_NOT_GRANTED",
+  "freshRuntime": null,
+  "resumeRequired": "Later explicit human resume after the13:21UTC project-wide pause; old grants, queued model fallback and other-chat prompts do not suffice."
+}

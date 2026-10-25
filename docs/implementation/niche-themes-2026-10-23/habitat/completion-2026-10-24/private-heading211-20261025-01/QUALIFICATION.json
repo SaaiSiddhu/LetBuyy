@@ -1,0 +1,150 @@
+{
+  "recordedAt": "2026-10-24T20:51:17.014197+00:00",
+  "status": "PRIVATE_SOURCE_TESTS_PASS_NATIVE_NOT_RUN_MAIN_NOT_APPLIED_REVIEW_PENDING",
+  "sourceTests": [
+    {
+      "path": "engine-source-run-01.tap",
+      "sha256": "2319ba64367f97d376a93cd254a1e83a6b16539802dfa532fabc1f11f46a9d0a",
+      "PASS": 18,
+      "FAIL": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "newTests": 18,
+      "retainedTests": 0
+    },
+    {
+      "path": "editor-source-run-01.tap",
+      "sha256": "03f11babfb8dbfb81f20f90667b00c2ee36e7270777844bc14d3566f8fa5c9cc",
+      "PASS": 12,
+      "FAIL": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "newTests": 4,
+      "retainedTests": 8
+    },
+    {
+      "path": "retained-all10-child-source-run-01.tap",
+      "sha256": "2369c31eebcf3680597897958c774defefa44c0bd01fba2a96464a9bc1125cfa",
+      "PASS": 31,
+      "FAIL": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "newTests": 0,
+      "retainedTests": 31
+    }
+  ],
+  "sourceTestTotal": 61,
+  "newSourceTests": 22,
+  "retainedRegressions": 39,
+  "countMeaning": "61 executed cases across three files;37 fingerprints and92 default-template/layout comparisons are assertions inside them. No runtime journey or historical overlapping-suite inflation.",
+  "sourceClosure": {
+    "path": "native-source-closure.json",
+    "sha256": "7a45b5b6c8273e78e89a2eb5ddc120ab19f9b54b60b94be504d0e71304806685",
+    "files": 1080,
+    "runtimeModules": 477,
+    "edges": 3730,
+    "migrationCount": 322,
+    "migrationMaximum": 393,
+    "migrationCeiling": null,
+    "threeNegativeInventoryGuards": "PASS",
+    "modulesExecutedByDiscovery": false
+  },
+  "offlineSqlPolicyChecks": [
+    {
+      "check": "Exactly four reserved211/version6 packages with exact prior210",
+      "pass": true
+    },
+    {
+      "check": "UP only inserts three capture tables and updates exact four catalog rows",
+      "pass": true
+    },
+    {
+      "check": "DOWN only restores catalog metadata; no destructive/ACL/schema statement",
+      "pass": true
+    },
+    {
+      "check": "Exact prior/current capture and checkpoint/replay guards",
+      "pass": true
+    },
+    {
+      "check": "Canonical optional checksum-to-NULL normalization",
+      "pass": true
+    },
+    {
+      "check": "NULL catalog/version states refuse",
+      "pass": true
+    },
+    {
+      "check": "Private SQL files match generated hashes",
+      "pass": true
+    },
+    {
+      "check": "No native admission/file/permission silently created",
+      "pass": true
+    }
+  ],
+  "canonicalHelperAndRendererUnchanged": true,
+  "privateReadOnlyInputsPreserved": 1823,
+  "onlyChangedCopiedInputs": [
+    "apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts",
+    "packages/theme-engine/src/first-party-theme-catalog.ts"
+  ],
+  "nativeMainDifferences": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/order-heading211-integration01/DISTRIBUTION_PROPOSAL.json",
+      "mainSha256": null,
+      "privateSha256": "0ed7332d5b6db94b52623da036f8fb1b8e7747d5fa1d52521d723309858b1738",
+      "expectedOverlayOrPrivateData": true
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/order-heading211-integration01/generate-order-heading211-proposal.ts",
+      "mainSha256": null,
+      "privateSha256": "7d9ae2ea96b780ab497d62d138629995611272bb8f8182bc6e82fec842826993",
+      "expectedOverlayOrPrivateData": true
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/order-heading211-integration01/heading211.down.proposal.sql",
+      "mainSha256": null,
+      "privateSha256": "cd5274403e77beec6cb5373a6fce693018b450470e6ff12c4217a3af9313cf0a",
+      "expectedOverlayOrPrivateData": true
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/order-heading211-integration01/heading211.up.proposal.sql",
+      "mainSha256": null,
+      "privateSha256": "c14d30c15dffa044a209cc87e47d1b000d80213e61bae7b495352c650278e68e",
+      "expectedOverlayOrPrivateData": true
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "mainSha256": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488",
+      "privateSha256": "8e07a42c1dbad8e64e1b16a008a403a201e7207214d44a0e63313b666da10086",
+      "expectedOverlayOrPrivateData": true
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/first-party-order-heading211-qualification.manual.ts",
+      "mainSha256": null,
+      "privateSha256": "b1844df54733c25cf2ce67c812b67e0ec0ef861c84384a71a2f8c5a685ef7fe2",
+      "expectedOverlayOrPrivateData": true
+    }
+  ],
+  "native": {
+    "status": "NOT_RUN",
+    "mainPhases": 8,
+    "explicitPositive211SetupSubstage": "phase2b",
+    "refusalControlsPrepared": 8,
+    "admission": "NOT_GRANTED",
+    "PLpgSQLCompiled": "NOT_RUN",
+    "databaseOrSqlExecution": false
+  },
+  "preservation": {
+    "MainBasesExact": true,
+    "MainOrRuntime07Edited": false,
+    "captured200Or210Mutated": false,
+    "newNumberedMigration": false,
+    "browserActions": 0,
+    "providerCalls": 0,
+    "newStackOrBuild": false
+  },
+  "oldCurrent210Failure": "Retained2PASS/1FAIL in ../runtime07-20261025/source-run-01.tap. This private211 proposal does not fix installed210 or erase that failure.",
+  "FULL_THEME_CERTIFIED": false
+}

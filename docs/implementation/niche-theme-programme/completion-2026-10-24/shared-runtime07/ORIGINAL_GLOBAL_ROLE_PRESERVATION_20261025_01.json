@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-25T03:46:58.570330+00:00",
+  "status": "ORIGINAL_OWNED_GLOBALS_AND_DATABASE_CONFIG_PRIVATELY_PRESERVED_READ_ONLY",
+  "applicationFixtureId": "49ada80bc494",
+  "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+  "containerImageId": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+  "originalRunner54685": "Absent after interruption; no replacement/adoption/guard exception",
+  "rolesPrivateFile": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025T034658Z-runtime07-cluster-roles.json",
+    "sha256": "21ec12281561c3cb1a4b6352387a37fe407aa9ba2df3004fc090a8e043c982ce",
+    "bytes": 5607,
+    "mode": "0600"
+  },
+  "databaseConfigPrivateFile": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025T034658Z-runtime07-database-config.json",
+    "sha256": "cc21096320b903ced5e2662617e22b6b855094c64fc3f02eb5899d663605a9e5",
+    "bytes": 392,
+    "mode": "0600"
+  },
+  "roleCount": 20,
+  "membershipCount": 8,
+  "ownedOrdersVerified": 8,
+  "rawRoleOrPasswordDataPrinted": false,
+  "databaseWrites": 0,
+  "processSignals": 0,
+  "restorePerformed": false,
+  "readerCorrection": {
+    "originalRoleQuerySha256": "067299918e5023c0933903d925b7e740067bbde0ff069797b0794986edd0396e",
+    "correctedRoleQuerySha256": "c371d8cf04cf02151aa1d5d64e3d8d03934899ec7a43a3b9bd95dd76b2a72127",
+    "observedFailure": "Original proposal query failed: pg_authid has no rolconfig column; no original database write or output of raw credentials",
+    "correction": "Join pg_db_role_setting at setdatabase=0 to retain global role settings. Frozen source01 remains unchanged.",
+    "primarySources": [
+      "https://www.postgresql.org/docs/16/catalog-pg-authid.html",
+      "https://www.postgresql.org/docs/16/catalog-pg-db-role-setting.html"
+    ]
+  },
+  "scope": "Capture existing owned cluster-global role attributes, memberships and password hashes, plus database-level owner/config, into protected ignored files for later reviewed recovery. Raw credentials are never printed. No reaping, relabel or running-app access."
+}

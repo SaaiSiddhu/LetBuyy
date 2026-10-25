@@ -1,0 +1,325 @@
+{
+  "theme": "Threadline",
+  "slug": "letbuyy-sense",
+  "runId": "49ada80bc494",
+  "startedAt": "2026-10-25T00:25:57.368Z",
+  "host": "Merchant service information",
+  "uniqueField": "Fit guidance",
+  "beforeValue": "",
+  "cases": [
+    {
+      "id": "TL-ED-FIELD-section/trust-badges/fitText",
+      "status": "PASS",
+      "scope": "Declared trust-badges.fitText edited/save/fullreload/preview/publish then original empty value restored/fullreload/publicclean",
+      "identifierOrigin": "Existing Threadline COVERAGE field case; only this field clause credited"
+    },
+    {
+      "id": "TL-R07-TMP-ROOT-CHILD-ADD",
+      "status": "PASS",
+      "scope": "Only owned new Badge root and two declared Badge children"
+    },
+    {
+      "id": "TL-R07-TMP-REORDER-HIDE-RELOAD",
+      "status": "PASS",
+      "scope": "Exact RootA,B,A order and true/true/false visibility afterfullreload"
+    },
+    {
+      "id": "TL-R07-TMP-LIQUID-HIDE-SHOW",
+      "status": "PASS",
+      "scope": "Actual public RootA/B visible and A absent; thenAshown afteracknowledgedpublish"
+    },
+    {
+      "id": "TL-R07-TMP-REMOVE-CANCEL-READD",
+      "status": "PASS",
+      "scope": "Normal cancellation/removal of ownedA, Bretained, A2readded/publicvisible"
+    },
+    {
+      "id": "TL-R07-TMP-CLEANUP-UNDO-REDO",
+      "status": "PASS",
+      "scope": "Exact rootlabelguard, removeonlynewsubtree, Undo2children/Redo0, save/fullreload/cleanpublish"
+    },
+    {
+      "id": "TL-R07-PREVIEW-DESKTOP-DIMENSIONS",
+      "status": "PASS_FINITE",
+      "scope": "Actual1440iframebox/1434innerCSSviewport/906outerwidth; no horizontaloverflow in measurediframe"
+    },
+    {
+      "id": "TL-R07-PREVIEW-TABLET820-RECOVERY",
+      "status": "FAIL",
+      "scope": "Actual820iframebox/766outerwidth,blankiframe+error; normalRetry didnotrecover"
+    },
+    {
+      "id": "TL-R07-PREVIEW-MOBILE390-RECOVERY",
+      "status": "FAIL",
+      "scope": "Actual390box,blankvisibleiframe+error; capturednormalRetryoutcome"
+    }
+  ],
+  "temporaryLabels": [
+    "Threadline temporary root A",
+    "Threadline temporary child A",
+    "Threadline temporary child B"
+  ],
+  "previewDesktop": [
+    {
+      "clientHeight": 1321,
+      "clientWidth": 1440,
+      "outerHeight": 831.129150390625,
+      "outerViewport": {
+        "height": 987,
+        "width": 1614
+      },
+      "outerWidth": 906
+    }
+  ],
+  "publicHiddenProof": {
+    "root": true,
+    "visibleB": true,
+    "hiddenAAbsent": true,
+    "uniqueField": true
+  },
+  "publicationTiming": "Initial immediate public reload happened before publish acknowledgement and showed previous hidden release; after merchant settledSaved/Activev14, fullreload showed all labels. Preserved as timing observation, not app-defect verdict.",
+  "previewRetryObserved": false,
+  "cleanup": {
+    "undoNestedChildren": 2,
+    "redoBadgeRows": 0,
+    "restoredField": "",
+    "fullReload": true,
+    "publicTemporaryContentAbsent": true,
+    "originalAnnouncementRetained": true
+  },
+  "previewDesktopClean": {
+    "outer": [
+      {
+        "clientHeight": 1321,
+        "clientWidth": 1440,
+        "outerHeight": 831.129150390625,
+        "outerWidth": 906,
+        "viewport": {
+          "height": 987,
+          "width": 1614
+        }
+      }
+    ],
+    "inner": {
+      "scrollWidth": 1434,
+      "viewportHeight": 1321,
+      "viewportWidth": 1434
+    }
+  },
+  "previewTablet": {
+    "status": "FAIL_INITIAL_AND_NORMAL_RETRY",
+    "outer": [
+      {
+        "clientHeight": 890,
+        "clientWidth": 820,
+        "outerHeight": 831.3902587890625,
+        "outerViewport": {
+          "height": 987,
+          "width": 1614
+        },
+        "outerWidth": 766,
+        "queryKeys": [
+          "subdomain",
+          "editor",
+          "viewport",
+          "template",
+          "theme_preview_token"
+        ],
+        "srcPath": "/preview"
+      }
+    ],
+    "consoleErrors": 0
+  },
+  "previewMobile": {
+    "status": "FAIL_INITIAL_AND_NORMAL_RETRY",
+    "outer": [
+      {
+        "clientHeight": 836,
+        "clientWidth": 390,
+        "outerHeight": 831.7128295898438,
+        "outerViewport": {
+          "height": 987,
+          "width": 1614
+        },
+        "outerWidth": 388,
+        "queryKeys": [
+          "subdomain",
+          "editor",
+          "viewport",
+          "template",
+          "theme_preview_token"
+        ],
+        "srcPath": "/preview"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-25T00:35:32.541Z",
+  "ordersOrInventoryMutated": false,
+  "fullThemeCertified": false,
+  "originalMatrix": "Only atomic clauses and named fitText field credited; all21templates/all318/full26/negativeprovider/history not inferred.",
+  "evidence": [
+    {
+      "recordedAt": "2026-10-25T00:25:57.726Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-fit-guidance-save-ack",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/030-threadline-fit-guidance-save-ack.ax.txt",
+      "screenshot": "evidence/030-threadline-fit-guidance-save-ack.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:26:01.301Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-fit-guidance-full-reload",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/031-threadline-fit-guidance-full-reload.ax.txt",
+      "screenshot": "evidence/031-threadline-fit-guidance-full-reload.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:26:54.606Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-badge-root-children-reorder-hide-save",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/032-threadline-badge-root-children-reorder-hide-save.ax.txt",
+      "screenshot": "evidence/032-threadline-badge-root-children-reorder-hide-save.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:26:55.054Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-badge-reload-exact-order-visibility",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/033-threadline-badge-reload-exact-order-visibility.ax.txt",
+      "screenshot": "evidence/033-threadline-badge-reload-exact-order-visibility.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:27:20.882Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-temporary-hidden-child-published",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/034-threadline-temporary-hidden-child-published.ax.txt",
+      "screenshot": "evidence/034-threadline-temporary-hidden-child-published.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:27:23.711Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-public-root-b-visible-a-hidden",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/035-threadline-public-root-b-visible-a-hidden.ax.txt",
+      "screenshot": "evidence/035-threadline-public-root-b-visible-a-hidden.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:27:58.328Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-child-shown-public-after-ack",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/036-threadline-child-shown-public-after-ack.ax.txt",
+      "screenshot": "evidence/036-threadline-child-shown-public-after-ack.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:28:38.845Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-child-a-removed-b-retained-editor",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/037-threadline-child-a-removed-b-retained-editor.ax.txt",
+      "screenshot": "evidence/037-threadline-child-a-removed-b-retained-editor.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:28:39.265Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-child-a-removed-b-retained-public",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/038-threadline-child-a-removed-b-retained-public.ax.txt",
+      "screenshot": "evidence/038-threadline-child-a-removed-b-retained-public.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:30:08.337Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-child-a2-readded-published",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/039-threadline-child-a2-readded-published.ax.txt",
+      "screenshot": "evidence/039-threadline-child-a2-readded-published.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:30:29.239Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-temporary-subtree-cleaned-field-restored-reload",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/040-threadline-temporary-subtree-cleaned-field-restored-reload.ax.txt",
+      "screenshot": "evidence/040-threadline-temporary-subtree-cleaned-field-restored-reload.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:30:51.999Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-clean-public-original-marker-retained",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/041-threadline-clean-public-original-marker-retained.ax.txt",
+      "screenshot": "evidence/041-threadline-clean-public-original-marker-retained.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:30:52.183Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-clean-preview-error-before-retry",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/042-threadline-clean-preview-error-before-retry.ax.txt",
+      "screenshot": "evidence/042-threadline-clean-preview-error-before-retry.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:30:52.752Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-desktop-preview-restored-clean",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/043-threadline-desktop-preview-restored-clean.ax.txt",
+      "screenshot": "evidence/043-threadline-desktop-preview-restored-clean.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:31:22.908Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-tablet820-error-before-retry",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/044-threadline-tablet820-error-before-retry.ax.txt",
+      "screenshot": "evidence/044-threadline-tablet820-error-before-retry.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:33:16.636Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-tablet820-retry-still-error",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/045-threadline-tablet820-retry-still-error.ax.txt",
+      "screenshot": "evidence/045-threadline-tablet820-retry-still-error.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:34:04.790Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-mobile390-blank-with-error",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/046-threadline-mobile390-blank-with-error.ax.txt",
+      "screenshot": "evidence/046-threadline-mobile390-blank-with-error.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:35:32.539Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-mobile390-retry-outcome",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/047-threadline-mobile390-retry-outcome.ax.txt",
+      "screenshot": "evidence/047-threadline-mobile390-retry-outcome.png"
+    }
+  ],
+  "checkpointedAt": "2026-10-25T00:38:35.945Z"
+}

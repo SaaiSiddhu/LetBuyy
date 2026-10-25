@@ -1,0 +1,21 @@
+{
+  "recordedAtUtc": "2026-10-24T11:38:34.920147+00:00",
+  "runtimeTests": {
+    "PASS": 16,
+    "FAIL": 0
+  },
+  "focusedLint": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "strictTypecheck": {
+    "diagnostics": 3
+  },
+  "classification": "TEST_TYPING_AND_ONE_VACUOUS_ASSERTION_CORRECTED",
+  "causes": [
+    "JSDOM declaration omits direct window.close; use document.defaultView close API",
+    "assets belongs under renderer; top-level absent properties gave vacuous undefined equality"
+  ],
+  "correction": "Assert renderer, blocks and locales equality plus actual typed window cleanup; preserve snapshots",
+  "runtimeOrBrowserAcceptance": false
+}

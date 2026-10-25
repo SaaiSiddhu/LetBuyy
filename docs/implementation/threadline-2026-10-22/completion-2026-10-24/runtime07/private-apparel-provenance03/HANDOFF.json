@@ -1,0 +1,120 @@
+{
+  "recordedAt": "2026-10-25T00:24:51.908741+00:00",
+  "status": "SEALED_PRIVATE03_NATIVE_CASE_SOURCE_PREPARATION_NOT_EXECUTION_ADMISSION",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "allocation": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/THREADLINE_APPAREL_PROVENANCE_AMENDMENT_ALLOCATION_03.json",
+  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-03",
+  "durableRoot": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03",
+  "prior02Seal": "9c9f226a258b6b1709f428c3c6c7da106ab118ce9d26e44b62e21d9cb29176da",
+  "onlyMutableOverlay": {
+    "path": "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+    "beforeSha256": "2c4be759fb301a77c7cf53427ebbffeb8db74bd44a62891ddfb0dadbced12a45",
+    "afterSha256": "a102b41961da43c73fdd96032e6158839e1ff8656870f5bfa318adc265565e2d"
+  },
+  "sevenFrozenOverlays": [
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "2f20d1555ff729e11215d8bee70a85391d7f473523b3a75b2b9e2b6ed1723ae3"
+    },
+    {
+      "path": "packages/commerce-core/src/product-facts-summary.ts",
+      "sha256": "e9ead6d7d043022ab1886a9a75fde03ba088ffcaaa2a748e5d5dcf5722560913"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "63e5a3836f9602a843df27bc61be28572ab8c5491a2ae4f60d38e04acd5d686b"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "sha256": "57bdd378f890b55b241c70141ba366c732b9bc458829f179b1359c94e9908fc1"
+    },
+    {
+      "path": "packages/commerce-core/test/apparel-order-history.test.ts",
+      "sha256": "46112ebd032ad054d13829e04435c8da8ec22e9fc35cf15a1f00e43d4cb095bc"
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-order-facts-v211.test.ts",
+      "sha256": "714179af00e3f76811c08ebd23abd4308675adbff6d224a06b4bed13b5d7cec9"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/order-fact-readback.test.ts",
+      "sha256": "dcf663fd71f5ebdc1bc5017bbf9e6ad9473aa3544698789eeef0459bd3018049"
+    }
+  ],
+  "SQLPair": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03/UNNUMBERED_apparel_order_facts.up.proposal.sql",
+      "sha256": "2bfb45a18178a0098780efad25171751a317060adb0282cd8e2022d4eaae68ce"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03/UNNUMBERED_apparel_order_facts.down.proposal.sql",
+      "sha256": "fca8fc2fb303f065ba98ed5fa4a2c1d08e12c0ed05c0cbb8a1797bdb406fa1d0"
+    }
+  ],
+  "pins": {
+    "native-source-closure.json": "b50bd7ad4c2a30e88f7ad3a204fe3eeb3dc9868419968688b94dda5d888410b1",
+    "SOURCE_MANIFEST.json": "cb4fbfef18ad52a829fb5b6f9d94deb4a6432ca32c67db8811d4dd92f9409a96",
+    "NATIVE_PREPARATION_PLAN.json": "ee7805b8188d605c7553102b4e2659637607a7a7e3e4f5acba36c276c1edc9b7",
+    "ARTIFACT_MANIFEST.json": "d33aff61b8cb245dfec07d465f64cdcc07f606b690ed14a2df1d377c10fd2641"
+  },
+  "R01": "Explicit whole accepted niche/options/personalization equality and exact product/variant/quantity/price; SQL replay then later catalogue edit history conservation.",
+  "R02": "Honest11-table HTTP witness plus full-public stored row/sequence/materialized counts/SHA256 and non-secret function/security/catalogue conservation at SQL-only boundaries. No telemetry ignored or disabled.",
+  "R03": "Future actual admission+pin required before owned/app module evaluation; independent recursive workspace/vendor/tool re-discovery and exact bytes, actual322/max393/no-ceiling source+runner process/receipt, apply exact4UPs before baseline. Capture complete actual creator profile only on future fresh owned cohort. Actual parent applied migration/cleanup evidence must pass post-run gate. Recheck source/tools at future cohort end.",
+  "reviewSummary": {
+    "recordedAt": "2026-10-25T00:24:51.882171+00:00",
+    "status": "SEALED_PRIVATE03_NATIVE_CASE_SOURCE_PREPARATION_NOT_EXECUTION_ADMISSION",
+    "mutableOverlayCount": 1,
+    "readOnlyOverlays": 7,
+    "SQLPairByteExact": true,
+    "originalSourceUniverse": 6547,
+    "copiedBaseFiles": 6541,
+    "excludedEnvTemplates": 6,
+    "readOnlyBaseFilesRechecked": 6536,
+    "completeNativeSourceFiles": 1120,
+    "runtimeOrTypeModulesResolvedNotImported": 478,
+    "importExportEdges": 3749,
+    "vendorToolFilePins": 5411,
+    "migrations": 322,
+    "maxMigration": 393,
+    "ceiling": null,
+    "pureMetadataCasesPass": 13,
+    "pureMetadataCasesFail": 0,
+    "overlapRerun": "The earlier13-case metadata pass is retained but not added to unique coverage; final13 match final inputs.",
+    "typecheck": {
+      "ownedIntroduced": 0,
+      "baselineDiagnostics": 5,
+      "proposedOtherDiagnostics": 5,
+      "exactBaselineEquality": true,
+      "inputStableAcrossCompiler": true,
+      "businessLeaks": 0
+    },
+    "retained02SuitesNotRerun": {
+      "focused": 16,
+      "regressionExecutions": 45,
+      "frozenSenseOverlap": 1
+    },
+    "discoveredAppModuleEvaluationNativeDbDockerBuildBrowserProviderActions": 0,
+    "NativeExpectedTests": 4,
+    "fullThemeCertificate": false
+  },
+  "proposedExecutionEnvelope": {
+    "plan": "NATIVE_PREPARATION_PLAN.json",
+    "cohorts": 1,
+    "jobs": 1,
+    "timeoutSeconds": 600,
+    "preparedTransactions": 2,
+    "noReap": true,
+    "maxAttempts": 1,
+    "actualAdmissionCreated": false,
+    "actualExecution": false,
+    "postRunRequired": "node --import tsx verify-native-result.mjs <actual parent result.json>; migration/cleanup mismatch refuses. Exact argv/effect budgets and future admission contract are sealed in plan."
+  },
+  "preservation": "No Main/candidate/current runtime writes or original data/ORD10001/stock edits. Frozen200/201/210 and prior02 bytes retained; Habitat sole catalogue/capture/eligibility owner.",
+  "limitations": [
+    "Native SQL/parser/RPC/security/rollback/data behavior NOT_RUN. Preparation is not native admission, and no NATIVE_ADMISSION file was created.",
+    "Source-only metadata guards are not current runtime07 liveness, provider binding, receiver renewal, browser or full certificate proof.",
+    "Existing5 source diagnostics remain exactly equal under same-support/same-metadata compiler baseline; no global green build claimed.",
+    "Actual installed Docker/image/resource provenance is measured only by the future canonical runner/owned guard. No Docker invoked during prep."
+  ],
+  "next": "Themes independent private03 review, then separate exact one-cohort owned native grant when resource ownership permits. No partial Main/candidate application. All26/318 Threadline obligations remain retained."
+}

@@ -1,0 +1,24 @@
+{
+  "expectedIdentity": {
+    "slug": "letbuyy-dawn",
+    "version": "2.0.0",
+    "bundleSha256": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0"
+  },
+  "derivedHashForObservationOnly": true,
+  "factory": {
+    "module": "packages/theme-engine/src/first-party-theme-catalog.ts",
+    "export": "createFirstPartyCatalogBundle",
+    "args": [
+      "letbuyy-dawn",
+      {
+        "designVersion": "2.0.0"
+      }
+    ]
+  },
+  "adapters": {
+    "domainModule": "packages/theme-engine/src/index.ts",
+    "editorPage": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+    "registryAdapter": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+    "tokenPackage": "apps/merchant/web/package.json"
+  }
+}

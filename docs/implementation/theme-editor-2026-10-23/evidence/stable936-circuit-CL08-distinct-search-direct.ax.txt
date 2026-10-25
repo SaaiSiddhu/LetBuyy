@@ -1,0 +1,104 @@
+Browser tab: 70, Title: "Search | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&power_output_w=45&pass_through_output_w=60".
+1 AXWebArea Search | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&power_output_w=45&pass_through_output_w=60
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, ID: lb-product-origin-filter
+				16 button Apply filter
+		17 text THE CONNECTION DESK
+		18 heading Search products, Value: 1
+			19 text Search products
+		20 text 1 products
+		21 container
+			22 text Search products, models and connectors
+			23 search text field (settable) Search products, models and connectors, ID: ct-search-forge-discovery-search
+			24 button Search
+		25 container
+			26 heading Filter accessories, Value: 2
+				27 text Filter accessories
+			28 container Connector
+				29 text Connector
+				30 container
+					31 checkbox (settable, integer) Description: usb-a (1 matching product), Value: 0
+					32 text usb-a (1 matching product)
+				33 container
+					34 checkbox (settable, integer) Description: usb-c (1 matching product), Value: 0
+					35 text usb-c (1 matching product)
+			36 container Accessory type
+				37 text Accessory type
+				38 radio button (settable, integer) Description: Any, Value: 1
+				39 container
+					40 radio button (settable, integer) Description: hub (1 matching product), Value: 0
+					41 text hub (1 matching product)
+			42 container Pass-through output (W)
+				43 text Pass-through output (W)
+				44 radio button (settable, integer) Description: Any, Value: 0
+				45 container
+					46 radio button (settable, integer) Description: 60 (1 matching product), Value: 1
+					47 text 60 (1 matching product)
+			48 container Power input (W)
+				49 text Power input (W)
+				50 radio button (settable, integer) Description: Any, Value: 0
+				51 container
+					52 radio button (settable, integer) Description: 65 (1 matching product), Value: 1
+					53 text 65 (1 matching product)
+			54 container Power output (W)
+				55 text Power output (W)
+				56 radio button (settable, integer) Description: Any, Value: 0
+				57 container
+					58 radio button (settable, integer) Description: 45 (1 matching product), Value: 1
+					59 text 45 (1 matching product)
+			60 button Apply filters
+			61 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order
+		62 container
+			63 text Sort by
+			64 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-search, Secondary Actions: Expand
+				65 menu
+					66 (selected) Featured
+					67 Price: low to high
+					68 Price: high to low
+					69 Newest
+					70 Name
+			71 button Sort
+		72 container Applied filters
+			73 link Description: Remove Collection: 01f56eb8-89fa-4fc5-be47-02f3ec591f2f, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order&power_input_w=65&power_output_w=45&pass_through_output_w=60
+			74 link Description: Remove Power input (W): 65, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_output_w=45&pass_through_output_w=60
+			75 link Description: Remove Power output (W): 45, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&pass_through_output_w=60
+			76 link Description: Remove Pass-through output (W): 60, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&power_output_w=45
+		77 container
+			78 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			79 text Synthetic Lab · Synthetic H1
+			80 heading Circuit lifecycle hub, Value: 3
+				81 link Description: Circuit lifecycle hub, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			82 definition list
+				83 container Output maximum
+					84 text Output maximum
+				85 text 45 W
+				86 container Power outputs
+					87 text Power outputs
+				88 text 2 × USB-C
+			89 text INR 1,200.00
+			90 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			91 text Available
+		92 container Product pages
+			93 text Page 1 of 1
+		94 heading Threadline, Value: 3
+			95 text Threadline
+		96 text Circuit 936 B footer saved
+		97 heading CONTACT, Value: 4
+			98 text CONTACT
+		99 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		100 text © Threadline. All rights reserved.
+		101 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&power_input_w=65&power_output_w=45&pass_through_output_w=60

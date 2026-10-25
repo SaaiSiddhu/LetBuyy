@@ -1,0 +1,160 @@
+Browser tab: 65, Title: "LetBuyy Store", URL: "http://localhost:58091/theme-preview/letbuyy-forge?[query-redacted]".
+0 AXWebArea LetBuyy Store, URL: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+	1 container
+		2 heading Circuit, Value: 1
+			3 text Circuit
+		4 text Version 2.0.0 ·  Sample store
+		5 container Preview device
+			6 checkbox Description: desktop preview, Value: 1
+			7 checkbox Description: tablet preview, Value: 0
+			8 checkbox Description: mobile preview, Value: 0
+		9 button Demo home
+		10 button Reload demo page
+		11 link Description: Open sample store separately, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+		12 text Your store is unchanged.
+		13 container Current demo page
+			14 text /
+		15 text 1440 px viewport
+		16 container Circuit desktop sample store
+			17 AXWebArea LetBuyy Store, URL: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+				18 container
+					19 text Circuit  theme · Read-only sample store. Purchases, accounts and messages are disabled. Your store is unchanged.
+				20 container Sample store navigation
+					21 link Description: Sample home, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					22 link Description: Products, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					23 link Description: Collections, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					24 link Description: Journal, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					25 container
+						26 text field (settable) Search sample products
+						27 button Search sample store
+				28 text Know the model. Check the connection.
+				29 container
+					30 container Description: Primary, ID: lb-nav-panel-header-default
+						31 link Description: Connect, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+						32 link Description: Charge, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+						33 link Description: Compatibility guide, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					34 link Description: Circuit, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					35 link Description: Log in, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					36 link Description: Cart ( 0 ), Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+				37 container
+					38 text ELECTRONICS, MADE LEGIBLE
+					39 heading What do you need to connect?, Value: 1
+						40 text What do you need to connect?
+					41 text Start with the task. Finish with the right model.
+					42 link Description: Charge Charge →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					43 link Description: Connect Connect →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					44 link Description: Listen Listen →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					45 link Description: Work Work →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+				46 container
+					47 text FEATURED MODEL / CG-7
+					48 heading A clearer connection for your desk., Value: 2
+						49 text A clearer connection for your desk.
+					50 text One USB-C host. Seven useful ports. Check the exact host features before choosing. Nodeworks CG-7 · INR 3,490.00
+					51 link Description: View model →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					52 image A clearer connection for your desk.
+				53 container
+					54 heading Small details. Better decisions., Value: 2
+						55 text Small details. Better decisions.
+					56 link Description: CG-7 USB-C hub, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					57 text Nodeworks · CG-7
+					58 heading CG-7 USB-C hub, Value: 3
+						59 link Description: CG-7 USB-C hub, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					60 definition list
+						61 container Video
+							62 text Video
+						63 text 3840 × 2160 / 30 Hz
+						64 container USB data maximum
+							65 text USB data maximum
+						66 text 5000 Mb/s
+					67 text INR 3,490.00
+					68 link Description: Choose options →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					69 text Available
+					70 link Description: CG-5 USB-C hub, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					71 text Nodeworks · CG-5
+					72 heading CG-5 USB-C hub, Value: 3
+						73 link Description: CG-5 USB-C hub, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					74 definition list
+						75 container Video
+							76 text Video
+						77 text 3840 × 2160 / 30 Hz
+						78 container USB data maximum
+							79 text USB data maximum
+						80 text 480 Mb/s
+					81 text INR 2,490.00
+					82 link Description: Choose options →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					83 text Available
+					84 link Description: CH-65 dual USB-C charger, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					85 text Nodeworks · CH-65
+					86 heading CH-65 dual USB-C charger, Value: 3
+						87 link Description: CH-65 dual USB-C charger, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					88 definition list
+						89 container Output maximum
+							90 text Output maximum
+						91 text 65 W
+						92 container Power outputs
+							93 text Power outputs
+						94 text 2 × USB-C
+					95 text INR 1,890.00
+					96 link Description: Choose options →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					97 text Available
+					98 link Description: CL-100 USB-C cable · 1 m, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					99 text Nodeworks · CL-100
+					100 heading CL-100 USB-C cable · 1 m, Value: 3
+						101 link Description: CL-100 USB-C cable · 1 m, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					102 definition list
+						103 container Cable power capacity
+							104 text Cable power capacity
+						105 text 100 W
+						106 container USB data maximum
+							107 text USB data maximum
+						108 text 480 Mb/s
+					109 text INR 690.00
+					110 link Description: Choose options →, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					111 text Available
+				112 container
+					113 heading Same connector. Different capabilities., Value: 2
+						114 text Same connector. Different capabilities.
+					115 text Connector shape alone does not establish device compatibility. 01
+					116 heading Find the exact model, Value: 3
+						117 text Find the exact model
+					118 text Use the complete device model identifier.
+					119 text 02
+					120 heading Check the required feature, Value: 3
+						121 text Check the required feature
+					122 text Display, data and power are separate capabilities.
+					123 text 03
+					124 heading Read the reference, Value: 3
+						125 text Read the reference
+					126 text No model reference means compatibility is unconfirmed.
+				127 container
+					128 heading Shipping, Value: 3
+						129 text Shipping
+					130 text Available shipping rates are checked at checkout. No delivery date is supplied in this demonstration.
+					131 heading Returns, Value: 3
+						132 text Returns
+					133 text Contact the merchant for the applicable product return terms. No automatic approval is promised.
+					134 heading Support, Value: 3
+						135 text Support
+					136 text Bring the exact product and device model. Do not share your password or account codes.
+				137 container
+					138 heading Circuit, Value: 3
+						139 text Circuit
+					140 heading QUICK LINKS, Value: 4
+						141 text QUICK LINKS
+					142 link Description: Browse accessories, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					143 link Description: About this sample shop, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					144 link Description: Sample journal, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					145 link Description: Contact, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					146 heading POLICIES, Value: 4
+						147 text POLICIES
+					148 link Description: Privacy policy, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					149 link Description: Terms of service, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					150 link Description: Shipping policy, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					151 link Description: Returns policy, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					152 heading CONTACT, Value: 4
+						153 text CONTACT
+					154 link Description: Contact us, Value: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]
+					155 text © Circuit. All rights reserved.
+					156 link Description: Powered by LetBuyy, Value: …
+
+The focused UI element is 0 AXWebArea LetBuyy Store, URL: localhost:58091/theme-preview/letbuyy-forge?[query-redacted]

@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-24T11:35:09.014508+00:00",
+  "status": "DELIVERED",
+  "recipientThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authorization": "Direct human coordination scope plus later verified named resumption",
+  "checkpoint": "RESUME_CHECKPOINT_20261024_01.json",
+  "sharedHarness": "shared-roundtrip-harness/HANDOFF.json",
+  "facetProposal": "facet-contract-01/PROPOSAL.md",
+  "newResourceGrantInferred": false,
+  "newInstalledPasses": 0
+}

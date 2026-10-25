@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-23T19:10:13.447377+00:00",
+  "runId": "f6074d90e894",
+  "phase": "A",
+  "proofStatus": 200,
+  "proof": {
+    "packageVersion": "2.0.0",
+    "releaseId": "87e4c406-bded-4500-b7a8-59d7050ab6f0",
+    "sourceDraftVersion": 3,
+    "releaseSha256": "fcd3a787116e839a919b9582bc07a1a74bead48aab68c5a84213b91f981b4571",
+    "orders": 0,
+    "installed": 2,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "publicReadback": {
+    "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+    "httpStatus": 200,
+    "expectedHeading": "Habitat saved heading A f6074d90e894",
+    "expectedFound": true,
+    "otherHeadingFound": false
+  }
+}

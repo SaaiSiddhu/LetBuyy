@@ -1,0 +1,196 @@
+TAP version 13
+# Subtest: toys: immutable accepted facts survive source catalog mutation and deletion
+ok 1 - toys: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 8.634792
+  type: 'test'
+  ...
+# Subtest: electronics: immutable accepted facts survive source catalog mutation and deletion
+ok 2 - electronics: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 4.310666
+  type: 'test'
+  ...
+# Subtest: food: immutable accepted facts survive source catalog mutation and deletion
+ok 3 - food: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.135417
+  type: 'test'
+  ...
+# Subtest: furniture: immutable accepted facts survive source catalog mutation and deletion
+ok 4 - furniture: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.800667
+  type: 'test'
+  ...
+# Subtest: gifts: immutable accepted facts survive source catalog mutation and deletion
+ok 5 - gifts: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.459125
+  type: 'test'
+  ...
+# Subtest: personalization: immutable accepted facts survive source catalog mutation and deletion
+ok 6 - personalization: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 5.887958
+  type: 'test'
+  ...
+# Subtest: beauty: immutable accepted facts survive source catalog mutation and deletion
+ok 7 - beauty: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.523083
+  type: 'test'
+  ...
+# Subtest: sports: immutable accepted facts survive source catalog mutation and deletion
+ok 8 - sports: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 0.998625
+  type: 'test'
+  ...
+# Subtest: books: immutable accepted facts survive source catalog mutation and deletion
+ok 9 - books: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 2.701875
+  type: 'test'
+  ...
+# Subtest: selected durable variant, not a matching option label, determines frozen dimensions and fingerprint
+ok 10 - selected durable variant, not a matching option label, determines frozen dimensions and fingerprint
+  ---
+  duration_ms: 1.830125
+  type: 'test'
+  ...
+# Subtest: per-pack food quantity stays unknown without a selected override and absent gift contents are never manufactured
+ok 11 - per-pack food quantity stays unknown without a selected override and absent gift contents are never manufactured
+  ---
+  duration_ms: 1.451583
+  type: 'test'
+  ...
+# Subtest: an explicit toy clear may remove the namespace and cannot retain an inherited completeness promise
+ok 12 - an explicit toy clear may remove the namespace and cannot retain an inherited completeness promise
+  ---
+  duration_ms: 0.685042
+  type: 'test'
+  ...
+# Subtest: same-RGB beauty names remain exact server-selected options with deterministic ordering
+ok 13 - same-RGB beauty names remain exact server-selected options with deterministic ordering
+  ---
+  duration_ms: 0.875792
+  type: 'test'
+  ...
+# Subtest: historical option selection cannot contain two values for the same named relational option
+ok 14 - historical option selection cannot contain two values for the same named relational option
+  ---
+  duration_ms: 0.487459
+  type: 'test'
+  ...
+# Subtest: forged, replayed and stale personalization reviews cannot manufacture an accepted configuration
+ok 15 - forged, replayed and stale personalization reviews cannot manufacture an accepted configuration
+  ---
+  duration_ms: 6.047292
+  type: 'test'
+  ...
+# Subtest: missing facts remain absent and private, unsupported or malformed fulfillment fields fail closed
+ok 16 - missing facts remain absent and private, unsupported or malformed fulfillment fields fail closed
+  ---
+  duration_ms: 1.004083
+  type: 'test'
+  ...
+# Subtest: missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+ok 17 - missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+  ---
+  duration_ms: 6.353042
+  type: 'test'
+  ...
+# Subtest: canonical UUID/version and selected variant parent are mandatory server context
+ok 18 - canonical UUID/version and selected variant parent are mandatory server context
+  ---
+  duration_ms: 1.207709
+  type: 'test'
+  ...
+# Subtest: malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+ok 19 - malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+  ---
+  duration_ms: 1.670291
+  type: 'test'
+  ...
+# Subtest: food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+ok 20 - food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+  ---
+  duration_ms: 1.823958
+  type: 'test'
+  ...
+# Subtest: furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+ok 21 - furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+  ---
+  duration_ms: 1.642125
+  type: 'test'
+  ...
+# Subtest: book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+ok 22 - book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+  ---
+  duration_ms: 4.20525
+  type: 'test'
+  ...
+# Subtest: required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+ok 23 - required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+  ---
+  duration_ms: 3.963833
+  type: 'test'
+  ...
+# Subtest: NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+ok 24 - NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+  ---
+  duration_ms: 10.365875
+  type: 'test'
+  ...
+# Subtest: SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+ok 25 - SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+  ---
+  duration_ms: 20.627833
+  type: 'test'
+  ...
+# Subtest: a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+ok 26 - a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+  ---
+  duration_ms: 2.382042
+  type: 'test'
+  ...
+# Subtest: accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+ok 27 - accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+  ---
+  duration_ms: 1.541708
+  type: 'test'
+  ...
+# Subtest: historical order readback validates frozen facts/labels and never falls back to current catalog facts
+ok 28 - historical order readback validates frozen facts/labels and never falls back to current catalog facts
+  ---
+  duration_ms: 1.200792
+  type: 'test'
+  ...
+# Subtest: revision transition permits no-effect resaves and requires advances for capability meaning changes
+ok 29 - revision transition permits no-effect resaves and requires advances for capability meaning changes
+  ---
+  duration_ms: 0.701834
+  type: 'test'
+  ...
+# Subtest: echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+ok 30 - echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+  ---
+  duration_ms: 2.273
+  type: 'test'
+  ...
+# Subtest: saved canonical option names and values retain spaces and Hindi without label inference
+ok 31 - saved canonical option names and values retain spaces and Hindi without label inference
+  ---
+  duration_ms: 1.270084
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 469.152875

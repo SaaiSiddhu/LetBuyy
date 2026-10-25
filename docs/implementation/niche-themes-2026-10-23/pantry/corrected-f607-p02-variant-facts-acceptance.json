@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-10-23T19:56:17.179291+00:00",
+  "classification": "READ_ONLY_AUDIT_OF_ACTUAL_EDITOR_UI_AND_SAVED_CANONICAL_RECEIPTS",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "caseId": "P02",
+  "status": "PASS",
+  "independentlyCheckedSavedArtifacts": {
+    "earlierSameUuid750EnterThenExplicitClearComponentAudited": true,
+    "actualKnown250SkuMarkerSavedAndFullReloadThenReverted": true,
+    "exactSameThreeVariantUuidsAndFoodFactsPreserved": true,
+    "onlySkuAndExpectedOpaqueVersionChangedAcrossSkuSaveRestore": true,
+    "otherVariantRowsPricesStockInventoryUnknownAllergensAndCartConserved": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-entered-readback.json",
+      "sha256": "00e938137055d5982d073b9cd28c8f7aec34224dc3e52463e2dc358af237fe8b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-cleared-readback.json",
+      "sha256": "fe8d5b5a912bdaa2c0905132baba34f5b1f47344a40580857cdc5a16f2bd05c7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-temporary-750-reloaded.ax.txt",
+      "sha256": "7930ec75320834b3d510bc2dafc97ed3df4a7aece85e9bf609ea73c6b058c609"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-unknown-cleared-reloaded.ax.txt",
+      "sha256": "13ccc22403274694c863fddfe8c821ce640326caa172b0c0150b1ce3e84748d0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-250g-merchant-reloaded.ax.txt",
+      "sha256": "444789450f16e0b19e4291a4bce396d015c83da89257af21f48e6ffdc559d89e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-500g-merchant-reloaded.ax.txt",
+      "sha256": "f7087604da208b45a7b0f40d8cd16d8d1e4ae2610c4918b095687847748ddd4c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-sku-saved-readback.json",
+      "sha256": "6e7949096fa8048c8190003f2124065fbdaa33b319885ab0623b1e81b1b59fa7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-sku-restored-readback.json",
+      "sha256": "9f0124a40205e52f5c0a6c2c660089dfe8dfcbdeb11d3e2e1319a92f02a7bbaf"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-250-sku-marker-reloaded.ax.txt",
+      "sha256": "3dee5a46bb9034554f9b7b55a91fa00855694b380c38a4f166b419ee24f57d4e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-250-sku-restored-reloaded.ax.txt",
+      "sha256": "16a2c4f9b3e8472e8998be42ae859272c217ed79e6e1a1a665cf6ff981e459a9"
+    }
+  ],
+  "limits": [
+    "Raw parent mutation request body/status not retained; actual normal UI acknowledgment/full reload plus guarded saved rows are the persistence evidence.",
+    "Optional version-conflict replay not executed.",
+    "Compared saved whitelisted fields, not complete private product objects."
+  ],
+  "sourceChangesByPantry": [],
+  "priorVariantClearComponentAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p02-variant-clear-audit.json",
+    "sha256": "583931fc0a9261ad68da05cb55da52fd9fbe0b42a6756ef6bec63bb7724a570d"
+  },
+  "productVersionAfterRestore": 31
+}

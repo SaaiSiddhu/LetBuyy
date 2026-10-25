@@ -1,0 +1,3523 @@
+{
+  "recordedAt": "2026-10-25T01:28:02.535908+00:00",
+  "status": "SAVED_STOPPED_BOUNDARY_READ_ONLY_DATABASE_WITNESS_RESTORE_NOT_RUN",
+  "runId": "49ada80bc494",
+  "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+  "backupReceipt": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/FINAL_DATA_BACKUP_FINAL_STOPPED_20261025_01.json",
+  "archiveSha256": "94ebf9c112b05068cf6a5f6edb236d27667785fa01b0ea51813f18e456d3ff9d",
+  "identity": {
+    "kind": "identity",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "readOnly": "on",
+    "fixtureRunId": "49ada80bc494",
+    "serverVersion": "16.15"
+  },
+  "tables": [
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "users",
+      "schema": "auth",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "access_review_records",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "account_links",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ad_campaign_placements",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ad_campaigns",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ad_credit_accounts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ad_credit_ledger_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ai_capability_seams",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ai_credits",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ai_usage",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "analytics_event_stream",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "analytics_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "analytics_rollups_daily",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_activity_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_api_quotas",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_api_usage_metrics",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "app_awards",
+      "schema": "public",
+      "sha256": "a8ad64a303a5d732d04139c51e8a11d7a140ba00b740a64366033e0010a6b864"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_billing_charges",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "app_built_for_letbuyy_checks",
+      "schema": "public",
+      "sha256": "53ed7f955d7aeb68907ba979dab57a37bc5af05cd9af31fc36b95c747e05c643"
+    },
+    {
+      "kind": "table",
+      "rows": 3,
+      "table": "app_bundle_items",
+      "schema": "public",
+      "sha256": "5aa9937815f1e699fb39cb5f3a46c731d541b2df2a58b20b397dc49bea6c8981"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "app_bundles",
+      "schema": "public",
+      "sha256": "df61f7b65c584579f277c0f2f4b3a2d3fbf400b81eaed303e27d0420cd91d881"
+    },
+    {
+      "kind": "table",
+      "rows": 29,
+      "table": "app_categories",
+      "schema": "public",
+      "sha256": "d9b5d0e77546254883c9282adbf3be0f0649d5110ee8b1688172f8272b5e7359"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_collaborator_codes",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 6,
+      "table": "app_collection_items",
+      "schema": "public",
+      "sha256": "9f1c689b3663ac870cabe84f28e0ab291ceb08247ba822d5155a926996494cd5"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_collection_sections",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 3,
+      "table": "app_collections",
+      "schema": "public",
+      "sha256": "4e26f3a7d2ea7e5250f8742a4a88debc95f47f4483bde0551b3f649f21c86f90"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_demo_sessions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "app_developers",
+      "schema": "public",
+      "sha256": "5185bc4280db4fa78ff6e4d5a5d214bf15f07cbf8723c5e00e571fbb45e252c1"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_discovery_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_extension_registrations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_extensions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 10,
+      "table": "app_feature_groups",
+      "schema": "public",
+      "sha256": "167bc340ecb7fa4862e06d7826524d9acc2e2710bd995f2515baa0d5da2c801b"
+    },
+    {
+      "kind": "table",
+      "rows": 24,
+      "table": "app_feature_tag_assignments",
+      "schema": "public",
+      "sha256": "45193ee107fd4db5a48f9d5130491f6cc81a4e5e5dea99af7a0298bd2665ce73"
+    },
+    {
+      "kind": "table",
+      "rows": 45,
+      "table": "app_feature_tags",
+      "schema": "public",
+      "sha256": "2565c7380daa9cd2bbfe595da3fff1ed235cadd2175724fb73e11058592e2d68"
+    },
+    {
+      "kind": "table",
+      "rows": 3,
+      "table": "app_featured_placements",
+      "schema": "public",
+      "sha256": "4e1c4c23e7ccd67ef5127af78b6201d54fcdf5ba56c4ef0bcc25bfddc0981d2d"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_function_registrations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_installations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_listing_reports",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_partner_agency_seats",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_partner_analytics_daily",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_partner_tiers",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 3,
+      "table": "app_pricing_plans",
+      "schema": "public",
+      "sha256": "ca6008001a8adcfff815c2918f83bd27fb9778b592cb263a3e1d798667e0d705"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_requests",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "app_review_policies",
+      "schema": "public",
+      "sha256": "6068ce175eb602305ae71bd8e42ff37892e038ea089da468a38a473268914b4b"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_review_proofs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_review_reports",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_review_summaries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_reviews",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_sandbox_stores",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_saved_apps",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_spend_controls",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_telemetry_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_uninstall_feedback",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_usage_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_usage_meter_rollups",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_versions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "app_webhooks",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 645,
+      "table": "audit_activity_events",
+      "schema": "public",
+      "sha256": "0c6bf30a64c9e3d1f214e138a6de21834cd3db7aef2e1c706f616780789e9d93"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "audit_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "audit_export_cursors",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 13,
+      "table": "audit_logs",
+      "schema": "public",
+      "sha256": "849c343d5f7aae5cf12cc55da00cb1dc7d83439467609a6c9a0a6f847b533d32"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "auth_password_set_intents",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "authenticators",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "authorization_codes",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "billing_dunning_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "billing_history",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "billing_mandates",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "billing_usage_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "blog_categories",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "blog_comments",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "blog_post_tags",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "blog_posts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "blog_tags",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "break_glass_grants",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "buyer_accounts",
+      "schema": "public",
+      "sha256": "552ad87ee2114ffc91f76c29f2580a29ef8eebe54b952973d6f0d96b32f0b1d8"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_addresses",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_ai_daily_quotas",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_ai_operations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 6,
+      "table": "buyer_authorization_codes",
+      "schema": "public",
+      "sha256": "763a0f61a96f79dc600fe724a1c87a033a24733c29377874ebb2331ef706f99a"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_email_challenges",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_firebase_links",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_notifications",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 7,
+      "table": "buyer_order_links",
+      "schema": "public",
+      "sha256": "0394a357f3512af6a3b728027fa6ea5554f455cdb9b9545eedcc6233149d7fef"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_product_views",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_review_links",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_store_customers",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "buyer_support_mutation_receipts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "cache_invalidation_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "cache_operation_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "carts",
+      "schema": "public",
+      "sha256": "e55ba1fdb7dc54c82dfcd26972ef2dee9fba87c93323f7738719bc971787be30"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "certifications",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "channel_listing_moderation_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "channel_listings",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "chaos_experiment_runs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "chargeback_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 16,
+      "table": "checkout_sessions",
+      "schema": "public",
+      "sha256": "24241914d8f816fab56c28aab5d98a66ba99b9b3f9ab49927ba3ddb3bdffce84"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "cod_confirmation_requests",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "cod_reconciliation_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "cohort_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 13,
+      "table": "collection_membership_receipts",
+      "schema": "public",
+      "sha256": "bc5270c14ad771837a67a170d4244a7011ef0935da52e5ab299828d2cab4f335"
+    },
+    {
+      "kind": "table",
+      "rows": 17,
+      "table": "collection_products",
+      "schema": "public",
+      "sha256": "526a2d00bd75d79a9d87b66071471d9e82fa3885ff1020af1ae68fd816a7e9fb"
+    },
+    {
+      "kind": "table",
+      "rows": 16,
+      "table": "collections",
+      "schema": "public",
+      "sha256": "3a7f8c5d46070fa55d78edfbd0153b05a8f31deacf3e2590cef09dadd15fd1c6"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "commerce_reel_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "commerce_reel_revisions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "commerce_reels",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "commission_reconciliation_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "commission_schedules",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "compensation_actions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "consents",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "console_magic_link_consumptions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "contact_requests",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "contact_submissions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "contacts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "coordination_operation_diagnostics",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "coupons",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "credentials",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "customer_activity_log",
+      "schema": "public",
+      "sha256": "77578d46967e064ac4b7130aa2589a3b9265ca2806cca8b989c8845520917129"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_addresses",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_credentials",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_dsr_exports",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_notes",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_segments",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_tags",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_whatsapp_messages",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "customer_wishlists",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "data_subject_requests",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "database_operation_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "delegations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "demo_requests",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "deployment_health_gate_results",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "deployment_promotion_runs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "developer_profiles",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "device_tokens",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "devices",
+      "schema": "public",
+      "sha256": "b5eb220d4d0a6ce58c4a37f185cf71bd693b3d41d7169f0f12c0b9f57126252a"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "discount_allocations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "distributed_event_store",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "distributed_event_streams",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "distributed_queue_heartbeats",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "distributed_queue_messages",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "domain_orders",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "draft_order_lines",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "draft_orders",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "dual_model_reconciliation_reports",
+      "schema": "public",
+      "sha256": "0513579f4d1ac798e058ae619d36bb67402d1e934dca710c18df2b978d6555f3"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "education",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "email_logs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "email_suppressions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "employee_invites",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "employee_permissions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "employee_roles",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "employees",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "event_store_integrity_checks",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "event_stream_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "execution_audit_trail",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "failover_drill_runs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "federation_tokens",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "form_submissions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "founding_merchant_allocations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "founding_merchant_program",
+      "schema": "public",
+      "sha256": "36ebe1880bbd46b821addfa520acfe620ea56470bb9089a1147597bf19734a69"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "fulfillment_order_lines",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "fulfillment_orders",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "funnel_steps",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "gallery_items",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "gift_card_accounts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "gift_card_ledger_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "gift_card_redemptions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "gift_cards",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "gst_invoices",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "hsn_rates",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 273,
+      "table": "idempotency_keys",
+      "schema": "public",
+      "sha256": "aeed196af782f7b7279044445fceb4559b733143587f3da23ca767dc018308e1"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "impersonation_sessions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "incident_postmortems",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1044,
+      "table": "internal_auth_replay_claims",
+      "schema": "public",
+      "sha256": "bdce1110deaf46d1e411b52f811003d8537cbb10c54691311d74e45b25762629"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "inventory_adjustment_receipts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 46,
+      "table": "inventory_adjustments",
+      "schema": "public",
+      "sha256": "df258c0f9549ade7acc676eef238eec8457b018f3c11812f5baec3a4490e5497"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "inventory_events",
+      "schema": "public",
+      "sha256": "0f1d51274f36585a909b99f038c3b9add9e328e47b1e754a76c7ec2de189a87f"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "inventory_level_duplicate_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 43,
+      "table": "inventory_levels",
+      "schema": "public",
+      "sha256": "8756da8b5517898f3424e52c60178d4c1a7708d2a4842f3a783dd450112fed92"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "inventory_locations",
+      "schema": "public",
+      "sha256": "5e2d53ece90845f10fd5ab527382cc5b17d54a72c1de346055a2ec3783be88b0"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "inventory_reservations",
+      "schema": "public",
+      "sha256": "d305311bc34db0c645e70a096f2f1609005cdff886a213d7f9f1b78d0979802d"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "inventory_transfer_lines",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "inventory_transfer_receipts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "inventory_transfers",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "invitations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "lead_forms",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "leads",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "ledger_accounts",
+      "schema": "public",
+      "sha256": "8df97d1ca7f364a713d012cb4de2556a7a359267a9e16a47a9c0d221ab160307"
+    },
+    {
+      "kind": "table",
+      "rows": 14,
+      "table": "ledger_entries",
+      "schema": "public",
+      "sha256": "ab5ec02c9506b54cf6bd9ecaaf87dfd138164ad91f44595e6f05703be6f852cb"
+    },
+    {
+      "kind": "table",
+      "rows": 7,
+      "table": "ledger_transactions",
+      "schema": "public",
+      "sha256": "c1f2e6b9852c3f9a2ef2e8a0ff331c625158da64f81f88470ebb13adf987dc63"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "load_test_runs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "loyalty_accounts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "loyalty_ledger_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "loyalty_programs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "marketing_email_campaigns",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "marketing_email_recipients",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 3,
+      "table": "marketplace_apps",
+      "schema": "public",
+      "sha256": "a1745131fae3979d87ea6bf69c7d7e815a392c6052a8612ee1f6a18fc5ccaee9"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "marketplace_banners",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "marketplace_categories",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "marketplace_review_records",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "marketplace_trending_searches",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "media",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "media_assets",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "merchant_2fa_factors",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "merchant_billing_invoices",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "merchant_kyc_documents",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "merchant_session_jti_consumptions",
+      "schema": "public",
+      "sha256": "4e3fd006ad1d1a863a4c9865e53a73274bc796179f3dc95a5db091073e6ca6d8"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "merchant_totp_commands_v1",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "metric_rollups",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 805,
+      "table": "migration_privilege_journal",
+      "schema": "public",
+      "sha256": "d473c8f4993e89b9364d19999668304806849f95f9f93c8d6302728515f3ff96"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "mobile_app_releases",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "money_ledger_reconciliation_batches",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "money_ledger_reconciliation_traversal",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "money_ledger_site_reconciliations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "mrr_arr_rollups",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "navigation_menu_items",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "navigation_menus",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "notification_logs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "notification_preferences",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "notification_suppressions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "notifications",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "oauth_clients",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "oauth_grants",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "onboarding_attempts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "oncall_schedules",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "operation_metrics",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "operational_certification_reports",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "operational_dashboard_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "operational_feature_flag_audit_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "operational_feature_flag_exposures",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "operational_feature_flags",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "order_items",
+      "schema": "public",
+      "sha256": "90fac390e7ebad070e9ec84e8e20746d20e53f4e5a1deda823bee24704fc0fd3"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "order_line_adjustments",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "order_risk_assessments",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "order_shipping_lines",
+      "schema": "public",
+      "sha256": "5fd74862c9a32787fdb2d9e4a8679ef2a3d479d5ad114ce1b05d4a8bbb43f8f4"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "order_tax_lines",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "orders",
+      "schema": "public",
+      "sha256": "96febbd0c04679958ec6eb36f6400cba5b398394846fa444be72f129bfd28ccf"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "org_memberships",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "org_store_links",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "organizations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "outbox_consumptions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "outbox_dead_letters",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 376,
+      "table": "outbox_events",
+      "schema": "public",
+      "sha256": "1729053e88481829873de08e2cd375a9b77b9b8f77b28a3d2d480010deb727cd"
+    },
+    {
+      "kind": "table",
+      "rows": 376,
+      "table": "outbox_events_partitioned",
+      "schema": "public",
+      "sha256": "1729053e88481829873de08e2cd375a9b77b9b8f77b28a3d2d480010deb727cd"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "outbox_events_partitioned_2026_06",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "outbox_events_partitioned_2026_07",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 376,
+      "table": "outbox_events_partitioned_default",
+      "schema": "public",
+      "sha256": "1729053e88481829873de08e2cd375a9b77b9b8f77b28a3d2d480010deb727cd"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ownership_transfers",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "pages",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 10,
+      "table": "partition_lifecycle_partitions",
+      "schema": "public",
+      "sha256": "4a5e849d4e81e498b0c46a2bdc0f6478157e77a347cd81906e9d0f8c2632bfc5"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "partner_payout_ledger_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 14,
+      "table": "payment_attempts",
+      "schema": "public",
+      "sha256": "c204a5d06154457a6a0bc45e4b2e11eded013df3e704d30a9ca9ebb03cf7e9f1"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payment_credentials",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payment_tokens",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "payment_transactions",
+      "schema": "public",
+      "sha256": "703281f2c3c699d88f2599a259f337d3ced3ca0fa93d460897b99082cb82242b"
+    },
+    {
+      "kind": "table",
+      "rows": 14,
+      "table": "payment_webhook_events",
+      "schema": "public",
+      "sha256": "452557c003061960b9480c5400f0355bd2a5175204153ffa6dd80dafd35b16db"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payments",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payout_disputes",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payout_items",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payout_reconciliation_records",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payout_statement_source_ledger_transactions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payout_statement_source_orders",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payout_statements",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "payouts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 4,
+      "table": "plan_entitlements",
+      "schema": "public",
+      "sha256": "0fb555bc4552e2ce7ed63137645842f3b8960736a4b7eb57acd7a501d8e7584e"
+    },
+    {
+      "kind": "table",
+      "rows": 4,
+      "table": "plans",
+      "schema": "public",
+      "sha256": "8560ffc8842b9d18ceeddc7ef3991e1cf97ef33dcb3c7f0572c059004946c5f8"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "platform_queue_jobs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "platform_queue_jobs_partitioned",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "platform_queue_jobs_partitioned_2026_06",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "platform_queue_jobs_partitioned_2026_07",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "platform_queue_jobs_partitioned_default",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "portfolio_projects",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 6,
+      "table": "pricing_snapshots",
+      "schema": "public",
+      "sha256": "d7e3b0641fb6735f4baf206028cc55820ea10962899df2bfa40a86c3381b92ee"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "principals",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 14,
+      "table": "product_edit_receipts",
+      "schema": "public",
+      "sha256": "c3be950ca7ff7013f353894ee0476afe29d474c2eafa3794958d90d6b21706e4"
+    },
+    {
+      "kind": "table",
+      "rows": 14,
+      "table": "product_options",
+      "schema": "public",
+      "sha256": "f438aff90d87dfb8d3e1774edbb792cc45fddf6c93a90b70b5a56068a029e144"
+    },
+    {
+      "kind": "table",
+      "rows": 152,
+      "table": "product_price_observations",
+      "schema": "public",
+      "sha256": "7dc798d7696493268323f342d484262a9fb4dd86cdbed87bf314fc30684394ea"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "product_reviews",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 29,
+      "table": "product_variants",
+      "schema": "public",
+      "sha256": "6c48587749d5fcbdb31ebd9fd4d554296ce44a585670aebcbd45d49048364566"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "production_db_rollout_plans",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "production_incident_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "production_incidents",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "production_readiness_gate_runs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 17,
+      "table": "products",
+      "schema": "public",
+      "sha256": "f8c7d85b4088b009e9a5dca0b4cd5974e3471da99361d3f2d112e1fa3bb33e6e"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "projection_checkpoints",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "projection_operation_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "projection_rebuilds",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "projection_store",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "projects",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "promotion_codes",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "promotion_effects",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "promotion_redemptions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "promotion_rules",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "promotion_usage_counters",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "promotions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "provider_health_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "provider_outage_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "provider_recovery_plans",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "purchase_order_lines",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "purchase_order_receipts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "purchase_orders",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "purchases",
+      "schema": "public",
+      "sha256": "332f54614cdb947f78aca3941664f432ae4e2046991387046fb9d83c79545406"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "query_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "queue_operation_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "queue_recovery_operations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "recon_breaks",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "recovery_codes",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "reel_asset_provenance",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "reel_processing_receipts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "reel_review_inspections",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "reel_upload_intents",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "refresh_chains",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "refresh_tokens",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "refund_attempts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "refund_lines",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "refund_transactions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "refunds",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "regional_execution_diagnostics",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "regional_routing_overrides",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "replay_dry_run_results",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "replay_operation_schedules",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "reserves",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "restock_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "resume_versions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 5,
+      "table": "retention_policies",
+      "schema": "public",
+      "sha256": "c13adb1f10f83c82432ecf1f12a948fd1b4416599d19e1f93074316cfe9cde6c"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "return_lines",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "return_requests",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "returns",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "review_check_runs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "risk_action_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 9,
+      "table": "risk_rules",
+      "schema": "public",
+      "sha256": "7371017ea76662cbde8952f98ec3a3901af8111d268d5075b30c4f7f8128ef39"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "risk_scores",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "risk_signals",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "rollout_stage_evidence",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_alert_evaluations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_checkpoints",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_command_journal",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_control_commands",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_deployment_topology_records",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_diagnostics",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_event_retention_policies",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_health_projections",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_leases",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_replay_executions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_secret_rotation_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_slo_definitions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_structured_logs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 6708,
+      "table": "runtime_telemetry_metrics",
+      "schema": "public",
+      "sha256": "7113e2cac23a3fff6f3811dec136937aa75d001624803263ef523ad8322c4102"
+    },
+    {
+      "kind": "table",
+      "rows": 6708,
+      "table": "runtime_telemetry_metrics_partitioned",
+      "schema": "public",
+      "sha256": "7113e2cac23a3fff6f3811dec136937aa75d001624803263ef523ad8322c4102"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_telemetry_metrics_partitioned_2026_06",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_telemetry_metrics_partitioned_2026_07",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 6708,
+      "table": "runtime_telemetry_metrics_partitioned_default",
+      "schema": "public",
+      "sha256": "7113e2cac23a3fff6f3811dec136937aa75d001624803263ef523ad8322c4102"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "runtime_telemetry_spans",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "sandbox_provider_contracts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 17,
+      "table": "search_documents",
+      "schema": "public",
+      "sha256": "05507557f307c790052b9ec9bd30a877cf2594680043444992f8e6da4e931b30"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "security_enforcement_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "security_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "seller_follows",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "sender_domains",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "sensitive_action_approvals",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "session_token_rotation_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "sessions",
+      "schema": "public",
+      "sha256": "272c01687d0394af7167b262a25d14fc4d0664d4a6bf2417322a43372c6485ec"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "sessions_v2",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "settlements",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "shadow_traffic_comparison_runs",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "shipment_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "shipments",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "shipping_labels",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "shipping_profiles",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "shipping_rates",
+      "schema": "public",
+      "sha256": "d63222a6ec215c19ec04129447bd187f2d84382e890c4c10929cd6250d1d834f"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "shipping_serviceability_rules",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "shipping_zones",
+      "schema": "public",
+      "sha256": "207a07a0f6d46fead3deb49169c09ed9df45f7c4ac15ec633f8df1ac2e94755e"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "signing_keys",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_api_clients",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_domain_reviews",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_domain_verifications",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_domains",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_entitlement_overrides",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_gate_attempts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_memberships",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_preview_links",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_role_permissions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "site_roles",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "site_usage_meters",
+      "schema": "public",
+      "sha256": "b077fb2566a4b1f003c7482a61c3c0ebd157e03776ef6721cad6e142fa0c7707"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "sites",
+      "schema": "public",
+      "sha256": "f2c76b4aebf50001ae25711dfd09b28c7ad729f357500b35a0e733065d69e2a2"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "skill_endorsements",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "skills",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "smart_collections",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "sre_error_budget_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "step_up_challenges",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_branding",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_credit",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_credit_ledger_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 8,
+      "table": "store_customers",
+      "schema": "public",
+      "sha256": "22dfb5b0d53a7b57c056ee4ce2cc6764d463985d1eb27c30ddfb2b4b9d311596"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_markets",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_memberships",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_metafield_definitions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_metafield_values",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "store_surveys",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 10,
+      "table": "store_themes",
+      "schema": "public",
+      "sha256": "5604b905a3e8bf8c2b1b65d4e24451f383e7aeb40a3d2e2ae091c3c7e1bfd3a3"
+    },
+    {
+      "kind": "table",
+      "rows": 72,
+      "table": "storefront_cache_tags",
+      "schema": "public",
+      "sha256": "be3dfb803dd9f8143083c75cce036f12183016e650eec8c666419eae1f4d9fbd"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "storefront_locales",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "storefront_page_revisions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "storefront_pages",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "storefront_policies",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "storefront_slug_redirects",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "storefront_translations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "subscription_coupon_redemptions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "subscription_coupons",
+      "schema": "public",
+      "sha256": "de7e932908cc5d406366ffc1a7e0999c33ba380a09a83f11b4b2b8acf84ee4cd"
+    },
+    {
+      "kind": "table",
+      "rows": 1,
+      "table": "subscriptions",
+      "schema": "public",
+      "sha256": "5ef2b8c7a79f390a4b7671f3e1620a35d955323c48b62fe7f917d5348fc9ef94"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "super_admin_allowlist",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "suppliers",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "support_mutation_receipts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "support_tickets",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "tax_overrides",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "tax_rates",
+      "schema": "public",
+      "sha256": "53915b88a3f0773eebd92c691cb9629d6c0825313aa4ffa1bab48beff8b8709c"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "tax_registrations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "team_memberships",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "teams",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "tenant_execution_quotas",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "tenant_operation_projections",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "testimonials",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_assets",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_block_definitions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_collection_items",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_collections",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_developer_listings",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_developer_payout_accounts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_download_artifacts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 214,
+      "table": "theme_draft_patches",
+      "schema": "public",
+      "sha256": "d4e490036b009c42e4517f0683cd867cbd78ea8f09ff7b3d1d358188637b6256"
+    },
+    {
+      "kind": "table",
+      "rows": 10,
+      "table": "theme_editor_drafts",
+      "schema": "public",
+      "sha256": "ef574340bcbd014bfae23b987bbe0e7da371e8b68aaa6fcec96e013b98dd9a90"
+    },
+    {
+      "kind": "table",
+      "rows": 71,
+      "table": "theme_instance_drafts",
+      "schema": "public",
+      "sha256": "e2ff50fa205f35911c1b0325472d3f96e7c774284c619c05be2e54954a3ffd2e"
+    },
+    {
+      "kind": "table",
+      "rows": 10,
+      "table": "theme_instances",
+      "schema": "public",
+      "sha256": "cc546f5b508112bdc2d1febc020737f1a4418fb47053299c5ecc87816b81e464"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_layouts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_marketplace_settings",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_migrations",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 21,
+      "table": "theme_package_versions",
+      "schema": "public",
+      "sha256": "d3fc9e93b0d3dfe42d936efe2e0543bb6d13a2d9323bf50747f0502cf96151c0"
+    },
+    {
+      "kind": "table",
+      "rows": 10,
+      "table": "theme_packages",
+      "schema": "public",
+      "sha256": "1ccf44d2ab30ce7c4dca9b1d5fa43b98c6966c1dbce7019e22070c4f64667915"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_presets",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 282,
+      "table": "theme_preview_sessions",
+      "schema": "public",
+      "sha256": "ccbc60c9975425828b4d623703375392af27cad97d9dc658dc5486849609ded8"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_purchase_receipts",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_purchases",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_refund_requests",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 61,
+      "table": "theme_releases",
+      "schema": "public",
+      "sha256": "489295cc9ca9646901eb3035c837286627f782d5a1bedc5e99584db1e51f693a"
+    },
+    {
+      "kind": "table",
+      "rows": 21,
+      "table": "theme_renderer_manifests",
+      "schema": "public",
+      "sha256": "f33a65ee7f4300361c500112bdc38769ad85ce9a60ec067cab79af6556d533e0"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_reports",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_reviews",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_saved_searches",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 21,
+      "table": "theme_schema_manifests",
+      "schema": "public",
+      "sha256": "10cc84f8859ff9bb61a832119e577c04a06d77d87ebb6c0b0d35e304470b71b5"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_section_definitions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_template_assignments",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "theme_templates",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 11,
+      "table": "themes",
+      "schema": "public",
+      "sha256": "47cb4666683b14aaa575d927f06eb5bdf701a3b1bb349683b98fb9c79d82e7e0"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ticket_csat",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ticket_macros",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ticket_messages",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ticket_sla_clocks",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ts_appeals",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ts_case_events",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ts_cases",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ts_evidence",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 3,
+      "table": "ts_policies",
+      "schema": "public",
+      "sha256": "c898c25c940608b6b4b299f2715992ce518ce989cccded2df6adc41abd81a726"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "ts_takedowns",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 22,
+      "table": "usage_meter_entries",
+      "schema": "public",
+      "sha256": "ada656331967215c7b9214b8432ab608dd01177e51c8b628303bc684d8137b2d"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "user_profiles",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "users",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 2,
+      "table": "users_custom",
+      "schema": "public",
+      "sha256": "c3e107d1645215fa035cb60dcd89ff558d815bbae8916469e7af4c13151e9613"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "velocity_counters",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "verification_tokens",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "wa_optins",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "wa_sessions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "wa_templates",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "wallet_ledger_entries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "webhook_deliveries",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "webhook_deliveries_partitioned",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "webhook_deliveries_partitioned_2026_06",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "webhook_deliveries_partitioned_2026_07",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "webhook_deliveries_partitioned_default",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "webhook_subscriptions",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "whatsapp_messages",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "wishlists",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "work_experience",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 3450,
+      "table": "worker_request_logs",
+      "schema": "public",
+      "sha256": "feb1c24773eb9d08d8fdc7aee0acadd0624ec54e781ced637b18f15a018a9ecf"
+    },
+    {
+      "kind": "table",
+      "rows": 3450,
+      "table": "worker_request_logs_partitioned",
+      "schema": "public",
+      "sha256": "feb1c24773eb9d08d8fdc7aee0acadd0624ec54e781ced637b18f15a018a9ecf"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "worker_request_logs_partitioned_2026_06",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "worker_request_logs_partitioned_2026_07",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 3450,
+      "table": "worker_request_logs_partitioned_default",
+      "schema": "public",
+      "sha256": "feb1c24773eb9d08d8fdc7aee0acadd0624ec54e781ced637b18f15a018a9ecf"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "workflow_heartbeats",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "workflow_lifecycle",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "table",
+      "rows": 0,
+      "table": "workflow_operation_snapshots",
+      "schema": "public",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "metadata": [
+    {
+      "kind": "metadata",
+      "sha256": "d2bee36d6afc688a1c8b1305be9e337d182ab7d739d6382ba4cb24c09868d101",
+      "objects": 8274,
+      "category": "columns"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "417569b59fe2e06f33f366cb053172476593d78578790fa3ade0c00ba3b5140a",
+      "objects": 2710,
+      "category": "constraints"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "522d51b1175d5b7ab4f85686d9571d0f5428ca35d76d7f668142f035a1ed1677",
+      "objects": 3,
+      "category": "defaultAcls"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "d339f70f764a98d12389494931bec8e11db57ab7f7a2ae1dc19c2dfc3dc59b04",
+      "objects": 3,
+      "category": "extensions"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "c07de424861cbecb60c05f6d5adf612e160a7bcaf679186de943dad72d397e75",
+      "objects": 1749,
+      "category": "indexes"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "d9f8072470f951b57e2f99478a9dcf2a0f177e69ee9a43aec9a5561e6a72b30a",
+      "objects": 8,
+      "category": "memberships"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "9077b12deeee30606afdc06ae44a355a9563020be4e193448cc2fb93c3e87674",
+      "objects": 1067,
+      "category": "policies"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "60e294965d1d1b306200fc158e3f7acf5417bcfd2ba8137533870ca974614e3c",
+      "objects": 493,
+      "category": "relations"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "06de1cc26716f831ab00338d2a7a8c43a44e1de6197164ae0617542e1353e945",
+      "objects": 20,
+      "category": "roles"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "49859bc7622c74e07dcecc0f1073e5509a65e5237d39effd37921aa6f6247e97",
+      "objects": 490,
+      "category": "routines"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "d13da428067f44f0e3afbe93595186b3295b066cc54e3ad357a9c67450b0faa4",
+      "objects": 4,
+      "category": "schemas"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "9c11a20db07e13851ae02a0e9ebc436b37014ff7dbf5cca90915a008370d86a4",
+      "objects": 3,
+      "category": "sequences"
+    },
+    {
+      "kind": "metadata",
+      "sha256": "7736d5948703d4f37720df56a8461722d60e03f74e67aea6c9b40c5fcd125989",
+      "objects": 505,
+      "category": "triggers"
+    }
+  ],
+  "querySha256": "b34cedb8175581850defb55af156a425fbac37957f3fa784f5c5424fbabf2fa2",
+  "scope": "All non-system base tables and partitions: sorted per-row SHA256 of JSON representation, then SHA256 aggregate. Counts and hashes only; no row values or credentials exported. Metadata covers columns, relation ownership/ACL/RLS, constraints, policies, triggers, routines, sequences, schemas, roles excluding password hashes, memberships and default ACLs. One repeatable-read/read-only transaction. Metadata also includes index definitions and extension owners/schemas/versions.",
+  "limitations": [
+    "Not a restore rehearsal or proof of application health.",
+    "No claim of schema migration equivalence or live production certification.",
+    "Cluster role definitions are hashed, not backed up by pg_dump; canonical fresh bootstrap must reproduce required globals.",
+    "Any intentional future fixture refinements or source migration must have separately declared exact witness deltas."
+  ],
+  "databaseMutations": 0,
+  "processSignals": 0
+}

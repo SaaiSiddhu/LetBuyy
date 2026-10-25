@@ -1,0 +1,516 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(18, 18, 18, 0.75)",
+    "font": "Assistant, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada | CAD $",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Assistant, sans-serif",
+      "height": 1,
+      "line": "26px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 1,
+      "x": 91,
+      "y": 668
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": -93.5
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 39,
+      "line": "39px",
+      "size": "30px",
+      "tag": "H1",
+      "text": "Your cart is empty",
+      "weight": "400",
+      "width": 360,
+      "x": 15,
+      "y": 179
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 26,
+      "line": "26px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "Have an account?",
+      "weight": "400",
+      "width": 360,
+      "x": 15,
+      "y": 340
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 26,
+      "line": "26px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "You may also like",
+      "weight": "400",
+      "width": 360,
+      "x": 15,
+      "y": 457.62939453125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 15.59375,
+      "line": "15.6px",
+      "size": "12px",
+      "tag": "H3",
+      "text": "Art Deco",
+      "weight": "400",
+      "width": 178,
+      "x": 15,
+      "y": 706.9696655273438
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 15.59375,
+      "line": "15.6px",
+      "size": "12px",
+      "tag": "H3",
+      "text": "Bo Ivy",
+      "weight": "400",
+      "width": 178,
+      "x": 197,
+      "y": 710.554931640625
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 15.59375,
+      "line": "15.6px",
+      "size": "12px",
+      "tag": "H3",
+      "text": "Bo Soft Strap",
+      "weight": "400",
+      "width": 178,
+      "x": 15,
+      "y": 998.22314453125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 15.59375,
+      "line": "15.6px",
+      "size": "12px",
+      "tag": "H3",
+      "text": "Brick",
+      "weight": "400",
+      "width": 178,
+      "x": 197,
+      "y": 998.22314453125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 20.796875,
+      "line": "20.8px",
+      "size": "16px",
+      "tag": "H2",
+      "text": "Quick links",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 1220.1875
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 20.796875,
+      "line": "20.8px",
+      "size": "16px",
+      "tag": "H2",
+      "text": "Info",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 1436.5703125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 20.796875,
+      "line": "20.8px",
+      "size": "16px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 1698.1484375
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 20.796875,
+      "line": "20.8px",
+      "size": "16px",
+      "tag": "H2",
+      "text": "Subscribe to our emails",
+      "weight": "400",
+      "width": 216.5,
+      "x": 86.75,
+      "y": 1812.9453125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 147.421875,
+      "x": 121.2890625,
+      "y": 2015.7421875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-dawn-demo.myshopify.com/cart#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/tote-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/shoulder-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/crossbody-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/top-handle-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/mini-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/shoes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/sandals"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/boots"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/lookbook-summer"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/account/login"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-dawn-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Continue shopping",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Log in",
+      "url": "https://theme-dawn-demo.myshopify.com/account/login"
+    },
+    {
+      "text": "Art Deco",
+      "url": "https://theme-dawn-demo.myshopify.com/products/art-deco-cyclamen"
+    },
+    {
+      "text": "Bo Ivy",
+      "url": "https://theme-dawn-demo.myshopify.com/products/bo-ivy-black"
+    },
+    {
+      "text": "Bo Soft Strap",
+      "url": "https://theme-dawn-demo.myshopify.com/products/bo-soft-strap-brown"
+    },
+    {
+      "text": "Brick",
+      "url": "https://theme-dawn-demo.myshopify.com/products/brick-apple"
+    },
+    {
+      "text": "View all",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Bags",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/bags"
+    },
+    {
+      "text": "Shoes",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/shoes"
+    },
+    {
+      "text": "Lookbook",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/lookbook"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/about"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/contact-us"
+    },
+    {
+      "text": "Shipping policy",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/shipping"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-dawn-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "theme-dawn-demo",
+      "url": "https://theme-dawn-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257638489__cart-items",
+      "rect": {
+        "height": 322,
+        "width": 390,
+        "x": 0,
+        "y": 104
+      },
+      "tag": "DIV",
+      "text": "Your cart is empty\nContinue shopping\nHave an account?\n\nLog in to check out faster."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257638489__cart-footer",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 426
+      },
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257638489__featured-collection",
+      "rect": {
+        "height": 691.1875,
+        "width": 390,
+        "x": 0,
+        "y": 426
+      },
+      "tag": "SECTION",
+      "text": "You may also like\nSale\nArt Deco\nRegular price\n$375.00 CAD \nSale price\n$165.00 CAD\nBo Ivy\nRegular price\n$390.00 CAD\nBo Soft Strap\nRegular price\n$365.00 CAD\nBrick\nRegular price\n$385."
+    }
+  ],
+  "title": "Your Shopping Cart – theme-dawn-demo",
+  "url": "https://theme-dawn-demo.myshopify.com/cart",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "grid product-grid contains-card contains-card--product contains-card--standard grid--4-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 529.1875,
+      "tag": "UL",
+      "width": 360
+    }
+  ],
+  "images": [
+    {
+      "alt": "Art Deco",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 178,
+        "width": 178
+      }
+    },
+    {
+      "alt": "Bo Ivy",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 178,
+        "width": 178
+      }
+    },
+    {
+      "alt": "Bo Soft Strap",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 178,
+        "width": 178
+      }
+    },
+    {
+      "alt": "Brick",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 178,
+        "width": 178
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping available on all orders!\n\nCart\nYour cart is empty\nContinue shopping\nHave an account?\n\nLog in to check out faster.\n\nYou may also like\nSale\nArt Deco\nRegular price\n$375.00 CAD \nSale price\n$165.00 CAD\nBo Ivy\nRegular price\n$390.00 CAD\nBo Soft Strap\nRegular price\n$365.00 CAD\nBrick\nRegular price\n$385.00 CAD\nView all\nQuick links\nBags\nShoes\nLookbook\nInfo\nAbout\nContact us\nShipping policy\nBlog\nOur mission\n\nQuality materials, good designs, craftsmanship and sustainability.\n\nSubscribe to our emails\nEmail\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nCountry/region\nCanada | CAD $\nPayment methods\n© 2026, theme-dawn-demo Powered by Shopify"
+}

@@ -1,0 +1,15 @@
+{
+  "border": "0px none rgb(16, 16, 16)",
+  "describedBy": ":r9pu:Error",
+  "invalid": "true",
+  "outline": "rgb(16, 16, 16) none 3px",
+  "padding": "5px 12px",
+  "radius": "0px",
+  "rect": {
+    "h": 30,
+    "w": 580,
+    "x": 430,
+    "y": 488
+  },
+  "tag": "INPUT"
+}

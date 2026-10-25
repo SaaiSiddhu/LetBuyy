@@ -1,0 +1,426 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 0, 0.81)",
+    "font": "Inter, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Account",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close dialog",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Bricolage Grotesque\", sans-serif",
+      "height": 1,
+      "line": "48px",
+      "size": "48px",
+      "tag": "H1",
+      "text": "Horizon",
+      "weight": "700",
+      "width": 1,
+      "x": -1,
+      "y": -1
+    },
+    {
+      "font": "\"Bricolage Grotesque\", sans-serif",
+      "height": 48,
+      "line": "48px",
+      "size": "48px",
+      "tag": "H2",
+      "text": "New arrivals",
+      "weight": "700",
+      "width": 281.6328125,
+      "x": 54.1796875,
+      "y": 227.203125
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Featured products",
+      "weight": "700",
+      "width": 209.7265625,
+      "x": 16,
+      "y": 433.59375
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Join the club",
+      "weight": "700",
+      "width": 145.5078125,
+      "x": 16,
+      "y": 1738.46875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-horizon-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/test-alex-merino-wool-open-placket-polo-324"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/allied-down-hooded-blouson-424"
+    },
+    {
+      "text": "Horizon",
+      "url": "https://theme-horizon-demo.myshopify.com/"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-horizon-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "View all",
+      "url": "https://theme-horizon-demo.myshopify.com/collections/front-page"
+    },
+    {
+      "text": "Michael Shaggy Wool Cardigan",
+      "url": "https://theme-horizon-demo.myshopify.com/products/michael-shaggy-wool-cardigan-324-1?variant=50385529667905"
+    },
+    {
+      "text": "Sofia Lightweight Turtleneck Top",
+      "url": "https://theme-horizon-demo.myshopify.com/products/sofia-lightweight-turtleneck-top-324-1?variant=50385562468673"
+    },
+    {
+      "text": "Mohair Shaggy Knit",
+      "url": "https://theme-horizon-demo.myshopify.com/products/mohair-shaggy-knit-424-2?variant=50385483596097"
+    },
+    {
+      "text": "Striped Waffle LS Tee",
+      "url": "https://theme-horizon-demo.myshopify.com/products/striped-waffle-ls-tee-324-1?variant=50385573314881"
+    },
+    {
+      "text": "Denim Jacket",
+      "url": "https://theme-horizon-demo.myshopify.com/products/denim-jacket-324?variant=50385506468161"
+    },
+    {
+      "text": "Leah Cashmere Zip Sweater",
+      "url": "https://theme-horizon-demo.myshopify.com/products/leah-cashmere-zip-sweater-324-1?variant=50385565352257"
+    },
+    {
+      "text": "Jahmad Long Sleeve Polo",
+      "url": "https://theme-horizon-demo.myshopify.com/products/jahmad-linen-long-sleeve-polo-324-1?variant=50385524556097"
+    },
+    {
+      "text": "Mole Yarn Stripe Skipper Knit",
+      "url": "https://theme-horizon-demo.myshopify.com/products/mole-yarn-stripe-skipper-knit-424-1?variant=50385464787265"
+    },
+    {
+      "text": "Horizon",
+      "url": "https://theme-horizon-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--25678738620737__hero_TA4rQk",
+      "rect": {
+        "height": 340,
+        "width": 390,
+        "x": 0,
+        "y": 60
+      },
+      "tag": "SECTION",
+      "text": "New arrivals\nShop now"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--25678738620737__product_list_qU3bEB",
+      "rect": {
+        "height": 1303.875,
+        "width": 390,
+        "x": 0,
+        "y": 400
+      },
+      "tag": "DIV",
+      "text": "Featured products\nView all\nMichael Shaggy Wool Cardigan\nMichael Shaggy Wool Cardigan\n$285.00\nSofia Lightweight Turtleneck Top\nSofia Lightweight Turtleneck Top\n$93.00\nMohair Shaggy "
+    }
+  ],
+  "title": "Horizon",
+  "url": "https://theme-horizon-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "\n    resource-list\n    \n    \n    resource-list--grid\n  ",
+      "columns": "173px 173px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 1163.3828125,
+      "tag": "DIV",
+      "width": 358
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 287.4453125,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 287.4453125,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 265.046875,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 265.046875,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 287.4453125,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 287.4453125,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 287.4453125,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 287.4453125,
+      "tag": "DIV",
+      "width": 173
+    }
+  ],
+  "images": [
+    {
+      "alt": "Two models wearing sweaters from our latest collection.",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 340,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Pumice | Michael Shaggy Wool Cardigan",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Pumice | Michael Shaggy Wool Cardigan",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Pumice | Michael Shaggy Wool Cardigan",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Black | Michael Shaggy Wool Cardigan",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Pumice | Michael Shaggy Wool Cardigan",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Pumice | Michael Shaggy Wool Cardigan",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Black | Sofia Lightweight Turtleneck Top",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Black | Sofia Lightweight Turtleneck Top",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Black | Sofia Lightweight Turtleneck Top",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Black | Sofia Lightweight Turtleneck Top",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Black | Sofia Lightweight Turtleneck Top",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nHorizon\nHorizon\nTotal items in cart: 0\nNew arrivals\nShop now\nFeatured products\nView all\nMichael Shaggy Wool Cardigan\nMichael Shaggy Wool Cardigan\n$285.00\nSofia Lightweight Turtleneck Top\nSofia Lightweight Turtleneck Top\n$93.00\nMohair Shaggy Knit\nMohair Shaggy Knit\n$233.00\nStriped Waffle LS Tee\nStriped Waffle LS Tee\n$76.00\nDenim Jacket\nDenim Jacket\n$236.00\nLeah Cashmere Zip Sweater\nLeah Cashmere Zip Sweater\n$214.00\nJahmad Long Sleeve Polo\nJahmad Long Sleeve Polo\n$214.00\nMole Yarn Stripe Skipper Knit\nMole Yarn Stripe Skipper Knit\n$207.00\nJoin the club\n\nGet exclusive deals and early access to new products.\n\nEmail\n© 2026 Horizon, Powered by Shopify"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:19:43.726915+00:00",
+  "classification": "ADDITIVE_PRIVATE_RENDER_PROOF_ORIGINAL_RUNTIME_STATUSES_RETAINED",
+  "parentCoverage": "../COVERAGE.json",
+  "cases": [
+    {
+      "caseId": "TL-ED-FIELD-section/category-grid/subtitle",
+      "privateImplementation": "APPLIED_IN_OWNED_PRIVATE_COPY",
+      "pureCanonicalRenderStatus": "PASS",
+      "matchingExecutedTestNames": [
+        "REGRESSION_category_subtitle",
+        "category subtitle clear",
+        "hostile subtitle",
+        "default page/chrome/style"
+      ],
+      "evidence": "RESULTS.json",
+      "MainIntegrationStatus": "NOT_APPLIED",
+      "browserOperationStatus": "NOT_RUN",
+      "providerStatus": "NOT_RUN",
+      "independentReview": "PENDING"
+    },
+    {
+      "caseId": "TL-ED-FIELD-section/collection-product-list/title",
+      "privateImplementation": "APPLIED_IN_OWNED_PRIVATE_COPY",
+      "pureCanonicalRenderStatus": "PASS",
+      "matchingExecutedTestNames": [
+        "REGRESSION_populated_collection_heading_edit",
+        "collection heading omitted",
+        "explicit Clothing",
+        "missing collection title",
+        "hostile subtitle",
+        "new distribution defaults"
+      ],
+      "evidence": "RESULTS.json",
+      "MainIntegrationStatus": "NOT_APPLIED",
+      "browserOperationStatus": "NOT_RUN",
+      "providerStatus": "NOT_RUN",
+      "independentReview": "PENDING"
+    },
+    {
+      "caseId": "TL-ED-FIELD-section/customer-order-detail/heading",
+      "privateImplementation": "APPLIED_IN_OWNED_PRIVATE_COPY",
+      "pureCanonicalRenderStatus": "PASS",
+      "matchingExecutedTestNames": [
+        "REGRESSION_order_heading_edit",
+        "order heading default",
+        "hostile subtitle",
+        "guest, unavailable and missing"
+      ],
+      "evidence": "RESULTS.json",
+      "MainIntegrationStatus": "NOT_APPLIED",
+      "browserOperationStatus": "NOT_RUN",
+      "providerStatus": "NOT_RUN",
+      "independentReview": "PENDING"
+    }
+  ],
+  "original26Obligations": "UNCHANGED_NOT_RUN",
+  "LOCAL_E2E_VERIFIED": false,
+  "RAZORPAY_TEST_VERIFIED": false,
+  "REVIEW_ACCEPTED": false,
+  "FULL_THEME_CERTIFIED": false
+}

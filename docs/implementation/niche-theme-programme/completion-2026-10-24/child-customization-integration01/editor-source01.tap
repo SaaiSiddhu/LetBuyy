@@ -1,0 +1,154 @@
+TAP version 13
+# Subtest: unmodified installed definitions preserve canonical unrestricted first-party nesting and keep app seams/unknown types dormant
+ok 1 - unmodified installed definitions preserve canonical unrestricted first-party nesting and keep app seams/unknown types dormant
+  ---
+  duration_ms: 20.140166
+  type: 'test'
+  ...
+# Subtest: canonical explicit empty and allowlist definitions restrict only eligible reusable children
+ok 2 - canonical explicit empty and allowlist definitions restrict only eligible reusable children
+  ---
+  duration_ms: 5.865417
+  type: 'test'
+  ...
+# Subtest: section-inline parents do not offer children the actual renderer cannot recurse into
+ok 3 - section-inline parents do not offer children the actual renderer cannot recurse into
+  ---
+  duration_ms: 7.969166
+  type: 'test'
+  ...
+# Subtest: actual captured Marginalia/MadeYours collision keeps root inline and nested reusable descriptors separate
+ok 4 - actual captured Marginalia/MadeYours collision keeps root inline and nested reusable descriptors separate
+  ---
+  duration_ms: 31.423916
+  type: 'test'
+  ...
+# Subtest: adding preserves instance IDs and history and rejects duplicate or prebuilt hidden subtrees
+ok 5 - adding preserves instance IDs and history and rejects duplicate or prebuilt hidden subtrees
+  ---
+  duration_ms: 5.791458
+  type: 'test'
+  ...
+# Subtest: depth, direct DTO count, nested canonical count and declared type limits refuse without mutation
+ok 6 - depth, direct DTO count, nested canonical count and declared type limits refuse without mutation
+  ---
+  duration_ms: 7.474709
+  type: 'test'
+  ...
+# Subtest: flat/nested reorder uses exact sibling identities and refuses cross-parent or edge moves
+ok 7 - flat/nested reorder uses exact sibling identities and refuses cross-parent or edge moves
+  ---
+  duration_ms: 0.201125
+  type: 'test'
+  ...
+# Subtest: visibility targets the exact flat/nested instance, preserves unrelated values and round trips twice
+ok 8 - visibility targets the exact flat/nested instance, preserves unrelated values and round trips twice
+  ---
+  duration_ms: 0.122875
+  type: 'test'
+  ...
+# Subtest: the actual default editor document passes canonical validation before its first CAS save
+ok 9 - the actual default editor document passes canonical validation before its first CAS save
+  ---
+  duration_ms: 4.281958
+  type: 'test'
+  ...
+# Subtest: editor document validation continues rejecting unsafe color values in both representations
+ok 10 - editor document validation continues rejecting unsafe color values in both representations
+  ---
+  duration_ms: 0.965084
+  type: 'test'
+  ...
+# Subtest: the actual installed Liquid document remains valid when normalized by the editor
+ok 11 - the actual installed Liquid document remains valid when normalized by the editor
+  ---
+  duration_ms: 25.903459
+  type: 'test'
+  ...
+# Subtest: every header/footer section remains selectable and editable through the actual compiler round trip
+ok 12 - every header/footer section remains selectable and editable through the actual compiler round trip
+  ---
+  duration_ms: 17.246792
+  type: 'test'
+  ...
+# Subtest: customer templates and alternates preserve their own identity instead of relabeling home
+ok 13 - customer templates and alternates preserve their own identity instead of relabeling home
+  ---
+  duration_ms: 8.235833
+  type: 'test'
+  ...
+# Subtest: an intentionally empty alternate stays empty instead of inheriting another template body
+ok 14 - an intentionally empty alternate stays empty instead of inheriting another template body
+  ---
+  duration_ms: 8.152
+  type: 'test'
+  ...
+# Subtest: intentionally empty Liquid header/footer groups remain empty and compile without inventing a legacy slot
+ok 15 - intentionally empty Liquid header/footer groups remain empty and compile without inventing a legacy slot
+  ---
+  duration_ms: 9.63875
+  type: 'test'
+  ...
+# Subtest: canonical disabled sections and blocks stay hidden when loaded and saved through the editor
+ok 16 - canonical disabled sections and blocks stay hidden when loaded and saved through the editor
+  ---
+  duration_ms: 11.235583
+  type: 'test'
+  ...
+# Subtest: nested canonical block identity, typed settings and order reach the actual editor model and serializer
+ok 17 - nested canonical block identity, typed settings and order reach the actual editor model and serializer
+  ---
+  duration_ms: 0.285458
+  type: 'test'
+  ...
+# Subtest: same-millisecond block insertions receive different stable instance IDs
+ok 18 - same-millisecond block insertions receive different stable instance IDs
+  ---
+  duration_ms: 0.357916
+  type: 'test'
+  ...
+# Subtest: nested edits and removal affect the selected instance only, preserving duplicate labels and siblings
+ok 19 - nested edits and removal affect the selected instance only, preserving duplicate labels and siblings
+  ---
+  duration_ms: 0.098625
+  type: 'test'
+  ...
+# Subtest: over-depth block data fails visibly instead of truncating it into a saveable tree
+ok 20 - over-depth block data fails visibly instead of truncating it into a saveable tree
+  ---
+  duration_ms: 0.173542
+  type: 'test'
+  ...
+# Subtest: actual page actions preserve confirmed deletion, selection, history and canonical saved identities/order/visibility
+ok 21 - actual page actions preserve confirmed deletion, selection, history and canonical saved identities/order/visibility
+  ---
+  duration_ms: 79.286083
+  type: 'test'
+  ...
+# Subtest: the page passes executed actions to its tree, and actual flat/nested row affordances bind exact IDs and bounds
+ok 22 - the page passes executed actions to its tree, and actual flat/nested row affordances bind exact IDs and bounds
+  ---
+  duration_ms: 156.000792
+  type: 'test'
+  ...
+# Subtest: actual389 inline/reusable collisions reload and compile without inventing child defaults or dropping saved unknown values
+ok 23 - actual389 inline/reusable collisions reload and compile without inventing child defaults or dropping saved unknown values
+  ---
+  duration_ms: 58.401375
+  type: 'test'
+  ...
+# Subtest: actual page callbacks complete each qualified theme inline-parent edit cycle through the canonical compiler and reload
+ok 24 - actual page callbacks complete each qualified theme inline-parent edit cycle through the canonical compiler and reload
+  ---
+  duration_ms: 3923.425125
+  type: 'test'
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5420.757167

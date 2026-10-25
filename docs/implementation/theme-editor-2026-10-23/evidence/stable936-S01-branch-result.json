@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-24T03:55:02.378356+00:00",
+  "runId": "936e5f577646",
+  "case": "S01",
+  "classification": "ACTUAL_ISOLATED_NORMAL_UI_DATA_SECURITY_BRANCH",
+  "productId": "b2b7303f-d78f-468e-b658-ea90e8d0a2d8",
+  "normalCreate": true,
+  "actualVersions": [
+    3,
+    5,
+    7
+  ],
+  "primaryTintExact": true,
+  "primaryOrdersExact": true,
+  "changedProtectedTables": [
+    "inventory_levels",
+    "outbox_events"
+  ],
+  "noPaymentOrderCartMutation": true,
+  "readbacks": [
+    "stable936-security-benign-readback.json",
+    "stable936-security-hostile-readback.json",
+    "stable936-security-restored-readback.json"
+  ],
+  "dom": [
+    "stable936-S01-PDP-dom.json",
+    "stable936-S01-discovery-dom.json"
+  ],
+  "ui": [
+    "stable936-S01-benign-created-list.ax.txt",
+    "stable936-S01-benign-PDP-positive.ax.txt",
+    "stable936-S01-hostile-PDP-inert.ax.txt",
+    "stable936-S01-hostile-discovery-inert.ax.txt"
+  ],
+  "limits": [
+    "Actual hostile format and ingredients remain literal/inert in PDP and search card.",
+    "Stock0/unavailable cohort supplied no format chooser; unsafe facet selection/purchase not claimed.",
+    "No network interception/request-zero proof; actual DOM had no injected img[src=x], pure attack script or attack-handler attributes.",
+    "Retained benign synthetic control, not deleted."
+  ]
+}

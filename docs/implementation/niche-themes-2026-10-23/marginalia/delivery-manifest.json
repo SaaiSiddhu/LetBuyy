@@ -1,0 +1,676 @@
+{
+  "generatedAt": "2026-10-23T08:07:21.349289+00:00",
+  "scope": "Owned source and evidence files. Browser captured-source hashes remain separately pinned in browser-fixtures.json; this delivery manifest does not recertify changed shared source.",
+  "files": [
+    {
+      "path": "apps/commerce/web/public/theme-assets/marginalia/v2/field-notes-cover.webp",
+      "bytes": 128522,
+      "sha256": "509408394c810a7fd6c1a568ff62e821fcd0e2bd5003cb51d4b760df19f46526"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/marginalia/v2/notebook.webp",
+      "bytes": 41188,
+      "sha256": "19159046aca144a787c055f9f750ae49df39a9a00e695b5c2f1db2e1e4ec2aaf"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/marginalia/v2/small-thought-cover.webp",
+      "bytes": 87442,
+      "sha256": "ee9815a96282b063febfeaf986c610f64183a4736c19f667d4192ac6aea1c0bb"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/marginalia-demo.ts",
+      "bytes": 7098,
+      "sha256": "e4c9c277170279cf6982d264d96772fbdf9f52daa677a7f58cb93d87abb990f8"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.test.tsx",
+      "bytes": 13413,
+      "sha256": "9ab7c057c6724194f054eb7a00e96bbca8986d59a65d5b1ae3396af899ad8ba1"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "bytes": 11660,
+      "sha256": "c059678c802fa85099f2a649fef161b51d029624edec47e5cd3c7f4fe17f0aef"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.test.tsx",
+      "bytes": 15914,
+      "sha256": "7f7cc7b24d05624b4be997a33a87eb84051674a2c867743e695a1af7a78a016e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "bytes": 12819,
+      "sha256": "f87836610908763c4b5417ebcc67dbeb74ac9560377a4c8117c2ff10f549b13c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/README.md",
+      "bytes": 12680,
+      "sha256": "88d9733b6b273fa2b3a48803aef82dbe8bab4f7efcacf4e8b895c3730518f587"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/STATUS.json",
+      "bytes": 3228,
+      "sha256": "562e16a8eb9c4942aba70c0f0785c4a9246c22573b3f7c2fa4f0046fac76c493"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/all-targeted-tests.tap",
+      "bytes": 13784,
+      "sha256": "bcbb9bed9c5c4fe127d34bc12eb4092d31aeef108b34ef2c70ad118eff093b49"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/assets.json",
+      "bytes": 1361,
+      "sha256": "a1e625b8efc27478fc97d087641422f3ec7ff5f475300bca1edad7085970292a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-before-target-fix.json",
+      "bytes": 44861,
+      "sha256": "67f2beb8a1a6e9ea8f8eff9f6254a9d4032fc6bc430254054865f48820428c8b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/book-description-open-mobile.png",
+      "bytes": 325507,
+      "sha256": "2c29b6118dbb7056c7504f6411faae7ba1541905a3e0914ef715fc8c63f4859e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/book-desktop.png",
+      "bytes": 453076,
+      "sha256": "0936530a198835d60845c2b2466e635d74174ba289c07842abf065750e2aa32e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/book-mobile-text2x.png",
+      "bytes": 548612,
+      "sha256": "64d826c81f0bc30d5e86bc387a2538304a8329732c331e936398a960bad773b6"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/book-mobile.png",
+      "bytes": 314957,
+      "sha256": "5160d660214a7900753bbd44c0a82f18499385b93f98dcf1ba34c4fd457fdf76"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/book-narrow.png",
+      "bytes": 266770,
+      "sha256": "eaaddf4223d026d392f6fadc0aad3d84f99851caf6d8160fc208d9916e036a5b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/book-tablet.png",
+      "bytes": 310100,
+      "sha256": "5037eed0ba95ac5a803e4f90c5a77d84a85046077ff4b8a4fe8281568a237806"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/collection-desktop.png",
+      "bytes": 196085,
+      "sha256": "62438bdf03ad40648f7f6ac5ca9348b60f728d34b638b1047ad3cefaffa4191e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/collection-mobile-text2x.png",
+      "bytes": 236135,
+      "sha256": "c1d6d205e7942fc42e947ae5e52c977457d754ccba9ac8b592d4c9e2e6d033bf"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/collection-mobile.png",
+      "bytes": 139893,
+      "sha256": "6edd505c03467cf09c2ee07a9034c951d3a832d8727455368df8c57f59185895"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/collection-narrow.png",
+      "bytes": 138202,
+      "sha256": "83d1cdfb16322c17459f3afb456af3337a9ac80ab27d988d41e08e900bc726e7"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/collection-tablet.png",
+      "bytes": 182828,
+      "sha256": "26f23e0a8c60d2774a00afeeb14d0738ec2e40ad2ca96d21de22bb9198497b8b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/edition-english-illustrated-hardback-mobile.png",
+      "bytes": 323396,
+      "sha256": "6368989477cd13f9f0198491a88898a33b3d7b985976b49da212a01ecf26b12d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/edition-english-paperback-mobile.png",
+      "bytes": 323343,
+      "sha256": "30203b6cf2aab4b5561bd9a195282293b81b60f881fa5eb8f121b3f1498aa352"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/edition-hindi-paperback-mobile.png",
+      "bytes": 325806,
+      "sha256": "df27ca2bbb9cc01e71cf9273b256a330a71429c5b42bb2918f904960a9f717cc"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/empty-desktop.png",
+      "bytes": 67304,
+      "sha256": "ecee02fdaaef464c02ec347c4f28fae44b897f4701d5bb47e6a9b2fe17ae1839"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/empty-mobile-text2x.png",
+      "bytes": 105676,
+      "sha256": "a87c90972f7ead2d472ec6dfdbf286a00333b5c8276f4a2d3e0e18f957186624"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/empty-mobile.png",
+      "bytes": 52654,
+      "sha256": "0c480d7f4f4f7eaf3359b75b04700d6366a7950c25edb3f68332b8870c972f34"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/empty-narrow.png",
+      "bytes": 51638,
+      "sha256": "bf7d272654f611641353b17d684e6248b84e045fd0006579dcee8ff2a5b54ef3"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/empty-tablet.png",
+      "bytes": 59925,
+      "sha256": "fb9196f33792233906e1834e7b9b3eabde9fde0f0298a5b72887224f974fa7d2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/essays-desktop.png",
+      "bytes": 154247,
+      "sha256": "1f65847ba57ef99e33bbcb1ef93b3097ef7bdf5d31b2f600609e532656123df0"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/essays-mobile.png",
+      "bytes": 111413,
+      "sha256": "3ba9f12b34525b5c0f9801ab3703208fce1bbf30d2d9152d63e459f7178e74c4"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/essays-narrow.png",
+      "bytes": 110349,
+      "sha256": "68a615a24eba10facd5d59a66512dbaaf836a94fc5643d001d385750f85d0b18"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/essays-tablet.png",
+      "bytes": 145642,
+      "sha256": "5b567d890aea43b3973be41aad1a0692db68fe72d31acc06e762252f94ddeb59"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/home-desktop.png",
+      "bytes": 692602,
+      "sha256": "63a734ed950078e97e3559e3d1c1b860b1159d9c34f4ae5673ae7c5a948f195b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/home-mobile-text2x.png",
+      "bytes": 536715,
+      "sha256": "908573df2f3b03b92c4f2b0cb1ac0a688dc2eb650ff23afad98f1bfb780fc8c8"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/home-mobile.png",
+      "bytes": 353162,
+      "sha256": "f8a6fe4aa94947a75f9b3e33e133b13583c5cb0013fded8ae3308aba418cdb8a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/home-narrow.png",
+      "bytes": 292117,
+      "sha256": "ad485620101724fbd2877cacf160d5f1f702e5898ba3597daee90b6cd6e98196"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/home-tablet.png",
+      "bytes": 508345,
+      "sha256": "652c7dec5db50fb0e23a2271fb64695501a38354dc29e0924ddd2ef33cfcbc1a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-english-320-text2x.png",
+      "bytes": 719960,
+      "sha256": "facd1d5d769ed15dba62fddfb05ce96bb720507b3853d6f8ed80d6cb1bed229b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-english-320.png",
+      "bytes": 355571,
+      "sha256": "ba85cfdaa42da9ab186b636ff04f5402b95bcc778cc46589a2a458112e3bae53"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-english-390-text2x.png",
+      "bytes": 753464,
+      "sha256": "b0affefdae12da8cd5cbb5d0afa8b60a69b7d785a5b151f1dda70fc75c539c31"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-english-390.png",
+      "bytes": 398752,
+      "sha256": "14ea12b5fa72abfa99c922f17546310a3ffd9b654476c468f2b0576338236612"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-hindi-320-text2x.png",
+      "bytes": 670529,
+      "sha256": "075d3ddfba735beb7ee4b7e117f870d000fc1b4f75f9b500319654b7bbae9767"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-hindi-320.png",
+      "bytes": 337915,
+      "sha256": "3f1185a7d1068e66505b0f39d26d2a2d8ea1536f0a75ea9a296f828abf4a5529"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-hindi-390-text2x.png",
+      "bytes": 703684,
+      "sha256": "2abc5fb8721383efdec648b153279374d166810eb27c9913d1602f725252888d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/long-hindi-390.png",
+      "bytes": 378830,
+      "sha256": "2e51279cd4a691fb136a901fa320ea2d77622ad059450eaaaeff8350d424a0a1"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/missing-desktop.png",
+      "bytes": 74050,
+      "sha256": "cc419e6051a5695996418a803923a1fad168a96f04b8f7d15a7fa43787345050"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/missing-mobile.png",
+      "bytes": 58455,
+      "sha256": "c1aae6a813ae8b6459ad903fae975b80c1a6d81de600c6ea5d0c276053dd6962"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/missing-narrow.png",
+      "bytes": 58027,
+      "sha256": "5ad3503c720db5fc91a0b4a4aeda0d61b42cffaedfb065aaf68ac0e2b394ad51"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/missing-tablet.png",
+      "bytes": 66943,
+      "sha256": "ab84245a229d95fb6a682673f89005169bbeac421f63ec6cdb27786f1e3002c2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/stationery-desktop.png",
+      "bytes": 227502,
+      "sha256": "3742d0d19c3c72117a0cc80b8a84dacc44cd4586c9e220bd87042a4f93d44113"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/stationery-mobile-text2x.png",
+      "bytes": 242717,
+      "sha256": "ec6277219bb79d68901ae07ca230c8696a1e49258d980406226f170cb81b25ac"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/stationery-mobile.png",
+      "bytes": 157759,
+      "sha256": "0367f62c0c74c1261425205b61ab98ef1ea811ddf2a6e74cf8523423059bfbeb"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/stationery-narrow.png",
+      "bytes": 124769,
+      "sha256": "af80b54833709346c8772cc4c5a503fbfab210d631419d813c9c5b743c1e9e8b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-captures/stationery-tablet.png",
+      "bytes": 153931,
+      "sha256": "51475e8d832768f1aef0ae94c55d9656f390bc23a8d4a1857400af575474b1c5"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-diagnostics/home-desktop-before-target-fix.png",
+      "bytes": 692865,
+      "sha256": "84ddab762b731f174c800b786599819580ba9ba643795a54bf869a2a9b5c63b9"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-diagnostics/overview-before-selected-policy.png",
+      "bytes": 709938,
+      "sha256": "dbcacf7024be3b35544a1f15ea23fdec04a06da28cd23a31a271b2607216cbf9"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-fixtures.json",
+      "bytes": 6038,
+      "sha256": "27e592e42d82a89d4730c10e87b85daa8e973932651a01ea8623b9c75fdef7d2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-fixtures.ts",
+      "bytes": 13966,
+      "sha256": "fb579ee1a83a041d76490bfe76b59f56b9778bcdac97e1f0bccda85d285302c1"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-preflight/book-mobile.png",
+      "bytes": 462607,
+      "sha256": "f4e057a2df13f89359b9f5fa15f763fba0819fe6fe7ff09a54e27b1f062a43df"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-preflight/home-mobile.png",
+      "bytes": 353162,
+      "sha256": "f8a6fe4aa94947a75f9b3e33e133b13583c5cb0013fded8ae3308aba418cdb8a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-preflight-before/book-mobile.png",
+      "bytes": 447075,
+      "sha256": "afd4de71ff5b274f98d77e82761f7919d498426253dcd8d7fd054b088155168e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-preflight-before/home-mobile.png",
+      "bytes": 346410,
+      "sha256": "8aab2c228b2e912d524f947069254703c337ac459a0e41a98330163b7433fbbb"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-preflight-before.json",
+      "bytes": 12451,
+      "sha256": "f6bf4771d2565b9840f19440ee5a9123b507104c98b711283537487f395dd8ea"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-preflight.json",
+      "bytes": 6297,
+      "sha256": "b42d1b268249dcf29494cd6570efb5b757d2227bb9ef0e642d4527b2566c55dd"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/book.html",
+      "bytes": 52754,
+      "sha256": "ed48ecf88d1661322be5b8cc3bbd9d75edef8b378156cbcb6bf0cbc5550cce29"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/collection.html",
+      "bytes": 47603,
+      "sha256": "7438b2750d87390232521fefbfc6492b210e8a6ad06fee76cd4967fff1f48957"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/empty.html",
+      "bytes": 45583,
+      "sha256": "6d2cc47622cb2f056cbe94b1dbd87f4c95d66f5997b6fc7d0e8ed9337b59761c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/essays.html",
+      "bytes": 46891,
+      "sha256": "1ad91484e16df8878b58073b178e976e2d046f7d03990e5fb49980080b9a2d94"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/home.html",
+      "bytes": 48798,
+      "sha256": "06b6d4ca357dcbbe29c9796176d5fad9b6f083007cd8225536e8c3ccb0f1fcd3"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/long-english.html",
+      "bytes": 53948,
+      "sha256": "45a501c5665a633f39a879834bc2a6cc1e42dbd4bab8b9d7585d5c1f9fef950b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/long-hindi.html",
+      "bytes": 55923,
+      "sha256": "1d3779f8d608e4c0cf0cab2ff4c88d6b9ac3e70bada3f6d425391507bcb36825"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/missing.html",
+      "bytes": 46775,
+      "sha256": "7669aaee3fd9760f99395b376e12491b6372c0ed67858eca3fb89ed597b340c0"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/navigation.js",
+      "bytes": 11988,
+      "sha256": "25ba00af78c32e14b69c7ba06beb5f63407df2e0a8dc62a5e9dd06e5e2f9f2b1"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-rendered/stationery.html",
+      "bytes": 47914,
+      "sha256": "9f1f9d55de72b9aa636e1eb9c7395bb5eb3423f91b3639daca6c65b45d07bf15"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review/book-mobile-detail.png",
+      "bytes": 90115,
+      "sha256": "8b35c7cb6591c059f883b25e63025116442110aff86722c8e7ab60fabbef3d4d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review/desktop.png",
+      "bytes": 266132,
+      "sha256": "e34461263f295e817b8e9413f3946bd67d4b8e686df47819575c62371bcb5344"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review/long-hindi-320-text2x-detail.png",
+      "bytes": 167310,
+      "sha256": "5f86205a3ec691ebe728d4f09a754766d42fcea241f49b03b246c90cc49425b2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review/mobile.png",
+      "bytes": 460057,
+      "sha256": "ef5c853840d63df21fcbe93892fe2d252a051b56cbf2594af03dc9f23e9d8f88"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review/narrow.png",
+      "bytes": 441466,
+      "sha256": "90c2ac4b85747fbc4cd81ce34103636e736cb75f51da755d8cf6b376e019cc13"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review/tablet.png",
+      "bytes": 375443,
+      "sha256": "62c365703624cf89be1976755f5ce9308e45ede2b3535b44c68fb9bdbf2fabcb"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review.json",
+      "bytes": 1758,
+      "sha256": "4d42e49a7275b947b41b8b66581ca576f0af525a9a63be428b0a2a5aef91cb92"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-review.md",
+      "bytes": 6818,
+      "sha256": "9d8f92ae24431f4bcde7e63643e01dbb42fd2b7d944429adbd75e6c296f2bbb8"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/browser-validation.json",
+      "bytes": 43625,
+      "sha256": "9526debcc0143a3571c7b542ca515e831bf2e4d3a3e421712726f8178281b711"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/capture-browser.cjs",
+      "bytes": 14969,
+      "sha256": "14dece77c30869c1604b5e29f3b437cf4ecb90f3dcd1d35df8c7dfce80b70d0c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/demo-membership-tests.tap",
+      "bytes": 1080,
+      "sha256": "2758a07cc5df97c9e5a5792272c59e1ce5e758c27da1a180e14ad4f449757f34"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/demo-membership-validation.json",
+      "bytes": 812,
+      "sha256": "aa80f91f6eaae40c4773afea2d0b816dd483c9c5c327491fd4eff68e3dcaf60d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/demo-membership.test.ts",
+      "bytes": 3820,
+      "sha256": "aa78e13782fc22e492cdadcd4b51f5fd405f82f93f74cc82c5e5c5e60fcc2e07"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/editor-typecheck.json",
+      "bytes": 548,
+      "sha256": "4c27b9d54d5812781cf49049d8734d3b052f6ed45c273d6ff71ad6b3cfcb1df7"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/make-review-boards.cjs",
+      "bytes": 2014,
+      "sha256": "9af23d64ddcfc571c5acbe6ce704818ae47ac250139592070ea5c54f16451cc2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/mapped-fixtures.json",
+      "bytes": 1017,
+      "sha256": "db0898197300abcd72ff24affd88bd5a5feeca4ef7e44b5c9983cef1634f2f2c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/mapped-fixtures.test.ts",
+      "bytes": 12910,
+      "sha256": "05e6eefa287ddea63448d93938911e4f069cd5b9215aefd5767d0d80e0e3e291"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/mapped-tests.tap",
+      "bytes": 2542,
+      "sha256": "9d0deaa43ce6ef2f76ff33ad24537182801919e6301c1e145f896d852aae1113"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/merchant-editor-tests.tap",
+      "bytes": 2273,
+      "sha256": "276a41916bde0596a0cd29a717c1126dcdf597557837ef0c921174fe729a40e2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/merchant-editor-validation.json",
+      "bytes": 805,
+      "sha256": "e9136fe9fc1491d4e281304c82ade78e52ac86afa90ff9370f6443f629016655"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/merchant-editor.md",
+      "bytes": 4866,
+      "sha256": "deee3215f9333cd9bd323fc5ff768b472ebd207f19a130264fb565df8273138a"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/rendered/book.html",
+      "bytes": 52094,
+      "sha256": "e9b0f45f2a16c2f56480deca7235512f350f5494ee6f35d47455ac9d7557782e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/rendered/collection.html",
+      "bytes": 46320,
+      "sha256": "a377890d71e996920bbdb5363c35b930f56b2d60704fd1224ba2df459202b260"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/rendered/home.html",
+      "bytes": 47267,
+      "sha256": "4eae2d72b60b5b385f8f9dd3e61ce537fad9f35ae59b7bace29538a42b1b6694"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/rendered/invalid.html",
+      "bytes": 45970,
+      "sha256": "3bd19639e6ebb8d6ca5913b4bc8b5f621779875b5a2e1db97c6f72ded7c5b314"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/rendered/missing.html",
+      "bytes": 45250,
+      "sha256": "c23f53cd384f336bf23c367baf6429c92707d8c59b33d71443e88917b16326b9"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/rendered/stationery.html",
+      "bytes": 46334,
+      "sha256": "8d111c51b0cccf82446c63fc06396e48607e0b0af78890eebc2e8a5a8516ed46"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/all-targeted-tests.tap",
+      "bytes": 13784,
+      "sha256": "bcbb9bed9c5c4fe127d34bc12eb4092d31aeef108b34ef2c70ad118eff093b49"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/selected-edition-dom/edition-1.html",
+      "bytes": 13412,
+      "sha256": "8412e9763ca1529a4562515973db83329c730331bb95095c358d2c15866c0632"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/selected-edition-dom/edition-2.html",
+      "bytes": 13439,
+      "sha256": "bf1614f853fe5a2c61e27f32c071db32f82570d6708c023138a03b23f4f5e0fc"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/selected-edition-dom/edition-3.html",
+      "bytes": 13531,
+      "sha256": "585d89148138c9c0569ab680f0d8485acfbe42d97381ed90ea268ae627f97a66"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/selected-edition-dom/missing-dimensions-hostile-text.html",
+      "bytes": 13311,
+      "sha256": "c689966616e4eac9e71f77ab013ced3fc1145be105d3d9daf6e36e974bbeb1b6"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/selected-edition-dom/unknown-combination.html",
+      "bytes": 13604,
+      "sha256": "6af16d9613286857d03a63672f1cfea1002f10dd8b8ecec784d7a6c275ddad79"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/selected-edition-tests.tap",
+      "bytes": 1575,
+      "sha256": "7907c1b4f9a922d4acefb872a213b03cbe272b824e043b85f38ac5936f248471"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-checkpoints/initial-54/selected-edition-validation.json",
+      "bytes": 4447,
+      "sha256": "9884bfd578536be296c9bf4a5763dad2c60b9c25c41872461fe8ef1cd756f740"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-dom/edition-1.html",
+      "bytes": 13412,
+      "sha256": "8412e9763ca1529a4562515973db83329c730331bb95095c358d2c15866c0632"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-dom/edition-2.html",
+      "bytes": 13439,
+      "sha256": "bf1614f853fe5a2c61e27f32c071db32f82570d6708c023138a03b23f4f5e0fc"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-dom/edition-3.html",
+      "bytes": 13531,
+      "sha256": "585d89148138c9c0569ab680f0d8485acfbe42d97381ed90ea268ae627f97a66"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-dom/missing-dimensions-hostile-text.html",
+      "bytes": 13311,
+      "sha256": "c689966616e4eac9e71f77ab013ced3fc1145be105d3d9daf6e36e974bbeb1b6"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-dom/unknown-combination.html",
+      "bytes": 13604,
+      "sha256": "6af16d9613286857d03a63672f1cfea1002f10dd8b8ecec784d7a6c275ddad79"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-hydration.test.ts",
+      "bytes": 16213,
+      "sha256": "86bc4cc9c07ffec8841f0f463d045f40fea1604b05a18f9bca3fee9d8ac4d19e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-review.md",
+      "bytes": 6574,
+      "sha256": "c14e04c5bcf9d94106bc74cf7f00055f587dcaf6719a01bc4f3c9ce685823e25"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-tests.tap",
+      "bytes": 1578,
+      "sha256": "d9e71cb84a1bf281aff2fae04e91e2b283ad4197773c9cc4cea85469cdb7a7d4"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/selected-edition-validation.json",
+      "bytes": 4371,
+      "sha256": "4a445e4bee59fedf08637b6a9ed945926901d052599057e86f6e33cbddaee402"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/unit-tests.tap",
+      "bytes": 4347,
+      "sha256": "3ac58aae221853a56f81a6a022d4a5fc85a21c1a4b54584146b99bc197e07485"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/validation.json",
+      "bytes": 6237,
+      "sha256": "58e8fea9880bb0e83b43516ea0c21a7903574818bc77455462745c54b297b35d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/variant-editor-tests.tap",
+      "bytes": 2540,
+      "sha256": "54bdd7cb209de9203aeef2a04286a214bd04b7e8f900c435717eb625f7b72529"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/variant-editor-typecheck.json",
+      "bytes": 285,
+      "sha256": "96f7d9f2abbc071b8505e2a190170a163c0376a3df5187ef52b46197de542aec"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/variant-editor-validation.json",
+      "bytes": 455,
+      "sha256": "20641fe37bf8c1514e28fa7c9cdec3e3358cc659b611d60f989bd28d966b085b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/variant-editor.md",
+      "bytes": 4674,
+      "sha256": "91649e0de0916f74fdf87d6580acc8da5c24dfd920155aaa2e4630b281342f66"
+    },
+    {
+      "path": "packages/commerce-core/src/marginalia-facts.ts",
+      "bytes": 4326,
+      "sha256": "891d8e5f77cf301213421b1fd945746fb22a887cc024f2ad4ca5d1cd0d2071c0"
+    },
+    {
+      "path": "packages/commerce-core/test/marginalia-facts.test.ts",
+      "bytes": 4177,
+      "sha256": "afbe5171e52a7531e43271ae946a81a9a176f94c7a081b33354eaa9c29f3e2f7"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-discovery.ts",
+      "bytes": 5459,
+      "sha256": "0def54888df6d296258317401223467e7d60f02dd3d6734bf092eebb7bd3edc6"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "bytes": 14583,
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "bytes": 18888,
+      "sha256": "e4727391eaff1997e2c3647b895de403b227aa52222549a11b48324b4617d7c8"
+    },
+    {
+      "path": "packages/theme-engine/test/marginalia.test.ts",
+      "bytes": 12968,
+      "sha256": "0019836fce6ae4c476f5a69798c30b22c6c9359b6c4fec0f8082389f4bacab6f"
+    }
+  ]
+}

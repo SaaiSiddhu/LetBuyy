@@ -1,0 +1,65 @@
+{
+  "recordedAt": "2026-10-24T03:19:59.044883+00:00",
+  "runId": "936e5f577646",
+  "case": "B00",
+  "status": "PASS",
+  "scope": "Normal merchant sign-in/install; three-field header/index/footer A and B Save/reload; anonymous local A/B publish; normal recovery rollback to A; retained B and normal reapply. Hero actual public loaded960x1200; editor-preview screenshot separate. No provider/production operation.",
+  "installation": {
+    "slug": "letbuyy-aura",
+    "version": "2.0.0",
+    "productsBefore": 17,
+    "productsAfter": 17,
+    "ordersDuringCycle": 0,
+    "initialNoThemesAndPrivateAX": "stable936-B00-empty-library.ax.txt",
+    "installedStillUnpublishedAX": "stable936-B00-installed-unpublished.ax.txt"
+  },
+  "readbacks": {
+    "a-published": {
+      "path": "stable936-b00-a-published-readback.json",
+      "currentReleaseId": "60b23f05-240a-4daa-8dbc-403ad3190ca5",
+      "draftRevision": 6
+    },
+    "b-saved": {
+      "path": "stable936-b00-b-saved-readback.json",
+      "currentReleaseId": "60b23f05-240a-4daa-8dbc-403ad3190ca5",
+      "draftRevision": 7
+    },
+    "b-published": {
+      "path": "stable936-b00-b-published-readback.json",
+      "currentReleaseId": "69030193-7a41-4d2c-a84b-10ea6d49b4c3",
+      "draftRevision": 9
+    },
+    "a-restored": {
+      "path": "stable936-b00-a-restored-readback.json",
+      "currentReleaseId": "b26c03db-392a-4b22-839c-b432c76e25d3",
+      "draftRevision": 9
+    },
+    "b-reapplied": {
+      "path": "stable936-b00-b-reapplied-readback.json",
+      "currentReleaseId": "76b466cf-79ef-4768-9d61-5550dfbb7da9",
+      "draftRevision": 11
+    }
+  },
+  "ui": [
+    "stable936-B00-A-saved.ax.txt",
+    "stable936-B00-B-reloaded.ax.txt",
+    "stable936-B00-A-public.ax.txt",
+    "stable936-B00-B-public.ax.txt",
+    "stable936-B00-A-restored-public.ax.txt",
+    "stable936-B00-B-retained-after-rollback.ax.txt",
+    "stable936-B00-B-reapplied-public.ax.txt",
+    "stable936-B00-B-public.jpg",
+    "stable936-B00-editor-preview.jpg"
+  ],
+  "releaseAtPrimary": {
+    "packageVersion": "2.0.0",
+    "releaseId": "76b466cf-79ef-4768-9d61-5550dfbb7da9",
+    "sourceDraftVersion": 9,
+    "releaseSha256": "2bf97271c715ce889ed5e8eaa9b9f48bc4c8a09a7e624154c4f329dd1545093a"
+  },
+  "notes": [
+    "Manifest hashes in readbacks are draft SQL serialization hashes, not immutable release hash.",
+    "No whole all10 acceptance."
+  ],
+  "editorPreviewVisualInspection": "PASS: actual screenshot inspected; loaded Cloud photograph appears in embedded preview with B heading/header. Public image natural dimensions960x1200 separately observed."
+}

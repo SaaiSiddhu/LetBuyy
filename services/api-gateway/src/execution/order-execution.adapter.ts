@@ -82,7 +82,13 @@ export class OrderExecutionAdapter {
             p_customer_email: input.customer_email,
             p_customer_phone: input.customer_phone || null,
             p_shipping_address: shippingAddress,
-            p_items: input.items,
+            // Persisted cart references only. Never forward a caller's snapshot, price,
+            // accepted labels or personalization as fulfillment authority to the RPC.
+            p_items: input.items.map(item => ({
+                product_id: item.product_id, variant_id: item.variant_id || null, quantity: item.quantity,
+                ...(item.marketplace_listing_id ? { marketplace_listing_id: item.marketplace_listing_id } : {}),
+                ...(item.cart_fact_ref ? { cart_fact_ref: item.cart_fact_ref } : {}),
+            })),
             p_payment_method: input.payment_method,
             p_notes: input.notes || null,
             p_coupon_code: input.coupon_code || null,
@@ -131,6 +137,9 @@ export class OrderExecutionAdapter {
 
         if (error) {
             const message = error.message || 'Order creation failed';
+            if (/CART_FACT|CART_VARIANT_REQUIRED/.test(message)) {
+                throw new AppError('Product choices changed or need review. Refresh your cart and review its details before ordering.', 409, 'CHECKOUT_PRODUCT_CHANGED');
+            }
             if (message.includes('INSUFFICIENT_INVENTORY')) {
                 throw new AppError(
                     'One or more items are no longer available in the requested quantity. Review your cart and try again.',

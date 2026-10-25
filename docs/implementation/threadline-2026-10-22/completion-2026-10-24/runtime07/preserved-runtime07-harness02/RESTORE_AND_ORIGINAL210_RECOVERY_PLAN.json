@@ -1,0 +1,50 @@
+{
+  "status": "SOURCE_ONLY_NOT_ACTUAL_RESTORE_ADMISSION",
+  "recordedAt": "2026-10-25T03:57:01.487105+00:00",
+  "fixes": {
+    "PR-R01": "Logical sequence last_value/is_called and start/increment/min/max/cache/cycle/type/owner/ACL retained; only log_cnt excluded; large integers remain strings.",
+    "PR-R02": "Archive FD, private role and receipt FDs, parent directory all fsync and close before safety flag; all IO/verification/witness failures fail closed. Before/after role profile also conserved.",
+    "PR-R03": "Immutable protected label from creation on new PostgreSQL/network/volume/REST. Both actual canonical reapers refuse any value of that label for dead/live/old owners. Only current runner after verified durable checkpoint can clean its new resources; no unprotect/reaper override.",
+    "PR-R04": "Generated internal trigger OID naming normalized only; complete internal count/constraint/reference/function/event/enabled/deferral/args/parent semantics and exact user trigger names/definitions retained.",
+    "PR-R05": "Raw pg_authid attributes/password hashes joined with global pg_db_role_setting s (setrole=a.oid,setdatabase=0), s.setconfig; no pg_roles masked passwords. PerDB settings remain separateR6."
+  },
+  "validation": {
+    "runtimePureCases": 11,
+    "runtimeFail": 0,
+    "reaperSelectedCases": 5,
+    "reaperFail": 0,
+    "additionalParentRoleFocusedCases": 2,
+    "overlap": "Focused2 overlap11; reused unchanged old prebuilt/source evidence, no additive test claim.",
+    "compilerCurrent": "fixture-types-final.json:0actual/0introduced/0outsidebusinessleaks; prior five baseline diagnostics and intermediate failed context retained in frozen01 TYPECHECK_HISTORY.",
+    "syntax": "Three changed MJS files node --check passed; no whole build or actual PostgreSQL parser/restore credit.",
+    "nativeQualifier": "CASE SOURCE ONLY, six subtests under existing manual wrapper; NOT_RUN"
+  },
+  "preservationBoundary": {
+    "latestOriginalState": "Originalrunner54685ABSENT; runtime55109STOP/orphanPPID1. Never adopt/relabel/replacePID/SIGCONT/reap old lineage. Existing source runnerPid binding is historical provenance, never operational ownership.",
+    "originalData": "Final stopped full archive and Root488table/35954row/13category witness retained. Root private raw20roles/8memberships and perDB config preservation is separate input, never read by this prep.",
+    "newWitnessMethod": "runtime07-logical-sequence-trigger-profile-v2; separately capture expected values under later Root admission. Never rewrite/relabel authoritative Root witness.",
+    "oldEightOrders": "Byteexact preserved, no backfill of10001 empty apparel facts, no replenishment/remap.",
+    "actualPrivateContentsReads": "0; redacted Root receipts only.",
+    "resourceActions": "0 under this source scope; apparel04 separate consumed cohort failed before TAP and cleaned completely."
+  },
+  "minimalOriginal210Recovery": [
+    "Independently accepted source02 and exact coherent original210 candidate; all37 old catalogue fingerprints/defaults/version eligibility unchanged.",
+    "Separately approved new-owned emptyDB restore of final archive plus raw roles/global and required perDB settings, ordinary guard/new marker, full zero-loss Root and new semantic witnesses.",
+    "Relevant actual shared capture/Editor/preview protocol fixes, new three prebuilt builds/PID distribution qualification, scoped QA key refresh or retained capsule with normal SSO/TLS/checkout health.",
+    "Root disposition of old sockets and exact cutover permit; fixed original application/site/origins separate from new owned resources.",
+    "Fresh soleEditor UI and provider receiver lease for remaining original210 cases. No automatic provider action."
+  ],
+  "excludedArtificialGates": [
+    "All unactivated211 catalogue/bundle/eligibility/capture additions are EXCLUDED from the minimal original210 recovery candidate; this source02 has none of those overlays. If later staged, their own explicit unchanged37fingerprint/default and closed-eligibility proof is required.",
+    "Circuit or other unrelated performance/heading native completion is not a prerequisite for original210 recovery. Threadline own mandatory quality cases remain later certification obligations.",
+    "New apparel facts producer/SQL writes are held until corresponding consumer compatibility is qualified; full211 publish/history is its own later source/runtime/version gate. Do not apply apparel04 UP into210 recovery just because prepared."
+  ],
+  "laterActualGates": [
+    "Explicit separate restore and staging permission; source approval is not execution. All three prior approved PG cohorts consumed.",
+    "Role/ACL/schema/functions/sequence/LO/security/DBsetting and historical OID-journal rollback compatibility, exact full archive restore; do not normalize business rows.",
+    "Three actual prebuilt artifacts before Root retires old sockets, same new owned run/transport and short source/archive/fence/binding/build-hash permit; no oldSIGCONT.",
+    "Normal SSO/relogin/realm/site/TLS/provider and saved draft/release/order parity, fresh UI lease; full26/318 remains open.",
+    "Cleanup after accepted later work only after durable verified archive+private roles+stable witness. Forced death leaves machine-protected resources; no unprotect option."
+  ],
+  "noCommandsExecuted": "No actual restore/archive/key/state/provider/build/browser/DB/Docker action. Future rehearsal command uses existing manual suite, gateway-db/jobs1/no-reap/prepared2/timeout600/preserved-phase rehearsal + Root supplied capsule/hash and isolated source root. Exact executable command remains unbound until Root creates/pins the private capsule; no fabricated admission."
+}

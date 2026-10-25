@@ -1,0 +1,1019 @@
+{
+  "media": [
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 166.99020385742188,
+      "loop": false,
+      "src": "product-4-611b3c0f88f0.png",
+      "tag": "IMG",
+      "width": 166.99017333984375
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 97.88653564453124,
+      "loop": false,
+      "src": "product-2-ada19f43e61e.png",
+      "tag": "IMG",
+      "width": 98.01950073242188
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 68.48001098632812,
+      "loop": false,
+      "src": "product-orange-stairs-3174a8846b9b.png",
+      "tag": "IMG",
+      "width": 69.47071838378906
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 583.078125,
+      "loop": false,
+      "src": "theme-2-698e5093cabe.png",
+      "tag": "IMG",
+      "width": 153.8125
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 191.65625,
+      "loop": false,
+      "src": "theme-3-5a22b9e42e5d.png",
+      "tag": "IMG",
+      "width": 153.8125
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 14.6875,
+      "loop": false,
+      "src": "theme-type-29ba4fb1023e.svg",
+      "tag": "IMG",
+      "width": 25.1484375
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 57.63525390625,
+      "loop": false,
+      "src": "domain-679024d35dc8.png",
+      "tag": "IMG",
+      "width": 57.63531494140625
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 57.63525390625,
+      "loop": false,
+      "src": "domain-679024d35dc8.png",
+      "tag": "IMG",
+      "width": 57.63531494140625
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 57.63525390625,
+      "loop": false,
+      "src": "domain-679024d35dc8.png",
+      "tag": "IMG",
+      "width": 57.63531494140625
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 153.16546630859375,
+      "loop": false,
+      "src": "box-in-41be33e1ba2c.png",
+      "tag": "IMG",
+      "width": 153.8173828125
+    },
+    {
+      "alt": "",
+      "autoplay": false,
+      "height": 47.6923828125,
+      "loop": false,
+      "src": "shipping-2-235f96319a43.png",
+      "tag": "IMG",
+      "width": 58.1505126953125
+    },
+    {
+      "alt": "Three panel map illustration with arrows showing paths between a home store and multiple destinations.",
+      "autoplay": false,
+      "height": 140,
+      "loop": false,
+      "src": "guidecard_InternationalDynamicGuideHomeUplift-d98a6a2148c4f5fd5723b4803734ac694e23fb734751083bf2e93c2e66079b49.png",
+      "tag": "IMG",
+      "width": 266
+    }
+  ],
+  "motionStyles": [
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "BUTTON",
+      "transition": "scale 0.4s cubic-bezier(0.2, 0.8, 0, 1), filter 0.4s cubic-bezier(0.2, 0.8, 0, 1), opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 32
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 36,
+      "tag": "BUTTON",
+      "transition": "scale 0.4s cubic-bezier(0.2, 0.8, 0, 1), translate 0.4s cubic-bezier(0.2, 0.8, 0, 1), filter 0.4s cubic-bezier(0.2, 0.8, 0, 1), opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 220
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 508,
+      "tag": "DIV",
+      "transition": "all",
+      "width": 220
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 508,
+      "tag": "DIV",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 508,
+      "tag": "DIV",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 282,
+      "tag": "DIV",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 282,
+      "tag": "UL",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "none",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 36.2265625
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.01s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.01s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.01s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 149
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 41.4296875
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.02s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.02s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.02s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 54.25
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.03s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.03s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.03s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 66.09375
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.04s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.04s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.04s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 44.234375
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.05s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.05s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.05s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 60.34375
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.06s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.06s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.06s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 48.1015625
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.07s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.07s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.07s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 49.2578125
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.08s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.08s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.08s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "S-INTERNAL-ICON",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 56.4921875
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 226,
+      "tag": "UL",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 102,
+      "tag": "LI",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 24,
+      "tag": "DIV",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 24,
+      "tag": "BUTTON",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.09s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.09s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.09s",
+      "width": 115.46875
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "all",
+      "width": 104.46875
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 87.46875
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "transform 0.05s cubic-bezier(0.42, 0, 0.58, 1)",
+      "width": 5
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 8,
+      "tag": "DIV",
+      "transition": "all",
+      "width": 5
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 60,
+      "tag": "UL",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "UL",
+      "transition": "all",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "LI",
+      "transition": "opacity 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.1s, translate 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.1s, filter 0.4s cubic-bezier(0.2, 0.8, 0, 1) 0.1s",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "DIV",
+      "transition": "inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), min-inline-size 0.25s cubic-bezier(0.2, 0.8, 0, 1), padding-inline 0.25s cubic-bezier(0.2, 0.8, 0, 1)",
+      "width": 210
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 30,
+      "tag": "A",
+      "transition": "all",
+      "width": 198
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "DIV",
+      "transition": "opacity 0.15s cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "svg",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 16,
+      "tag": "rect",
+      "transition": "all",
+      "width": 16
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 20,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 160
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 15.5,
+      "tag": "SPAN",
+      "transition": "all",
+      "width": 74.7109375
+    },
+    {
+      "animationDuration": "0s",
+      "animationName": "none",
+      "animationTimingFunction": "ease",
+      "height": 28,
+      "tag": "SPAN",
+      "transition": "none",
+      "width": 52
+    }
+  ],
+  "viewport": {
+    "dpr": 1,
+    "height": 778,
+    "width": 1144
+  }
+}

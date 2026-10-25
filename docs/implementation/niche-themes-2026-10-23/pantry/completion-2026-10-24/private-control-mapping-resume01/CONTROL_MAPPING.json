@@ -1,0 +1,243 @@
+{
+  "recordedAt": "2026-10-24T11:47:14.186027+00:00",
+  "classification": "SOURCE_MAPPING_AND_PRIVATE_COMPATIBLE_REPAIR_NOT_EDITOR_BROWSER_ACCEPTANCE",
+  "inputReceipt": "CURRENT_INPUTS.json",
+  "privateSource": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-control-mapping-resume01/src/pantry-presentation-controls.ts",
+  "newDescriptorCount": 8,
+  "newDescriptorExplanation": "Two section fields in each of3listing schemas, one product-detail field, one global typography field. Guide repair uses existing fields.",
+  "versionPolicy": "Version-neutral private overlay on Main201. Themes must choose a successor/capture strategy before integration/distribution; do not overwrite captured201.",
+  "mapping": [
+    {
+      "area": "listing layout",
+      "baseline": "product-grid, collection-product-list and featured-products use the existing Pantry shelf list; two columns become one at the existing900px breakpoint. There is no selectable layout field.",
+      "proposal": {
+        "sections": [
+          "product-grid",
+          "collection-product-list",
+          "featured-products"
+        ],
+        "field": "shelfColumns",
+        "type": "select",
+        "default": "responsive",
+        "options": [
+          "responsive",
+          "one"
+        ],
+        "effect": "One column retains the same cards/order/content; responsive restores the existing grid. Conditional fixed CSS uses source-owned classes and is emitted only when selected."
+      },
+      "authority": [
+        {
+          "path": "packages/theme-engine/src/pantry-theme.ts",
+          "lines": [
+            26,
+            43,
+            46,
+            47
+          ]
+        },
+        {
+          "path": "packages/theme-engine/src/pantry-styles.ts",
+          "lines": [
+            4,
+            9
+          ]
+        }
+      ],
+      "sourceCases": [
+        "PNCTRL02",
+        "PNCTRL03",
+        "PNCTRL04",
+        "PNCTRL05"
+      ],
+      "installedStatus": "NOT_RUN"
+    },
+    {
+      "area": "PDP layout",
+      "baseline": "Existing three-panel product layout with ingredients/allergen context before purchase; mobile already stacks the same children. No declared selectable layout.",
+      "proposal": {
+        "section": "product-detail",
+        "field": "layout",
+        "type": "select",
+        "default": "ingredients",
+        "options": [
+          "ingredients",
+          "stacked"
+        ],
+        "effect": "Stack the existing composition with full-width children. Food/allergen information stays ahead of the existing purchase region; no new purchase island or cart authority."
+      },
+      "authority": [
+        {
+          "path": "packages/theme-engine/src/pantry-theme.ts",
+          "lines": [
+            51,
+            53,
+            68
+          ]
+        },
+        {
+          "path": "packages/theme-engine/src/pantry-styles.ts",
+          "lines": [
+            4,
+            8,
+            10
+          ]
+        }
+      ],
+      "sourceCases": [
+        "PNCTRL02",
+        "PNCTRL03",
+        "PNCTRL04",
+        "PNCTRL08"
+      ],
+      "installedStatus": "NOT_RUN"
+    },
+    {
+      "area": "bounded type scale",
+      "baseline": "Inter/Inter with fixed16px body and scoped heading/support scales. Existing font/palette settings remain canonical.",
+      "proposal": {
+        "group": "typography",
+        "field": "pantryTextScale",
+        "type": "select",
+        "default": "standard",
+        "options": [
+          "standard",
+          "comfortable"
+        ],
+        "effect": "Comfortable increases the existing body and heading sizes12.5%, with fixed supporting food-text rules. No arbitrary CSS/font value; standard emits no extra CSS. Font family, colors and composition unchanged."
+      },
+      "authority": [
+        {
+          "path": "packages/theme-engine/src/pantry-styles.ts",
+          "lines": [
+            3,
+            4,
+            10
+          ]
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/letbuyy-design-blueprints/04-refresh-pantry.md",
+          "lines": [
+            59,
+            113
+          ]
+        }
+      ],
+      "sourceCases": [
+        "PNCTRL02",
+        "PNCTRL03",
+        "PNCTRL04",
+        "PNCTRL09"
+      ],
+      "installedStatus": "NOT_RUN"
+    },
+    {
+      "area": "permitted card fact",
+      "baseline": "Cards retain title, image, net/pack guidance, server price/unit basis and availability. Validated common food.storage already reaches Liquid; no new commerce DTO is needed.",
+      "proposal": {
+        "sections": [
+          "product-grid",
+          "collection-product-list",
+          "featured-products"
+        ],
+        "field": "showCardStorage",
+        "type": "toggle",
+        "default": false,
+        "effect": "Optionally show supplied common storage guidance before price. Absent storage stays absent. This control cannot hide price, availability, required net/pack guidance or PDP allergen warnings; variant labels do not invent net facts."
+      },
+      "authority": [
+        {
+          "path": "packages/commerce-core/src/pantry-facts.ts",
+          "lines": [
+            24,
+            27,
+            30
+          ]
+        },
+        {
+          "path": "packages/commerce-core/src/product-fact-presentation.ts",
+          "lines": [
+            76,
+            82
+          ]
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+          "sourceRole": "Canonical validated public product projection"
+        },
+        {
+          "path": "packages/theme-engine/src/pantry-theme.ts",
+          "lines": [
+            26
+          ]
+        }
+      ],
+      "sourceCases": [
+        "PNCTRL02",
+        "PNCTRL03",
+        "PNCTRL04",
+        "PNCTRL06",
+        "PNCTRL07"
+      ],
+      "installedStatus": "NOT_RUN"
+    },
+    {
+      "area": "merchant storage/shelf-life guide",
+      "baseline": "Blueprint requires a shelf-life policy, not an invented current expiry date. Canonical FoodFactsSchema has no expiry field. Existing CMS Page title/body/slug/published workflow plus about-section linkLabel/linkUrl already supplies the intended content route. However a valid link pair alone is hidden by the old content/image gate.",
+      "proposal": {
+        "existingFields": [
+          "about-section.title",
+          "about-section.content",
+          "about-section.image",
+          "about-section.linkLabel",
+          "about-section.linkUrl"
+        ],
+        "effect": "Compatible private gate repair allows a complete link pair alone. Reuse merchant CMS Page with a nonreserved single slug such as /storage-and-shelf-life; store_url adds the current store scope. No new policy table, food schema, batch expiry or fabricated claim.",
+        "domainSchemaChanges": false
+      },
+      "authority": [
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/letbuyy-design-blueprints/04-refresh-pantry.md",
+          "lines": [
+            13,
+            109,
+            111,
+            113
+          ]
+        },
+        {
+          "path": "packages/theme-engine/src/pantry-theme.ts",
+          "lines": [
+            48
+          ]
+        },
+        {
+          "path": "apps/merchant/web/src/app/[store]/online-store/pages/page.tsx",
+          "lines": [
+            13,
+            73,
+            263,
+            267
+          ]
+        },
+        {
+          "path": "apps/commerce/web/src/app/store/[subdomain]/[...path]/page.tsx",
+          "lines": [
+            24,
+            31,
+            47,
+            54,
+            66
+          ]
+        }
+      ],
+      "sourceCases": [
+        "PNCTRL04",
+        "PNCTRL10",
+        "PNCTRL11"
+      ],
+      "installedStatus": "NOT_RUN"
+    }
+  ],
+  "expandedCoverageAccounting": "Existing281 composite obligations remain NOT_RUN. These mappings and future checks require reconciliation against the allocator-selected successor inventory;12 source cases are not lifecycle cases.",
+  "purchaseSafety": "No required safety fact removal, sticky purchase bar, new cart/session path or provider call."
+}

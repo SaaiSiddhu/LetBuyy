@@ -1,0 +1,110 @@
+{
+  "recordedAt": "2026-10-23T13:47:00.285Z",
+  "status": "STARTUP_READY_VERIFICATION_LANE_RELEASED",
+  "runId": "d4eb85047858",
+  "candidate": "/private/tmp/letbuyy-marketplace-candidate-20261023-110027",
+  "origins": {
+    "api": "http://127.0.0.1:59599",
+    "accounts": "http://accounts.threadline-d4eb85047858.localhost:59594",
+    "admin": "http://admin.threadline-d4eb85047858.localhost:59595",
+    "commerce": "http://localhost:59596",
+    "marketplace": "http://localhost:9005"
+  },
+  "health": [
+    {
+      "name": "apiCatalog",
+      "url": "http://127.0.0.1:59599/v1/themes?limit=50",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'none'",
+      "xFrameOptions": "DENY",
+      "bytes": 9868,
+      "threadline": true,
+      "apiCount": 10,
+      "applicationError": false
+    },
+    {
+      "name": "marketplace",
+      "url": "http://localhost:9005/themes",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'self'",
+      "xFrameOptions": "SAMEORIGIN",
+      "bytes": 580107,
+      "threadline": true,
+      "applicationError": false
+    },
+    {
+      "name": "detail",
+      "url": "http://localhost:9005/themes/letbuyy-sense",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'self'",
+      "xFrameOptions": "SAMEORIGIN",
+      "bytes": 569405,
+      "threadline": true,
+      "applicationError": false
+    },
+    {
+      "name": "demo",
+      "url": "http://localhost:59596/theme-preview/letbuyy-sense?version=2.0.0&embedded=1&demo_path=%2F",
+      "status": 200,
+      "redirect": null,
+      "frameAncestors": "frame-ancestors 'self' http://admin.threadline-d4eb85047858.localhost:59595 http://localhost:9005",
+      "xFrameOptions": null,
+      "bytes": 407829,
+      "threadline": true,
+      "applicationError": false
+    },
+    {
+      "name": "install",
+      "url": "http://localhost:9005/install?theme=letbuyy-sense&version=2.0.0",
+      "status": 307,
+      "redirect": "http://accounts.threadline-d4eb85047858.localhost:59594/lookup?return_to=http%3A%2F%2Flocalhost%3A9005%2Finstall%3Ftheme%3Dletbuyy-sense%26version%3D2.0.0",
+      "frameAncestors": "frame-ancestors 'self'",
+      "xFrameOptions": "SAMEORIGIN",
+      "bytes": 154,
+      "threadline": false,
+      "applicationError": false
+    },
+    {
+      "name": "accounts",
+      "url": "http://accounts.threadline-d4eb85047858.localhost:59594/login",
+      "status": 200,
+      "redirect": null
+    },
+    {
+      "name": "admin",
+      "url": "http://admin.threadline-d4eb85047858.localhost:59595",
+      "status": 307,
+      "redirect": "http://accounts.threadline-d4eb85047858.localhost:59594/lookup"
+    },
+    {
+      "name": "commerce",
+      "url": "http://localhost:59596/api/buyer-auth/session",
+      "status": 200,
+      "redirect": null
+    }
+  ],
+  "privateStateReferenceOnly": "/private/tmp/threadline-marketplace-current-20261023-02-state.json",
+  "sessions": {
+    "ownedRuntime": 77059,
+    "marketplace": 94331
+  },
+  "retention": {
+    "retained": true,
+    "holdMaximumMs": 21600000,
+    "supervisorTimeoutSeconds": 22500
+  },
+  "evidence": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/theme-marketplace-2026-10-23/evidence/current-runtime-http-health.json",
+      "sha256": "094eaf55e8937453d1fac3a08e586741cfb11878170d64dc2297361ca3c893dc"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/theme-marketplace-2026-10-23/evidence/current-runtime-explicit-origin.json",
+      "sha256": "1c5ccd57efc8307182258e6a2a767a6ab3a134d80e166d4f7cc7a15c7c572ac2"
+    }
+  ],
+  "scope": "DB/startup verification lease released only; retained own runtime continues. Own IAB check finishes separately. Protected user/ff994/e359 resources preserved."
+}

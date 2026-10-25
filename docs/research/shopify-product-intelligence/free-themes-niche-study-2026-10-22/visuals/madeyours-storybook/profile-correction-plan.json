@@ -1,0 +1,30 @@
+{
+  "finding": "Current canonical profile displays sign-in email and permits full_name/phone updates only",
+  "coordinatorRequested": "2026-10-23",
+  "sourcePrepared": true,
+  "sourceStaticChecks": {
+    "emailInputs": 0,
+    "fullNameInputs": 1,
+    "emailIsParagraphText": true,
+    "unsupportedEmailChangePromiseRemoved": true
+  },
+  "requiredRecapture": [
+    "12-profile-desktop.png",
+    "12-profile-tablet.png",
+    "12-profile-mobile.png"
+  ],
+  "requiredBoard": "boards/12-profile.png",
+  "archive": "MadeYours-45-mockups.zip",
+  "preserveOtherPngHashes": "comparisons/profile-preserved-42.json",
+  "captureCommand": "node source/capture.mjs --profile",
+  "stressCommand": "node source/capture.mjs --stress --profile",
+  "packageCommand": "bundled-python source/package-storybook.py",
+  "validation": "Current source profile semantics, PNG/viewport/font/image checks,42unchangedPNG hashes,14unchangedboard hashes,currentZIP bytes and independent programme checker",
+  "slot": "short_slot1_released_after_browser_work",
+  "browserRunning": false,
+  "exportsRefreshed": true,
+  "productionEdits": false,
+  "implementationGate": "all405 mockup gate pending",
+  "preservationVerified": true,
+  "correctionProof": "comparisons/profile-correction-proof.json"
+}

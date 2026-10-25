@@ -1,6 +1,9 @@
 export type SecurityHeaderOptions = {
   frameAncestors?: string[];
+  /** Explicit provider frames; these origins gain no script/connect/CORS permission. */
+  frameSources?: string[];
   reportOnly?: boolean;
+  razorpayCheckoutForms?: boolean;
 };
 
 function splitOrigins(value: string | undefined): string[] {
@@ -82,7 +85,13 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
   // layout.tsx are emitted correctly but have no effect when the CSP blocks the stylesheet.
   const styleSrc = unique(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com']);
   const fontSrc = unique(["'self'", 'data:', 'https://fonts.gstatic.com']);
-  const frameSrc = unique(["'self'", 'https://challenges.cloudflare.com', ...razorpayOrigins, ...origins]);
+  const providerFrames = (options.frameSources || []).flatMap(value => {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && /^[a-z0-9][a-z0-9.-]*$/i.test(url.hostname) && !url.username && !url.password && url.pathname === '/' && !url.search && !url.hash ? [url.origin] : [];
+    } catch { return []; }
+  });
+  const frameSrc = unique(["'self'", 'https://challenges.cloudflare.com', ...razorpayOrigins, ...origins, ...providerFrames]);
 
   return [
     "default-src 'self'",
@@ -94,7 +103,9 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
     `frame-src ${frameSrc.join(' ')}`,
     `frame-ancestors ${frameAncestors.join(' ')}`,
     "base-uri 'self'",
-    "form-action 'self'",
+    options.razorpayCheckoutForms
+      ? "form-action 'self' https://api.razorpay.com"
+      : "form-action 'self'",
     "object-src 'none'",
   ].join('; ');
 }

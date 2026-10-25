@@ -1,6 +1,7 @@
 // Labelled local fixtures: synthetic accounts and public Turnstile test keys only.
 // No seeded user, session, verified email, password or store. Resend HTTP is captured;
 // this is provider-fixture acceptance, not real inbox delivery or hosted cookie proof.
+import {resolveCatalogDemoContent} from '../../apps/commerce/web/src/lib/demo/catalog-demo-dispatch';
 import {tmpdir} from 'node:os';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
@@ -139,7 +140,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await page.getByRole('button',{name:'Add option',exact:true}).click();await page.getByPlaceholder('Option name (Size, Color, Material)').fill('Size');await page.getByRole('button',{name:'Done',exact:true}).click();
   for(const value of ['Small','Large']){await page.getByPlaceholder('Add value',{exact:true}).fill(value);await page.getByRole('button',{name:'Add value',exact:true}).click();}
   for(const [title,price,stock]of [['Small','199','3'],['Large','249','4']]){await page.getByLabel(`Price for ${title}`,{exact:true}).fill(price);await page.getByLabel(`Stock for ${title}`,{exact:true}).fill(stock);await page.getByLabel(`SKU for ${title}`,{exact:true}).fill('SYN-CORE-'+title);}
-  const [saved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/products')&&r.request().method()==='POST'),page.getByRole('button',{name:'Save product',exact:true}).click()]);assert.equal(saved.status(),201);
+  console.info('NATIVE_PRODUCT_SAVE_ACTIONS '+JSON.stringify(await page.getByRole('button').evaluateAll(nodes=>nodes.filter(n=>/^(Save product|Create product)$/.test(n.textContent?.trim()||'')).map(n=>({text:n.textContent,disabled:(n as HTMLButtonElement).disabled,visible:!!n.getClientRects().length})))));
+  const [saved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/products')&&r.request().method()==='POST'),page.getByRole('button',{name:'Create product',exact:true}).click()]);assert.equal(saved.status(),201);
   const productId=owned.psql(`SELECT id FROM products WHERE store_id='${siteId}' AND name='${productName}';`);assert.match(productId,/^[a-f0-9-]{36}$/);assert.equal(owned.psql(`SELECT count(*) FROM product_variants WHERE product_id='${productId}';`),'2');
   await page.goto(`${merchantOrigin}/${subdomain}/products/${productId}`);await expect(page.getByLabel('Title',{exact:true})).toHaveValue(productName);await expect(page.getByLabel('Stock for Small',{exact:true})).toHaveValue('3');
   stage='merchant-manual-collection';console.info('OWNED_NATIVE_STAGE merchant-manual-collection');const collectionTitle='Synthetic Native Collection';
@@ -170,8 +172,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await expect(page.locator('article[aria-label$="catalog theme"]')).toHaveCount(10);
   await page.getByRole('link',{name:'Edit theme',exact:true}).click();
   await page.waitForURL(u=>u.pathname===`/${subdomain}/online-store/themes/letbuyy-core/editor`);
-  stage='core-editor-publish';console.info('OWNED_NATIVE_STAGE core-editor-publish');await expect(page.getByRole('tree',{name:'Template sections',exact:true})).toBeVisible();
-  await page.getByRole('tree',{name:'Template sections',exact:true}).getByRole('treeitem').filter({hasText:/Hero/}).first().click();const marker='Synthetic Native Core Ready';
+  stage='core-editor-publish';console.info('OWNED_NATIVE_STAGE core-editor-publish');await expect(page.getByRole('tree',{name:'Theme sections',exact:true})).toBeVisible();
+  await page.getByRole('tree',{name:'Theme sections',exact:true}).getByRole('treeitem').filter({hasText:/Hero/}).first().click();const marker='Synthetic Native Core Ready';
   const draftReply=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'&&Boolean(r.request().postData()?.includes(marker)));await page.getByLabel('Heading',{exact:true}).fill(marker);assert.equal((await draftReply).status(),200);
   await expect(page.frameLocator('iframe.te-preview-iframe').locator('[data-letbuyy-preview-route="true"]')).toBeVisible({timeout:90_000});
   const previewSrc=await page.locator('iframe.te-preview-iframe').getAttribute('src');assert.ok(previewSrc);
@@ -209,18 +211,64 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const publicScreenshot=`${tmpdir()}/letbuyy-native-core-store-${owned.runId}.png`;await buyer.screenshot({path:publicScreenshot,fullPage:true});
   stage='public-read-profile';console.info('OWNED_NATIVE_STAGE public-read-profile');
   const profileEditorUrl=page.url();await page.goto('about:blank');await buyer.waitForLoadState('networkidle');
+  await buyer.addInitScript(() => {
+   const metrics = { lcpMs: null as number | null, cls: 0 };
+   Object.assign(window, { __ownedStorefrontMetrics: metrics });
+   new PerformanceObserver(list => {
+    for (const entry of list.getEntries()) metrics.lcpMs = entry.startTime;
+   }).observe({ type: 'largest-contentful-paint', buffered: true });
+   new PerformanceObserver(list => {
+    for (const entry of list.getEntries() as (PerformanceEntry & { hadRecentInput: boolean; value: number })[]) {
+     if (!entry.hadRecentInput) metrics.cls += entry.value;
+    }
+   }).observe({ type: 'layout-shift', buffered: true });
+  });
   const readProfiles=[];
+  const performanceSession = await buyer.context().newCDPSession(buyer);
+  await performanceSession.send('Network.enable');
+  const networkResources: { path: string; cached: boolean; type: string; encodedBytes: number }[] = [];
+  const networkRequests = new Map<string, (typeof networkResources)[number]>();
+  performanceSession.on('Network.responseReceived', ({ requestId, response, type }) => {
+   const resource = { path: new URL(response.url).pathname, cached: Boolean(response.fromDiskCache || response.fromPrefetchCache || response.fromServiceWorker), type, encodedBytes: 0 };
+   networkResources.push(resource);networkRequests.set(requestId, resource);
+  });
+  performanceSession.on('Network.loadingFinished', ({ requestId, encodedDataLength }) => {
+   const resource = networkRequests.get(requestId);
+   if (resource) resource.encodedBytes = encodedDataLength;
+   networkRequests.delete(requestId);
+  });
+  for (const profile of [
+   { name: 'desktop-loopback', width: 1280, cpuRate: 1, latency: 0, download: -1, upload: -1 },
+   { name: 'mobile-lab', width: 390, cpuRate: 4, latency: 80, download: 200_000, upload: 93_750 },
+  ]) {
+  await buyer.setViewportSize({ width: profile.width, height: 900 });
+  await performanceSession.send('Emulation.setCPUThrottlingRate', { rate: profile.cpuRate });
+  await performanceSession.send('Network.emulateNetworkConditions', { offline: false, latency: profile.latency, downloadThroughput: profile.download, uploadThroughput: profile.upload });
   for(const [kind,path]of [['home',''],['product',`/product/${productId}`],['collection-index','/collections']] as const){
-   for(let sample=0;sample<3;sample++){
-    await buyer.waitForLoadState('networkidle');const startIndex=calls.length,began=performance.now();
+   for(let sample=0;sample<5;sample++){
+    await buyer.waitForLoadState('networkidle');const startIndex=calls.length,networkStartIndex=networkResources.length,began=performance.now();
     const document=await buyer.goto(`${tenantOrigin}${path}`,{waitUntil:'domcontentloaded'});assert.equal(document?.status(),200);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
     if(kind==='home')await expect(buyer.getByRole('heading',{level:1,name:marker,exact:true})).toBeVisible();
     if(kind==='product'){await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();await expect(buyer.getByRole('button',{name:'Add to cart',exact:true})).toBeDisabled();}
     if(kind==='collection-index')await expect(buyer.locator('.lb-category-grid a').filter({visible:true})).toHaveCount(24);
+    await buyer.waitForFunction(() => Boolean(customElements.get('lb-mobile-nav') && customElements.get('lb-variant-picker')));
     const usefulReadyMs=Math.round((performance.now()-began)*100)/100;
     const timing=await buyer.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;return{ttfbMs:n.responseStart-n.startTime,responseEndMs:n.responseEnd-n.startTime,domContentLoadedMs:n.domContentLoadedEventEnd-n.startTime,decodedDocumentBytes:n.decodedBodySize};});
     await buyer.waitForLoadState('networkidle');
+    const browserMetrics = await buyer.evaluate(() => {
+     const metrics = (window as unknown as { __ownedStorefrontMetrics: { lcpMs: number | null; cls: number } }).__ownedStorefrontMetrics;
+     const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+     return { ...metrics, resourceRequests: resources.length, resourceTransferBytes: resources.reduce((sum, resource) => sum + resource.transferSize, 0),
+      resources: resources.map(resource => ({ type: resource.initiatorType, path: new URL(resource.name).pathname, transferBytes: resource.transferSize, decodedBytes: resource.decodedBodySize })) };
+    });
+    let variantFeedbackMs: number | null = null;
+    if (kind === 'product') {
+     const started = performance.now();
+     await buyer.getByRole('button', { name: 'Large', exact: true }).click();
+     await expect(buyer.getByRole('button', { name: 'Buy now', exact: true })).toBeEnabled();
+     variantFeedbackMs = Math.round((performance.now() - started) * 100) / 100;
+    }
     const reads=calls.slice(startIndex).filter(call=>call.path===`/v1/storefront/${subdomain}`||call.path.startsWith(`/v1/storefront/${subdomain}/`));
     const counts:Record<string,number>={};for(const call of reads){const key=call.path.replace(subdomain,':store').replace(productId,':product')+(call.navigationLocation?'?location='+call.navigationLocation:'');counts[key]=(counts[key]??0)+1;}
     const navigationReads=reads.filter(call=>call.path.endsWith('/navigation')).length;
@@ -233,10 +281,79 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
     assert.equal(counts['/v1/storefront/:store/status'],1,`${kind} needs one current status read per new document`);
     if(kind==='product')assert.equal(skuReads,1,'metadata/page share one public SKU read in this render');
     if(kind==='product'||kind==='collection-index')assert.equal(catalogReads,0,'Liquid chrome must not fetch an unused catalog');
-    readProfiles.push({kind,sample,usefulReadyMs,...timing,upstreamReads:reads.length,upstreamResponseBytes:reads.reduce((sum,call)=>sum+call.bytes,0),navigationReads,skuReads,catalogReads,counts,upstreamWallDurationsMs:reads.map(call=>call.ms),failures});
+    readProfiles.push({profile:profile.name,sample,kind,usefulReadyMs,variantFeedbackMs,...timing,...browserMetrics,networkResources:networkResources.slice(networkStartIndex),upstreamReads:reads.length,upstreamResponseBytes:reads.reduce((sum,call)=>sum+call.bytes,0),navigationReads,skuReads,catalogReads,counts,upstreamWallDurationsMs:reads.map(call=>call.ms),failures});
    }
   }
-  console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful DOM, then bounded settled request capture',samples:readProfiles}));
+  }
+  // A separate cold HTTP-cache cohort exercises actual script/font downloads.
+  // Keep it separate from the matched warm samples above and from field data.
+  for (const profile of [
+   { name: 'desktop-loopback-cold-http', width: 1280, cpuRate: 1, latency: 0, download: -1, upload: -1 },
+   { name: 'mobile-lab-cold-http', width: 390, cpuRate: 4, latency: 80, download: 200_000, upload: 93_750 },
+  ]) {
+   await buyer.setViewportSize({ width: profile.width, height: 900 });
+   await performanceSession.send('Emulation.setCPUThrottlingRate', { rate: profile.cpuRate });
+   await performanceSession.send('Network.emulateNetworkConditions', { offline: false, latency: profile.latency, downloadThroughput: profile.download, uploadThroughput: profile.upload });
+   await performanceSession.send('Network.setCacheDisabled', { cacheDisabled: true });
+   for (let sample = 0; sample < 3; sample++) {
+    await performanceSession.send('Network.clearBrowserCache');
+    await buyer.goto('about:blank');const startIndex = calls.length, networkStartIndex = networkResources.length, began = performance.now();
+    const document = await buyer.goto(tenantOrigin, { waitUntil: 'domcontentloaded' });assert.equal(document?.status(), 200);
+    await expect(buyer.getByRole('heading', { level: 1, name: marker, exact: true })).toBeVisible();
+    await buyer.waitForFunction(() => Boolean(customElements.get('lb-mobile-nav') && customElements.get('lb-variant-picker')));
+    const usefulReadyMs = Math.round((performance.now() - began) * 100) / 100;
+    await buyer.waitForLoadState('networkidle');
+    const browserMetrics = await buyer.evaluate(() => {
+     const metrics = (window as unknown as { __ownedStorefrontMetrics: { lcpMs: number | null; cls: number } }).__ownedStorefrontMetrics;
+     const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+     return { ...metrics, ttfbMs: navigation.responseStart - navigation.startTime, decodedDocumentBytes: navigation.decodedBodySize,
+      resourceRequests: resources.length, resourceTransferBytes: resources.reduce((sum, resource) => sum + resource.transferSize, 0),
+      resources: resources.map(resource => ({ type: resource.initiatorType, path: new URL(resource.name).pathname, transferBytes: resource.transferSize, decodedBytes: resource.decodedBodySize })) };
+    });
+    const reads = calls.slice(startIndex).filter(call => call.path === `/v1/storefront/${subdomain}` || call.path.startsWith(`/v1/storefront/${subdomain}/`));
+    assert.deepEqual(reads.filter(call => call.status >= 400), []);
+    const resources = networkResources.slice(networkStartIndex);
+    const scripts = resources.filter(resource => resource.type === 'Script' && resource.path.startsWith('/_next/'));
+    assert.ok(scripts.length > 0 && scripts.every(resource => !resource.cached && resource.encodedBytes > 0), 'cold cohort must download actual scripts rather than reuse a warm HTTP cache');
+    readProfiles.push({ profile: profile.name, sample, kind: 'home', usefulReadyMs, ...browserMetrics, networkResources: resources, upstreamReads: reads.length, upstreamResponseBytes: reads.reduce((sum, call) => sum + call.bytes, 0) });
+   }
+   await performanceSession.send('Network.setCacheDisabled', { cacheDisabled: false });
+  }
+  await performanceSession.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  await performanceSession.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+  await performanceSession.detach();await buyer.setViewportSize({width:1280,height:900});
+  console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful content plus registered shopping controls; five sequential samples per route/profile, HTTP cache retained; mobile lab is 390px viewport, 4x CPU slowdown, 80ms latency, 1.6Mbps down/750Kbps up, not a physical phone or field INP. Resource bytes may be zero for warm/cross-origin entries without Timing-Allow-Origin; upstream reads are HTTP, not SQL statements.',samples:readProfiles}));
+  stage = 'catalog-and-react-preview';console.info('OWNED_NATIVE_STAGE catalog-and-react-preview');
+  const catalogCoverage = [];
+  const demoEffects=()=>owned.psql(`SELECT (SELECT count(*) FROM carts)::text||'|'||(SELECT count(*) FROM orders)::text;`);
+  const beforeDemos=demoEffects();
+  for (const slug of ['forge','sense','aura','craft','refresh','ride','dawn','bloom','nova','summit']) {
+   const catalog=JSON.parse(owned.psql(`SELECT jsonb_build_object('version',version,'template',default_template) FROM themes WHERE slug='letbuyy-${slug}';`));
+   const content=resolveCatalogDemoContent('letbuyy-'+slug,catalog.version,catalog.template);assert.ok(content);
+   const product=content.products[0];assert.ok(product);
+   for (const width of [1280,390]) {
+    await buyer.setViewportSize({width,height:900});
+    for(const path of ['/','/product/'+product.id,'/products']){
+     const preview=await buyer.goto(`${commerceOrigin}/theme-preview/letbuyy-${slug}?embedded=1&demo_path=${encodeURIComponent(path)}`,{waitUntil:'networkidle'});assert.equal(preview?.status(),200);
+     await expect(buyer.locator('[data-catalog-demo-read-only="true"]')).toBeVisible();
+     await expect(buyer.locator('div[data-theme-renderer="liquid"]')).toBeVisible();
+     if(path!=='/')await expect(buyer.getByText(product.name,{exact:true}).filter({visible:true}).first()).toBeVisible();
+     assert.equal(await buyer.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth+1),true,'sample has no horizontal overflow '+slug+'/'+path+'/'+width);
+    }
+    catalogCoverage.push({slug,width,routes:['home','product','collection'],currentVersion:catalog.version,readOnlySample:true});
+   }
+  }
+  assert.equal(demoEffects(),beforeDemos,'read-only catalog previews never create a real cart or order');
+  await buyer.setViewportSize({width:1280,height:900});
+  await buyer.goto(`${commerceOrigin}/preview?demo=urban-kicks&engine=react&route_type=product`, { waitUntil: 'domcontentloaded' });
+  await expect(buyer.getByRole('heading', { level: 1, name: 'Aero Runner 90', exact: true })).toBeVisible();
+  await expect(buyer.locator('[data-section-id="product-detail-default"][data-renderer-key="productDetail"]')).toBeVisible();
+  await expect(buyer.locator('[data-theme-renderer="liquid"]')).toHaveCount(0);
+  await buyer.getByRole('button', { name: 'Increase quantity', exact: true }).click();
+  await expect(buyer.getByRole('button', { name: 'Decrease quantity', exact: true })).toBeEnabled();
+  console.info('OWNED_PREVIEW_ENTRYPOINTS '+JSON.stringify({allTenCatalogIdentities:true,catalogCoverage,reactProductSSR:true,routePropsValid:true}));
+  await buyer.goto(tenantOrigin, { waitUntil: 'networkidle' });
   // Fetch the script as a resource, not a document: rendering the generic404
   // document legitimately prefetches its Continue shopping Link into a new RSC request.
   const resourceStart=calls.length;const resourceStatus=await buyer.evaluate(async()=>{
@@ -290,11 +407,11 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await page.goto(profileEditorUrl);await expect(page.getByRole('button',{name:'Theme styles',exact:true})).toBeVisible();
   stage='ten-core-presets';console.info('OWNED_NATIVE_STAGE ten-core-presets');const presets=[];
   for(const name of ['Forge','Sense','Aura','Craft','Refresh','Ride','Dawn','Bloom','Nova','Summit']){
-   await page.getByRole('button',{name:'Theme styles',exact:true}).click();const apply=page.getByRole('button',{name:'Apply '+name,exact:true});
+   await page.getByRole('button',{name:'Theme styles',exact:true}).click();const apply=page.getByRole('button',{name:'Apply '+name+' style',exact:true});
    if(await apply.count()){
     const [savedPreset]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'),apply.click()]);assert.equal(savedPreset.status(),200);await expect(page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled();
    }
-   await page.reload({waitUntil:'domcontentloaded'});await page.getByRole('button',{name:'Theme styles',exact:true}).click();await expect(page.getByRole('button',{name:'Applied',exact:true})).toHaveCount(1);
+   await page.reload({waitUntil:'domcontentloaded'});await page.getByRole('button',{name:'Theme styles',exact:true}).click();await expect(page.getByRole('button',{name:'Applied style',exact:true})).toHaveCount(1);
    const [presetPublish]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/letbuyy-core/editor'&&r.request().method()==='PUT'),page.getByRole('button',{name:'Publish',exact:true}).click()]);assert.equal(presetPublish.status(),200);
    const reference=JSON.parse(owned.psql(`SELECT default_template->'liquidBundle'->'config'->'settings_data'->'presets'->'${name}' FROM themes WHERE slug='letbuyy-core';`));
    const release=JSON.parse(owned.psql(`SELECT r.template_snapshot->'themeSettings' FROM theme_releases r JOIN sites s ON s.current_theme_release_id=r.id WHERE s.id='${siteId}';`));
@@ -304,8 +421,22 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
     await buyer.setViewportSize({width,height:900});const document=await buyer.goto(tenantOrigin,{waitUntil:'networkidle'});assert.equal(document?.status(),200);assert.match(document!.headers()['cache-control']||'',/no-store/);
     const rendered=buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]');await expect(rendered).toBeVisible();assert.equal(await rendered.evaluate(el=>getComputedStyle(el).getPropertyValue('--primary').trim()),reference.primaryColor);
     assert.equal(await buyer.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth+1),true);
+    if (width === 360) {
+     await buyer.getByRole('button', { name: 'Menu', exact: true }).click();
+     await expect(buyer.locator('[data-lb-nav-toggle]')).toHaveAttribute('aria-expanded', 'true');
+     await buyer.getByRole('button', { name: 'Close menu', exact: true }).click();
+     await expect(buyer.locator('[data-lb-nav-toggle]')).toHaveAttribute('aria-expanded', 'false');
+    }
+    await buyer.goto(`${tenantOrigin}/product/${productId}`, { waitUntil: 'networkidle' });
+    await expect(buyer.getByRole('heading', { level: 1, name: productName, exact: true })).toBeVisible();
+    assert.equal(await rendered.evaluate(el => getComputedStyle(el).getPropertyValue('--primary').trim()), reference.primaryColor);
+    await buyer.getByRole('button', { name: 'Large', exact: true }).click();
+    await expect(buyer.getByRole('button', { name: 'Buy now', exact: true })).toBeEnabled();
+    await buyer.goto(`${tenantOrigin}/collections`, { waitUntil: 'networkidle' });
+    await expect(buyer.locator('.lb-category-grid a').filter({ visible: true })).toHaveCount(24);
+    assert.equal(await buyer.locator('body').evaluate(el => el.scrollWidth <= window.innerWidth + 1), true);
    }
-   presets.push({name,applied:true,reloaded:true,published:true,exactStoredValues:true,widths:[1280,360],renderedPrimary:true});
+   presets.push({name,applied:true,reloaded:true,published:true,exactStoredValues:true,widths:[1280,360],renderedPrimary:true,routes:['home','product','collection-index'],variantSelection:true,mobileMenu:true});
   }
   await buyer.setViewportSize({width:1280,height:900});
   stage='shopper-collection-search';console.info('OWNED_NATIVE_STAGE shopper-collection-search');
@@ -447,6 +578,6 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   console.info('OWNED_NATIVE_VISITOR_ACCESS '+JSON.stringify({nativeWorkerd:true,productionApps:3,passwordForm:true,wrongPasswordRefused:true,verifierUnavailableAndRetry:true,secureHttpOnlyGate:true,productAndCollectionsUnlocked:true,passwordRotationRevoked:true,modeChangeRevoked:true,normalPreviewIssue:true,firstPreviewRequest:true,previewProduct:true,normalPreviewRevoke:true,offlineRefused:true,publicRecovery:true,retiredPreviewCookieCleared:true,visitorScreenshot}));
   console.info('OWNED_NATIVE_CORE '+JSON.stringify({nativeWorkerd:true,nativeR2:true,seededAccount:false,seededStore:false,seededProduct:false,productionApps:3,providerFixtureOnly:true,store,productVariants:2,uploadedExactPng:true,imageDimensions:[320,320],normalEditorPublish:true,unpublishedPreviewVerified:true,merchantDomainLabelsVerified:true,preferencesSeoReadback:true,anonymousDraftDenied:true,presets,realTenantTlsHost:true,actualScheduledSearchIndex:true,manualCollectionShopperVerified:true,searchSubmissionVerified:true,canonicalBuyerProfileAddressVerified:true,buyerAddressCrudVerified:true,staleAccountWriteDenied:true,canonicalBuyers:2,unrelatedOrderDenied:true,searchScreenshot,accountScreenshot,addressScreenshot,customerOrders:Number(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${siteId}';`)),codTotalMinor:orders[0].total,screenshot,publicScreenshot,orderScreenshot}));
   assert.doesNotMatch(signupCopy,/₹20|14 days free/);
- }catch(error){console.info('OWNED_NATIVE_CORE_FAILURE '+JSON.stringify({stage,path:page?new URL(page.url()).pathname:null,buyer:buyerDiagnostic?{host:new URL(buyerDiagnostic.url()).host,path:new URL(buyerDiagnostic.url()).pathname}:null,storeState:owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('status',status,'published',published,'accessMode',access_mode,'theme',theme_id))::text,'[]') FROM sites WHERE subdomain='${subdomain}';`),calls:calls.slice(-15).map(({path,status})=>({path:path.replace(/ct_[A-Za-z0-9_-]+/g,'[redacted-cart-token]'),status})),errors:errors.slice(-3).map(s=>s.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'))}));throw new Error((error instanceof Error?error.message:String(error)).replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'));
+ }catch(error){console.info('OWNED_NATIVE_CORE_UI_FAILURE '+JSON.stringify({stage,alerts:page?await page.locator('[role=alert]').allTextContents():[],invalid:page?await page.locator(':invalid').evaluateAll(nodes=>nodes.map(node=>({tag:node.tagName,id:node.id,name:node.getAttribute('name'),message:(node as HTMLInputElement).validationMessage}))):[]}));console.info('OWNED_NATIVE_CORE_FAILURE '+JSON.stringify({stage,path:page?new URL(page.url()).pathname:null,buyer:buyerDiagnostic?{host:new URL(buyerDiagnostic.url()).host,path:new URL(buyerDiagnostic.url()).pathname}:null,storeState:owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('status',status,'published',published,'accessMode',access_mode,'theme',theme_id))::text,'[]') FROM sites WHERE subdomain='${subdomain}';`),calls:calls.slice(-15).map(({path,status})=>({path:path.replace(/ct_[A-Za-z0-9_-]+/g,'[redacted-cart-token]'),status})),errors:errors.slice(-3).map(s=>s.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'))}));throw new Error((error instanceof Error?error.message:String(error)).replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'));
  }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await stopOwnedClientRuntime(commerce);await gateway?.settle();await pooled.stop();if(tls){tls.closeAllConnections();await new Promise<void>(r=>tls!.close(()=>r()));}if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}}
 });

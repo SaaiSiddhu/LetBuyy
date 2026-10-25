@@ -1,0 +1,17 @@
+{
+  "extends": "../../../../apps/merchant/web/tsconfig.json",
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "/private/tmp/dewdrop-readback-merchant.tsbuildinfo"
+  },
+  "include": [
+    "../../../../apps/merchant/web/next-env.d.ts",
+    "../../../../apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+    "../../../../apps/merchant/web/src/components/orders/order-line-items.ts",
+    "../../../../apps/merchant/web/src/components/orders/order-line-items.test.tsx"
+  ],
+  "exclude": [
+    "../../../../node_modules",
+    "../../../../apps/merchant/web/.next"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-25T04:08:48.755696+00:00",
+  "status": "PRIVATE_RECOVERY_INPUTS_PREPARED_NOT_ACTIVATED",
+  "applicationFixtureId": "49ada80bc494",
+  "references": {
+    "testCsv": {
+      "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-razorpay-test.csv",
+      "bytes": 66,
+      "sha256": "5b8427d7cf1e3d577260f8b902c498709a6015b28e5220dfbe697c02b7b84489",
+      "mode": "0600"
+    },
+    "webhookSecret": {
+      "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-webhook-secret.txt",
+      "bytes": 65,
+      "sha256": "6e1d574c04a367df59c7fed5500e0c6ce60e1b742ffdbaa99681c0feb9d8f61b",
+      "mode": "0600"
+    },
+    "tlsCertificate": {
+      "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-checkout-cert.pem",
+      "bytes": 1623,
+      "sha256": "94a3b7f4e9e5bb819ae5560a9e85fcecd5299f9115a1ad2a14acf437ca0f9762",
+      "mode": "0600"
+    },
+    "tlsKey": {
+      "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-checkout-key.pem",
+      "bytes": 1704,
+      "sha256": "2fab0dd51f4b69382fce63189c5dd6f84743912ee2b6f147306b8bf73e5b737a",
+      "mode": "0600"
+    }
+  },
+  "augmentedLogicalWitness": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-logical-witness-with-intent-inventory.json",
+    "bytes": 1120,
+    "sha256": "5e5c0196a3115b4f3affb085ec83afb0053c6ad24a0c33431bb3331914a6614d",
+    "mode": "0600"
+  },
+  "originalLogicalWitnessPreserved": true,
+  "pendingIntentInventorySha256": "9ff1c87e452f88c2cce1ea23bcdb4ef4e4f4ddcba749ee509a8c16c338e0615c",
+  "pendingIntentObservation": {
+    "completedSessions": 16,
+    "nonterminalProviderBoundIntents": 0,
+    "capturedTransactions": 7,
+    "pendingCodTransactions": 1,
+    "orders": 8
+  },
+  "existingWebhookSecretMatch": true,
+  "qaKeyGeneration": 0,
+  "privateDataPrinted": false,
+  "originalFilesModified": false,
+  "newResourceOrRestoreOrNetworkActions": 0,
+  "limitations": [
+    "Actual restore parity, TLS certificate identity/expiry/trust, fresh normal SSO, serving runtime and real provider callbacks remain qualification gates.",
+    "This is a recovery input preparation receipt, not a per-theme acceptance or production certificate."
+  ]
+}

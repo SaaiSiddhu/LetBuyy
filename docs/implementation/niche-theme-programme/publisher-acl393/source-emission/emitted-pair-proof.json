@@ -1,0 +1,25 @@
+{
+  "status": "QUALIFIED_V2_STATEMENTS_BYTE_IDENTICAL_ONLY_FIRST_PROVENANCE_COMMENT_CHANGED",
+  "files": [
+    {
+      "direction": "up",
+      "candidate": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/393_publisher_tenant_execute.up.candidate.sql",
+      "candidateSha256": "f90aa5743b73ac639bf098533c0e025917572592c218892d8d7ae29eb6347869",
+      "emitted": "database/supabase/migrations/393_theme_publisher_tenant_execute.sql",
+      "emittedSha256": "7fb066b3f6b8d27728c43b2b6dd1beecc5f311856c81ec0bca84513f5b83ac10",
+      "bytes": 14062,
+      "onlyChangedHeaderLine": true,
+      "headerMaskedBodySha256": "43b0533fdf29d2fb40c7876031c70ce01d9c2d438a19eb18312a47315d05eb73"
+    },
+    {
+      "direction": "down",
+      "candidate": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/393_publisher_tenant_execute.down.candidate.sql",
+      "candidateSha256": "87aad2e369c43d457e2094d38b7fae13fe85c61bd50703fb9b5acfdfa057763a",
+      "emitted": "database/supabase/rollback/393_theme_publisher_tenant_execute.rollback.sql",
+      "emittedSha256": "0161356d994d6e97ea78405980770bb6d53793d6540336eec58c2bc62b45b930",
+      "bytes": 14156,
+      "onlyChangedHeaderLine": true,
+      "headerMaskedBodySha256": "bb66deac17429d1e4096f64365fa1eebff84eb004ef56dfb8b502aad7792e0e1"
+    }
+  ]
+}

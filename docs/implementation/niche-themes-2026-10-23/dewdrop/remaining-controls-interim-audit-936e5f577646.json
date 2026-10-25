@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-10-24T05:28:41.686886+00:00",
+  "P03": {
+    "actualStatus": 400,
+    "code": "VARIANT_NOT_FOUND",
+    "all27ScopesExact": true,
+    "knownCrossProductBindingAddendumPending": true
+  },
+  "M04": {
+    "firstStatus": 200,
+    "firstReturnedVersion": 37,
+    "firstReplayStatus": 401,
+    "allPostFirst27ScopesExact": true,
+    "freshAuthReplayPending": true
+  },
+  "archivedNewEvidence": [
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-final-controls-plan.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-final-controls-plan.json",
+      "sha256": "d5fa6706c38ebd93aac52f40186cb9dad2d1f5b659bd2391fe7f1443bc0dbb7d"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-P03-cross-product-attempt.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-P03-cross-product-attempt.json",
+      "sha256": "9849433fb2ce28dbd074f69ee6303309373fcf88c40ff92a973d1810634bd3b3"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-P03-cross-product-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-P03-cross-product-result.json",
+      "sha256": "fad1727a7fd86b980c289367606eeadbed8f4efbced5550bec0ded9b2edd06f1"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-new-api-replay-attempt.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-new-api-replay-attempt.json",
+      "sha256": "e0ad1d56054ec8089ac9664adc50ff937a68f3763af019dd9467a2b6ac003edb"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-new-api-exact-replay-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-new-api-exact-replay-result.json",
+      "sha256": "ddf115d83bc3f3aa574f380e9663b3d16b1ca7c7194e454865109f8e5e35fab6"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-new-api-replay-error-addendum.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-new-api-replay-error-addendum.json",
+      "sha256": "c442901ed5849eb4e700367b8fd2d69a3eb6047e070b230e56ba2de6cf921e76"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-post-api-v37-normal-reload.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-post-api-v37-normal-reload.ax.txt",
+      "sha256": "1bb98248a88d2001128897a9efa0be0bbbb216f1f2f1f5a0406b8d66ce0e48f0"
+    }
+  ]
+}

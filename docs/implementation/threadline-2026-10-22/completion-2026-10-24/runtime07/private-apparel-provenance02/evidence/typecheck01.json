@@ -1,0 +1,15 @@
+{
+  "classification": "FOCUSED_STRICT_PRIVATE_TYPECHECK_AND_EIGHT_OVERLAY_SYNTAX_CHECKS_NOT_NATIVE_EXECUTION_OR_BUILD",
+  "strictRoots": [
+    "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02/packages/commerce-core/src/product-fact-snapshot.ts",
+    "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02/packages/commerce-core/src/product-facts-summary.ts",
+    "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02/packages/commerce-core/test/apparel-order-history.test.ts",
+    "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02/packages/theme-engine/src/niche-order-presentation.ts",
+    "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02/apps/commerce/web/src/lib/order-fact-readback.test.ts"
+  ],
+  "sourceFileCount": 274,
+  "diagnostics": [],
+  "syntaxDiagnostics": [],
+  "MainWorkspaceBusinessLeaks": [],
+  "limits": "Native case source and Gateway cart source syntax checked only here; their full coherent Worker closure type/native qualification requires fresh admission."
+}

@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-24T03:37:56.369276+00:00",
+  "status": "ACL393_SOURCE_CANDIDATES_AND_DEDICATED_NATIVE_SOURCE_READY_PENDING_ROOT_REVIEW_NO_NATIVE_ADMISSION_OR_EMISSION",
+  "release": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-release.json",
+    "sha256": "e714e172769147f23b644940c10867a666ee5913a9f0c104796510fc26e34f57",
+    "bytes": 12143
+  },
+  "handoff": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/SOURCE-RELEASE.md",
+    "sha256": "2a3d9056163759df3790be32dfe3fb112bd3f9ad5496132f906ed7d7de05429b",
+    "bytes": 7658
+  },
+  "manifest": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/manifest.json",
+    "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f",
+    "bytes": 3954
+  },
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+    "sha256": "24d1b0cc9e8b0ce76aa6a14adc9466420f52b1069a9ae0b3b885dbab1312a58a",
+    "bytes": 23914
+  },
+  "closure": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+    "sha256": "3697c9d176e60eed801ea72529e387810b3c5e372d27c3a083e9232b85660262",
+    "bytes": 559275
+  },
+  "sourceChecksPass": 8,
+  "newNativeLintErrors": 0,
+  "nativeExecuted": false,
+  "393Emitted": false,
+  "394WorkPerformed": false
+}

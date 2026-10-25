@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
+import { readOrderItemFactSnapshot } from '@/lib/order-fact-readback';
 import { safeReturnTo } from '@/lib/buyer-auth/flow';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
@@ -39,7 +40,9 @@ export async function GET(request: NextRequest) {
             order.items = order.items.map((value) => {
                 if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
                 const item = value as Record<string, unknown>;
-                return Object.fromEntries(ITEM_FIELDS.filter((field) => Object.hasOwn(item, field)).map((field) => [field, item[field]]));
+                const approved = Object.fromEntries(ITEM_FIELDS.filter((field) => Object.hasOwn(item, field)).map((field) => [field, item[field]]));
+                const nicheSnapshot = readOrderItemFactSnapshot(item);
+                return nicheSnapshot ? { ...approved, niche_snapshot: nicheSnapshot } : approved;
             });
         }
         return NextResponse.json({ order }, { headers: NO_STORE });

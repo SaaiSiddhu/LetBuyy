@@ -1,0 +1,14 @@
+{
+  "recordedAtUtc": "2026-10-24T12:48:07.814362+00:00",
+  "classification": "COORDINATOR_MODEL_CAPACITY_FAILURE_RECOVERY_REQUESTED_NOT_BROWSER_EXECUTION",
+  "ownerThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "failedTurnId": "01a16da9-6e6d-7cf3-9b71-c6afbbcaf733",
+  "reportedStatus": "systemError",
+  "error": "Selected model is at capacity. Please try a different model.",
+  "recovery": "One follow-up sent to existing Main chat using current settings; no model override/new chat. Editor notified to preserve job ownership and continue disjoint preparation.",
+  "lastOwnedNative": "Main native06 reported started after preflight; actual completion/cleanup remains owner responsibility until inspected.",
+  "runtimeAdoptedOrStopped": false,
+  "activeDewdropBrowserLease": null,
+  "newDewdropBrowserPasses": 0,
+  "all30Complete": false
+}

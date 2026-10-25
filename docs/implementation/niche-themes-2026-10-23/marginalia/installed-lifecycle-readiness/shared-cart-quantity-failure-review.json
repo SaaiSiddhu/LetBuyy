@@ -1,0 +1,41 @@
+{
+  "reviewedAt": "2026-10-23T19:28:57.916008+00:00",
+  "classification": "INDEPENDENT_SAVED_COMMON_CART_FAILURE_NOT_MG_EXECUTION",
+  "runId": "f6074d90e894",
+  "defect": "Visible line quantity remains5 after denied increment, while canonical cart/header/money represent4, including full-reload screenshot/AX witness",
+  "canonicalReadback": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-stock-2.json",
+    "sha256": "970360ef9e1c4dc088469008d41f9aae0c5cf4d8b0a662ef321273186b2fb45c"
+  },
+  "reloadAccessibility": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-cart-reload-after-stock-denial.ax.txt",
+    "sha256": "ff458534e78380424250beddf561e06d71be025d2d3944379555a0ca3780e563"
+  },
+  "observations": {
+    "canonicalLineQuantity": 4,
+    "reloadVisibleLineQuantity": 5,
+    "reloadHeaderCount": 4,
+    "canonicalLineTotalINR": 35600,
+    "reloadSubtotalINR": 35600,
+    "orders": 0
+  },
+  "limits": {
+    "backendAcceptedFifthItem": false,
+    "rootReportedRepairAssigned": true,
+    "repairWriterNotOverlapped": true,
+    "causeNotDiagnosedHere": true,
+    "marginaliaCaseCredit": false,
+    "marginaliaBindingsAssigned": false
+  },
+  "affectedFutureChecks": [
+    "MG-BK-OOS-01 no accepted side effect and truthful purchase/cart state",
+    "MG-CART-01",
+    "MG-CART-RELOAD-01"
+  ],
+  "next": "Track assigned shared repair and real controlled retest. Do not repeat old green Circuit add-to-cart source tests as proof this current quantity/reload issue is fixed.",
+  "sideEffectsHere": {
+    "sourceEdits": false,
+    "browserOrHttpOrDbActions": false,
+    "crossChatMessages": 0
+  }
+}

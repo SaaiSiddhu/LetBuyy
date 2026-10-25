@@ -1,0 +1,420 @@
+{
+  "body": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgba(46, 42, 57, 0.75)",
+    "font": "Poppins, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": -19.515625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 45,
+      "line": "45px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "Your cart is empty",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 213.984375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 30,
+      "line": "30px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "You may also like",
+      "weight": "500",
+      "width": 223.0625,
+      "x": 15,
+      "y": 410.984375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 35.984375,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Algae Peel-off Mask",
+      "weight": "500",
+      "width": 130,
+      "x": 35,
+      "y": 663.984375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 35.984375,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Bamboo Hair Brush",
+      "weight": "500",
+      "width": 130,
+      "x": 225,
+      "y": 663.984375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 35.984375,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Bamboo Konjac Sponge",
+      "weight": "500",
+      "width": 130,
+      "x": 35,
+      "y": 998.3671875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 35.984375,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Bamboo Soap Dish",
+      "weight": "500",
+      "width": 130,
+      "x": 225,
+      "y": 998.3671875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 90,
+      "line": "45px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Get 20% off your first order",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1313.75
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Menu",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1595.75
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our Store",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1950.921875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our Promise",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 2376.5859375
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-sense-demo.myshopify.com/cart#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-sense-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Continue shopping",
+      "url": "https://theme-sense-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Algae Peel-off Mask",
+      "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-antioxidant"
+    },
+    {
+      "text": "Bamboo Hair Brush",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-bamboo-hairbrush-ecofriendly"
+    },
+    {
+      "text": "Bamboo Konjac Sponge",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-konjac-sponge-charcoal"
+    },
+    {
+      "text": "Bamboo Soap Dish",
+      "url": "https://theme-sense-demo.myshopify.com/products/bamboo-soap-dish"
+    },
+    {
+      "text": "View all",
+      "url": "https://theme-sense-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Skin Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Hair Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Body Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Nail Polish",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "About Us",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "theme-sense-demo",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093358288__cart-items",
+      "rect": {
+        "height": 197,
+        "width": 390,
+        "x": 0,
+        "y": 138.984375
+      },
+      "tag": "DIV",
+      "text": "Your cart is empty\nContinue shopping"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093358288__cart-footer",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 335.984375
+      },
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093358288__featured-products",
+      "rect": {
+        "height": 901.765625,
+        "width": 390,
+        "x": 0,
+        "y": 335.984375
+      },
+      "tag": "SECTION",
+      "text": "You may also like\nAlgae Peel-off Mask\nRegular price\nFrom $32.00 CAD\nBamboo Hair Brush\nRegular price\n$22.00 CAD\nBamboo Konjac Sponge\nRegular price\n$10.00 CAD\nBamboo Soap Dish\nRegula"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093358288__newsletter",
+      "rect": {
+        "height": 321,
+        "width": 390,
+        "x": 0,
+        "y": 1262.75
+      },
+      "tag": "SECTION",
+      "text": "Get 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail"
+    }
+  ],
+  "title": "Your Shopping Cart – theme-sense-demo",
+  "url": "https://theme-sense-demo.myshopify.com/cart",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "grid grid--2-col product-grid grid--2-col-tablet grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 624.765625,
+      "tag": "UL",
+      "width": 360
+    }
+  ],
+  "images": [
+    {
+      "alt": "Algae Peel-off Mask - Chlorella, Aloe vera and Ginkgo biloba - BKIND",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 170,
+        "width": 170
+      }
+    },
+    {
+      "alt": "Bamboo Hair Brush",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 170,
+        "width": 170
+      }
+    },
+    {
+      "alt": "Purifying Konjac Sponge - Bamboo Charcoal bkind",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 170,
+        "width": 170
+      }
+    },
+    {
+      "alt": "Bamboo Soap Dish",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 170,
+        "width": 170
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSave 15% on orders over $50 ♡ Use code 15OFF at checkout\n\nCart\nYour cart is empty\nContinue shopping\nYou may also like\nAlgae Peel-off Mask\nRegular price\nFrom $32.00 CAD\nBamboo Hair Brush\nRegular price\n$22.00 CAD\nBamboo Konjac Sponge\nRegular price\n$10.00 CAD\nBamboo Soap Dish\nRegular price\n$12.00 CAD\nView all\nGet 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail\nMenu\nSkin Care\nHair Care\nBody Care\nNail Polish\nBlog\nAbout Us\nOur Store\n\n3455 St Laurent Blvd\nMontreal, Quebec H2X 2T6\nMon - Fri 9 a.m. - 7 p.m.\nSat - Sun 10a.m. - 6p.m.\n\n\nOur Promise\n\nTo create high quality, plant-based products that are safe for people and the planet.\n\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\n© 2026, theme-sense-demo Powered by Shopify"
+}

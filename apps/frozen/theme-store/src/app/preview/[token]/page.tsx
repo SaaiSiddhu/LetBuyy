@@ -5,7 +5,7 @@ import { getStorefrontUrl } from '@/lib/public-urls';
 
 interface PreviewPageProps {
     params: Promise<{ token: string }>;
-    searchParams?: Promise<{ theme?: string }>;
+    searchParams?: Promise<{ theme?: string; version?: string }>;
 }
 
 export const metadata: Metadata = {
@@ -23,9 +23,10 @@ export default async function AnonymousPreviewPage({ params, searchParams }: Pre
     const query = await searchParams;
     const slug = typeof query?.theme === 'string' ? query.theme : token;
     const record = slug ? await ThemeService.getThemeBySlug(slug) : null;
-    const theme = record ? {
+    const theme = record && (!query?.version || query.version === record.version) ? {
         slug: stringValue(record, 'slug', slug),
         name: stringValue(record, 'name', 'Sandbox theme preview'),
+        version: stringValue(record, 'version'),
         description: stringValue(record, 'description', 'Preview a marketplace theme without selecting or owning a store.'),
         demo_url: Array.isArray(record.tags) && record.tags.includes('first-party')
             ? getStorefrontUrl(`/theme-preview/${encodeURIComponent(slug)}`) : stringValue(record, 'demo_url'),

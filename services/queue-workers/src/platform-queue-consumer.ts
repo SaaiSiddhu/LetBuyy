@@ -728,6 +728,8 @@ class PlatformQueueConsumer {
 
     const pushResult = await dispatchPushNotificationToDevices(this.db, this.env, {
       userId,
+      siteId: event.site_id,
+      category: ({ 'order.created':'order_created', 'order.placed':'order_created', 'order.paid':'order_paid', 'inventory.low_stock':'low_stock', 'refund.created':'refunds', 'customer.created':'customer_signup' } as Record<string,string>)[event.event_type] || 'system',
       title: planned.title,
       message: planned.message,
       data: {

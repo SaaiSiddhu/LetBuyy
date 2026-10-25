@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: one known request claim/log/metric passes with exact default or monthly partition copies, including409/403
+ok 1 - one known request claim/log/metric passes with exact default or monthly partition copies, including409/403
+  ---
+  duration_ms: 23.448791
+  type: 'test'
+  ...
+# Subtest: commerce/site/draft/audit/outbox and every unclassified table mutation fails
+ok 2 - commerce/site/draft/audit/outbox and every unclassified table mutation fails
+  ---
+  duration_ms: 20.296541
+  type: 'test'
+  ...
+# Subtest: an unrelated request/actor/route/status/IP/auth-source or extra request count is never exempted
+ok 3 - an unrelated request/actor/route/status/IP/auth-source or extra request count is never exempted
+  ---
+  duration_ms: 12.027625
+  type: 'test'
+  ...
+# Subtest: an unrelated/extra metric, altered dimensions, count/value, or actor binding fails
+ok 4 - an unrelated/extra metric, altered dimensions, count/value, or actor binding fails
+  ---
+  duration_ms: 26.012125
+  type: 'test'
+  ...
+# Subtest: existing operational rows cannot change or disappear even when the new request is valid
+ok 5 - existing operational rows cannot change or disappear even when the new request is valid
+  ---
+  duration_ms: 6.233625
+  type: 'test'
+  ...
+# Subtest: claim hash/type/count/TTL/time and bounded request timestamps are enforced
+ok 6 - claim hash/type/count/TTL/time and bounded request timestamps are enforced
+  ---
+  duration_ms: 10.687583
+  type: 'test'
+  ...
+# Subtest: real mirror topology, physical aliases and untouched leaf hashes are mandatory
+ok 7 - real mirror topology, physical aliases and untouched leaf hashes are mandatory
+  ---
+  duration_ms: 4.773333
+  type: 'test'
+  ...
+# Subtest: complete table hashes and all operational rows are required; no unknown-family allowance
+ok 8 - complete table hashes and all operational rows are required; no unknown-family allowance
+  ---
+  duration_ms: 1.655708
+  type: 'test'
+  ...
+# Subtest: canonical auth cleanup admits exactly the oldest up-to100 expired rows and preserves active claims
+ok 9 - canonical auth cleanup admits exactly the oldest up-to100 expired rows and preserves active claims
+  ---
+  duration_ms: 9.66175
+  type: 'test'
+  ...
+# Subtest: emitted393 UP/DOWN preserve every qualified byte after the single provenance header line
+ok 10 - emitted393 UP/DOWN preserve every qualified byte after the single provenance header line
+  ---
+  duration_ms: 7.276375
+  type: 'test'
+  ...
+# Subtest: pair changes only the fixed direct tenant ACL and preserves all qualified profile/fence/dependency refusal guards
+ok 11 - pair changes only the fixed direct tenant ACL and preserves all qualified profile/fence/dependency refusal guards
+  ---
+  duration_ms: 0.471
+  type: 'test'
+  ...
+# Subtest: current CI automatically discovers the permanent suite and excludes the explicit manual qualifier without a catalog bypass
+ok 12 - current CI automatically discovers the permanent suite and excludes the explicit manual qualifier without a catalog bypass
+  ---
+  duration_ms: 4.022584
+  type: 'test'
+  ...
+# Subtest: permanent entry uses the ordinary owned guard and canonical SQL with a hardened baseline, independent of release grants/counts
+ok 13 - permanent entry uses the ordinary owned guard and canonical SQL with a hardened baseline, independent of release grants/counts
+  ---
+  duration_ms: 0.483208
+  type: 'test'
+  ...
+# Subtest: manual and permanent entries share one proven registrar and the complete ordered seven-phase proof
+ok 14 - manual and permanent entries share one proven registrar and the complete ordered seven-phase proof
+  ---
+  duration_ms: 17.393459
+  type: 'test'
+  ...
+# Subtest: all qualified security/state/request functions and phase1/3/4/5/6 bodies are exact in the shared proof
+ok 15 - all qualified security/state/request functions and phase1/3/4/5/6 bodies are exact in the shared proof
+  ---
+  duration_ms: 16.399792
+  type: 'test'
+  ...
+# Subtest: hardened current entry requires UP/replay to be fully inert and finishes exact after the deliberate isolated historical inverse
+ok 16 - hardened current entry requires UP/replay to be fully inert and finishes exact after the deliberate isolated historical inverse
+  ---
+  duration_ms: 0.451916
+  type: 'test'
+  ...
+# Subtest: all six mounted retry/CAS/denial checks retain full snapshots, single-request attribution, original statuses and private draft assertions
+ok 17 - all six mounted retry/CAS/denial checks retain full snapshots, single-request attribution, original statuses and private draft assertions
+  ---
+  duration_ms: 0.41575
+  type: 'test'
+  ...
+# Subtest: historical manual qualifier fails closed on the consumed grant before the ordinary owned guard
+ok 18 - historical manual qualifier fails closed on the consumed grant before the ordinary owned guard
+  ---
+  duration_ms: 108.336959
+  type: 'test'
+  ...
+# Subtest: own-row parser reads typed positive1 between command tags
+ok 19 - own-row parser reads typed positive1 between command tags
+  ---
+  duration_ms: 0.326292
+  type: 'test'
+  ...
+# Subtest: own-row parser rejects zero or malformed/untyped counts
+ok 20 - own-row parser rejects zero or malformed/untyped counts
+  ---
+  duration_ms: 0.829333
+  type: 'test'
+  ...
+# Subtest: own-row parser rejects missing malformed or duplicate markers
+ok 21 - own-row parser rejects missing malformed or duplicate markers
+  ---
+  duration_ms: 0.345792
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1152.937875

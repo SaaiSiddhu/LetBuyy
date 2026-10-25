@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-25T00:33:10.858710+00:00",
+  "status": "VERIFIED_ORIGINAL_RUNNER_ALIVE_CORRECTION",
+  "runnerPid": 54685,
+  "runnerAlive": true,
+  "runnerParentPid": 25385,
+  "runtimePid": 55109,
+  "runtimeAlive": true,
+  "expiredConnectorPid78034Alive": false,
+  "expiredWatchdogPid56132Alive": false,
+  "method": "Read-only ps and os.kill(pid,0) under approved filesystem/process permissions; ProcessLookupError distinguished from PermissionError",
+  "earlierError": "Sandboxed os.kill(pid,0) raised PermissionError, previously caught as genericOSError and misclassified asdead. Earlier dead-runner claims are withdrawn.",
+  "doNotBuild": "No orphanadoption/deadPIDsubstitution/guardweakening/ownershiptransferisneededbasedonthatclaim",
+  "preserve": "Alloriginalapps,DB,volumes,orders,drafts,data unchanged",
+  "remainingRebindGap": "Sourceupgrade stillneeds no-seed existing-DB serving and stagedprebuiltstart. Originalephemeral runtimekeys are not in currentprivateState; no memory/envdump authorized."
+}

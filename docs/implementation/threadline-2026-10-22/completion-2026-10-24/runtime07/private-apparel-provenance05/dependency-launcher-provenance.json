@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "root": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05",
+  "kind": "PREPARED_CANONICAL_LAUNCHER_NOT_NATIVE_ADMISSION",
+  "launcher": {
+    "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/node_modules/.bin/tsx",
+    "realpath": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cli.mjs",
+    "links": [
+      {
+        "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/node_modules/.bin/tsx",
+        "target": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cli.mjs",
+        "resolved": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cli.mjs"
+      }
+    ],
+    "sha256": "293360f3bf5826200d31375aea1267ccdad675d2a9cd1ad832e00b9f16509a7a",
+    "mode": 493
+  },
+  "node": {
+    "path": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+    "realpath": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+    "sha256": "37c7004c9b9edfc14c5a31190d3c26e5a3fe669309b9e40f3f8dcb39ed31cca4",
+    "version": "v22.23.3"
+  },
+  "tsxVersion": "4.20.6",
+  "vendorPins": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/package.json",
+      "sha256": "1712340c8942ca0af1efaf2b42fd0cd608fb023f6a4fae427399ed08c61cf0f4"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cli.mjs",
+      "sha256": "293360f3bf5826200d31375aea1267ccdad675d2a9cd1ad832e00b9f16509a7a"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/typescript.js",
+      "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    }
+  ],
+  "smokeSha256": "c373d5811dbfcb2d994936a4a91f279c21872c32a3f5f7f16f23a3f710baae85"
+}

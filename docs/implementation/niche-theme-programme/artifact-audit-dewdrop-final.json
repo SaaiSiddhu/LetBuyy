@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "themes": [
+    {
+      "theme": "dewdrop",
+      "passed": true,
+      "checks": {
+        "files": {
+          "screens": 45,
+          "boards": 15,
+          "pillowVerified": true
+        },
+        "localHtmlLinks": 529
+      },
+      "errors": [],
+      "visualReview": "separate_pending",
+      "productionBehaviorCertified": false
+    }
+  ],
+  "requiredIndividualPngs": 45,
+  "requiredBoards": 15
+}

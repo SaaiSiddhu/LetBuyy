@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-25T00:08:34.666424+00:00",
+  "status": "ROOT_GRANTED_PRIVATE_ONE_CSS_FILE_PROPOSAL_ONLY",
+  "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "privateRoot": "/private/tmp/letbuyy-editor-block-targets-prep-20261025-01",
+  "exactPath": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/editor.css",
+  "beforeSha256": "a18b469a13e822b7d55b9746ea588aa2eb9536461b754dbe6eddacf7d9b76856",
+  "finding": "New tree block action icons have12x12actualbutton rectangles; no matchingactionCSS. Canonicalsectionactioncontrolsare24x24, correctiontoearlier28description. Pointermissnotattributedtobugwithoutnativeproof.",
+  "scope": "Reusecanonical24pxsectionbutton/focus/spacingstylesforblockactions anddeclaredchildaddcontrols; preservetokens/identity/structure/logic. ExistingstandaloneCSSsyntax/stylechecks permitted.",
+  "forbidden": "NoMain/candidate/runtime/native/browser/build/schema/providermutation",
+  "ends": "Firstsealedproposalor1hour",
+  "proofRequired": "Exactbefore/afterdiff,existingcanonicalpattern,parse/lint,24pxDOM/keyboard/pointeracceptanceplan; no browserproofclaimed"
+}

@@ -1,0 +1,204 @@
+{
+  "recordedAt": "2026-10-23T13:36:54.596Z",
+  "scope": "Current static Liquid + exact bundle/shared CSS + source-extracted actual layout CSS template; native Chromium DOM/AX/keyboard and screenshot adjudication. Not installed Next/hydrated/live SQL/commerce/screen-reader speech.",
+  "R01": {
+    "status": "PASS",
+    "controls": 6,
+    "widthCases": 18,
+    "visual": [
+      {
+        "scene": "circuit-collection",
+        "width": 320,
+        "owner": "circuit",
+        "selector": "form.ct-search input[name=\"search\"]",
+        "status": "PASS",
+        "basis": "Visible Search word remains beside/below populated field; field and button fit viewport.",
+        "screenshot": "circuit-collection-320-r01-filled.png"
+      },
+      {
+        "scene": "circuit-search",
+        "width": 320,
+        "owner": "circuit",
+        "selector": "form.ct-search input[name=\"search\"]",
+        "status": "PASS",
+        "basis": "Visible Search word remains beside/below populated field; field and button fit viewport.",
+        "screenshot": "circuit-search-320-r01-filled.png"
+      },
+      {
+        "scene": "habitat-search",
+        "width": 320,
+        "owner": "habitat",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "habitat-search-320-r01-filled.png"
+      },
+      {
+        "scene": "habitat-search-physical",
+        "width": 320,
+        "owner": "habitat",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "habitat-search-physical-320-r01-filled.png"
+      },
+      {
+        "scene": "madeyours-search",
+        "width": 320,
+        "owner": "madeyours",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "madeyours-search-320-r01-filled.png"
+      },
+      {
+        "scene": "playfield-search",
+        "width": 320,
+        "owner": "playfield",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "playfield-search-320-r01-filled.png"
+      },
+      {
+        "scene": "circuit-collection",
+        "width": 768,
+        "owner": "circuit",
+        "selector": "form.ct-search input[name=\"search\"]",
+        "status": "PASS",
+        "basis": "Visible Search word remains beside/below populated field; field and button fit viewport.",
+        "screenshot": "circuit-collection-768-r01-filled.png"
+      },
+      {
+        "scene": "circuit-search",
+        "width": 768,
+        "owner": "circuit",
+        "selector": "form.ct-search input[name=\"search\"]",
+        "status": "PASS",
+        "basis": "Visible Search word remains beside/below populated field; field and button fit viewport.",
+        "screenshot": "circuit-search-768-r01-filled.png"
+      },
+      {
+        "scene": "habitat-search",
+        "width": 768,
+        "owner": "habitat",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "habitat-search-768-r01-filled.png"
+      },
+      {
+        "scene": "habitat-search-physical",
+        "width": 768,
+        "owner": "habitat",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "habitat-search-physical-768-r01-filled.png"
+      },
+      {
+        "scene": "madeyours-search",
+        "width": 768,
+        "owner": "madeyours",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "madeyours-search-768-r01-filled.png"
+      },
+      {
+        "scene": "playfield-search",
+        "width": 768,
+        "owner": "playfield",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "playfield-search-768-r01-filled.png"
+      },
+      {
+        "scene": "circuit-collection",
+        "width": 1440,
+        "owner": "circuit",
+        "selector": "form.ct-search input[name=\"search\"]",
+        "status": "PASS",
+        "basis": "Visible Search word remains beside/below populated field; field and button fit viewport.",
+        "screenshot": "circuit-collection-1440-r01-filled.png"
+      },
+      {
+        "scene": "circuit-search",
+        "width": 1440,
+        "owner": "circuit",
+        "selector": "form.ct-search input[name=\"search\"]",
+        "status": "PASS",
+        "basis": "Visible Search word remains beside/below populated field; field and button fit viewport.",
+        "screenshot": "circuit-search-1440-r01-filled.png"
+      },
+      {
+        "scene": "habitat-search",
+        "width": 1440,
+        "owner": "habitat",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "habitat-search-1440-r01-filled.png"
+      },
+      {
+        "scene": "habitat-search-physical",
+        "width": 1440,
+        "owner": "habitat",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "habitat-search-physical-1440-r01-filled.png"
+      },
+      {
+        "scene": "madeyours-search",
+        "width": 1440,
+        "owner": "madeyours",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "madeyours-search-1440-r01-filled.png"
+      },
+      {
+        "scene": "playfield-search",
+        "width": 1440,
+        "owner": "playfield",
+        "selector": "[id=\"lb-search-input-search-box-default\"]",
+        "status": "PASS",
+        "basis": "Visible magnifier remains on 44×44px button beside populated field; sr-only label remains browser AX-exposed.",
+        "screenshot": "playfield-search-1440-r01-filled.png"
+      }
+    ]
+  },
+  "R02": {
+    "status": "PASS",
+    "widthCases": 6,
+    "correctedBrowserAXNames": 48,
+    "nativeTabOrder": "checked Hub radio → USB-C checkbox → HDMI checkbox → power100 radio → pass-through85 radio → data5000 radio → length100 radio → Apply filters → Clear filters; mobile summary precedes group",
+    "inactivePanelVisits": 0,
+    "clippedCountHelper": "actual Chromium position:absolute;1px×1px;clip:rect(0px,0px,0px,0px)",
+    "radioArrows": "PASS",
+    "checkboxSpace": "PASS",
+    "disclosureOpenCloseAndSummaryFocus": "PASS_320_768"
+  },
+  "playfield": {
+    "status": "PASS",
+    "cases": 12,
+    "nativeSelect": "Actual keyboard typeahead + Tab clears/restores positive age/interest selections. Arrow-only interaction is not claimed; probe files preserve macOS headless behavior.",
+    "independentClear": "Actual keyboard Enter navigation to exact canonical projected clear URLs; other adult choice, limit and country retained. Static finite responses only.",
+    "emptyRecovery": "No invented chooser on empty facets; hidden active choices survive Apply, independent clear and clear-all reach admitted pre-rendered response."
+  },
+  "geometry": {
+    "status": "PASS",
+    "documentAndBodyWidthWithinViewport": true,
+    "brokenImages": []
+  },
+  "defects": [],
+  "NOT_RUN": [
+    "Full Next global/Tailwind pipeline and hydration",
+    "Real screen-reader speech or device/browser matrix",
+    "Live discovery SQL/measurement qualification",
+    "Installed theme/editor/store lifecycle and commerce"
+  ],
+  "browserReportSha256": "d18f88bc76953d17ce01d80a4f00e4403bc95d1559e3822ffbad6953e3032372"
+}

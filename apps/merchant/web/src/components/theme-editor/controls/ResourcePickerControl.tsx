@@ -1,5 +1,6 @@
 'use client'
 
+import { CircleAlert, CloudOff, LoaderCircle, Shapes, X } from 'lucide-react'
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 /**
@@ -32,7 +33,7 @@ import { useReadRequest } from '@/lib/api/use-read-request'
  *   section_definitions or the schema object.
  *
  * Design ratchet:
- *   - Imports from @letbuyy/ui (Input, Button, MaterialIcon)
+ *   - Imports from @letbuyy/ui (Input, Button; Lucide icons)
  *   - Uses --lb-* design tokens via controls.module.css
  *   - No raw rounded-[Npx] Tailwind classes
  *   - No unsafe innerHTML injection (sanitiser law)
@@ -42,7 +43,7 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 import { useId, useState, useEffect, useCallback, useRef } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-import { Button, Input, MaterialIcon } from '@letbuyy/ui'
+import { Button, Input } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 /* ── Types ──────────────────────────────────────────────────────────────── */
@@ -108,7 +109,7 @@ export function ResourcePickerControl({
                 </label>
                 <div className={styles.resourcePickerWrapper}>
                     <span className={styles.resourceTypeHint}>
-                        <MaterialIcon name="category" size={11} aria-hidden />
+                        <Shapes size={11} aria-hidden />
                         {' '}{resourceLabel} ID or handle
                     </span>
                     <Input
@@ -124,13 +125,13 @@ export function ResourcePickerControl({
                     />
                     {/* NOT-CONNECTED badge — storeName is required for live search */}
                     <span className={styles.notConnectedBadge} aria-live="polite">
-                        <MaterialIcon name="cloud_off" size={12} aria-hidden />
+                        <CloudOff size={12} aria-hidden />
                         NOT-CONNECTED — store context required for live search
                     </span>
                 </div>
                 {error ? (
                     <p className={styles.fieldError} role="alert">
-                        <MaterialIcon name="error" size={12} aria-hidden />
+                        <CircleAlert size={12} aria-hidden />
                         {' '}{error}
                     </p>
                 ) : null}
@@ -186,7 +187,11 @@ function ResourcePickerCombobox({
     const [searchError, setSearchError] = useState<string | null>(null)
     const [activeIndex, setActiveIndex] = useState(-1)
     const [isOpen, setIsOpen] = useState(false)
-    const [selectedTitle, setSelectedTitle] = useState('')
+    const [selectedResource, setSelectedResource] = useState<{ id: string; title: string } | null>(null)
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(false)
+    const [searchActive, setSearchActive] = useState(false)
+    const [retry, setRetry] = useState(0)
 
     const listboxRef = useRef<HTMLUListElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -194,12 +199,12 @@ function ResourcePickerCombobox({
     const activeDescendant =
         isOpen && activeIndex >= 0 ? `${listboxId}-opt-${activeIndex}` : undefined
 
-    const beginRead = useReadRequest(JSON.stringify([storeName, field.type, query]))
+    const beginRead = useReadRequest(JSON.stringify([storeName, field.type, query, page, retry]))
 
     // ── Debounced search ────────────────────────────────────────────────
     useEffect(() => {
         const request = beginRead()
-        if (!query.trim()) {
+        if (!searchActive) {
             setItems([])
             setState('idle')
             setIsOpen(false)
@@ -209,6 +214,7 @@ function ResourcePickerCombobox({
 
         setState('loading')
         setSearchError(null)
+        setActiveIndex(-1)
 
         const timer = setTimeout(async () => {
             try {
@@ -216,7 +222,7 @@ function ResourcePickerCombobox({
                     `/api/stores/${encodeURIComponent(storeName)}/resource-search` +
                     `?type=${encodeURIComponent(field.type)}` +
                     `&q=${encodeURIComponent(query.trim())}` +
-                    `&limit=20`
+                    `&limit=20&page=${page}`
 
                 const res = await fetch(url, { cache: 'no-store', signal: request.signal })
                 const json = await res.json().catch(() => ({ data: [] }))
@@ -233,6 +239,7 @@ function ResourcePickerCombobox({
 
                 const fetched: ResourceItem[] = Array.isArray(json.data) ? json.data : []
                 setItems(fetched)
+                setHasMore(json?.meta?.has_more === true && typeof json?.meta?.next_page === 'number')
                 setState(fetched.length === 0 ? 'no-results' : 'results')
                 setIsOpen(true)
                 setActiveIndex(-1)
@@ -242,19 +249,22 @@ function ResourcePickerCombobox({
                 setSearchError(msg)
                 setState('error')
                 setItems([])
+                setHasMore(false)
                 setIsOpen(true)
             }
         }, 300)
 
         return () => clearTimeout(timer)
-    }, [query, storeName, field.type, beginRead])
+    }, [query, storeName, field.type, page, retry, searchActive, beginRead])
 
     // ── Select ──────────────────────────────────────────────────────────
     const handleSelect = useCallback(
         (item: ResourceItem) => {
             // RISK-DUAL-N01: emit id only; never touches section_definitions
             onChange(item.id)
-            setSelectedTitle(item.title)
+            setSelectedResource({ id: item.id, title: item.title })
+            setSearchActive(false)
+            setPage(1)
             setQuery('')
             setItems([])
             setState('idle')
@@ -267,7 +277,9 @@ function ResourcePickerCombobox({
     // ── Clear ───────────────────────────────────────────────────────────
     const handleClear = useCallback(() => {
         onChange('')
-        setSelectedTitle('')
+        setSelectedResource(null)
+        setSearchActive(false)
+        setPage(1)
         setQuery('')
         setItems([])
         setState('idle')
@@ -281,6 +293,7 @@ function ResourcePickerCombobox({
         (e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === 'ArrowDown') {
                 e.preventDefault()
+                setSearchActive(true)
                 setActiveIndex((prev) =>
                     items.length === 0 ? -1 : Math.min(prev + 1, items.length - 1)
                 )
@@ -295,6 +308,7 @@ function ResourcePickerCombobox({
                 }
             } else if (e.key === 'Escape') {
                 e.preventDefault()
+                setSearchActive(false)
                 setIsOpen(false)
                 setActiveIndex(-1)
             }
@@ -312,6 +326,7 @@ function ResourcePickerCombobox({
                 !inputRef.current.contains(e.target as Node)
             ) {
                 setIsOpen(false)
+                setSearchActive(false)
                 setActiveIndex(-1)
             }
         }
@@ -320,7 +335,7 @@ function ResourcePickerCombobox({
     }, [])
 
     const hasValue = value.length > 0
-    const displayTitle = selectedTitle || value
+    const displayTitle = selectedResource?.id === value ? selectedResource.title : value
 
     return (
         <div className="te-field">
@@ -335,7 +350,7 @@ function ResourcePickerCombobox({
                 {/* Selected resource chip */}
                 {hasValue ? (
                     <div className={styles.selectedResourceChip}>
-                        <MaterialIcon name="category" size={13} aria-hidden />
+                        <Shapes size={13} aria-hidden />
                         <span className={styles.selectedResourceLabel} title={displayTitle}>
                             {displayTitle}
                         </span>
@@ -346,7 +361,7 @@ function ResourcePickerCombobox({
                             aria-label={`Clear selected ${resourceLabel.toLowerCase()}`}
                             onClick={handleClear}
                         >
-                            <MaterialIcon name="close" size={13} aria-hidden />
+                            <X  size={13} aria-hidden />
                         </Button>
                     </div>
                 ) : null}
@@ -368,7 +383,8 @@ function ResourcePickerCombobox({
                     className="te-field-input"
                     value={query}
                     placeholder={hasValue ? `Change ${resourceLabel.toLowerCase()}…` : `Search ${resourceLabel.toLowerCase()}s…`}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => { setQuery(e.target.value); setPage(1); setSearchActive(true) }}
+                    onFocus={() => { setSearchActive(true); setIsOpen(true) }}
                     onKeyDown={handleKeyDown}
                     autoComplete="off"
                 />
@@ -384,12 +400,12 @@ function ResourcePickerCombobox({
                     >
                         {state === 'loading' ? (
                             <li className={styles.searchStatus} aria-live="polite">
-                                <MaterialIcon name="hourglass_top" size={13} aria-hidden />
+                                <LoaderCircle size={13} aria-hidden />
                                 Searching…
                             </li>
                         ) : state === 'error' ? (
                             <li className={`${styles.searchStatus} ${styles.searchStatusError}`} aria-live="assertive">
-                                <MaterialIcon name="error" size={13} aria-hidden />
+                                <CircleAlert size={13} aria-hidden />
                                 {searchError ?? 'Search failed'}
                             </li>
                         ) : state === 'no-results' ? (
@@ -424,11 +440,19 @@ function ResourcePickerCombobox({
                         )}
                     </ul>
                 ) : null}
+                {isOpen && state === 'error' ? <Button variant="secondary" onClick={() => { setRetry(count => count + 1); setSearchActive(true) }}>Retry search</Button> : null}
+                {isOpen && (state === 'results' || state === 'no-results') ? (
+                    <div role="group" aria-label={`${resourceLabel} result pages`} onMouseDown={(event) => event.preventDefault()}>
+                        <Button variant="ghost" disabled={page === 1} onClick={() => { setPage(value => value - 1); setIsOpen(true) }}>Previous</Button>
+                        <span role="status" aria-live="polite">Page {page}</span>
+                        <Button variant="ghost" disabled={!hasMore} onClick={() => { setPage(value => value + 1); setIsOpen(true) }}>Next</Button>
+                    </div>
+                ) : null}
             </div>
 
             {error ? (
                 <p className={styles.fieldError} role="alert">
-                    <MaterialIcon name="error" size={12} aria-hidden />
+                    <CircleAlert size={12} aria-hidden />
                     {' '}{error}
                 </p>
             ) : null}

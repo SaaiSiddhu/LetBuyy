@@ -1,0 +1,271 @@
+{
+  "recordedAt": "2026-10-24T23:53:36.458729+00:00",
+  "scope": "Finite saved Pantry order/receipt reconciliation only; no browser/database/provider/process action",
+  "authority": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+    "sha256": "3d1bb457e0a3637169a914dcb43b6f7cde7117c464a341cf2035106a8c5aa821",
+    "verifiedActualHumanChat": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "turnId": "01a17051-60e1-79b1-9416-da1ea0818b15",
+    "messageIds": [
+      "01a17051-60f8-7fe2-bf0e-87647ea64e7f",
+      "01a17051-aabe-7e93-954b-da5059e385df"
+    ],
+    "supersedesLatestPause": true,
+    "automationsRemainPaused": true
+  },
+  "runtime": {
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "package": "letbuyy-refresh",
+    "version": "2.1.0",
+    "recovery": "ROOT_SOLE_RUNTIME_BROWSER_RECOVERY_OWNER; runner54685/tunnel stopped per current handoff; no Pantry live process check or alternate environment",
+    "oldReceiverDeadline": "EXPIRED_2026-10-24T22:20Z; no usable current provider window or extension inferred"
+  },
+  "actualPurchase": {
+    "caseId": "RP-PURCHASE",
+    "status": "PASS",
+    "scope": "Actual saved external Razorpay Test payment/financial correlation and initial buyer/merchant food detail readbacks; open metadata defect not waived",
+    "executor": "Root under direct human authorization",
+    "order": {
+      "id": "d79f15fb-bbd6-4084-b391-1a7586294023",
+      "total": 200.0,
+      "status": "confirmed",
+      "currency": "INR",
+      "createdAt": "2026-10-24T20:22:34.46469+00:00",
+      "paymentId": "pay_TrsMHrL9Kx60ef",
+      "orderNumber": "ORD-20261024-10002",
+      "paymentMethod": "razorpay",
+      "paymentStatus": "paid",
+      "themeReleaseId": null,
+      "themeInstanceId": null
+    },
+    "productId": "802e1d1c-7aad-4293-a7f4-442618f60f30",
+    "variantId": "7050ba6e-7fbe-4c34-8e07-63323fee7d9d",
+    "convertedCartId": "c47bbce7-668a-4b96-b5f9-2d19cd00e7f8",
+    "quantity": 1,
+    "unitINR": 180,
+    "deliveryINR": 20,
+    "totalINR": 200,
+    "providerMode": "sandbox",
+    "checks": {
+      "ownedOrderConfirmedPaid": true,
+      "oneIntendedProductQuantityOne": true,
+      "oneSandboxHostedIntent": true,
+      "serverAmountMatches": true,
+      "exactlyOneBalancedCapture": true,
+      "completedConfirmedHostedCheckout": true,
+      "signedCapturedCallback200": true,
+      "durableCapturedSignatureProcessed": true,
+      "singleQuantityOneInventoryConsumption": true
+    },
+    "actualSignedCallbackStatuses": [
+      {
+        "event": "payment.authorized",
+        "status": 200,
+        "bodySha256": "041221c94f78fbd7ae667ad25e67b13eff3c84836beaedccb5a57217ff9e6d43"
+      },
+      {
+        "event": "payment.captured",
+        "status": 200,
+        "bodySha256": "32acacbc5486887a22028a1324d3a0337dd7f3e84bf60eaab6645f5518fb3a63"
+      }
+    ],
+    "durableWebhookChecks": [
+      {
+        "eventType": "payment.authorized",
+        "signatureValid": true,
+        "processingStatus": "processed"
+      },
+      {
+        "eventType": "payment.captured",
+        "signatureValid": true,
+        "processingStatus": "processed"
+      }
+    ],
+    "canonicalCapture": {
+      "id": "ad74c185-9fd3-46f7-9b7f-4be7e7e93173",
+      "entries": 2,
+      "currency": "INR",
+      "sourceId": "razorpay:pay_TrsMHrL9Kx60ef",
+      "debitMinor": 20000,
+      "sourceType": "payment_capture",
+      "creditMinor": 20000,
+      "writerModule": "settlement"
+    },
+    "stockEvent": {
+      "id": "194903b7-2e81-4abe-b0ac-cc54c4ad701d",
+      "orderId": "d79f15fb-bbd6-4084-b391-1a7586294023",
+      "createdAt": "2026-10-24T20:22:34.46469+00:00",
+      "eventType": "sale_committed",
+      "productId": "802e1d1c-7aad-4293-a7f4-442618f60f30",
+      "variantId": "7050ba6e-7fbe-4c34-8e07-63323fee7d9d",
+      "quantityDelta": -1,
+      "onHandQuantity": 4,
+      "reservedQuantity": 0,
+      "availableQuantity": 3,
+      "committedQuantity": 1
+    },
+    "inventoryAtRecordedRead": [
+      {
+        "id": "09f16008-c33f-4cb7-a5e0-f5a20f87a71e",
+        "productId": "802e1d1c-7aad-4293-a7f4-442618f60f30",
+        "updatedAt": "2026-10-24T20:22:34.46469+00:00",
+        "variantId": "7050ba6e-7fbe-4c34-8e07-63323fee7d9d",
+        "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+        "onHandQuantity": 4,
+        "reservedQuantity": 0,
+        "availableQuantity": 3,
+        "committedQuantity": 1
+      }
+    ],
+    "currentStockAfterRecovery": "UNOBSERVED; historical available3 is not a live read",
+    "immutableBefore": {
+      "snapshotSha256DatabaseWitness": "23b71fd29269d43dc4158a2fd8a9e024e443d2224d6a1a8879c2215109e110ba",
+      "snapshotFingerprint": "e9f2ff2354171f732107ba874e1d4a21c756b453d0b4dabee8639af1ee401420",
+      "productVersion": 9,
+      "variantTitle": "250 g",
+      "food": {
+        "storage": "Keep cool and dry.",
+        "allergens": {
+          "status": "not_supplied"
+        },
+        "ingredients": "Split red lentils (100%).",
+        "netQuantity": {
+          "unit": "g",
+          "value": 250
+        },
+        "preparation": "Rinse before cooking.",
+        "nutritionText": null
+      },
+      "selectedOptions": [
+        {
+          "name": "Pack",
+          "value": "250 g"
+        }
+      ]
+    },
+    "historicalReadback": "Buyer fullreload/expanded AX and screenshot plus merchant expanded AX/screenshot inspected; 250g,180,old lentils ingredients and honest unknown allergen/nutrition match saved snapshot. No post-edit readback claimed."
+  },
+  "openFinding": {
+    "id": "R07-HOSTED-CAPTURE-FLAG-01",
+    "status": "OPEN_FOR_CANONICAL_OWNER_REVIEW",
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/HOSTED_CAPTURE_FLAG_FINDING.json",
+    "source": {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "sha256": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e",
+      "sealedCandidateSameBytes": true,
+      "captureProofPredicateLine": 1459,
+      "captureProofIdempotencyPredicateLine": 1464,
+      "persistedFlagLine": 1489
+    },
+    "actual": "Cart-bound hosted checkout completed and one balanced capture exists; stored capture_posted_to_ledger=false. No loss or missing capture inferred.",
+    "sourceCause": "Owner source inference only; not a separately executed fault reproduction",
+    "ownerRoute": "Existing canonical checkout owner via shared allocator Themes and root coordinator; existing finding retained, no duplicate repair or shared edit",
+    "required": "Owner/reviewer disposition and affected re-verification; no manual historical flag rewrite"
+  },
+  "originalCaseIntegrity": {
+    "P00-P08": "9 actual historical936 PASS retained in original scope; no installed210 wholesale relabel",
+    "P09": "NOT_RUN_CURRENT07_COD_Q2; prior936 failure retained; Testq1 does not replace CODq2",
+    "P10": "NOT_RUN_ORIGINAL_COD_ORDER; initial Test-order readback scoped PASS separately, scope-denial and post-edit histories still open",
+    "P11": "NOT_RUN",
+    "P12": "NOT_RUN_REQUIRED; actual stale HTTP/status/code/requestId UNOBSERVED"
+  },
+  "certificates": {
+    "LOCAL_E2E_VERIFIED": false,
+    "RAZORPAY_TEST_VERIFIED": "Actual payment PASS; full flag held pending canonical metadata finding disposition and required review",
+    "REVIEW_ACCEPTED": false,
+    "FULL_THEME_CERTIFIED": false,
+    "PRODUCTION_DEPLOYED": "NOT_REQUESTED"
+  },
+  "witnesses": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+      "sha256": "3d1bb457e0a3637169a914dcb43b6f7cde7117c464a341cf2035106a8c5aa821",
+      "bytes": 715
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/THREADLINE_PANTRY_READONLY_PAYMENT_CORRELATION.json",
+      "sha256": "1d4ba014d79729cc1ddc2c6314b6832b51acae2679169abf76b1660426d56ee0",
+      "bytes": 21645
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/HOSTED_CAPTURE_FLAG_FINDING.json",
+      "sha256": "a4adddf23b9b30aeb7ec678e590070d0b53f38633223e1c630e5f32b1b95ff13",
+      "bytes": 9012
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/LIVE_BROWSER_QUEUE.json",
+      "sha256": "3224590b8afd57bf90476b431ebef74efb409105af15f23b01fe3b28dd21b575",
+      "bytes": 8962
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/PANTRY_BEFORE_PUBLIC_VARIANTS.json",
+      "sha256": "fae47b4ad133283fc3e3efb20a4352da18d55e8a303ddb7e01c0d2aac3591272",
+      "bytes": 1056
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-cart-restored.ax.txt",
+      "sha256": "7d4c297d4ae24ef63a3756d931568eeb415fe58fe6dcfb161d45c2b42b37f685",
+      "bytes": 1544
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-checkout-quote.ax.txt",
+      "sha256": "66483a3a16de8ab36b9d7a3f481b26b0680a7f74d4cfe7ffcfdbc8861552f8e9",
+      "bytes": 1574
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-demo-bank.ax.txt",
+      "sha256": "60497899b8d075a364c24f7f9a82cce144dad3e7af526582f621dee85137509a",
+      "bytes": 238
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-order-confirmed.ax.txt",
+      "sha256": "0f7b37cef5bd0982b8076e44dc9d055d697301ab698e50965824849a6b600baf",
+      "bytes": 711
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-buyer-order-detail.ax.txt",
+      "sha256": "caf47444c5e681ed5403c6e28ff842d1caa7247af9ceeda0adeda39df28b210e",
+      "bytes": 1111
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-buyer-food-details-expanded.ax.txt",
+      "sha256": "87b4f5d94073754846cb69fe1d8bd9d9e42a12d1bd425877c4bed3d906db9abf",
+      "bytes": 1408
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-merchant-food-details.ax.txt",
+      "sha256": "913c4b09ddb2cd681601219a468932503275f87a9d4e6e3ec539d46fec588bab",
+      "bytes": 4992
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-buyer-food-details-expanded.png",
+      "sha256": "f67b8a4aa65d497c1f8af6d0dabb1dcf2612c0a031ff80162e87322f01c58391",
+      "bytes": 55610
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/pantry-merchant-food-details.png",
+      "sha256": "de2e59a0cab61df9c49be6340c45bd311bb7002d0fd2e5354b0303e2306bde34",
+      "bytes": 81325
+    }
+  ],
+  "preservation": {
+    "businessWrites": 0,
+    "sharedSourceWrites": 0,
+    "sharedQueueWrites": 0,
+    "browserActions": 0,
+    "nativeRuns": 0,
+    "newStack": false,
+    "providerActions": 0,
+    "secretsRead": false,
+    "credentialsOrCapabilityUrlsCopied": false
+  },
+  "updatedRuntimeObservation": {
+    "observedAt": "2026-10-24T23:54:20.373942+00:00",
+    "source": "Editor compact final turn01a17052-b12a-7631-8682-e96883af93d0; coordinator cursor51712cb0-c119-4027-97c5-69539082064e:117",
+    "currentReport": "Editor says original runtime survives per coordinator and no relaunch is needed; earlier stopped-runner report is superseded. Pantry has not independently probed process/database.",
+    "controller": "Root retains sole browser/runtime control; no Pantry action lease inferred.",
+    "provider": "Old callback window expired; root has asked human about renewing same endpoint. Pantry does not act on that pending question.",
+    "PantryImplication": "Own Test10002 already proved; no repeat or new provider callback needed for the remaining normal COD/P09-P12 sequence. It may proceed only once root admits current preserved state and allocates the sole controller."
+  }
+}

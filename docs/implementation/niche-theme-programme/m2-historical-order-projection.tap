@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: actual private buyer BFF retains only canonical approved facts and never raw snapshots/private metadata
+ok 1 - actual private buyer BFF retains only canonical approved facts and never raw snapshots/private metadata
+  ---
+  duration_ms: 8.512416
+  type: 'test'
+  ...
+# Subtest: malformed approved snapshot is omitted even if a valid raw snapshot is also supplied upstream
+ok 2 - malformed approved snapshot is omitted even if a valid raw snapshot is also supplied upstream
+  ---
+  duration_ms: 1.591125
+  type: 'test'
+  ...
+# Subtest: missing session, host/site mismatch and denied order cannot reveal saved facts
+ok 3 - missing session, host/site mismatch and denied order cannot reveal saved facts
+  ---
+  duration_ms: 1.796958
+  type: 'test'
+  ...
+# Subtest: actual Liquid order mapping preserves frozen facts after current product mutation/deletion and money/status fixes
+ok 4 - actual Liquid order mapping preserves frozen facts after current product mutation/deletion and money/status fixes
+  ---
+  duration_ms: 507.132875
+  type: 'test'
+  ...
+# Subtest: hostile saved text is escaped by actual Liquid; malformed/legacy facts remain a neutral missing result
+ok 5 - hostile saved text is escaped by actual Liquid; malformed/legacy facts remain a neutral missing result
+  ---
+  duration_ms: 34.929583
+  type: 'test'
+  ...
+# Subtest: real canonical normalizer output reaches the Liquid mapper without a mocked niche projection or lost saved title
+ok 6 - real canonical normalizer output reaches the Liquid mapper without a mocked niche projection or lost saved title
+  ---
+  duration_ms: 0.966958
+  type: 'test'
+  ...
+# Subtest: saved non-beauty option tuples reach both the exact variant map and actual Liquid receipt
+ok 7 - saved non-beauty option tuples reach both the exact variant map and actual Liquid receipt
+  ---
+  duration_ms: 29.991334
+  type: 'test'
+  ...
+# Subtest: actual decorated Liquid order keeps saved facts hidden for absent or unavailable buyer context
+ok 8 - actual decorated Liquid order keeps saved facts hidden for absent or unavailable buyer context
+  ---
+  duration_ms: 48.846166
+  type: 'test'
+  ...
+# Subtest: the actual order drop adapts server rupees into Liquid minor units without changing the receipt
+ok 9 - the actual order drop adapts server rupees into Liquid minor units without changing the receipt
+  ---
+  duration_ms: 1.0275
+  type: 'test'
+  ...
+# Subtest: pending COD and unknown order states never imply completed fulfillment
+ok 10 - pending COD and unknown order states never imply completed fulfillment
+  ---
+  duration_ms: 0.120125
+  type: 'test'
+  ...
+# Subtest: decimal receipts retain paise and non-finite values cannot reach Liquid money formatting
+ok 11 - decimal receipts retain paise and non-finite values cannot reach Liquid money formatting
+  ---
+  duration_ms: 0.363459
+  type: 'test'
+  ...
+# Subtest: the surviving legacy customer receipt shape uses the same money projection
+ok 12 - the surviving legacy customer receipt shape uses the same money projection
+  ---
+  duration_ms: 0.070958
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1114.719125

@@ -1,0 +1,858 @@
+{
+  "recordedAt": "2026-10-23T16:38:00.440652+00:00",
+  "runId": "9cd50e893016",
+  "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-final02",
+  "classification": "ACTUAL_HASH_PARITY_ONLY_NOT_INSTALLED_CASE_ACCEPTANCE",
+  "checks": [
+    {
+      "receipt": "docs/implementation/niche-themes-2026-10-23/habitat/source-manifest.json",
+      "count": 11,
+      "changed": 0,
+      "files": [
+        {
+          "path": "packages/theme-engine/src/habitat-theme.ts",
+          "expected": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "workspace": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "candidate": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-styles.ts",
+          "expected": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+          "workspace": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+          "candidate": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-discovery.ts",
+          "expected": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "workspace": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "candidate": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/test/habitat.test.ts",
+          "expected": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "workspace": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "candidate": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "passed": true
+        },
+        {
+          "path": "packages/commerce-core/src/habitat-facts.ts",
+          "expected": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+          "workspace": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+          "candidate": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+          "passed": true
+        },
+        {
+          "path": "packages/commerce-core/test/habitat-facts.test.ts",
+          "expected": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+          "workspace": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+          "candidate": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+          "passed": true
+        },
+        {
+          "path": "apps/commerce/web/src/lib/demo/habitat-demo.ts",
+          "expected": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+          "workspace": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+          "candidate": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.tsx",
+          "expected": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+          "workspace": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+          "candidate": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.test.tsx",
+          "expected": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+          "workspace": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+          "candidate": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.tsx",
+          "expected": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+          "workspace": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+          "candidate": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.test.tsx",
+          "expected": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea",
+          "workspace": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea",
+          "candidate": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "receipt": "docs/implementation/niche-themes-2026-10-23/habitat/measurement-consumer-source-manifest.json",
+      "count": 7,
+      "changed": 0,
+      "files": [
+        {
+          "path": "packages/theme-engine/src/habitat-discovery.ts",
+          "expected": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "workspace": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "candidate": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-theme.ts",
+          "expected": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "workspace": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "candidate": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/test/habitat.test.ts",
+          "expected": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "workspace": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "candidate": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/discovery-form-roundtrip.test.ts",
+          "expected": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+          "workspace": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+          "candidate": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+          "passed": true
+        },
+        {
+          "path": "packages/commerce-core/src/storefront-discovery.ts",
+          "expected": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+          "workspace": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+          "candidate": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+          "passed": true
+        },
+        {
+          "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+          "expected": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+          "workspace": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+          "candidate": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+          "passed": true
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+          "expected": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+          "workspace": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+          "candidate": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "receipt": "docs/implementation/niche-themes-2026-10-23/habitat/installed-matrix-preparation-receipt.json",
+      "count": 5,
+      "changed": 0,
+      "files": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-lifecycle-matrix.md",
+          "expected": "46941565c11dd5fa8cbab5a4e406efe610dc24afdf782a18dc5c8e430f7c3ddc",
+          "workspace": "46941565c11dd5fa8cbab5a4e406efe610dc24afdf782a18dc5c8e430f7c3ddc",
+          "candidate": "46941565c11dd5fa8cbab5a4e406efe610dc24afdf782a18dc5c8e430f7c3ddc",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json",
+          "expected": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1",
+          "workspace": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1",
+          "candidate": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/validate-installed-fixture-plan.ts",
+          "expected": "c2d64fbc8ca71865ba6e885edcb7f46e0a49933ac30d8145370ac189dd6ca7ce",
+          "workspace": "c2d64fbc8ca71865ba6e885edcb7f46e0a49933ac30d8145370ac189dd6ca7ce",
+          "candidate": "c2d64fbc8ca71865ba6e885edcb7f46e0a49933ac30d8145370ac189dd6ca7ce",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-schema-validation.json",
+          "expected": "f64404bc31d3109e411813a48f786b90a496ee4c04f21e75cc021f9bda86e8f8",
+          "workspace": "f64404bc31d3109e411813a48f786b90a496ee4c04f21e75cc021f9bda86e8f8",
+          "candidate": "f64404bc31d3109e411813a48f786b90a496ee4c04f21e75cc021f9bda86e8f8",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/tsconfig.installed-fixture-plan.json",
+          "expected": "71acb6dc8e8b3ab57697efabe315493d2b42f26407b27523ecc4bd5332385e07",
+          "workspace": "71acb6dc8e8b3ab57697efabe315493d2b42f26407b27523ecc4bd5332385e07",
+          "candidate": "71acb6dc8e8b3ab57697efabe315493d2b42f26407b27523ecc4bd5332385e07",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "receipt": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/approved-mockup-freeze.json",
+      "count": 110,
+      "changed": 0,
+      "files": [
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/scenes.json",
+          "expected": "3e4e505baa8f7fb5d9bd69aa09e177ad0895077ba6afd4be91bd63e2702b7211",
+          "workspace": "3e4e505baa8f7fb5d9bd69aa09e177ad0895077ba6afd4be91bd63e2702b7211",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/stress-audit.json",
+          "expected": "1faf3aa771fcb83538aef28643e0ca1e11646e174989fcf1752738f479fa94cc",
+          "workspace": "1faf3aa771fcb83538aef28643e0ca1e11646e174989fcf1752738f479fa94cc",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/index.html",
+          "expected": "385e25836c7d5ab08e46d3fdb55f0bfbcd9142690a9e6da5ca4f71c57adcb868",
+          "workspace": "385e25836c7d5ab08e46d3fdb55f0bfbcd9142690a9e6da5ca4f71c57adcb868",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/review-audit.json",
+          "expected": "a98c36ea573bf2cf06850db97913f8b1c5abe880cee341f8254f120ea4d405c6",
+          "workspace": "a98c36ea573bf2cf06850db97913f8b1c5abe880cee341f8254f120ea4d405c6",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/generation-prompts.json",
+          "expected": "91769d04702637158e853ad686562904a7ed14c31865e6ad2b592f579968395c",
+          "workspace": "91769d04702637158e853ad686562904a7ed14c31865e6ad2b592f579968395c",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/prototype-index.html",
+          "expected": "bb728e3a1a95e63da1d26d5b0037f75c8bc379a006ed5a39bcba8a97cf0cd818",
+          "workspace": "bb728e3a1a95e63da1d26d5b0037f75c8bc379a006ed5a39bcba8a97cf0cd818",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/visual-review.json",
+          "expected": "39bde00838b451dce9ddb12d1c07a25b00a9c7c58d78b27c509da149adbd78ec",
+          "workspace": "39bde00838b451dce9ddb12d1c07a25b00a9c7c58d78b27c509da149adbd78ec",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/exports.json",
+          "expected": "9a04b653cd6348933044ff46ff917f527010f9520087f33fcbdc1df58ae34d32",
+          "workspace": "9a04b653cd6348933044ff46ff917f527010f9520087f33fcbdc1df58ae34d32",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/validation.json",
+          "expected": "93139fdad2edda847beaae17e3f210d8b490c94e1c15d1fdd17decc5f5e5617d",
+          "workspace": "93139fdad2edda847beaae17e3f210d8b490c94e1c15d1fdd17decc5f5e5617d",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/fixtures.json",
+          "expected": "70d3fe2f6c97b98b29f596f761772ba2a012498ed6a1ac35296b5bbaa54fb411",
+          "workspace": "70d3fe2f6c97b98b29f596f761772ba2a012498ed6a1ac35296b5bbaa54fb411",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/responsive-audit.json",
+          "expected": "f15d9dbc4249f821055620b9336c445b1d7f55d21d5df7a9beaada49fd69a390",
+          "workspace": "f15d9dbc4249f821055620b9336c445b1d7f55d21d5df7a9beaada49fd69a390",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/Habitat-45-mockups.zip",
+          "expected": "79f65eee1284e454532c961405d91e0a479919f560d80a7fee0929f2bfd23012",
+          "workspace": "79f65eee1284e454532c961405d91e0a479919f560d80a7fee0929f2bfd23012",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/comparisons/index.html",
+          "expected": "fbf862eead08ec2a83bd25c5c3ff652f7ef14fff90bc6074acf8826e8d5c528b",
+          "workspace": "fbf862eead08ec2a83bd25c5c3ff652f7ef14fff90bc6074acf8826e8d5c528b",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/13-orders-desktop.png",
+          "expected": "f97c1f9d3ca51bb621d8b7aebf7a38b1747df0a6bed22383cb5864211a05dedf",
+          "workspace": "f97c1f9d3ca51bb621d8b7aebf7a38b1747df0a6bed22383cb5864211a05dedf",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/06-product-continuation-desktop.png",
+          "expected": "03701d5bcb1a7b49aa2ab40a7408cfd19cf4cdef19abc7c75c32eb8748abd040",
+          "workspace": "03701d5bcb1a7b49aa2ab40a7408cfd19cf4cdef19abc7c75c32eb8748abd040",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/13-orders-mobile.png",
+          "expected": "2ef769fe5e4f57d0d932e29263fe82f8c2c838df995d181037b6f9d056af1c7b",
+          "workspace": "2ef769fe5e4f57d0d932e29263fe82f8c2c838df995d181037b6f9d056af1c7b",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/06-product-continuation-tablet.png",
+          "expected": "3df7cffe34b368f94675db5b79c23368f696dd0fc9dfe179a78182292fe5ef93",
+          "workspace": "3df7cffe34b368f94675db5b79c23368f696dd0fc9dfe179a78182292fe5ef93",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/07-cart-desktop.png",
+          "expected": "68def59d80d577f47f10c2fb7c883551c92beb0e7c5d8c88f0b4efe20d8d6d3e",
+          "workspace": "68def59d80d577f47f10c2fb7c883551c92beb0e7c5d8c88f0b4efe20d8d6d3e",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/06-product-continuation-mobile.png",
+          "expected": "ead976c64a04e3723458bdaef73e30d16bcfe129bda1538574650d87211adfcf",
+          "workspace": "ead976c64a04e3723458bdaef73e30d16bcfe129bda1538574650d87211adfcf",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/13-orders-tablet.png",
+          "expected": "299d13883c65771bdbb546a33936d06eb489daf9e2946d2ee9f8d0a4fb856c71",
+          "workspace": "299d13883c65771bdbb546a33936d06eb489daf9e2946d2ee9f8d0a4fb856c71",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/14-order-detail-desktop.png",
+          "expected": "7f7f7efd88555fb8e16e6bbc98881706d721ba0087c9bbfd7795092a6b38bfbe",
+          "workspace": "7f7f7efd88555fb8e16e6bbc98881706d721ba0087c9bbfd7795092a6b38bfbe",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/05-product-dimensions-desktop.png",
+          "expected": "1d7ca3727b50983e4cc7d474b3c5f9b4713f727ab7d0f18b964caa796c95e08d",
+          "workspace": "1d7ca3727b50983e4cc7d474b3c5f9b4713f727ab7d0f18b964caa796c95e08d",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/15-addresses-mobile.png",
+          "expected": "8e92b75b6a16d895c0f497171b1b8264eda7ec8e67b892b579470020bbd158a6",
+          "workspace": "8e92b75b6a16d895c0f497171b1b8264eda7ec8e67b892b579470020bbd158a6",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/09-checkout-review-mobile.png",
+          "expected": "44db96b348d5dc8b18180604c7c753706b356868696809cad3423841174325f5",
+          "workspace": "44db96b348d5dc8b18180604c7c753706b356868696809cad3423841174325f5",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/03-collection-mobile.png",
+          "expected": "b05436a32da774e3c6713777c0620e0b4f2776f373d995e5a443f59989f250b1",
+          "workspace": "b05436a32da774e3c6713777c0620e0b4f2776f373d995e5a443f59989f250b1",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/11-sign-up-tablet.png",
+          "expected": "7da11f8530ce8d62d7af2a02f959542a2a1f87a4d7a52644f94263c5d97d48f1",
+          "workspace": "7da11f8530ce8d62d7af2a02f959542a2a1f87a4d7a52644f94263c5d97d48f1",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/15-addresses-tablet.png",
+          "expected": "401e3456f0640b867ee297121b3a0a6543bd5926f1a88ff579f3f4b8593f83aa",
+          "workspace": "401e3456f0640b867ee297121b3a0a6543bd5926f1a88ff579f3f4b8593f83aa",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/03-collection-desktop.png",
+          "expected": "ce0af4d0ca97e886e188baff52be826c714e11676d328152fe2243403d9c2c66",
+          "workspace": "ce0af4d0ca97e886e188baff52be826c714e11676d328152fe2243403d9c2c66",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/15-addresses-desktop.png",
+          "expected": "1190b77fbbd86cd3f0210c4bb224a730e589d1a4e37761617c5c8953bf1724cd",
+          "workspace": "1190b77fbbd86cd3f0210c4bb224a730e589d1a4e37761617c5c8953bf1724cd",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/11-sign-up-mobile.png",
+          "expected": "1bdfd003b5197325e37659114085e2310820996aff9d847037f70262f161a142",
+          "workspace": "1bdfd003b5197325e37659114085e2310820996aff9d847037f70262f161a142",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/03-collection-tablet.png",
+          "expected": "432f25871dbb31f0cfd72cb92225bde4abe4e6ea4b3e62cbc8a675e7cdb1c958",
+          "workspace": "432f25871dbb31f0cfd72cb92225bde4abe4e6ea4b3e62cbc8a675e7cdb1c958",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/09-checkout-review-tablet.png",
+          "expected": "fc7c863cc0f5e897ae36e8999b1e765bcc43bb0d0f79120977501bae1cc2746f",
+          "workspace": "fc7c863cc0f5e897ae36e8999b1e765bcc43bb0d0f79120977501bae1cc2746f",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/04-product-main-desktop.png",
+          "expected": "4ef473d9c3b005d55abb46a981618883d95802df56f08cbfb3c018cfe2f7d764",
+          "workspace": "4ef473d9c3b005d55abb46a981618883d95802df56f08cbfb3c018cfe2f7d764",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/01-home-top-tablet.png",
+          "expected": "4426c519f264bac2006be85c8a40d813739d10aa9e0a42f4afd1029a12302d95",
+          "workspace": "4426c519f264bac2006be85c8a40d813739d10aa9e0a42f4afd1029a12302d95",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/05-product-dimensions-mobile.png",
+          "expected": "6c3ae37a133f55c800e26abf0ea7482b40f0498eefd81883b988368d7d20528a",
+          "workspace": "6c3ae37a133f55c800e26abf0ea7482b40f0498eefd81883b988368d7d20528a",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/01-home-top-mobile.png",
+          "expected": "95f78c971c07321984e2fd5746d2339a4322351ccb1cc870df1e6a04c5a50864",
+          "workspace": "95f78c971c07321984e2fd5746d2339a4322351ccb1cc870df1e6a04c5a50864",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/11-sign-up-desktop.png",
+          "expected": "12e33b53714b7bd4ae008cc9ff44fd5c65fa2e79d3ae4bb1ffbc7708362e1315",
+          "workspace": "12e33b53714b7bd4ae008cc9ff44fd5c65fa2e79d3ae4bb1ffbc7708362e1315",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/09-checkout-review-desktop.png",
+          "expected": "b06ea347d3900cc24f4cb3266052782f1e8a67bf7f74e2ba775cafd67e559565",
+          "workspace": "b06ea347d3900cc24f4cb3266052782f1e8a67bf7f74e2ba775cafd67e559565",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/05-product-dimensions-tablet.png",
+          "expected": "44eff69042edb5dc34b3a710cea582e89608b983deed188e68d1ec7d41ed7640",
+          "workspace": "44eff69042edb5dc34b3a710cea582e89608b983deed188e68d1ec7d41ed7640",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/08-checkout-address-desktop.png",
+          "expected": "cdc6ab8c3d125ee4aa7f3c8921f94f500f64606824f3f22f20077097873014c0",
+          "workspace": "cdc6ab8c3d125ee4aa7f3c8921f94f500f64606824f3f22f20077097873014c0",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/02-home-bottom-mobile.png",
+          "expected": "bfbefd3899f8779d76c90e8635ef1e65a904e3f47207e1cf1fa88388df5a43e1",
+          "workspace": "bfbefd3899f8779d76c90e8635ef1e65a904e3f47207e1cf1fa88388df5a43e1",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/02-home-bottom-desktop.png",
+          "expected": "8740d51c39579dee637322378cadde8525a209630726aebf6cc756333fb72981",
+          "workspace": "8740d51c39579dee637322378cadde8525a209630726aebf6cc756333fb72981",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/08-checkout-address-mobile.png",
+          "expected": "9a4d2a6898c253c4c375785ecfe9d2b9cb24942fc6b6868b0223336b133e7a37",
+          "workspace": "9a4d2a6898c253c4c375785ecfe9d2b9cb24942fc6b6868b0223336b133e7a37",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/10-sign-in-desktop.png",
+          "expected": "0e4ec6a569adfc0054b19aa518a97fece744149947d5f1446e9134c094941445",
+          "workspace": "0e4ec6a569adfc0054b19aa518a97fece744149947d5f1446e9134c094941445",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/12-profile-desktop.png",
+          "expected": "9314bbe37ad602edaeab662a1da0625596bc5c0c8440567ae8df33ded4da37e4",
+          "workspace": "9314bbe37ad602edaeab662a1da0625596bc5c0c8440567ae8df33ded4da37e4",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/07-cart-mobile.png",
+          "expected": "49951bf79c4db6038da6c4e903963a897f642170936cc4efde566868f59eae6c",
+          "workspace": "49951bf79c4db6038da6c4e903963a897f642170936cc4efde566868f59eae6c",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/10-sign-in-tablet.png",
+          "expected": "82a5b1d901520e7730347b270c62b17afa49a31db6f4c0bf005192bdc51f67bb",
+          "workspace": "82a5b1d901520e7730347b270c62b17afa49a31db6f4c0bf005192bdc51f67bb",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/01-home-top-desktop.png",
+          "expected": "cfc943aba2185005a5b25a2b19d47764956a9a088ad3c1a147bfedcd0855efb5",
+          "workspace": "cfc943aba2185005a5b25a2b19d47764956a9a088ad3c1a147bfedcd0855efb5",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/12-profile-tablet.png",
+          "expected": "5b9eae3543f28c14cff10c38742c7819bd9698537b63a93e0fea9ae3c0901cab",
+          "workspace": "5b9eae3543f28c14cff10c38742c7819bd9698537b63a93e0fea9ae3c0901cab",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/14-order-detail-mobile.png",
+          "expected": "91e6b9a210a2bb06f8063412f7b53b867786f801d0f68e3219adc55b0d5e2307",
+          "workspace": "91e6b9a210a2bb06f8063412f7b53b867786f801d0f68e3219adc55b0d5e2307",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/04-product-main-mobile.png",
+          "expected": "82e32ed3bc40d42f572cdc0fef73030d64befead9e9926190c47afaea378a2b7",
+          "workspace": "82e32ed3bc40d42f572cdc0fef73030d64befead9e9926190c47afaea378a2b7",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/10-sign-in-mobile.png",
+          "expected": "bbcfbe4d5d3f6ce964f059fb180a21d1230a28fb305d5aba0bc8619af09eea5e",
+          "workspace": "bbcfbe4d5d3f6ce964f059fb180a21d1230a28fb305d5aba0bc8619af09eea5e",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/07-cart-tablet.png",
+          "expected": "751c7d915aee99cb22a68984473ea7ebf860208ede24bdf2c467802694752c65",
+          "workspace": "751c7d915aee99cb22a68984473ea7ebf860208ede24bdf2c467802694752c65",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/08-checkout-address-tablet.png",
+          "expected": "9845e215a527861f8964662dffd56ba5bd017d299bde7797c3c35c160f756355",
+          "workspace": "9845e215a527861f8964662dffd56ba5bd017d299bde7797c3c35c160f756355",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/02-home-bottom-tablet.png",
+          "expected": "cf10fa8e4a8593ab274b36c80bb1e8be8fa6b149e81b1b5c25cd46a58c0ac438",
+          "workspace": "cf10fa8e4a8593ab274b36c80bb1e8be8fa6b149e81b1b5c25cd46a58c0ac438",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/04-product-main-tablet.png",
+          "expected": "6c6d3feb574c62cfca14ffafa40c9a6cec05ed6be24b8538d265347cea5e7668",
+          "workspace": "6c6d3feb574c62cfca14ffafa40c9a6cec05ed6be24b8538d265347cea5e7668",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/14-order-detail-tablet.png",
+          "expected": "4759f61c11593635bddfb3b5f44b296f8cd68d3eb47821d3cfd52d9b9b0d3d4d",
+          "workspace": "4759f61c11593635bddfb3b5f44b296f8cd68d3eb47821d3cfd52d9b9b0d3d4d",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/images/12-profile-mobile.png",
+          "expected": "7053111ae335e907bffec78119442d9d790f882590b4fbea8165fe14a2939df7",
+          "workspace": "7053111ae335e907bffec78119442d9d790f882590b4fbea8165fe14a2939df7",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/12-profile.html",
+          "expected": "f38b22a3cdc7e1b0f3728bc1f8b6b91b9d63bc04561ddb4495457c74025c848d",
+          "workspace": "f38b22a3cdc7e1b0f3728bc1f8b6b91b9d63bc04561ddb4495457c74025c848d",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/14-order-detail.html",
+          "expected": "94e1f42278f8e1f9b54a9fea1e788b9f15dc6ca1e018af4378ab88051774e1b6",
+          "workspace": "94e1f42278f8e1f9b54a9fea1e788b9f15dc6ca1e018af4378ab88051774e1b6",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/validate_storybook.py",
+          "expected": "90dd44a8b22f1995ff75678fde22f3eaa777f851323c75e9fc3c060a2cadfc74",
+          "workspace": "90dd44a8b22f1995ff75678fde22f3eaa777f851323c75e9fc3c060a2cadfc74",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/icons.json",
+          "expected": "ef7a6c35e970c3258cca5c7c5363a0c18367709bb5f0a94045c63ea79fd45481",
+          "workspace": "ef7a6c35e970c3258cca5c7c5363a0c18367709bb5f0a94045c63ea79fd45481",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/styles.css",
+          "expected": "f475abee4e3adbfb429f346daec30021f3ef87e222db927db385b35a73e2c69a",
+          "workspace": "f475abee4e3adbfb429f346daec30021f3ef87e222db927db385b35a73e2c69a",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/build_storybook.py",
+          "expected": "edb7954b4d387ca523aaaa2b42f263cc204f4b25d5adf4bd8bb8e916f8806635",
+          "workspace": "edb7954b4d387ca523aaaa2b42f263cc204f4b25d5adf4bd8bb8e916f8806635",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/11-sign-up.html",
+          "expected": "72d5b717ac6b97eab29c181d31c33e2d250cb1c511c36910adf08316cdd87dc5",
+          "workspace": "72d5b717ac6b97eab29c181d31c33e2d250cb1c511c36910adf08316cdd87dc5",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/03-collection.html",
+          "expected": "553db3a4eea0699e2ac6d44e2be3b7a4fa85b3a7f8bbb1c33a923c51c6d78275",
+          "workspace": "553db3a4eea0699e2ac6d44e2be3b7a4fa85b3a7f8bbb1c33a923c51c6d78275",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/capture.mjs",
+          "expected": "53c1df51d3e9bd096a259c0293e8c8e901277c4c6097dcc349323b698d56604e",
+          "workspace": "53c1df51d3e9bd096a259c0293e8c8e901277c4c6097dcc349323b698d56604e",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/06-product-continuation.html",
+          "expected": "99622fba77ff715d0fab321d3445554329bbc82faa8baced7404dbc66585c011",
+          "workspace": "99622fba77ff715d0fab321d3445554329bbc82faa8baced7404dbc66585c011",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/08-checkout-address.html",
+          "expected": "7bedc5b72f5da35de9f7278dddafb0d39490a5b79cebfae1b14a2ec7cdb75462",
+          "workspace": "7bedc5b72f5da35de9f7278dddafb0d39490a5b79cebfae1b14a2ec7cdb75462",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/05-product-dimensions.html",
+          "expected": "d406cf2604a625e7654e6acc2ecbb328d13f449a1ce5a19786cfece5b7aa5609",
+          "workspace": "d406cf2604a625e7654e6acc2ecbb328d13f449a1ce5a19786cfece5b7aa5609",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/10-sign-in.html",
+          "expected": "b2f8b2d06f1dc9974607667c319d75d4e9ddd6b1ea7ca09f875225fcf1f99a34",
+          "workspace": "b2f8b2d06f1dc9974607667c319d75d4e9ddd6b1ea7ca09f875225fcf1f99a34",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/15-addresses.html",
+          "expected": "bbf04ea8f1b47c56d35a0f2294593fdfbcf6e0d6706191eb3ffe87f2c6530599",
+          "workspace": "bbf04ea8f1b47c56d35a0f2294593fdfbcf6e0d6706191eb3ffe87f2c6530599",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/prototype.js",
+          "expected": "0a392117a445a8b4c4c550cb9aea719e896d732dc545d3544357067ff029c519",
+          "workspace": "0a392117a445a8b4c4c550cb9aea719e896d732dc545d3544357067ff029c519",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/07-cart.html",
+          "expected": "54b6effe8f02385a289fbf128c74e5a5381cdd65038d8a1690564e17c2a6ac9d",
+          "workspace": "54b6effe8f02385a289fbf128c74e5a5381cdd65038d8a1690564e17c2a6ac9d",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/review_capture.mjs",
+          "expected": "329f5a0d42646bd13c3f9dc7c8068bb61e282d383a18b1f8920af39cd58e67d7",
+          "workspace": "329f5a0d42646bd13c3f9dc7c8068bb61e282d383a18b1f8920af39cd58e67d7",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/02-home-bottom.html",
+          "expected": "78e5dfdce2fa38b84c44bb6a7168573683b87008bf9658af5f015ab6b26ee70b",
+          "workspace": "78e5dfdce2fa38b84c44bb6a7168573683b87008bf9658af5f015ab6b26ee70b",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/13-orders.html",
+          "expected": "965675f42299253fbd514450d96fe51f17f65e087ff3b4cc2bff38fa538ff782",
+          "workspace": "965675f42299253fbd514450d96fe51f17f65e087ff3b4cc2bff38fa538ff782",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/package_storybook.py",
+          "expected": "a6f7edede4fd17704a5c6a930bdf08196282ae9920a943e188f6ed650b09ea62",
+          "workspace": "a6f7edede4fd17704a5c6a930bdf08196282ae9920a943e188f6ed650b09ea62",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/04-product-main.html",
+          "expected": "61bae50f25f22407f4e9da7107a2605d82559d874881a6489de0a37ced3e0baa",
+          "workspace": "61bae50f25f22407f4e9da7107a2605d82559d874881a6489de0a37ced3e0baa",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/01-home-top.html",
+          "expected": "54d4e38c730d0310e1270d9067c96511a52ac3ff0fec82a581107da649bd06f8",
+          "workspace": "54d4e38c730d0310e1270d9067c96511a52ac3ff0fec82a581107da649bd06f8",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/source/09-checkout-review.html",
+          "expected": "576bc80d43a78099e6fa414d8ea3df2501ab46e6921ef969b3148e0bbe808d31",
+          "workspace": "576bc80d43a78099e6fa414d8ea3df2501ab46e6921ef969b3148e0bbe808d31",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/07-cart.png",
+          "expected": "722c6faea55c7e569d15a8f1ac31bae8ec59ad4d0ab45e401d1a283c23dcff5f",
+          "workspace": "722c6faea55c7e569d15a8f1ac31bae8ec59ad4d0ab45e401d1a283c23dcff5f",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/01-home-top.png",
+          "expected": "4021f26c64c65157e71900e9b26a720191bc65efa9b392928b9db9d7210589a9",
+          "workspace": "4021f26c64c65157e71900e9b26a720191bc65efa9b392928b9db9d7210589a9",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/14-order-detail.png",
+          "expected": "41005459c5f50bcc64014e9aa4c3354314036a4f2cc2e47725921e812c293f03",
+          "workspace": "41005459c5f50bcc64014e9aa4c3354314036a4f2cc2e47725921e812c293f03",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/03-collection.png",
+          "expected": "c0bf15afe8dea6939345e88e499521d0cd66ddd77aea24eb272199fc4c657109",
+          "workspace": "c0bf15afe8dea6939345e88e499521d0cd66ddd77aea24eb272199fc4c657109",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/06-product-continuation.png",
+          "expected": "a178297bd37e6e108e960bd995fc991e2f84038c6816c60cf7708a385bc45756",
+          "workspace": "a178297bd37e6e108e960bd995fc991e2f84038c6816c60cf7708a385bc45756",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/11-sign-up.png",
+          "expected": "6481e8d6c4428eba7b0a2c8149b72cf43865e41965403ed1c0b445dd98927cb8",
+          "workspace": "6481e8d6c4428eba7b0a2c8149b72cf43865e41965403ed1c0b445dd98927cb8",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/12-profile.png",
+          "expected": "607953cb79dec707dc5c31e0711c9b063a40c817e66b93899e373e414e53a42a",
+          "workspace": "607953cb79dec707dc5c31e0711c9b063a40c817e66b93899e373e414e53a42a",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/05-product-dimensions.png",
+          "expected": "171a4d84cc161ff3747bf91cb532191ce0ff76dcc5321f9de7c033e68b938c92",
+          "workspace": "171a4d84cc161ff3747bf91cb532191ce0ff76dcc5321f9de7c033e68b938c92",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/15-addresses.png",
+          "expected": "daf8bbc7fc50a6b644fb8eb3e5bafb6dfab889ac2481f674b0164605666c759a",
+          "workspace": "daf8bbc7fc50a6b644fb8eb3e5bafb6dfab889ac2481f674b0164605666c759a",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/04-product-main.png",
+          "expected": "0aeee3c3d8cb145167a7630d730745128993cfe29a9d1eccca6ff12fbba9a2fb",
+          "workspace": "0aeee3c3d8cb145167a7630d730745128993cfe29a9d1eccca6ff12fbba9a2fb",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/02-home-bottom.png",
+          "expected": "28b1dee919ca510194e6cf26e016b31820c54ececedf41bc4f4253baa90a4ba3",
+          "workspace": "28b1dee919ca510194e6cf26e016b31820c54ececedf41bc4f4253baa90a4ba3",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/10-sign-in.png",
+          "expected": "31203f1c05215cb15b015156e833bf75cf0e50c55b2fbb5e5e4b6b177f606b1f",
+          "workspace": "31203f1c05215cb15b015156e833bf75cf0e50c55b2fbb5e5e4b6b177f606b1f",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/09-checkout-review.png",
+          "expected": "63229ec8970e8feebda99538d850083be791642f0d78d031076766d2b3914d4c",
+          "workspace": "63229ec8970e8feebda99538d850083be791642f0d78d031076766d2b3914d4c",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/08-checkout-address.png",
+          "expected": "7892f7c6df985dd009326c2b5aa53a41512f8d854e3e0da36e1260d5d7319946",
+          "workspace": "7892f7c6df985dd009326c2b5aa53a41512f8d854e3e0da36e1260d5d7319946",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/boards/13-orders.png",
+          "expected": "fcae5d189ac713b3afd58a5abad47091c3fcaed817fcd6e08976c8d2d0323647",
+          "workspace": "fcae5d189ac713b3afd58a5abad47091c3fcaed817fcd6e08976c8d2d0323647",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/room.png",
+          "expected": "ef9442054d907fcc4860d53542ee5a9e48e629e37ba608f2933c4771b724a33a",
+          "workspace": "ef9442054d907fcc4860d53542ee5a9e48e629e37ba608f2933c4771b724a33a",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/chair-smoked.png",
+          "expected": "68ba922d5cb5288eba911b4ef7ab24c1cb4acbee51b712614dd42fd09e39e457",
+          "workspace": "68ba922d5cb5288eba911b4ef7ab24c1cb4acbee51b712614dd42fd09e39e457",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/chair.png",
+          "expected": "6dc5dfbc83175393bbee49e6302882a4c5ced258fd8a4dddfa83e8e66378b764",
+          "workspace": "6dc5dfbc83175393bbee49e6302882a4c5ced258fd8a4dddfa83e8e66378b764",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/table.png",
+          "expected": "abcc2cdd9f949fe4667619e0a4beedc18be475d18fdd7fa3cb3ab203d643182f",
+          "workspace": "abcc2cdd9f949fe4667619e0a4beedc18be475d18fdd7fa3cb3ab203d643182f",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/letbuyy-logo.svg",
+          "expected": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+          "workspace": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/LUCIDE-LICENSE",
+          "expected": "3c57143f22dac950efebf84002e360bba5458c7b90fe583b0667aaaef1a7256e",
+          "workspace": "3c57143f22dac950efebf84002e360bba5458c7b90fe583b0667aaaef1a7256e",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/google-fonts.css",
+          "expected": "72d8e7c647f4937ed3d9a5b86b300756fdc1c642ccf72718b7ba7277f0e25641",
+          "workspace": "72d8e7c647f4937ed3d9a5b86b300756fdc1c642ccf72718b7ba7277f0e25641",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/source-sans-pro-600.ttf",
+          "expected": "550545f3b5d97c163dbf19425fd513f86f1a3da4d6df9e518d113cef53e3dbb3",
+          "workspace": "550545f3b5d97c163dbf19425fd513f86f1a3da4d6df9e518d113cef53e3dbb3",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/source-sans-pro-400.ttf",
+          "expected": "0bf84ff4fc16b817807dfc3f5f84cab1911f516d10e958f0b502743d78cae100",
+          "workspace": "0bf84ff4fc16b817807dfc3f5f84cab1911f516d10e958f0b502743d78cae100",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/libre-baskerville-400.ttf",
+          "expected": "f5bc4341f15de5e877d8d95b6b14b33e9a3da1f8fef4ed0700ed407f096cffb6",
+          "workspace": "f5bc4341f15de5e877d8d95b6b14b33e9a3da1f8fef4ed0700ed407f096cffb6",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/geist-sans-latin.woff2",
+          "expected": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8",
+          "workspace": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/Source-Sans-LICENSE.md",
+          "expected": "56af9b9c6715597e458284a474dc118a50a4150e9d547c70f7b4a33c3e6a9328",
+          "workspace": "56af9b9c6715597e458284a474dc118a50a4150e9d547c70f7b4a33c3e6a9328",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/libre-baskerville-700.ttf",
+          "expected": "8b008ffdae31b314657cb8e28d822da09893035d06bad9b1ab53ea762549cbd1",
+          "workspace": "8b008ffdae31b314657cb8e28d822da09893035d06bad9b1ab53ea762549cbd1",
+          "passed": true
+        },
+        {
+          "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/Libre-Baskerville-OFL.txt",
+          "expected": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd",
+          "workspace": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "passed": true
+}

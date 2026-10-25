@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:57:30.071052+00:00",
+  "classification": "PRIVATE_FACTORY_AND_ACTUAL_LIQUID_SOURCE_TEST_ACCEPTANCE_ONLY",
+  "status": "FIVE_SOURCE_TESTS_PASS_UNAPPLIED_REVIEW_AND_ADMISSION_PENDING",
+  "proposal": "PROPOSAL.json",
+  "actualCommands": [
+    {
+      "command": "node --import tsx --test --test-concurrency=1 docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-order-heading-v201/proposal.test.mjs",
+      "executedPathAtTime": "proposal.test.mjs preserved as source-run-01.test.mjs",
+      "exitCode": 1,
+      "log": "source-run-01.tap",
+      "classification": "EVIDENCE_TEST_LOADER_FAILURE_BEFORE_PRODUCT_TESTS",
+      "failure": "jsdom is workspace-local to theme-engine, not resolvable from docs root ESM; corrected to package-scoped createRequire",
+      "productCasesExecuted": 0,
+      "testSnapshot": "source-run-01.test.mjs"
+    },
+    {
+      "command": "node --import tsx --test --test-concurrency=1 docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-order-heading-v201/proposal.test.mjs",
+      "executedPathAtTime": "proposal.test.mjs preserved as source-run-02.test.mjs",
+      "exitCode": 1,
+      "log": "source-run-02.tap",
+      "classification": "EVIDENCE_TEST_LOADER_FAILURE_BEFORE_PRODUCT_TESTS",
+      "failure": "Private docs TypeScript uses CJS; named ESM import corrected to default namespace destructuring",
+      "productCasesExecuted": 0,
+      "testSnapshot": "source-run-02.test.mjs"
+    },
+    {
+      "command": "node --import tsx --test --test-concurrency=1 docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-order-heading-v201/proposal.test.mjs",
+      "exitCode": 0,
+      "log": "source-run-03.tap",
+      "sourceTests": {
+        "PASS": 5,
+        "FAIL": 0,
+        "skipped": 0
+      },
+      "installedCasePassesAdded": 0
+    }
+  ],
+  "frozenFactorySha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d",
+  "all15PinnedInputsStable": true,
+  "sourcePins": {
+    "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/schema-field-extensions.ts": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+    "packages/theme-engine/src/experience-fonts.ts": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+    "packages/theme-engine/src/theme-presets.ts": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+    "packages/theme-engine/src/built-in-section-schemas.ts": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+    "packages/theme-engine/src/theme-registry.ts": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+    "packages/theme-engine/src/theme-document.ts": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+    "packages/theme-engine/src/template-registry.ts": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+    "packages/theme-engine/src/habitat-styles.ts": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+    "packages/theme-engine/src/theme-bundle-core.ts": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+    "packages/theme-engine/src/niche-order-presentation.ts": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "packages/theme-engine/src/theme-settings.ts": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00"
+  },
+  "meaningfulOracles": [
+    "Frozen2.0.0 canonical factory digest exact before/after; default and blank successor order content byte-identical to baseline",
+    "Existing actual merchant section/block IDs, custom guide, palette and all templates/settings preserved without reapplying defaults",
+    "Idempotent successor; corrupt marker/unknown future Habitat version refused",
+    "Actual canonical Liquid renderer shows alpha/beta edits affect successor heading; same changes are inert in old2.0.0",
+    "Escaped merchant attack string creates no heading img/script node; existing saved-text outlet unchanged"
+  ],
+  "limits": [
+    "Synthetic in-memory order drop is not a real order, signup, history, SQL, browser or provider purchase proof",
+    "No Main source, catalogue dispatch/export, migration, build, server, database, browser or provider changed",
+    "Existing shared generic module-wire harness was not copied or rerun",
+    "Independent review, exact shared integration grant, opt-in catalogue registration and affected actual UI/history acceptance remain pending"
+  ],
+  "artifactHashes": {
+    "source-run-01.test.mjs": "69d9bacb79fbb960c24abeec7f3091e2c056fdc302a193ab110b6d66ae94c959",
+    "source-run-03.tap": "27c0cbd4fd9ea2053369158185b2b740a6ceda242f7a4a0ecbdeba7afc55215b",
+    "habitat-order-heading.UNAPPLIED.diff": "fcf37260b9303a2901b615a669ed595469cfa46c8ffd1f49cdc42aff409f9450",
+    "source-run-02.tap": "9db307f5f22398e027388d66f6456e7a5bbea84c86650ac3666e2d67f2005e85",
+    "habitat-theme-v201.ts": "4ca03ff9579d24362170b8d1c4b79fd7b22f68c6a3ebb5263d74788777dc82fb",
+    "source-run-01.tap": "fc6ac238c988b9855f7defccaf36ef5b333ab233e8356aa7cba8c3021b304f11",
+    "proposal.test.mjs": "88b6b32400fa4c29c58a6baa998200edd25ea64e938e4dc481846c021c548153",
+    "PROPOSAL.json": "9d3492b93494fd4f85030fda3d4395ce5c05e2f2fd7edf4473aadeebe916603d",
+    "habitat-theme-v201.intended.ts.txt": "a59c26c268bb85970a33eb635c1d81638642feba7da4041dca445d9bf0fc15fa",
+    "source-run-02.test.mjs": "65e11eb2531b1e842502b1441239001a1c4ce40dd49bf8bfbe8f73922c81ad5d",
+    "source-run-03/frozen-alpha.html": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+    "source-run-03/proposed-default.html": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+    "source-run-03/frozen-beta.html": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+    "source-run-03/proposed-beta.html": "afae06a87e2acacd9142451a9cbbcb923ef04b445f3aa766260c9e702eb6570c",
+    "source-run-03/proposed-escaped.html": "0bf91b3fb31c3f54529a9b9bba7707f6395a19bf62855c86bd6d41324e1d30a4",
+    "source-run-03/proposed-blank.html": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+    "source-run-03/OBSERVED.json": "2145c9261562a2ffdb73c4ef8e2c530a7b512e4e0f51cd22462ef9e9a4b6f044",
+    "source-run-03/proposed-alpha.html": "431b56b0231621dd0a94d7ba0ad809ba244c06dea9e1989a6dcda89a01cb3d8b"
+  }
+}

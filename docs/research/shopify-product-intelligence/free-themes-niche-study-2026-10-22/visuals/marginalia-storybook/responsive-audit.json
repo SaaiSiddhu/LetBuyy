@@ -1,0 +1,3389 @@
+[
+  {
+    "scene": "07-cart",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:17:46.088Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1461,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your bag 3 items",
+      "Field Notes for a Slower City",
+      "The Everyday Notebook",
+      "A moment to check."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1461
+    }
+  },
+  {
+    "scene": "07-cart",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:17:46.239Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1706,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your bag 3 items",
+      "Field Notes for a Slower City",
+      "The Everyday Notebook",
+      "A moment to check."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1706
+    }
+  },
+  {
+    "scene": "07-cart",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:17:46.362Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2327,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your bag 3 items",
+      "Field Notes for a Slower City",
+      "The Everyday Notebook",
+      "A moment to check."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2327
+    }
+  },
+  {
+    "scene": "01-home-top",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:18.153Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1162,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "opening-grid",
+        "columns": "250px 954px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Find your next good page.",
+      "Follow a thread.",
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1162
+    }
+  },
+  {
+    "scene": "01-home-top",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:18.297Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1112,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "opening-grid",
+        "columns": "175px 579px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Find your next good page.",
+      "Follow a thread.",
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1112
+    }
+  },
+  {
+    "scene": "01-home-top",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:18.396Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1663,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "opening-grid",
+        "columns": "175px 1fr"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Find your next good page.",
+      "Follow a thread.",
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 1663
+    }
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:18.508Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 2160,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Stay with a thought.",
+      "On noticing the ordinary.",
+      "Room for your own words.",
+      "A small shop. Many ways in."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 2160
+    }
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:18.706Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2514,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Stay with a thought.",
+      "On noticing the ordinary.",
+      "Room for your own words.",
+      "A small shop. Many ways in."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 2514
+    }
+  },
+  {
+    "scene": "02-home-bottom",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:18.878Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3065,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Stay with a thought.",
+      "On noticing the ordinary.",
+      "Room for your own words.",
+      "A small shop. Many ways in."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 3065
+    }
+  },
+  {
+    "scene": "03-collection",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:19.022Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1788,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "catalog-layout",
+        "columns": "230px 958px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Essays & ideas",
+      "Browse books"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1788
+    }
+  },
+  {
+    "scene": "03-collection",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:19.167Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2065,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "catalog-layout",
+        "columns": "175px 573px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Essays & ideas",
+      "Browse books"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 2065
+    }
+  },
+  {
+    "scene": "03-collection",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:19.327Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2277,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "catalog-layout",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Essays & ideas",
+      "Browse books"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2277
+    }
+  },
+  {
+    "scene": "04-product-main",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:19.458Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1378,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "pdp-grid",
+        "columns": "547.156px 612.844px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1378
+    }
+  },
+  {
+    "scene": "04-product-main",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:19.638Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1336,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "pdp-grid",
+        "columns": "336.594px 411.406px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1336
+    }
+  },
+  {
+    "scene": "04-product-main",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:19.796Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1939,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "pdp-grid",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 1939
+    }
+  },
+  {
+    "scene": "05-product-facts",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:19.961Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1833,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "A city, read at walking pace.",
+      "The long way home",
+      "This exact edition"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1833
+    }
+  },
+  {
+    "scene": "05-product-facts",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:20.168Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1791,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "A city, read at walking pace.",
+      "The long way home",
+      "This exact edition"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1791
+    }
+  },
+  {
+    "scene": "05-product-facts",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:20.346Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2129,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "A city, read at walking pace.",
+      "The long way home",
+      "This exact edition"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2129
+    }
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:20.514Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 2030,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "For the margins.",
+      "Good paper. A place to begin.",
+      "Continue reading.",
+      "Before you order"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 2030
+    }
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:20.818Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2467,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "For the margins.",
+      "Good paper. A place to begin.",
+      "Continue reading.",
+      "Before you order"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 2467
+    }
+  },
+  {
+    "scene": "06-product-continuation",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:21.046Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 3078,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "For the margins.",
+      "Good paper. A place to begin.",
+      "Continue reading.",
+      "Before you order"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 3078
+    }
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:21.808Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1671,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout",
+        "columns": "615.109px 534.875px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "298.547px 298.562px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Where should we send your pages?",
+      "Delivery address",
+      "Shipping",
+      "Order summary 3 items"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1671
+    }
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:22.002Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2317,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout",
+        "columns": "778px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "380px 380px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Where should we send your pages?",
+      "Delivery address",
+      "Shipping",
+      "Order summary 3 items"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 2317
+    }
+  },
+  {
+    "scene": "08-checkout-address",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:22.189Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2500,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout",
+        "columns": "350px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Where should we send your pages?",
+      "Delivery address",
+      "Shipping",
+      "Order summary 3 items"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2500
+    }
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:22.430Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1394,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout review",
+        "columns": "615.109px 534.875px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": {
+      "summaryBeforePayment": true,
+      "summaryBottom": 838.171875,
+      "commitTop": 1089.125,
+      "total": "TotalINR ₹1,180"
+    },
+    "headings": [
+      "Check the details. Then make it yours.",
+      "Deliver to",
+      "Shipping",
+      "Order summary 3 items"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1394
+    }
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:22.614Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2051,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout review",
+        "columns": "778px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": {
+      "summaryBeforePayment": true,
+      "summaryBottom": 1321.34375,
+      "commitTop": 1749.4375,
+      "total": "TotalINR ₹1,180"
+    },
+    "headings": [
+      "Check the details. Then make it yours.",
+      "Deliver to",
+      "Shipping",
+      "Order summary 3 items"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 2051
+    }
+  },
+  {
+    "scene": "09-checkout-review",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:22.800Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2036,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "checkout-layout review",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": {
+      "summaryBeforePayment": true,
+      "summaryBottom": 1263.84375,
+      "commitTop": 1702.8125,
+      "total": "TotalINR ₹1,180"
+    },
+    "headings": [
+      "Check the details. Then make it yours.",
+      "Deliver to",
+      "Shipping",
+      "Order summary 3 items"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2036
+    }
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:22.946Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1085,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Sign in",
+      "One buyer account. Your places to shop."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1085
+    }
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.084Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1143,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Sign in",
+      "One buyer account. Your places to shop."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1143
+    }
+  },
+  {
+    "scene": "10-sign-in",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.216Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1101,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Sign in",
+      "One buyer account. Your places to shop."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 1101
+    }
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.336Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1390,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Create your LetBuyy account",
+      "Continue to Marginalia",
+      "One buyer account. Your places to shop."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1390
+    }
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.468Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1391,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Create your LetBuyy account",
+      "Continue to Marginalia",
+      "One buyer account. Your places to shop."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1391
+    }
+  },
+  {
+    "scene": "11-sign-up",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.592Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1451,
+    "fonts": {
+      "status": "loaded",
+      "libre": false,
+      "sourceSans3": false,
+      "geist": true,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "loaded"
+        }
+      ],
+      "heading": "\"LetBuyy Geist\", Arial, sans-serif"
+    },
+    "brokenImages": [],
+    "grids": [],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Create your LetBuyy account",
+      "Continue to Marginalia",
+      "One buyer account. Your places to shop."
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 1451
+    }
+  },
+  {
+    "scene": "12-profile",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.702Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1525,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "210px 976px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "450px 450px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Hello, Sample Reader.",
+      "Personal details",
+      "Your latest order",
+      "Default address"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1525
+    }
+  },
+  {
+    "scene": "12-profile",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.845Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1758,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "778px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "351px 351px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Hello, Sample Reader.",
+      "Personal details",
+      "Your latest order",
+      "Default address"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1758
+    }
+  },
+  {
+    "scene": "12-profile",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:23.977Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2328,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "350px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "304px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Hello, Sample Reader.",
+      "Personal details",
+      "Your latest order",
+      "Default address"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2328
+    }
+  },
+  {
+    "scene": "13-orders",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:24.134Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1391,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "210px 976px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your orders.",
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1391
+    }
+  },
+  {
+    "scene": "13-orders",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:24.298Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 1623,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "778px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your orders.",
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 1623
+    }
+  },
+  {
+    "scene": "13-orders",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:24.451Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 1976,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Your orders.",
+      "Field Notes for a Slower City"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 1976
+    }
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:24.584Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1528,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "210px 976px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Order MG-1042",
+      "Preparing your pages",
+      "Delivery address",
+      "Payment summary"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1528
+    }
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:24.734Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2234,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "778px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Order MG-1042",
+      "Preparing your pages",
+      "Delivery address",
+      "Payment summary"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 2234
+    }
+  },
+  {
+    "scene": "14-order-detail",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:24.893Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2640,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "350px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Order MG-1042",
+      "Preparing your pages",
+      "Delivery address",
+      "Payment summary"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2640
+    }
+  },
+  {
+    "scene": "15-addresses",
+    "device": "desktop",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:24.999Z",
+    "requested": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "dpr": 1,
+    "documentWidth": 1440,
+    "scrollWidth": 1440,
+    "scrollHeight": 1559,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "210px 976px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "221.453px 221.469px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Saved addresses.",
+      "Home",
+      "Edit address"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 1440,
+      "height": 1559
+    }
+  },
+  {
+    "scene": "15-addresses",
+    "device": "tablet",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:25.128Z",
+    "requested": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "dpr": 1,
+    "documentWidth": 834,
+    "scrollWidth": 834,
+    "scrollHeight": 2011,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "778px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "360.719px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Saved addresses.",
+      "Home",
+      "Edit address"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 834,
+      "height": 2011
+    }
+  },
+  {
+    "scene": "15-addresses",
+    "device": "mobile",
+    "browserVersion": "148.0.7778.96",
+    "capturedAt": "2026-10-23T04:01:25.250Z",
+    "requested": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 844,
+    "dpr": 1,
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 2648,
+    "fonts": {
+      "status": "loaded",
+      "libre": true,
+      "sourceSans3": true,
+      "geist": false,
+      "loadedFaces": [
+        {
+          "family": "Libre Baskerville",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Libre Baskerville",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "600",
+          "status": "loaded"
+        },
+        {
+          "family": "Source Sans 3",
+          "weight": "700",
+          "status": "unloaded"
+        },
+        {
+          "family": "LetBuyy Geist",
+          "weight": "100 900",
+          "status": "unloaded"
+        }
+      ],
+      "heading": "\"Libre Baskerville\", Georgia, serif"
+    },
+    "brokenImages": [],
+    "grids": [
+      {
+        "selector": "account-layout",
+        "columns": "350px"
+      },
+      {
+        "selector": "form-grid",
+        "columns": "308px"
+      }
+    ],
+    "overflowElements": [],
+    "checkoutOrder": null,
+    "headings": [
+      "Saved addresses.",
+      "Home",
+      "Edit address"
+    ],
+    "pageErrors": [],
+    "captureMethod": "Isolated Playwright headless Chromium local file; native PNG fullPage; no user profile",
+    "screenshot": {
+      "width": 390,
+      "height": 2648
+    }
+  }
+]

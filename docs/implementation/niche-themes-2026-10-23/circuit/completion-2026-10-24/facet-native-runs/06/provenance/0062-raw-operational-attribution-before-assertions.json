@@ -1,0 +1,197 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "raw-operational-attribution-before-assertions",
+  "value": {
+    "family": {
+      "base": "runtime_telemetry_metrics",
+      "parent": "runtime_telemetry_metrics_partitioned",
+      "leaves": [
+        "runtime_telemetry_metrics_partitioned_2026_06",
+        "runtime_telemetry_metrics_partitioned_2026_07",
+        "runtime_telemetry_metrics_partitioned_default"
+      ]
+    },
+    "requests": [
+      {
+        "requestId": "03877f59-e9bc-4608-8540-ea1523b498b7",
+        "traceId": "5b14dfaa-282b-4401-a8fe-53e18d3b57bf",
+        "route": "/v1/storefront/:subdomain/products",
+        "status": 200,
+        "errorCode": null
+      },
+      {
+        "requestId": "ecfa2b48-ccbe-4e1f-8239-b784a9f726a6",
+        "traceId": "07a26d38-d108-47eb-ac64-7f15ed2aa5ed",
+        "route": "/v1/storefront/store/:storeId/products",
+        "status": 200,
+        "errorCode": null
+      },
+      {
+        "requestId": "ff42f3ea-0376-4748-950c-c187290ab174",
+        "traceId": "50343dcc-7cea-4988-9b91-47876f777de1",
+        "route": "/v1/storefront/:subdomain/products",
+        "status": 200,
+        "errorCode": null
+      },
+      {
+        "requestId": "97970b5b-73a8-4bcc-9b3a-633d04f4707b",
+        "traceId": "d851e696-1c71-43de-b7d4-a5345d641ece",
+        "route": "/v1/storefront/:subdomain/products",
+        "status": 500,
+        "errorCode": null
+      }
+    ],
+    "rows": [
+      {
+        "id": "3be9e8af-c86e-471f-a598-73c3521adf8e",
+        "unit": "count",
+        "site_id": null,
+        "trace_id": "50343dcc-7cea-4988-9b91-47876f777de1",
+        "created_at": "2026-10-24T15:53:13.032689+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "dimensions": {
+          "colo": null,
+          "route": "/v1/storefront/:subdomain/products",
+          "method": "GET",
+          "country": null,
+          "latency_ms": 8,
+          "auth_source": null,
+          "status_code": 200,
+          "status_class": "2xx",
+          "success_count": 1,
+          "client_error_count": 0,
+          "server_error_count": 0
+        },
+        "request_id": "ff42f3ea-0376-4748-950c-c187290ab174",
+        "updated_at": "2026-10-24T15:53:13.032689+00:00",
+        "updated_by": null,
+        "metric_name": "letbuyy.runtime.request",
+        "recorded_at": "2026-10-24T15:53:13.032689+00:00",
+        "metric_value": 1,
+        "runtime_name": "api-gateway",
+        "correlation_id": "ff42f3ea-0376-4748-950c-c187290ab174"
+      },
+      {
+        "id": "9c4c9f68-2772-4f03-bfab-b01c3f9b022c",
+        "unit": "count",
+        "site_id": null,
+        "trace_id": "d851e696-1c71-43de-b7d4-a5345d641ece",
+        "created_at": "2026-10-24T15:53:15.333231+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "dimensions": {
+          "colo": null,
+          "route": "/v1/storefront/:subdomain/products",
+          "method": "GET",
+          "country": null,
+          "latency_ms": 6,
+          "auth_source": null,
+          "status_code": 500,
+          "status_class": "5xx",
+          "success_count": 0,
+          "client_error_count": 0,
+          "server_error_count": 1
+        },
+        "request_id": "97970b5b-73a8-4bcc-9b3a-633d04f4707b",
+        "updated_at": "2026-10-24T15:53:15.333231+00:00",
+        "updated_by": null,
+        "metric_name": "letbuyy.runtime.request",
+        "recorded_at": "2026-10-24T15:53:15.333231+00:00",
+        "metric_value": 1,
+        "runtime_name": "api-gateway",
+        "correlation_id": "97970b5b-73a8-4bcc-9b3a-633d04f4707b"
+      },
+      {
+        "id": "9edd3531-7b88-4262-992a-c02719d31170",
+        "unit": "count",
+        "site_id": null,
+        "trace_id": "07a26d38-d108-47eb-ac64-7f15ed2aa5ed",
+        "created_at": "2026-10-24T15:53:13.021538+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "dimensions": {
+          "colo": null,
+          "route": "/v1/storefront/store/:storeId/products",
+          "method": "GET",
+          "country": null,
+          "latency_ms": 28,
+          "auth_source": null,
+          "status_code": 200,
+          "status_class": "2xx",
+          "success_count": 1,
+          "client_error_count": 0,
+          "server_error_count": 0
+        },
+        "request_id": "ecfa2b48-ccbe-4e1f-8239-b784a9f726a6",
+        "updated_at": "2026-10-24T15:53:13.021538+00:00",
+        "updated_by": null,
+        "metric_name": "letbuyy.runtime.request",
+        "recorded_at": "2026-10-24T15:53:13.021538+00:00",
+        "metric_value": 1,
+        "runtime_name": "api-gateway",
+        "correlation_id": "ecfa2b48-ccbe-4e1f-8239-b784a9f726a6"
+      },
+      {
+        "id": "d7c85ce9-c920-4048-908f-f6b0c50eacdf",
+        "unit": "count",
+        "site_id": null,
+        "trace_id": "5b14dfaa-282b-4401-a8fe-53e18d3b57bf",
+        "created_at": "2026-10-24T15:53:12.982017+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "dimensions": {
+          "colo": null,
+          "route": "/v1/storefront/:subdomain/products",
+          "method": "GET",
+          "country": null,
+          "latency_ms": 50,
+          "auth_source": null,
+          "status_code": 200,
+          "status_class": "2xx",
+          "success_count": 1,
+          "client_error_count": 0,
+          "server_error_count": 0
+        },
+        "request_id": "03877f59-e9bc-4608-8540-ea1523b498b7",
+        "updated_at": "2026-10-24T15:53:12.982017+00:00",
+        "updated_by": null,
+        "metric_name": "letbuyy.runtime.request",
+        "recorded_at": "2026-10-24T15:53:12.982017+00:00",
+        "metric_value": 1,
+        "runtime_name": "api-gateway",
+        "correlation_id": "03877f59-e9bc-4608-8540-ea1523b498b7"
+      },
+      {
+        "id": "f7ca0b5f-35dd-4b0a-a071-f6e28be3047c",
+        "unit": "count",
+        "site_id": null,
+        "trace_id": "d851e696-1c71-43de-b7d4-a5345d641ece",
+        "created_at": "2026-10-24T15:53:15.333223+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "dimensions": {
+          "colo": null,
+          "route": "/v1/storefront/:subdomain/products",
+          "method": "GET",
+          "source": "api-gateway.observability",
+          "country": null,
+          "severity": "sev3",
+          "error_code": null,
+          "auth_source": null,
+          "status_code": 500,
+          "telemetry_env": "test",
+          "deployment_env": "test"
+        },
+        "request_id": "97970b5b-73a8-4bcc-9b3a-633d04f4707b",
+        "updated_at": "2026-10-24T15:53:15.333223+00:00",
+        "updated_by": null,
+        "metric_name": "letbuyy.alert.runtime.error",
+        "recorded_at": "2026-10-24T15:53:15.333223+00:00",
+        "metric_value": 1,
+        "runtime_name": "api-gateway",
+        "correlation_id": "97970b5b-73a8-4bcc-9b3a-633d04f4707b"
+      }
+    ]
+  }
+}

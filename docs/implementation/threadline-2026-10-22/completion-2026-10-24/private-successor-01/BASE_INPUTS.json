@@ -1,0 +1,85 @@
+{
+  "recordedAt": "2026-10-24T09:10:23.331295+00:00",
+  "scope": "PRIVATE_APPLIED_SUCCESSOR_AND_PURE_CANONICAL_RENDER_TESTS_ONLY",
+  "versionProposal": "2.0.1-private.1 draft; allocator review pending",
+  "source": {
+    "path": "packages/theme-engine/src/threadline-theme.ts",
+    "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+  },
+  "files": [
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "bytes": 15830
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "bytes": 213170
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "bytes": 5963
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "bytes": 107646
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "bytes": 37055
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4",
+      "bytes": 35703
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "bytes": 26801
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+      "bytes": 2599
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+      "bytes": 10278
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+      "bytes": 4862
+    },
+    {
+      "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+      "sha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+      "bytes": 166123
+    },
+    {
+      "path": "database/supabase/rollback/382_threadline_catalog_v2.rollback.sql",
+      "sha256": "6866dc1cdadf828ce9c392e9fe71ede2acb08a3159d77887af8bd5a038a2105e",
+      "bytes": 990
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    },
+    {
+      "path": "package.json",
+      "sha256": "bf8f6c15bce8a79297946b76b20995b40a6810d7da2791163b7abbd1f0203d1d",
+      "bytes": 19437
+    }
+  ],
+  "baselineBundleSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+  "preservedPriorRecords": true,
+  "sourceIntegrationGranted": false,
+  "browserDatabaseProviderBuildGranted": false
+}

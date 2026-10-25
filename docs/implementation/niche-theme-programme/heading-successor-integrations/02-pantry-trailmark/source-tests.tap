@@ -1,0 +1,200 @@
+TAP version 13
+# Subtest: Circuit successor selection is explicit; package identity is stable and version advances
+ok 1 - Circuit successor selection is explicit; package identity is stable and version advances
+  ---
+  duration_ms: 27.218209
+  type: 'test'
+  ...
+# Subtest: all ten default 2.0.0 and legacy catalog outputs remain exactly equal to current Main
+ok 2 - all ten default 2.0.0 and legacy catalog outputs remain exactly equal to current Main
+  ---
+  duration_ms: 124.903625
+  type: 'test'
+  ...
+# Subtest: Circuit explicit option does not change another theme or opt a legacy package into v2
+ok 3 - Circuit explicit option does not change another theme or opt a legacy package into v2
+  ---
+  duration_ms: 45.9755
+  type: 'test'
+  ...
+# Subtest: actual successor schema/manifest and JSON document roundtrip preserve explicit heading edits
+ok 4 - actual successor schema/manifest and JSON document roundtrip preserve explicit heading edits
+  ---
+  duration_ms: 13.437167
+  type: 'test'
+  ...
+# Subtest: collection: editing the declared title changes actual Liquid heading output
+ok 5 - collection: editing the declared title changes actual Liquid heading output
+  ---
+  duration_ms: 430.273083
+  type: 'test'
+  ...
+# Subtest: collection: clearing removes only the optional heading and restores exact default HTML/styles
+ok 6 - collection: clearing removes only the optional heading and restores exact default HTML/styles
+  ---
+  duration_ms: 81.511167
+  type: 'test'
+  ...
+# Subtest: collection: merchant heading markup is escaped as text
+ok 7 - collection: merchant heading markup is escaped as text
+  ---
+  duration_ms: 26.887333
+  type: 'test'
+  ...
+# Subtest: search: editing the declared title changes actual Liquid heading output
+ok 8 - search: editing the declared title changes actual Liquid heading output
+  ---
+  duration_ms: 53.55625
+  type: 'test'
+  ...
+# Subtest: search: clearing removes only the optional heading and restores exact default HTML/styles
+ok 9 - search: clearing removes only the optional heading and restores exact default HTML/styles
+  ---
+  duration_ms: 79.371917
+  type: 'test'
+  ...
+# Subtest: search: merchant heading markup is escaped as text
+ok 10 - search: merchant heading markup is escaped as text
+  ---
+  duration_ms: 24.80375
+  type: 'test'
+  ...
+# Subtest: order: declared heading edits render with the authoritative order number retained
+ok 11 - order: declared heading edits render with the authoritative order number retained
+  ---
+  duration_ms: 50.070625
+  type: 'test'
+  ...
+# Subtest: order: clear falls back to Order; default HTML/styles and immutable saved facts stay unchanged
+ok 12 - order: clear falls back to Order; default HTML/styles and immutable saved facts stay unchanged
+  ---
+  duration_ms: 69.13375
+  type: 'test'
+  ...
+# Subtest: order: merchant heading markup is escaped without changing the order number
+ok 13 - order: merchant heading markup is escaped without changing the order number
+  ---
+  duration_ms: 24.688084
+  type: 'test'
+  ...
+# Subtest: only package version and the two Circuit section outputs differ; electronics facts and styles unchanged
+ok 14 - only package version and the two Circuit section outputs differ; electronics facts and styles unchanged
+  ---
+  duration_ms: 12.633792
+  type: 'test'
+  ...
+# Subtest: new successor factory is idempotent and does not mutate its frozen input
+ok 15 - new successor factory is idempotent and does not mutate its frozen input
+  ---
+  duration_ms: 10.675042
+  type: 'test'
+  ...
+# Subtest: Pantry: explicit successor selection preserves defaults, identity and unrelated selectors
+ok 16 - Pantry: explicit successor selection preserves defaults, identity and unrelated selectors
+  ---
+  duration_ms: 63.383708
+  type: 'test'
+  ...
+# Subtest: Pantry collection: unchanged defaults and explicit heading edits render and survive document roundtrip
+not ok 17 - Pantry collection: unchanged defaults and explicit heading edits render and survive document roundtrip
+  ---
+  duration_ms: 571.533375
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/packages/theme-engine/test/pantry-trailmark-successors.test.ts:1:3504'
+  failureType: 'testCodeFailure'
+  error: 'collection must retain its canonical section'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    settings (/Volumes/Projects/LetBuyy/packages/theme-engine/test/pantry-trailmark-successors.test.ts:22:10)
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/pantry-trailmark-successors.test.ts:62:42)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Pantry collection: clearing an override restores the supported collection fallback
+not ok 18 - Pantry collection: clearing an override restores the supported collection fallback
+  ---
+  duration_ms: 6.930125
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/packages/theme-engine/test/pantry-trailmark-successors.test.ts:1:4326'
+  failureType: 'testCodeFailure'
+  error: 'collection must retain its canonical section'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    settings (/Volumes/Projects/LetBuyy/packages/theme-engine/test/pantry-trailmark-successors.test.ts:22:10)
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/pantry-trailmark-successors.test.ts:76:42)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Pantry search: unchanged defaults and explicit heading edits render and survive document roundtrip
+ok 19 - Pantry search: unchanged defaults and explicit heading edits render and survive document roundtrip
+  ---
+  duration_ms: 129.905208
+  type: 'test'
+  ...
+# Subtest: Pantry search: clearing an override restores the supported collection fallback
+ok 20 - Pantry search: clearing an override restores the supported collection fallback
+  ---
+  duration_ms: 72.53025
+  type: 'test'
+  ...
+# Subtest: Pantry: order copy changes preserve authoritative number and accepted facts; blank defaults and hostile text stay safe
+ok 21 - Pantry: order copy changes preserve authoritative number and accepted facts; blank defaults and hostile text stay safe
+  ---
+  duration_ms: 126.124792
+  type: 'test'
+  ...
+# Subtest: Trailmark: explicit successor selection preserves defaults, identity and unrelated selectors
+ok 22 - Trailmark: explicit successor selection preserves defaults, identity and unrelated selectors
+  ---
+  duration_ms: 39.764583
+  type: 'test'
+  ...
+# Subtest: Trailmark collection: unchanged defaults and explicit heading edits render and survive document roundtrip
+ok 23 - Trailmark collection: unchanged defaults and explicit heading edits render and survive document roundtrip
+  ---
+  duration_ms: 113.062334
+  type: 'test'
+  ...
+# Subtest: Trailmark collection: clearing an override restores the supported collection fallback
+ok 24 - Trailmark collection: clearing an override restores the supported collection fallback
+  ---
+  duration_ms: 22.117042
+  type: 'test'
+  ...
+# Subtest: Trailmark search: unchanged defaults and explicit heading edits render and survive document roundtrip
+ok 25 - Trailmark search: unchanged defaults and explicit heading edits render and survive document roundtrip
+  ---
+  duration_ms: 101.19225
+  type: 'test'
+  ...
+# Subtest: Trailmark search: clearing an override restores the supported collection fallback
+ok 26 - Trailmark search: clearing an override restores the supported collection fallback
+  ---
+  duration_ms: 24.450666
+  type: 'test'
+  ...
+# Subtest: Trailmark: order copy changes preserve authoritative number and accepted facts; blank defaults and hostile text stay safe
+ok 27 - Trailmark: order copy changes preserve authoritative number and accepted facts; blank defaults and hostile text stay safe
+  ---
+  duration_ms: 108.219042
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 25
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1679.041625

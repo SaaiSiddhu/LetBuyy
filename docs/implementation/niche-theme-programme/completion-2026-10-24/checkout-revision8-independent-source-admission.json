@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-24T09:43:49.235657+00:00",
+  "classification": "INDEPENDENT08_TEST_ORACLE_FIXTURE_ONLY_ADMISSION",
+  "sourceFilesVerified": 1127,
+  "receiptHashesVerified": 13,
+  "dependencyLinksVerified": 1087,
+  "runtimeMetadataVerified": 38,
+  "vendorMetadataVerified": 769,
+  "actualVendorRuntimeFilesVerified": 489,
+  "changedFiles": [
+    "services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts"
+  ],
+  "implementationOverlaysUnchanged": 10,
+  "existing15NativeProofReusable": true,
+  "reviewedChanges": [
+    "Exact payment_intent scope mapping plus stronger site/request binding",
+    "Exact +2 level/+1 product versions justified by canonical SQL and native07 receipts",
+    "Coherent synthetic stock50 baseline and exact one-unit decrement",
+    "Preserve all refusal/replay zero-effect invariants and save diagnostics before assertion"
+  ],
+  "mismatches": [],
+  "decision": "PASS_SOURCE_ADMISSION_FOR_AFFECTED7_ONLY",
+  "actualProviderTest": false,
+  "browser": false
+}

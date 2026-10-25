@@ -1,0 +1,321 @@
+Browser tab: 59, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/f2382fe0-6a3e-4241-9aef-9a54c765433f".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/f2382fe0-6a3e-4241-9aef-9a54c765433f
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						43 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			44 text Apps
+			45 container Apps
+				46 content list
+					47 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		48 container Settings navigation
+			49 content list
+				50 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	51 container admin-page-scroll
+		52 container
+			53 heading Edit product, Value: 1
+				54 text Edit product
+			55 button Discard
+			56 button (disabled) Save product
+		57 container
+			58 heading Details, Value: 2
+				59 text Details
+			60 text Name and describe the product as shoppers will see it. Title
+			61 text field (settable) Title, Value: Marginalia lifecycle book
+			62 text Description
+			63 text entry area (settable) Description, Value: Synthetic owned theme acceptance fixture only.
+		64 container
+			65 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				66 text Apparel fit, fabric and care (optional)
+			67 container Product-specific facts
+				68 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				69 text Product facts category
+				70 pop up button (collapsed, settable) Product facts category, Value: Books and stationery, Secondary Actions: Expand
+					71 menu
+						72 (disabled) Choose product information to edit
+						73 Toys and activities
+						74 Electronics
+						75 Food and pantry
+						76 Furniture
+						77 Ready-made gifts
+						78 Text personalization
+						79 Beauty and care
+						80 Sports equipment
+						81 (selected) Books and stationery
+				82 container
+					83 button (expanded) Books and paper facts (optional), Secondary Actions: Collapse
+						84 text Books and paper facts (optional)
+					85 container Books and paper facts
+						86 text Books and paper facts
+						87 text Add only facts you know. Blank optional fields stay unknown. These facts are public on the storefront.
+						88 text Product facts type
+						89 pop up button (collapsed, settable) Product facts type, Value: Printed book, Secondary Actions: Expand
+							90 menu
+								91 No facts type selected
+								92 (selected) Printed book
+								93 Paper and stationery
+						94 text Changing type clears the previous type’s facts.
+						95 container Authors (optional)
+							96 container
+								97 text Authors  (optional)
+							98 button Add author
+								99 text Add 
+								100 text author
+						101 container Subjects (optional)
+							102 container
+								103 text Subjects  (optional)
+							104 text Subject 1
+							105 text field (settable) Subject 1, Value: Essays
+							106 button Remove subject 1
+							107 button Add subject
+								108 text Add 
+								109 text subject
+						110 text Language (optional)
+						111 text field (settable) Language (optional)
+						112 text Print format (optional)
+						113 pop up button (collapsed, settable) Print format (optional), Value: Not supplied, Secondary Actions: Expand
+							114 menu
+								115 (selected) Not supplied
+								116 Paperback
+								117 Hardback
+								118 Board book
+								119 Spiral bound
+								120 Other
+						121 text Edition (optional)
+						122 text field (settable) Edition (optional)
+						123 text Publisher (optional)
+						124 text field (settable) Publisher (optional)
+						125 text Publication year (optional)
+						126 text field (settable) Publication year (optional)
+						127 text Printed pages (optional)
+						128 text field (settable) Printed pages (optional)
+						129 text ISBN (optional)
+						130 text field (settable) ISBN (optional)
+						131 text Supply a valid ISBN-10 or ISBN-13, or leave it blank.
+						132 container Print dimensions (optional)
+							133 text Print dimensions (optional)
+							134 text Width (mm, optional)
+							135 text field (settable) Width (mm, optional)
+							136 text Height (mm, optional)
+							137 text field (settable) Height (mm, optional)
+							138 text Supply both width and height in millimetres, or leave both blank.
+						139 container Reading excerpt (optional)
+							140 text Reading excerpt (optional)
+							141 button Add reading excerpt
+							142 text Only add text you have permission to publish. Permission and attribution are required for an excerpt.
+						143 button Remove book and paper facts
+			144 heading Media, Value: 2
+				145 text Media
+			146 text Upload images that help shoppers inspect the product.
+			147 heading No product media yet, Value: 3
+				148 text No product media yet
+			149 text Upload product images so shoppers can inspect materials, colors, and details before buying.
+			150 button Upload media
+		151 container
+			152 heading Category, Value: 2
+				153 text Category
+			154 text Add category metadata for tax, discovery, and reporting. Category
+			155 text field (settable) Category, Value: Books
+			156 text Determines tax rates and adds product metadata.
+		157 container
+			158 heading Pricing, Value: 2
+				159 text Pricing
+			160 text Set the customer-facing price and internal product cost. Price
+			161 stepper (settable, integer) Price, Value: 420
+			162 text Compare-at price
+			163 stepper (settable) Compare-at price
+			164 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			165 text Cost per item
+			166 stepper (settable) Cost per item
+			167 text Customers will not see this.
+		168 container
+			169 heading Inventory, Value: 2
+				170 text Inventory
+			171 text Track SKU, barcode, and sell-through behavior.
+			172 checkbox (settable, integer) Description: Track quantity, Value: 1
+			173 text Quantity
+			174 stepper (settable, integer) Quantity, Value: 8
+			175 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			176 text SKU (Stock Keeping Unit)
+			177 text field (settable) SKU (Stock Keeping Unit), Value: SYN-EDITOR-books-936e5f577646
+			178 text Barcode (ISBN, UPC, GTIN)
+			179 text field (settable) Barcode (ISBN, UPC, GTIN)
+		180 container
+			181 heading Shipping, Value: 2
+				182 text Shipping
+			183 text Collect fulfillment and customs information for physical products.
+			184 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			185 text Weight
+			186 stepper (settable) Weight
+			187 text Unit
+			188 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				189 menu
+					190 (selected) kg
+					191 g
+					192 lb
+					193 oz
+			194 text Importer details (for imported products)
+			195 text entry area (settable) Importer details (for imported products)
+			196 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			197 text field (settable) Country/Region of origin, Value: India
+			198 text HS (Harmonized System) code
+			199 text field (settable) HS (Harmonized System) code
+		200 container
+			201 heading Variants, Value: 2
+				202 text Variants
+			203 text Add options like size, color, or material.
+			204 text Edition
+			205 button Rename option Edition
+			206 button Delete
+			207 text English hardback
+			208 button Rename Edition value English hardback
+			209 button Remove English hardback
+			210 text Hindi paperback
+			211 button Rename Edition value Hindi paperback
+			212 button Remove Hindi paperback
+			213 text English paperback unavailable
+			214 button Rename Edition value English paperback unavailable
+			215 button Remove English paperback unavailable
+			216 button Add values
+			217 button Add option
+			218 heading Variant combinations, Value: 2
+				219 text Variant combinations
+			220 text Edit price, SKU, and stock for each combination.
+			221 table
+				222 row
+					223 cell
+						224 text Variant
+					225 cell
+						226 text Price
+					227 cell
+						228 text Compare
+					229 cell
+						230 text SKU
+					231 cell
+						232 text Stock
+				233 row
+					234 cell
+						235 text English hardback
+					236 cell
+						237 stepper (settable, integer) Description: Price for English hardback, Value: 590
+					238 cell
+						239 stepper (settable) Compare-at price for English hardback
+					240 cell
+						241 text field (settable) SKU for English hardback
+					242 cell
+						243 stepper (settable, integer) Description: Stock for English hardback, Value: 4
+					244 cell
+						245 button Remove variant English hardback
+				246 row
+					247 cell
+						248 text Hindi paperback
+					249 cell
+						250 stepper (settable, integer) Description: Price for Hindi paperback, Value: 420
+					251 cell
+						252 stepper (settable) Compare-at price for Hindi paperback
+					253 cell
+						254 text field (settable) SKU for Hindi paperback
+					255 cell
+						256 stepper (settable, integer) Description: Stock for Hindi paperback, Value: 4
+					257 cell
+						258 button Remove variant Hindi paperback
+				259 row
+					260 cell
+						261 text English paperback unavailable
+					262 cell
+						263 stepper (settable, integer) Description: Price for English paperback unavailable, Value: 450
+					264 cell
+						265 stepper (settable) Compare-at price for English paperback unavailable
+					266 cell
+						267 text field (settable) SKU for English paperback unavailable
+					268 cell
+						269 stepper (settable, integer) Description: Stock for English paperback unavailable, Value: 0
+					270 cell
+						271 button Remove variant English paperback unavailable
+			272 button (collapsed) Facts for English hardback, Secondary Actions: Expand
+				273 text Facts for 
+				274 text English hardback
+			275 button (collapsed) Facts for Hindi paperback, Secondary Actions: Expand
+				276 text Facts for 
+				277 text Hindi paperback
+			278 button (collapsed) Facts for English paperback unavailable, Secondary Actions: Expand
+				279 text Facts for 
+				280 text English paperback unavailable
+		281 container
+			282 heading Search engine listing, Value: 2
+				283 text Search engine listing
+			284 text Control how this product may appear in search results. syn-threadline-ui-6815276b .letbuyy.com/products/ syn-editor-books-936e5f577646 Marginalia lifecycle book Synthetic owned theme acceptance fixture only. Page title
+			285 text field (settable) Page title
+			286 text 0 of 70 characters used Meta description
+			287 text entry area (settable) Meta description
+			288 text 0 of 160 characters used URL handle
+			289 text field (settable) URL handle, Value: syn-editor-books-936e5f577646
+		290 container
+			291 container
+				292 heading Status, Value: 2
+					293 text Status
+				294 text Product status
+				295 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					296 menu
+						297 (selected) Active
+						298 Draft
+						299 Archived
+				300 text Visible on storefront
+			301 container
+				302 heading Publishing, Value: 2
+					303 text Publishing
+				304 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			305 container
+				306 heading Product organization, Value: 2
+					307 text Product organization
+				308 text Use consistent metadata to keep catalog management fast. Product type
+				309 text field (settable) Product type
+				310 text Vendor
+				311 text field (settable) Vendor
+				312 text Tags
+				313 text field (settable) Tags
+				314 text Separate tags with commas.
+			315 container
+				316 heading Catalog readiness, Value: 2
+					317 text Catalog readiness
+				318 text Save product details, media, pricing, and inventory from one guided form.
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/f2382fe0-6a3e-4241-9aef-9a54c765433f

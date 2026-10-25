@@ -1,0 +1,14 @@
+- banner:
+  - link "Threadline":
+    - /url: http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+    - generic: Threadline
+  - text: Secure checkout
+- heading "Order Confirmed!" [level=1]
+- paragraph: Thank you for your purchase. We will send order updates to the contact details you provided.
+- paragraph: "Order Number: ORD-20261024-10004"
+- paragraph: Payment confirmation is complete. Keep this order number for support.
+- link "Track Your Order":
+  - /url: http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/orders
+- link "Continue Shopping":
+  - /url: http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+- alert

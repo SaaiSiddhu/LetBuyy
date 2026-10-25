@@ -1,0 +1,1040 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(16, 57, 72, 0.75)",
+    "font": "Cormorant, serif",
+    "fontSize": "16.5px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop by Artist",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load slide 1 of 3",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load slide 2 of 3",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load slide 3 of 3",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Pause slideshow",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Cormorant, serif",
+      "height": 75.5,
+      "line": "0px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "",
+      "weight": "500",
+      "width": 136.5,
+      "x": 126.75,
+      "y": 70.703125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 20.7890625,
+      "line": "20.8px",
+      "size": "14.3px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 297.6015625,
+      "x": 38.5,
+      "y": 4.8046875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 137.6953125,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "A curated selection of exceptional art by emerging talent.",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 187.203125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 30.59375,
+      "line": "30.6px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Explore our newest pieces",
+      "weight": "500",
+      "width": 307,
+      "x": 41.5,
+      "y": 759.8984375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "seven vessels 2",
+      "weight": "500",
+      "width": 142,
+      "x": 16.5,
+      "y": 1008.7890625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "eleven vessels",
+      "weight": "500",
+      "width": 142,
+      "x": 178.5,
+      "y": 1008.7890625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "eleven vessels 2",
+      "weight": "500",
+      "width": 142,
+      "x": 340.5,
+      "y": 1008.7890625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 229.4921875,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Each piece is chosen to reflect a cohesive, contemporary aesthetic.",
+      "weight": "500",
+      "width": 277,
+      "x": 56.5,
+      "y": 1452.9296875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 61.1875,
+      "line": "30.6px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Build or enhance your collection",
+      "weight": "500",
+      "width": 277,
+      "x": 56.5,
+      "y": 2044.328125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 61.1875,
+      "line": "30.6px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Expertly curated, affordably priced",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 2294.015625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Mur Vessel 3",
+      "weight": "500",
+      "width": 142,
+      "x": 16.5,
+      "y": 2570.5
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Mur Vessel 2",
+      "weight": "500",
+      "width": 142,
+      "x": 178.5,
+      "y": 2570.5
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Mur Vessel 5",
+      "weight": "500",
+      "width": 142,
+      "x": 340.5,
+      "y": 2570.5
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 137.6953125,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Inspired collections that complement your space and style.",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 2867.7421875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 26.0078125,
+      "line": "26.01px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Rachel Crummey",
+      "weight": "500",
+      "width": 357,
+      "x": 16.5,
+      "y": 3439.734375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 26.0078125,
+      "line": "26.01px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Leia Bryans",
+      "weight": "500",
+      "width": 357,
+      "x": 16.5,
+      "y": 3871.3359375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 26.0078125,
+      "line": "26.01px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Melanie Keay",
+      "weight": "500",
+      "width": 357,
+      "x": 16.5,
+      "y": 4302.9375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 26.0078125,
+      "line": "26.01px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Sid Hicks",
+      "weight": "500",
+      "width": 357,
+      "x": 16.5,
+      "y": 4734.5390625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 45.8984375,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Be the first to know",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5030.125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 244.75,
+      "line": "30.6px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "We offer a highly curated selection, so buyers are not overwhelmed by choice. Our collection is updated frequently with new works by current",
+      "weight": "500",
+      "width": 277,
+      "x": 56.5,
+      "y": 5927.375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Shop",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 6461.2265625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Info",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 6794.671875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 7132.9296875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Subscribe to our emails",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 7280.40625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-studio-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "Discover our newest collection from Leia Bryans",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "Prints",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "Originals",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "Art Objects",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/eryn-lougheed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/sid-hicks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/misbah-ahmed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/rachel-crummey"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/melanie-keay"
+    },
+    {
+      "text": "Gift Cards",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-studio-demo.myshopify.com/cart"
+    },
+    {
+      "text": "seven vessels 2",
+      "url": "https://theme-studio-demo.myshopify.com/products/seven-vessels"
+    },
+    {
+      "text": "eleven vessels",
+      "url": "https://theme-studio-demo.myshopify.com/products/eleven-vessels"
+    },
+    {
+      "text": "eleven vessels 2",
+      "url": "https://theme-studio-demo.myshopify.com/products/eleven-vessels-2"
+    },
+    {
+      "text": "Explore",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "Mur Vessel 3",
+      "url": "https://theme-studio-demo.myshopify.com/products/mur-vessel-3"
+    },
+    {
+      "text": "Mur Vessel 2",
+      "url": "https://theme-studio-demo.myshopify.com/products/mur-vessel-2"
+    },
+    {
+      "text": "Mur Vessel 5",
+      "url": "https://theme-studio-demo.myshopify.com/products/mur-vessel-5"
+    },
+    {
+      "text": "Rachel Crummey",
+      "url": "https://theme-studio-demo.myshopify.com/collections/rachel-crummey"
+    },
+    {
+      "text": "Leia Bryans",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "Melanie Keay",
+      "url": "https://theme-studio-demo.myshopify.com/collections/melanie-keay"
+    },
+    {
+      "text": "Sid Hicks",
+      "url": "https://theme-studio-demo.myshopify.com/collections/sid-hicks"
+    },
+    {
+      "text": "Read more",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Prints",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "Originals",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "Art Objects",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "Gift Cards",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-studio-demo.myshopify.com/search"
+    },
+    {
+      "text": "Our Story",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-studio-demo",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1643656524f5923335",
+      "rect": {
+        "height": 191.6953125,
+        "width": 390,
+        "x": 0,
+        "y": 172.203125
+      },
+      "tag": "SECTION",
+      "text": "A curated selection of exceptional art by emerging talent."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__164365662675e88c51",
+      "rect": {
+        "height": 354,
+        "width": 390,
+        "x": 0,
+        "y": 363.8984375
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1643752199f7fcb4a9",
+      "rect": {
+        "height": 72.59375,
+        "width": 390,
+        "x": 0,
+        "y": 717.8984375
+      },
+      "tag": "SECTION",
+      "text": "Explore our newest pieces"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1643749389925c8fed",
+      "rect": {
+        "height": 378.0390625,
+        "width": 390,
+        "x": 0,
+        "y": 790.4921875
+      },
+      "tag": "SECTION",
+      "text": "seven vessels 2\nVendor:\nLEIA BRYANS\nRegular price\n$250.00 CAD\neleven vessels\nVendor:\nLEIA BRYANS\nRegular price\n$600.00 CAD\neleven vessels 2\nVendor:\nLEIA BRYANS\nRegular price\n$600.0"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__164366113554b41ee4",
+      "rect": {
+        "height": 568.890625,
+        "width": 390,
+        "x": 0,
+        "y": 1168.53125
+      },
+      "tag": "DIV",
+      "text": "Each piece is chosen to reflect a cohesive, contemporary aesthetic."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1643661625fb14535a",
+      "rect": {
+        "height": 535.59375,
+        "width": 390,
+        "x": 0,
+        "y": 1737.421875
+      },
+      "tag": "DIV",
+      "text": "Build or enhance your collection\nExplore"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1643909575ac2fe0a2",
+      "rect": {
+        "height": 91.1875,
+        "width": 390,
+        "x": 0,
+        "y": 2273.015625
+      },
+      "tag": "SECTION",
+      "text": "Expertly curated, affordably priced"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__featured_collection",
+      "rect": {
+        "height": 390.0390625,
+        "width": 390,
+        "x": 0,
+        "y": 2364.203125
+      },
+      "tag": "SECTION",
+      "text": "Mur Vessel 3\nVendor:\nMISBAH AHMED\nRegular price\n$425.00 CAD\nMur Vessel 2\nVendor:\nMISBAH AHMED\nRegular price\n$425.00 CAD\nMur Vessel 5\nVendor:\nMISBAH AHMED\nRegular price\n$425.00 CAD\n"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1643657004d9161eca",
+      "rect": {
+        "height": 314.1953125,
+        "width": 390,
+        "x": 0,
+        "y": 2754.2421875
+      },
+      "tag": "SECTION",
+      "text": "SHOP BY ARTIST\n\nInspired collections that complement your space and style."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1643726070b02ce75f",
+      "rect": {
+        "height": 1757.40625,
+        "width": 390,
+        "x": 0,
+        "y": 3068.4375
+      },
+      "tag": "SECTION",
+      "text": "Rachel Crummey\nLeia Bryans\nMelanie Keay\nSid Hicks"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__1645210127c7e4e87e",
+      "rect": {
+        "height": 195.28125,
+        "width": 390,
+        "x": 0,
+        "y": 4825.84375
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__16437518661b2dc948",
+      "rect": {
+        "height": 270.3984375,
+        "width": 390,
+        "x": 0,
+        "y": 5021.125
+      },
+      "tag": "SECTION",
+      "text": "Be the first to know\n\nJoin our email list to learn about exclusive showings and new collections.\n\nEmail"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821446824__16438458130e60f4ca",
+      "rect": {
+        "height": 1136.703125,
+        "width": 390,
+        "x": 0,
+        "y": 5291.5234375
+      },
+      "tag": "DIV",
+      "text": "We offer a highly curated selection, so buyers are not overwhelmed by choice. Our collection is updated frequently with new works by current and incoming artists but quality, not q"
+    }
+  ],
+  "title": "theme-studio-demo",
+  "url": "https://theme-studio-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "slideshow banner banner--small grid grid--1-col slider slider--everywhere",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 308,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 308,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 308,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 308,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "grid grid--2-col product-grid contains-card contains-card--standard grid--3-col-desktop grid--3-col-tablet slider slider--tablet grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 296.5390625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 541.890625,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 496.59375,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "grid grid--2-col product-grid contains-card contains-card--standard grid--3-col-desktop grid--3-col-tablet slider slider--tablet grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 296.5390625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "collection-list contains-card contains-card--standard grid grid--1-col grid--2-col-desktop grid--4-col-tablet collection-list--4-items",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 1706.40625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col grid--full-width grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 144.28125,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 1079.703125,
+      "tag": "DIV",
+      "width": 357
+    }
+  ],
+  "images": [
+    {
+      "alt": "A colorful abstract painting with pink, orange and grey tones ",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 308,
+        "width": 357
+      }
+    },
+    {
+      "alt": "A painting of a person leading a horse",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 308,
+        "width": 357
+      }
+    },
+    {
+      "alt": "An abstract painting with colorful shapes in orange, red, and blue",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 308,
+        "width": 357
+      }
+    },
+    {
+      "alt": "seven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 177.5,
+        "width": 142
+      }
+    },
+    {
+      "alt": "seven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 177.5,
+        "width": 142
+      }
+    },
+    {
+      "alt": "eleven vessels",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 177.5,
+        "width": 142
+      }
+    },
+    {
+      "alt": "eleven vessels",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 177.5,
+        "width": 142
+      }
+    },
+    {
+      "alt": "eleven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 177.5,
+        "width": 142
+      }
+    },
+    {
+      "alt": "eleven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 177.5,
+        "width": 142
+      }
+    },
+    {
+      "alt": "A painting of pink blooms on a tree",
+      "complete": true,
+      "naturalWidth": 170,
+      "rect": {
+        "height": 213.3984375,
+        "width": 357
+      }
+    },
+    {
+      "alt": "A room with a colorful painting hanging on the wall ",
+      "complete": true,
+      "naturalWidth": 170,
+      "rect": {
+        "height": 262.90625,
+        "width": 357
+      }
+    },
+    {
+      "alt": "Mur Vessel 3",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 177.5,
+        "width": 142
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nDiscover our newest collection from Leia Bryans \n\nPrints\nOriginals\nArt Objects\nShop by Artist\nGift Cards\nAbout\nCart\nA curated selection of exceptional art by emerging talent.\nExplore our newest pieces\nseven vessels 2\nVendor:\nLEIA BRYANS\nRegular price\n$250.00 CAD\neleven vessels\nVendor:\nLEIA BRYANS\nRegular price\n$600.00 CAD\neleven vessels 2\nVendor:\nLEIA BRYANS\nRegular price\n$600.00 CAD\n1\n/\nof\n2\nEach piece is chosen to reflect a cohesive, contemporary aesthetic.\nBuild or enhance your collection\nExplore\nExpertly curated, affordably priced\nMur Vessel 3\nVendor:\nMISBAH AHMED\nRegular price\n$425.00 CAD\nMur Vessel 2\nVendor:\nMISBAH AHMED\nRegular price\n$425.00 CAD\nMur Vessel 5\nVendor:\nMISBAH AHMED\nRegular price\n$425.00 CAD\n1\n/\nof\n2\n\nSHOP BY ARTIST\n\nInspired collections that complement your space and style.\nRachel Crummey\nLeia Bryans\nMelanie Keay\nSid Hicks\nBe the first to know\n\nJoin our email list to learn about exclusive showings and new collections.\n\nEmail\nWe offer a highly curated selection, so buyers are not overwhelmed by choice. Our collection is updated frequently with new works by current and incoming artists but quality, not quantity, is our focus.\n\nASHLEY MULVIHILL — FOUNDER\n\nRead more\nShop\nPrints\nOriginals\nArt Objects\nGift Cards\nSearch\nInfo\nOur Story\nJournal\nContact\nOur mission\n\nWe curate affordably priced pieces from the most exciting up-and-coming artists.\n\nSubscribe to our emails\nEmail\nPayment methods\n© 2026, theme-studio-demo Powered by Shopify"
+}

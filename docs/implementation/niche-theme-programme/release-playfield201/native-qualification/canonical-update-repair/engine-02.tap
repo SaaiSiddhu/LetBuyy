@@ -1,0 +1,295 @@
+TAP version 13
+# Subtest: package-edition: exact captured Playfield200→201 with unchanged schema adopts target source and preserves merchant content
+ok 1 - package-edition: exact captured Playfield200→201 with unchanged schema adopts target source and preserves merchant content
+  ---
+  duration_ms: 36.984333
+  type: 'test'
+  ...
+# Subtest: package-edition: same-schema downgrade is rejected by both preview and apply with no input mutation
+ok 2 - package-edition: same-schema downgrade is rejected by both preview and apply with no input mutation
+  ---
+  duration_ms: 14.393041
+  type: 'test'
+  ...
+# Subtest: package-edition: a different package or reused ordinal with another label fails closed before merge
+ok 3 - package-edition: a different package or reused ordinal with another label fails closed before merge
+  ---
+  duration_ms: 11.714542
+  type: 'test'
+  ...
+# Subtest: phase-ab: same-version update is a no-op — updatedDoc is the identical reference
+ok 4 - phase-ab: same-version update is a no-op — updatedDoc is the identical reference
+  ---
+  duration_ms: 1.3835
+  type: 'test'
+  ...
+# Subtest: phase-ab: same-version update diff is empty — no sections, no conflicts
+ok 5 - phase-ab: same-version update diff is empty — no sections, no conflicts
+  ---
+  duration_ms: 0.454
+  type: 'test'
+  ...
+# Subtest: phase-ab: same-version update diff carries fromVersion and toVersion
+ok 6 - phase-ab: same-version update diff carries fromVersion and toVersion
+  ---
+  duration_ms: 0.285458
+  type: 'test'
+  ...
+# Subtest: phase-ab: unknown target schema_version throws UpdateVersionRejectedError
+ok 7 - phase-ab: unknown target schema_version throws UpdateVersionRejectedError
+  ---
+  duration_ms: 2.581042
+  type: 'test'
+  ...
+# Subtest: phase-ab: computeThemeUpdateDiff also throws UpdateVersionRejectedError for unknown version
+ok 8 - phase-ab: computeThemeUpdateDiff also throws UpdateVersionRejectedError for unknown version
+  ---
+  duration_ms: 0.484208
+  type: 'test'
+  ...
+# Subtest: phase-ab: UpdateVersionRejectedError has correct name, targetVersion, reason
+ok 9 - phase-ab: UpdateVersionRejectedError has correct name, targetVersion, reason
+  ---
+  duration_ms: 0.433667
+  type: 'test'
+  ...
+# Subtest: phase-ab: downgrade from V2 document to V1 bundle throws UpdateDowngradeError
+ok 10 - phase-ab: downgrade from V2 document to V1 bundle throws UpdateDowngradeError
+  ---
+  duration_ms: 1.021084
+  type: 'test'
+  ...
+# Subtest: phase-ab: UpdateDowngradeError has correct name, fromVersion, toVersion
+ok 11 - phase-ab: UpdateDowngradeError has correct name, fromVersion, toVersion
+  ---
+  duration_ms: 0.427667
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version preserves merchant-content settings (text fields)
+ok 12 - phase-ab: cross-version preserves merchant-content settings (text fields)
+  ---
+  duration_ms: 0.527458
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version does NOT carry token settings (primaryColor)
+ok 13 - phase-ab: cross-version does NOT carry token settings (primaryColor)
+  ---
+  duration_ms: 0.408625
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version does NOT carry empty-string settings (generated-placeholder)
+ok 14 - phase-ab: cross-version does NOT carry empty-string settings (generated-placeholder)
+  ---
+  duration_ms: 0.389
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version preserves resource-binding settings via plain key (collectionHandle)
+ok 15 - phase-ab: cross-version preserves resource-binding settings via plain key (collectionHandle)
+  ---
+  duration_ms: 0.654083
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version preserves resource-binding settings via Id suffix pattern
+ok 16 - phase-ab: cross-version preserves resource-binding settings via Id suffix pattern
+  ---
+  duration_ms: 0.601459
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version preserves W binding descriptor in section settings
+ok 17 - phase-ab: cross-version preserves W binding descriptor in section settings
+  ---
+  duration_ms: 0.612083
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting classifies isDynamicSourceDescriptor as resource-binding
+ok 18 - phase-ab: classifyUpdateSetting classifies isDynamicSourceDescriptor as resource-binding
+  ---
+  duration_ms: 0.041791
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version preserves nested block children (T)
+ok 19 - phase-ab: cross-version preserves nested block children (T)
+  ---
+  duration_ms: 0.364042
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version carries merchant locale-adjacent text (Z classification as merchant-content)
+ok 20 - phase-ab: cross-version carries merchant locale-adjacent text (Z classification as merchant-content)
+  ---
+  duration_ms: 0.394542
+  type: 'test'
+  ...
+# Subtest: phase-ab: cross-version locales are replaced by nextBundle locales (Z replacement)
+ok 21 - phase-ab: cross-version locales are replaced by nextBundle locales (Z replacement)
+  ---
+  duration_ms: 0.45925
+  type: 'test'
+  ...
+# Subtest: phase-ab: no customizations → clean update produces valid document
+ok 22 - phase-ab: no customizations → clean update produces valid document
+  ---
+  duration_ms: 0.339834
+  type: 'test'
+  ...
+# Subtest: phase-ab: removed customized section raises requiresDuplicateBeforeApply=true
+ok 23 - phase-ab: removed customized section raises requiresDuplicateBeforeApply=true
+  ---
+  duration_ms: 0.409959
+  type: 'test'
+  ...
+# Subtest: phase-ab: removed customized section appears in diff.conflicts with lostContent.settings
+ok 24 - phase-ab: removed customized section appears in diff.conflicts with lostContent.settings
+  ---
+  duration_ms: 0.333042
+  type: 'test'
+  ...
+# Subtest: phase-ab: removed section with NO merchant content does not appear in diff.conflicts
+ok 25 - phase-ab: removed section with NO merchant content does not appear in diff.conflicts
+  ---
+  duration_ms: 0.227125
+  type: 'test'
+  ...
+# Subtest: phase-ab: new section type in nextBundle appears as action=added in diff
+ok 26 - phase-ab: new section type in nextBundle appears as action=added in diff
+  ---
+  duration_ms: 0.299208
+  type: 'test'
+  ...
+# Subtest: phase-ab: added section is NOT automatically inserted into merchant templates
+ok 27 - phase-ab: added section is NOT automatically inserted into merchant templates
+  ---
+  duration_ms: 0.304709
+  type: 'test'
+  ...
+# Subtest: phase-ab: isDynamicSourceDescriptor value in removed section appears in lostContent
+ok 28 - phase-ab: isDynamicSourceDescriptor value in removed section appears in lostContent
+  ---
+  duration_ms: 0.3605
+  type: 'test'
+  ...
+# Subtest: phase-ab: G migration runs before merge — schemaMigrations is empty array (empty registry)
+ok 29 - phase-ab: G migration runs before merge — schemaMigrations is empty array (empty registry)
+  ---
+  duration_ms: 1.170583
+  type: 'test'
+  ...
+# Subtest: phase-ab: updated document passes parseThemeDocument validation
+ok 30 - phase-ab: updated document passes parseThemeDocument validation
+  ---
+  duration_ms: 1.155917
+  type: 'test'
+  ...
+# Subtest: phase-ab: updated document bundle_schema_version matches nextBundle schema_version
+ok 31 - phase-ab: updated document bundle_schema_version matches nextBundle schema_version
+  ---
+  duration_ms: 0.399042
+  type: 'test'
+  ...
+# Subtest: phase-ab: updated document section_definitions come from nextBundle
+ok 32 - phase-ab: updated document section_definitions come from nextBundle
+  ---
+  duration_ms: 0.5
+  type: 'test'
+  ...
+# Subtest: phase-ab: planThemeSafeUpdate is deterministic — same inputs produce identical output
+ok 33 - phase-ab: planThemeSafeUpdate is deterministic — same inputs produce identical output
+  ---
+  duration_ms: 0.77275
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting returns token for TOKEN_KEYS (drift parity with Phase O)
+ok 34 - phase-ab: classifyUpdateSetting returns token for TOKEN_KEYS (drift parity with Phase O)
+  ---
+  duration_ms: 0.055167
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting returns resource-binding for EXPLICIT_RESOURCE_BINDING_KEYS (Phase O parity)
+ok 35 - phase-ab: classifyUpdateSetting returns resource-binding for EXPLICIT_RESOURCE_BINDING_KEYS (Phase O parity)
+  ---
+  duration_ms: 0.036334
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting returns resource-binding for camelCase Handle/Id suffix (Phase O parity)
+ok 36 - phase-ab: classifyUpdateSetting returns resource-binding for camelCase Handle/Id suffix (Phase O parity)
+  ---
+  duration_ms: 0.027625
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting returns resource-binding for snake_case _handle/_id suffix (Phase O parity)
+ok 37 - phase-ab: classifyUpdateSetting returns resource-binding for snake_case _handle/_id suffix (Phase O parity)
+  ---
+  duration_ms: 0.021292
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting returns generated-placeholder for empty/null/undefined (Phase O parity)
+ok 38 - phase-ab: classifyUpdateSetting returns generated-placeholder for empty/null/undefined (Phase O parity)
+  ---
+  duration_ms: 0.034333
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting returns merchant-content for non-empty non-token non-binding values (Phase O parity)
+ok 39 - phase-ab: classifyUpdateSetting returns merchant-content for non-empty non-token non-binding values (Phase O parity)
+  ---
+  duration_ms: 0.022875
+  type: 'test'
+  ...
+# Subtest: phase-ab: classifyUpdateSetting W-binding check fires BEFORE token check (Phase AB addition)
+ok 40 - phase-ab: classifyUpdateSetting W-binding check fires BEFORE token check (Phase AB addition)
+  ---
+  duration_ms: 0.026083
+  type: 'test'
+  ...
+# Subtest: phase-ab: diff.summary counts are accurate for a mixed update
+ok 41 - phase-ab: diff.summary counts are accurate for a mixed update
+  ---
+  duration_ms: 0.523916
+  type: 'test'
+  ...
+# Subtest: phase-ab: diff.summary counts are accurate for a clean same-section update
+ok 42 - phase-ab: diff.summary counts are accurate for a clean same-section update
+  ---
+  duration_ms: 0.517291
+  type: 'test'
+  ...
+# Subtest: phase-ab: preserveContent=false skips merchant setting carry-forward
+ok 43 - phase-ab: preserveContent=false skips merchant setting carry-forward
+  ---
+  duration_ms: 0.430792
+  type: 'test'
+  ...
+# Subtest: phase-ab: computeThemeUpdateDiff produces same diff shape as planThemeSafeUpdate
+ok 44 - phase-ab: computeThemeUpdateDiff produces same diff shape as planThemeSafeUpdate
+  ---
+  duration_ms: 0.477958
+  type: 'test'
+  ...
+# Subtest: phase-ab: retained section with dropped block type surfaces lostContent in diff.conflicts (NO-DATA-LOSS)
+not ok 45 - phase-ab: retained section with dropped block type surfaces lostContent in diff.conflicts (NO-DATA-LOSS)
+  ---
+  duration_ms: 0.480167
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/packages/theme-engine/test/theme-safe-update.test.ts:1:31532'
+  failureType: 'testCodeFailure'
+  error: 'Theme safe-update rejected: cannot apply target bundle version "2.0.0" (reason: package-mismatch). Only known, forward-compatible versions may be applied.'
+  code: 'ERR_TEST_FAILURE'
+  name: 'UpdateVersionRejectedError'
+  stack: |-
+    updateDirection (/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-safe-update.ts:527:57)
+    planThemeSafeUpdate (/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-safe-update.ts:682:21)
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/theme-safe-update.test.ts:1125:42)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..45
+# tests 45
+# suites 0
+# pass 44
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 366.806917

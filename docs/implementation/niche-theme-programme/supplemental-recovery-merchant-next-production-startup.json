@@ -1,0 +1,144 @@
+{
+  "recordedAt": "2026-10-23T20:44:01.035Z",
+  "status": "OWNED_SUPPLEMENTAL_PRODUCTION_HTTP_READY_NORMAL_UI_NOT_RUN",
+  "kind": "merchant-next-production",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-recovery-20261024-01",
+  "origin": "http://admin.threadline-f6074d90e894.localhost:49943",
+  "port": 49943,
+  "parentPid": 30132,
+  "supervisorPid": 30240,
+  "healthStatus": 307,
+  "healthPath": "/",
+  "sourceProof": {
+    "path": "/private/tmp/theme-editor-recovery-20261024-01/supplemental-recovery-source-proof.json",
+    "sha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f"
+  },
+  "sourceFiles": 17243,
+  "sourceAfterBuildUnchanged": true,
+  "sourceDeltas": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts",
+      "sha256": "1cc8bd46a88302dc9319f00d8e4a3c5688760bfcc8a76f494936b83943245070",
+      "bytes": 16569
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712",
+      "bytes": 143908
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/playfield-v201-facts.test.ts",
+      "sha256": "d71ff4afa6fbd7417f7d836589a25b55f78fdb43ce8889b0cd3d382b48eb72e0",
+      "bytes": 20944
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7",
+      "bytes": 6021
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "sha256": "40b12590447f6689d59197e52f7f35841589d1b1b7da3e1ae3e11b84a50e9864",
+      "bytes": 21535
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "sha256": "829f6f49e4330c819a640ef11be87cd0f48eca02c03722c6072234c6c14b35dd",
+      "bytes": 12945
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts",
+      "sha256": "1d4febedd0d6babf2cd0a3146f758adf082293a5bb8065291034bfdc8b6b477f",
+      "bytes": 18261
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/variant-selection-url.ts",
+      "sha256": "290b94804e758325f8262a4dd53bdc81ddbbf30b4ae1a811f7affacde5158ed1",
+      "bytes": 3189
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/final-combined-source-2026-10-24/builder-proof.ts",
+      "sha256": "a35eff916f84e1533d72f9caf36ec657878ea5206652fd1d4c3046084e85f029",
+      "bytes": 3105
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+      "bytes": 4862
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3",
+      "bytes": 2585
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+      "bytes": 5882
+    },
+    {
+      "path": "packages/theme-engine/test/niche-order-presentation.test.ts",
+      "sha256": "20cef99b2deea24bb02b0c08ecfe7224eb3e8fe90b2a30c09c06afc88502eb19",
+      "bytes": 8701
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-v201.test.ts",
+      "sha256": "5253b640529109e96ce4c04c76085f79160f77be90bff06be992e7198ed20eae",
+      "bytes": 6414
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "0e43c56ea73b3b60d3e8c99da545849272e578a0f352580004f7a5ef1ad07145",
+      "bytes": 32327,
+      "beforeSha256": "bebce783d3bd28990ac691a180f5ef85d60de14d76021a3c4be04daa43920af3"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "686d437aeed4a295a175a8b94bd8c3e2c758f4454d60fabcaa55685d4710bac4",
+      "bytes": 90708,
+      "beforeSha256": "6963ac68ee0e4eb76704372dd65d46742efdcc9485157ee9ad2a509b365857c4"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "cdc702e0375f75bbcac4149b18fdf1fe682d191f67f0dab8238663f15d945883",
+      "bytes": 99979,
+      "beforeSha256": "39f39b7f5737da6456e8c7830fb95b80a0f66a27571e5a265ee4569d3ec9df7e"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+      "sha256": "0accbb3037ccb1c6f10022e93921394bee471a6742d1219752179c136cdc4757",
+      "bytes": 12864,
+      "beforeSha256": "a318ecc7594660d6c86ed1cfe4dbcbeab505705d929078c0a35648c27a2bf838"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts",
+      "sha256": "413a6e3c42ac78f3352e29139034134c51163f7287a83dfb6379f74071d17fca",
+      "bytes": 10675,
+      "beforeSha256": null
+    }
+  ],
+  "oldProcessesStopped": false,
+  "databaseMutationPerformed": false,
+  "before": {
+    "orders": 1,
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "ownerId": "b18d7bd0-2f1a-4e34-81e9-db7d06658dc5",
+    "products": 22,
+    "cartScopeMd5": "aa6ebecc8324ddb6405eb92446ea29e5"
+  },
+  "originalAnnouncementSource": "Exact original still-owned supervisor3913; named per-run whitelist privately reused unchanged",
+  "merchantOrigin": "http://admin.threadline-f6074d90e894.localhost:49943",
+  "commerceOrigin": "http://syn-threadline-ui-33be9d94.localhost:49944",
+  "originalMerchantOrigin": "http://admin.threadline-f6074d90e894.localhost:62075",
+  "originalCommerceOrigin": "http://syn-threadline-ui-33be9d94.localhost:62076",
+  "checkoutOrigin": "https://checkout.localhost:62082",
+  "logPath": "/private/tmp/theme-editor-recovery-f607-merchant-next-production-01.log",
+  "limits": [
+    "Original62074issuer and62082checkout retained; no signing key read or copied.",
+    "Natural host cookies only; no cookie/token/storage injection. New-port SSO not claimed.",
+    "New Commerce port has separate localStorage and must create its own cart through normal UI; old pre-edit cart remains untouched.",
+    "Hosted checkout Back/Store/confirmation links still point to original62076; no cross-port cart continuity claim."
+  ],
+  "cspConfiguration": null
+}

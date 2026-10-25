@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: versioned factory is pure, retains stable ride identity and preserves v1/template functions
+ok 1 - versioned factory is pure, retains stable ride identity and preserves v1/template functions
+  ---
+  duration_ms: 25.922709
+  type: 'test'
+  ...
+# Subtest: real Liquid index and collection render actual identity and measured equipment cards
+ok 2 - real Liquid index and collection render actual identity and measured equipment cards
+  ---
+  duration_ms: 176.627875
+  type: 'test'
+  ...
+# Subtest: canonical variant/cart/gallery islands survive; variant facts are labelled by their own identity
+ok 3 - canonical variant/cart/gallery islands survive; variant facts are labelled by their own identity
+  ---
+  duration_ms: 44.12075
+  type: 'test'
+  ...
+# Subtest: clothing switches to apparel measurements; equipment never receives garment size headings
+ok 4 - clothing switches to apparel measurements; equipment never receives garment size headings
+  ---
+  duration_ms: 75.183667
+  type: 'test'
+  ...
+# Subtest: missing media/facts and empty catalog remain useful without invented stock or compatibility
+ok 5 - missing media/facts and empty catalog remain useful without invented stock or compatibility
+  ---
+  duration_ms: 56.4445
+  type: 'test'
+  ...
+# Subtest: equipment facets stay absent until the canonical server explicitly supplies capability/options
+ok 6 - equipment facets stay absent until the canonical server explicitly supplies capability/options
+  ---
+  duration_ms: 57.089917
+  type: 'test'
+  ...
+# Subtest: merchant settings save/readback changes actual rendered content and media
+ok 7 - merchant settings save/readback changes actual rendered content and media
+  ---
+  duration_ms: 60.755667
+  type: 'test'
+  ...
+# Subtest: portable CSS parses with scoped rules and valid narrow-grid declarations
+ok 8 - portable CSS parses with scoped rules and valid narrow-grid declarations
+  ---
+  duration_ms: 33.78725
+  type: 'test'
+  ...
+# Subtest: reapplying the factory does not duplicate schemas/styles on its own versioned package
+ok 9 - reapplying the factory does not duplicate schemas/styles on its own versioned package
+  ---
+  duration_ms: 7.591
+  type: 'test'
+  ...
+# Subtest: editor preview identifies the actual inline navigation anchor; public output omits block metadata
+ok 10 - editor preview identifies the actual inline navigation anchor; public output omits block metadata
+  ---
+  duration_ms: 69.363334
+  type: 'test'
+  ...
+# Subtest: fresh inherited collection grid contains only supported defaults across the real document JSON wire
+ok 11 - fresh inherited collection grid contains only supported defaults across the real document JSON wire
+  ---
+  duration_ms: 13.552708
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1516.649417

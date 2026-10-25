@@ -10,7 +10,7 @@
 // ---------- Types ----------
 
 export interface SchemaField {
-    type: 'text' | 'textarea' | 'richtext' | 'color' | 'image' | 'select' | 'toggle' | 'range' | 'number' | 'url' | 'radio'
+    type: 'text' | 'textarea' | 'richtext' | 'color' | 'image' | 'select' | 'toggle' | 'range' | 'number' | 'url' | 'radio' | 'product' | 'collection'
     label: string
     default?: unknown
     maxLength?: number

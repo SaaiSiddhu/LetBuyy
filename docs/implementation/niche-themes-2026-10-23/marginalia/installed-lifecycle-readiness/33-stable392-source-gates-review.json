@@ -1,0 +1,134 @@
+{
+  "reviewedAt": "2026-10-24T02:49:52.668946+00:00",
+  "status": "PASS_NEW_STABLE392_SOURCE_GATES_OFFLINE;STARTUP_CORRECTION_RECORDED;RUNTIME_NOT_ADMITTED",
+  "rootSourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/editor-stable392-02-source-gate-admission.json",
+    "sha256": "a01f0f1355444fbd8d1fe72ed639237993d6e17841cc956d7e50cb6760356d76",
+    "bytes": 3358
+  },
+  "rootLaunchCorrection": {
+    "path": "docs/implementation/niche-theme-programme/editor-stable392-02-first-launch-correction.json",
+    "sha256": "596fe61744900ca9f5d87c708d2208e73a781ae38fae8897dff05c236fc4b01f",
+    "bytes": 1200
+  },
+  "verifiedEvidenceHashes": [
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/stable392-editor-source-proof.json",
+      "sha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+      "bytes": 3810263
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/observer-origins.tap",
+      "sha256": "d2d77d68eb55e3b4f99ebf95a91d33c3a1b6f6d7239d93f43c00402ba1e7a5e4",
+      "bytes": 9515
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/checkout-bff.tap",
+      "sha256": "459c726e6dbd783bd0b21a882cb8ae166e2277918f52471b781c2207892dc068",
+      "bytes": 2943
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/gateway-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/commerce-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02-runner.json",
+      "sha256": "dbe88649c355749ff86b41c6295d70f1edd90f7a1225e2d36cc303a27fd5a132",
+      "bytes": 1559
+    }
+  ],
+  "candidate": "/private/tmp/theme-editor-stable392-20261024-02",
+  "sourceProof": {
+    "path": "/private/tmp/theme-editor-stable392-20261024-02/stable392-editor-source-proof.json",
+    "sha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a"
+  },
+  "sourceValidation": {
+    "observerAndOrigins": {
+      "pass": 36,
+      "fail": 0,
+      "skip": 0,
+      "cancelled": 0
+    },
+    "checkoutBff": {
+      "pass": 11,
+      "fail": 0,
+      "skip": 0,
+      "cancelled": 0
+    },
+    "fullGatewayNoEmit": 0,
+    "commerceNoEmit": 0,
+    "scopedLint": "Frozen owner receipts0errors0warnings; not globally lint green"
+  },
+  "sourceValidationScope": "New isolated observer/origin36 and checkoutBff11 gates plus Gateway/commerce noEmit. Not Main updater393 qualification, not an installed case. No local test rerun.",
+  "stockIntentFiveCandidatePinsExact": [
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "0e43c56ea73b3b60d3e8c99da545849272e578a0f352580004f7a5ef1ad07145",
+      "bytes": 32327
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "686d437aeed4a295a175a8b94bd8c3e2c758f4454d60fabcaa55685d4710bac4",
+      "bytes": 90708
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "cdc702e0375f75bbcac4149b18fdf1fe682d191f67f0dab8238663f15d945883",
+      "bytes": 99979
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+      "sha256": "0accbb3037ccb1c6f10022e93921394bee471a6742d1219752179c136cdc4757",
+      "bytes": 12864
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts",
+      "sha256": "413a6e3c42ac78f3352e29139034134c51163f7287a83dfb6379f74071d17fca",
+      "bytes": 10675
+    }
+  ],
+  "a483HelperExact": {
+    "path": "/private/tmp/theme-editor-stable392-20261024-02/apps/merchant/web/src/lib/product-facts-draft.ts",
+    "sha256": "a4833276eb2647dca6ad6ab5e9b30e0f68f235ac7188516c98aea5f8c8b4288d",
+    "bytes": 6561
+  },
+  "rootReportedOtherSourceConservation": {
+    "filesRehashed": 17243,
+    "changes": 0,
+    "qualifiedCart191PinsExact": true,
+    "cart164PreservedNotRerun": true
+  },
+  "firstAttempt": {
+    "runId": "6d9ec520ad66",
+    "applicationStarted": false,
+    "stateCreated": false,
+    "kind": "postgres",
+    "cause": "Manual .ts entry is outside *.test.ts discovery; --gateway-db selects suite sets but does not override explicit path kind. Omitted --kind gateway-db classified it postgres/plain node, causing extensionless TypeScript module resolution failure before fixture code.",
+    "cleanupEmpty": true,
+    "supportedCorrection": "Use existing documented-source --kind gateway-db on the same explicit suite. No test loader/guard/source edits. Preserve original logs and use separate retry paths.",
+    "retryPerformedHere": false
+  },
+  "newRuntimeStatus": "NOT_ADMITTED;OWNER_STARTUP_PENDING",
+  "browserGrant": "NONE_UNTIL_NEW_ACTUAL_RUNTIME_ADMISSION; DEWDROP_FIRST_FULL30_RESERVED",
+  "mainUpdaterWip": "EXCLUDED; current Main compile/native393 not qualified by this separate gate",
+  "marginalia": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16,
+    "grant": null,
+    "runtimeBindings": null
+  },
+  "next": "Root alone performs corrected owned startup, admits actual runtime/source/auth/new data bindings. Dewdrop30 reserved first; Marginalia requires separate fresh named serialized grant. No historical f607 resources or case credit reused.",
+  "sideEffects": {
+    "sourceEdits": 0,
+    "testsRun": 0,
+    "runtimeBrowserProcessNetworkOrDatabaseActions": 0,
+    "privateStateKeysRead": 0
+  }
+}

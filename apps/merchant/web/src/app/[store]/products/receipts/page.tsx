@@ -181,7 +181,8 @@ export default function InventoryReceiptsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Receipt History"
                 description="Goods received from purchase orders and inventory transfers"
             />

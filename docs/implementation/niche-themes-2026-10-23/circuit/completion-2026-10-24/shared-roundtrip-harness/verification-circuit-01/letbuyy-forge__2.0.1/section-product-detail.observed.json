@@ -1,0 +1,82 @@
+{
+  "id": "section-product-detail",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "product-detail",
+    "group": "template",
+    "firstId": "section-f12a8d59-881b-4f6c-8808-c4d981ece5ae",
+    "finalId": "section-1b1c256b-9da5-4b3c-9ecc-96f31044577c",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showElectronicsFacts": false,
+            "showBuyNow": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showElectronicsFacts": false,
+            "showBuyNow": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showElectronicsFacts": false,
+            "showBuyNow": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": false,
+            "showDescription": false,
+            "showReviews": false,
+            "showElectronicsFacts": false,
+            "showBuyNow": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

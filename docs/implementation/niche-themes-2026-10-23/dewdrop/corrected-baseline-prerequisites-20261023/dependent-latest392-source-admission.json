@@ -1,0 +1,64 @@
+{
+  "recordedAt": "2026-10-23T17:02:55.781261+00:00",
+  "status": "ROOT_QUALIFIED392_DEPENDENT_SOURCE_ADMITTED_FOR_FULL_DEFAULT_LATEST_RUN",
+  "release": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/source-release.json",
+    "sha256": "da2613b2ef3dc5f1296abace4b9b55a820e78f4db198d19bd0128957222612b7"
+  },
+  "sources": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+      "sha256": "cab467f13d4a381aecffb23ad7b63789e8608a501429a3ea7aee9c55ee2fd72a",
+      "bytes": 43309,
+      "historicalSha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+      "snapshot": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts.snapshot",
+        "sha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+        "bytes": 33370
+      },
+      "diff": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/theme-shared-groups.postgres.test.ts.active.diff",
+        "sha256": "8ee1ea08fc4f6654f6b53ff18d74e993619ba3f0abeb679cd89a4eeca5958a7c",
+        "bytes": 14479
+      },
+      "childPhasesPreserved": 5
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+      "sha256": "7a4477a1255529c7cc9eaaef41f2bf36700022976fbeb4172c9ca6125eddd64e",
+      "bytes": 52083,
+      "historicalSha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+      "snapshot": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts.snapshot",
+        "sha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+        "bytes": 41419
+      },
+      "diff": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/niche-theme-promotion.postgres.test.ts.active.diff",
+        "sha256": "4326e9907ff0ba241429d6cf341dafe055bc1e9663fa0f0368a53b81856d03f1",
+        "bytes": 20379
+      },
+      "childPhasesPreserved": 4
+    }
+  ],
+  "archivedHistoricalFilesVerified": 31,
+  "originalAdmissionsAndRootProofsUnchanged": true,
+  "independentSourceChecks": {
+    "path": "docs/implementation/niche-theme-programme/m2-dependent-latest392-source-independent.tap",
+    "sha256": "7c16050cbbef1d29f85094bee1f8165f80c357660f64798eaa87ced1d60a7f59",
+    "pass": 12,
+    "fail": 0,
+    "skip": 0
+  },
+  "consumerAdmission": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/admission.json",
+    "sha256": "b7193047b437c5864f57bf105dbf45cd1594928c2e660727d92edf917dd947d6"
+  },
+  "review": [
+    "NewconsumerbindingsrequireexactrealRoot3273638passrecord/qualification/resultbytes;old391admissionandd549/c162sourceidentitiesremainimmutable",
+    "391consumerstrict392DOWNthen391DOWN/full5phases/UP391/392UP;allTENchangedandmissinggroups/security/atomicity preserved",
+    "Promotionconsumerstrict392DOWN/390DOWN/389DOWN/full4phases/UP389/390/392;391fullcatalogexactthroughout",
+    "Noexistingphase/assertionorprovider/rawACL/defaultAST/witnessguardweakened;unknownbodyfailsbeforeDDL"
+  ],
+  "scope": "Sourceadmissiononly;nextALL3existingfullsuitesdefaultLATEST392(8+6+5);no current9cdorhostedapply"
+}

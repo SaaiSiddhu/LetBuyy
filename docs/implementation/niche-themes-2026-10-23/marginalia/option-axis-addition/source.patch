@@ -1,0 +1,366 @@
+--- a/apps/merchant/web/src/lib/product-form-state.ts
++++ b/apps/merchant/web/src/lib/product-form-state.ts
+@@ -131,23 +131,67 @@
+     })
+ }
+ 
+-/** An explicit value addition keeps existing rows themselves; it never finds a
+- * regenerated row and grafts an old identity/fact draft onto it. Other axis or
+- * combination changes still go through the guarded full rebuild above. */
++/** Validate physical option slots without completing a sparse matrix or using
++ * labels/SKUs to recover identity. Empty axes are handled only by explicit add. */
++function validateVariantAxisRows(options: VariantOption[], rows: VariantRow[]) {
++    const tuples = rows.map(row => [row.option1, row.option2, row.option3])
++    const ids = rows.flatMap(row => row.id === undefined ? [] : [row.id])
++    if (options.length > 3 || rows.length > 100
++        || options.some(axis => !ProductOptionSchema.safeParse(axis).success || !axis.name.trim() || axis.name !== axis.name.trim() || !axis.values.length
++            || axis.values.some(value => !value.trim() || value !== value.trim()) || new Set(axis.values).size !== axis.values.length)
++        || new Set(options.map(axis => axis.name.toLowerCase())).size !== options.length
++        || ids.some(id => !ProductEditVariantSchema.shape.id.safeParse(id).success)
++        || new Set(ids.map(id => id.toLowerCase())).size !== ids.length
++        || tuples.some(tuple => tuple.some((value, index) => index < options.length ? value === null || !options[index].values.includes(value) : value !== null))
++        || new Set(tuples.map(tuple => JSON.stringify(tuple))).size !== rows.length) {
++        throw new Error('Variant combinations are kept. Review existing rows before adding an option or value.')
++    }
++}
++
++/** Adding an empty trailing axis changes no rows. Its first explicit value will
++ * extend each row one-to-one, including when the old matrix is sparse/reordered. */
++export function appendVariantOptionAxis(options: VariantOption[], name: string, rows: VariantRow[]): VariantOption[] {
++    validateVariantAxisRows(options, rows)
++    if (options.length >= 3 || !ProductOptionSchema.shape.name.safeParse(name).success || !name.trim() || name !== name.trim()
++        || options.some(axis => axis.name.toLowerCase() === name.toLowerCase())) throw new Error('Choose a new, distinct option name. Up to three options are supported.')
++    return [...options, { name, values: [] }]
++}
++
++function validateVariantLabels(rows: VariantRow[]) {
++    if (rows.some(row => !ProductEditVariantSchema.shape.title.safeParse(row.title).success)) throw new Error('The combined variant label must be between 1 and 200 characters.')
++    return rows
++}
++
++function newVariantRows(options: VariantOption[], basePrice: string) {
++    if (options.reduce((count, axis) => count * axis.values.length, 1) > 100) throw new Error('Up to 100 variant combinations are supported.')
++    return validateVariantLabels(buildVariantMatrix(options, basePrice))
++}
++
++/** Explicit additions preserve existing UUIDs and raw drafts. Only the first,
++ * single value of a new trailing axis extends existing rows; later values create
++ * new idless rows. General rebuild/removal still uses the guarded path above. */
+ export function appendVariantOptionValue(options: VariantOption[], optionIndex: number, value: string, basePrice: string, rows: VariantRow[]): VariantRow[] {
+     const option = options[optionIndex]
+-    if (!option || !value || option.values.includes(value)) throw new Error('Choose a new, distinct option value.')
++    if (!Number.isInteger(optionIndex) || !option || !ProductOptionSchema.shape.values.unwrap().element.safeParse(value).success
++        || !value.trim() || value !== value.trim() || option.values.includes(value)) throw new Error('Choose a new, distinct option value.')
+     const nextOptions = options.map((item, index) => index === optionIndex ? { ...item, values: [...item.values, value] } : item)
+-    if (!rows.length || !option.values.length) return buildVariantMatrix(nextOptions, basePrice, rows)
+-    const axes = options.filter(item => item.values.length)
+-    const tuples = rows.map(row => [row.option1, row.option2, row.option3])
+-    if (axes.length > 3 || new Set(axes.map(axis => axis.name)).size !== axes.length
+-        || axes.some(axis => new Set(axis.values).size !== axis.values.length)
+-        || tuples.some(tuple => tuple.some((item, index) => index < axes.length ? item === null || !axes[index].values.includes(item) : item !== null))
+-        || new Set(tuples.map(tuple => JSON.stringify(tuple))).size !== rows.length) {
+-        throw new Error('Variant combinations are kept. Review existing rows before adding an option value.')
+-    }
+-    const added = buildVariantMatrix(options.map((item, index) => index === optionIndex ? { ...item, values: [value] } : item), basePrice)
++    if (!option.values.length) {
++        if (optionIndex !== options.length - 1 || options.length > 3 || !ProductOptionSchema.safeParse(nextOptions[optionIndex]).success
++            || options.slice(0, optionIndex).some(axis => axis.name.toLowerCase() === option.name.toLowerCase())
++            || !option.name.trim() || option.name !== option.name.trim()) throw new Error('Variant combinations are kept. Add one trailing option at a time.')
++        validateVariantAxisRows(options.slice(0, optionIndex), rows)
++        if (!rows.length) return newVariantRows(nextOptions, basePrice)
++        return validateVariantLabels(rows.map(row => {
++            const tuple = [row.option1, row.option2, row.option3]; tuple[optionIndex] = value
++            return { ...row, option1: tuple[0], option2: tuple[1], option3: tuple[2], title: tuple.slice(0, options.length).join(' / ') }
++        }))
++    }
++    validateVariantAxisRows(options, rows)
++    if (!ProductOptionSchema.safeParse(nextOptions[optionIndex]).success) throw new Error('Review the option value limits before adding a value.')
++    if (!rows.length) return newVariantRows(nextOptions, basePrice)
++    const additions = options.reduce((count, axis, index) => count * (index === optionIndex ? 1 : axis.values.length), 1)
++    if (rows.length + additions > 100) throw new Error('Up to 100 variant combinations are supported.')
++    const added = newVariantRows(options.map((item, index) => index === optionIndex ? { ...item, values: [value] } : item), basePrice)
+     return [...rows, ...added]
+ }
+ 
+--- a/apps/merchant/web/src/app/[store]/products/new/page.tsx
++++ b/apps/merchant/web/src/app/[store]/products/new/page.tsx
+@@ -7,6 +7,7 @@
+     defaultProductSnapshot,
+     buildVariantMatrix,
+     appendVariantOptionValue,
++    appendVariantOptionAxis,
+     renameVariantOptionValue,
+     normalizeApiVariants,
+     weightUnitOptions,
+@@ -574,7 +575,9 @@
+ 
+     const addVariantOption = () => {
+         const optionName = newOptionName.trim()
+-        if (!optionName || !rebuildMatrix([...variantOptions, { name: optionName, values: [] }])) return
++        if (!optionName) return
++        try { setVariantOptions(appendVariantOptionAxis(variantOptions, optionName, variantMatrix)); setError(null) }
++        catch (error) { setError(error instanceof Error ? error.message : 'Review variant options.'); return }
+         setEditingOptionIndex(variantOptions.length)
+         setNewOptionName('')
+         setShowVariantBuilder(false)
+--- a/apps/merchant/web/src/components/products/product-conflict.test.tsx
++++ b/apps/merchant/web/src/components/products/product-conflict.test.tsx
+@@ -905,6 +905,130 @@
+     } finally { await h.close() }
+ })
+ 
++function axisProduct(): Record<string, unknown> {
++    return { ...row(), product_options: [{ name: 'Width', position: 0, values: ['48 in', 'Common size'] }],
++        metadata: { privateSupplier: { reference: 'KEEP' }, furniture: { materials: ['Wood'], finish: 'Natural' }, books: { kind: 'book', language: 'Hindi' } },
++        variants: [
++            { ...row().variants[0], option1: '48 in', option2: null, option3: null, title: '48 in', price: 8900, compare_price: 9900, inventory_qty: 4, sku: 'KEEP-A', metadata: { furniture: { assembled: { unit: 'in', width: 48, depth: 30 } }, books: { language: 'English' } } },
++            { ...row().variants[0], id: secondVariantId, option1: 'Common size', option2: null, option3: null, title: 'Common size', price: 8700, inventory_qty: 3, sku: 'KEEP-C', metadata: { furniture: {} } },
++        ] }
++}
++function acceptAxisWrite(current: Record<string, unknown>, body: Record<string, unknown>, version = 13): Record<string, unknown> {
++    const names = (body.product_options as { name: string }[]).map(option => option.name)
++    return { ...current, ...body, version, variants: variantRows(body).map((item, index) => {
++        const saved = item.id ? variantRows(current).find(candidate => candidate.id === item.id) : undefined
++        const options = item.options as Record<string, string>
++        return { ...saved, ...item, id: item.id ?? `77777777-7777-4777-8777-${String(index + 1).padStart(12, '0')}`,
++            option1: options[names[0]] ?? null, option2: options[names[1]] ?? null, option3: options[names[2]] ?? null, inventory_qty: item.stock }
++    }) }
++}
++async function addAxisThroughForm(h: Awaited<ReturnType<typeof mount>>, name: string, value: string) {
++    await h.click('Add option')
++    const nameInput = h.container.querySelector('input[placeholder="Option name (Size, Color, Material)"]') as HTMLInputElement | null
++    assert.ok(nameInput); await h.setInput(nameInput, name); await h.click('Done')
++    const valueInput = h.container.querySelector('input[placeholder="Add value"]') as HTMLInputElement | null
++    assert.ok(valueInput); await h.setInput(valueInput, value); await h.click('Add value')
++}
++
++test('normal first Finish value preserves bound Width IDs, sibling facts and commercial fields through save and reload', async () => {
++    let current = axisProduct()
++    const initial = structuredClone(current), calls: Record<string, unknown>[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        const body = JSON.parse(String(init.body)); calls.push(body); current = acceptAxisWrite(current, body); return json(current)
++    })
++    try {
++        await addAxisThroughForm(h, 'Finish', 'Natural')
++        assert.ok(h.container.querySelector('[aria-label="Stock for 48 in / Natural"]'), 'the explicit first value extends the existing row')
++        assert.ok(h.container.querySelector('[aria-label="Stock for Common size / Natural"]'))
++        assert.equal(calls.length, 0)
++        await h.click('Save product'); assert.equal(calls.length, 1, h.container.textContent ?? '')
++        assert.deepEqual(variantRows(calls[0]).map(item => item.id), [variantId, secondVariantId])
++        variantRows(calls[0]).forEach((item, index) => {
++            const original = variantRows(initial)[index]
++            assert.deepEqual(item.options, { Width: original.option1, Finish: 'Natural' })
++            assert.equal(item.price, original.price); assert.equal(item.stock, original.inventory_qty); assert.equal(item.sku, original.sku)
++            assert.equal(Object.hasOwn(item, 'metadata'), false, 'unchanged inline facts are omitted instead of cleared')
++            assert.deepEqual(variantRows(current)[index].metadata, original.metadata)
++        })
++        assert.deepEqual(current.metadata, initial.metadata)
++        await h.remount()
++        assert.equal((h.container.querySelector('[aria-label="Stock for 48 in / Natural"]') as HTMLInputElement).value, '4')
++        assert.equal((h.container.querySelector('[aria-label="Stock for Common size / Natural"]') as HTMLInputElement).value, '3')
++        assert.ok(variantScope(h.container, variantId)); assert.ok(variantScope(h.container, secondVariantId))
++    } finally { await h.close() }
++})
++
++test('new-axis UI preserves sparse reordered rows and refuses duplicate names and invalid first values without changing rows', async () => {
++    let current = axisProduct()
++    current = { ...current, product_options: [{ name: 'Width', position: 0, values: ['48 in', 'Common size', '130 cm'] }], variants: [...variantRows(current)].reverse() }
++    const calls: Record<string, unknown>[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        const body = JSON.parse(String(init.body)); calls.push(body); current = acceptAxisWrite(current, body); return json(current)
++    })
++    try {
++        await addAxisThroughForm(h, 'Finish', 'Natural')
++        assert.ok(h.container.querySelector('[aria-label="Stock for Common size / Natural"]'))
++        assert.equal(h.container.querySelectorAll('[data-variant-facts]').length, 2)
++        await h.click('Add option')
++        const name = h.container.querySelector('input[placeholder="Option name (Size, Color, Material)"]') as HTMLInputElement
++        await h.setInput(name, 'finish'); await h.click('Done')
++        assert.match(h.container.textContent!, /distinct option name/)
++        assert.equal(h.container.querySelectorAll('[data-variant-facts]').length, 2)
++        await h.setInput(name, 'Pack'); await h.click('Done')
++        const value = h.container.querySelector('input[placeholder="Add value"]') as HTMLInputElement
++        await h.setInput(value, 'x'.repeat(101)); await h.click('Add value')
++        assert.match(h.container.textContent!, /distinct option value/)
++        assert.ok(h.container.querySelector('[aria-label="Stock for Common size / Natural"]'))
++        assert.equal(calls.length, 0)
++        await h.setInput(value, 'Single'); await h.click('Add value'); await h.click('Save product')
++        assert.equal(calls.length, 1, h.container.textContent ?? '')
++        assert.deepEqual(variantRows(calls[0]).map(item => item.id), [secondVariantId, variantId])
++        assert.deepEqual(variantRows(calls[0]).map(item => item.options), [{ Width: 'Common size', Finish: 'Natural', Pack: 'Single' }, { Width: '48 in', Finish: 'Natural', Pack: 'Single' }])
++        assert.equal(variantRows(current).length, 2)
++    } finally { await h.close() }
++})
++
++test('new axis draft and later value survive recovery while an earlier save retries with exact immutable bytes', async () => {
++    let current = axisProduct()
++    const calls: { body: string; key: string }[] = []
++    const h = await mount(async (_url, init) => {
++        if (init?.method !== 'PATCH') return json(current)
++        calls.push({ body: String(init.body), key: new Headers(init.headers).get('X-Idempotency-Key')! })
++        if (calls.length === 1) { current = acceptAxisWrite(current, JSON.parse(calls[0].body), 13); return json({ code: 'UNAVAILABLE', message: 'Lost committed response' }, 503) }
++        if (calls.length > 2) current = acceptAxisWrite(current, JSON.parse(String(init.body)), 14)
++        return json(current)
++    })
++    try {
++        await addAxisThroughForm(h, 'Finish', 'Natural')
++        await h.remount(); await h.click('Restore draft')
++        assert.ok(h.container.querySelector('[aria-label="Stock for 48 in / Natural"]'))
++        await h.click('Save product'); assert.equal(calls.length, 1)
++        // Recovered form starts with no value editor open. Open Finish explicitly.
++        const finishHeading = [...h.container.querySelectorAll('p')].find(item => item.textContent === 'Finish')
++        assert.ok(finishHeading)
++        const add = [...finishHeading.parentElement!.parentElement!.querySelectorAll('button')].find(item => item.textContent?.trim() === 'Add values')
++        assert.ok(add); await act(async () => add.click())
++        const value = h.container.querySelector('input[placeholder="Add value"]') as HTMLInputElement
++        await h.setInput(value, 'Black'); await h.click('Add value')
++        assert.equal(h.container.querySelectorAll('[data-variant-facts]').length, 4)
++        await h.remount(); await h.click('Retry pending save')
++        assert.deepEqual(calls[1], calls[0])
++        assert.ok(h.container.querySelector('[aria-label="Stock for 48 in / Black"]'))
++        assert.equal(h.container.querySelectorAll('[data-variant-facts]').length, 4)
++        await h.click('Save product'); assert.equal(calls.length, 3)
++        const body = JSON.parse(calls[2].body)
++        assert.equal(body.version, 13); assert.notEqual(calls[2].key, calls[0].key)
++        assert.deepEqual(variantRows(body).slice(0, 2).map(item => item.id), [variantId, secondVariantId])
++        variantRows(body).slice(2).forEach(item => {
++            assert.equal(Object.hasOwn(item, 'id'), false); assert.equal(Object.hasOwn(item, 'metadata'), false)
++            assert.equal(item.stock, 0); assert.equal(item.sku, null)
++        })
++        assert.deepEqual(variantRows(current).slice(0, 2).map(item => item.metadata), variantRows(axisProduct()).map(item => item.metadata))
++    } finally { await h.close() }
++})
++
+ test('unproven option deletion preserves both the original options and bound facts until explicit row removal', async () => {
+     const h = await mount(async () => json(variantProduct()))
+     try {
+--- /dev/null
++++ b/apps/merchant/web/src/lib/product-form-state.option-axis.test.ts
+@@ -0,0 +1,125 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import { appendVariantOptionAxis, appendVariantOptionValue, buildVariantMatrix, renameVariantOptionValue, type VariantOption, type VariantRow } from './product-form-state'
++import { variantFactsCommand } from './variant-facts-draft'
++
++const first: VariantRow = { id: '11111111-1111-4111-8111-111111111111', option1: '48 in', option2: null, option3: null, title: '48 in', price: '8900', comparePrice: '9900', sku: 'KEEP-A', stock: '4', factsMetadataBaseline: { furniture: { assembled: { unit: 'in', width: 48 } } }, factsMetadataDraft: { furniture: { assembled: { unit: 'in', width: 48, depth: 30 } } }, factsMetadataEdited: true }
++const second: VariantRow = { ...first, id: '22222222-2222-4222-8222-222222222222', option1: 'Common size', title: 'Common size', sku: 'KEEP-C', stock: '3', factsMetadataBaseline: { furniture: {} }, factsMetadataDraft: { furniture: {} }, factsMetadataEdited: false }
++
++test('first value of a new trailing axis preserves both bound Width rows one-to-one', () => {
++    const options = [{ name: 'Width', values: ['48 in', 'Common size'] }, { name: 'Finish', values: [] }]
++    const rows = [first, second], before = JSON.stringify({ options, rows })
++    const result = appendVariantOptionValue(options, 1, 'Natural', '100', rows)
++    assert.deepEqual(result, rows.map(row => ({ ...row, option2: 'Natural', title: `${row.option1} / Natural` })))
++    result.forEach((row, index) => {
++        assert.equal(row.factsMetadataBaseline, rows[index].factsMetadataBaseline)
++        assert.equal(row.factsMetadataDraft, rows[index].factsMetadataDraft)
++    })
++    assert.equal(JSON.stringify({ options, rows }), before)
++})
++
++test('adding an empty axis preserves sparse and reordered rows without completing a Cartesian matrix', () => {
++    const axes = [{ name: 'Width', values: ['48 in', 'Common size', '130 cm'] }], rows = [second, first]
++    const before = JSON.stringify({ axes, rows })
++    const next = appendVariantOptionAxis(axes, 'Finish', rows)
++    assert.equal(next[0], axes[0]); assert.deepEqual(next[1], { name: 'Finish', values: [] })
++    const added = appendVariantOptionValue(next, 1, 'Natural', '100', rows)
++    assert.deepEqual(added.map(row => row.id), [second.id, first.id])
++    assert.equal(added.length, 2, 'missing 130 cm is not fabricated')
++    assert.equal(JSON.stringify({ axes, rows }), before)
++})
++
++test('a third axis extends only existing sparse combinations and retains mixed bound/new drafts', () => {
++    const axes = [{ name: 'Width', values: ['48 in', 'Common size'] }, { name: 'Finish', values: ['Natural', 'Black'] }]
++    const unbound = { ...second, id: undefined, option2: 'Black', title: 'Common size / Black' }
++    const rows = [{ ...first, option2: 'Natural', title: '48 in / Natural' }, unbound]
++    const added = appendVariantOptionValue(appendVariantOptionAxis(axes, 'Pack', rows), 2, 'Single', '100', rows)
++    assert.equal(added.length, 2)
++    added.forEach((row, index) => {
++        assert.deepEqual(row, { ...rows[index], option3: 'Single', title: `${rows[index].title} / Single` })
++        assert.equal(row.factsMetadataDraft, rows[index].factsMetadataDraft)
++    })
++})
++
++test('first explicit axis can extend a single default bound row without inventing identity', () => {
++    const row = { ...first, option1: null, title: 'Default' }
++    const added = appendVariantOptionValue(appendVariantOptionAxis([], 'Edition', [row]), 0, 'English', '100', [row])
++    assert.deepEqual(added, [{ ...row, option1: 'English', title: 'English' }])
++})
++
++test('later values retain old objects while new combinations receive no UUID, facts, SKU or stock', () => {
++    const axes = [{ name: 'Width', values: ['48 in', 'Common size'] }, { name: 'Finish', values: ['Natural'] }]
++    const rows = appendVariantOptionValue([{ ...axes[0] }, { name: 'Finish', values: [] }], 1, 'Natural', '100', [second, first])
++    const added = appendVariantOptionValue(axes, 1, 'Black', '200', rows)
++    assert.equal(added[0], rows[0]); assert.equal(added[1], rows[1])
++    assert.deepEqual(added.slice(2).map(row => [row.option1, row.option2]), [['48 in', 'Black'], ['Common size', 'Black']])
++    added.slice(2).forEach(row => {
++        assert.equal(Object.hasOwn(row, 'id'), false)
++        assert.deepEqual(row.factsMetadataDraft, {}); assert.deepEqual(row.factsMetadataBaseline, {})
++        assert.equal(row.price, '200'); assert.equal(row.stock, '0'); assert.equal(row.sku, ''); assert.equal(row.comparePrice, '')
++    })
++})
++
++test('raw invalid fact drafts survive the axis edit and still block canonical save instead of being reset', () => {
++    const draft = { furniture: { assembled: { width: 48 } } }, row = { ...first, factsMetadataDraft: draft, factsMetadataEdited: true }
++    const axes = [{ name: 'Width', values: ['48 in', 'Common size'] }, { name: 'Finish', values: [] }]
++    const [added] = appendVariantOptionValue(axes, 1, 'Natural', '100', [row])
++    assert.equal(added.factsMetadataDraft, draft); assert.equal(added.factsMetadataBaseline, first.factsMetadataBaseline)
++    assert.equal(added.factsMetadataEdited, true)
++    assert.throws(() => variantFactsCommand(added), /Check variant facts/)
++})
++
++test('ambiguous axes, duplicate IDs/tuples, occupied new slots and stale indices refuse atomically', () => {
++    const width = { name: 'Width', values: ['48 in', 'Common size'] }, empty = { name: 'Finish', values: [] }
++    const cases: { axes: VariantOption[]; rows: VariantRow[]; index: number; value?: string }[] = [
++        { axes: [width, { ...empty, name: 'width' }], rows: [first], index: 1 },
++        { axes: [width, { ...empty, name: ' Finish ' }], rows: [first], index: 1 },
++        { axes: [empty, width], rows: [first], index: 0 },
++        { axes: [width, empty, { name: 'Pack', values: [] }], rows: [first], index: 2 },
++        { axes: [width, empty], rows: [first, { ...second, id: first.id }], index: 1 },
++        { axes: [width, empty], rows: [first, { ...first, id: second.id }], index: 1 },
++        { axes: [width, empty], rows: [{ ...first, id: 'not-a-uuid' }], index: 1 },
++        { axes: [width, empty], rows: [{ ...first, option2: 'Occupied' }], index: 1 },
++        { axes: [width, empty], rows: [{ ...first, option1: 'Missing' }], index: 1 },
++        { axes: [{ ...width, values: ['48 in', '48 in'] }, empty], rows: [first], index: 1 },
++        { axes: [width, empty], rows: [first], index: 1.5 },
++        { axes: [width, empty], rows: [first], index: -1 },
++        { axes: [width, empty], rows: [first], index: 1, value: '  ' },
++        { axes: [width, empty], rows: [first], index: 1, value: ' Natural ' },
++        { axes: [width, empty], rows: [first], index: 1, value: 'x'.repeat(101) },
++    ]
++    for (const item of cases) {
++        const before = JSON.stringify(item)
++        assert.throws(() => appendVariantOptionValue(item.axes, item.index, item.value ?? 'Natural', '100', item.rows))
++        assert.equal(JSON.stringify(item), before)
++    }
++    assert.throws(() => appendVariantOptionAxis([width], 'WIDTH', [first]))
++    assert.throws(() => appendVariantOptionAxis([width, empty], 'Pack', [first]))
++})
++
++test('canonical axis, value, row-count and combined-label limits are enforced before producing an edit', () => {
++    const axes = [{ name: 'One', values: ['A'] }, { name: 'Two', values: ['B'] }, { name: 'Three', values: ['C'] }]
++    const row = { ...first, option1: 'A', option2: 'B', option3: 'C', title: 'A / B / C' }
++    assert.throws(() => appendVariantOptionAxis(axes, 'Fourth', [row]))
++    assert.throws(() => appendVariantOptionValue([...axes, { name: 'Fourth', values: [] }], 3, 'D', '1', [row]))
++    const wide = { name: 'Width', values: Array.from({ length: 100 }, (_, index) => String(index)) }
++    const sparse = [{ ...first, option1: '0', option2: 'Natural', title: '0 / Natural' }]
++    assert.throws(() => appendVariantOptionValue([wide, { name: 'Finish', values: ['Natural'] }], 1, 'Black', '1', sparse), /100 variant combinations/)
++    assert.throws(() => appendVariantOptionValue([wide], 0, '101', '1', []), /value limits/)
++    const long = { ...first, option1: 'a'.repeat(100) }, option = { name: 'Width', values: [long.option1] }
++    assert.throws(() => appendVariantOptionValue([option, { name: 'Finish', values: [] }], 1, 'b'.repeat(100), '1', [long]), /combined variant label/)
++    const boundary = { ...long, option1: 'a'.repeat(97) }
++    assert.equal(appendVariantOptionValue([{ ...option, values: [boundary.option1] }, { name: 'Finish', values: [] }], 1, 'b'.repeat(100), '1', [boundary])[0].title.length, 200)
++})
++
++test('new-product Cartesian creation and explicit existing-axis append/rename remain supported; generic deletion stays guarded', () => {
++    const axes = [{ name: 'Width', values: ['48 in', 'Common size'] }]
++    const created = appendVariantOptionValue(appendVariantOptionAxis(axes, 'Finish', []), 1, 'Natural', '100', [])
++    assert.equal(created.length, 2); created.forEach(row => assert.equal(row.id, undefined))
++    const renamed = renameVariantOptionValue(axes, 0, 0, '48 inch', [first, second])
++    assert.equal(renamed.rows[0].id, first.id)
++    const appended = appendVariantOptionValue(axes, 0, '130 cm', '100', [second, first])
++    assert.equal(appended[0], second); assert.equal(appended[1], first); assert.equal(appended[2].id, undefined)
++    assert.throws(() => buildVariantMatrix([], '100', [first, second]), /combinations are kept/)
++    assert.throws(() => buildVariantMatrix([{ name: 'Width', values: ['Common size', '48 in'] }], '100', [first, second]), /combinations are kept/)
++})

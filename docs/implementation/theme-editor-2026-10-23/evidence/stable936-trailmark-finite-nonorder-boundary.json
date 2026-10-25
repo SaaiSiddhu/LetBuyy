@@ -1,0 +1,913 @@
+{
+  "recordedAt": "2026-10-24T06:51:03.106294+00:00",
+  "runId": "936e5f577646",
+  "classification": "FINITE_NONORDER_BOUNDARY_NOT_WHOLE_THEME_ACCEPTANCE",
+  "wholeThemeAccepted": false,
+  "runtimeAdmission": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+  "rows": [
+    {
+      "id": "L00",
+      "status": "PASS",
+      "scope": "Installed2.0.0, full B00 A/B Save/reload/private isolation/publish/reviewed rollbackA/retainedB/reapplyB; actual preview/section controls observed; no configured merchant hero image/media was invented."
+    },
+    {
+      "id": "M01",
+      "status": "PARTIAL",
+      "scope": "Existing baseline/durable two UUIDs exact unchanged; two normal supplementary Creates/public common+variant facts/prices/stock all exact; five normal collection Creates/exact memberships and reloads. Normal UI cannot supply private supplier field or independent custom variant titles; actual S/M/L titles retained and positively bound by tuples."
+    },
+    {
+      "id": "M02",
+      "status": "PASS",
+      "scope": "Reachable incomplete common length pair refused normal Save with draft retained; all22 immediate hashes and product8 exact; corrected cm/Discard/full reopen. Unsupported ft absent from native control, separate schema-only clause NOT_RUN."
+    },
+    {
+      "id": "P01",
+      "status": "PASS",
+      "scope": "Actual baseline common/inch/inherited and witnessS/M/L/no-length PDP facts, whole-group absent-height behavior, variant UUIDs/price states/OOS Adddisabled. No cart action. Earlier first-static-reference DOM capture explicitly corrected in selected-facts addendum; original retained."
+    },
+    {
+      "id": "P02",
+      "status": "PARTIAL",
+      "scope": "34/34 allocated public canonical query reads PASS and 34 exact route UI views agree; 12 native recovery observations. Private preview resource HTTP layer NOT_RUN, not replaced by public proof."
+    },
+    {
+      "id": "C01",
+      "status": "NOT_RUN",
+      "scope": "excluded from current nonorder allocation"
+    },
+    {
+      "id": "C02",
+      "status": "NOT_RUN",
+      "scope": "excluded from current nonorder allocation"
+    },
+    {
+      "id": "O01",
+      "status": "NOT_RUN",
+      "scope": "excluded from current nonorder allocation"
+    },
+    {
+      "id": "O02",
+      "status": "NOT_RUN",
+      "scope": "excluded from current nonorder allocation"
+    },
+    {
+      "id": "H01",
+      "status": "NOT_RUN",
+      "scope": "excluded from current nonorder allocation"
+    },
+    {
+      "id": "H02",
+      "status": "NOT_RUN",
+      "scope": "excluded from current nonorder allocation"
+    },
+    {
+      "id": "H03",
+      "status": "NOT_RUN",
+      "scope": "excluded from current nonorder allocation"
+    }
+  ],
+  "counts": {
+    "PASS": 3,
+    "FAIL": 0,
+    "PARTIAL": 2,
+    "NOT_RUN": 7
+  },
+  "theme": {
+    "id": "feca3a21-b0a3-4375-bbf2-9c6ceb776df0",
+    "status": "published",
+    "themeId": "letbuyy-ride",
+    "sourceDraftVersion": 9,
+    "assetManifestSqlSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "releaseConfigSqlSha256": "0644403ef89fb838043da358eb0cc766ff9c6ca18d76a18d51de3533c087df20",
+    "templateSnapshotSqlSha256": "0644403ef89fb838043da358eb0cc766ff9c6ca18d76a18d51de3533c087df20"
+  },
+  "instance": {
+    "slug": "letbuyy-ride",
+    "status": "active",
+    "version": "2.0.0",
+    "packageId": "e764c050-15e0-4255-bf83-c5b4d8f00dc8",
+    "instanceId": "786e992f-c59a-4f40-b6ab-a428b471e7d1",
+    "bundleVersion": "2.0.0",
+    "draftRevision": 11,
+    "currentDraftId": "9812e848-d18c-4b37-b830-15fbea4fe2b2",
+    "activeReleaseId": "feca3a21-b0a3-4375-bbf2-9c6ceb776df0",
+    "catalogChecksum": null,
+    "packageVersionId": "868767f4-2053-40ed-8879-60bb49a6629d",
+    "installedConfigSqlSha256": "185d12bc5f2a7c3b548b1f60074cd42685ea923cdc781dabbe388d04850eb4b7",
+    "packageManifestSqlSha256": "81b52dd26a4b83ad49fcb6cd12e45cf8b173261789229cce48bac867ad748611"
+  },
+  "B00Checks": {
+    "aSavedReloaded": true,
+    "bSavedReloaded": true,
+    "bPrivateWhileAPublic": true,
+    "bPublished": true,
+    "aRestored": true,
+    "bRetained": true,
+    "bReapplied": true
+  },
+  "publicRecipeRouteResults": [
+    {
+      "id": "Q-OVERRIDE-mm",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-OVERRIDE-cm",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-OVERRIDE-in",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-COMMON-mm",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-COMMON-cm",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-COMMON-in",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-UNIT-NOT-DROPPED",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-CROSS-SIZE-LENGTH",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-CROSS-PRICE-LENGTH",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-MEDIUM-POSITIVE",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-SMALL-POSITIVE",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-SOLDOUT-ONLY",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-NO-LENGTH",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-NO-LENGTH-SELECTED",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-EMPTY-COLLECTION",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-PAST-END",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION",
+      "route": "collection",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-OVERRIDE-mm",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-OVERRIDE-cm",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-OVERRIDE-in",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-COMMON-mm",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-COMMON-cm",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-COMMON-in",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-UNIT-NOT-DROPPED",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-CROSS-SIZE-LENGTH",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-CROSS-PRICE-LENGTH",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-MEDIUM-POSITIVE",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-SMALL-POSITIVE",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-SOLDOUT-ONLY",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-NO-LENGTH",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-NO-LENGTH-SELECTED",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-EMPTY-COLLECTION",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-PAST-END",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION",
+      "route": "search",
+      "publicHTTP": "PASS",
+      "uiProductIdsAgree": true,
+      "privatePreview": "NOT_RUN; no signed resource transport receipt collected"
+    }
+  ],
+  "nativeRecovery": [
+    {
+      "id": "Q-QUERY-PRESERVATION-search-sort-native",
+      "checks": {
+        "pageReset": true,
+        "sortAsc": true,
+        "bothConnectorsRetained": true
+      }
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION-search-clear-length",
+      "checks": {
+        "pageReset": true,
+        "bothLengthFieldsRemoved": true
+      }
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION-search-clear-one-connector",
+      "checks": {
+        "pageReset": true,
+        "oneConnectorRemains": true,
+        "lengthRetained": true
+      }
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION-search-apply-zero",
+      "checks": {
+        "pageReset": true
+      }
+    },
+    {
+      "id": "Q-PAST-END-search-apply-recovered",
+      "checks": {
+        "pageReset": true
+      }
+    },
+    {
+      "id": "Q-UNIT-NOT-DROPPED-search-clear-pair-recovered",
+      "checks": {
+        "pageReset": true,
+        "bothLengthFieldsRemoved": true
+      }
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION-collection-sort-native",
+      "checks": {
+        "pageReset": true,
+        "sortAsc": true,
+        "bothConnectorsRetained": true
+      }
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION-collection-clear-length",
+      "checks": {
+        "pageReset": true,
+        "bothLengthFieldsRemoved": true
+      }
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION-collection-clear-one-connector",
+      "checks": {
+        "pageReset": true,
+        "oneConnectorRemains": true,
+        "lengthRetained": true
+      }
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION-collection-apply-zero",
+      "checks": {
+        "pageReset": true
+      }
+    },
+    {
+      "id": "Q-PAST-END-collection-apply-recovered",
+      "checks": {
+        "pageReset": true
+      }
+    },
+    {
+      "id": "Q-UNIT-NOT-DROPPED-collection-clear-pair-recovered",
+      "checks": {
+        "pageReset": true,
+        "bothLengthFieldsRemoved": true
+      }
+    }
+  ],
+  "setup": "stable936-trailmark-M01-public-facts-agreement.json",
+  "collections": "stable936-trailmark-M01-collections-readback.json",
+  "conservation": {
+    "unchangedTableCount": 19,
+    "unchangedTables": [
+      "ad_credit_ledger_entries",
+      "carts",
+      "checkout_sessions",
+      "gift_card_ledger_entries",
+      "inventory_events",
+      "inventory_reservations",
+      "ledger_accounts",
+      "ledger_entries",
+      "ledger_transactions",
+      "loyalty_ledger_entries",
+      "money_ledger_reconciliation_batches",
+      "money_ledger_reconciliation_traversal",
+      "money_ledger_site_reconciliations",
+      "order_items",
+      "orders",
+      "partner_payout_ledger_entries",
+      "payout_statement_source_ledger_transactions",
+      "store_credit_ledger_entries",
+      "wallet_ledger_entries"
+    ],
+    "expectedChangedSetupTables": [
+      "inventory_adjustments",
+      "inventory_levels",
+      "outbox_events"
+    ],
+    "allChangedExpected": true,
+    "baselineExact": true,
+    "ordersAndSnapshotsExact": true,
+    "heldPantryAndNativeCarts": "stable936-cart-trailmark-after.json",
+    "noIntentionalCartCheckoutOrderOrPostOrderAction": true,
+    "heldCheckout53": "not opened/refreshed/submitted"
+  },
+  "artifacts": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-A-public.ax.txt",
+      "sha256": "28222ee94739c1b6c215659bbff8d0a9db3c65ff3dd497fc680821c588e0204c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-A-reloaded.ax.txt",
+      "sha256": "02057f3cf50ec19c08a0f443d925dcbabb36b8d33da0b6459bfb1bfb7b2ceba0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-A-restored-public.ax.txt",
+      "sha256": "28222ee94739c1b6c215659bbff8d0a9db3c65ff3dd497fc680821c588e0204c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-B-final-clean-editor.ax.txt",
+      "sha256": "43415353c4316b3b9771b2c63553bdb64f100268b727c06d346f7d2a6fe7e4d7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-B-private-public-A.ax.txt",
+      "sha256": "28222ee94739c1b6c215659bbff8d0a9db3c65ff3dd497fc680821c588e0204c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-B-public.ax.txt",
+      "sha256": "d7786817ee57ba70d0695869e42249aa07b93960b0e3462759013fbc6a7858bc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-B-reapplied-public.ax.txt",
+      "sha256": "d7786817ee57ba70d0695869e42249aa07b93960b0e3462759013fbc6a7858bc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-B-reloaded.ax.txt",
+      "sha256": "a137ef3095137d33e1454a680122899468a4554213222656106ca3cc744a0d13"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-B-retained-after-restore.ax.txt",
+      "sha256": "213c4b9a06c4e9a641b832bc21a2797f1a3efd838106ea16ed8244c6b273f58f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-L00-installed-editor.ax.txt",
+      "sha256": "d07acf368f7a0d9a5689d5925d2010d81f200e60f8bc0012559dc41674eeda8f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M01-baseline-reopened.ax.txt",
+      "sha256": "71ffcca71fd266bd8c1c8d0dcaf49f711383efcdec8701ab14e6fd1018aa8538"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M01-collections-readback.json",
+      "sha256": "4dc8d9a658d64dc48e1a6a61348a62d484695bda7b717ee42667ba4db00f9f25"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M01-collections-reloaded.ax.txt",
+      "sha256": "c6442f782ddea01bfd875edbcfbe7c3be7b2453a3bd4460b1e3e85d4a1e24365"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M01-products-before-setup.ax.txt",
+      "sha256": "57ea55a3f84acd38760f6730921bb57b17048145ac75f6125cef13fb1d80ec71"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M01-products-readback.json",
+      "sha256": "eeef8d6eb1569e8e48326378184116f21675b1b2e89563a4dad62b43a233399c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M01-public-facts-agreement.json",
+      "sha256": "d942512e98decca9f3aa04f3b62c642998491e0f200f7515de62bb9ba63e2a78"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M02-incomplete-length-conservation.json",
+      "sha256": "dc1a9813eee24078f157969cf69137c9579a5695db5a77a10fd8d677400f904c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M02-incomplete-length-draft.ax.txt",
+      "sha256": "43c50a310c439b3f713f3a118396c12f60addf067469ec25c23f7b10310c80f7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M02-invalid-save-refused.ax.txt",
+      "sha256": "c5ff61153e2162ba48a856ffe584e03539f1c3ee6bf90db84f4c5be5cdca3e3d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M02-valid-baseline-reloaded.ax.txt",
+      "sha256": "0a726fb856760e20971c89ba05fa40e1a98dfcc1d2f680c9736201f08544376d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-M02-valid-pair-restored-draft.ax.txt",
+      "sha256": "fff0a2b7c5b3a11c12f7316cf2ccef10d1ae0ab65764f95ce9e7f06bd143705b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-PDP-DOM.json",
+      "sha256": "8ad42094e3f1bb1496d19087fbf1baf44cb4315a5554795aa0494134ebebf497"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-common.ax.txt",
+      "sha256": "39f7fa887456c79beac8ebd9d95ab8a6dd5a64654b0d15afff24bb9aa5b7c278"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-inch.ax.txt",
+      "sha256": "86bd6231c9fa8be1893de39c435d0eb661cab3047ac0b9422c078cbbacda5d50"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-inherit-common.ax.txt",
+      "sha256": "d659df71f8a4fa610b7a784cac11d60b9b01e821eb6976aee08a33f4ec6f4b44"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-no-length.ax.txt",
+      "sha256": "b6a9485c234555fb0c03d648ed02cda8dbd50a16a3e5f560c6f5f9142810fb39"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-selected-facts-addendum.json",
+      "sha256": "4ede68eec943f294f9222428f9e5da4c4155987903843b0d7d9b7154d637081b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-witness-L.ax.txt",
+      "sha256": "4d1ba4633323dd326fbbb31a4fc46185f6ceb78bf682af369af3eddfeb4b5e34"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-witness-M.ax.txt",
+      "sha256": "3859db0cd263b9c22359dd429a4878d6ccd1838b43f8b4fecb50c8c57458fe53"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P01-witness-S.ax.txt",
+      "sha256": "0c40ff74747fbf51b0230ed22ccd2fee7786e365a0e8d654ccb91ac0cd003e65"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P02-UI-actual.json",
+      "sha256": "c0249cee7a0175b6315c8915f83ff089e126c15145162164b5c802e3e76ee2fa"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-P02-discovery-public-actual.json",
+      "sha256": "eafdbdaa5d02203cc9194d17f9ab675b83cf6108d89896a74394d1ec6f8cb436"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-COMMON-cm-collection.ax.txt",
+      "sha256": "6e6090491e2bd0e8a179ae7a07e39c0e81c3835954f6bd1c4ebb1697fc028515"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-COMMON-cm-search.ax.txt",
+      "sha256": "f2fe6c5d32c84f43c6c9f0218e639fc8eb6a695421847c2a894be04cc56c0003"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-COMMON-in-collection.ax.txt",
+      "sha256": "81b1072b690f5a20d5c1be99aa05e4707c48fc3f33ac8c390f858568cd62a9bc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-COMMON-in-search.ax.txt",
+      "sha256": "3066e5d1d7fb841bed773a95371dd390984ca5903cca5f4c22387d992b9be458"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-COMMON-mm-collection.ax.txt",
+      "sha256": "b67e40d981866b8bbc5d0bb50d9030b2cc98aa575a1c17fe1dccc2af96f4ff68"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-COMMON-mm-search.ax.txt",
+      "sha256": "74b189626e351e29b007bf2758de5a88c88ab82fabcd1dae4199af4008685eef"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-CROSS-PRICE-LENGTH-collection.ax.txt",
+      "sha256": "7973ef1dba07485d7e6fe535da34bae90fe5d5917919c42273215aa8cd0f90d9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-CROSS-PRICE-LENGTH-search.ax.txt",
+      "sha256": "7e81151a9ee6b087507cf3787b1c96749913af02c6921049e1ae1d2d2d9aa186"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-CROSS-SIZE-LENGTH-collection.ax.txt",
+      "sha256": "7db2052a4f9dbbcc74f518293de7c799f25dd12b03951d0a78b383fc813a0a00"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-CROSS-SIZE-LENGTH-search.ax.txt",
+      "sha256": "42213e3c8e2ca0e192fa96164fa7e2695c91dd1bc6062f436409bfcee9b962f4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-EMPTY-COLLECTION-collection.ax.txt",
+      "sha256": "d447641a9c692a89e6a39a442530a3a61268f20f08748700754a4f17242c5567"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-EMPTY-COLLECTION-search.ax.txt",
+      "sha256": "78e87653b037bfa1f831daccd32f03ff6880cd21360fe52446115ec667181a36"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-MEDIUM-POSITIVE-collection.ax.txt",
+      "sha256": "6e8028f4442070d821cd82717eb31bc5e79e39d6147b608f54263ca7ead25fd4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-MEDIUM-POSITIVE-search.ax.txt",
+      "sha256": "c404fc30189554542927178e0335c9bde17903f0c84c193d81a283818dddf924"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-NO-LENGTH-SELECTED-collection.ax.txt",
+      "sha256": "ec67f91dd112ed965f2d79b6a921e6902d63b57525130d790940291f671f1506"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-NO-LENGTH-SELECTED-search.ax.txt",
+      "sha256": "e5fba8ac732e5dd50853c2c7092b381a0991c2654910e87591e5a8851f771bbf"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-NO-LENGTH-collection.ax.txt",
+      "sha256": "7090837ffe75fa54ae9c21203aa5e7e0282ba31f41a5293a64324629ca2b1f4d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-NO-LENGTH-search.ax.txt",
+      "sha256": "74e2017a81908fd530a151fd1eac0d97a91c0bd493c0795eb566eb500977c694"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-OVERRIDE-cm-collection.ax.txt",
+      "sha256": "dabdc131d722e48504693b19e6188a3cc0bfdfa34621864645d6b3b8e9674540"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-OVERRIDE-cm-search.ax.txt",
+      "sha256": "fe43aae91af6a730648855c7b84128af53d53430e2a0fbcc7e4c3f74ec37219c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-OVERRIDE-in-collection.ax.txt",
+      "sha256": "0a41b021c62a51f77e40bcf6d2f3eff925c53d7a2aafdf9f681c1579372d8963"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-OVERRIDE-in-search.ax.txt",
+      "sha256": "3e800339128c0e12e31d1282d48184e2f5049096c6cb4b9daa578f897b3fc832"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-OVERRIDE-mm-collection.ax.txt",
+      "sha256": "30127c7195ec5a7e9722b3d2ba6be8e15900c7276fc6a70210891f5d594e1e3e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-OVERRIDE-mm-search.ax.txt",
+      "sha256": "b4e25e0c3bfb3cf731665def5e400ee127f4d042a6c791ef6fbfdfe3e4a1bcc3"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-PAST-END-collection-apply-recovered.ax.txt",
+      "sha256": "1709ce4fc17cf07a00edd3e25acf6f6176bf2e291fdb37d4f0dca7605a55f4c0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-PAST-END-collection.ax.txt",
+      "sha256": "d4824c4c7aa8a868c7111539b5934c783b9f3a9b6d0e9df1272f5b97b4b83e9d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-PAST-END-search-apply-recovered.ax.txt",
+      "sha256": "f0dd7f824232be7f92c9c7a37a6db3347ff89d26cc9527129a3c62b92c4b671b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-PAST-END-search.ax.txt",
+      "sha256": "958b2f71b8898228d7c5f5c679d4fa6b8c1168beb59c59eb86f6449a60e13591"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-collection-apply-zero.ax.txt",
+      "sha256": "efdd71559ce78f69fa614ce4d79ffcf43f31c228e51f75f40296c69b8a11aa90"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-collection-clear-length.ax.txt",
+      "sha256": "563768ee65df2845790f680a07d2e88e9cee4998bc032e347275396e0d653fe9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-collection-clear-one-connector.ax.txt",
+      "sha256": "42cf6fc03a5c0a6ba13573460e6c676a89416fd1bea4501087b6f8732b81fe0f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-collection-sort-native.ax.txt",
+      "sha256": "a74a83aa8d65942178c6247e2ff27220edafb22c0ce213ee8114c096ec07516c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-collection.ax.txt",
+      "sha256": "33829ac863f8e62ac580bfc7cfa1a1791fc050153de803fcd4dd26d956bde6c4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-search-apply-zero.ax.txt",
+      "sha256": "9571a390c20512c37654f26e0ae50909d94277eb797d48fbcf22768448214c79"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-search-clear-length.ax.txt",
+      "sha256": "f54fd846bb87d2fe822a415825587362a28f9732aec37ce1395d92a85a0edcc0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-search-clear-one-connector.ax.txt",
+      "sha256": "44ea0ac3a7ff586ec009a208ad12fbd63ef93f33dc5e80d6e3871b8e1591e385"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-search-sort-native.ax.txt",
+      "sha256": "c63e3dda1bed71f20a698a5e77ef98a2f1a3d7f464731b269566bfb2b53f4f1f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-QUERY-PRESERVATION-search.ax.txt",
+      "sha256": "d5dd94a2b2766bf703418984d4fa0579cbce0a6bac6942ad73e0018e3ead307e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-SMALL-POSITIVE-collection.ax.txt",
+      "sha256": "1a8d3ac7acbd9f9c6779246cf77984f5c8d8718fa4dbba637fb45c4610df58a0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-SMALL-POSITIVE-search.ax.txt",
+      "sha256": "402c33e57faabd4fedf2dc44ffc5e5344dc05ec02752a691f6324dc89471b423"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-SOLDOUT-ONLY-collection.ax.txt",
+      "sha256": "b2bd943649965f6be1c6c7b398f5f002f4c557f88ea7196c686bd04c31aa184e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-SOLDOUT-ONLY-search.ax.txt",
+      "sha256": "ff6956a3c6dac810645cd8ea407503734531c7c542ce13ffacf40e1890dcb2af"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-UNIT-NOT-DROPPED-collection-clear-pair-recovered.ax.txt",
+      "sha256": "8300880dc8166d89f5d86dfd3e85f36d0ff87e9fd92ed4f7bbb6de3b564c203c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-UNIT-NOT-DROPPED-collection.ax.txt",
+      "sha256": "5b67fb215f00fd8a8ce1aa63466351b272ce7fa9e05dd96cf1eac9e92ec32c99"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-UNIT-NOT-DROPPED-search-clear-pair-recovered.ax.txt",
+      "sha256": "a034bf1ce03f8401c6c8741f20fd2878b4505271a00b3be7c2ff5f1cd1266e66"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-Q-UNIT-NOT-DROPPED-search.ax.txt",
+      "sha256": "6ebc6509787f00895141a6d905b68d9f64ac8e226289d6cebf0926bd031fdc3d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-a-restored-readback.json",
+      "sha256": "27eda25b4a8815ee20198d58f50dd7c25644080f63585a1af39899e2bce8c47e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-b-private-readback.json",
+      "sha256": "a94c989470af83c5a0c84e62eb56064706d474008a5e47afc49cb75135c934ac"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-b-published-readback.json",
+      "sha256": "868da8328d6fc5846cc6d77ebafb05260e8239c9a8609359570b31ee0bf3bd2b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-b-reapplied-readback.json",
+      "sha256": "39dd53e024cd53b6a3479d5cf481325109521c89ea1feb74422cf5a6665c3ccd"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-collections-before-setup.ax.txt",
+      "sha256": "857be9bbf47c177f9e47a8c21bd58f77d99ca775522903591ba6c5763fdeac8f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-editor-cycle-completed.json",
+      "sha256": "92a37e423dc3d2bc66a58619889c0b70c1aa37da6d3ccfd2b4c142873fb6765f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-installed-readback.json",
+      "sha256": "27de2b010e59faca26a434fd860c5c578d7ebebd36a7111e7f6e1aaff747efb1"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-lifecycle-after-invalid-ui.json",
+      "sha256": "897690ab09706f48d95a23cd9848dee64a24987b58d2a712e67ac17eaf57037c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-lifecycle-after-nonorder-ui.json",
+      "sha256": "1b875f02d0a2648ed5e6ac028e22e418b9e07f775de430b597d64c3e3310c110"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-lifecycle-before-invalid-ui.json",
+      "sha256": "842e4da2840162b80bdd465c6dc4f5834b70e1029fb295787c9b86066c5f53aa"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-lifecycle-before-ui.json",
+      "sha256": "c11e3af41a51d5992554e7c206983d60e1e5daf5eb83fa96431b05152c0bfcb9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-no-length-create-draft.ax.txt",
+      "sha256": "acc5cbbce1333d16c284eef8982fd15bb71996a001077b199caebcb00e8c7305"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-no-length-created.ax.txt",
+      "sha256": "b1a2358a19ac99f085d8ba403489177ac01d4ffb9b7329bb6853eacfc644c447"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-no-length-reloaded.ax.txt",
+      "sha256": "9092063b2687ff1736e9d610fbb9b5e20f0967d4e567e527f726c35369ea0e17"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-restore-review.ax.txt",
+      "sha256": "da3daf7f06dee3c2765fbca2779352d56e708a9335a681d7f32dd1f3268016ab"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkAll-create-draft.ax.txt",
+      "sha256": "553f3c96ad27e01603117d4aacc26226a4707c8d35f54f00dfe9c59cca11c8d4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkAll-created.ax.txt",
+      "sha256": "90c046043fed5b80bc49d3590aed489b889cc29694f39ca324a15510abcb7559"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkAll-members-selected.ax.txt",
+      "sha256": "78c2003dc70cdf2935a31b7accbc6f6fcc286829387bfb2b2ebab2ce0c49b7af"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkBaseline-create-draft.ax.txt",
+      "sha256": "c80e5c3563975214a70b17edc86ee21096c7954afc062a27d8fe9665d25ce077"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkBaseline-created.ax.txt",
+      "sha256": "ef7fdce094aa2e9edba51f26cb0900602c524d45d39084515887e9c3b309c370"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkBaseline-members-selected.ax.txt",
+      "sha256": "0879e151a934032839da86ae0eec805471de3eee50e3c7353c667c219e2e77ab"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkEmpty-create-draft.ax.txt",
+      "sha256": "7c00fab66ed60a857faeddd7de8ad05ae76dcfcaed4efca3b8c5d53c21504edf"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkEmpty-created.ax.txt",
+      "sha256": "773f28368a6817a31474c077860db0a3b3aad7edfdb25d482faecea9d7c902d4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkNoLength-create-draft.ax.txt",
+      "sha256": "ad4a6e299cf10da324f913ef07731d528d3f0b4d1de0620df1671703a13b9507"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkNoLength-created.ax.txt",
+      "sha256": "ed5214343727b38fe91168a213864e9a0f2950bd8f78a897fb34956dfd54374f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkNoLength-members-selected.ax.txt",
+      "sha256": "c3c9547a4014368ca165e0133feb56a3264ad050ca3958ce6626be1f91319eac"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkWitness-create-draft.ax.txt",
+      "sha256": "36ec6acbd53c614c8f193d249bd138bc6494201e75fcc22ba971bd8b4bdb5742"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkWitness-created.ax.txt",
+      "sha256": "254a05b649a7db69c0165dd759fed0861c1b966bd96deec6070d19f3c1b3e9a6"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-trailmarkWitness-members-selected.ax.txt",
+      "sha256": "4ec05b7fe4e97bec72ef335271fa571209d0a07531dac33cc51332f0be855cb5"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-witness-create-draft.ax.txt",
+      "sha256": "5b0ce0365226462ddb4e6a488988b2cf48e204f58cecfc288d76089db167813e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-witness-created.ax.txt",
+      "sha256": "a6b3481206a01751bf3fa2b5aae2349e67b647d8f354ea593a6d714ee8f6e6e9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-trailmark-witness-reloaded.ax.txt",
+      "sha256": "6e577b28089bcb941c4ec0da918825418d44c46f6660a0dc7edfaddae90fe658"
+    }
+  ]
+}

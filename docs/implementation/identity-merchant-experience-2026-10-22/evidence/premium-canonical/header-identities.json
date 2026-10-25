@@ -1,0 +1,217 @@
+[
+  {
+    "file": "apps/merchant/web/src/app/[store]/ai/page.tsx",
+    "identity": "settings",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/analytics/page.tsx",
+    "identity": "analytics",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/appearance/page.tsx",
+    "identity": "themes",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/apps/page.tsx",
+    "identity": "apps",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/categories/page.tsx",
+    "identity": "collections",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/certifications/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/comments/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/contact/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/coupons/page.tsx",
+    "identity": "marketing",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/customers/[email]/page.tsx",
+    "identity": "customers",
+    "headers": 3
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/customers/page.tsx",
+    "identity": "customers",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/customers/segments/page.tsx",
+    "identity": "customers",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/dashboard/DashboardClient.tsx",
+    "identity": "dashboard",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/education/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/export/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/gallery/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/leads/page.tsx",
+    "identity": "customers",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/marketing/page.tsx",
+    "identity": "marketing",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/online-store/pages/page.tsx",
+    "identity": "themes",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/online-store/preferences/page.tsx",
+    "identity": "themes",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+    "identity": "orders",
+    "headers": 3
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/orders/page.tsx",
+    "identity": "orders",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/pages/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/payouts/page.tsx",
+    "identity": "payments",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/posts/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/collections/page.tsx",
+    "identity": "products",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/gift-cards/page.tsx",
+    "identity": "products",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/inventory/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/inventory-history/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/locations/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+    "identity": "products",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/operations-dashboard/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/purchase-orders/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/receipts/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/reservations/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/smart-collections/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/suppliers/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/products/transfers/page.tsx",
+    "identity": "products",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/projects/page.tsx",
+    "identity": "content",
+    "headers": 2
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/reviews/page.tsx",
+    "identity": "content",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/page.tsx",
+    "identity": "settings",
+    "headers": 1
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/testimonials/page.tsx",
+    "identity": "content",
+    "headers": 2
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "recordedAt": "2026-10-23T16:03:33.424032+00:00",
+  "classification": "ENTERPRISE_FIXTURE_PRECONDITION_AND_NORMAL_INSTALL_RETRY_IN_PROGRESS_NOT_P00_ACCEPTANCE",
+  "runId": "9cd50e893016",
+  "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "approval": {
+    "reportedBy": "Direct Editor message, corroborated by Themes compact snapshot",
+    "directHumanApprovalReported": true,
+    "independentlyReadHumanTurnByPantry": false,
+    "priorAutoReviewRejectionPreserved": true
+  },
+  "postcommitReceipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-postcommit-readback.json",
+    "sha256": "ce2a5fdba85033daf29b78b005c729f0a40ceda2f1dfa59ce54e88c12af56846"
+  },
+  "verifiedPostcommitReadback": {
+    "guardVerified": true,
+    "effectiveCanonicalLimit": {
+      "limit": null,
+      "plan_name": "enterprise"
+    },
+    "activeSyntheticSubscriptionCount": 1,
+    "amountPaid": 0,
+    "paymentGateway": null,
+    "externalSubscriptionId": null,
+    "mutationReplay": false,
+    "currentInvariantCounts": {
+      "carts": 1,
+      "drafts": 4,
+      "orders": 0,
+      "patches": 14,
+      "releases": 4,
+      "instances": 1
+    },
+    "currentTheme": "letbuyy-aura"
+  },
+  "evidenceLimitation": "Previous process reached postcommit effective-limit assertion only after SQL returned0, parsed JSON and all before/after nonbilling equality checks passed. Original numeric before/after digests were not durably saved before later JS assertion threw; current readback does not fabricate those earlier digest values.",
+  "normalPantryRetry": {
+    "source": "Editor message and compact revision4 in reset cursor session",
+    "status": "UI_ACKNOWLEDGED_INSTALLED_SAVED_DRAFT",
+    "catalogAddToolIssue": "First click failed at browser-control layer; Editor checked no state change before accessibility control completed install.",
+    "installHttpReceipt": "NOT_PROVIDED_TO_PANTRY",
+    "editorSaveReload": "IN_PROGRESS_NOT_PROVEN",
+    "localPublication": "NOT_YET_PROVEN",
+    "buyerPantryReadback": "NOT_YET_PROVEN",
+    "p00Acceptance": "OPEN"
+  },
+  "originalFreeFirstPassPreserved": true,
+  "noPantrySourceBrowserOrDbMutation": true
+}

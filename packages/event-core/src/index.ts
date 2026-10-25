@@ -272,7 +272,7 @@ const ShipmentPayloadSchema = GenericSiteEventPayloadSchema.extend({
 
 const NotificationPayloadSchema = GenericSiteEventPayloadSchema.extend({
   notification_id: UuidSchema,
-  channel: z.enum(['email', 'sms', 'whatsapp', 'push', 'webhook']).optional(),
+  channel: z.enum(['email', 'sms', 'whatsapp', 'push', 'in_app', 'webhook']).optional(),
 });
 
 const EmailPayloadSchema = GenericSiteEventPayloadSchema.extend({
