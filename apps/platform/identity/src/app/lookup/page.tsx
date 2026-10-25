@@ -263,7 +263,7 @@ function LookupContent() {
                 setViewState('password')
             } else {
                 // User exists but no password — send magic link
-                handleSendMagicLink()
+                await handleSendMagicLink()
             }
         } catch {
             setError('Something went wrong. Please try again.')

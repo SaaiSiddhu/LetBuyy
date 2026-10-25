@@ -108,3 +108,17 @@ for (const page of ['lookup', 'check-email']) {
     assert.equal(f.errors.at(-1), 'network-failed');
   });
 }
+
+
+test('email lookup stays busy until its automatic magic-link request finishes', async () => {
+  const f = fixture(); const loading = []; let release;
+  f.context.setLoading = value => loading.push(value);
+  f.context.fetch = async () => new Response(JSON.stringify({ exists: true, hasPassword: false }));
+  f.context.handleSendMagicLink = () => new Promise(resolve => { release = resolve; });
+  const pending = handler('lookup', 'handleEmailContinue', f.context)({ preventDefault() {} });
+  for (let i = 0; i < 10 && !release; i++) await new Promise(resolve => setImmediate(resolve));
+  assert.equal(typeof release, 'function');
+  try { assert.equal(loading.at(-1), true); }
+  finally { release(); await pending; }
+  assert.equal(loading.at(-1), false);
+});
