@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUrl } from '@/lib/config/urls'
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 
-const PROTECTED_ROUTES = ['/set-password']
 const PUBLIC_ROUTES = ['/check-email', '/api/']
 const ACCIDENTAL_ADMIN_PATH = /^\/[^/]+\/(?:dashboard|analytics|products|orders|customers|settings|appearance|online-store)(?:\/|$)/
 
@@ -33,12 +32,8 @@ export function proxy(request: NextRequest) {
         return NextResponse.next()
     }
 
-    if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) && !session.accepted && !hasSessionCookie) {
-        const url = new URL('/lookup', request.url)
-        url.searchParams.set('redirect', pathname)
-        return NextResponse.redirect(url)
-    }
-
+    // This route renders a data-free password form. Its API still requires
+    // CSRF and a fresh server-validated, single-use verification intent.
     const response = NextResponse.next()
     const existingCsrf = request.cookies.get('letbuyy_csrf')?.value || request.cookies.get('lb_csrf')?.value
 

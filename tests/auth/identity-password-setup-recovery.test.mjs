@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -100,4 +101,42 @@ test('magic link for an account with a password preserves normal sign-in', async
   assert.equal(response.location, '/onboarding');
   assert.ok(f.calls.includes('session'));
   assert.ok(!f.calls.includes('intent'));
+});
+
+function passwordProxy(cookies = {}) {
+  const source = readFileSync('apps/platform/identity/src/proxy.ts', 'utf8');
+  const output = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
+  const writes = [];
+  const next = { kind: 'next', cookies: { set: (...args) => writes.push(args) }, headers: new Headers() };
+  const ctx = { exports: {}, URL, Uint8Array, process: { env: { NODE_ENV: 'production' } },
+    crypto: { getRandomValues: bytes => bytes.fill(7) }, require: name => {
+      if (name === 'next/server') return { NextResponse: { next: () => next, redirect: url => ({ kind: 'redirect', location: url.pathname }) } };
+      if (name === '@/lib/config/urls') return { getAdminUrl: () => 'https://admin.letbuyy.com' };
+      if (name === '@letbuyy/auth-core') return { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) };
+      throw new Error(`Unexpected runtime import: ${name}`);
+    } };
+  new vm.Script(output).runInContext(vm.createContext(ctx));
+  const response = ctx.exports.proxy({ nextUrl: new URL('https://accounts.letbuyy.com/set-password'), url: 'https://accounts.letbuyy.com/set-password', cookies: { get: name => cookies[name] ? { value: cookies[name] } : undefined } });
+  return { response, writes };
+}
+for (const cookie of [undefined, 'synthetic-intent-id']) {
+  test(`the production proxy renders the password shell before session creation (intent ${Boolean(cookie)})`, () => {
+    const { response, writes } = passwordProxy(cookie ? { lb_password_set_intent: cookie } : {});
+    assert.equal(response.kind, 'next');
+    assert.ok(writes.some(row => row[0] === 'letbuyy_csrf'));
+    assert.equal(response.headers.get('X-Frame-Options'), 'DENY');
+  });
+}
+
+test('the public password shell never lets an unverified POST change a password', async () => {
+  const calls = [];
+  const response = await execute(setPassword, 'POST', {
+    checkRateLimit: async () => ({ allowed: true }), validateCsrf: () => true,
+    getPasswordSetIntentCookie: async () => undefined,
+    identityApiRequest: async () => { calls.push('mutation'); },
+    NextResponse: { json: (body, init) => ({ body, status: init.status }) },
+    console: { error() {} },
+  })({ headers: new Headers(), json: async () => ({ password: randomUUID(), userId: 'forged-user', email: 'forged@example.invalid' }) });
+  assert.equal(response.status, 403);
+  assert.deepEqual(calls, []);
 });
