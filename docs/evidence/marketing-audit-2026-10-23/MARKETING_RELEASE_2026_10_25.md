@@ -28,4 +28,15 @@ Existing Vercel project marketing-site (prj_2FQ0ZEkuDMHtzj58XKyWHsWRTVLx) was co
 
 Previous production deployment: dpl_sujU6rmuovy3ao3GYJEbeRWFQmNC (marketing-site-kzmtvnf6l-letbuyy-store-s-projects.vercel.app). This is the hosting rollback anchor. Source rollback anchor: 28423d2b5.
 
-Staging/production deployment IDs and observed checks will be appended after execution. No deployment is claimed in this preparation record.
+## Executed release
+
+- GitHub develop, staging and main synchronized at `1724330e17ac8ddecc7cec64c6ff142037908197` by fast-forward promotion.
+- Staging: `dpl_BNTW2gXbpGJ5dnb7jUNNLXRfdQ7h`, READY; Git source staging at that exact SHA. Cloud build: 29 tasks passed. Authenticated HTTP checks: 198 localized routes, 96 artwork assets and 24 JS bundles passed. Search has the expected client-rendered Suspense shell; pricing reuses its section heading. An initial anonymous attempt reached Vercel login, so verification used the authorized Vercel CLI session and retained protection.
+- Production: `dpl_E4CeDGFA9EN7XdTxVSZHyyDM5xck`, READY; Git source main at that same SHA; https://www.letbuyy.com. Cloud build: 29 tasks passed. Public HTTP checks: 198 routes and 96 artwork assets passed. Canonical home URL is https://www.letbuyy.com/in and the new SVG store mark is rendered. Public client bundles and the live pricing endpoint were checked separately.
+- The owner explicitly approved copying only the public NEXT_PUBLIC_TURNSTILE_SITE_KEY from the existing accounts project. Selected its metadata without decrypting other variables, retrieved that exact public variable, and configured marketing preview/production. Verified that it occurs in the deployed client bundle. No private secret was read or copied. No live contact/demo message was sent and Turnstile provider interaction was not exercised in a browser.
+- GitHub Actions remains skipped by owner direction after its jobs failed to start due account billing/spending limits. Local and Vercel evidence is separately identified; no CI pass is claimed.
+- Source preservation check: all 430 marketing/source/test paths from the original checkout are present; only the documented Continue/Resume wording differs. No marketing work was omitted. Unrelated original working changes remain preserved.
+- Only the marketing Vercel project was manually deployed. No database migration or Worker deployment was dispatched. Existing Git integrations can react to the main branch promotion.
+- Browser-based layout, keyboard and user interaction checks were unavailable because local browser use is disabled in Work settings. HTTP checks prove response/content/asset availability, not browser interaction behavior.
+
+Sanitized receipts are in `release-verification/`. This documentation follows the tested release as a bookkeeping-only commit; application source and deployment configuration are unchanged.
