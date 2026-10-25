@@ -2,7 +2,9 @@
 
 Authority: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` > root `AGENTS.md` > this ledger.
 Operating rules: `.claude/skills/letbuyy/references/merge.md` (rows, claims, worktree lifecycle) and
-`references/promote.md` (the `## Promotions` table). Enforced by
+`references/promote.md` (the `| `codex/password-setup-recovery` | `f01a7c07dbcb734fa6e897a4ecd03f4683febf11` | MERGED_DEVELOP | 2026-10-25 | PHASE-PASSWORD-SETUP-20261025 | Canonical password page uses verified intent readiness and visible recovery; passwordless magic links create the existing single-use intent before full session. Auth-only078/161/175/396 compatibility package applied staging then production with server-only grants and unchanged counts; full Worker activation and history reconciliation remain separate. Seven new regressions, auth58, identity51/contracts6, Gateway1789, build/typecheck/lint, owned PostgreSQL16 and Supabase17.6, rotation/reuse/rollback and real governance114 pass. Gate has only attributed generated-artifact and preserved-env lifecycle findings; exact clean lifecycle1/1 passes. Managed task worktree remains app-protected. Hosted password entry/submission awaits owner private browser action. | `a3fb6ff1f926f26c5d7ebeb786bc99d602f91fd1` |
+
+## Promotions` table). Enforced by
 `scripts/validators/branch-dispositions-validator.mjs` (gate lane).
 
 ## Claim protocol
@@ -281,4 +283,6 @@ owner's first push of `develop`/`staging`/`main` is a fast-forward on every ref.
 | 2026-10-25 | `a7f539d175977335505e5d24ba67e80e9e1d003b` | `staging` (fast-forward; Git-only source synchronization) | yes; remote heads verified | "Now promptore develop to staging to production,.. now"; clarified "Only sync Git branches for now" | Target CI40194560215 failed; source CI40193784527 confirmed account billing/spending-limit refusal before jobs; hosted deployment/E2E not performed |
 | 2026-10-25 | `a7f539d175977335505e5d24ba67e80e9e1d003b` | `main` (fast-forward; Git-only source synchronization) | yes; remote heads verified | "Now promptore develop to staging to production,.. now"; clarified "Only sync Git branches for now" | Target CI40194652673 failed; source CI40193784527 confirmed account billing/spending-limit refusal before jobs; hosted deployment/E2E not performed |
 
-| `codex/password-setup-recovery` | `90529fbf7` | ACTIVE | 2026-10-25 | PHASE-PASSWORD-SETUP-20261025 | Owner reports live set-password repeatedly returning to lookup after email delivery confirmed. Scope identity password page/API and verification handoff, canonical auth-only schema repair/deploy package with restricted grants and paired rollback, focused executable UI/routes/owned database tests, existing release evidence/ledgers. Clean primary and sole managed worktree inspected; previous phase fully merged, no overlapping work. Preserve credentials, records, local env/apps, full Worker activation block and catalog-fence guards; single agent. | N/A — pending |
+
+| 2026-10-25 | `a3fb6ff1f926f26c5d7ebeb786bc99d602f91fd1` | `staging` (fast-forward; includes final bookkeeping) | yes; GitHub heads verified | "Now promptore develop to staging to production,.. now"; current "check the live browser ... fix that issue" | Local source/schema gates recorded in production-workers evidence; hosted build and password acceptance tracked separately |
+| 2026-10-25 | `a3fb6ff1f926f26c5d7ebeb786bc99d602f91fd1` | `main` (fast-forward; includes final bookkeeping) | yes; GitHub heads verified | "Now promptore develop to staging to production,.. now"; current "check the live browser ... fix that issue" | Vercel production build follows this source; full Worker activation remains blocked |
