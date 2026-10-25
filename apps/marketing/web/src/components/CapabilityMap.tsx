@@ -1147,7 +1147,7 @@ export default function CapabilityMap() {
                         <CommerceOSGraph activeId={activeId} onSelect={selectCapability} />
                         {!isReduced && (
                             <Button unstyled type="button" className="cmap-motion-control" onClick={() => setPlaying(value => !value)}>
-                                <Copy text={playing ? "Pause automatic module tour" : "Resume automatic module tour"} />
+                                <Copy text={playing ? "Pause automatic module tour" : "Continue automatic module tour"} />
                             </Button>
                         )}
                     </div>
