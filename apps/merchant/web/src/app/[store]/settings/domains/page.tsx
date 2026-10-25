@@ -189,7 +189,7 @@ export default function DomainCenterPage() {
             )}
 
             <Banner variant="info" title="Use your own domain">
-                Connect a custom domain to give your store a professional, branded address with automatic HTTPS. Your LetBuyy address always stays live as a fallback.
+                Connect a custom domain to give your store a professional, branded address with automatic HTTPS. Your LetBuyy address remains assigned when you connect a custom domain.
             </Banner>
 
             {/* Your domains */}
@@ -201,7 +201,7 @@ export default function DomainCenterPage() {
                             <span className="domains-row-icon"><Globe className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="domains-row-meta">
                                 <span className="domains-row-domain">{letbuyyHost}</span>
-                                <span className="domains-row-sub">LetBuyy address · always available</span>
+                                <span className="domains-row-sub">{storeInfo?.published ? 'LetBuyy address' : 'LetBuyy address · store not published'}</span>
                             </div>
                             <Badge label={storeInfo?.published ? 'Live' : 'Default'} variant={storeInfo?.published ? 'success' : 'info'} />
                         </div>

@@ -20,6 +20,9 @@ import { createTrailmarkThemeV201 } from './trailmark-theme-v201';
 import { createMarginaliaTheme } from './marginalia-theme';
 import { withNicheOrderPresentation } from './niche-order-presentation';
 
+/** Starting design for new stores; existing selections remain durable merchant state. */
+export { DEFAULT_STOREFRONT_THEME_SLUG } from '@letbuyy/shared-types';
+
 // Explicit distribution input only. Persisted version selection remains the catalog's authority.
 const NICHE_V2 = {
     bloom: { name: 'Playfield', category: 'toys', factory: createPlayfieldTheme },

@@ -58,5 +58,9 @@ export function getStorefrontHost(subdomain: string): string {
 
 /** The public storefront URL for a store subdomain. */
 export function getStorefrontUrl(subdomain: string, path = ''): string {
-    return appendPath(buildTenantStorefrontUrl(subdomain, {rootDomain: getStorefrontRootDomain(), baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL}), path)
+    return appendPath(buildTenantStorefrontUrl(subdomain, {
+        rootDomain: getStorefrontRootDomain(),
+        rootDomainAliases: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES,
+        baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL,
+    }), path)
 }

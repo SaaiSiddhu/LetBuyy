@@ -46,6 +46,9 @@ test('storefront reserved labels match the domain split governance list', () => 
     // current authority to reconcile against.
     'checkout',
     'checkout-staging',
+    // Verified platform preview aliases, protected from new tenant registration.
+    'storefront',
+    'storefront-staging',
   ]);
 
   for (const label of RESERVED_STOREFRONT_LABELS) {

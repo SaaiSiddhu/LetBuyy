@@ -10,7 +10,7 @@
         "branch": "staging"
       },
       "production": {
-        "project_id": "prj_R08a9PAd7LioHFGtXeLzSD1pj8jy",
+        "project_id": "prj_PN63TtTkFRglGNnI4k3fxE2lDThi",
         "url": "https://accounts.letbuyy.com",
         "branch": "main"
       }
@@ -25,7 +25,7 @@
         "branch": "staging"
       },
       "production": {
-        "project_id": "prj_SwuRDvdTWhovHOzwVLt5yYzwGmhD",
+        "project_id": "prj_BkaBsf3h7TvKRMpmyYQWsVmfP38J",
         "url": "https://admin.letbuyy.com",
         "branch": "main"
       }
@@ -36,12 +36,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_STOREFRONT_PROJECT_ID",
-        "url": "https://store-staging.letbuyy.com",
+        "url": "https://storefront-staging.letbuyy.store",
         "branch": "staging"
       },
       "production": {
         "project_id": "prj_P5yXTxXK5VnzVoAfv0lSoqXpIME8",
-        "url": "https://store.letbuyy.com",
+        "url": "https://storefront.letbuyy.store",
         "branch": "main"
       }
     },

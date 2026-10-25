@@ -14,9 +14,9 @@ async function fixture(){
  const id=crypto.randomUUID(),email=`syn-core-bootstrap-${id}@example.invalid`;
  owned.psql(`INSERT INTO users_custom(id,email,email_verified)VALUES('${id}','${email}',true);`);
  const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),proxy.env()));
- return {id,email,gateway,create:async(theme='letbuyy-core',key=crypto.randomUUID())=>{
+ return {id,email,gateway,create:async(theme:string|null='letbuyy-core',key=crypto.randomUUID())=>{
   const slug='syn-core-'+crypto.randomUUID().slice(0,8);
-  const body={name:'Synthetic Core Store',subdomain:slug,site_type:'store',theme_id:theme,template_config:{survey:{industry:'food'}}};
+  const body={name:'Synthetic Core Store',subdomain:slug,site_type:'store',...(theme?{theme_id:theme}:{}),template_config:{survey:{industry:'food'}}};
   const headers=await signedIdentityHeaders(id,email);
   const request=()=>gateway.request('/v1/stores',{method:'POST',headers:{...headers,'Content-Type':'application/json','X-Idempotency-Key':key},body:JSON.stringify(body)});
   // Identity headers are short lived and carry unique request JTIs; generate on each replay.
@@ -169,4 +169,25 @@ test('Core starter copy patch is catalog-only, owner-safe, idempotent and revers
   owned.script(`UPDATE themes SET default_template='${custom.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);
   owned.psql(rollback);owned.psql(forward);assert.equal(core(),custom,'unrecognized custom copy is retained');
  }finally{owned.script(`UPDATE themes SET is_site_private=false,default_template='${before.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);}
+});
+
+
+test('new stores default to the captured Circuit catalog document without rewriting existing Core stores',async()=>{
+ const f=await fixture();
+ try {
+  const before=owned.psql("SELECT md5(coalesce(jsonb_agg(to_jsonb(s) ORDER BY id),'[]'::jsonb)::text) FROM sites s;");
+  const made=await f.create(null);assert.equal(made.response.status,201,made.response.text);
+  const siteId=String(made.response.json?.data?.id);
+  assert.equal(made.response.json?.data?.theme_id,'letbuyy-forge');
+  const config=JSON.parse(owned.psql(`SELECT template_config::text FROM sites WHERE id='${siteId}';`));
+  assert.equal(config.themeId,'letbuyy-forge');assert.equal(config.liquidBundle?.package?.slug,'letbuyy-forge');
+  assert.equal(config.liquidBundle.package.name,'Circuit');assert.equal(config.survey.industry,'food');
+  assert.deepEqual(config.themeSettings,JSON.parse(owned.psql("SELECT default_template->'themeSettings' FROM themes WHERE slug='letbuyy-forge';")),'survey metadata cannot restyle the selected niche design');
+  assert.equal(owned.psql(`SELECT md5(coalesce(jsonb_agg(to_jsonb(s) ORDER BY id),'[]'::jsonb)::text) FROM sites s WHERE id<>'${siteId}';`),before);
+  const replay=await made.replay();assert.equal(replay.status,201,replay.text);assert.equal(replay.json?.data?.id,siteId);
+  owned.psql("UPDATE themes SET is_active=false WHERE slug='letbuyy-forge';");
+  try {const blocked=await f.create(null);assert.equal(blocked.response.status,503,blocked.response.text);}
+  finally {owned.psql("UPDATE themes SET is_active=true WHERE slug='letbuyy-forge';");}
+  assert.equal(owned.psql(`SELECT count(*) FROM sites WHERE custom_user_id='${f.id}';`),'1');
+ }finally{await f.gateway.settle();}
 });

@@ -425,7 +425,9 @@ router.get('/', async (c) => {
             break;
     }
 
-    query = query.range(offset, offset + limit - 1);
+    // A unique tie-breaker keeps paginated catalog order stable, including the
+    // authored first-party sequence when sort_order values are equal.
+    query = query.order('id', { ascending: true }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query.returns<Array<Pick<Theme, 'id' | 'slug'> & Record<string, unknown>>>();
 

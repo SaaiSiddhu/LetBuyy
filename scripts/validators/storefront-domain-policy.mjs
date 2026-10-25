@@ -8,6 +8,11 @@ const storefrontEnvFiles = new Set([
 export function isApprovedStorefrontDomainLiteral(file, text, index) {
  const start=text.lastIndexOf('\n',index-1)+1,end=text.indexOf('\n',index);
  const line=text.slice(start,end<0?text.length:end).trim();
+ if(file==='config/vercel/projects.json') {
+  const owner=Array.from(text.slice(0,index).matchAll(/"directory"\s*:\s*"([^"]+)"/g)).at(-1)?.[1];
+  return owner==='apps/commerce/web' && /^"url": "https:\/\/storefront(?:-staging)?\.letbuyy\.store",?$/.test(line);
+ }
+ if(file==='services/api-gateway/wrangler.toml')return /^NEXT_PUBLIC_STORE_ROOT_DOMAIN = "letbuyy\.store"$/.test(line);
  if(file==='packages/shared-types/src/brand.ts')return /^export const DEFAULT_STOREFRONT_DOMAIN = 'letbuyy\.store';$/.test(line);
  return storefrontEnvFiles.has(file)&&(/^(?:NEXT_PUBLIC_STORE_ROOT_DOMAIN|STOREFRONT_ROOT_DOMAIN)=letbuyy\.store$/.test(line) || /^NEXT_PUBLIC_STOREFRONT_URL=https:\/\/letbuyy\.store$/.test(line));
 }

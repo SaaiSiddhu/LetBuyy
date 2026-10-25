@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { MerchantNavigationLink as Link } from '../MerchantNavigationLink'
 import { Input, LayoutDashboard, ScrollThumb, Search, X } from '@letbuyy/ui'
 import {
@@ -125,7 +126,7 @@ export function SettingsShell({
                         </span>
                         <span className="settings-sidebar-store-info">
                             <span className="settings-sidebar-store-name">{storeName}</span>
-                            <span className="settings-sidebar-store-domain">{subdomain}.letbuyy.com</span>
+                            <span className="settings-sidebar-store-domain">{subdomain}.{getStorefrontRootDomain()}</span>
                         </span>
                         <Link
                             href={`/${store}/dashboard`}
