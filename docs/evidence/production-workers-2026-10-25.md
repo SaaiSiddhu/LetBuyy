@@ -1,6 +1,6 @@
 # Production and staging Worker release — 25 October 2026
 
-The owner requested current Worker code in both environments. **Source upload is complete for the seven existing Workers; activation and hosted end-to-end acceptance remain blocked.** Runtime source is main/develop/staging `a175c729caef8a3c71307ee4b51b29a70131e9b9`. This phase changes no application or Worker source and applies no hosted SQL.
+The owner requested current Worker code in both environments. **Source upload is complete for the seven existing Workers; activation and hosted end-to-end acceptance remain blocked.** The Worker candidates were built from main/develop/staging `a175c729caef8a3c71307ee4b51b29a70131e9b9`. The initial upload subphase changed no application or Worker source and applied no hosted SQL. A later identity UI repair is recorded below.
 
 ## Observed state
 
@@ -35,3 +35,13 @@ The managed worktree's repository-wide baseline has six failing checks (typechec
 ## Required continuation
 
 Verify Supabase's supported installation on staging first, then production, using the exact owner/body/ACL profile. Complete the hosted migration/history reconciliation, close the password-intent policy issue, preserve original records and verify positive/negative identity, replay and tenant behavior. Provision the missing staging BFF and staging queue secret, verify all environment-specific secrets and bindings, then activate through the governed deployment path. Reconcile the old storefront Vercel internal-secret consumer separately. Full hosted login, signup, merchant, buyer and asynchronous acceptance remains unverified and production login is still reported failing.
+
+## Follow-up: login email never arrives
+
+The owner clarified that the email is missing, rather than a received link failing to open. Two reproduced UI defects concealed this: lookup navigated to check-email without inspecting the send response, and resend sent a literal placeholder instead of a Turnstile proof and ignored errors. A third reproduced race cleared the parent busy state before its automatic send finished.
+
+The two identity pages now require an acknowledged successful send before advancing/resetting cooldown, show bounded localized failure messages through the canonical Banner, use the existing real Turnstile widget with token reset, and wait for automatic sends. Password-reset resends use the existing send-reset route. Unknown-account success behavior remains unchanged for privacy. No email provider credential, server authentication guard, database or Worker source changed.
+
+Tests execute the actual page handlers with synthetic browser/network ports: 14 of the first 15 failed before repair, then all15 passed; the additional busy-state regression failed before its fix and all16 now pass. Existing identity unit51 and contracts6 pass. App typecheck and production build pass; changed-page ESLint has zero errors and one pre-existing hook warning. The worktree gate at dd6e980cf passes typecheck/lint/contracts/gateway unit/CI and113 validators; its stale-artifact sweep is attributable to normal generated directories, and its one governance failure is the owned-client guard refusing a preserved merchant .env.local. The exact lifecycle case passed1/1 in a clean source clone, and the actual artifact-cleaning governance lane at b5976767a passes114/114 (one validator not applicable). Branch ancestry was separately verified in the real repository because the temporary clone lacks local develop refs. Auth/security tests outside the database fixture passed56; the separately executed owned PostgreSQL security suite passed23/23. The direct security invocation's23 cancelled cases are preserved as a failed attempt, not counted as a pass.
+
+A local production-build browser check with synthetic recipient confirmed a rejected resend displays an error and leaves the ready retry control available. This is UI recovery proof, not email delivery. Provider/runtime logs older than the Hobby retention window are unavailable; the current production alias and its previously configured environment were verified unchanged before this repair. Fresh hosted send and inbox acceptance remain required after the accounts-only Vercel update.
