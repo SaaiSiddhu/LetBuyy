@@ -56,6 +56,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "console-runtime-command-history.postgres.test.ts",
         "core-preset-save.postgres.test.ts",
         "current-entitlement-authority.postgres.test.ts",
+        "custom-domain-owned-zones.postgres.test.ts",
         "customer-password-reset.postgres.test.ts",
         "final-definer-role-access.postgres.test.ts",
         "final-tenant-table-access.postgres.test.ts",
