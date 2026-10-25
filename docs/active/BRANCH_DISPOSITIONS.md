@@ -2,7 +2,9 @@
 
 Authority: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` > root `AGENTS.md` > this ledger.
 Operating rules: `.claude/skills/letbuyy/references/merge.md` (rows, claims, worktree lifecycle) and
-`references/promote.md` (the `## Promotions` table). Enforced by
+`references/promote.md` (the `| `codex/production-worker-auth` | pending | ACTIVE | 2026-10-25 | Owner requested production login repair and current Worker deployment | F-PROD-WORKERS-AUTH: restore and rehearse the real production snapshot, complete the canonical schema and deploy the four existing Workers. New source scope is migration 396 with paired rollback and a database security test restricting password-set intents to service_role (SEC-R6); 078 currently omits TO and exposes verification authority. May write those three files, an evidence note, and this ledger. Base a175c729; primary clean, only this clean managed worktree, no ACTIVE overlapping claims. No new runtime/provider. | N/A — pending |
+
+## Promotions` table). Enforced by
 `scripts/validators/branch-dispositions-validator.mjs` (gate lane).
 
 ## Claim protocol
