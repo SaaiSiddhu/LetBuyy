@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -135,7 +136,7 @@ test('the public password shell never lets an unverified POST change a password'
     identityApiRequest: async () => { calls.push('mutation'); },
     NextResponse: { json: (body, init) => ({ body, status: init.status }) },
     console: { error() {} },
-  })({ headers: new Headers(), json: async () => ({ password: 'SyntheticOnly42!', userId: 'forged-user', email: 'forged@example.invalid' }) });
+  })({ headers: new Headers(), json: async () => ({ password: randomUUID(), userId: 'forged-user', email: 'forged@example.invalid' }) });
   assert.equal(response.status, 403);
   assert.deepEqual(calls, []);
 });
