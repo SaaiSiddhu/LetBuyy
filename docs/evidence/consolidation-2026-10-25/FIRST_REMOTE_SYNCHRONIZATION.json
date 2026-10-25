@@ -1,0 +1,25 @@
+{
+  "status": "THREE_BRANCHES_PUSHED_AND_VERIFIED",
+  "promoted_commit": "b92296e40a3a42e03707ce26bc36b490cd2f00ec",
+  "branches": {
+    "develop": "b92296e40a3a42e03707ce26bc36b490cd2f00ec",
+    "staging": "b92296e40a3a42e03707ce26bc36b490cd2f00ec",
+    "main": "b92296e40a3a42e03707ce26bc36b490cd2f00ec"
+  },
+  "remaining_feature_branches": {
+    "letbuyy/checkpoint-theme-cli-mode": "145e330a92ba406fdbd7fd1b6e1a3a6f8ec5b264",
+    "letbuyy/merchant-performance": "5a62b6590aea3e74be1df4a88eeae63ccd12d528",
+    "letbuyy/recovery-2026-10-18": "faeab17f7d5a404ffec95b7c56961bdae74ee379",
+    "letbuyy/sustained-l-marketplace-account-ui": "15359cf3ecf49e6a159170d3eebf2780e48352a9",
+    "letbuyy/theme-release-performance-resume": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+    "letbuyy/week1-compact-bootstrap": "eba8b2951599d526260d556bdece09c5ed843605",
+    "letbuyy/week1-hyperdrive-protocol": "d8707aaf11f86a2d65fd94c63718f85a942ddf98",
+    "letbuyy/week1-storefront-access": "9c4ae60548e1e9260aad0bd4011becbf4ebdca4b"
+  },
+  "promotion_order": [
+    "develop",
+    "staging",
+    "main"
+  ],
+  "force_push": false
+}

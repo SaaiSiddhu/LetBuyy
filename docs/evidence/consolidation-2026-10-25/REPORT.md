@@ -1,6 +1,6 @@
 # LetBuyy consolidation report — 25 October 2026
 
-Status: qualified source merged into develop; GitHub synchronization and cleanup are in progress. The owner authorized all accepted work to be merged into develop, then fast-forward synchronization of staging and main, followed by local and GitHub branch/worktree cleanup. No cleanup precedes qualification and preservation.
+Status: COMPLETE. Accepted work is merged into develop; develop, staging and main are synchronized on GitHub. Cleanup is complete and the primary checkout is clean after the final report commit. The owner authorized all accepted work to be merged into develop, then fast-forward synchronization of staging and main, followed by local and GitHub branch/worktree cleanup. No cleanup precedes qualification and preservation.
 
 Execution: one agent; no delegated chats or subagents. New commits use SaaiSiddhu <saaisiddu@gmail.com>. Existing history is retained.
 
@@ -42,6 +42,44 @@ All 240 owned PostgreSQL/Gateway/native-browser suites pass: 2,003 tests, zero f
 The no-loss reconciliation accounts for all 23,557 original paths and all 152 stash paths. FINAL_VALIDATION.json contains the local verdict and completed command receipts. Source commit 618f1b8ab214112b3cb9de280a2911c5b97afba3 is merged into develop as 5e1abb7f681aa7e09f89524ee3a3de3e8e0d7c2e. The merge tree is exactly the qualified source tree. PRIMARY_MERGE_VERIFICATION.json records the main-folder checks (81/81 typecheck tasks, 1,789 Gateway unit tests, dependency graph and secret scan). FINAL_GIT_STATE.json records subsequent promotions and cleanup; exact final remote tips are verified privately after the final bookkeeping commit.
 
 GitHub Actions has an external account billing/spending-limit failure before jobs start. This local qualification does not claim a green hosted CI run or a production deployment. Both deployment workflows require manual dispatch, which was not performed.
+
+## Final branch and worktree disposition
+
+The original main folder is retained at `/Volumes/Projects/LetBuyy`, checked out on `develop`. Only `main`, `staging` and `develop` remain as local and GitHub branches. Their first qualified synchronized tip was `b92296e40a3a42e03707ce26bc36b490cd2f00ec`; the final report bookkeeping commit is also fast-forwarded and pushed to all three. Its exact final SHA is recorded after the push in `.tmp/consolidation-2026-10-25/FINAL_REMOTE_VERIFICATION.json` to avoid a self-referencing commit hash in the report.
+
+Eight original GitHub feature branches and two local feature branches were deleted only after remote verification and per-tip containment checks. The primary checkout is the only registered worktree. The agent’s isolated verification clone was removed. The recovered stash was removed after all 152 paths were reconciled and its complete original history/third parent were verified in the private bundle. No environment branch was force-pushed and existing history was retained. PR [#1](https://github.com/SaaiSiddhu/LetBuyy/pull/1) is merged and closed.
+
+| Original branch/ref | Original or captured tip | Final disposition |
+|---|---|---|
+| `origin/develop` | `045a77003a01` | Kept; synchronized by fast-forward promotion |
+| `origin/letbuyy/checkpoint-theme-cli-mode` | `145e330a92ba` | Contained in develop; feature branch retired |
+| `origin/letbuyy/merchant-performance` | `5a62b6590aea` | Contained in develop; feature branch retired |
+| `origin/letbuyy/recovery-2026-10-18` | `faeab17f7d5a` | Branch retired; complete history retained at archive/recovery-2026-10-18 (owner approved) |
+| `origin/letbuyy/sustained-l-marketplace-account-ui` | `15359cf3ecf4` | Contained in develop; feature branch retired |
+| `origin/letbuyy/theme-release-performance-resume` | `85aac99043d8` | Contained in develop; feature branch retired |
+| `origin/letbuyy/week1-compact-bootstrap` | `eba8b2951599` | Contained in develop; feature branch retired |
+| `origin/letbuyy/week1-hyperdrive-protocol` | `d8707aaf11f8` | Contained in develop; feature branch retired |
+| `origin/letbuyy/week1-storefront-access` | `9c4ae60548e1` | Contained in develop; feature branch retired |
+| `origin/main` | `1e6cc4c3d876` | Kept; synchronized by fast-forward promotion |
+| `origin/staging` | `1e6cc4c3d876` | Kept; synchronized by fast-forward promotion |
+| `local/codex/local-marketplace-installation` | `610074d2bce4` | Contained in develop; feature branch retired |
+| `local/letbuyy/theme-release-performance-resume` | `618f1b8ab214` | Contained in develop; feature branch retired |
+
+All new consolidation commits use SaaiSiddhu <saaisiddu@gmail.com> as both author and committer. The original working-file archive, all-refs/stash bundle, original index/diff, per-file manifests, qualified delta, debug APK and raw audit/check archive remain privately under `.tmp/consolidation-2026-10-25/`. The no-loss receipt has **zero unaccounted paths**. Historical accessibility captures, recorded diffs and archived prompts preserve their original whitespace; active source whitespace checks pass.
+
+| Local qualification | Result |
+|---|---|
+| Owned PostgreSQL/Gateway/native browser suites | 240 suites; 2,003 passed; 0 failed; 0 skipped |
+| Root pure lane | 3,068 passed; 0 failed; 15 declared skips |
+| Governance | 114 validators passed; 0 failed; 1 explicitly not applicable |
+| Production build / primary typecheck | 81/81 tasks for each |
+| Primary Gateway unit / contracts | 1,789 / 361 passed; 0 failed |
+| Theme engine | 2,209 passed; 0 failed |
+| Merchant Flutter / analysis | 379 passed; 0 analysis issues; fresh debug APK built |
+| Dart API client | 97 passed; 6 declared skips; 0 failed |
+| Archive secret scan | 8,324 text files; 0 findings |
+
+Runtime totals overlap; they are not added as unique tests. Current GitHub [CI](https://github.com/SaaiSiddhu/LetBuyy/actions/runs/40188003801) and [database-graph](https://github.com/SaaiSiddhu/LetBuyy/actions/runs/40188003816) annotations confirm jobs were not started because of the account payment/spending limit. They are an external account blocker, not a successful cloud gate. No cloud deployment, hosted database migration or provider transaction was dispatched.
 
 ## Chat-by-chat work inventory
 
