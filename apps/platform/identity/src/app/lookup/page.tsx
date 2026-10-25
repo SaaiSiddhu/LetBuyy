@@ -9,7 +9,7 @@ import { features } from '@/lib/config/features'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
-import { Button, Input } from '@letbuyy/ui'
+import { Banner, Button, Input } from '@letbuyy/ui'
 import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
@@ -40,6 +40,9 @@ const translations: Record<Lang, Record<string, string>> = {
         botFailed: 'Verification failed. Please try again.',
         verifyEmail: 'Please verify your email first',
         accountFound: 'Account found! Please log in.',
+        sendFailed: 'We could not send your login email. Please try again.',
+        requestFailed: 'Please refresh this page and try again.',
+        networkFailed: 'Could not connect. Check your connection and try again.',
     },
     hi: {
         logIn: 'लॉग इन',
@@ -65,6 +68,9 @@ const translations: Record<Lang, Record<string, string>> = {
         botFailed: 'सत्यापन विफल। कृपया पुनः प्रयास करें।',
         verifyEmail: 'कृपया पहले अपना ईमेल सत्यापित करें',
         accountFound: 'अकाउंट मिला! कृपया लॉग इन करें।',
+        sendFailed: 'लॉगिन ईमेल नहीं भेज सके। कृपया फिर कोशिश करें।',
+        requestFailed: 'कृपया पेज रीफ्रेश करके फिर कोशिश करें।',
+        networkFailed: 'कनेक्शन नहीं हो सका। अपना इंटरनेट जांचें और फिर कोशिश करें।',
     },
     ta: {
         logIn: 'உள்நுழை',
@@ -90,6 +96,9 @@ const translations: Record<Lang, Record<string, string>> = {
         botFailed: 'சரிபார்ப்பு தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.',
         verifyEmail: 'முதலில் உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்',
         accountFound: 'கணக்கு கிடைத்தது! உள்நுழையவும்.',
+        sendFailed: 'உள்நுழைவு மின்னஞ்சலை அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
+        requestFailed: 'இந்தப் பக்கத்தைப் புதுப்பித்து மீண்டும் முயற்சிக்கவும்.',
+        networkFailed: 'இணைக்க முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.',
     },
 }
 
@@ -322,9 +331,10 @@ function LookupContent() {
 
         setLoading(true)
         setError(null)
+        let sent = false
 
         try {
-            await fetch('/api/auth/send-magic', {
+            const response = await fetch('/api/auth/send-magic', {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
@@ -332,11 +342,29 @@ function LookupContent() {
                     turnstileToken: currentToken,
                 }),
             })
+            const payload = await response.json().catch(() => null) as {
+                success?: boolean
+                error?: string
+            } | null
 
+            if (!response.ok || payload?.success !== true) {
+                if (response.status === 429) setError(t.rateLimited)
+                else if (response.status === 403 && typeof payload?.error === 'string' && payload.error.includes('Bot')) setError(t.botFailed)
+                else if (response.status === 400 || response.status === 403) setError(t.requestFailed)
+                else setError(t.sendFailed)
+                return
+            }
+
+            sent = true
             window.location.href = `/check-email?email=${encodeURIComponent(email.trim())}&type=magic_link`
         } catch {
-            setError('Failed to send link. Please try again.')
+            setError(t.networkFailed)
         } finally {
+            if (!sent) {
+                turnstileTokenRef.current = null
+                setTurnstileToken(null)
+                turnstileRef.current?.reset()
+            }
             setLoading(false)
         }
     }
@@ -488,7 +516,7 @@ function LookupContent() {
                                 />
                             </div>
 
-                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
+                            {error && <Banner variant="critical">{error}</Banner>}
 
                             <Button unstyled
                                 type="submit"
@@ -582,7 +610,7 @@ function LookupContent() {
                                 </div>
                             </div>
 
-                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
+                            {error && <Banner variant="critical">{error}</Banner>}
 
                             <Button unstyled
                                 type="submit"
