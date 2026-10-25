@@ -1,6 +1,7 @@
 import type { ThemeCatalogResponse, ThemeListQuery } from '@letbuyy/api-client';
 import { JsonRecordSchema, ThemeSchema, type ThemeEditableSchemaResponse } from '@letbuyy/shared-types';
 import { InstallThemeSchema, ThemeBundlePackageMetadataSchema, ThemeSlugParamSchema, confirmThemeInstallReceipt, confirmThemeInstallLibraryReadback } from '@letbuyy/theme-engine';
+import { catalogArtworkUrl } from './catalog-artwork';
 
 // Transport schemas derive existing public Zod validators. No app-local commerce DTO.
 const text = ThemeBundlePackageMetadataSchema.shape.name;
@@ -58,7 +59,7 @@ export function normalizeCatalogTheme(theme: ThemeCatalogResponse['data'][number
     const pricing = ThemeSchema.shape.pricing_type.safeParse(pricingValue);
     const amount = ThemeSchema.shape.price_inr.safeParse(amountValue);
     if (!pricing.success || !amount.success || (pricing.data === 'free' && (record.is_premium === true || amount.data !== 0))) throw new Error('Catalog pricing could not be confirmed.');
-    return { ...theme, pricing_type: pricing.data, price_inr: amount.data };
+    return { ...theme, thumbnail_url: catalogArtworkUrl(theme), pricing_type: pricing.data, price_inr: amount.data };
 }
 export function editorHandoff(store: string, slug: string, instanceId: string, versionId?: string | null) {
     const params = new URLSearchParams({ theme_instance_id: instanceId });

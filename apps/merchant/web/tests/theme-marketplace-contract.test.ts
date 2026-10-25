@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { ThemeCatalogItem } from '@letbuyy/api-client';
+import { catalogArtworkUrl } from '../src/lib/themes/catalog-artwork';
 import { addMarketplaceTheme, confirmMarketplaceInstallReceipt, editorHandoff, gatewayCatalogQuery, MarketplaceInstallSchema, marketplaceQuery, normalizeCatalogTheme } from '../src/lib/themes/marketplace-contract';
 
 const instanceId = '7b669c70-9000-4000-8000-000000000001';
@@ -8,6 +9,17 @@ const versionId = '7b669c70-9000-4000-8000-000000000002';
 const packageId = '7b669c70-9000-4000-8000-000000000003';
 const receipt = { theme_instance_id: instanceId, theme: { id: packageId, slug: 'letbuyy-sense', name: 'Threadline', version: '2.0.0' }, theme_package_id: packageId, theme_package_version_id: versionId, installed_version: '2.0.0', already_installed: false };
 const library = { data: { themes: [{ instance_id: instanceId, slug: 'letbuyy-sense', instance_status: 'installed', theme_package_version_id: versionId }] } };
+
+test('captured artwork replaces only its exact first-party version and keeps custom or historical previews', () => {
+    const theme = { slug: 'letbuyy-forge', version: '2.0.0', thumbnail_url: '/theme-previews/forge.svg' };
+    assert.equal(catalogArtworkUrl(theme), '/theme-previews/catalog-v2/circuit.webp');
+    assert.equal(catalogArtworkUrl({ ...theme, version: '1.0.0' }), theme.thumbnail_url);
+    assert.equal(catalogArtworkUrl({ ...theme, version: '3.0.0' }), theme.thumbnail_url);
+    assert.equal(catalogArtworkUrl({ ...theme, thumbnail_url: 'https://merchant.example/custom.webp' }), 'https://merchant.example/custom.webp');
+    assert.equal(catalogArtworkUrl({ ...theme, slug: 'merchant-custom-theme' }), theme.thumbnail_url);
+    assert.equal(catalogArtworkUrl({ ...theme, slug: '__proto__', thumbnail_url: null }), null);
+    assert.equal(catalogArtworkUrl({ ...theme, slug: 'letbuyy-sense', thumbnail_url: '/theme-previews/threadline-2.0.0.webp' }), '/theme-previews/catalog-v2/threadline.webp');
+});
 
 test('catalog query preserves combined server filters, sort and pagination; rejects malformed and oversized state', () => {
     const result = marketplaceQuery(new URLSearchParams('search=linen&category=fashion&feature=Search&sort=name&page=2&limit=12&theme_slug=letbuyy-sense'));
