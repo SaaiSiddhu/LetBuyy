@@ -125,5 +125,8 @@
     "GitHub Actions account billing/spending limit prevents jobs starting. Git synchronization does not dispatch either workflow_dispatch-only deployment workflow."
   ],
   "qualified_receipts": "QUALIFICATION_RECEIPTS.json",
-  "source_index_tree_before_validation_receipt": "8cbad950de8fc53b495728fb029ad27d40cd470d"
+  "source_index_tree_before_validation_receipt": "8cbad950de8fc53b495728fb029ad27d40cd470d",
+  "primary_merge_verification": "PRIMARY_MERGE_VERIFICATION.json",
+  "source_commit": "618f1b8ab214112b3cb9de280a2911c5b97afba3",
+  "develop_merge_commit": "5e1abb7f681aa7e09f89524ee3a3de3e8e0d7c2e"
 }

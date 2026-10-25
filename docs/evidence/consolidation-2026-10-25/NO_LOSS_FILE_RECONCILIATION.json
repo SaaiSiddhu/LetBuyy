@@ -2,8 +2,8 @@
   "scope": "original working files at intake; fixes and archival disposition are explicit, not byte-parity claims",
   "original_count": 23557,
   "counts": {
-    "RECONCILED_OR_FIXED": 64,
-    "RETAINED_BYTE_IDENTICAL": 15147,
+    "RECONCILED_OR_FIXED": 72,
+    "RETAINED_BYTE_IDENTICAL": 15139,
     "PROMPT_ARCHIVED_BYTE_IDENTICAL": 1,
     "ARCHIVED_BYTE_IDENTICAL": 8331,
     "GENERATED_LINK_EXCLUDED_OR_LOCAL_ONLY": 6,
@@ -164385,8 +164385,8 @@
       "kind": "file",
       "bytes": 4542,
       "sha256": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd",
-      "final_sha256": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "55959eef5b0c3b2e3c1c7631b8ff0f9447d75de20f29cfa7db5bcfb026763343",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/habitat-storybook/assets/fonts/Source-Sans-LICENSE.md",
@@ -167889,8 +167889,8 @@
       "kind": "file",
       "bytes": 4542,
       "sha256": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd",
-      "final_sha256": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "55959eef5b0c3b2e3c1c7631b8ff0f9447d75de20f29cfa7db5bcfb026763343",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/marginalia-storybook/assets/Lucide-LICENSE.txt",
@@ -167905,8 +167905,8 @@
       "kind": "file",
       "bytes": 4579,
       "sha256": "09746787287a289323b0ec3cff4d1a4a801331b82b7207c1e186f5d26619a392",
-      "final_sha256": "09746787287a289323b0ec3cff4d1a4a801331b82b7207c1e186f5d26619a392",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "ed86f375d70bd39238d13b2ba5bd3bed20b3fe4847fa1356a63f380d2b26a8a5",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/marginalia-storybook/assets/field-notes-cover.png",
@@ -176273,8 +176273,8 @@
       "kind": "file",
       "bytes": 25846,
       "sha256": "0c889eaab2ba992aac100c4090f13619673aa369fa02fefb2efc9fc06526af53",
-      "final_sha256": "0c889eaab2ba992aac100c4090f13619673aa369fa02fefb2efc9fc06526af53",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "2d7faa50929d580e721357537b8ed70c6b5477b24b6ce92b160fccf82d9a244b",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/shopify-product-intelligence/identity-onboarding-2026-10-22/evidence/archived-polaris-token-reference.json",
@@ -177897,16 +177897,16 @@
       "kind": "file",
       "bytes": 1124,
       "sha256": "48cab68b84f229560bcc9f21fb59330ac1aed9a237fe2a0206aea2442cb79fdb",
-      "final_sha256": "48cab68b84f229560bcc9f21fb59330ac1aed9a237fe2a0206aea2442cb79fdb",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "e9eb339cb995976a2bf6b4c8a5ca3523c6e12c81db4a026f2d10160d373170b3",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/three-channel-platform-2026-10-24/IMPLEMENTATION_BACKLOG.csv",
       "kind": "file",
       "bytes": 4582,
       "sha256": "c9f237e7db1728c89cc9100ec54e3b457ec0f517b50acfc3381e288700cc0bae",
-      "final_sha256": "c9f237e7db1728c89cc9100ec54e3b457ec0f517b50acfc3381e288700cc0bae",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "2c43fbef81f7eb7bd9850c46539e5b01f1126eca96450db7857d87df13c81204",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/three-channel-platform-2026-10-24/README.md",
@@ -177921,8 +177921,8 @@
       "kind": "file",
       "bytes": 181787,
       "sha256": "1b2766ed859ed1c5295486f7e35d306a8b0a4121dcf48f4481bc3a7ed0c9ab93",
-      "final_sha256": "1b2766ed859ed1c5295486f7e35d306a8b0a4121dcf48f4481bc3a7ed0c9ab93",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "be9627668a9b19df0a3679acdbc7659c17154c15cbd4add1a86b45d66c1ab4fd",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/three-channel-platform-2026-10-24/REQUIREMENTS.json",
@@ -177969,8 +177969,8 @@
       "kind": "file",
       "bytes": 153666,
       "sha256": "4e4eba3a551491257d5e70ae5715607d4d122684b1ca95f46255bfb7dd59fb7a",
-      "final_sha256": "4e4eba3a551491257d5e70ae5715607d4d122684b1ca95f46255bfb7dd59fb7a",
-      "disposition": "RETAINED_BYTE_IDENTICAL"
+      "final_sha256": "97ccd3ac2877ab25bc32cac3632d3268bf312484fc2d68a3369b2e50c9938935",
+      "disposition": "RECONCILED_OR_FIXED"
     },
     {
       "path": "docs/research/three-channel-platform-2026-10-24/SOURCE_REGISTER.json",

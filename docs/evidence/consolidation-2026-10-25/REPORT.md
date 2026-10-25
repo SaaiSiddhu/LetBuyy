@@ -1,6 +1,6 @@
 # LetBuyy consolidation report — 25 October 2026
 
-Status: local qualification passed; Git integration and final remote verification are in progress. The owner authorized all accepted work to be merged into develop, then fast-forward synchronization of staging and main, followed by local and GitHub branch/worktree cleanup. No cleanup precedes qualification and preservation.
+Status: qualified source merged into develop; GitHub synchronization and cleanup are in progress. The owner authorized all accepted work to be merged into develop, then fast-forward synchronization of staging and main, followed by local and GitHub branch/worktree cleanup. No cleanup precedes qualification and preservation.
 
 Execution: one agent; no delegated chats or subagents. New commits use SaaiSiddhu <saaisiddu@gmail.com>. Existing history is retained.
 
@@ -39,7 +39,7 @@ The recovery transfer branch is an older archive of unfinished snapshots. The ow
 
 All 240 owned PostgreSQL/Gateway/native-browser suites pass: 2,003 tests, zero failures, zero skips, and every completed run reports fixture cleanup. The final production build, root pure suite, governance gate, frozen dependency installation, typecheck, lint, Gateway unit tests and contracts pass. Runtime/theme/UI, Flutter analysis and 379 merchant tests, Dart API tests and a fresh debug APK are recorded in QUALIFICATION_RECEIPTS.json. Explicit declared root/Dart skips remain recorded; overlapping runtime totals are not added as unique tests.
 
-The no-loss reconciliation accounts for all 23,557 original paths and all 152 stash paths. FINAL_VALIDATION.json contains the local verdict and completed command receipts. FINAL_GIT_STATE.json records the subsequent merge, promotions and cleanup; final exact remote tips are verified privately after the bookkeeping commit.
+The no-loss reconciliation accounts for all 23,557 original paths and all 152 stash paths. FINAL_VALIDATION.json contains the local verdict and completed command receipts. Source commit 618f1b8ab214112b3cb9de280a2911c5b97afba3 is merged into develop as 5e1abb7f681aa7e09f89524ee3a3de3e8e0d7c2e. The merge tree is exactly the qualified source tree. PRIMARY_MERGE_VERIFICATION.json records the main-folder checks (81/81 typecheck tasks, 1,789 Gateway unit tests, dependency graph and secret scan). FINAL_GIT_STATE.json records subsequent promotions and cleanup; exact final remote tips are verified privately after the final bookkeeping commit.
 
 GitHub Actions has an external account billing/spending-limit failure before jobs start. This local qualification does not claim a green hosted CI run or a production deployment. Both deployment workflows require manual dispatch, which was not performed.
 

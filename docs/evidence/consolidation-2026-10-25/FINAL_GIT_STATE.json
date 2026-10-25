@@ -1,0 +1,16 @@
+{
+  "status": "MERGED_QUALIFIED_PROMOTIONS_PENDING",
+  "source_commit": "618f1b8ab214112b3cb9de280a2911c5b97afba3",
+  "develop_merge_commit": "5e1abb7f681aa7e09f89524ee3a3de3e8e0d7c2e",
+  "qualified_source_tree": "fc5c0fc252723b02971dff04efd2313eace16fa8",
+  "primary_tree_equals_qualified_source": true,
+  "new_commit_identity": "SaaiSiddhu <saaisiddu@gmail.com>",
+  "required_final_branches": [
+    "main",
+    "staging",
+    "develop"
+  ],
+  "github_cleanup_authorized": true,
+  "original_recovery_tag": "archive/recovery-2026-10-18",
+  "cleanup_requires_three_branch_remote_verification": true
+}

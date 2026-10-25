@@ -1,0 +1,39 @@
+{
+  "merge": {
+    "merge_commit": "5e1abb7f681aa7e09f89524ee3a3de3e8e0d7c2e",
+    "parents": [
+      "045a77003a019588a3878b80b9de43e1ce2dc84a",
+      "618f1b8ab214112b3cb9de280a2911c5b97afba3"
+    ],
+    "tree": "fc5c0fc252723b02971dff04efd2313eace16fa8",
+    "source_commit": "618f1b8ab214112b3cb9de280a2911c5b97afba3",
+    "identical_to_qualified_source": true,
+    "identity": "SaaiSiddhu <saaisiddu@gmail.com> | SaaiSiddhu <saaisiddu@gmail.com>",
+    "status_lines": 0
+  },
+  "checks": [
+    {
+      "log": "primary-frozen-install.log",
+      "sha256": "787ccb8ba3060f971b40c3f46f4249818e3502bcb5b57c53032af3dc488f8947"
+    },
+    {
+      "log": "primary-typecheck.log",
+      "sha256": "f15604c6a701d7fef6de144cca2e8fefc36940502fb37e63779ebb4ebcb893f4"
+    },
+    {
+      "log": "primary-gateway-unit.log",
+      "sha256": "d20e0372c1d172315af30e69f220ea88b03a4058819f3afc168392e096dec257"
+    },
+    {
+      "log": "primary-dependency-graph.log",
+      "sha256": "19589461cfd5290632b48c4a8e5c195b75b3bc6b18c188bdb9f4c3057db7ac18"
+    },
+    {
+      "log": "primary-secret-scan.log",
+      "sha256": "1e9b218b4fc704709bbf4866ad734c92c22dfebb68d4051a5b53da99102c9498"
+    }
+  ],
+  "typecheck_tasks_passed": 81,
+  "gateway_unit_passed": 1789,
+  "gateway_unit_failed": 0
+}
