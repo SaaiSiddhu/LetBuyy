@@ -185,6 +185,13 @@ test('new stores default to the captured Circuit catalog document without rewrit
   assert.deepEqual(config.themeSettings,JSON.parse(owned.psql("SELECT default_template->'themeSettings' FROM themes WHERE slug='letbuyy-forge';")),'survey metadata cannot restyle the selected niche design');
   assert.equal(owned.psql(`SELECT md5(coalesce(jsonb_agg(to_jsonb(s) ORDER BY id),'[]'::jsonb)::text) FROM sites s WHERE id<>'${siteId}';`),before);
   const replay=await made.replay();assert.equal(replay.status,201,replay.text);assert.equal(replay.json?.data?.id,siteId);
+  const editor=await f.gateway.request(`/v1/themes/letbuyy-forge/editor?store_id=${siteId}`,{headers:await signedIdentityHeaders(f.id,f.email,siteId)});
+  assert.equal(editor.status,200,editor.text);assert.equal(editor.json?.data?.template_config?.themeId,'letbuyy-forge');
+  const saved=await f.gateway.request('/v1/themes/letbuyy-forge/editor/draft',{method:'PUT',headers:await signedIdentityHeaders(f.id,f.email,siteId),body:JSON.stringify({store_id:siteId,template_config:editor.json?.data?.template_config,base_version:editor.json?.data?.version,idempotency_key:'syn-circuit-default-'+crypto.randomUUID()})});
+  assert.equal(saved.status,200,saved.text);
+  const preview=await f.gateway.request('/v1/themes/letbuyy-forge/preview-session',{method:'POST',headers:await signedIdentityHeaders(f.id,f.email,siteId),body:JSON.stringify({store_id:siteId,ttl_seconds:900})});
+  assert.equal(preview.status,201,preview.text);
+  assert.equal(owned.psql(`SELECT status||'|'||published::text FROM sites WHERE id='${siteId}';`),'draft|false','editing the default must not publish the store');
   owned.psql("UPDATE themes SET is_active=false WHERE slug='letbuyy-forge';");
   try {const blocked=await f.create(null);assert.equal(blocked.response.status,503,blocked.response.text);}
   finally {owned.psql("UPDATE themes SET is_active=true WHERE slug='letbuyy-forge';");}
