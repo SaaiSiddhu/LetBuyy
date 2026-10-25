@@ -25,6 +25,10 @@ test('auth-only repair preserves records, validates sessions, restricts capabili
       IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='app_tenant') THEN CREATE ROLE app_tenant NOLOGIN NOBYPASSRLS; END IF;
       IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
     END $$;
+    ALTER ROLE anon NOLOGIN NOSUPERUSER NOBYPASSRLS;
+    ALTER ROLE authenticated NOLOGIN NOSUPERUSER NOBYPASSRLS;
+    ALTER ROLE app_tenant NOLOGIN NOSUPERUSER NOBYPASSRLS;
+    ALTER ROLE service_role NOLOGIN NOSUPERUSER BYPASSRLS;
     GRANT USAGE ON SCHEMA public, extensions TO anon, authenticated, app_tenant, service_role;
     CREATE TABLE public.users_custom(id uuid PRIMARY KEY, email text NOT NULL);
     CREATE TABLE public.sessions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid REFERENCES users_custom(id), token text UNIQUE NOT NULL, expires_at timestamptz NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), last_active timestamptz NOT NULL DEFAULT now());
