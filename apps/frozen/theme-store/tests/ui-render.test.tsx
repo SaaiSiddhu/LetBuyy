@@ -464,6 +464,12 @@ test('style gallery distinguishes one published preset from illustrative studies
     assert.equal((html.match(/data-selected="true"/g) || []).length, 1);
     assert.match(html, /1 published preset/);
     assert.match(html, /3 style studies/);
+    assert.match(html, /theme-style-device-top/);
+    assert.match(html, /theme-style-screen/);
+    assert.match(html, /aria-label="Next style"/);
+    const previous = (html.match(/<button\b[^>]*>/g) || []).find(button => button.includes('aria-label="Previous style"'));
+    assert.ok(previous && /\bdisabled/.test(previous));
+    assert.doesNotMatch(html, /theme-style-selected|theme-style-selection-detail/);
     assert.match(html, /Style studies are visual inspiration/);
     assert.match(html, /href="\/themes\/letbuyy-core"/);
     assert.doesNotMatch(html, /Use this preset|Install this style|ready-made designs/);

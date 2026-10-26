@@ -59,7 +59,7 @@ export default async function HomePage() {
 
             <section className="marketplace-section marketplace-container marketplace-featured-section" aria-labelledby="featured-themes-heading">
                 <div className="marketplace-section-heading">
-                    <div><p className="marketplace-eyebrow">Find your starting point</p><h2 id="featured-themes-heading">A theme. Your own point of view.</h2><p>Explore the published design, then discover a few directions for making it yours.</p></div>
+                    <div><p className="marketplace-eyebrow">Find your starting point</p><h2 id="featured-themes-heading">Find your store’s look.</h2><p>Explore the published preset and a few mobile layout studies.</p></div>
                     <Link className="marketplace-text-link" href="/themes">View all themes <span aria-hidden="true">↗</span></Link>
                 </div>
                 {!featuredResult.ok ? <MarketplaceUnavailable /> : featured.length ? (
