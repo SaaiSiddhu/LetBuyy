@@ -1337,7 +1337,7 @@ export class ThemeExecutionAdapter {
         // Tenancy step 3: list theme_instances scoped to this store only
         const { data: instances, error: instancesError } = await this.db
             .from('theme_instances')
-            .select('id, theme_slug, instance_status, created_at, updated_at, active_release_id, theme_package_version_id')
+            .select('id, theme_slug, instance_status, created_at, updated_at, active_release_id, theme_package_version_id, package_version:theme_package_versions!theme_instances_theme_package_version_id_fkey(version)')
             .eq('store_id', storeId)
             .is('deleted_at', null)
             .order('created_at', { ascending: false });
@@ -1363,7 +1363,7 @@ export class ThemeExecutionAdapter {
             // Fetch last published release for this store + theme (scoped by store_id first)
             const { data: lastRelease } = await this.db
                 .from('theme_releases')
-                .select('published_at, release_version, theme_package_version_id')
+                .select('published_at, release_version, theme_package_version_id, package_version:theme_package_versions!theme_releases_theme_package_version_id_fkey(version)')
                 .eq('store_id', storeId)
                 .eq('theme_id', themeSlug)
                 .eq('is_current', true)
@@ -1380,12 +1380,15 @@ export class ThemeExecutionAdapter {
 
             const theme = themeData as DbRecord | null;
             const release = lastRelease as DbRecord | null;
+            const captured = (release?.theme_package_version_id ? release.package_version : instance.package_version) as DbRecord | null;
+            const version = captured && typeof captured.version === 'string' ? captured.version : null;
 
             return {
                 slug: themeSlug,
                 name: (theme?.name as string | null) || themeSlug,
                 description: (theme?.description as string | null) || null,
                 thumbnail_url: (theme?.thumbnail_url as string | null) || null,
+                version,
                 instance_id: String(instance.id || ''),
                 instance_status: String(instance.instance_status || 'installed'),
                 installed_at: String(instance.created_at || ''),

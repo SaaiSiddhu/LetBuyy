@@ -12,6 +12,7 @@
 // for that ownership check.
 
 import { z } from 'zod';
+import { ThemeSchema } from '@letbuyy/shared-types';
 
 const UuidField = z.string().uuid('Must be a valid UUID');
 const ThemeNameField = z.string().min(1, 'Name is required').max(120, 'Name must be 120 characters or fewer').trim();
@@ -55,3 +56,15 @@ export const DeleteUnpublishedThemeQuerySchema = z.object({
   store_id: UuidField,
 });
 export type DeleteUnpublishedThemeQueryInput = z.infer<typeof DeleteUnpublishedThemeQuerySchema>;
+
+
+/** Owned library presentation; version is the captured package, not catalog latest. */
+export const SiteThemeLibraryItemSchema = z.object({
+  slug: z.string(), name: z.string(), thumbnail_url: z.string().nullable().optional(),
+  version: ThemeSchema.shape.version.nullable().optional(),
+  instance_status: z.enum(['active', 'installed', 'inactive', 'archived', 'deleted']),
+  installed_at: z.string().nullable(), last_published_at: z.string().nullable(), last_modified_at: z.string().nullable(),
+  hasDraft: z.boolean(), isCurrentlyPublished: z.boolean(), updateAvailable: z.boolean(),
+  theme_package_version_id: z.string().nullable(),
+});
+export type SiteThemeLibraryItem = z.infer<typeof SiteThemeLibraryItemSchema>;

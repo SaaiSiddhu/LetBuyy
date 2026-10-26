@@ -1,6 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import type { SiteThemeLibraryItem } from '@letbuyy/theme-engine'
+import { catalogArtworkUrl } from '@/lib/themes/catalog-artwork'
 import {
     Badge,
     Card,
@@ -22,23 +24,7 @@ import {
  * GET /api/themes/library. All fields are set by the gateway after joining
  * theme_instances + themes catalog + theme_releases.
  */
-export interface SiteThemeRecord {
-    slug: string
-    thumbnail_url?: string | null
-    name: string
-    /** Current lifecycle status of the theme instance on this site */
-    instance_status: 'active' | 'installed' | 'inactive' | 'archived' | 'deleted'
-    installed_at: string | null
-    last_published_at: string | null
-    last_modified_at: string | null
-    /** Whether an unsaved draft exists in theme_editor_drafts */
-    hasDraft: boolean
-    /** Whether this theme slug matches sites.current_theme_release_id */
-    isCurrentlyPublished: boolean
-    /** Whether a newer package version is available in the marketplace */
-    updateAvailable: boolean
-    theme_package_version_id: string | null
-}
+export type SiteThemeRecord = SiteThemeLibraryItem
 
 interface ThemeLibraryCardProps {
     theme: SiteThemeRecord
@@ -185,7 +171,7 @@ export function ThemeLibraryCard({
             className="flex flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)]"
             aria-label={`${theme.name} theme`}
         >
-            {theme.thumbnail_url && <img className="theme-library-thumbnail" src={theme.thumbnail_url} alt={`${theme.name} design preview`} loading="lazy" />}
+            {catalogArtworkUrl(theme) && <img className="theme-library-thumbnail" src={catalogArtworkUrl(theme)!} alt={`${theme.name} design preview`} loading="lazy" />}
             {/* Card header */}
             <div className="flex min-w-0 items-start justify-between gap-[var(--lb-space-2)]">
                 <div className="min-w-0">
