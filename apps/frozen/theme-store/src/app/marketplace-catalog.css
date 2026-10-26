@@ -91,6 +91,8 @@
 .marketplace-menu-help { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: thin solid var(--lb-color-border); padding-top: var(--lb-space-3); }
 .marketplace-menu-footer { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-3); }
 .marketplace-menu-footer > a { color: var(--lb-color-text); font-size: var(--lb-font-size-body); font-weight: var(--lb-font-weight-medium); text-underline-offset: var(--lb-space-1); }
+.marketplace-appearance-control { display: inline-flex; flex-shrink: 0; }
+.marketplace-appearance-control button { min-height: var(--lb-size-touch-target); min-width: var(--lb-size-touch-target); border-radius: var(--lb-radius-md); }
 .marketplace-menu-content :where(a, summary):focus-visible, .marketplace-menu-footer a:focus-visible { outline: medium solid var(--lb-color-focus-ring); outline-offset: var(--lb-space-1); }
 @media (width >= 40rem) {
     .marketplace-catalog-page .marketplace-device-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

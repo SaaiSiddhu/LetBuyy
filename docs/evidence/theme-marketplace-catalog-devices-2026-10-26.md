@@ -28,3 +28,11 @@ Read-only HTTP checks cover `/themes`, real-query/free/category/zero-price/empty
 No backend architecture, migration, API/DTO, auth behavior, theme bundle or live preview renderer change. No production deploy, merge, push, external message, install or purchase. Local preview: http://localhost:9005/themes.
 
 Logs: `/private/tmp/letbuyy-catalog-{tests,types,build,lint,css,design}.log`; route results `/private/tmp/letbuyy-catalog-http-checks.json`; post-commit quick gate `/private/tmp/letbuyy-catalog-close-20261026/`.
+
+## Appearance control relocation — 2026-10-26
+
+Owner reported the moon control in the drawer footer was unreliable and requested another location. Move the existing shared ThemeToggleButton beside search in the header at every breakpoint, remove its duplicate from the drawer footer, and give it the explicit accessible label “Switch light or dark appearance.” Keep canonical touch-target dimensions and a neutral ghost presentation. Shared provider, persistence, system-preference behavior, hydration, navigation and backend contracts remain unchanged. This addresses placement and discoverability; intermittent click behavior has not been reproduced in a browser.
+
+Verification: package76 tests pass (24 source contracts +52 UI/API/session/render), typecheck, production build, stylelint and design-system governance pass; app lint has zero errors and seven existing warnings. Regression checks confirm one canonical toggle and no app-local preference controller. Read-only parsed HTML confirms one labelled header control on homepage and free-theme catalog, with HTTP200 over localhost and the existing Wi-Fi address. Delivered CSS includes the always-visible wrapper and touch-target rules. Browser interaction, mobile layout and visual acceptance remain deferred per the owner’s automated-only instruction.
+
+Logs: `/private/tmp/letbuyy-appearance-{tests,types,lint,css,design,build}.log`, `/private/tmp/letbuyy-appearance-http.json`; post-commit quick gate `/private/tmp/letbuyy-appearance-close-20261026/`. No backend, shared-package, marketing, architecture or configuration change.

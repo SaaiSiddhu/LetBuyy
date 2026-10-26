@@ -79,7 +79,7 @@ export default function Navbar() {
                 </nav>
                 <div className="marketplace-header-actions">
                     <Button variant="ghost" size="icon" aria-label="Search themes" onClick={()=>setSearchOpen(true)}><Search aria-hidden="true" /></Button>
-                    <span className="marketplace-theme-toggle"><ThemeToggleButton /></span>
+                    <span className="marketplace-appearance-control"><ThemeToggleButton variant="ghost" label="Switch light or dark appearance" /></span>
                     <div className="marketplace-account-nav">
                         {isAuthenticated ? <><Link href="/dashboard" className="marketplace-header-login">Your library</Link><Button variant="ghost" onClick={()=>void signOut()}>Log out</Button></> : <><a href={accountHref('/lookup')} onClick={preserveReturnTo} className="marketplace-header-login">Log in</a></>}
                     </div>
@@ -87,7 +87,7 @@ export default function Navbar() {
                 </div>
             </div>
         </header>
-        <Drawer open={mobileOpen} onClose={()=>setMobileOpen(false)} title="Explore LetBuyy Themes" description="Find a design, return to your library, or get a little guidance." side="right" size="md" className="marketplace-navigation-drawer" footer={<div className="marketplace-menu-footer">{isAuthenticated ? <Link href="/dashboard" onClick={closeNavigation}>Your library</Link> : <a href={accountHref('/lookup')} onClick={preserveReturnTo}>Log in to your account</a>}<ThemeToggleButton label="Change appearance" /></div>}>
+        <Drawer open={mobileOpen} onClose={()=>setMobileOpen(false)} title="Explore LetBuyy Themes" description="Find a design, return to your library, or get a little guidance." side="right" size="md" className="marketplace-navigation-drawer" footer={<div className="marketplace-menu-footer">{isAuthenticated ? <Link href="/dashboard" onClick={closeNavigation}>Your library</Link> : <a href={accountHref('/lookup')} onClick={preserveReturnTo}>Log in to your account</a>}</div>}>
             <MarketplaceMobileMenu groups={MENUS} pathname={pathname} onNavigate={closeNavigation} />
         </Drawer>
         <Modal className="marketplace-search-modal" open={searchOpen} onClose={()=>setSearchOpen(false)} title="Find your theme" description="Search by name, style, or a feature your business needs.">

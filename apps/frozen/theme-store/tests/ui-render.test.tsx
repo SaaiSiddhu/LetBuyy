@@ -592,3 +592,13 @@ test('theme detail introduction uses listing media and clear library/preview/com
     assert.match(unavailable,/Ask about this theme/);
     assert.doesNotMatch(unavailable,/<iframe|Desktop preview|Maximize demo/);
 });
+
+test('appearance toggle is a single canonical control in the header on every breakpoint', () => {
+    const navbar = readAppFile('src/components/layout/navbar.tsx');
+    assert.equal((navbar.match(/<ThemeToggleButton\b/g)||[]).length,1);
+    assert.match(navbar,/marketplace-appearance-control/);
+    assert.match(navbar,/label="Switch light or dark appearance"/);
+    const drawer = navbar.slice(navbar.indexOf('<Drawer'));
+    assert.doesNotMatch(drawer,/<ThemeToggleButton/);
+    assert.doesNotMatch(navbar,/localStorage|documentElement|setAttribute/);
+});
