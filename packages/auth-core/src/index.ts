@@ -1707,3 +1707,67 @@ export function planEmployeeUpdate(body: Record<string, unknown>): AuthPlanResul
 export function employeeRemovalPatch(deletedAt: string): Record<string, unknown> {
   return { deleted_at: deletedAt, status: 'removed', is_active: false };
 }
+
+
+// Commerce's two server-owned store-access operations use a distinct, request-bound
+// capability. This never represents a buyer/merchant session or another internal API.
+export const STOREFRONT_INTERNAL_CALLER = 'commerce-storefront';
+export const STOREFRONT_INTERNAL_REQUEST_VERSION = 'storefront-request-v1';
+export const STOREFRONT_INTERNAL_REQUEST_MAX_AGE_MS = 60_000;
+export const STOREFRONT_INTERNAL_REQUEST_MAX_BODY_BYTES = 8192;
+
+export function isBoundStorefrontRequestTarget(method: string, url: string): boolean {
+  try {
+    const target = new URL(url);
+    return (method === 'GET' && target.pathname === '/v1/internal/store-access/resolve')
+      || (method === 'POST' && target.pathname === '/v1/internal/store-access/verify');
+  } catch { return false; }
+}
+
+async function boundStorefrontSigningPayload(input: {
+  method: string; url: string; body?: string | Uint8Array; timestamp: string; jti: string;
+}): Promise<string | null> {
+  if (!isBoundStorefrontRequestTarget(input.method, input.url)) return null;
+  const bytes = typeof input.body === 'string' ? new TextEncoder().encode(input.body) : new Uint8Array(input.body ?? []);
+  if (bytes.byteLength > STOREFRONT_INTERNAL_REQUEST_MAX_BODY_BYTES || input.method === 'GET' && bytes.byteLength !== 0) return null;
+  const target = new URL(input.url);
+  const digest = bytesToHex(await crypto.subtle.digest('SHA-256', bytes));
+  return JSON.stringify([STOREFRONT_INTERNAL_REQUEST_VERSION, STOREFRONT_INTERNAL_CALLER, 'storefront',
+    input.method, target.pathname + target.search, digest, input.timestamp, input.jti]);
+}
+
+export async function createBoundStorefrontRequestHeaders(input: {
+  secret: string; method: string; url: string; body?: string; nowMs?: number; jti?: string;
+}): Promise<Record<string, string>> {
+  if (input.secret.trim().length < 32) throw new Error('Dedicated storefront request secret is not configured');
+  const timestamp = String(input.nowMs ?? Date.now()), jti = input.jti ?? randomInternalJti();
+  if (!/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)) throw new Error('Invalid storefront request metadata');
+  const payload = await boundStorefrontSigningPayload({ ...input, timestamp, jti });
+  if (!payload) throw new Error('Unsupported storefront internal request');
+  return {
+    'X-LetBuyy-Internal-Version': STOREFRONT_INTERNAL_REQUEST_VERSION,
+    'X-LetBuyy-Internal-Caller': STOREFRONT_INTERNAL_CALLER,
+    'X-LetBuyy-Internal-App': 'storefront',
+    'X-LetBuyy-Internal-Timestamp': timestamp,
+    'X-LetBuyy-Internal-JTI': jti,
+    'X-LetBuyy-Internal-Signature': await hmacSha256Hex(input.secret, payload),
+  };
+}
+
+export async function verifyBoundStorefrontRequestSignature(input: {
+  secret: string | undefined; method: string; url: string; body?: Uint8Array;
+  headers: Headers; nowMs?: number;
+}): Promise<{ status: 'accepted'; jti: string } | { status: 'misconfigured' | 'malformed' | 'expired' | 'invalid' }> {
+  if (!input.secret || input.secret.trim().length < 32) return { status: 'misconfigured' };
+  const timestamp = input.headers.get('X-LetBuyy-Internal-Timestamp'), jti = input.headers.get('X-LetBuyy-Internal-JTI');
+  if (input.headers.get('X-LetBuyy-Internal-Version') !== STOREFRONT_INTERNAL_REQUEST_VERSION
+    || input.headers.get('X-LetBuyy-Internal-Caller') !== STOREFRONT_INTERNAL_CALLER
+    || input.headers.get('X-LetBuyy-Internal-App') !== 'storefront'
+    || !timestamp || !/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)) return { status: 'malformed' };
+  if (!isFreshLetbuyyInternalTimestamp(timestamp, input.nowMs, STOREFRONT_INTERNAL_REQUEST_MAX_AGE_MS)) return { status: 'expired' };
+  const payload = await boundStorefrontSigningPayload({ ...input, timestamp, jti });
+  const signature = input.headers.get('X-LetBuyy-Internal-Signature');
+  if (!payload || !signature || !/^[a-f0-9]{64}$/.test(signature)
+    || !timingSafeEqualHex(await hmacSha256Hex(input.secret, payload), signature)) return { status: 'invalid' };
+  return { status: 'accepted', jti };
+}

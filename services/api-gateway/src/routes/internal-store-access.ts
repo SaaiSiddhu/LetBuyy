@@ -10,6 +10,7 @@ import {
 import type { Env } from '../index';
 import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { verifyInternalAppRequest } from '../lib/internal-auth';
+import { hasBoundStorefrontRequest } from '../lib/storefront-internal-request';
 import { resolveStorefrontSiteByHost } from '../middleware/store-context';
 import { verifyStoreAccessPassword } from '../lib/store-access-password';
 import { checkRateLimitKey } from '../middleware/rateLimit';
@@ -19,6 +20,11 @@ const router = new Hono<{ Bindings: Env }>();
 router.use('*', async (c, next) => { c.header('Cache-Control', 'no-store'); await next(); });
 
 async function requireStorefrontInternal(c: Context<{ Bindings: Env }>) {
+    if (c.env.STOREFRONT_INTERNAL_PERIMETER?.trim()) {
+        return c.env.STOREFRONT_INTERNAL_PERIMETER?.trim() === 'bound-request-v1' && hasBoundStorefrontRequest(c)
+            ? null : c.json({ error: { code: 'UNAUTHORIZED', message: 'Invalid storefront internal request' } }, 401);
+    }
+
     const directSecret = c.req.header('X-Internal-API-Secret');
     if (c.env.INTERNAL_API_SECRET && timingSafeEqualText(directSecret, c.env.INTERNAL_API_SECRET)) {
         return null;

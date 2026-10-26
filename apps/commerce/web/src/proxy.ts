@@ -16,6 +16,7 @@ import {
 } from '@letbuyy/tenant-core';
 import { getThemePreviewCookieName, normalizeThemePreviewToken } from './lib/theme-preview-cookie';
 import { readStorefrontApiBaseUrl } from './lib/api/base-url';
+import { storefrontInternalHeaders } from './lib/storefront-internal-headers';
 
 // Mirrors the sites_access_mode_check CHECK constraint, which is the upstream source of truth.
 const STOREFRONT_ACCESS_MODES = ['public', 'password', 'preview_only', 'offline'] as const;
@@ -76,24 +77,16 @@ function gatewayBaseUrl(): string | null {
   return value.replace(/\/+$/, '').replace(/\/v1$/, '');
 }
 
-function internalHeaders(): Record<string, string> | null {
-  const secret = process.env.INTERNAL_API_SECRET;
-  if (!secret) {
-    warnOnce('internal-api-secret', 'INTERNAL_API_SECRET is not set; storefront access cannot be resolved and every storefront request will be denied');
+// A missing server credential keeps routing closed before a network request.
+function backendConfig(): { baseUrl: string } | null {
+  const baseUrl = gatewayBaseUrl();
+  const secret = process.env.STOREFRONT_INTERNAL_PERIMETER?.trim()
+    ? process.env.STOREFRONT_INTERNAL_REQUEST_SECRET : process.env.INTERNAL_API_SECRET;
+  if (!baseUrl || !secret) {
+    warnOnce('internal-api-secret', 'Storefront internal credentials are not configured');
     return null;
   }
-  return { 'x-internal-api-secret': secret };
-}
-
-// Backend config needed to call the store-access API. Returns null (instead of
-// throwing) when an env var is missing so each caller can take its own
-// fail-closed path; every caller treats null as "cannot verify" and denies
-// rather than admitting the request (SEC-R1).
-function backendConfig(): { baseUrl: string; headers: Record<string, string> } | null {
-  const baseUrl = gatewayBaseUrl();
-  const headers = internalHeaders();
-  if (!baseUrl || !headers) return null;
-  return { baseUrl, headers };
+  return { baseUrl };
 }
 
 // Returns the signing secret, or null when it is missing/too short. Callers in
@@ -120,8 +113,9 @@ async function resolveAccess(host: string, req: NextRequest): Promise<Storefront
 
   let response: Response;
   try {
-    response = await fetch(`${config.baseUrl}/v1/internal/store-access/resolve?host=${encodeURIComponent(host)}`, {
-      headers: {...config.headers,
+    const url = `${config.baseUrl}/v1/internal/store-access/resolve?host=${encodeURIComponent(host)}`;
+    response = await fetch(url, {
+      headers: {...await storefrontInternalHeaders('GET', url),
         ...(req.cookies.get(LETBUYY_STOREFRONT_GATE_COOKIE)?.value?{'X-LetBuyy-Storefront-Gate':req.cookies.get(LETBUYY_STOREFRONT_GATE_COOKIE)!.value}:{}),
         ...((req.nextUrl.searchParams.get(LETBUYY_STOREFRONT_PREVIEW_QUERY)||req.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)?.value)?{'X-LetBuyy-Storefront-Preview':(req.nextUrl.searchParams.get(LETBUYY_STOREFRONT_PREVIEW_QUERY)||req.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)!.value)}:{})},
       cache: 'no-store',
@@ -152,18 +146,12 @@ async function verifyStorePassword(input: { siteId: string; host: string; passwo
   const config = backendConfig();
   if (!config) return {ok:false,status:503};
   try {
-    const response = await fetch(`${config.baseUrl}/v1/internal/store-access/verify`, {
+    const url = `${config.baseUrl}/v1/internal/store-access/verify`;
+    const requestBody = JSON.stringify({ site_id: input.siteId, host: input.host, password: input.password, ip: input.ip });
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        ...config.headers,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        site_id: input.siteId,
-        host: input.host,
-        password: input.password,
-        ip: input.ip,
-      }),
+      headers: await storefrontInternalHeaders('POST', url, requestBody),
+      body: requestBody,
       cache: 'no-store',
       signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
     });
