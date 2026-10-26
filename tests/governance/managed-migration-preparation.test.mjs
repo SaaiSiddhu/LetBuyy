@@ -30,6 +30,12 @@ test('offline preparation binds exact committed source and refuses dirty, ambigu
         assert.equal(Object.keys(manifest.adapterHashes).length,5);
         assert.equal(statSync(join(out,'artifact.sql')).mode&0o777,0o600);
         assert.equal(manifest.preparationOnly,true);assert.equal(manifest.requiresFreshBackupRestoreRehearsalAndStagingAcceptance,true);
+        const journalOut=join(workspace,'journaled');
+        const journal=run(['--ack-trusted-admin-maintenance','--history-sha256','a'.repeat(64),'--out',journalOut]);
+        assert.equal(journal.status,0,journal.stderr);
+        const journalManifest=JSON.parse(readFileSync(join(journalOut,'manifest.json'),'utf8'));
+        assert.equal(journalManifest.journaled,true);assert.equal(journalManifest.historyRecordsAdaptedPayload,true);
+        assert.match(readFileSync(join(journalOut,'artifact.sql'),'utf8'),/LETBUYY_MANAGED_HISTORY_SNAPSHOT_CHANGED/);
         const duplicate=run(['--ack-trusted-admin-maintenance']);assert.notEqual(duplicate.status,0,'never overwrite an existing artifact');
         assert.equal(readFileSync(join(out,'artifact.sql'),'utf8'),sql);
         writeFileSync(join(repo,'unreviewed.sql'),'SELECT 1;');

@@ -95,6 +95,16 @@ test('361 accepts only the exact provider CLI membership in both forward and rol
     }
 });
 
+test('393 admits only the named CLI session while preserving the original context and exact source checks',()=>{
+    for(const [folder,file] of [['migrations','393_theme_publisher_tenant_execute.sql'],['rollback','393_theme_publisher_tenant_execute.rollback.sql']]) {
+        const text=readFileSync('database/supabase/'+folder+'/'+file,'utf8');
+        const artifact=compileManagedMigration(text,file);
+        assert.equal(artifact.receipt.adaptedRoleChecks.length,1);
+        assert.match(artifact.sql,/session_user NOT IN\(current_user,'cli_login_postgres'\)/);
+        assert.throws(()=>compileManagedMigration(text.replace('session_user<>current_user','false'),file),/Unreviewed backend-role admission/);
+    }
+});
+
 test('batch records its exact bytes and one backend lease across historical commits',()=>{
     const artifact=compileManagedMigrationBatch([{name,source}],randomUUID());
     assert.equal(artifact.manifest.batchSha256,digest(artifact.sql));

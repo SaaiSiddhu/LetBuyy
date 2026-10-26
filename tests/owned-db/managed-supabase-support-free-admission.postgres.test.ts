@@ -83,6 +83,10 @@ test('support-free admission works as managed postgres without a provider helper
             assert.equal(psql("SELECT to_regprocedure('public.console_platform_job_snapshot_v1(uuid)') IS NULL;"),'t');
             assert.equal(psql("SELECT pg_try_advisory_lock(1818388845,1);"),'t','connection loss releases the lease');
         });
+        await t.test('a backend with an existing lease refuses reentrant execution',()=>{
+            denied('SELECT pg_advisory_lock(1818388845,1); '+batch(353,353).sql,/LETBUYY_MANAGED_MIGRATION_REENTRANT_SESSION/);
+            assert.equal(psql("SELECT pg_try_advisory_lock(1818388845,1);"),'t','refused client termination releases the original lease');
+        });
         await t.test('foreign assigned and prepared writers refuse without discarding their records',async()=>{
             const connection=fixture.session(),id=randomUUID();
             try {
@@ -111,7 +115,8 @@ test('support-free admission works as managed postgres without a provider helper
         });
         await t.test('managed postgres applies 353 through 396 and installs all ten catalog themes without provider provisioning',()=>{
             const artifact=batch(353,396);
-            psql(artifact.sql);
+            assert.equal(fixture.migrator("SELECT session_user='cli_login_postgres' AND current_user='postgres';"),'t');
+            fixture.migrator(artifact.sql);
             assert.equal(absent(),'t');
             assert.equal(psql("SELECT count(*) FROM themes WHERE is_active AND catalog_visible AND NOT is_site_private AND owned_by_site_id IS NULL;"),'10');
             assert.equal(psql("SELECT name FROM themes WHERE slug='letbuyy-forge';"),'Circuit');
@@ -185,7 +190,7 @@ test('support-free admission works as managed postgres without a provider helper
             const entry={name:'393_theme_publisher_tenant_execute.sql',source:read('393_theme_publisher_tenant_execute.sql')};
             const old=digest();
             const up=compileManagedJournalBatch([entry],randomUUID(),{expectedHistorySha256:old});
-            psql(up.sql);
+            fixture.migrator(up.sql);
             assert.equal(psql("SELECT count(*) FROM supabase_migrations.schema_migrations;"),'2');
             assert.equal(psql("SELECT statements[1] FROM supabase_migrations.schema_migrations WHERE version='393';"),compileManagedMigration(entry.source,entry.name).sql.trim());
             assert.match(psql("SELECT statements[2] FROM supabase_migrations.schema_migrations WHERE version='393';"),/^-- LETBUYY_MANAGED_EXECUTION_V1 /);
@@ -199,7 +204,7 @@ test('support-free admission works as managed postgres without a provider helper
             const rollbackName=entry.name.replace('.sql','.rollback.sql');
             const down=compileManagedJournalBatch([{name:rollbackName,source:readFileSync('database/supabase/rollback/'+rollbackName,'utf8')}],randomUUID(),{
                 expectedHistorySha256:digest(),direction:'down',forwardEntries:[entry]});
-            psql(down.sql);
+            fixture.migrator(down.sql);
             assert.equal(digest(),old,'rollback removes only its verified execution receipt, preserving older history');
             psql(compileManagedJournalBatch([entry],randomUUID(),{expectedHistorySha256:old}).sql);
             assert.equal(psql("SELECT count(*) FROM supabase_migrations.schema_migrations;"),'2');

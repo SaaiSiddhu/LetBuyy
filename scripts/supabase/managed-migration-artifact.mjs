@@ -22,6 +22,8 @@ function managedRoleAdmissionEdits(source,name,statements) {
         original=legacyBackendRoleCheck;replacement=managedBackendRoleCheck;
     } else if(['361_collection_membership.sql','361_collection_membership.rollback.sql'].includes(name)) {
         original=legacyCollectionRoleFilter;replacement=managedCollectionRoleFilter;
+    } else if(['393_theme_publisher_tenant_execute.sql','393_theme_publisher_tenant_execute.rollback.sql'].includes(name)) {
+        original='session_user<>current_user';replacement="session_user NOT IN(current_user,'cli_login_postgres')";
     } else return [];
     const expected=sqlTokens(original),edits=[];
     for(const statement of statements) {
@@ -104,7 +106,7 @@ SET statement_timeout='25min';
 SET idle_in_transaction_session_timeout='60s';
 DO $managed_migration_window_v1$
 BEGIN
- IF current_user<>'postgres' OR session_user<>'postgres'
+ IF current_user<>'postgres' OR session_user NOT IN('postgres','cli_login_postgres')
   OR (SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user)
   OR pg_catalog.current_setting('role') NOT IN ('none','postgres') THEN
   RAISE EXCEPTION 'LETBUYY_MANAGED_MIGRATION_SESSION_REQUIRED';

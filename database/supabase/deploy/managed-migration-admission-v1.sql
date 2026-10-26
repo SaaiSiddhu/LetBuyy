@@ -5,7 +5,7 @@
 DO $managed_migration_admission_v1$
 DECLARE relation record;
 BEGIN
- IF current_user <> 'postgres' OR session_user <> 'postgres'
+ IF current_user <> 'postgres' OR session_user NOT IN ('postgres','cli_login_postgres')
   OR (SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user)
   OR pg_catalog.pg_is_in_recovery()
   OR pg_catalog.current_setting('role') NOT IN ('none','postgres')
