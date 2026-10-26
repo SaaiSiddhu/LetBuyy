@@ -16,6 +16,7 @@ import {
 } from '../src/components/theme-detail-experience';
 import ThemeCategoryLanding from '../src/components/theme-category-landing';
 import ThemeCard from '../src/components/theme-card';
+import ThemeShowcase from '../src/components/theme-showcase';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
 import { MARKETPLACE_POLICIES, policySectionId } from '../src/lib/marketplace-policies';
@@ -347,4 +348,19 @@ test('learning content links resolve to published routes or a known guide/docume
         if (faq.href.startsWith('/guides/')) assert.ok(guideSlugs.has(faq.href.slice('/guides/'.length)),faq.href);
         if (faq.href.startsWith('/legal/')) assert.ok(policySlugs.has(faq.href.slice('/legal/'.length)),faq.href);
     }
+});
+
+test('homepage lookbook renders opposite rows, noninteractive duplicate artwork and an accessible pause control', () => {
+    const html = renderToStaticMarkup(<ThemeShowcase />);
+    assert.match(html, /aria-label="Animated sample theme lookbook"/);
+    assert.match(html, /data-direction="left"/);
+    assert.match(html, /data-direction="right"/);
+    assert.equal((html.match(/class="marketplace-showcase-group"[^>]*aria-hidden="true"/g) || []).length, 2);
+    assert.match(html, /aria-label="Pause theme animation"[^>]*aria-pressed="false"/);
+    assert.match(html, /Sample design inspiration/);
+    assert.doesNotMatch(html, /<iframe|href="\/themes\//);
+    const home = readAppFile('src/app/page.tsx');
+    assert.ok(home.indexOf('<ThemeShowcase />') < home.indexOf('<section className="marketplace-hero">'));
+    assert.match(home, /Search themes, styles, or features/);
+    assert.match(home, /Start with a free theme/);
 });

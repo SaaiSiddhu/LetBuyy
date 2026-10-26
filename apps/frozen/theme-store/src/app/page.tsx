@@ -5,6 +5,7 @@ import { ThemeService } from '@/lib/theme-service';
 import { normalizeThemeRecord } from '@/lib/theme-catalog';
 import MarketplaceUnavailable from '@/components/marketplace-unavailable';
 import MarketplaceHomeResources from '@/components/marketplace-home-resources';
+import ThemeShowcase from '@/components/theme-showcase';
 
 const CATEGORIES = [
     { slug: 'store', label: 'Online stores' },
@@ -24,7 +25,8 @@ export default async function HomePage() {
     const recent = recentResult.ok ? recentResult.value.themes.map(normalizeThemeRecord).filter(theme => !featuredIds.has(theme.id)) : [];
 
     return (
-        <div className="marketplace">
+        <div className="marketplace marketplace-home">
+            <ThemeShowcase />
             <section className="marketplace-hero">
                 <div className="marketplace-container">
                     <p className="marketplace-eyebrow"><Palette size={16} aria-hidden="true" /> LetBuyy Theme Store</p>
@@ -43,7 +45,7 @@ export default async function HomePage() {
                                 <Link href="/themes?pricing=free" className="marketplace-text-link">Start with a free theme</Link>
                             </div>
                         </div>
-                        <p className="marketplace-hero-note"><Check size={16} aria-hidden="true" /> Preview before you choose.<br />Your products stay yours.</p>
+                        <p className="marketplace-hero-note"><Check size={16} aria-hidden="true" /><span>Preview before you choose.</span><span>Your products stay yours.</span></p>
                     </div>
                     <nav className="marketplace-category-nav" aria-label="Browse theme categories">
                         <Link href="/themes" aria-current="page">All themes</Link>

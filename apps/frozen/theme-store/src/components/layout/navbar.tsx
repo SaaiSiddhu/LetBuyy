@@ -33,6 +33,7 @@ export default function Navbar() {
     const [searchOpen,setSearchOpen] = useState(false);
     const [mobileOpen,setMobileOpen] = useState(false);
     const [openMenu,setOpenMenu] = useState<string | null>(null);
+    const [scrolled,setScrolled] = useState(false);
 
     useEffect(()=>{
         function shortcut(event:KeyboardEvent) {
@@ -40,6 +41,13 @@ export default function Navbar() {
         }
         window.addEventListener('keydown',shortcut);
         return ()=>window.removeEventListener('keydown',shortcut);
+    },[]);
+
+    useEffect(()=>{
+        const syncScroll=()=>setScrolled(window.scrollY>16);
+        syncScroll();
+        window.addEventListener('scroll',syncScroll,{passive:true});
+        return()=>window.removeEventListener('scroll',syncScroll);
     },[]);
 
     function accountHref(path:string) {
@@ -59,14 +67,14 @@ export default function Navbar() {
 
     return <>
         <a href="#marketplace-main" className="marketplace-skip-link">Skip to themes</a>
-        <header className="marketplace-header">
+        <header className="marketplace-header" data-scrolled={scrolled} data-menu-open={Boolean(openMenu)||mobileOpen}>
             <div className="marketplace-container marketplace-header-inner">
-                <Link href="/" className="marketplace-brand" aria-label="LetBuyy Themes home" onClick={closeNavigation}><BrandLogo width={142} height={44} priority /><span>Themes</span></Link>
+                <Link href="/" className="marketplace-brand" aria-label="LetBuyy Themes home" onClick={closeNavigation}><BrandLogo width={152} height={49} priority /></Link>
                 <nav className="marketplace-desktop-nav" aria-label="Main navigation">
-                    {MENUS.map(menu => <Popover key={menu.key} open={openMenu===menu.key} onOpenChange={open=>setOpenMenu(open?menu.key:null)} ariaLabel={menu.label} trigger={<Button variant="ghost">{menu.label} <ChevronDown size={14} aria-hidden="true" /></Button>}>
+                    {MENUS.map(menu => <Popover key={menu.key} open={openMenu===menu.key} onOpenChange={open=>setOpenMenu(open?menu.key:null)} ariaLabel={menu.label} className="marketplace-nav-popover" trigger={<Button unstyled className="marketplace-nav-link">{menu.label} <ChevronDown size={14} aria-hidden="true" /></Button>}>
                         <div className="marketplace-browse-menu">{menu.links.map(link=><Link href={link.href} key={link.href} aria-current={pathname===link.href?'page':undefined} onClick={closeNavigation}>{link.label}</Link>)}</div>
                     </Popover>)}
-                    <Link href="/support" aria-current={pathname==='/support'?'page':undefined}>Support</Link>
+                    <Link className="marketplace-nav-link" href="/support" aria-current={pathname==='/support'?'page':undefined}>Support</Link>
                 </nav>
                 <div className="marketplace-header-actions">
                     <Button variant="ghost" size="icon" aria-label="Search themes" onClick={()=>setSearchOpen(true)}><Search aria-hidden="true" /></Button>
@@ -74,6 +82,7 @@ export default function Navbar() {
                     <div className="marketplace-account-nav">
                         {isAuthenticated ? <><Link href="/dashboard" className="marketplace-header-login">Your library</Link><Button variant="ghost" onClick={()=>void signOut()}>Log out</Button></> : <><a href={accountHref('/lookup')} onClick={preserveReturnTo} className="marketplace-header-login">Log in</a><a href={accountHref('/signup')} onClick={preserveReturnTo} className="marketplace-action">Start for free</a></>}
                     </div>
+                    {!isAuthenticated && <a href={accountHref('/signup')} onClick={preserveReturnTo} className="marketplace-mobile-start-link">Start for free</a>}
                     <Button className="marketplace-mobile-menu-trigger" variant="ghost" size="icon" aria-label="Open menu" aria-expanded={mobileOpen} onClick={()=>setMobileOpen(true)}><Menu aria-hidden="true" /></Button>
                 </div>
             </div>
