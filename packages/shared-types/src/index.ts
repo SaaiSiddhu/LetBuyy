@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+// Schema construction is pure. Keep its eager exported value and exact validation
+// contract, while allowing bundlers to discard whole unused schema factories.
+// The zero-argument boundary also covers nested Zod calls in object fields.
+
 export * from './brand';
 export * from './console-overview';
 export * from './contact';
@@ -28,79 +32,79 @@ export {
 import { UuidSchema } from './uuid';
 export { UuidSchema } from './uuid';
 
-export const ProductCsvImportSchema = z.object({
+export const ProductCsvImportSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   // Keep quoted field whitespace and line breaks intact.
   csv: z.string().min(1).max(1_048_576).refine(value => value.trim().length > 0, 'A product CSV is required'),
-});
+}))();
 export type ProductCsvImportInput = z.infer<typeof ProductCsvImportSchema>;
 
-export const QueryBooleanSchema = z.preprocess((value) => {
+export const QueryBooleanSchema = /* @__PURE__ */ (() => z.preprocess((value) => {
   if (value === undefined || value === null || value === '') return false;
   if (typeof value === 'string') return ['1', 'true', 'yes'].includes(value.toLowerCase());
   return value;
-}, z.boolean()).default(false);
+}, z.boolean()).default(false))();
 
-export const PaginationQuery = z.object({
+export const PaginationQuery = /* @__PURE__ */ (() => z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   cursor: z.string().max(512).optional(),
   withCount: QueryBooleanSchema,
   sort: z.string().max(50).optional(),
   order: z.enum(['asc', 'desc']).default('desc'),
-});
+}))();
 
-export const IdParam = z.object({
+export const IdParam = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
-});
+}))();
 
-export const SlugSchema = z
+export const SlugSchema = /* @__PURE__ */ (() => z
   .string()
   .min(1)
   .max(100)
-  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be lowercase with hyphens only');
+  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be lowercase with hyphens only'))();
 
-export const EmailSchema = z.string().email().max(320).toLowerCase();
+export const EmailSchema = /* @__PURE__ */ (() => z.string().email().max(320).toLowerCase())();
 
-export const PhoneSchema = z
+export const PhoneSchema = /* @__PURE__ */ (() => z
   .string()
   .regex(/^\+[1-9]\d{6,14}$/, 'Phone must be E.164 format: +XXXXXXXXXXX')
-  .optional();
+  .optional())();
 
-export const UrlSchema = z.string().url().max(2000);
+export const UrlSchema = /* @__PURE__ */ (() => z.string().url().max(2000))();
 
-export const JsonRecordSchema = z.record(z.string(), z.unknown());
+export const JsonRecordSchema = /* @__PURE__ */ (() => z.record(z.string(), z.unknown()))();
 
-export const MoneySchema = z
+export const MoneySchema = /* @__PURE__ */ (() => z
   .number()
   .min(0, 'Amount cannot be negative')
-  .max(99_999_999.99, 'Amount exceeds maximum');
+  .max(99_999_999.99, 'Amount exceeds maximum'))();
 
-export const CurrencySchema = z.string().length(3).toUpperCase().default('INR');
+export const CurrencySchema = /* @__PURE__ */ (() => z.string().length(3).toUpperCase().default('INR'))();
 
-export const CommerceChannelSchema = z.enum(['web', 'whatsapp', 'instagram', 'pos', 'api']).default('web');
+export const CommerceChannelSchema = /* @__PURE__ */ (() => z.enum(['web', 'whatsapp', 'instagram', 'pos', 'api']).default('web'))();
 export type CommerceChannel = z.infer<typeof CommerceChannelSchema>;
 
-export const GstinSchema = z
+export const GstinSchema = /* @__PURE__ */ (() => z
   .string()
   .trim()
   .toUpperCase()
   .regex(
     /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/,
     'GSTIN must be a valid 15 character Indian GSTIN',
-  );
+  ))();
 
-export const IndianStateCodeSchema = z
+export const IndianStateCodeSchema = /* @__PURE__ */ (() => z
   .string()
   .trim()
-  .regex(/^(0[1-9]|[12][0-9]|3[0-8]|97)$/, 'GST state code must be 01-38 or 97');
+  .regex(/^(0[1-9]|[12][0-9]|3[0-8]|97)$/, 'GST state code must be 01-38 or 97'))();
 
-export const HsnCodeSchema = z
+export const HsnCodeSchema = /* @__PURE__ */ (() => z
   .string()
   .trim()
-  .regex(/^\d{4,8}$/, 'HSN code must be 4 to 8 digits');
+  .regex(/^\d{4,8}$/, 'HSN code must be 4 to 8 digits'))();
 
-export const AddressSchema = z.object({
+export const AddressSchema = /* @__PURE__ */ (() => z.object({
   name: z.string().max(200).optional(),
   line1: z.string().min(1).max(500),
   line2: z.string().max(500).optional(),
@@ -111,9 +115,9 @@ export const AddressSchema = z.object({
   country: z.string().length(2).toUpperCase().default('IN'),
   phone: z.string().max(30).optional(),
   gstin: GstinSchema.optional(),
-});
+}))();
 
-export const BusinessEntityTypeSchema = z.enum([
+export const BusinessEntityTypeSchema = /* @__PURE__ */ (() => z.enum([
   'proprietorship',
   'partnership',
   'llp',
@@ -121,9 +125,9 @@ export const BusinessEntityTypeSchema = z.enum([
   'public_limited',
   'individual',
   'other',
-]);
+]))();
 
-export const BusinessProfileSchema = z.object({
+export const BusinessProfileSchema = /* @__PURE__ */ (() => z.object({
   legal_name: z.string().min(1).max(200).optional(),
   trade_name: z.string().max(200).optional(),
   entity_type: BusinessEntityTypeSchema.optional(),
@@ -133,18 +137,18 @@ export const BusinessProfileSchema = z.object({
   email: EmailSchema.optional(),
   phone: z.string().max(30).optional(),
   website: UrlSchema.optional(),
-}).passthrough();
+}).passthrough())();
 
-export const InvoiceAddressSchema = AddressSchema.partial().passthrough();
+export const InvoiceAddressSchema = /* @__PURE__ */ (() => AddressSchema.partial().passthrough())();
 
-export const RobotsDirectiveSchema = z.enum([
+export const RobotsDirectiveSchema = /* @__PURE__ */ (() => z.enum([
   'index,follow',
   'index,nofollow',
   'noindex,follow',
   'noindex,nofollow',
-]);
+]))();
 
-export const StructuredDataTypeSchema = z.enum([
+export const StructuredDataTypeSchema = /* @__PURE__ */ (() => z.enum([
   'Product',
   'Article',
   'BlogPosting',
@@ -156,7 +160,7 @@ export const StructuredDataTypeSchema = z.enum([
   'BreadcrumbList',
   'Service',
   'None',
-]);
+]))();
 
 /**
  * Canonical per-entity SEO contract. All fields beyond title/description/og_image
@@ -164,7 +168,7 @@ export const StructuredDataTypeSchema = z.enum([
  * Merchant-facing surfaces (storefront pages, products, collections, CMS pages,
  * themes, apps) should persist and round-trip these through the API gateway.
  */
-export const SeoSchema = z.object({
+export const SeoSchema = /* @__PURE__ */ (() => z.object({
   seo_title: z.string().max(70).optional(),
   seo_description: z.string().max(160).optional(),
   og_image_url: UrlSchema.optional(),
@@ -176,7 +180,7 @@ export const SeoSchema = z.object({
   structured_data_type: StructuredDataTypeSchema.optional(),
   alternate_name: z.string().max(120).optional(),
   twitter_handle: z.string().max(40).optional(),
-});
+}))();
 
 export type SeoInput = z.infer<typeof SeoSchema>;
 export type RobotsDirective = z.infer<typeof RobotsDirectiveSchema>;
@@ -225,8 +229,8 @@ export type IsoDateTime = string;
 export type JsonRecord = Record<string, unknown>;
 export type MoneyMinorUnit = number;
 
-export const InternalPermissionTierSchema = z.enum(['viewer', 'operator', 'lead', 'admin']);
-export const InternalPermissionScopeSchema = z.enum([
+export const InternalPermissionTierSchema = /* @__PURE__ */ (() => z.enum(['viewer', 'operator', 'lead', 'admin']))();
+export const InternalPermissionScopeSchema = /* @__PURE__ */ (() => z.enum([
   'rbac:view',
   'rbac:manage',
   'audit:read',
@@ -257,7 +261,7 @@ export const InternalPermissionScopeSchema = z.enum([
   'compliance:manage',
   'developer:view',
   'developer:manage',
-]);
+]))();
 
 export type InternalPermissionTier = z.infer<typeof InternalPermissionTierSchema>;
 export type InternalPermissionScope = z.infer<typeof InternalPermissionScopeSchema>;
@@ -337,61 +341,61 @@ export const INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS: Record<string, InternalPermis
 
 /** Same ten-minute bound as canonical sensitive-action step-up verification. */
 export const INTERNAL_APPROVAL_WINDOW_SECONDS = 600;
-export const InternalMerchantApprovalRequestSchema = z.object({
+export const InternalMerchantApprovalRequestSchema = /* @__PURE__ */ (() => z.object({
   action: z.enum(['merchant.suspend', 'merchant.restore']),
   resource_id: z.string().uuid(), reason: z.string().trim().min(8).max(1000), request_key: z.string().uuid(),
-}).strict();
+}).strict())();
 /** Operator review annotates a break; it never adjusts the canonical journal. */
-export const InternalMoneyResolutionDetailsSchema = z.object({
+export const InternalMoneyResolutionDetailsSchema = /* @__PURE__ */ (() => z.object({
   resolution: z.enum(['acknowledge_suspense', 'provider_explained', 'request_recheck']),
   provider_reference: z.string().trim().max(160).nullable().optional().transform(value => value || null),
   suspense_ledger_transaction_id: z.string().uuid().nullable().optional().transform(value => value || null),
-}).strict();
-export const InternalMoneyApprovalRequestSchema = z.object({
+}).strict())();
+export const InternalMoneyApprovalRequestSchema = /* @__PURE__ */ (() => z.object({
   action: z.literal('money.reconciliation.resolve'), resource_id: z.string().uuid(),
   reason: z.string().trim().min(8).max(1000), request_key: z.string().uuid(), payload: InternalMoneyResolutionDetailsSchema,
-}).strict();
-export const InternalTrustSafetyNoteMetadataSchema = z.record(z.string(),z.unknown()).refine(value => {
+}).strict())();
+export const InternalTrustSafetyNoteMetadataSchema = /* @__PURE__ */ (() => z.record(z.string(),z.unknown()).refine(value => {
   try { return new TextEncoder().encode(JSON.stringify(value)).length <= 4096; } catch { return false; }
-}, 'Keep additional notes within4KB.').default({});
-export const InternalTrustReinstatementRequestSchema = z.object({ action:z.literal('ts.reinstate'),resource_id:z.string().uuid(),
-  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),metadata:InternalTrustSafetyNoteMetadataSchema }).strict();
-export const InternalTrustReinstatementExecuteSchema = z.object({approval_id:z.string().uuid().optional(),reason:z.string().trim().min(8).max(1000),
-  secondary_approver_id:z.string().uuid().optional(),metadata:InternalTrustSafetyNoteMetadataSchema}).strict();
-export const InternalTrustSiteEnforcementSchema = z.object({action:z.enum(['suspend_site','takedown_theme','disable_app','freeze_payouts','platform_disable']),
+}, 'Keep additional notes within4KB.').default({}))();
+export const InternalTrustReinstatementRequestSchema = /* @__PURE__ */ (() => z.object({ action:z.literal('ts.reinstate'),resource_id:z.string().uuid(),
+  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),metadata:InternalTrustSafetyNoteMetadataSchema }).strict())();
+export const InternalTrustReinstatementExecuteSchema = /* @__PURE__ */ (() => z.object({approval_id:z.string().uuid().optional(),reason:z.string().trim().min(8).max(1000),
+  secondary_approver_id:z.string().uuid().optional(),metadata:InternalTrustSafetyNoteMetadataSchema}).strict())();
+export const InternalTrustSiteEnforcementSchema = /* @__PURE__ */ (() => z.object({action:z.enum(['suspend_site','takedown_theme','disable_app','freeze_payouts','platform_disable']),
   reason:z.string().trim().min(8).max(1000),idempotency_key:z.string().uuid().optional(),notify_subject:z.boolean().default(true),
-  metadata:InternalTrustSafetyNoteMetadataSchema}).strict();
-export const InternalOperatorMfaResetRequestSchema = z.object({action:z.literal('operator.mfa.reset'),resource_id:z.string().uuid(),
- reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),configured_fingerprint:z.string().regex(/^[0-9a-f]{64}$/)}).strict();
+  metadata:InternalTrustSafetyNoteMetadataSchema}).strict())();
+export const InternalOperatorMfaResetRequestSchema = /* @__PURE__ */ (() => z.object({action:z.literal('operator.mfa.reset'),resource_id:z.string().uuid(),
+ reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),configured_fingerprint:z.string().regex(/^[0-9a-f]{64}$/)}).strict())();
 /** Minimal operator projection; private queue payloads/errors/results never cross this boundary. */
-export const InternalPlatformJobSchema = z.object({
+export const InternalPlatformJobSchema = /* @__PURE__ */ (() => z.object({
   id:z.string().uuid(),site_id:z.string().uuid().nullable(),queue_name:z.literal('loyalty-refunds'),job_type:z.literal('loyalty.restore_redeemed'),
   status:z.enum(['queued','running','succeeded','failed','dead','cancelled']),attempts:z.number().int(),max_attempts:z.number().int(),
   order_id:z.string().uuid().nullable(),redeemed_entry_id:z.string().uuid().nullable(),points:z.string().regex(/^\d+$/).nullable(),
   point_value_minor:z.string().nullable(),value_minor:z.string().nullable(),created_at:z.string(),failed_at:z.string().nullable(),completed_at:z.string().nullable(),
   eligible:z.boolean(),source_valid:z.boolean(),reason_code:z.enum(['eligible','source_unavailable','debt_not_owed','lease_present','not_exhausted','attempt_limit']),
   source_identity:z.string().regex(/^[0-9a-f]{64}$/),source_fingerprint:z.string().regex(/^[0-9a-f]{64}$/),
-}).strict();
+}).strict())();
 export type InternalPlatformJob = z.infer<typeof InternalPlatformJobSchema>;
-export const InternalPlatformJobQuerySchema = z.object({site_id:z.string().uuid().optional(),job_id:z.string().uuid().optional(),
-  page:z.coerce.number().int().min(1).max(10000).default(1),limit:z.coerce.number().int().min(1).max(50).default(25)}).strict();
-export const InternalPlatformJobRecoveryRequestSchema = z.object({site_id:z.string().uuid(),source_fingerprint:z.string().regex(/^[0-9a-f]{64}$/),
-  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),expected_session_id:z.string().uuid()}).strict();
-export const InternalPlatformJobRecoveryExecuteSchema = z.object({approval_id:z.string().uuid(),site_id:z.string().uuid(),
-  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid()}).strict();
-export const InternalPlatformJobRecoveryResultSchema = z.object({operation:z.literal('retry_authorized'),operation_id:z.string().uuid(),
+export const InternalPlatformJobQuerySchema = /* @__PURE__ */ (() => z.object({site_id:z.string().uuid().optional(),job_id:z.string().uuid().optional(),
+  page:z.coerce.number().int().min(1).max(10000).default(1),limit:z.coerce.number().int().min(1).max(50).default(25)}).strict())();
+export const InternalPlatformJobRecoveryRequestSchema = /* @__PURE__ */ (() => z.object({site_id:z.string().uuid(),source_fingerprint:z.string().regex(/^[0-9a-f]{64}$/),
+  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),expected_session_id:z.string().uuid()}).strict())();
+export const InternalPlatformJobRecoveryExecuteSchema = /* @__PURE__ */ (() => z.object({approval_id:z.string().uuid(),site_id:z.string().uuid(),
+  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid()}).strict())();
+export const InternalPlatformJobRecoveryResultSchema = /* @__PURE__ */ (() => z.object({operation:z.literal('retry_authorized'),operation_id:z.string().uuid(),
   job_id:z.string().uuid(),site_id:z.string().uuid(),event_id:z.string().uuid(),previous_attempts:z.number().int().nonnegative(),
-  max_attempts:z.number().int().positive(),retry_budget:z.literal(1),queued_at:z.string(),replayed:z.boolean()}).strict();
-export const InternalProtectedApprovalRequestSchema = z.discriminatedUnion('action', [
+  max_attempts:z.number().int().positive(),retry_budget:z.literal(1),queued_at:z.string(),replayed:z.boolean()}).strict())();
+export const InternalProtectedApprovalRequestSchema = /* @__PURE__ */ (() => z.discriminatedUnion('action', [
   InternalMerchantApprovalRequestSchema, InternalMoneyApprovalRequestSchema, InternalTrustReinstatementRequestSchema, InternalOperatorMfaResetRequestSchema,
-]);
-export const InternalMoneyResolutionExecuteSchema = InternalMoneyResolutionDetailsSchema.extend({
+]))();
+export const InternalMoneyResolutionExecuteSchema = /* @__PURE__ */ (() => InternalMoneyResolutionDetailsSchema.extend({
   approval_id: z.string().uuid().optional(), reason: z.string().trim().min(8).max(1000),
   // Legacy transport fields are optional and never grant authority.
   actor_id: z.string().uuid().optional(), actor_email: z.string().email().nullable().optional(),
   secondary_approver_id: z.string().uuid().optional(),
-}).strict();
-export const InternalMoneyReconciliationRowSchema = z.object({
+}).strict())();
+export const InternalMoneyReconciliationRowSchema = /* @__PURE__ */ (() => z.object({
   site_id: z.string().uuid(), status: z.enum(['verified', 'mismatch']),
   wallet_available_minor: z.union([z.number().int(), z.string().regex(/^-?\d+$/)]),
   ledger_merchant_payable_minor: z.union([z.number().int(), z.string().regex(/^-?\d+$/)]),
@@ -399,12 +403,12 @@ export const InternalMoneyReconciliationRowSchema = z.object({
   verified_at: z.string().nullable(), updated_at: z.string().nullable(),
   sites: z.object({ id: z.string().optional(), name: z.string().nullable().optional(),
     store_name: z.string().nullable().optional(), subdomain: z.string().nullable().optional() }).nullable().optional(),
-}).passthrough();
+}).passthrough())();
 export type InternalMoneyReconciliationRow = z.infer<typeof InternalMoneyReconciliationRowSchema>;
-export const InternalApprovalDecisionSchema = z.object({
+export const InternalApprovalDecisionSchema = /* @__PURE__ */ (() => z.object({
   decision: z.enum(['approve', 'reject', 'cancel']), payload_hash: z.string().regex(/^[0-9a-f]{64}$/),
-}).strict();
-export const InternalSensitiveApprovalSchema = z.object({
+}).strict())();
+export const InternalSensitiveApprovalSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().uuid(), protocol_version: z.literal(1), site_id: z.string().uuid().nullable(),
   action: z.enum(['refund.approve', 'payout.release', 'customer.dsr.erase', 'merchant.suspend', 'merchant.restore',
     'developer.suspend', 'money.reconciliation.resolve', 'ts.reinstate', 'runtime.control-command', 'operator.mfa.reset', 'platform.job.redrive']),
@@ -418,11 +422,11 @@ export const InternalSensitiveApprovalSchema = z.object({
   notification_delivery:z.object({status:z.enum(['queued','running','succeeded','failed','dead','cancelled']),attempts:z.number().int().nonnegative(),completed_at:z.string().nullable()}).nullable().optional(),
 }).refine(value=>value.action==='operator.mfa.reset'
  ? value.site_id===null&&value.resource_type==='platform_operator'
- : value.site_id!==null,{message:'The protected action scope does not match its resource.'});
+ : value.site_id!==null,{message:'The protected action scope does not match its resource.'}))();
 export type InternalSensitiveApproval = z.infer<typeof InternalSensitiveApprovalSchema>;
 
-export const RiskEntityTypeSchema = z.enum(['signup', 'merchant', 'site', 'payment', 'app', 'theme', 'developer']);
-export const RiskSignalTypeSchema = z.enum([
+export const RiskEntityTypeSchema = /* @__PURE__ */ (() => z.enum(['signup', 'merchant', 'site', 'payment', 'app', 'theme', 'developer']))();
+export const RiskSignalTypeSchema = /* @__PURE__ */ (() => z.enum([
   'signup_velocity',
   'store_creation_velocity',
   'disposable_email',
@@ -433,11 +437,11 @@ export const RiskSignalTypeSchema = z.enum([
   'country_ip_mismatch',
   'vpn_tor',
   'manual_review',
-]);
-export const RiskSignalSeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
-export const RiskBandSchema = z.enum(['low', 'medium', 'high']);
-export const RiskScoreStatusSchema = z.enum(['open', 'confirmed', 'dismissed', 'restricted']);
-export const RiskDecisionSchema = z.enum(['confirm', 'dismiss', 'manual_block']);
+]))();
+export const RiskSignalSeveritySchema = /* @__PURE__ */ (() => z.enum(['low', 'medium', 'high', 'critical']))();
+export const RiskBandSchema = /* @__PURE__ */ (() => z.enum(['low', 'medium', 'high']))();
+export const RiskScoreStatusSchema = /* @__PURE__ */ (() => z.enum(['open', 'confirmed', 'dismissed', 'restricted']))();
+export const RiskDecisionSchema = /* @__PURE__ */ (() => z.enum(['confirm', 'dismiss', 'manual_block']))();
 
 export type RiskEntityType = z.infer<typeof RiskEntityTypeSchema>;
 export type RiskSignalType = z.infer<typeof RiskSignalTypeSchema>;
@@ -550,8 +554,8 @@ export function scoreRiskSignals(signals: readonly RiskSignalForScoring[]): Risk
   };
 }
 
-export const TrustSafetySubjectTypeSchema = z.enum(['site', 'merchant', 'app', 'theme', 'developer', 'payment', 'order', 'custom']);
-export const TrustSafetyCaseCategorySchema = z.enum([
+export const TrustSafetySubjectTypeSchema = /* @__PURE__ */ (() => z.enum(['site', 'merchant', 'app', 'theme', 'developer', 'payment', 'order', 'custom']))();
+export const TrustSafetyCaseCategorySchema = /* @__PURE__ */ (() => z.enum([
   'fraud',
   'illegal_goods',
   'counterfeit',
@@ -562,13 +566,13 @@ export const TrustSafetyCaseCategorySchema = z.enum([
   'payments',
   'platform_integrity',
   'other',
-]);
-export const TrustSafetySeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
-export const TrustSafetyCaseStatusSchema = z.enum(['open', 'under_review', 'actioned', 'appealed', 'reinstated', 'closed', 'finalized']);
-export const TrustSafetyDecisionSchema = z.enum(['no_violation', 'violation', 'needs_more_info']);
-export const TrustSafetyEnforcementActionSchema = z.enum(['none', ...InternalTrustSiteEnforcementSchema.shape.action.options]);
-export const TrustSafetyAppealStatusSchema = z.enum(['filed', 'under_review', 'upheld', 'overturned', 'rejected', 'expired']);
-export const TrustSafetyTakedownStatusSchema = z.enum(['pending', 'active', 'reversed']);
+]))();
+export const TrustSafetySeveritySchema = /* @__PURE__ */ (() => z.enum(['low', 'medium', 'high', 'critical']))();
+export const TrustSafetyCaseStatusSchema = /* @__PURE__ */ (() => z.enum(['open', 'under_review', 'actioned', 'appealed', 'reinstated', 'closed', 'finalized']))();
+export const TrustSafetyDecisionSchema = /* @__PURE__ */ (() => z.enum(['no_violation', 'violation', 'needs_more_info']))();
+export const TrustSafetyEnforcementActionSchema = /* @__PURE__ */ (() => z.enum(['none', ...InternalTrustSiteEnforcementSchema.shape.action.options]))();
+export const TrustSafetyAppealStatusSchema = /* @__PURE__ */ (() => z.enum(['filed', 'under_review', 'upheld', 'overturned', 'rejected', 'expired']))();
+export const TrustSafetyTakedownStatusSchema = /* @__PURE__ */ (() => z.enum(['pending', 'active', 'reversed']))();
 
 export type TrustSafetySubjectType = z.infer<typeof TrustSafetySubjectTypeSchema>;
 export type TrustSafetyCaseCategory = z.infer<typeof TrustSafetyCaseCategorySchema>;
@@ -588,9 +592,9 @@ export const TRUST_SAFETY_RETENTION_EXEMPT_TABLES = [
   'ts_takedowns',
 ] as const;
 
-export const ComplianceDataSubjectRequestTypeSchema = z.enum(['access', 'erasure']);
-export const ComplianceDataSubjectSubjectTypeSchema = z.enum(['customer', 'shop', 'merchant', 'developer', 'employee', 'other']);
-export const ComplianceDataSubjectSourceSchema = z.enum([
+export const ComplianceDataSubjectRequestTypeSchema = /* @__PURE__ */ (() => z.enum(['access', 'erasure']))();
+export const ComplianceDataSubjectSubjectTypeSchema = /* @__PURE__ */ (() => z.enum(['customer', 'shop', 'merchant', 'developer', 'employee', 'other']))();
+export const ComplianceDataSubjectSourceSchema = /* @__PURE__ */ (() => z.enum([
   'manual',
   'customers/data_request',
   'customers/redact',
@@ -598,8 +602,8 @@ export const ComplianceDataSubjectSourceSchema = z.enum([
   'support',
   'trust_safety',
   'system',
-]);
-export const ComplianceDataSubjectStatusSchema = z.enum([
+]))();
+export const ComplianceDataSubjectStatusSchema = /* @__PURE__ */ (() => z.enum([
   'open',
   'verifying',
   'in_progress',
@@ -607,9 +611,9 @@ export const ComplianceDataSubjectStatusSchema = z.enum([
   'rejected',
   'cancelled',
   'expired',
-]);
-export const ComplianceAuditExportStatusSchema = z.enum(['idle', 'running', 'completed', 'failed']);
-export const ComplianceAuditExportSinkTypeSchema = z.enum(['local_dry_run', 'siem', 'worm']);
+]))();
+export const ComplianceAuditExportStatusSchema = /* @__PURE__ */ (() => z.enum(['idle', 'running', 'completed', 'failed']))();
+export const ComplianceAuditExportSinkTypeSchema = /* @__PURE__ */ (() => z.enum(['local_dry_run', 'siem', 'worm']))();
 
 export type ComplianceDataSubjectRequestType = z.infer<typeof ComplianceDataSubjectRequestTypeSchema>;
 export type ComplianceDataSubjectSubjectType = z.infer<typeof ComplianceDataSubjectSubjectTypeSchema>;
@@ -652,18 +656,18 @@ export const COMPLIANCE_RETENTION_POLICY = [
   },
 ] as const;
 
-export const SupportTicketStatusSchema = z.enum(['open', 'pending_customer', 'pending_internal', 'escalated', 'resolved', 'closed']);
-export const SupportTicketPrioritySchema = z.enum(['low', 'normal', 'high', 'urgent']);
-export const SupportTicketChannelSchema = z.enum(['email', 'in_app', 'chat', 'phone', 'api']);
-export const SupportTicketTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general']);
+export const SupportTicketStatusSchema = /* @__PURE__ */ (() => z.enum(['open', 'pending_customer', 'pending_internal', 'escalated', 'resolved', 'closed']))();
+export const SupportTicketPrioritySchema = /* @__PURE__ */ (() => z.enum(['low', 'normal', 'high', 'urgent']))();
+export const SupportTicketChannelSchema = /* @__PURE__ */ (() => z.enum(['email', 'in_app', 'chat', 'phone', 'api']))();
+export const SupportTicketTopicSchema = /* @__PURE__ */ (() => z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general']))();
 // What a ticket in the platform queue can carry, so what the queue can be filtered by: every topic above plus 'privacy'
 // (migration 261). Only the buyer's privacy intake writes a privacy ticket. An operator creates tickets and macros with
 // SupportTicketTopicSchema, which leaves 'privacy' out on purpose: filter with this schema, create with that one.
-export const SupportTicketQueueTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general', 'privacy']);
-export const SupportTicketMessageAuthorSchema = z.enum(['requester', 'agent', 'system']);
-export const SupportTicketMessageVisibilitySchema = z.enum(['public', 'internal']);
-export const SupportTicketEscalationTargetSchema = z.enum(['risk', 'trust_safety', 'incident', 'finance', 'engineering']);
-export const SupportTicketSlaClockTypeSchema = z.enum(['first_response', 'resolution']);
+export const SupportTicketQueueTopicSchema = /* @__PURE__ */ (() => z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general', 'privacy']))();
+export const SupportTicketMessageAuthorSchema = /* @__PURE__ */ (() => z.enum(['requester', 'agent', 'system']))();
+export const SupportTicketMessageVisibilitySchema = /* @__PURE__ */ (() => z.enum(['public', 'internal']))();
+export const SupportTicketEscalationTargetSchema = /* @__PURE__ */ (() => z.enum(['risk', 'trust_safety', 'incident', 'finance', 'engineering']))();
+export const SupportTicketSlaClockTypeSchema = /* @__PURE__ */ (() => z.enum(['first_response', 'resolution']))();
 
 export type SupportTicketStatus = z.infer<typeof SupportTicketStatusSchema>;
 export type SupportTicketPriority = z.infer<typeof SupportTicketPrioritySchema>;
@@ -702,35 +706,35 @@ export interface AuditedEntity extends TimestampedEntity {
   deleted_by?: EntityId | null;
 }
 
-export const MetadataSchema = z.record(z.string(), z.unknown());
+export const MetadataSchema = /* @__PURE__ */ (() => z.record(z.string(), z.unknown()))();
 
-export const TimestampedEntitySchema = z.object({
+export const TimestampedEntitySchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
   deleted_at: z.string().datetime().optional().nullable(),
-});
+}))();
 
-export const AuditedEntitySchema = TimestampedEntitySchema.extend({
+export const AuditedEntitySchema = /* @__PURE__ */ (() => TimestampedEntitySchema.extend({
   created_by: UuidSchema.optional().nullable(),
   updated_by: UuidSchema.optional().nullable(),
   deleted_by: UuidSchema.optional().nullable(),
-});
+}))();
 
-export const SiteTypeSchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing']);
+export const SiteTypeSchema = /* @__PURE__ */ (() => z.enum(['store', 'portfolio', 'resume', 'blog', 'landing']))();
 // ── Status vocabularies are DERIVED, not restated ──────────────────────────
 // Each of these schemas is built from the canonical value tuple in
 // ./status-presentation, which mirrors the live CHECK constraint. Restating the
 // values here is how they drifted: five schemas disagreed with the database,
 // including merchant statements confused with provider payouts. Deriving makes the
 // schema, the TS union and the presentation map one source by construction.
-export const StoreStatusSchema = z.enum(SITE_STATUS_VALUES);
-export const CustomDomainStatusSchema = z.enum(CUSTOM_DOMAIN_STATUS_VALUES);
-export const StoreAccessModeSchema = z.enum(['public', 'password', 'preview_only', 'offline']);
-export const StoreHealthPillarStatusSchema = z.enum(['ready', 'attention', 'blocked', 'unknown']);
-export const ProductStatusSchema = z.enum(['draft', 'active', 'archived']);
-export const InventoryPolicySchema = z.enum(['deny', 'continue']);
-export const InventoryAdjustmentReasonSchema = z.enum([
+export const StoreStatusSchema = /* @__PURE__ */ (() => z.enum(SITE_STATUS_VALUES))();
+export const CustomDomainStatusSchema = /* @__PURE__ */ (() => z.enum(CUSTOM_DOMAIN_STATUS_VALUES))();
+export const StoreAccessModeSchema = /* @__PURE__ */ (() => z.enum(['public', 'password', 'preview_only', 'offline']))();
+export const StoreHealthPillarStatusSchema = /* @__PURE__ */ (() => z.enum(['ready', 'attention', 'blocked', 'unknown']))();
+export const ProductStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'active', 'archived']))();
+export const InventoryPolicySchema = /* @__PURE__ */ (() => z.enum(['deny', 'continue']))();
+export const InventoryAdjustmentReasonSchema = /* @__PURE__ */ (() => z.enum([
   'received',
   'sold',
   'returned',
@@ -741,15 +745,15 @@ export const InventoryAdjustmentReasonSchema = z.enum([
   'return',
   'adjustment',
   'recount',
-]);
-export const CollectionStatusSchema = z.enum(['draft', 'active', 'archived']);
-export const GiftCardStatusSchema = z.enum(GIFT_CARD_STATUS_VALUES);
-export const ReviewModerationStatusSchema = z.enum(REVIEW_MODERATION_STATUS_VALUES);
-export const CustomerStatusSchema = z.enum(['active', 'disabled', 'invited']);
-export const CartStatusSchema = z.enum(['active', 'converted', 'abandoned', 'expired']);
-export const OrderStatusSchema = z.enum(ORDER_STATUS_VALUES);
-export const DraftOrderStatusSchema = z.enum(['draft', 'converted', 'discarded']);
-export const PaymentStatusSchema = z.enum([
+]))();
+export const CollectionStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'active', 'archived']))();
+export const GiftCardStatusSchema = /* @__PURE__ */ (() => z.enum(GIFT_CARD_STATUS_VALUES))();
+export const ReviewModerationStatusSchema = /* @__PURE__ */ (() => z.enum(REVIEW_MODERATION_STATUS_VALUES))();
+export const CustomerStatusSchema = /* @__PURE__ */ (() => z.enum(['active', 'disabled', 'invited']))();
+export const CartStatusSchema = /* @__PURE__ */ (() => z.enum(['active', 'converted', 'abandoned', 'expired']))();
+export const OrderStatusSchema = /* @__PURE__ */ (() => z.enum(ORDER_STATUS_VALUES))();
+export const DraftOrderStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'converted', 'discarded']))();
+export const PaymentStatusSchema = /* @__PURE__ */ (() => z.enum([
   'pending',
   'requires_action',
   'authorized',
@@ -758,40 +762,40 @@ export const PaymentStatusSchema = z.enum([
   'refunded',
   'partially_refunded',
   'voided',
-]);
-export const FulfillmentStatusSchema = z.enum([
+]))();
+export const FulfillmentStatusSchema = /* @__PURE__ */ (() => z.enum([
   'unfulfilled',
   'partial',
   'fulfilled',
   'returned',
   'cancelled',
-]);
+]))();
 // Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
 // money-in rails; 'upi'/'card'/'netbanking'/'wallet' are Razorpay
 // instruments, not separate aggregators, and 'manual' is offline
 // reconciliation, not a third-party provider -- both are kept.
-export const PaymentProviderSchema = z.enum([
+export const PaymentProviderSchema = /* @__PURE__ */ (() => z.enum([
   'razorpay',
   'upi',
   'cod',
   'manual',
-]);
-export const PaymentMethodSchema = z.enum([
+]))();
+export const PaymentMethodSchema = /* @__PURE__ */ (() => z.enum([
   'upi',
   'card',
   'netbanking',
   'wallet',
   'cod',
   'manual',
-]);
-export const SubscriptionBillingPeriodSchema = z.enum(['monthly', 'yearly']);
-export const SubscriptionStatusSchema = z.enum(SUBSCRIPTION_STATUS_VALUES);
-export const DiscountTypeSchema = z.enum(['percentage', 'fixed', 'free_shipping']);
-export const PageStatusSchema = z.enum(PAGE_STATUS_VALUES);
-export const PolicyTypeSchema = z.enum(['privacy', 'refund', 'shipping', 'terms', 'contact', 'custom']);
-export const BlogPostStatusSchema = z.enum(['draft', 'published', 'scheduled', 'archived']);
-export const BlogCommentStatusSchema = z.enum(['pending', 'approved', 'spam', 'rejected']);
-export const FormSubmissionStatusSchema = z.enum([
+]))();
+export const SubscriptionBillingPeriodSchema = /* @__PURE__ */ (() => z.enum(['monthly', 'yearly']))();
+export const SubscriptionStatusSchema = /* @__PURE__ */ (() => z.enum(SUBSCRIPTION_STATUS_VALUES))();
+export const DiscountTypeSchema = /* @__PURE__ */ (() => z.enum(['percentage', 'fixed', 'free_shipping']))();
+export const PageStatusSchema = /* @__PURE__ */ (() => z.enum(PAGE_STATUS_VALUES))();
+export const PolicyTypeSchema = /* @__PURE__ */ (() => z.enum(['privacy', 'refund', 'shipping', 'terms', 'contact', 'custom']))();
+export const BlogPostStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'published', 'scheduled', 'archived']))();
+export const BlogCommentStatusSchema = /* @__PURE__ */ (() => z.enum(['pending', 'approved', 'spam', 'rejected']))();
+export const FormSubmissionStatusSchema = /* @__PURE__ */ (() => z.enum([
   'new',
   'read',
   'replied',
@@ -799,66 +803,66 @@ export const FormSubmissionStatusSchema = z.enum([
   'converted',
   'archived',
   'spam',
-]);
-export const MediaTypeSchema = z.enum(['image', 'video', 'audio', 'document', 'other']);
-export const AnalyticsPeriodSchema = z.enum(['7d', '30d', '90d', '12m']);
-export const AIGenerationStatusSchema = z.enum(['pending', 'completed', 'failed']);
-export const ResumeContentSectionSchema = z.enum([
+]))();
+export const MediaTypeSchema = /* @__PURE__ */ (() => z.enum(['image', 'video', 'audio', 'document', 'other']))();
+export const AnalyticsPeriodSchema = /* @__PURE__ */ (() => z.enum(['7d', '30d', '90d', '12m']))();
+export const AIGenerationStatusSchema = /* @__PURE__ */ (() => z.enum(['pending', 'completed', 'failed']))();
+export const ResumeContentSectionSchema = /* @__PURE__ */ (() => z.enum([
   'skills',
   'education',
   'work_experience',
   'certifications',
   'testimonials',
   'projects',
-]);
+]))();
 /** Default for newly created stores; saved merchant selections are never inferred from this. */
 export const DEFAULT_STOREFRONT_THEME_SLUG = 'letbuyy-forge';
 
-export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
-export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
-export const ShippingRateTypeSchema = z.enum(['flat', 'weight_based', 'price_based', 'free']);
-export const TaxAppliesToSchema = z.enum(['all', 'shipping', 'products']);
+export const ThemeCategorySchema = /* @__PURE__ */ (() => z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']))();
+export const ThemePricingTypeSchema = /* @__PURE__ */ (() => z.enum(['free', 'one_time', 'subscription']))();
+export const ShippingRateTypeSchema = /* @__PURE__ */ (() => z.enum(['flat', 'weight_based', 'price_based', 'free']))();
+export const TaxAppliesToSchema = /* @__PURE__ */ (() => z.enum(['all', 'shipping', 'products']))();
 
-export const MoneyAmountSchema = z.object({
+export const MoneyAmountSchema = /* @__PURE__ */ (() => z.object({
   amount: MoneySchema,
   amount_minor: z.number().int().min(0).optional(),
   currency: CurrencySchema,
-});
+}))();
 
-export const MerchantPayoutStatusSchema = z.enum(MERCHANT_PAYOUT_STATUS_VALUES);
-export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
-export const MerchantPayoutModeSchema = z.enum(['sandbox', 'live']);
-export const WalletLedgerEntryTypeSchema = z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']);
-export const WalletLedgerDirectionSchema = z.enum(['credit', 'debit']);
-export const WalletLedgerStatusSchema = z.enum(['pending', 'posted', 'held', 'reversed']);
-export const CommissionReconciliationStatusSchema = z.enum(['pending', 'included_in_payout', 'reconciled', 'reversed']);
-export const CodReconciliationStatusSchema = z.enum(['pending', 'collected', 'reconciled', 'short', 'over', 'reversed']);
-export const MerchantKycDocumentTypeSchema = z.enum([
+export const MerchantPayoutStatusSchema = /* @__PURE__ */ (() => z.enum(MERCHANT_PAYOUT_STATUS_VALUES))();
+export const MerchantPayoutRailSchema = /* @__PURE__ */ (() => z.enum(['razorpay_route', 'upi', 'manual']))();
+export const MerchantPayoutModeSchema = /* @__PURE__ */ (() => z.enum(['sandbox', 'live']))();
+export const WalletLedgerEntryTypeSchema = /* @__PURE__ */ (() => z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']))();
+export const WalletLedgerDirectionSchema = /* @__PURE__ */ (() => z.enum(['credit', 'debit']))();
+export const WalletLedgerStatusSchema = /* @__PURE__ */ (() => z.enum(['pending', 'posted', 'held', 'reversed']))();
+export const CommissionReconciliationStatusSchema = /* @__PURE__ */ (() => z.enum(['pending', 'included_in_payout', 'reconciled', 'reversed']))();
+export const CodReconciliationStatusSchema = /* @__PURE__ */ (() => z.enum(['pending', 'collected', 'reconciled', 'short', 'over', 'reversed']))();
+export const MerchantKycDocumentTypeSchema = /* @__PURE__ */ (() => z.enum([
   'business_pan',
   'gst_certificate',
   'bank_proof',
   'address_proof',
   'identity_proof',
-]);
-export const MerchantKycDocumentStatusSchema = z.enum([
+]))();
+export const MerchantKycDocumentStatusSchema = /* @__PURE__ */ (() => z.enum([
   'draft',
   'submitted',
   'needs_review',
   'verified',
   'rejected',
-]);
-export const MerchantKycProviderModeSchema = z.enum(['sandbox', 'live']);
-export const MerchantKycOverallStatusSchema = z.enum([
+]))();
+export const MerchantKycProviderModeSchema = /* @__PURE__ */ (() => z.enum(['sandbox', 'live']))();
+export const MerchantKycOverallStatusSchema = /* @__PURE__ */ (() => z.enum([
   'not_started',
   'in_progress',
   'needs_review',
   'verified',
   'rejected',
-]);
-export const MerchantTwoFactorTypeSchema = z.enum(['totp', 'passkey']);
-export const MerchantTwoFactorStatusSchema = z.enum(['pending', 'active', 'disabled']);
+]))();
+export const MerchantTwoFactorTypeSchema = /* @__PURE__ */ (() => z.enum(['totp', 'passkey']))();
+export const MerchantTwoFactorStatusSchema = /* @__PURE__ */ (() => z.enum(['pending', 'active', 'disabled']))();
 
-export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
+export const MerchantPayoutStatementSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   // Gateway preserves PostgREST's timestamp offsets in statement readback.
   created_at: z.string().datetime({ offset: true }),
   updated_at: z.string().datetime({ offset: true }),
@@ -884,9 +888,9 @@ export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
   provider_reference: z.string().optional().nullable(),
   failure_reason: z.string().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const WalletLedgerEntrySchema = AuditedEntitySchema.extend({
+export const WalletLedgerEntrySchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   site_id: UuidSchema,
   payout_statement_id: UuidSchema.optional().nullable(),
   entry_type: WalletLedgerEntryTypeSchema,
@@ -899,9 +903,9 @@ export const WalletLedgerEntrySchema = AuditedEntitySchema.extend({
   reference_id: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const WalletBalanceSchema = z.object({
+export const WalletBalanceSchema = /* @__PURE__ */ (() => z.object({
   site_id: UuidSchema,
   currency: CurrencySchema,
   available_minor: z.number().int(),
@@ -909,9 +913,9 @@ export const WalletBalanceSchema = z.object({
   held_minor: z.number().int(),
   released_minor: z.number().int(),
   ledger: z.array(WalletLedgerEntrySchema).default([]),
-});
+}))();
 
-export const CommissionScheduleSchema = AuditedEntitySchema.extend({
+export const CommissionScheduleSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   site_id: UuidSchema,
   name: z.string().min(1).max(160),
   status: z.enum(['draft', 'active', 'archived']),
@@ -922,9 +926,9 @@ export const CommissionScheduleSchema = AuditedEntitySchema.extend({
   effective_to: z.string().optional().nullable(),
   source: z.string().min(1).max(120),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const CommissionReconciliationEntrySchema = AuditedEntitySchema.extend({
+export const CommissionReconciliationEntrySchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   site_id: UuidSchema,
   order_id: UuidSchema.optional().nullable(),
   payout_statement_id: UuidSchema.optional().nullable(),
@@ -938,9 +942,9 @@ export const CommissionReconciliationEntrySchema = AuditedEntitySchema.extend({
   gst_amount_minor: z.number().int().nonnegative(),
   net_payable_minor: z.number().int().nonnegative(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const CodReconciliationEntrySchema = AuditedEntitySchema.extend({
+export const CodReconciliationEntrySchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   site_id: UuidSchema,
   order_id: UuidSchema,
   status: CodReconciliationStatusSchema,
@@ -956,9 +960,9 @@ export const CodReconciliationEntrySchema = AuditedEntitySchema.extend({
   reconciliation_idempotency_key: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const MerchantPayoutListSchema = z.object({
+export const MerchantPayoutListSchema = /* @__PURE__ */ (() => z.object({
   payouts: z.array(MerchantPayoutStatementSchema).default([]),
   summary: z.object({
     site_id: UuidSchema,
@@ -969,9 +973,9 @@ export const MerchantPayoutListSchema = z.object({
     failed_minor: z.number().int().nonnegative(),
     next_payout: MerchantPayoutStatementSchema.optional().nullable(),
   }),
-});
+}))();
 
-export const CommissionOverviewSchema = z.object({
+export const CommissionOverviewSchema = /* @__PURE__ */ (() => z.object({
   site_id: UuidSchema,
   currency: CurrencySchema,
   schedule: CommissionScheduleSchema,
@@ -982,9 +986,9 @@ export const CommissionOverviewSchema = z.object({
     gst_amount_minor: z.number().int().nonnegative(),
     net_payable_minor: z.number().int().nonnegative(),
   }),
-});
+}))();
 
-export const CodReconciliationOverviewSchema = z.object({
+export const CodReconciliationOverviewSchema = /* @__PURE__ */ (() => z.object({
   site_id: UuidSchema,
   currency: CurrencySchema,
   entries: z.array(CodReconciliationEntrySchema).default([]),
@@ -997,9 +1001,9 @@ export const CodReconciliationOverviewSchema = z.object({
     difference_amount_minor: z.number().int(),
     counts: z.record(CodReconciliationStatusSchema, z.number().int().nonnegative()),
   }),
-});
+}))();
 
-export const MerchantKycDocumentSchema = AuditedEntitySchema.extend({
+export const MerchantKycDocumentSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   site_id: UuidSchema,
   document_type: MerchantKycDocumentTypeSchema,
   status: MerchantKycDocumentStatusSchema,
@@ -1014,25 +1018,25 @@ export const MerchantKycDocumentSchema = AuditedEntitySchema.extend({
   submitted_at: z.string().datetime().optional().nullable(),
   verified_at: z.string().datetime().optional().nullable(),
   rejected_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MerchantKycRequirementSchema = z.object({
+export const MerchantKycRequirementSchema = /* @__PURE__ */ (() => z.object({
   document_type: MerchantKycDocumentTypeSchema,
   title: z.string().min(1),
   required: z.boolean(),
   status: MerchantKycDocumentStatusSchema.optional().nullable(),
-});
+}))();
 
-export const MerchantKycOverviewSchema = z.object({
+export const MerchantKycOverviewSchema = /* @__PURE__ */ (() => z.object({
   site_id: UuidSchema,
   overall_status: MerchantKycOverallStatusSchema,
   provider_mode: MerchantKycProviderModeSchema,
   required_documents: z.array(MerchantKycRequirementSchema).default([]),
   documents: z.array(MerchantKycDocumentSchema).default([]),
   next_action: z.string().optional().nullable(),
-});
+}))();
 
-export const MerchantTwoFactorSchema = AuditedEntitySchema.extend({
+export const MerchantTwoFactorSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   custom_user_id: UuidSchema,
   factor_type: MerchantTwoFactorTypeSchema,
   status: MerchantTwoFactorStatusSchema,
@@ -1042,43 +1046,43 @@ export const MerchantTwoFactorSchema = AuditedEntitySchema.extend({
   enrolled_at: z.string().datetime().optional().nullable(),
   disabled_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const MerchantSessionInventoryItemSchema = z.object({
+export const MerchantSessionInventoryItemSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   device_id: z.string().optional().nullable(),
   expires_at: z.string().datetime().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   last_active: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MerchantTwoFactorOverviewSchema = z.object({
+export const MerchantTwoFactorOverviewSchema = /* @__PURE__ */ (() => z.object({
   custom_user_id: UuidSchema,
   email: EmailSchema,
   mfa_enabled: z.boolean(),
   factors: z.array(MerchantTwoFactorSchema).default([]),
   sessions: z.array(MerchantSessionInventoryItemSchema).default([]),
-});
+}))();
 
-export const MerchantTwoFactorEnrollmentSchema = z.object({
+export const MerchantTwoFactorEnrollmentSchema = /* @__PURE__ */ (() => z.object({
   factor: MerchantTwoFactorSchema,
   secret: z.string().min(16),
   otpauth_uri: z.string().min(1),
-});
+}))();
 
-export const AuthSessionUserSchema = z.object({
+export const AuthSessionUserSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   email: EmailSchema,
   fullName: z.string().max(200).optional().nullable(),
   avatarUrl: UrlSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AuthSessionResponseSchema = z.object({
+export const AuthSessionResponseSchema = /* @__PURE__ */ (() => z.object({
   authenticated: z.boolean(),
   user: AuthSessionUserSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const StoreSchema = AuditedEntitySchema.extend({
+export const StoreSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   user_id: UuidSchema,
   name: z.string().min(1).max(100),
   subdomain: z.string().min(3).max(63),
@@ -1115,9 +1119,9 @@ export const StoreSchema = AuditedEntitySchema.extend({
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
   published_at: z.string().datetime().optional().nullable(),
-});
+}))();
 
-export const StoreSummarySchema = StoreSchema.pick({
+export const StoreSummarySchema = /* @__PURE__ */ (() => StoreSchema.pick({
   id: true,
   name: true,
   subdomain: true,
@@ -1134,18 +1138,18 @@ export const StoreSummarySchema = StoreSchema.pick({
   trial_ends_at: z.string().datetime().optional().nullable(),
   trial_status: z.string().max(80).optional().nullable(),
   theme_settings: MetadataSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const DomainHealthRecordSchema = z.object({
+export const DomainHealthRecordSchema = /* @__PURE__ */ (() => z.object({
   type: z.string().min(1).max(16),
   host: z.string().min(1).max(255),
   value: z.string().min(1).max(1000),
   status: z.enum(['verified', 'pending', 'mismatch', 'unknown']),
   actual: z.array(z.string().min(1).max(1000)).default([]),
   message: z.string().max(500).optional().nullable(),
-});
+}))();
 
-export const CustomDomainHealthSchema = z.object({
+export const CustomDomainHealthSchema = /* @__PURE__ */ (() => z.object({
   site_id: UuidSchema,
   domain: z.string().min(3).max(255),
   status: CustomDomainStatusSchema,
@@ -1164,11 +1168,11 @@ export const CustomDomainHealthSchema = z.object({
   checked_at: z.string().datetime(),
   records: z.array(DomainHealthRecordSchema).min(1).max(6),
   vercel: MetadataSchema.default({}),
-});
+}))();
 
-export const DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'sandbox']);
+export const DomainRegistrarProviderSchema = /* @__PURE__ */ (() => z.enum(['resellerclub', 'opensrs', 'sandbox']))();
 
-export const DomainAvailabilityQuoteSchema = z.object({
+export const DomainAvailabilityQuoteSchema = /* @__PURE__ */ (() => z.object({
   domain: z.string().min(3).max(255),
   available: z.boolean(),
   currency: CurrencySchema,
@@ -1176,17 +1180,17 @@ export const DomainAvailabilityQuoteSchema = z.object({
   provider: DomainRegistrarProviderSchema,
   premium: z.boolean().default(false),
   reasons: z.array(z.string().max(120)).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const DomainCheckoutSchema = z.object({
+export const DomainCheckoutSchema = /* @__PURE__ */ (() => z.object({
   mode: z.enum(['sandbox', 'external_reference']),
   status: z.enum(['verified', 'reference_recorded']),
   payment_reference: z.string().min(3).max(180),
   amount_minor: z.number().int().min(0),
   currency: CurrencySchema,
-}).passthrough();
+}).passthrough())();
 
-export const DomainPurchaseResultSchema = z.object({
+export const DomainPurchaseResultSchema = /* @__PURE__ */ (() => z.object({
   order_id: UuidSchema.or(z.string().min(1).max(120)),
   domain: z.string().min(3).max(255),
   provider: DomainRegistrarProviderSchema,
@@ -1194,9 +1198,9 @@ export const DomainPurchaseResultSchema = z.object({
   registrar_order_id: z.string().max(255).optional().nullable(),
   dns_configured: z.boolean().default(false),
   checkout: DomainCheckoutSchema,
-}).passthrough();
+}).passthrough())();
 
-export const StoreHealthPillarSchema = z.object({
+export const StoreHealthPillarSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(80),
   label: z.string().min(1).max(120),
   score: z.number().int().min(0).max(100),
@@ -1205,18 +1209,18 @@ export const StoreHealthPillarSchema = z.object({
   action_label: z.string().min(1).max(120).optional().nullable(),
   route: z.string().min(1).max(200).optional().nullable(),
   metrics: MetadataSchema.default({}),
-});
+}))();
 
-export const StoreHealthSchema = z.object({
+export const StoreHealthSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   score: z.number().int().min(0).max(100),
   generated_at: z.string().datetime(),
   pillars: z.array(StoreHealthPillarSchema).min(1).max(12),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const StorefrontLocaleStatusSchema = z.enum(['draft', 'published', 'archived']);
-export const StorefrontTranslationResourceTypeSchema = z.enum([
+export const StorefrontLocaleStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'published', 'archived']))();
+export const StorefrontTranslationResourceTypeSchema = /* @__PURE__ */ (() => z.enum([
   'store',
   'product',
   'collection',
@@ -1224,11 +1228,11 @@ export const StorefrontTranslationResourceTypeSchema = z.enum([
   'policy',
   'theme',
   'navigation',
-]);
-export const StorefrontTranslationStatusSchema = z.enum(['draft', 'published', 'needs_review']);
-export const StoreMarketRoundingModeSchema = z.enum(['standard', 'up', 'down', 'none']);
+]))();
+export const StorefrontTranslationStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'published', 'needs_review']))();
+export const StoreMarketRoundingModeSchema = /* @__PURE__ */ (() => z.enum(['standard', 'up', 'down', 'none']))();
 
-export const StoreMarketSchema = AuditedEntitySchema.extend({
+export const StoreMarketSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   name: z.string().min(1).max(120),
   country_code: z.string().regex(/^[A-Z]{2}$/),
@@ -1239,9 +1243,9 @@ export const StoreMarketSchema = AuditedEntitySchema.extend({
   price_adjustment_bps: z.number().int().min(-10000).max(10000).default(0),
   rounding_mode: StoreMarketRoundingModeSchema.default('standard'),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const StorefrontLocaleSchema = AuditedEntitySchema.extend({
+export const StorefrontLocaleSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   locale: z.string().min(2).max(16),
   name: z.string().min(1).max(120),
@@ -1249,9 +1253,9 @@ export const StorefrontLocaleSchema = AuditedEntitySchema.extend({
   is_default: z.boolean().default(false),
   published_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const StorefrontTranslationSchema = AuditedEntitySchema.extend({
+export const StorefrontTranslationSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   locale: z.string().min(2).max(16),
   resource_type: StorefrontTranslationResourceTypeSchema,
@@ -1262,9 +1266,9 @@ export const StorefrontTranslationSchema = AuditedEntitySchema.extend({
   status: StorefrontTranslationStatusSchema.default('draft'),
   published_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const StoreLocalizationSummarySchema = z.object({
+export const StoreLocalizationSummarySchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   default_locale: z.string().min(2).max(16),
   currency: z.string().regex(/^[A-Z]{3}$/),
@@ -1274,9 +1278,9 @@ export const StoreLocalizationSummarySchema = z.object({
   translations: z.array(StorefrontTranslationSchema).default([]),
   schema_ready: z.boolean().default(true),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const StoreMetafieldOwnerTypeSchema = z.enum([
+export const StoreMetafieldOwnerTypeSchema = /* @__PURE__ */ (() => z.enum([
   'store',
   'product',
   'variant',
@@ -1285,8 +1289,8 @@ export const StoreMetafieldOwnerTypeSchema = z.enum([
   'order',
   'page',
   'theme',
-]);
-export const StoreMetafieldValueTypeSchema = z.enum([
+]))();
+export const StoreMetafieldValueTypeSchema = /* @__PURE__ */ (() => z.enum([
   'single_line_text',
   'multi_line_text',
   'number_integer',
@@ -1295,17 +1299,17 @@ export const StoreMetafieldValueTypeSchema = z.enum([
   'json',
   'date',
   'url',
-]);
-export const StoreMetafieldJsonValueSchema = z.union([
+]))();
+export const StoreMetafieldJsonValueSchema = /* @__PURE__ */ (() => z.union([
   z.string(),
   z.number(),
   z.boolean(),
   z.null(),
   JsonRecordSchema,
   z.array(z.unknown()),
-]);
+]))();
 
-export const StoreMetafieldDefinitionSchema = AuditedEntitySchema.extend({
+export const StoreMetafieldDefinitionSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   owner_type: StoreMetafieldOwnerTypeSchema,
   namespace: z.string().min(1).max(80).default('custom'),
@@ -1318,18 +1322,18 @@ export const StoreMetafieldDefinitionSchema = AuditedEntitySchema.extend({
   is_public: z.boolean().default(false),
   sort_order: z.number().int().default(0),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const StoreMetafieldValueSchema = AuditedEntitySchema.extend({
+export const StoreMetafieldValueSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   definition_id: UuidSchema,
   owner_type: StoreMetafieldOwnerTypeSchema,
   owner_id: z.string().min(1).max(200),
   value: StoreMetafieldJsonValueSchema,
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const StoreMetafieldsSummarySchema = z.object({
+export const StoreMetafieldsSummarySchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   owner_type: StoreMetafieldOwnerTypeSchema,
   owner_id: z.string().min(1).max(200),
@@ -1337,17 +1341,17 @@ export const StoreMetafieldsSummarySchema = z.object({
   values: z.array(StoreMetafieldValueSchema).default([]),
   schema_ready: z.boolean().default(true),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const ProductOptionSchema = z.object({
+export const ProductOptionSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema.optional(),
   product_id: UuidSchema.optional(),
   name: z.string().min(1).max(100),
   position: z.number().int().min(0).default(0),
   values: z.array(z.string().min(1).max(100)).max(100).default([]),
-});
+}))();
 
-export const VariantSchema = AuditedEntitySchema.extend({
+export const VariantSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   product_id: UuidSchema,
   title: z.string().min(1).max(200),
   sku: z.string().max(100).optional().nullable(),
@@ -1361,9 +1365,9 @@ export const VariantSchema = AuditedEntitySchema.extend({
   image_url: UrlSchema.optional().nullable(),
   weight: z.number().min(0).optional().nullable(),
   weight_unit: z.string().max(20).default('kg'),
-});
+}))();
 
-export const ProductSchema = AuditedEntitySchema.extend({
+export const ProductSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   version: z.number().int().positive(),
   name: z.string().min(1).max(256),
@@ -1397,17 +1401,17 @@ export const ProductSchema = AuditedEntitySchema.extend({
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const ProductBarcodeLookupSchema = z.object({
+export const ProductBarcodeLookupSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   barcode: z.string().min(1).max(100),
   product: ProductSchema,
   variant: VariantSchema.optional().nullable(),
   matched_field: z.enum(['product.barcode', 'variant.barcode']),
-}).strict();
+}).strict())();
 
-export const ProductCategorySchema = AuditedEntitySchema.extend({
+export const ProductCategorySchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   name: z.string().min(1).max(100),
   slug: SlugSchema,
@@ -1420,15 +1424,15 @@ export const ProductCategorySchema = AuditedEntitySchema.extend({
   path: z.string().max(500).optional().nullable(),
   products_count: z.number().int().min(0).optional(),
   children: z.array(z.unknown()).optional(),
-});
+}))();
 
-export const CollectionRuleSchema = z.object({
+export const CollectionRuleSchema = /* @__PURE__ */ (() => z.object({
   field: z.string().min(1).max(80),
   relation: z.enum(['equals', 'not_equals', 'contains', 'greater_than', 'less_than']),
   value: z.union([z.string(), z.number(), z.boolean()]),
-});
+}))();
 
-export const CollectionSchema = AuditedEntitySchema.extend({
+export const CollectionSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   title: z.string().min(1).max(160),
   slug: SlugSchema,
@@ -1441,22 +1445,22 @@ export const CollectionSchema = AuditedEntitySchema.extend({
   rules: z.array(CollectionRuleSchema).max(50).default([]),
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
-});
+}))();
 
 // Merchant read projection: assignment counts are confirmed by the server, never defaulted.
-export const CollectionListPaginationSchema = z.object({
+export const CollectionListPaginationSchema = /* @__PURE__ */ (() => z.object({
   page: z.coerce.number().int().min(1).max(10000).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-}).strict();
-export const CollectionListQuerySchema = CollectionListPaginationSchema.extend({ store_id: UuidSchema }).strict();
-export const CollectionSummarySchema = z.object({
+}).strict())();
+export const CollectionListQuerySchema = /* @__PURE__ */ (() => CollectionListPaginationSchema.extend({ store_id: UuidSchema }).strict())();
+export const CollectionSummarySchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema, store_id: UuidSchema, title: CollectionSchema.shape.title,
   description: z.string().max(1000).nullable(), image_url: CollectionSchema.shape.image_url,
   created_at: z.string().datetime({ offset: true }), is_active: z.boolean(),
   membership_version: z.number().int().positive(),
   product_count: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
-}).strict();
-export const CollectionListPageSchema = z.object({
+}).strict())();
+export const CollectionListPageSchema = /* @__PURE__ */ (() => z.object({
   success: z.literal(true), data: z.array(CollectionSummarySchema).max(100),
   meta: z.object({page:z.number().int().positive().max(10000),per_page:z.number().int().min(1).max(100),
     total:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),total_pages:z.number().int().nonnegative(),
@@ -1467,7 +1471,7 @@ export const CollectionListPageSchema = z.object({
     m.total_pages!==Math.ceil(m.total/m.per_page)||m.has_next!==(m.page<m.total_pages)||m.has_prev!==(m.page>1)||
     value.data.length!==Math.min(m.per_page,Math.max(0,m.total-(m.page-1)*m.per_page)))
     ctx.addIssue({code:'custom',message:'Collection pagination could not be confirmed.'});
-});
+}))();
 export type CollectionSummary = z.infer<typeof CollectionSummarySchema>;
 export type CollectionListPage = z.infer<typeof CollectionListPageSchema>;
 export type CollectionListQuery = z.infer<typeof CollectionListQuerySchema>;
@@ -1476,16 +1480,16 @@ export type CollectionListPagination = z.infer<typeof CollectionListPaginationSc
 
 // Complete manual membership and an explicit ordered replacement intent. These
 // contracts do not change the metadata Collection shape or public projections.
-export const CollectionMembershipProductSchema = ProductSchema.pick({id: true, name: true, price: true, is_active: true}).extend({
+export const CollectionMembershipProductSchema = /* @__PURE__ */ (() => ProductSchema.pick({id: true, name: true, price: true, is_active: true}).extend({
   thumbnail_url: UrlSchema.optional().nullable(),
-});
-export const CollectionMembershipIdsSchema = z.array(UuidSchema).max(500).refine(ids => new Set(ids).size === ids.length, 'Product IDs must be unique');
-export const ReplaceCollectionMembershipSchema = z.object({
+}))();
+export const CollectionMembershipIdsSchema = /* @__PURE__ */ (() => z.array(UuidSchema).max(500).refine(ids => new Set(ids).size === ids.length, 'Product IDs must be unique'))();
+export const ReplaceCollectionMembershipSchema = /* @__PURE__ */ (() => z.object({
   product_ids: CollectionMembershipIdsSchema,
   expected_version: z.number().int().positive(),
   idempotency_key: UuidSchema,
-}).strict();
-export const CollectionMembershipSnapshotSchema = z.object({
+}).strict())();
+export const CollectionMembershipSnapshotSchema = /* @__PURE__ */ (() => z.object({
   collection_id: UuidSchema,
   store_id: UuidSchema,
   membership_version: z.number().int().positive(),
@@ -1502,11 +1506,11 @@ export const CollectionMembershipSnapshotSchema = z.object({
     if (!ids.has(id) || products.has(id)) ctx.addIssue({code: 'custom', path: ['unavailable_product_ids'], message: 'Unavailable products must be an explicit disjoint part of membership'});
   }
   if (products.size + data.unavailable_product_ids.length !== ids.size) ctx.addIssue({code: 'custom', path: ['products'], message: 'Every assigned ID must have a product or an explicit unavailable representation'});
-});
+}))();
 export type ReplaceCollectionMembershipInput = z.infer<typeof ReplaceCollectionMembershipSchema>;
 export type CollectionMembershipSnapshot = z.infer<typeof CollectionMembershipSnapshotSchema>;
 
-export const GiftCardSchema = AuditedEntitySchema.extend({
+export const GiftCardSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   code: z.string().min(4).max(80),
   initial_value: MoneySchema,
@@ -1516,9 +1520,9 @@ export const GiftCardSchema = AuditedEntitySchema.extend({
   expires_at: z.string().datetime().optional().nullable(),
   redeemed_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const ProductReviewSchema = AuditedEntitySchema.extend({
+export const ProductReviewSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   product_id: UuidSchema.optional().nullable(),
   product_name: z.string().max(256).optional().nullable(),
@@ -1536,9 +1540,9 @@ export const ProductReviewSchema = AuditedEntitySchema.extend({
   merchant_reply: z.string().max(1000).optional().nullable(),
   merchant_reply_by: UuidSchema.optional().nullable(),
   merchant_reply_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const InventoryLevelSchema = z.object({
+export const InventoryLevelSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   product_id: UuidSchema,
   variant_id: UuidSchema.optional().nullable(),
@@ -1555,9 +1559,9 @@ export const InventoryLevelSchema = z.object({
   sellable: z.number().int(),
   track_inventory: z.boolean(),
   updated_at: z.string().datetime().optional().nullable(),
-});
+}))();
 
-export const CustomerAddressSchema = AuditedEntitySchema.extend({
+export const CustomerAddressSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   customer_id: UuidSchema.optional().nullable(),
   full_name: z.string().min(1).max(200),
@@ -1573,9 +1577,9 @@ export const CustomerAddressSchema = AuditedEntitySchema.extend({
   landmark: z.string().max(255).optional().nullable(),
   label: z.string().max(50).optional().nullable(),
   is_default: z.boolean().default(false),
-});
+}))();
 
-export const CustomerSchema = AuditedEntitySchema.extend({
+export const CustomerSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   email: EmailSchema.optional().nullable(),
   phone: z.string().max(30).optional().nullable(),
@@ -1593,15 +1597,15 @@ export const CustomerSchema = AuditedEntitySchema.extend({
   total_spent: MoneySchema.default(0),
   last_order_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const CustomerNoteSchema = AuditedEntitySchema.extend({
+export const CustomerNoteSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   customer_email: EmailSchema,
   note: z.string().min(1).max(2000),
-});
+}))();
 
-export const WhatsAppTemplateKeySchema = z.enum([
+export const WhatsAppTemplateKeySchema = /* @__PURE__ */ (() => z.enum([
   'order_update',
   'order_paid',
   'order_shipped',
@@ -1610,18 +1614,18 @@ export const WhatsAppTemplateKeySchema = z.enum([
   'cod_confirmation',
   'abandoned_cart',
   'custom_message',
-]);
-export const WhatsAppMessageDirectionSchema = z.enum(['outbound', 'inbound']);
-export const WhatsAppMessageStatusSchema = z.enum(['queued', 'sent', 'delivered', 'read', 'failed', 'received']);
+]))();
+export const WhatsAppMessageDirectionSchema = /* @__PURE__ */ (() => z.enum(['outbound', 'inbound']))();
+export const WhatsAppMessageStatusSchema = /* @__PURE__ */ (() => z.enum(['queued', 'sent', 'delivered', 'read', 'failed', 'received']))();
 
-export const WhatsAppTemplateSchema = z.object({
+export const WhatsAppTemplateSchema = /* @__PURE__ */ (() => z.object({
   key: WhatsAppTemplateKeySchema,
   label: z.string().min(1).max(120),
   description: z.string().max(500),
   required_variables: z.array(z.string().min(1).max(80)).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const WhatsAppMessageSchema = AuditedEntitySchema.extend({
+export const WhatsAppMessageSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   customer_email: EmailSchema.optional().nullable(),
   customer_phone: z.string().min(5).max(40),
@@ -1632,18 +1636,18 @@ export const WhatsAppMessageSchema = AuditedEntitySchema.extend({
   provider_message_id: z.string().max(200).optional().nullable(),
   status: WhatsAppMessageStatusSchema.default('queued'),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const WhatsAppCapabilitySchema = z.object({
+export const WhatsAppCapabilitySchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   available: z.boolean(),
   provider: z.string().min(1).max(80),
   provider_mode: z.enum(['sandbox', 'live']).or(z.string().min(1).max(40)),
   unavailable_reason: z.string().max(500).optional().nullable(),
   templates: z.array(WhatsAppTemplateSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const WhatsAppSendInputSchema = z.object({
+export const WhatsAppSendInputSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   customer_email: EmailSchema.optional().nullable(),
   customer_phone: z.string().min(5).max(40).optional().nullable(),
@@ -1651,16 +1655,16 @@ export const WhatsAppSendInputSchema = z.object({
   variables: MetadataSchema.default({}),
   message: z.string().min(1).max(1200).optional().nullable(),
   idempotency_key: z.string().min(8).max(160).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const WhatsAppSendResultSchema = z.object({
+export const WhatsAppSendResultSchema = /* @__PURE__ */ (() => z.object({
   message: WhatsAppMessageSchema,
   provider_message_id: z.string().min(1).max(200),
   status: WhatsAppMessageStatusSchema,
   sandbox: z.boolean().default(false),
-}).passthrough();
+}).passthrough())();
 
-export const CustomerSegmentRulesSchema = z
+export const CustomerSegmentRulesSchema = /* @__PURE__ */ (() => z
   .object({
     status: CustomerStatusSchema.optional().nullable(),
     accepts_marketing: z.boolean().optional().nullable(),
@@ -1670,56 +1674,56 @@ export const CustomerSegmentRulesSchema = z
     last_order_after: z.string().datetime().optional().nullable(),
     last_order_before: z.string().datetime().optional().nullable(),
   })
-  .default({ tags_any: [] });
+  .default({ tags_any: [] }))();
 
-export const CustomerSegmentSchema = AuditedEntitySchema.extend({
+export const CustomerSegmentSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional().nullable(),
   rules: CustomerSegmentRulesSchema,
   customer_count: z.number().int().min(0).default(0),
-});
+}))();
 
-export const CustomerSegmentPreviewSchema = z.object({
+export const CustomerSegmentPreviewSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   rules: CustomerSegmentRulesSchema,
   customer_count: z.number().int().min(0),
   sample_customers: z.array(CustomerSchema).default([]),
-});
+}))();
 
-export const MarketingEmailCampaignStatusSchema = z.enum([
+export const MarketingEmailCampaignStatusSchema = /* @__PURE__ */ (() => z.enum([
   'draft',
   'scheduled',
   'sending',
   'sent',
   'failed',
   'cancelled',
-]);
+]))();
 
-export const MarketingEmailAudienceTypeSchema = z.enum([
+export const MarketingEmailAudienceTypeSchema = /* @__PURE__ */ (() => z.enum([
   'all_marketing',
   'segment',
   'manual',
-]);
+]))();
 
-export const MarketingEmailDeliveryModeSchema = z.enum(['sandbox', 'live']);
+export const MarketingEmailDeliveryModeSchema = /* @__PURE__ */ (() => z.enum(['sandbox', 'live']))();
 
-export const MarketingEmailRecipientStatusSchema = z.enum([
+export const MarketingEmailRecipientStatusSchema = /* @__PURE__ */ (() => z.enum([
   'queued',
   'sandbox_sent',
   'sent',
   'failed',
   'skipped',
-]);
+]))();
 
-export const MarketingEmailAudienceSchema = z.object({
+export const MarketingEmailAudienceSchema = /* @__PURE__ */ (() => z.object({
   type: MarketingEmailAudienceTypeSchema.default('all_marketing'),
   segment_id: UuidSchema.optional().nullable(),
   rules: CustomerSegmentRulesSchema.optional().nullable(),
   recipients: z.array(EmailSchema).max(500).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const MarketingEmailCampaignSchema = AuditedEntitySchema.extend({
+export const MarketingEmailCampaignSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   name: z.string().min(1).max(160),
   subject: z.string().min(1).max(180),
@@ -1740,9 +1744,9 @@ export const MarketingEmailCampaignSchema = AuditedEntitySchema.extend({
   scheduled_at: z.string().datetime().optional().nullable(),
   sent_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const MarketingEmailRecipientSchema = z.object({
+export const MarketingEmailRecipientSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   campaign_id: UuidSchema,
   store_id: UuidSchema,
@@ -1758,16 +1762,16 @@ export const MarketingEmailRecipientSchema = z.object({
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const MarketingEmailAudiencePreviewSchema = z.object({
+export const MarketingEmailAudiencePreviewSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   audience: MarketingEmailAudienceSchema,
   customer_count: z.number().int().min(0).default(0),
   sample_customers: z.array(CustomerSchema).max(20).default([]),
-});
+}))();
 
-export const MarketingEmailSendResultSchema = z.object({
+export const MarketingEmailSendResultSchema = /* @__PURE__ */ (() => z.object({
   campaign: MarketingEmailCampaignSchema,
   recipients: z.array(MarketingEmailRecipientSchema).default([]),
   delivery_mode: MarketingEmailDeliveryModeSchema,
@@ -1775,9 +1779,9 @@ export const MarketingEmailSendResultSchema = z.object({
   sandbox: z.boolean().default(true),
   sent_count: z.number().int().min(0).default(0),
   failed_count: z.number().int().min(0).default(0),
-}).passthrough();
+}).passthrough())();
 
-export const CartLineSchema = z.object({
+export const CartLineSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(120),
   product_id: UuidSchema,
   variant_id: UuidSchema.optional().nullable(),
@@ -1790,9 +1794,9 @@ export const CartLineSchema = z.object({
   currency: CurrencySchema,
   properties: MetadataSchema.default({}),
   line_total: MoneySchema,
-});
+}))();
 
-export const CartSchema = AuditedEntitySchema.extend({
+export const CartSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   customer_id: UuidSchema.optional().nullable(),
   session_id: z.string().min(1).max(200).optional().nullable(),
@@ -1809,9 +1813,9 @@ export const CartSchema = AuditedEntitySchema.extend({
   coupon_codes: z.array(z.string().max(50)).max(20).default([]),
   expires_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const LineItemSchema = z.object({
+export const LineItemSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema.optional(),
   order_id: UuidSchema.optional(),
   product_id: UuidSchema.optional().nullable(),
@@ -1831,25 +1835,25 @@ export const LineItemSchema = z.object({
   image_url: UrlSchema.optional().nullable(),
   variant_title: z.string().max(200).optional().nullable(),
   properties: MetadataSchema.default({}),
-});
+}))();
 
-export const DraftOrderLineSchema = z.object({
+export const DraftOrderLineSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema.optional(),
   draft_order_id: UuidSchema.optional(),
   product_id: UuidSchema,
   variant_id: UuidSchema.optional().nullable(),
   quantity: z.number().int().min(1).max(999),
-});
+}))();
 
-export const GstInvoicePartySchema = z.object({
+export const GstInvoicePartySchema = /* @__PURE__ */ (() => z.object({
   name: z.string().min(1).max(200),
   gstin: GstinSchema.optional().nullable(),
   state: z.string().min(1).max(100).optional().nullable(),
   state_code: IndianStateCodeSchema,
   address: AddressSchema.partial().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const GstInvoiceLineSchema = z.object({
+export const GstInvoiceLineSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(120).optional(),
   product_id: UuidSchema.optional().nullable(),
   variant_id: UuidSchema.optional().nullable(),
@@ -1866,9 +1870,9 @@ export const GstInvoiceLineSchema = z.object({
   igst_amount_minor: z.number().int().min(0).default(0),
   tax_amount_minor: z.number().int().min(0),
   total_amount_minor: z.number().int().min(0),
-}).strict();
+}).strict())();
 
-export const GstInvoiceSchema = z.object({
+export const GstInvoiceSchema = /* @__PURE__ */ (() => z.object({
   invoice_number: z.string().min(1).max(80),
   order_id: z.string().min(1).max(120),
   order_number: z.string().min(1).max(80),
@@ -1885,9 +1889,9 @@ export const GstInvoiceSchema = z.object({
   igst_amount_minor: z.number().int().min(0),
   tax_amount_minor: z.number().int().min(0),
   total_amount_minor: z.number().int().min(0),
-}).strict();
+}).strict())();
 
-export const OrderSchema = AuditedEntitySchema.extend({
+export const OrderSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   order_number: z.string().min(1).max(80),
   customer_id: UuidSchema.optional().nullable(),
@@ -1925,9 +1929,9 @@ export const OrderSchema = AuditedEntitySchema.extend({
   idempotency_key: z.string().min(8).max(200).optional().nullable(),
   line_items: z.array(LineItemSchema).max(250).default([]),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const DraftOrderSchema = AuditedEntitySchema.extend({
+export const DraftOrderSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   site_id: UuidSchema,
   store_id: UuidSchema,
   customer_email: EmailSchema,
@@ -1944,9 +1948,9 @@ export const DraftOrderSchema = AuditedEntitySchema.extend({
   converted_order_id: UuidSchema.optional().nullable(),
   items: z.array(DraftOrderLineSchema).max(250).default([]),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const PaymentSchema = AuditedEntitySchema.extend({
+export const PaymentSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   order_id: UuidSchema.optional().nullable(),
   customer_id: UuidSchema.optional().nullable(),
@@ -1966,9 +1970,9 @@ export const PaymentSchema = AuditedEntitySchema.extend({
   failure_code: z.string().max(120).optional().nullable(),
   failure_message: z.string().max(500).optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const SubscriptionPlanSchema = z.object({
+export const SubscriptionPlanSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema.optional(),
   site_type: SiteTypeSchema.or(z.string().min(1)).default('store'),
   slug: z.string().min(1).max(120),
@@ -1997,9 +2001,9 @@ export const SubscriptionPlanSchema = z.object({
   display_order: z.number().int().default(0),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const StoreSubscriptionSchema = z.object({
+export const StoreSubscriptionSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema.optional(),
   plan: z.string().min(1).max(120),
   status: SubscriptionStatusSchema.or(z.string().min(1).max(80)),
@@ -2009,9 +2013,9 @@ export const StoreSubscriptionSchema = z.object({
   promo_ends_at: z.string().datetime().optional().nullable(),
   amount_paid: z.number().min(0).optional().nullable(),
   cancelled_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const StoreSubscriptionStateSchema = z.object({
+export const StoreSubscriptionStateSchema = /* @__PURE__ */ (() => z.object({
   store: z.object({
     id: UuidSchema,
     trial_status: z.string().max(80).optional().nullable(),
@@ -2019,11 +2023,11 @@ export const StoreSubscriptionStateSchema = z.object({
     site_type: SiteTypeSchema.or(z.string().min(1)).default('store'),
   }).passthrough(),
   subscription: StoreSubscriptionSchema.nullable(),
-}).passthrough();
+}).passthrough())();
 
 // Public subscription money summary. Private supplier/recipient/source facts stay
 // in the canonical Billing snapshot and never enter browser retry storage.
-export const SubscriptionTaxSummarySchema=z.object({
+export const SubscriptionTaxSummarySchema=/* @__PURE__ */ (() => z.object({
   schema_version:z.literal(1),policy_version:z.literal('D-SUB-TAX-INCLUSIVE-V1'),basis:z.literal('inclusive'),currency:z.literal('INR'),
   supply_type:z.enum(['intra_state','inter_state']),
   gross_minor:z.number().int().safe().min(1).max(2147483647),taxable_minor:z.number().int().safe().min(0).max(2147483647),
@@ -2031,24 +2035,24 @@ export const SubscriptionTaxSummarySchema=z.object({
   sgst_minor:z.number().int().safe().min(0).max(2147483647),igst_minor:z.number().int().safe().min(0).max(2147483647),
 }).strict().refine(s=>s.taxable_minor+s.tax_minor===s.gross_minor && s.cgst_minor+s.sgst_minor+s.igst_minor===s.tax_minor
   && (s.supply_type==='intra_state'?s.igst_minor===0&&s.cgst_minor===Math.floor(s.tax_minor/2)&&s.sgst_minor===s.tax_minor-s.cgst_minor:s.cgst_minor===0&&s.sgst_minor===0&&s.igst_minor===s.tax_minor),
-  'Subscription tax summary does not conserve gross');
+  'Subscription tax summary does not conserve gross'))();
 export type SubscriptionTaxSummary=z.infer<typeof SubscriptionTaxSummarySchema>;
 
-export const BillingHistoryItemSchema = z.object({
+export const BillingHistoryItemSchema = /* @__PURE__ */ (() => z.object({
   tax:SubscriptionTaxSummarySchema.optional().nullable(),
   id: UuidSchema,
   amount_paid: z.number().min(0).optional().nullable(),
   status: z.string().max(80).optional().nullable(),
   billing_period: SubscriptionBillingPeriodSchema.or(z.string().min(1).max(80)).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const SubscriptionCancelResultSchema = z.object({
+export const SubscriptionCancelResultSchema = /* @__PURE__ */ (() => z.object({
   cancelled: z.boolean(),
   subscriptions: z.array(StoreSubscriptionSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const SubscriptionOrderResultSchema = z.object({
+export const SubscriptionOrderResultSchema = /* @__PURE__ */ (() => z.object({
   tax:SubscriptionTaxSummarySchema.optional(),
   razorpay_order_id: z.string().min(1).optional().nullable(),
   razorpay_subscription_id: z.string().min(1).optional().nullable(),
@@ -2065,25 +2069,25 @@ export const SubscriptionOrderResultSchema = z.object({
     plan_name: z.string().max(200).optional().nullable(),
   }).optional().nullable(),
   short_url: UrlSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const SubscriptionRecoveryResultSchema = SubscriptionOrderResultSchema.extend({
+export const SubscriptionRecoveryResultSchema = /* @__PURE__ */ (() => SubscriptionOrderResultSchema.extend({
   recovery: z.object({
     subscription_id: UuidSchema.or(z.string().min(1).max(120)),
     previous_status: z.string().min(1).max(80),
     plan_slug: z.string().min(1).max(120),
     next_step: z.enum(['checkout', 'activated']),
   }).passthrough(),
-}).passthrough();
+}).passthrough())();
 
-export const SubscriptionVerificationResultSchema = z.object({
+export const SubscriptionVerificationResultSchema = /* @__PURE__ */ (() => z.object({
   subscription: StoreSubscriptionSchema.extend({
     plan_name: z.string().max(200).optional().nullable(),
   }).passthrough(),
   message: z.string().max(500).optional(),
-}).passthrough();
+}).passthrough())();
 
-export const StorePaymentSettingsSchema = z.object({
+export const StorePaymentSettingsSchema = /* @__PURE__ */ (() => z.object({
   mode: z.enum(['shared', 'ownAccount']).default('shared'),
   gateways: z.array(z.string().min(1).max(80)).default(['razorpay']),
   razorpay: z.object({
@@ -2094,20 +2098,20 @@ export const StorePaymentSettingsSchema = z.object({
     updated_at: z.string().datetime().optional().nullable(),
     secret_configured: z.boolean().default(false),
   }).nullable().default(null),
-}).passthrough();
+}).passthrough())();
 
-export const StorePaymentConfigSchema = z.object({
+export const StorePaymentConfigSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   online_payment_enabled: z.boolean().default(true),
   cod_enabled: z.boolean().default(true),
   provider_mode: z.enum(['sandbox', 'live']).default('sandbox'),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
-}).passthrough();
+}).passthrough())();
 
-export const EmployeeStatusSchema = z.enum(['invited', 'active', 'inactive', 'removed', 'suspended']);
+export const EmployeeStatusSchema = /* @__PURE__ */ (() => z.enum(['invited', 'active', 'inactive', 'removed', 'suspended']))();
 
-export const EmployeeSchema = z.object({
+export const EmployeeSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   user_id: UuidSchema.optional().nullable(),
@@ -2122,9 +2126,9 @@ export const EmployeeSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MediaAssetSchema = z.object({
+export const MediaAssetSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   uploaded_by: UuidSchema.optional().nullable(),
@@ -2144,37 +2148,37 @@ export const MediaAssetSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const FileUploadResultSchema = z.object({
+export const FileUploadResultSchema = /* @__PURE__ */ (() => z.object({
   url: z.string().min(1).max(200000),
   key: z.string().min(1).max(1000),
   size: z.number().int().min(0),
   content_type: z.string().max(255).optional().nullable(),
   media_type: MediaTypeSchema.optional().nullable(),
   storage: z.string().max(120).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsMetricSchema = z.object({
+export const AnalyticsMetricSchema = /* @__PURE__ */ (() => z.object({
   value: z.number().default(0),
   change_pct: z.number().default(0),
   prev: z.number().default(0),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsPeriodWindowSchema = z.object({
+export const AnalyticsPeriodWindowSchema = /* @__PURE__ */ (() => z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   label: z.string().max(80).optional(),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsComparisonSchema = z.object({
+export const AnalyticsComparisonSchema = /* @__PURE__ */ (() => z.object({
   previous_period: AnalyticsPeriodWindowSchema,
   revenue: AnalyticsMetricSchema,
   orders: AnalyticsMetricSchema,
   average_order_value: AnalyticsMetricSchema,
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsDashboardSchema = z.object({
+export const AnalyticsDashboardSchema = /* @__PURE__ */ (() => z.object({
   period: z.string().default('30d'),
   summary: z.object({
     revenue: AnalyticsMetricSchema,
@@ -2184,42 +2188,42 @@ export const AnalyticsDashboardSchema = z.object({
     avg_order_value: z.number().min(0).default(0),
   }).passthrough(),
   comparison: AnalyticsComparisonSchema.optional(),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsRevenuePointSchema = z.object({
+export const AnalyticsRevenuePointSchema = /* @__PURE__ */ (() => z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   revenue: z.number().min(0).default(0),
   orders: z.number().min(0).default(0),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsRevenueSchema = z.object({
+export const AnalyticsRevenueSchema = /* @__PURE__ */ (() => z.object({
   period: z.string().default('30d'),
   chart: z.array(AnalyticsRevenuePointSchema).default([]),
   comparison: z.object({
     previous_period: AnalyticsPeriodWindowSchema,
     chart: z.array(AnalyticsRevenuePointSchema).default([]),
   }).passthrough().optional(),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsOrdersBreakdownSchema = z.object({
+export const AnalyticsOrdersBreakdownSchema = /* @__PURE__ */ (() => z.object({
   breakdown: z.record(z.string(), z.number().int().min(0)).default({}),
   total: z.number().int().min(0).default(0),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsLiveViewEntrySchema = z.object({
+export const AnalyticsLiveViewEntrySchema = /* @__PURE__ */ (() => z.object({
   label: z.string().min(1).max(240),
   value: z.number().min(0).default(0),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])).default({}),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsLiveViewSignalSchema = z.object({
+export const AnalyticsLiveViewSignalSchema = /* @__PURE__ */ (() => z.object({
   metric_name: z.string().min(1).max(160),
   label: z.string().min(1).max(240),
   value: z.number().min(0).default(0),
   seen_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsLiveViewSchema = z.object({
+export const AnalyticsLiveViewSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   available: z.boolean().default(false),
   window_minutes: z.number().int().min(1).max(120).default(15),
@@ -2241,17 +2245,17 @@ export const AnalyticsLiveViewSchema = z.object({
     source: z.string().min(1).max(160),
     message: z.string().max(500).optional().nullable(),
   }).passthrough(),
-}).passthrough();
+}).passthrough())();
 
-export const StorefrontAnalyticsEventTypeSchema = z.enum([
+export const StorefrontAnalyticsEventTypeSchema = /* @__PURE__ */ (() => z.enum([
   'session_started',
   'page_view',
   'product_view',
   'cart_add',
   'checkout_started',
-]);
+]))();
 
-export const StorefrontAnalyticsBeaconSchema = z.object({
+export const StorefrontAnalyticsBeaconSchema = /* @__PURE__ */ (() => z.object({
   event_id: UuidSchema.optional(),
   event_type: StorefrontAnalyticsEventTypeSchema.default('page_view'),
   session_id: z.string().trim().min(1).max(160),
@@ -2269,9 +2273,9 @@ export const StorefrontAnalyticsBeaconSchema = z.object({
   device: z.enum(['desktop', 'mobile', 'tablet', 'unknown']).optional(),
   country: z.string().trim().min(2).max(2).optional().nullable(),
   occurred_at: z.string().datetime().optional(),
-}).passthrough();
+}).passthrough())();
 
-export const StorefrontAnalyticsBeaconResultSchema = z.object({
+export const StorefrontAnalyticsBeaconResultSchema = /* @__PURE__ */ (() => z.object({
   accepted: z.boolean(),
   queued: z.boolean(),
   sampled: z.boolean(),
@@ -2279,16 +2283,16 @@ export const StorefrontAnalyticsBeaconResultSchema = z.object({
   store_id: UuidSchema,
   source: z.string().min(1).max(120),
   generated_at: z.string().datetime(),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsTrafficSourceEntrySchema = z.object({
+export const AnalyticsTrafficSourceEntrySchema = /* @__PURE__ */ (() => z.object({
   label: z.string().min(1).max(240),
   value: z.number().min(0).default(0),
   percentage: z.number().min(0).max(100).default(0),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])).default({}),
-}).passthrough();
+}).passthrough())();
 
-export const AnalyticsTrafficSourcesSchema = z.object({
+export const AnalyticsTrafficSourcesSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   period: z.string().default('30d'),
   available: z.boolean().default(false),
@@ -2301,9 +2305,9 @@ export const AnalyticsTrafficSourcesSchema = z.object({
     source: z.string().min(1).max(160),
     message: z.string().max(500).optional().nullable(),
   }).passthrough(),
-}).passthrough();
+}).passthrough())();
 
-export const AICreditBalanceSchema = z.object({
+export const AICreditBalanceSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   balance: z.number().int().min(0).default(0),
   plan_credits: z.number().int().min(0).default(0),
@@ -2315,9 +2319,9 @@ export const AICreditBalanceSchema = z.object({
   purchase_provider: z.string().max(120).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AICreditPurchaseSchema = z.object({
+export const AICreditPurchaseSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   store_id: UuidSchema,
   status: z.enum(['completed', 'pending_provider_payment', 'unavailable']),
@@ -2330,9 +2334,9 @@ export const AICreditPurchaseSchema = z.object({
   checkout_url: z.string().url().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   metadata: JsonRecordSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AIUsageRecordSchema = z.object({
+export const AIUsageRecordSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   user_id: UuidSchema.optional().nullable(),
@@ -2351,31 +2355,31 @@ export const AIUsageRecordSchema = z.object({
   user_feedback: z.string().max(2000).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AIOperatorToolSchema = z.enum([
+export const AIOperatorToolSchema = /* @__PURE__ */ (() => z.enum([
   'answer_metrics',
   'create_product',
   'draft_discount',
   'draft_homepage_section',
-]);
+]))();
 
-export const AIOperatorToolStatusSchema = z.enum([
+export const AIOperatorToolStatusSchema = /* @__PURE__ */ (() => z.enum([
   'ready',
   'completed',
   'requires_confirmation',
   'unavailable',
-]);
+]))();
 
-export const AIOperatorRequestSchema = z.object({
+export const AIOperatorRequestSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   message: z.string().min(2).max(2000),
   conversation_id: UuidSchema.optional().nullable(),
   execute: z.boolean().default(true),
   context: JsonRecordSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const AIOperatorToolCallSchema = z.object({
+export const AIOperatorToolCallSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(120),
   tool: AIOperatorToolSchema,
   label: z.string().min(1).max(160),
@@ -2383,26 +2387,26 @@ export const AIOperatorToolCallSchema = z.object({
   summary: z.string().min(1).max(1000),
   payload: JsonRecordSchema.default({}),
   result: JsonRecordSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AIOperatorResponseSchema = z.object({
+export const AIOperatorResponseSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   conversation_id: z.string().min(1).max(120),
   message: z.string().min(1).max(4000),
   tool_calls: z.array(AIOperatorToolCallSchema).max(10).default([]),
   created_at: z.string().datetime(),
-}).passthrough();
+}).passthrough())();
 
-export const AIHomepageGenerationRequestSchema = z.object({
+export const AIHomepageGenerationRequestSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   prompt: z.string().trim().min(8).max(2000),
   theme_slug: z.string().trim().min(1).max(120).optional().nullable(),
   section_count: z.number().int().min(1).max(5).default(3),
   locale: z.string().trim().min(2).max(12).default('en'),
   template_config: JsonRecordSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const AIHomepageDraftSectionSchema = z.object({
+export const AIHomepageDraftSectionSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(160),
   type: z.string().min(1).max(80),
   order: z.number().int().min(0),
@@ -2411,9 +2415,9 @@ export const AIHomepageDraftSectionSchema = z.object({
   blocks: z.array(JsonRecordSchema).default([]),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
-}).passthrough();
+}).passthrough())();
 
-export const AIHomepageGenerationResultSchema = z.object({
+export const AIHomepageGenerationResultSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   theme_slug: z.string().min(1).max(120),
   prompt: z.string().min(1).max(2000),
@@ -2426,9 +2430,9 @@ export const AIHomepageGenerationResultSchema = z.object({
   provider: z.string().max(120).optional().nullable(),
   provider_mode: z.enum(['sandbox', 'live']).optional().nullable(),
   model: z.string().max(160).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const CouponSchema = AuditedEntitySchema.extend({
+export const CouponSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   code: z.string().min(3).max(50),
   description: z.string().max(500).optional().nullable(),
@@ -2445,9 +2449,9 @@ export const CouponSchema = AuditedEntitySchema.extend({
   starts_at: z.string().datetime().optional().nullable(),
   expires_at: z.string().datetime().optional().nullable(),
   is_active: z.boolean().default(true),
-});
+}))();
 
-export const ShippingZoneSchema = z.object({
+export const ShippingZoneSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -2457,9 +2461,9 @@ export const ShippingZoneSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const ShippingRateSchema = z.object({
+export const ShippingRateSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   zone_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -2475,9 +2479,9 @@ export const ShippingRateSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const TaxRateSchema = z.object({
+export const TaxRateSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -2493,9 +2497,9 @@ export const TaxRateSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const PageSchema = AuditedEntitySchema.extend({
+export const PageSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   title: z.string().min(1).max(300),
   slug: SlugSchema,
@@ -2509,9 +2513,9 @@ export const PageSchema = AuditedEntitySchema.extend({
   seo_description: z.string().max(160).optional().nullable(),
   published_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-});
+}))();
 
-export const PolicySchema = z.object({
+export const PolicySchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   policy_type: PolicyTypeSchema,
@@ -2524,17 +2528,17 @@ export const PolicySchema = z.object({
   seo_description: z.string().max(160).optional().nullable(),
   published_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const NavigationMenuSchema = z.object({
+export const NavigationMenuSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   handle: z.string().min(1).max(120),
   name: z.string().min(1).max(160),
   location: z.string().min(1).max(40),
-}).passthrough();
+}).passthrough())();
 
-export const NavigationItemSchema = z.object({
+export const NavigationItemSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   menu_id: UuidSchema,
   store_id: UuidSchema,
@@ -2548,20 +2552,20 @@ export const NavigationItemSchema = z.object({
   open_in_new_tab: z.boolean().default(false),
   metadata: MetadataSchema.default({}),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const NavigationResponseSchema = z.object({
+export const NavigationResponseSchema = /* @__PURE__ */ (() => z.object({
   menu: NavigationMenuSchema.nullable(),
   items: z.array(NavigationItemSchema).default([]),
-});
+}))();
 
-export const ReplaceNavigationResultSchema = z.object({
+export const ReplaceNavigationResultSchema = /* @__PURE__ */ (() => z.object({
   replaced: z.boolean(),
   menu_id: UuidSchema,
   count: z.number().int().min(0),
-});
+}))();
 
-export const BlogPostSchema = AuditedEntitySchema.extend({
+export const BlogPostSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   author_id: UuidSchema.optional().nullable(),
   title: z.string().min(1).max(300),
@@ -2582,9 +2586,9 @@ export const BlogPostSchema = AuditedEntitySchema.extend({
   is_pinned: z.boolean().default(false),
   reading_time_min: z.number().int().min(0).max(1000).optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const BlogCommentSchema = AuditedEntitySchema.extend({
+export const BlogCommentSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   post_id: UuidSchema.optional().nullable(),
   post_title: z.string().max(300).optional().nullable(),
@@ -2596,9 +2600,9 @@ export const BlogCommentSchema = AuditedEntitySchema.extend({
   status: BlogCommentStatusSchema.default('pending'),
   moderated_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const FormSubmissionSchema = AuditedEntitySchema.extend({
+export const FormSubmissionSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   store_id: UuidSchema,
   form_type: z.string().max(80).optional().nullable(),
   form_name: z.string().max(160).optional().nullable(),
@@ -2614,18 +2618,18 @@ export const FormSubmissionSchema = AuditedEntitySchema.extend({
   subject: z.string().max(300).optional().nullable(),
   message: z.string().max(10000).optional().nullable(),
   source: z.string().max(2000).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const ResumeContentItemSchema = z.object({
+export const ResumeContentItemSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   store_id: UuidSchema,
   display_order: z.number().int().min(0).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const ThemeSettingFieldSchema = z.object({
+export const ThemeSettingFieldSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(120),
   type: z.enum(['text', 'textarea', 'number', 'range', 'checkbox', 'select', 'color', 'image', 'url', 'font']),
   label: z.string().min(1).max(160),
@@ -2638,9 +2642,9 @@ export const ThemeSettingFieldSchema = z.object({
   max: z.number().optional(),
   step: z.number().optional(),
   help_text: z.string().max(300).optional(),
-});
+}))();
 
-export const ThemeSettingsSchema = z.object({
+export const ThemeSettingsSchema = /* @__PURE__ */ (() => z.object({
   primaryColor: z.string().default('#00B3B3'),
   secondaryColor: z.string().default('#008080'),
   accentColor: z.string().default('#A4E500'),
@@ -2653,18 +2657,18 @@ export const ThemeSettingsSchema = z.object({
   enableShadows: z.boolean().default(true),
   isDark: z.boolean().default(false),
   surfaceColor: z.string().optional(),
-});
+}))();
 
-export const ThemeBlockSchema = z.object({
+export const ThemeBlockSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(120),
   type: z.string().min(1).max(120),
   order: z.number().int().min(0).default(0),
   renderer_key: z.string().max(120).optional(),
   settings: MetadataSchema.default({}),
   is_visible: z.boolean().default(true),
-});
+}))();
 
-export const ThemeSectionSchema = z.object({
+export const ThemeSectionSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(120),
   type: z.string().min(1).max(120),
   order: z.number().int().min(0).default(0),
@@ -2672,15 +2676,15 @@ export const ThemeSectionSchema = z.object({
   settings: MetadataSchema.default({}),
   blocks: z.array(ThemeBlockSchema).default([]),
   is_visible: z.boolean().default(true),
-});
+}))();
 
-export const ThemeTemplateSchema = z.object({
+export const ThemeTemplateSchema = /* @__PURE__ */ (() => z.object({
   key: z.string().min(1).max(120),
   layout_key: z.string().max(120).optional(),
   sections: z.array(ThemeSectionSchema).default([]),
-});
+}))();
 
-export const ThemeBundleSchema = z.object({
+export const ThemeBundleSchema = /* @__PURE__ */ (() => z.object({
   schema_version: z.string().min(1).max(40).default('2026-05'),
   theme_id: z.string().min(1).max(120),
   version: z.string().min(1).max(40),
@@ -2691,9 +2695,9 @@ export const ThemeBundleSchema = z.object({
   block_definitions: z.record(z.string(), MetadataSchema).default({}),
   locales: z.record(z.string(), MetadataSchema).default({}),
   assets: z.record(z.string(), z.string()).default({}),
-});
+}))();
 
-export const ThemeSchema = AuditedEntitySchema.extend({
+export const ThemeSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   slug: SlugSchema,
   name: z.string().min(1).max(160),
   description: z.string().max(1000).default(''),
@@ -2712,9 +2716,9 @@ export const ThemeSchema = AuditedEntitySchema.extend({
   install_count: z.number().int().min(0).default(0),
   bundle: ThemeBundleSchema.optional(),
   published_at: z.string().datetime().optional().nullable(),
-});
+}))();
 
-export const ThemeEditableSchemaResponseSchema = z.object({
+export const ThemeEditableSchemaResponseSchema = /* @__PURE__ */ (() => z.object({
   theme: z.object({
     id: UuidSchema,
     slug: SlugSchema,
@@ -2734,9 +2738,9 @@ export const ThemeEditableSchemaResponseSchema = z.object({
   }).passthrough(),
   renderer_manifest: MetadataSchema.optional().nullable(),
   approved_renderer_keys: z.array(z.string()).default([]),
-});
+}))();
 
-export const ThemeEditorPayloadSchema = z.object({
+export const ThemeEditorPayloadSchema = /* @__PURE__ */ (() => z.object({
   store: z.object({
     id: UuidSchema,
     name: z.string().optional(),
@@ -2768,9 +2772,9 @@ export const ThemeEditorPayloadSchema = z.object({
   renderer_manifest: MetadataSchema.optional().nullable(),
   approved_renderer_keys: z.array(z.string()).default([]),
   version: z.number().int().nonnegative(),
-});
+}))();
 
-export const ThemeDraftSaveResultSchema = z.object({
+export const ThemeDraftSaveResultSchema = /* @__PURE__ */ (() => z.object({
   replayed: z.boolean(),
   current_version: z.number().int().positive(),
   saved_at: z.string().datetime(),
@@ -2781,15 +2785,15 @@ export const ThemeDraftSaveResultSchema = z.object({
     version: z.number().int().positive(),
     auto_saved_at: z.string().datetime(),
   }).passthrough(),
-});
+}))();
 
-export const ThemePublishedReleaseSchema = z.object({
+export const ThemePublishedReleaseSchema = /* @__PURE__ */ (() => z.object({
   release_id: UuidSchema,
   release_version: z.number().int().positive(),
   published_at: z.string().datetime(),
-}).passthrough();
+}).passthrough())();
 
-export const ThemePublishResultSchema = z.object({
+export const ThemePublishResultSchema = /* @__PURE__ */ (() => z.object({
   version: z.number().int().positive(),
   replayed: z.boolean(),
   current_version: z.number().int().positive(),
@@ -2809,17 +2813,17 @@ export const ThemePublishResultSchema = z.object({
   release: ThemePublishedReleaseSchema,
   template_key: z.string().min(1).max(80).default('index'),
   published_at: z.string().datetime(),
-});
+}))();
 
-export const ThemePreviewSessionResultSchema = z.object({
+export const ThemePreviewSessionResultSchema = /* @__PURE__ */ (() => z.object({
   preview_session_id: UuidSchema,
   preview_token: z.string().min(1),
   expires_at: z.string().datetime(),
   draft_version: z.number().int().positive(),
   template_key: z.string().min(1).max(80).default('index'),
-});
+}))();
 
-export const ThemeReleaseSchema = z.object({
+export const ThemeReleaseSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   theme_id: z.string(),
   theme_instance_id: UuidSchema.optional().nullable(),
@@ -2834,9 +2838,9 @@ export const ThemeReleaseSchema = z.object({
   schema_manifest_version: z.string().optional().nullable(),
   engine_version: z.string().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const ThemeRollbackResultSchema = z.object({
+export const ThemeRollbackResultSchema = /* @__PURE__ */ (() => z.object({
   rollback: ThemePublishedReleaseSchema,
   replayed: z.boolean(),
   current_release_id: UuidSchema,
@@ -2851,11 +2855,11 @@ export const ThemeRollbackResultSchema = z.object({
     slug: SlugSchema,
     name: z.string().min(1).max(160),
   }).passthrough(),
-});
+}))();
 
-export const AppInstallationStatusSchema = z.enum(['active', 'paused', 'uninstalled']);
-export const MarketplaceAppTypeSchema = z.enum(['public', 'unlisted', 'custom', 'draft']);
-export const MarketplaceAppStatusSchema = z.enum([
+export const AppInstallationStatusSchema = /* @__PURE__ */ (() => z.enum(['active', 'paused', 'uninstalled']))();
+export const MarketplaceAppTypeSchema = /* @__PURE__ */ (() => z.enum(['public', 'unlisted', 'custom', 'draft']))();
+export const MarketplaceAppStatusSchema = /* @__PURE__ */ (() => z.enum([
   'draft',
   'submitted',
   'in_review',
@@ -2865,32 +2869,32 @@ export const MarketplaceAppStatusSchema = z.enum([
   'suspended',
   'removed',
   'rejected',
-]);
-export const MarketplaceAppPricingModelSchema = z.enum([
+]))();
+export const MarketplaceAppPricingModelSchema = /* @__PURE__ */ (() => z.enum([
   'free',
   'freemium',
   'recurring',
   'one_time',
   'usage',
-]);
-export const AppBillingChargeModeSchema = z.enum(['recurring', 'one_time', 'usage']);
-export const MarketplaceAppExtensionTypeSchema = z.enum([
+]))();
+export const AppBillingChargeModeSchema = /* @__PURE__ */ (() => z.enum(['recurring', 'one_time', 'usage']))();
+export const MarketplaceAppExtensionTypeSchema = /* @__PURE__ */ (() => z.enum([
   'storefront_block',
   'storefront_embed',
   'checkout_ui',
   'post_purchase',
   'admin_link',
   'admin_block',
-]);
-export const MarketplaceSubmissionTypeSchema = z.enum(['app', 'theme']);
-export const MarketplaceReviewStatusSchema = z.enum([
+]))();
+export const MarketplaceSubmissionTypeSchema = /* @__PURE__ */ (() => z.enum(['app', 'theme']))();
+export const MarketplaceReviewStatusSchema = /* @__PURE__ */ (() => z.enum([
   'pending',
   'in_review',
   'approved',
   'rejected',
   'changes_requested',
-]);
-export const ReviewCheckTypeSchema = z.enum([
+]))();
+export const ReviewCheckTypeSchema = /* @__PURE__ */ (() => z.enum([
   'app_scope_minimization',
   'app_webhook_signature',
   'app_oauth_pkce',
@@ -2904,8 +2908,8 @@ export const ReviewCheckTypeSchema = z.enum([
   'theme_compatibility',
   'theme_code_quality',
   'post_publish_abuse_monitor',
-]);
-export const ReviewCheckResultSchema = z.enum(['passed', 'warning', 'failed']);
+]))();
+export const ReviewCheckResultSchema = /* @__PURE__ */ (() => z.enum(['passed', 'warning', 'failed']))();
 
 export const APP_REVIEW_REQUIRED_CHECK_TYPES = [
   'app_scope_minimization',
@@ -2928,7 +2932,7 @@ export const THEME_REVIEW_REQUIRED_CHECK_TYPES = [
 export const THEME_REVIEW_PERFORMANCE_FLOOR = 60;
 export const THEME_REVIEW_ACCESSIBILITY_FLOOR = 90;
 
-export const ReviewCheckRunSchema = AuditedEntitySchema.extend({
+export const ReviewCheckRunSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   review_record_id: UuidSchema,
   submission_type: MarketplaceSubmissionTypeSchema,
   resource_id: UuidSchema,
@@ -2944,9 +2948,9 @@ export const ReviewCheckRunSchema = AuditedEntitySchema.extend({
   actor_type: z.enum(['employee', 'super_admin', 'system', 'worker']).default('system'),
   actor_id: UuidSchema.optional().nullable(),
   request_id: z.string().max(160).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceReviewAutomatedChecksSchema = z.object({
+export const MarketplaceReviewAutomatedChecksSchema = /* @__PURE__ */ (() => z.object({
   status: z.enum(['passed', 'warning', 'failed']).default('warning'),
   checked_at: z.string().datetime(),
   source: z.string().min(1).max(120),
@@ -2961,7 +2965,7 @@ export const MarketplaceReviewAutomatedChecksSchema = z.object({
   warning_count: z.number().int().nonnegative().default(0),
   hard_fail_count: z.number().int().nonnegative().default(0),
   metadata: JsonRecordSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
 export const EXECUTIVE_ANALYTICS_DEFINITION_VERSION = 'internal_exec_v1';
 export const EXECUTIVE_ANALYTICS_STALE_AFTER_HOURS = 36;
@@ -3001,21 +3005,21 @@ export const EXECUTIVE_METRIC_DEFINITIONS = [
   },
 ] as const;
 
-export const ExecutiveMetricDefinitionSchema = z.object({
+export const ExecutiveMetricDefinitionSchema = /* @__PURE__ */ (() => z.object({
   metric_key: z.string().min(1).max(120),
   label: z.string().min(1).max(160),
   unit: z.string().min(1).max(40),
   formula: z.string().min(1).max(1000),
-});
+}))();
 
-export const ExecutiveRollupFreshnessSchema = z.object({
+export const ExecutiveRollupFreshnessSchema = /* @__PURE__ */ (() => z.object({
   computed_at: z.string().datetime().optional().nullable(),
   stale: z.boolean(),
   stale_after_hours: z.number().int().positive().default(EXECUTIVE_ANALYTICS_STALE_AFTER_HOURS),
   stale_reason: z.string().max(400).optional().nullable(),
-});
+}))();
 
-export const ExecutiveMrrRollupSchema = AuditedEntitySchema.extend({
+export const ExecutiveMrrRollupSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   period_date: z.string(),
   mrr_paise: z.number().int().nonnegative().default(0),
   arr_paise: z.number().int().nonnegative().default(0),
@@ -3032,9 +3036,9 @@ export const ExecutiveMrrRollupSchema = AuditedEntitySchema.extend({
   definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
   computed_at: z.string().datetime(),
   metadata: JsonRecordSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const ExecutiveMetricRollupSchema = AuditedEntitySchema.extend({
+export const ExecutiveMetricRollupSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   metric_key: z.string().min(1).max(120),
   dimension: JsonRecordSchema.default({}),
   period_date: z.string(),
@@ -3043,9 +3047,9 @@ export const ExecutiveMetricRollupSchema = AuditedEntitySchema.extend({
   definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
   computed_at: z.string().datetime(),
   metadata: JsonRecordSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const ExecutiveCohortSnapshotSchema = AuditedEntitySchema.extend({
+export const ExecutiveCohortSnapshotSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   cohort_month: z.string(),
   period_index: z.number().int().nonnegative(),
   metric_key: z.string().min(1).max(120).default('active_stores'),
@@ -3055,9 +3059,9 @@ export const ExecutiveCohortSnapshotSchema = AuditedEntitySchema.extend({
   definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
   computed_at: z.string().datetime(),
   metadata: JsonRecordSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const ExecutiveFunnelStepSchema = AuditedEntitySchema.extend({
+export const ExecutiveFunnelStepSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   period_date: z.string(),
   step_key: z.enum(['signup', 'store_created', 'store_published', 'first_order', 'paying']),
   step_index: z.number().int().nonnegative(),
@@ -3066,35 +3070,35 @@ export const ExecutiveFunnelStepSchema = AuditedEntitySchema.extend({
   definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
   computed_at: z.string().datetime(),
   metadata: JsonRecordSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const ExecutiveMrrAnalyticsSchema = z.object({
+export const ExecutiveMrrAnalyticsSchema = /* @__PURE__ */ (() => z.object({
   definition_version: z.string().min(1).max(80),
   definitions: z.array(ExecutiveMetricDefinitionSchema),
   freshness: ExecutiveRollupFreshnessSchema,
   latest: ExecutiveMrrRollupSchema.optional().nullable(),
   trend: z.array(ExecutiveMrrRollupSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const ExecutiveFunnelAnalyticsSchema = z.object({
+export const ExecutiveFunnelAnalyticsSchema = /* @__PURE__ */ (() => z.object({
   definition_version: z.string().min(1).max(80),
   freshness: ExecutiveRollupFreshnessSchema,
   latest_period_date: z.string().optional().nullable(),
   steps: z.array(ExecutiveFunnelStepSchema).default([]),
   history: z.array(ExecutiveFunnelStepSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const ExecutiveCohortAnalyticsSchema = z.object({
+export const ExecutiveCohortAnalyticsSchema = /* @__PURE__ */ (() => z.object({
   definition_version: z.string().min(1).max(80),
   freshness: ExecutiveRollupFreshnessSchema,
   snapshots: z.array(ExecutiveCohortSnapshotSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const ExecutiveCompanyHealthSchema = z.object({
+export const ExecutiveCompanyHealthSchema = /* @__PURE__ */ (() => z.object({
   definition_version: z.string().min(1).max(80),
   freshness: ExecutiveRollupFreshnessSchema,
   metrics: z.array(ExecutiveMetricRollupSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
 export interface ReviewCheckEvaluation {
   check_type: z.infer<typeof ReviewCheckTypeSchema>;
@@ -3424,14 +3428,14 @@ export function isExecutiveAnalyticsStale(
   return referenceDate.getTime() - timestamp > staleAfterHours * 60 * 60 * 1000;
 }
 
-export const AppBridgeCapabilitySchema = z.enum([
+export const AppBridgeCapabilitySchema = /* @__PURE__ */ (() => z.enum([
   'api.fetch',
   'toast',
   'resize',
   'navigation.redirect',
-]);
+]))();
 
-export const MarketplaceAppCategorySchema = z.object({
+export const MarketplaceAppCategorySchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).optional().nullable(),
   slug: z.string().min(1).max(120),
   name: z.string().min(1).max(160),
@@ -3449,9 +3453,9 @@ export const MarketplaceAppCategorySchema = z.object({
   }).passthrough()).optional().nullable(),
   buyer_guidance: z.string().max(2000).optional().nullable(),
     count: z.number().int().nonnegative().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppFeatureTagSchema = z.object({
+export const MarketplaceAppFeatureTagSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   group_id: z.string().min(1).optional().nullable(),
   handle: z.string().min(1).max(160),
@@ -3462,9 +3466,9 @@ export const MarketplaceAppFeatureTagSchema = z.object({
   selected: z.boolean().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppFeatureGroupSchema = z.object({
+export const MarketplaceAppFeatureGroupSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   category_id: z.string().min(1),
   category_slug: z.string().min(1).max(120).optional().nullable(),
@@ -3475,9 +3479,9 @@ export const MarketplaceAppFeatureGroupSchema = z.object({
   tags: z.array(MarketplaceAppFeatureTagSchema).default([]),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppAwardSchema = z.object({
+export const MarketplaceAppAwardSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   app_id: z.string().min(1),
   award_key: z.string().min(1).max(120),
@@ -3488,9 +3492,9 @@ export const MarketplaceAppAwardSchema = z.object({
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppReviewSummarySchema = z.object({
+export const MarketplaceAppReviewSummarySchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   app_id: z.string().min(1),
   summary: z.string().min(1).max(5000),
@@ -3500,9 +3504,9 @@ export const MarketplaceAppReviewSummarySchema = z.object({
   generated_at: z.string().datetime().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppCollectionSectionSchema = z.object({
+export const MarketplaceAppCollectionSectionSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   collection_id: z.string().min(1),
   section_type: z.string().min(1).max(80),
@@ -3516,9 +3520,9 @@ export const MarketplaceAppCollectionSectionSchema = z.object({
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppCollectionReferenceSchema = z.object({
+export const MarketplaceAppCollectionReferenceSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   slug: z.string().min(1).max(120),
   name: z.string().min(1).max(160),
@@ -3531,9 +3535,9 @@ export const MarketplaceAppCollectionReferenceSchema = z.object({
   sections: z.array(MarketplaceAppCollectionSectionSchema).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppCollectionSchema = z.object({
+export const MarketplaceAppCollectionSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   slug: z.string().min(1).max(120),
   name: z.string().min(1).max(160),
@@ -3547,9 +3551,9 @@ export const MarketplaceAppCollectionSchema = z.object({
   apps: z.array(z.lazy(() => MarketplaceAppSchema)).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppDiscoveryEventInputSchema = z.object({
+export const AppDiscoveryEventInputSchema = /* @__PURE__ */ (() => z.object({
   event_type: z.enum(['search', 'zero_results', 'app_click', 'collection_view', 'featured_impression']),
   site_id: z.string().min(1).optional().nullable(),
   app_id: z.string().min(1).optional().nullable(),
@@ -3559,36 +3563,36 @@ export const AppDiscoveryEventInputSchema = z.object({
   result_count: z.number().int().min(0).max(100000).optional().nullable(),
   request_id: z.string().trim().max(200).optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).strict();
+}).strict())();
 
-export const AppDiscoveryEventResultSchema = z.object({
+export const AppDiscoveryEventResultSchema = /* @__PURE__ */ (() => z.object({
   accepted: z.boolean().default(true),
   id: z.string().min(1).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppRequestInputSchema = z.object({
+export const AppRequestInputSchema = /* @__PURE__ */ (() => z.object({
   query: z.string().trim().max(200).optional().nullable(),
   category_slug: z.string().trim().max(120).optional().nullable(),
   requested_app_name: z.string().trim().max(200).optional().nullable(),
   use_case: z.string().trim().min(1).max(2000),
   contact_email: EmailSchema.optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).strict();
+}).strict())();
 
-export const AppRequestResultSchema = z.object({
+export const AppRequestResultSchema = /* @__PURE__ */ (() => z.object({
   accepted: z.boolean().default(true),
   request_id: z.string().min(1).optional().nullable(),
   status: z.string().min(1).max(80).default('open'),
-}).passthrough();
+}).passthrough())();
 
-export const AppSavedAppInputSchema = z.object({
+export const AppSavedAppInputSchema = /* @__PURE__ */ (() => z.object({
   site_id: z.string().min(1).optional().nullable(),
   app_id: z.string().min(1),
   source: z.string().trim().max(80).optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).strict();
+}).strict())();
 
-export const AppSavedAppSchema = z.object({
+export const AppSavedAppSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   site_id: z.string().min(1),
   app_id: z.string().min(1),
@@ -3599,31 +3603,31 @@ export const AppSavedAppSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppSavedAppsResultSchema = z.object({
+export const AppSavedAppsResultSchema = /* @__PURE__ */ (() => z.object({
   saved_apps: z.array(AppSavedAppSchema).default([]),
   apps: z.array(z.lazy(() => MarketplaceAppSchema)).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const AppTrustReportInputSchema = z.object({
+export const AppTrustReportInputSchema = /* @__PURE__ */ (() => z.object({
   reason_code: z.string().trim().min(1).max(80),
   reason_text: z.string().trim().max(1000).optional().nullable(),
   site_id: z.string().min(1).optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).strict();
+}).strict())();
 
-export const AppReviewReplyInputSchema = z.object({
+export const AppReviewReplyInputSchema = /* @__PURE__ */ (() => z.object({
   developer_reply: z.string().trim().min(1).max(2000),
-}).strict();
+}).strict())();
 
-export const AppTrustReportResultSchema = z.object({
+export const AppTrustReportResultSchema = /* @__PURE__ */ (() => z.object({
   accepted: z.boolean().default(true),
   report_id: z.string().min(1).optional().nullable(),
   status: z.string().min(1).max(80).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppReviewPolicySchema = z.object({
+export const AppReviewPolicySchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   slug: z.string().min(1).max(120),
   version: z.string().min(1).max(120),
@@ -3637,9 +3641,9 @@ export const AppReviewPolicySchema = z.object({
   effective_at: z.string().datetime().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppActivityEventSchema = z.object({
+export const AppActivityEventSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   site_id: z.string().min(1),
   app_id: z.string().min(1),
@@ -3649,9 +3653,9 @@ export const AppActivityEventSchema = z.object({
   summary: z.string().min(1).max(500),
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppBundleSchema = z.object({
+export const AppBundleSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   slug: z.string().min(1).max(160),
   name: z.string().min(1).max(200),
@@ -3667,9 +3671,9 @@ export const AppBundleSchema = z.object({
   apps: z.array(z.lazy(() => MarketplaceAppSchema)).default([]),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppReviewProofSchema = z.object({
+export const AppReviewProofSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   review_id: z.string().min(1),
   app_id: z.string().min(1),
@@ -3681,9 +3685,9 @@ export const AppReviewProofSchema = z.object({
   external_reference: z.string().max(300).optional().nullable(),
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppReviewModerationItemSchema = z.object({
+export const AppReviewModerationItemSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   app_id: z.string().min(1),
   rating: z.number().int().min(1).max(5),
@@ -3701,9 +3705,9 @@ export const AppReviewModerationItemSchema = z.object({
     name: z.string().min(1).max(200),
     slug: z.string().min(1).max(160).optional().nullable(),
   }).passthrough().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppDeveloperSchema = z.object({
+export const MarketplaceAppDeveloperSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).optional().nullable(),
   company_name: z.string().min(1).max(200).optional().nullable(),
   slug: z.string().min(1).max(160).optional().nullable(),
@@ -3714,9 +3718,9 @@ export const MarketplaceAppDeveloperSchema = z.object({
   country: z.string().max(20).optional().nullable(),
   verified: z.boolean().optional().nullable(),
   status: z.string().min(1).max(80).optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppExtensionSchema = z.object({
+export const MarketplaceAppExtensionSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   app_id: z.string().min(1).optional().nullable(),
   type: MarketplaceAppExtensionTypeSchema.or(z.string().min(1)),
@@ -3727,12 +3731,12 @@ export const MarketplaceAppExtensionSchema = z.object({
   config: MetadataSchema.default({}),
   status: z.string().min(1).max(80).optional().nullable(),
   sort_order: z.number().int().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppPricingPlanIntervalSchema = z.enum(['none', 'monthly', 'yearly']);
-export const AppPricingPlanStatusSchema = z.enum(['draft', 'active', 'archived']);
+export const AppPricingPlanIntervalSchema = /* @__PURE__ */ (() => z.enum(['none', 'monthly', 'yearly']))();
+export const AppPricingPlanStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'active', 'archived']))();
 
-export const AppPricingPlanInputSchema = z.object({
+export const AppPricingPlanInputSchema = /* @__PURE__ */ (() => z.object({
   plan_slug: z.string().trim().min(1).max(120),
   name: z.string().trim().min(1).max(160),
   description: z.string().trim().max(1000).optional().nullable(),
@@ -3751,11 +3755,11 @@ export const AppPricingPlanInputSchema = z.object({
   is_default: z.boolean().default(false),
   status: AppPricingPlanStatusSchema.default('active'),
   sort_order: z.number().int().min(0).max(1000).default(0),
-}).strict();
+}).strict())();
 
-export const AppPricingPlanUpdateSchema = AppPricingPlanInputSchema.partial().strict();
+export const AppPricingPlanUpdateSchema = /* @__PURE__ */ (() => AppPricingPlanInputSchema.partial().strict())();
 
-export const AppPricingPlanSchema = z.object({
+export const AppPricingPlanSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   app_id: z.string().min(1),
   developer_id: z.string().min(1),
@@ -3780,20 +3784,20 @@ export const AppPricingPlanSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppVersionStatusSchema = z.enum(['draft', 'in_review', 'approved', 'released', 'rejected', 'rolled_back']);
+export const AppVersionStatusSchema = /* @__PURE__ */ (() => z.enum(['draft', 'in_review', 'approved', 'released', 'rejected', 'rolled_back']))();
 
-export const AppVersionInputSchema = z.object({
+export const AppVersionInputSchema = /* @__PURE__ */ (() => z.object({
   version: z.string().trim().min(1).max(60),
   release_notes: z.string().trim().min(1).max(5000),
   changelog: z.array(z.string().trim().min(1).max(500)).max(20).default([]),
   rollout_percentage: z.number().int().min(0).max(100).default(100),
   rollout_cohort: z.string().trim().max(120).optional().nullable(),
   manifest: MetadataSchema.optional().nullable(),
-}).strict();
+}).strict())();
 
-export const AppListingUpdateSchema = z.object({
+export const AppListingUpdateSchema = /* @__PURE__ */ (() => z.object({
   name: z.string().trim().min(1).max(200).optional(),
   tagline: z.string().trim().min(1).max(300).optional(),
   description: z.string().trim().min(1).max(50000).optional(),
@@ -3809,9 +3813,9 @@ export const AppListingUpdateSchema = z.object({
   rollout_percentage: z.number().int().min(0).max(100).optional(),
   rollout_cohort: z.string().trim().max(120).optional().nullable(),
   manifest: MetadataSchema.optional().nullable(),
-}).strict();
+}).strict())();
 
-export const AppVersionSchema = z.object({
+export const AppVersionSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   app_id: UuidSchema,
   developer_id: UuidSchema,
@@ -3831,14 +3835,14 @@ export const AppVersionSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppVersionsResultSchema = z.object({
+export const AppVersionsResultSchema = /* @__PURE__ */ (() => z.object({
   app: z.lazy(() => MarketplaceAppSchema),
   versions: z.array(AppVersionSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppSchema = z.object({
+export const MarketplaceAppSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   slug: z.string().min(1).max(160),
   name: z.string().min(1).max(200),
@@ -3911,16 +3915,16 @@ export const MarketplaceAppSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   published_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppRecommendationsSchema = z.object({
+export const MarketplaceAppRecommendationsSchema = /* @__PURE__ */ (() => z.object({
   app_id: z.string().min(1),
   works_with: z.array(z.string().min(1)).default([]),
   alternatives: z.array(MarketplaceAppSchema).default([]),
   also_installed: z.array(MarketplaceAppSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceAppReviewSchema = z.object({
+export const MarketplaceAppReviewSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   app_id: z.string().min(1),
   user_id: z.string().min(1).optional().nullable(),
@@ -3949,9 +3953,9 @@ export const MarketplaceAppReviewSchema = z.object({
   moderation_reason: z.string().optional().nullable(),
   status: z.string().max(80).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const MarketplaceReviewRecordSchema = AuditedEntitySchema.extend({
+export const MarketplaceReviewRecordSchema = /* @__PURE__ */ (() => AuditedEntitySchema.extend({
   submission_type: MarketplaceSubmissionTypeSchema,
   resource_id: UuidSchema,
   resource_slug: z.string().min(1).max(200).optional().nullable(),
@@ -3965,9 +3969,9 @@ export const MarketplaceReviewRecordSchema = AuditedEntitySchema.extend({
   reviewed_at: z.string().datetime().optional().nullable(),
   review_notes: z.string().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).passthrough();
+}).passthrough())();
 
-export const InstalledMarketplaceAppSchema = z.object({
+export const InstalledMarketplaceAppSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(160),
   slug: z.string().min(1).max(160).optional().nullable(),
@@ -3975,9 +3979,9 @@ export const InstalledMarketplaceAppSchema = z.object({
   tagline: z.string().max(240).optional().nullable(),
   pricing_model: z.string().max(80).optional().nullable(),
   app_url: UrlSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const InstalledAppSchema = z.object({
+export const InstalledAppSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   app_id: z.string().min(1),
   store_id: z.string().min(1),
@@ -3987,9 +3991,9 @@ export const InstalledAppSchema = z.object({
   installed_at: z.string().datetime().optional().nullable(),
   uninstalled_at: z.string().datetime().optional().nullable(),
   marketplace_apps: InstalledMarketplaceAppSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AdminAppEmbedSurfaceSchema = z.object({
+export const AdminAppEmbedSurfaceSchema = /* @__PURE__ */ (() => z.object({
   title: z.string().min(1).max(160),
   label: z.string().min(1).max(80),
   url: UrlSchema,
@@ -3997,9 +4001,9 @@ export const AdminAppEmbedSurfaceSchema = z.object({
   target: z.string().min(1).max(160).optional().nullable(),
   icon_url: UrlSchema.optional().nullable(),
   capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
-}).strict();
+}).strict())();
 
-export const MobileAdminAppBridgeHostPolicySchema = z.object({
+export const MobileAdminAppBridgeHostPolicySchema = /* @__PURE__ */ (() => z.object({
   platform: z.literal('mobile_webview'),
   host_version: z.string().min(1).max(80),
   allowed_origin: z.string().min(1).max(300),
@@ -4010,9 +4014,9 @@ export const MobileAdminAppBridgeHostPolicySchema = z.object({
   token_transport: z.literal('native_bridge'),
   capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
   expires_at: z.string().datetime(),
-}).strict();
+}).strict())();
 
-export const AdminAppBridgeSessionSchema = z.object({
+export const AdminAppBridgeSessionSchema = /* @__PURE__ */ (() => z.object({
   installation: InstalledAppSchema,
   embed: AdminAppEmbedSurfaceSchema,
   bridge: z.object({
@@ -4028,17 +4032,17 @@ export const AdminAppBridgeSessionSchema = z.object({
     capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
   }).strict(),
   mobile_host: MobileAdminAppBridgeHostPolicySchema.optional(),
-}).strict();
+}).strict())();
 
-export const AppBridgeApiFetchResultSchema = z.object({
+export const AppBridgeApiFetchResultSchema = /* @__PURE__ */ (() => z.object({
   ok: z.boolean(),
   status: z.number().int().min(100).max(599),
   data: z.unknown().optional().nullable(),
   error: z.string().optional().nullable(),
-}).strict();
+}).strict())();
 
-export const AppExtensionRegistrationStatusSchema = z.enum(['enabled', 'disabled', 'revoked']);
-export const AppExtensionRegistrationSchema = z.object({
+export const AppExtensionRegistrationStatusSchema = /* @__PURE__ */ (() => z.enum(['enabled', 'disabled', 'revoked']))();
+export const AppExtensionRegistrationSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   site_id: z.string().min(1),
   app_id: z.string().min(1),
@@ -4062,9 +4066,9 @@ export const AppExtensionRegistrationSchema = z.object({
   sort_order: z.number().int().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppFunctionRegistrationSchema = z.object({
+export const AppFunctionRegistrationSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1),
   site_id: z.string().min(1),
   app_id: z.string().min(1),
@@ -4089,34 +4093,34 @@ export const AppFunctionRegistrationSchema = z.object({
   revoked_at: z.string().datetime().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppExtensionRegistryResponseSchema = z.object({
+export const AppExtensionRegistryResponseSchema = /* @__PURE__ */ (() => z.object({
   installation_id: z.string().min(1),
   app_id: z.string().min(1),
   store_id: z.string().min(1),
   extensions: z.array(AppExtensionRegistrationSchema).default([]),
   functions: z.array(AppFunctionRegistrationSchema).default([]),
-}).strict();
+}).strict())();
 
-export const StorefrontCheckoutExtensionRegistryResponseSchema = z.object({
+export const StorefrontCheckoutExtensionRegistryResponseSchema = /* @__PURE__ */ (() => z.object({
   store_id: z.string().min(1),
   surface: z.literal('checkout.ui'),
   extensions: z.array(AppExtensionRegistrationSchema).default([]),
-}).strict();
+}).strict())();
 
-export const AppBillingChargeStatusSchema = z.enum([
+export const AppBillingChargeStatusSchema = /* @__PURE__ */ (() => z.enum([
   'pending_merchant_approval',
   'approved',
   'trialing',
   'active',
   'cancelled',
   'failed',
-]);
-export const AppBillingIndiaPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
-export const AppBillingChargeProviderModeSchema = z.enum(['sandbox', 'live']);
+]))();
+export const AppBillingIndiaPayoutRailSchema = /* @__PURE__ */ (() => z.enum(['razorpay_route', 'upi', 'manual']))();
+export const AppBillingChargeProviderModeSchema = /* @__PURE__ */ (() => z.enum(['sandbox', 'live']))();
 
-export const AppBillingChargeSchema = z.object({
+export const AppBillingChargeSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   site_id: UuidSchema,
   app_id: UuidSchema,
@@ -4149,9 +4153,9 @@ export const AppBillingChargeSchema = z.object({
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppBillingChargeCreateSchema = z.object({
+export const AppBillingChargeCreateSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   installation_id: UuidSchema,
   pricing_plan_id: UuidSchema.optional(),
@@ -4162,9 +4166,9 @@ export const AppBillingChargeCreateSchema = z.object({
   idempotency_key: z.string().trim().min(8).max(200),
   return_url: UrlSchema.optional(),
   metadata: MetadataSchema.default({}),
-}).strict();
+}).strict())();
 
-export const AppBillingChargeApproveSchema = z.object({
+export const AppBillingChargeApproveSchema = /* @__PURE__ */ (() => z.object({
   store_id: UuidSchema,
   charge_id: UuidSchema,
   idempotency_key: z.string().trim().min(8).max(200),
@@ -4172,9 +4176,9 @@ export const AppBillingChargeApproveSchema = z.object({
   provider_payment_id: z.string().trim().min(1).max(200).optional(),
   provider_signature: z.string().trim().min(1).max(500).optional(),
   provider_mode: AppBillingChargeProviderModeSchema.default('sandbox'),
-}).strict();
+}).strict())();
 
-export const AppBillingChargeResultSchema = z.object({
+export const AppBillingChargeResultSchema = /* @__PURE__ */ (() => z.object({
   charge: AppBillingChargeSchema,
   approval: z.object({
     required: z.boolean(),
@@ -4183,11 +4187,11 @@ export const AppBillingChargeResultSchema = z.object({
   billing: z.record(z.string(), z.unknown()).optional(),
   payout: z.record(z.string(), z.unknown()).optional(),
   payout_plan: z.record(z.string(), z.unknown()).optional(),
-}).passthrough();
+}).passthrough())();
 
-export const AppUsageBillingStatusSchema = z.enum(['metered', 'trial_included', 'blocked']);
+export const AppUsageBillingStatusSchema = /* @__PURE__ */ (() => z.enum(['metered', 'trial_included', 'blocked']))();
 
-export const AppUsageEventCreateSchema = z.object({
+export const AppUsageEventCreateSchema = /* @__PURE__ */ (() => z.object({
   meter_name: z.string().trim().min(1).max(120),
   quantity: z.number().positive(),
   idempotency_key: z.string().trim().min(8).max(200),
@@ -4195,9 +4199,9 @@ export const AppUsageEventCreateSchema = z.object({
   resource_type: z.string().trim().min(1).max(80).optional(),
   resource_id: z.string().trim().min(1).max(200).optional(),
   metadata: MetadataSchema.default({}),
-}).strict();
+}).strict())();
 
-export const AppUsageEventSchema = z.object({
+export const AppUsageEventSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   site_id: UuidSchema,
   app_id: UuidSchema,
@@ -4221,9 +4225,9 @@ export const AppUsageEventSchema = z.object({
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppUsageMeterRollupSchema = z.object({
+export const AppUsageMeterRollupSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   site_id: UuidSchema,
   app_id: UuidSchema,
@@ -4244,23 +4248,23 @@ export const AppUsageMeterRollupSchema = z.object({
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppUsageMeteringResultSchema = z.object({
+export const AppUsageMeteringResultSchema = /* @__PURE__ */ (() => z.object({
   event: AppUsageEventSchema,
   rollup: AppUsageMeterRollupSchema,
-}).passthrough();
+}).passthrough())();
 
-export const AppUsageSummarySchema = z.object({
+export const AppUsageSummarySchema = /* @__PURE__ */ (() => z.object({
   app_id: UuidSchema,
   rollups: z.array(AppUsageMeterRollupSchema).default([]),
   events: z.array(AppUsageEventSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const AppSpendControlEnforcementModeSchema = z.enum(['block', 'alert_only']);
-export const AppSpendControlStatusSchema = z.enum(['active', 'disabled']);
+export const AppSpendControlEnforcementModeSchema = /* @__PURE__ */ (() => z.enum(['block', 'alert_only']))();
+export const AppSpendControlStatusSchema = /* @__PURE__ */ (() => z.enum(['active', 'disabled']))();
 
-export const AppSpendControlSchema = z.object({
+export const AppSpendControlSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   site_id: UuidSchema,
   monthly_cap_minor: z.number().int().nonnegative().default(0),
@@ -4271,17 +4275,17 @@ export const AppSpendControlSchema = z.object({
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppSpendControlUpdateSchema = z.object({
+export const AppSpendControlUpdateSchema = /* @__PURE__ */ (() => z.object({
   monthly_cap_minor: z.number().int().nonnegative().max(999_999_999).optional(),
   alert_threshold_minor: z.number().int().nonnegative().max(999_999_999).optional(),
   alerts_enabled: z.boolean().optional(),
   enforcement_mode: AppSpendControlEnforcementModeSchema.optional(),
   status: AppSpendControlStatusSchema.optional(),
-}).strict();
+}).strict())();
 
-export const AppSpendControlResultSchema = z.object({
+export const AppSpendControlResultSchema = /* @__PURE__ */ (() => z.object({
   control: AppSpendControlSchema.optional().nullable(),
   spend: z.object({
     period_start: z.string().datetime(),
@@ -4291,9 +4295,9 @@ export const AppSpendControlResultSchema = z.object({
     over_cap: z.boolean().default(false),
     over_alert_threshold: z.boolean().default(false),
   }),
-}).passthrough();
+}).passthrough())();
 
-export const PartnerPayoutLedgerEntrySchema = z.object({
+export const PartnerPayoutLedgerEntrySchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   partner_id: UuidSchema,
   site_id: UuidSchema.optional().nullable(),
@@ -4311,9 +4315,9 @@ export const PartnerPayoutLedgerEntrySchema = z.object({
   metadata: MetadataSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const PartnerDevelopmentStoreSchema = z.object({
+export const PartnerDevelopmentStoreSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   name: z.string().min(1).max(200),
   subdomain: z.string().min(1).max(120).optional().nullable(),
@@ -4322,17 +4326,17 @@ export const PartnerDevelopmentStoreSchema = z.object({
   role_slugs: z.array(z.string().min(1)).default([]),
   managed: z.boolean().default(false),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const PartnerCollaboratorAccessSchema = z.object({
+export const PartnerCollaboratorAccessSchema = /* @__PURE__ */ (() => z.object({
   request_code: z.string().min(8).max(80),
   expires_at: z.string().datetime(),
   has_active_code: z.boolean().optional().default(false),
   scopes: z.array(z.string().min(1)).default([]),
   managed_stores: z.array(PartnerDevelopmentStoreSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const PartnerAnalyticsSchema = z.object({
+export const PartnerAnalyticsSchema = /* @__PURE__ */ (() => z.object({
   total_apps: z.number().int().nonnegative(),
   published_apps: z.number().int().nonnegative(),
   active_installations: z.number().int().nonnegative(),
@@ -4344,9 +4348,9 @@ export const PartnerAnalyticsSchema = z.object({
   payout_pending_minor: z.number().int().nonnegative(),
   payout_released_minor: z.number().int().nonnegative(),
   currency: z.literal('INR').default('INR'),
-}).passthrough();
+}).passthrough())();
 
-export const PartnerAnalyticsPointSchema = z.object({
+export const PartnerAnalyticsPointSchema = /* @__PURE__ */ (() => z.object({
   metric_date: z.string().min(1),
   app_id: UuidSchema.optional().nullable(),
   installs: z.number().int().nonnegative().default(0),
@@ -4360,14 +4364,14 @@ export const PartnerAnalyticsPointSchema = z.object({
   partner_amount_minor: z.number().int().nonnegative().default(0),
   payout_released_minor: z.number().int().nonnegative().default(0),
   currency: z.literal('INR').default('INR'),
-}).passthrough();
+}).passthrough())();
 
-export const PartnerAnalyticsTimeseriesSchema = z.object({
+export const PartnerAnalyticsTimeseriesSchema = /* @__PURE__ */ (() => z.object({
   points: z.array(PartnerAnalyticsPointSchema).default([]),
   totals: PartnerAnalyticsSchema.partial().passthrough().default({}),
-}).passthrough();
+}).passthrough())();
 
-export const AppApiUsageMetricSchema = z.object({
+export const AppApiUsageMetricSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema.optional().nullable(),
   app_id: UuidSchema,
   developer_id: UuidSchema.optional().nullable(),
@@ -4381,14 +4385,14 @@ export const AppApiUsageMetricSchema = z.object({
   metadata: JsonRecordSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppApiUsageSummarySchema = z.object({
+export const AppApiUsageSummarySchema = /* @__PURE__ */ (() => z.object({
   app_id: UuidSchema,
   metrics: z.array(AppApiUsageMetricSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const AppWebhookEndpointSchema = z.object({
+export const AppWebhookEndpointSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   app_id: UuidSchema,
   name: z.string().min(1).max(160).optional().nullable(),
@@ -4400,24 +4404,24 @@ export const AppWebhookEndpointSchema = z.object({
   last_delivery_at: z.string().datetime().optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppWebhookEndpointInputSchema = z.object({
+export const AppWebhookEndpointInputSchema = /* @__PURE__ */ (() => z.object({
   name: z.string().min(1).max(160).optional().nullable(),
   event: z.string().min(1).max(120),
   event_types: z.array(z.string().min(1).max(120)).default([]),
   url: UrlSchema,
   status: z.enum(['active', 'paused', 'disabled']).default('active'),
-}).strict();
+}).strict())();
 
-export const AppWebhookEndpointUpdateSchema = AppWebhookEndpointInputSchema.partial().strict();
+export const AppWebhookEndpointUpdateSchema = /* @__PURE__ */ (() => AppWebhookEndpointInputSchema.partial().strict())();
 
-export const PartnerCollaboratorRedeemInputSchema = z.object({
+export const PartnerCollaboratorRedeemInputSchema = /* @__PURE__ */ (() => z.object({
   request_code: z.string().min(8).max(120),
   site_id: UuidSchema,
-}).strict();
+}).strict())();
 
-export const PartnerTierSchema = z.object({
+export const PartnerTierSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   developer_id: UuidSchema,
   tier: z.enum(['bronze', 'silver', 'gold', 'platinum']),
@@ -4427,9 +4431,9 @@ export const PartnerTierSchema = z.object({
   criteria: JsonRecordSchema.default({}),
   metrics: JsonRecordSchema.default({}),
   reason: z.string().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppSandboxStoreSchema = z.object({
+export const AppSandboxStoreSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   developer_id: UuidSchema,
   site_id: UuidSchema.optional().nullable(),
@@ -4440,9 +4444,9 @@ export const AppSandboxStoreSchema = z.object({
   expires_at: z.string().datetime().optional().nullable(),
   metadata: JsonRecordSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppDemoSessionSchema = z.object({
+export const AppDemoSessionSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   app_id: UuidSchema,
   developer_id: UuidSchema,
@@ -4452,9 +4456,9 @@ export const AppDemoSessionSchema = z.object({
   expires_at: z.string().datetime().optional().nullable(),
   metadata: JsonRecordSchema.default({}),
   created_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const AppTelemetryEventInputSchema = z.object({
+export const AppTelemetryEventInputSchema = /* @__PURE__ */ (() => z.object({
   event_type: z.string().min(1).max(160),
   app_id: UuidSchema.optional().nullable(),
   site_id: UuidSchema.optional().nullable(),
@@ -4462,14 +4466,14 @@ export const AppTelemetryEventInputSchema = z.object({
   source: z.string().min(1).max(80).default('marketplace'),
   metadata: JsonRecordSchema.default({}),
   occurred_at: z.string().datetime().optional().nullable(),
-}).strict();
+}).strict())();
 
-export const AppTelemetryEventResultSchema = z.object({
+export const AppTelemetryEventResultSchema = /* @__PURE__ */ (() => z.object({
   accepted: z.boolean(),
   event_id: UuidSchema.optional().nullable(),
-}).passthrough();
+}).passthrough())();
 
-export const PartnerDashboardSchema = z.object({
+export const PartnerDashboardSchema = /* @__PURE__ */ (() => z.object({
   developer: MarketplaceAppDeveloperSchema,
   apps: z.array(MarketplaceAppSchema).default([]),
   app_versions: z.array(AppVersionSchema).default([]),
@@ -4484,9 +4488,9 @@ export const PartnerDashboardSchema = z.object({
   api_usage: z.array(AppApiUsageMetricSchema).default([]),
   partner_tiers: z.array(PartnerTierSchema).default([]),
   sandbox_stores: z.array(AppSandboxStoreSchema).default([]),
-}).passthrough();
+}).passthrough())();
 
-export const AppOAuthAuthorizationSchema = z.object({
+export const AppOAuthAuthorizationSchema = /* @__PURE__ */ (() => z.object({
   code: z.string().min(1),
   redirect_uri: UrlSchema,
   redirect_to: UrlSchema,
@@ -4496,14 +4500,14 @@ export const AppOAuthAuthorizationSchema = z.object({
   installation_id: z.string().min(1),
   app_id: z.string().min(1),
   store_id: z.string().min(1),
-}).strict();
+}).strict())();
 
-export const AppOAuthAuthorizationResultSchema = z.object({
+export const AppOAuthAuthorizationResultSchema = /* @__PURE__ */ (() => z.object({
   installation: InstalledAppSchema,
   authorization: AppOAuthAuthorizationSchema,
-}).strict();
+}).strict())();
 
-export const AppOAuthTokenResultSchema = z.object({
+export const AppOAuthTokenResultSchema = /* @__PURE__ */ (() => z.object({
   access_token: z.string().min(1),
   refresh_token: z.string().min(1).optional(),
   token_type: z.literal('Bearer'),
@@ -4514,27 +4518,27 @@ export const AppOAuthTokenResultSchema = z.object({
   installation_id: z.string().min(1),
   app_id: z.string().min(1),
   store_id: z.string().min(1),
-}).strict();
+}).strict())();
 
-export const GraphQLPageInfoSchema = z.object({
+export const GraphQLPageInfoSchema = /* @__PURE__ */ (() => z.object({
   hasNextPage: z.boolean(),
   hasPreviousPage: z.boolean(),
   startCursor: z.string().min(1).optional().nullable(),
   endCursor: z.string().min(1).optional().nullable(),
-}).strict();
+}).strict())();
 
-export const GraphQLQueryCostSchema = z.object({
+export const GraphQLQueryCostSchema = /* @__PURE__ */ (() => z.object({
   requested: z.number().int().min(1).max(1000),
   actual: z.number().int().min(0).max(1000),
   maximumAvailable: z.number().int().min(0),
   currentlyAvailable: z.number().int().min(0),
   restoreRate: z.number().int().min(1),
   policy: z.string().min(1).max(120),
-}).strict();
+}).strict())();
 
-export const GraphQLApiSurfaceSchema = z.enum(['admin', 'storefront']);
-export const GraphQLBulkOperationTypeSchema = z.enum(['query', 'mutation']);
-export const GraphQLBulkOperationStatusSchema = z.enum([
+export const GraphQLApiSurfaceSchema = /* @__PURE__ */ (() => z.enum(['admin', 'storefront']))();
+export const GraphQLBulkOperationTypeSchema = /* @__PURE__ */ (() => z.enum(['query', 'mutation']))();
+export const GraphQLBulkOperationStatusSchema = /* @__PURE__ */ (() => z.enum([
   'created',
   'queued',
   'running',
@@ -4542,9 +4546,9 @@ export const GraphQLBulkOperationStatusSchema = z.enum([
   'failed',
   'cancelled',
   'expired',
-]);
+]))();
 
-export const GraphQLBulkOperationSchema = z.object({
+export const GraphQLBulkOperationSchema = /* @__PURE__ */ (() => z.object({
   id: UuidSchema,
   storeId: UuidSchema.optional().nullable(),
   apiSurface: GraphQLApiSurfaceSchema,
@@ -4565,7 +4569,7 @@ export const GraphQLBulkOperationSchema = z.object({
   completedAt: z.string().datetime().optional().nullable(),
   expiresAt: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
-}).strict();
+}).strict())();
 
 export type SiteType = z.infer<typeof SiteTypeSchema>;
 export type StoreStatus = z.infer<typeof StoreStatusSchema>;
@@ -4904,17 +4908,17 @@ export interface GraphQLConnection<TNode> {
   queryCost?: GraphQLQueryCost;
 }
 
-export const RuntimeEnvironmentSchema = z.enum(['local', 'development', 'staging', 'production']);
+export const RuntimeEnvironmentSchema = /* @__PURE__ */ (() => z.enum(['local', 'development', 'staging', 'production']))();
 
-export const FeatureFlagScopeSchema = z.enum([
+export const FeatureFlagScopeSchema = /* @__PURE__ */ (() => z.enum([
   'tenant',
   'percentage',
   'internal',
   'region',
   'environment',
-]);
+]))();
 
-export const FeatureFlagRuleSchema = z.object({
+export const FeatureFlagRuleSchema = /* @__PURE__ */ (() => z.object({
   id: z.string().min(1).max(120),
   scope: FeatureFlagScopeSchema,
   enabled: z.boolean().default(true),
@@ -4923,9 +4927,9 @@ export const FeatureFlagRuleSchema = z.object({
   environments: z.array(RuntimeEnvironmentSchema).optional(),
   percentage: z.number().min(0).max(100).optional(),
   variant: z.string().min(1).max(120).optional(),
-});
+}))();
 
-export const FeatureFlagDefinitionSchema = z.object({
+export const FeatureFlagDefinitionSchema = /* @__PURE__ */ (() => z.object({
   key: z
     .string()
     .min(1)
@@ -4937,16 +4941,16 @@ export const FeatureFlagDefinitionSchema = z.object({
   defaultVariant: z.string().min(1).max(120).optional(),
   rules: z.array(FeatureFlagRuleSchema).default([]),
   expiresAt: z.string().datetime().optional(),
-});
+}))();
 
-export const FeatureFlagContextSchema = z.object({
+export const FeatureFlagContextSchema = /* @__PURE__ */ (() => z.object({
   environment: RuntimeEnvironmentSchema,
   tenantSiteId: UuidSchema.optional(),
   actorId: UuidSchema.optional(),
   anonymousKey: z.string().min(1).max(240).optional(),
   region: z.string().min(1).max(64).optional(),
   internal: z.boolean().default(false),
-});
+}))();
 
 export type RuntimeEnvironment = z.infer<typeof RuntimeEnvironmentSchema>;
 export type FeatureFlagScope = z.infer<typeof FeatureFlagScopeSchema>;
