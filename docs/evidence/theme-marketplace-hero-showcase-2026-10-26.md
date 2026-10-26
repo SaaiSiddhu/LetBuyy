@@ -1,0 +1,11 @@
+# Homepage animated sample lookbook — 26 October 2026
+
+Owner request: reproduce the reference’s moving rounded website-preview gallery, directly below the marketplace header and above the LetBuyy Theme Store introduction; keep headline, description, search and actions in the initial viewport. UI only. Backend is owned by the owner’s friend. Base 5e1af333f, existing isolated worktree codex/theme-marketplace-20261026; source clean before this request.
+
+Scope: new frontend showcase component, its CSS composition, homepage insertion, copied existing public image assets, affected UI tests and evidence/claim. No backend/config/API/schema changes. Preserve search and catalog actions. Browser visual verification remains deferred under the owner’s automated-only preference.
+
+Approach: two compact photographic sample-design rows moving in opposite directions; manually pause/resume, pause on hover/focus/offscreen/hidden document, reduced-motion static state. Code-native decorative mini website illustrations, not a new commerce renderer. Label as design inspiration, not available catalog inventory or merchant evidence. Reuse existing LetBuyy sample imagery by ordinary public-asset copy, with provenance recorded below. Existing placeholder catalog seed graphics are unsuitable for the visual reference.
+
+Assets: exact unedited copies from apps/commerce/web/public/theme-assets/{threadline,dewdrop,habitat,pantry,playfield,trailmark}/v2 into theme-store/public/showcase/. Read/source reuse only; no app imports, artwork generation, remote fetching or screenshots of private stores. Preserve the source provenance records where present. Headings/short decorative phrases are illustrative; visible copy explains catalog availability.
+
+Acceptance: gallery precedes hero introduction in DOM; complete headline/search/actions retained; responsive compact heights with no fixed viewport lock; no page-wide overflow; reduced-motion stops loops and hides duplicates; duplicate visuals absent from accessibility tree; keyboard-accessible pause control; no fake published theme/review/merchant counts; image files resolve; package build/typecheck/lint/tests and focused source/render checks. Real animated smoothness and viewport fit remain unverified until a browser check is available.
