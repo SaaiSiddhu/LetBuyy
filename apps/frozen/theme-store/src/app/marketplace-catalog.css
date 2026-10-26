@@ -76,8 +76,13 @@
 .marketplace-navigation-drawer > div { padding: var(--lb-space-5); }
 .marketplace-menu-content { display: grid; gap: var(--lb-space-5); }
 .marketplace-menu-quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--lb-space-3); }
-.marketplace-menu-quick > a { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--lb-space-2); min-height: calc(var(--lb-space-8) * 1.7); padding: var(--lb-space-3); border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-md); text-decoration: none; color: var(--lb-color-text); font-size: var(--lb-font-size-body); font-weight: var(--lb-font-weight-medium); }
-.marketplace-menu-quick > a > svg:first-child { color: var(--lb-color-primary); }
+.marketplace-menu-quick > a { position: relative; isolation: isolate; overflow: hidden; background: var(--lb-color-surface); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--lb-space-2); min-height: calc(var(--lb-space-8) * 1.7); padding: var(--lb-space-3); border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-md); text-decoration: none; color: var(--lb-color-text); font-size: var(--lb-font-size-body); font-weight: var(--lb-font-weight-medium); }
+.marketplace-menu-shortcut-image { position: absolute; z-index: -2; inset: 0 0 0 35%; pointer-events: none; }
+.marketplace-menu-shortcut-image img { object-fit: cover; object-position: center; }
+.marketplace-menu-quick > a::before { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(to right, var(--lb-color-surface) 35%, var(--lb-color-surface)); background: linear-gradient(to right, var(--lb-color-surface) 32%, color-mix(in srgb, var(--lb-color-surface) 94%, transparent) 65%, color-mix(in srgb, var(--lb-color-surface) 66%, transparent)); }
+.marketplace-menu-quick > a > svg:first-of-type { color: var(--lb-color-primary-text); flex-shrink: 0; }
+.marketplace-menu-quick > a[aria-current="page"] { color: var(--lb-color-primary-text); border-color: var(--lb-color-primary-text); }
+.marketplace-menu-quick > a:hover::before { background: color-mix(in srgb, var(--lb-color-surface) 88%, transparent); }
 .marketplace-menu-quick > a > svg:last-child { color: var(--lb-color-text-subdued); }
 .marketplace-menu-content a[aria-current="page"] { background: var(--lb-color-primary-soft); color: var(--lb-color-primary); }
 .marketplace-menu-groups > details { border-block-start: thin solid var(--lb-color-border); }

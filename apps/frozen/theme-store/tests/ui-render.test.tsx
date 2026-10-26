@@ -537,6 +537,8 @@ test('compact mobile menu keeps destinations inside native expandable groups', (
         {key:'learn',label:'Learn',links:[{label:'Theme guides',href:'/guides'},{label:'Legal and privacy',href:'/legal'}]},
         {key:'library',label:'My themes',links:[{label:'Downloads',href:'/dashboard/downloads'}]},
     ]} />);
+    assert.equal((html.match(/class="marketplace-menu-shortcut-image" aria-hidden="true"/g)||[]).length, 4);
+    for (const image of ['wardrobe','living','pantry','care']) assert.ok(html.includes(`${image}.webp`));
     assert.equal((html.match(/<details>/g)||[]).length, 3);
     assert.doesNotMatch(html, /<details[^>]*\bopen/);
     for(const href of ['/themes','/themes?category=store','/guides','/legal','/dashboard/downloads','/support','/contact'])assert.ok(html.includes(`href="${href}"`),href);
