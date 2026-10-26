@@ -19,6 +19,7 @@ import {
     type LiquidCommerceDrops,
 } from '@letbuyy/theme-engine';
 import { assembleLiquidPageFromRenderResult } from './liquid-page-assembly';
+import { liquidRenderFailureDiagnostics } from './liquid-render-diagnostics';
 import { productOriginFilterMarkup } from './platform-control-markup';
 import type { ProductReviewItem, SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
@@ -663,7 +664,10 @@ async function renderLiquidPlan({
             liquidContext: commerceContext,
         });
 
-        if (result.status !== 'rendered' || !result.liquid) return null;
+        if (result.status !== 'rendered' || !result.liquid) {
+            console.warn(JSON.stringify({ event: 'lb:liquid:render-unavailable', ...liquidRenderFailureDiagnostics(result) }));
+            return null;
+        }
 
         const assembled = assembleLiquidPageFromRenderResult(result.liquid, { beforeContentHtml: catalogDemo ? '' : productOriginFilterMarkup(plan.route, editorMode), afterContentHtml });
         return catalogDemo ? { ...assembled, html: await catalogDemoReadOnlyHtml(assembled.html, catalogDemo) } : assembled;
