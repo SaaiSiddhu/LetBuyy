@@ -153,3 +153,19 @@ for (const visibility of [
         assert.match(h.text(), /Threadline/);
     } finally { await h.close(); }
 });
+
+
+for (const artwork of [
+ {version:'2.0.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/catalog-v2/circuit.webp'},
+ {version:'1.0.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/forge.svg'},
+ {version:undefined,original:'/theme-previews/forge.svg',expected:'/theme-previews/forge.svg'},
+ {version:'2.0.0',original:'https://custom.example.invalid/captured-design.webp',expected:'https://custom.example.invalid/captured-design.webp'},
+]) test(`installed library artwork honors its captured version and custom override: ${artwork.version}/${artwork.original}`,async()=>{
+ const circuit={...theme,slug:'letbuyy-forge',name:'Circuit'};
+ const h=await mount('/sample-store/online-store/themes',async url=>{
+  if(url.includes('/access'))return Response.json({data:{published:false,status:'draft',access_mode:'public',access_message:null,has_password:false}});
+  if(url.includes('/library'))return Response.json({data:{themes:[{slug:circuit.slug,name:circuit.name,version:artwork.version,thumbnail_url:artwork.original,instance_status:'installed',installed_at:'2026-10-27T00:00:00Z',last_published_at:null,last_modified_at:'2026-10-27T00:00:00Z',hasDraft:true,isCurrentlyPublished:false,updateAvailable:false,theme_package_version_id:versionId}]}});
+  return Response.json({themes:[circuit],currentTheme:circuit,storeId:site,storeStatus:'draft'});
+ },true);
+ try{const image=h.document.querySelector('img[alt="Circuit design preview"]');assert.ok(image);assert.equal(image.getAttribute('src'),artwork.expected);assert.match(h.text(),/Saved draft/);}finally{await h.close();}
+});
