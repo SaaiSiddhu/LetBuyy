@@ -1,6 +1,6 @@
 import 'server-only';
 import { readStorefrontApiBaseUrl } from './api/base-url';
-import { storefrontInternalHeaders } from './storefront-internal-headers';
+import { storefrontInternalHeaders, STOREFRONT_INTERNAL_TIMEOUT_MS } from './storefront-internal-headers';
 
 export interface StorefrontAccessContext {
   site_id: string;
@@ -26,6 +26,7 @@ export async function resolveStorefrontAccessContext(host: string): Promise<Stor
   const response = await fetch(url, {
     headers: await storefrontInternalHeaders('GET', url),
     cache: 'no-store',
+    signal: AbortSignal.timeout(STOREFRONT_INTERNAL_TIMEOUT_MS),
   });
   if (response.status === 404) return null;
   if (!response.ok) {
@@ -48,6 +49,7 @@ export async function verifyStorePassword(input: {
     headers: await storefrontInternalHeaders('POST', url, body),
     body,
     cache: 'no-store',
+    signal: AbortSignal.timeout(STOREFRONT_INTERNAL_TIMEOUT_MS),
   });
   return response.ok;
 }

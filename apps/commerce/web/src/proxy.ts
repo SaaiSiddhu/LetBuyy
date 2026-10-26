@@ -16,7 +16,7 @@ import {
 } from '@letbuyy/tenant-core';
 import { getThemePreviewCookieName, normalizeThemePreviewToken } from './lib/theme-preview-cookie';
 import { readStorefrontApiBaseUrl } from './lib/api/base-url';
-import { storefrontInternalHeaders } from './lib/storefront-internal-headers';
+import { storefrontInternalHeaders, STOREFRONT_INTERNAL_TIMEOUT_MS } from './lib/storefront-internal-headers';
 
 // Mirrors the sites_access_mode_check CHECK constraint, which is the upstream source of truth.
 const STOREFRONT_ACCESS_MODES = ['public', 'password', 'preview_only', 'offline'] as const;
@@ -105,7 +105,7 @@ function signingKey(name: 'PREVIEW_SIGNING_KEY' | 'STORE_ACCESS_SIGNING_KEY'): s
 // rather than falls through, so a gateway that accepts the connection and then hangs would stall the
 // whole storefront instead of degrading to the holding page. Both store-access calls are bounded; the
 // abort surfaces as a rejected fetch, which takes the existing fail-closed path (SEC-R1).
-const STORE_ACCESS_TIMEOUT_MS = 3000;
+// The shared finite budget also covers legitimate Gateway coordinator cold starts.
 
 async function resolveAccess(host: string, req: NextRequest): Promise<StorefrontAccessResolution> {
   const config = backendConfig();
@@ -119,7 +119,7 @@ async function resolveAccess(host: string, req: NextRequest): Promise<Storefront
         ...(req.cookies.get(LETBUYY_STOREFRONT_GATE_COOKIE)?.value?{'X-LetBuyy-Storefront-Gate':req.cookies.get(LETBUYY_STOREFRONT_GATE_COOKIE)!.value}:{}),
         ...((req.nextUrl.searchParams.get(LETBUYY_STOREFRONT_PREVIEW_QUERY)||req.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)?.value)?{'X-LetBuyy-Storefront-Preview':(req.nextUrl.searchParams.get(LETBUYY_STOREFRONT_PREVIEW_QUERY)||req.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)!.value)}:{})},
       cache: 'no-store',
-      signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
+      signal: AbortSignal.timeout(STOREFRONT_INTERNAL_TIMEOUT_MS),
     });
   } catch (error) {
     warnOnce('store-access-fetch', `storefront access resolution request failed: ${errorMessage(error)}`);
@@ -153,7 +153,7 @@ async function verifyStorePassword(input: { siteId: string; host: string; passwo
       headers: await storefrontInternalHeaders('POST', url, requestBody),
       body: requestBody,
       cache: 'no-store',
-      signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
+      signal: AbortSignal.timeout(STOREFRONT_INTERNAL_TIMEOUT_MS),
     });
     const body=await response.json().catch(()=>null);
     const revision=body?.data?.access_revision;
@@ -332,7 +332,7 @@ async function handleContactSubmit(req: NextRequest, site: StorefrontAccessConte
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ store_id: site.site_id, name, email: email || undefined, phone: phone || undefined }),
-            signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
+            signal: AbortSignal.timeout(3000),
         });
         return redirectWithStatus(response.ok ? 'sent' : 'error');
     } catch {

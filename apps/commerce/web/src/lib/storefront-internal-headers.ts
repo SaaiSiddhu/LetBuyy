@@ -1,5 +1,8 @@
 import { createBoundStorefrontRequestHeaders } from '@letbuyy/auth-core';
 
+// Covers the Gateway's bounded five-second cold-start admission plus transport and store lookup.
+export const STOREFRONT_INTERNAL_TIMEOUT_MS = 10_000;
+
 /** Shared by the routing proxy and server actions; server-only environment values. */
 export async function storefrontInternalHeaders(method: 'GET' | 'POST', url: string, body?: string): Promise<Record<string, string>> {
   const policy = process.env.STOREFRONT_INTERNAL_PERIMETER?.trim();
