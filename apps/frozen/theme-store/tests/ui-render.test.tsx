@@ -17,6 +17,7 @@ import {
 import ThemeCategoryLanding from '../src/components/theme-category-landing';
 import ThemeCard from '../src/components/theme-card';
 import ThemeShowcase from '../src/components/theme-showcase';
+import MarketplaceThemeJourney from '../src/components/marketplace-theme-journey';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
 import { MARKETPLACE_POLICIES, policySectionId } from '../src/lib/marketplace-policies';
@@ -363,4 +364,16 @@ test('homepage lookbook renders opposite rows, noninteractive duplicate artwork 
     assert.ok(home.indexOf('<ThemeShowcase />') < home.indexOf('<section className="marketplace-hero">'));
     assert.match(home, /Search themes, styles, or features/);
     assert.match(home, /Start with a free theme/);
+});
+
+test('illustrated theme journey offers real guide destinations without exposing mock editor controls', () => {
+    const html = renderToStaticMarkup(<MarketplaceThemeJourney />);
+    assert.match(html, /<section[^>]+aria-labelledby="how-it-works"/);
+    assert.match(html, /<ol class="journey-steps">/);
+    assert.equal((html.match(/class="journey-art journey-art-[^"]+" aria-hidden="true"/g) || []).length, 3);
+    const guideLinks = [...html.matchAll(/href="\/guides\/([^"]+)"/g)].map(match => match[1]);
+    assert.deepEqual(guideLinks, ['choose-the-right-theme', 'install-and-publish', 'before-you-publish']);
+    for (const slug of guideLinks) assert.ok(findMarketplaceGuide(slug), slug);
+    assert.doesNotMatch(html, /<button|<input|<iframe/);
+    assert.doesNotMatch(readAppFile('src/app/page.tsx'), /marketplace-benefits/);
 });

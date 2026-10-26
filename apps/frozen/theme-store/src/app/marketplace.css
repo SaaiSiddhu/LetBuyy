@@ -206,11 +206,7 @@
 .marketplace-quick-look-art { position: relative; aspect-ratio: 4 / 3; background: var(--lb-color-surface-subdued); border-radius: var(--lb-radius-md); overflow: hidden; }
 .marketplace-quick-look-art img { object-fit: cover; object-position: top; }
 
-.marketplace-benefits { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--lb-space-6) * 12)), 1fr)); gap: var(--lb-space-6); padding-block: var(--lb-space-7); border-block: thin solid var(--lb-color-border); }
-.marketplace-benefits article { display: flex; align-items: flex-start; gap: var(--lb-space-3); }
-.marketplace-benefits svg { flex-shrink: 0; width: var(--lb-space-6); height: var(--lb-space-6); color: var(--lb-color-primary); }
-.marketplace-benefits h3 { margin: 0 0 var(--lb-space-2); font-size: var(--lb-font-size-body); }
-.marketplace-benefits p { margin: 0; color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); }
+
 .marketplace-callout { padding: var(--lb-space-7); background: var(--lb-color-primary-soft); border-radius: var(--lb-radius-xl); }
 .marketplace-callout h2 { margin: 0; font-size: var(--lb-font-size-section-title); }
 .marketplace-callout p { color: var(--lb-color-text-subdued); max-width: 56ch; }
@@ -296,6 +292,81 @@
 
 @media (width >= 80rem) {
     .marketplace-catalog-grid .marketplace-theme-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Illustrative theme journey: code-native artwork, never live editor controls. */
+.journey-heading { align-items: flex-end; gap: var(--lb-space-5); }
+.journey-heading > div { max-width: 58ch; }
+.journey-heading .marketplace-eyebrow { margin-bottom: var(--lb-space-3); }
+.journey-heading h2 { font-size: clamp(var(--lb-font-size-section-title), 3vw, var(--lb-font-size-page-title)); letter-spacing: -0.035em; text-wrap: balance; }
+.journey-heading > .marketplace-text-link { display: inline-flex; gap: var(--lb-space-2); align-items: center; min-height: var(--lb-size-touch-target); }
+.journey-steps { display: grid; gap: var(--lb-space-5); padding: 0; margin: var(--lb-space-6) 0 0; list-style: none; }
+.journey-steps > li { min-width: 0; }
+.journey-card { display: grid; height: 100%; padding: 0; gap: 0; overflow: hidden; border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-xl); background: var(--lb-color-surface); box-shadow: none; }
+.journey-card-copy { display: flex; flex-direction: column; align-items: flex-start; padding: var(--lb-space-5); gap: var(--lb-space-3); }
+.journey-card-copy h3 { font-size: var(--lb-font-size-card-title); line-height: var(--lb-line-height-section-title); letter-spacing: -0.025em; margin: 0; text-wrap: balance; }
+.journey-card-copy > p:not(.journey-step-label) { margin: 0 0 var(--lb-space-2); color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-body); line-height: var(--lb-line-height-body); }
+.journey-card-copy > .marketplace-text-link { margin-top: auto; display: inline-flex; align-items: center; gap: var(--lb-space-2); min-height: var(--lb-size-touch-target); font-size: var(--lb-font-size-body); }
+.journey-card-copy > .marketplace-text-link svg { flex-shrink: 0; }
+.journey-step-label { display: flex; align-items: center; gap: var(--lb-space-2); color: var(--lb-color-primary); font-size: var(--lb-font-size-caption); font-weight: var(--lb-font-weight-semibold); margin: 0; }
+.journey-step-label > span { color: var(--lb-color-text-subdued); font-variant-numeric: tabular-nums; }
+.marketplace-journey a:focus-visible { outline: medium solid var(--lb-color-focus-ring); outline-offset: var(--lb-space-1); border-radius: var(--lb-radius-sm); }
+.journey-art { container-type: inline-size; position: relative; aspect-ratio: 16 / 10; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--lb-color-primary) 18%, var(--lb-color-surface)), var(--lb-color-bg)); border-bottom: thin solid var(--lb-color-border); font-size: var(--lb-font-size-caption); }
+.journey-art i { display: block; }
+.journey-store { position: absolute; width: 72%; left: 9%; top: 12%; background: var(--lb-color-surface); border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-md); overflow: hidden; box-shadow: var(--lb-shadow-lg); transform: rotate(-4deg); }
+.journey-window-bar { height: var(--lb-space-4); display: flex; align-items: center; gap: calc(var(--lb-space-1) / 2); padding-inline: var(--lb-space-2); background: var(--lb-color-bg); border-bottom: thin solid var(--lb-color-border); }
+.journey-window-bar i { width: var(--lb-space-1); height: var(--lb-space-1); border-radius: var(--lb-radius-full); background: var(--lb-color-border); }
+.journey-window-bar > span { width: 40%; height: var(--lb-space-1); background: var(--lb-color-border); border-radius: var(--lb-radius-full); margin-inline: auto; }
+.journey-store-nav { display: flex; justify-content: space-between; gap: var(--lb-space-2); padding: 2cqw; font-size: calc(var(--lb-font-size-caption) * 0.5); }
+.journey-store-nav b { letter-spacing: 0.1em; }
+.journey-store-hero { display: grid; grid-template-columns: 1fr 1fr; background: var(--lb-color-primary-soft); min-height: 26cqw; }
+.journey-store-hero > div:first-child { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: var(--lb-space-2); padding: var(--lb-space-3); }
+.journey-store-hero small { font-size: calc(var(--lb-font-size-caption) * 0.4); letter-spacing: 0.08em; }
+.journey-store-hero strong { font-family: Georgia, serif; font-size: var(--lb-font-size-body-large); font-weight: var(--lb-font-weight-medium); line-height: 1.1; }
+.journey-store-hero i { width: 50%; height: var(--lb-space-2); border-radius: var(--lb-radius-full); background: var(--lb-color-primary); }
+.journey-photo { position: relative; min-width: 0; overflow: hidden; }
+.journey-photo img { object-fit: cover; }
+.journey-store-products { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--lb-space-2); padding: 3cqw; }
+.journey-store-products i { height: 7cqw; background: var(--lb-color-primary-soft); border-radius: var(--lb-radius-sm); }
+.journey-store-products i:nth-child(2) { background: color-mix(in srgb, var(--lb-color-text-subdued) 18%, var(--lb-color-surface)); }
+.journey-store-products i:nth-child(3) { background: color-mix(in srgb, var(--lb-color-primary) 25%, var(--lb-color-surface)); }
+.journey-sample-behind { position: absolute; width: 40%; height: 65%; right: 6%; top: 9%; border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-md); overflow: hidden; transform: rotate(9deg); background: var(--lb-color-surface); }
+.journey-sample-behind .journey-photo { height: 100%; }
+.journey-floating-label { position: absolute; bottom: 9%; right: 7%; display: flex; align-items: center; gap: var(--lb-space-2); padding: var(--lb-space-3); background: var(--lb-color-surface); border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-md); box-shadow: var(--lb-shadow-md); color: var(--lb-color-text); font-size: calc(var(--lb-font-size-caption) * 0.8); }
+.journey-floating-label svg { color: var(--lb-color-primary); width: var(--lb-space-4); height: var(--lb-space-4); }
+.journey-cursor { position: absolute; width: var(--lb-space-6); height: var(--lb-space-6); color: var(--lb-color-primary); fill: var(--lb-color-surface); right: 18%; bottom: 25%; filter: drop-shadow(0 var(--lb-space-1) var(--lb-space-1) var(--lb-color-border)); }
+.journey-art-personalise { background: radial-gradient(ellipse at 75% 30%, var(--lb-color-primary-soft), var(--lb-color-bg)); }
+.journey-art-personalise .journey-store { width: 73%; left: 20%; top: 12%; transform: rotate(3deg); }
+.journey-editor { position: absolute; width: 43%; left: 6%; bottom: 10%; display: grid; gap: var(--lb-space-3); padding: var(--lb-space-3); background: var(--lb-color-surface); border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-md); box-shadow: var(--lb-shadow-lg); }
+.journey-editor > span { font-size: calc(var(--lb-font-size-caption) * 0.8); font-weight: var(--lb-font-weight-semibold); }
+.journey-swatches { display: flex; gap: var(--lb-space-2); }
+.journey-swatches i { width: var(--lb-space-4); height: var(--lb-space-4); border-radius: var(--lb-radius-full); background: var(--lb-color-primary); }
+.journey-swatches i:first-child { outline: thin solid var(--lb-color-primary); outline-offset: calc(var(--lb-space-1) / 2); }
+.journey-swatches i:nth-child(2) { background: var(--lb-color-text); }
+.journey-swatches i:nth-child(3) { background: var(--lb-color-text-subdued); }
+.journey-swatches i:nth-child(4) { background: var(--lb-color-bg); border: thin solid var(--lb-color-border); }
+.journey-editor-line { width: 90%; height: var(--lb-space-1); background: var(--lb-color-border); border-radius: var(--lb-radius-full); }
+.journey-editor-line + .journey-editor-line { width: 62%; }
+.journey-type { display: flex; align-items: center; gap: var(--lb-space-2); border-top: thin solid var(--lb-color-border); padding-top: var(--lb-space-2); }
+.journey-type b { font-family: Georgia, serif; font-size: var(--lb-font-size-page-title); font-weight: var(--lb-font-weight-medium); }
+.journey-type span { font-size: calc(var(--lb-font-size-caption) * 0.65); color: var(--lb-color-text-subdued); }
+.journey-art-personalise .journey-cursor { bottom: 27%; right: 42%; }
+.journey-art-prepare .journey-store { width: 66%; left: 9%; top: 10%; transform: rotate(-3deg); }
+.journey-phone { position: absolute; width: 23%; right: 8%; top: 24%; padding: var(--lb-space-1); border: medium solid var(--lb-color-text-subdued); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface); box-shadow: var(--lb-shadow-lg); transform: rotate(5deg); }
+.journey-phone-speaker { margin: 0 auto var(--lb-space-1); width: 25%; height: calc(var(--lb-space-1) / 2); border-radius: var(--lb-radius-full); background: var(--lb-color-text-subdued); }
+.journey-phone .journey-photo { aspect-ratio: 1; border-radius: var(--lb-radius-sm); }
+.journey-phone b { display: block; font-family: Georgia, serif; font-size: calc(var(--lb-font-size-caption) * 0.75); line-height: 1.1; padding: var(--lb-space-2) 0; }
+.journey-phone > i { width: 80%; height: calc(var(--lb-space-1) / 2); background: var(--lb-color-border); margin-bottom: var(--lb-space-1); }
+.journey-review { position: absolute; bottom: 8%; left: 14%; display: grid; gap: var(--lb-space-2); width: 60%; padding: var(--lb-space-3); background: var(--lb-color-surface); border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-md); box-shadow: var(--lb-shadow-md); }
+.journey-review > span { display: flex; align-items: center; gap: var(--lb-space-2); font-size: calc(var(--lb-font-size-caption) * 0.7); }
+.journey-review svg { color: var(--lb-color-primary); width: var(--lb-space-3); height: var(--lb-space-3); }
+@media (width >= 40rem) and (width < 64rem) {
+    .journey-card { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); }
+    .journey-art { align-self: center; border-bottom: 0; }
+}
+@media (width >= 64rem) {
+    .journey-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .journey-card { grid-template-rows: auto 1fr; }
 }
 
 /* Resource, support and document layouts share the marketplace's semantic tokens. */

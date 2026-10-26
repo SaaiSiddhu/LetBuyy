@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Check, EmptyState, Eye, Palette, Search, ShieldCheck, Smartphone, Input, Button } from '@letbuyy/ui';
+import { ArrowRight, Check, EmptyState, Palette, Search, ShieldCheck, Input, Button } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
 import { ThemeService } from '@/lib/theme-service';
 import { normalizeThemeRecord } from '@/lib/theme-catalog';
@@ -63,14 +63,6 @@ export default async function HomePage() {
                     <div className="marketplace-theme-grid">{featured.map(theme => <ThemeCard key={theme.id} theme={theme} />)}</div>
                 ) : <EmptyState kind="themes" title="New themes are on the way" body="There are no published themes to browse yet. Check back soon." primaryAction={<Link href="/themes" className="marketplace-action">Browse themes</Link>} />}
             </section>
-
-            <div className="marketplace-container">
-                <section className="marketplace-benefits" aria-label="Choosing a LetBuyy theme">
-                    <article><Eye aria-hidden="true" /><div><h3>See it before you choose</h3><p>Explore a public sample before adding a theme to your store.</p></div></article>
-                    <article><Palette aria-hidden="true" /><div><h3>A starting point, made yours</h3><p>Bring your colours, content, and products into the merchant editor.</p></div></article>
-                    <article><Smartphone aria-hidden="true" /><div><h3>Look at the whole experience</h3><p>Switch between desktop and mobile views in the theme demo.</p></div></article>
-                </section>
-            </div>
 
             {recent.length > 0 && <section className="marketplace-section marketplace-container" aria-labelledby="recent-themes-heading">
                 <div className="marketplace-section-heading"><div><h2 id="recent-themes-heading">Fresh perspectives</h2><p>The latest additions to the theme catalog.</p></div><Link href="/themes?sort=recent" className="marketplace-text-link">See what’s new ↗</Link></div>
