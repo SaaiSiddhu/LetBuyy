@@ -1,6 +1,8 @@
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
+import { isBoundStorefrontRequestTarget } from '@letbuyy/auth-core';
+import { authenticateBoundStorefrontRequest } from '../lib/storefront-internal-request';
 
 type RuntimeEnvironmentFlags = Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'DEPLOYMENT_ENV'>;
 
@@ -79,6 +81,22 @@ function hasInternalCredential(c: GatewayContext): boolean {
 }
 
 export const internalPerimeter = createMiddleware<{ Bindings: Env }>(async (c, next) => {
+    // Owner-approved workload boundary for these two fixed Commerce operations.
+    // Every other internal path still takes the IP perimeter below.
+    const storefrontPolicy = c.env.STOREFRONT_INTERNAL_PERIMETER?.trim();
+    if (storefrontPolicy && isBoundStorefrontRequestTarget(c.req.method, c.req.url)) {
+        const result = storefrontPolicy === 'bound-request-v1'
+            ? await authenticateBoundStorefrontRequest(c) : 'unavailable';
+        if (result !== 'accepted') {
+            return c.json({ success: false, error: {
+                code: result === 'unavailable' ? 'STOREFRONT_INTERNAL_UNAVAILABLE' : 'UNAUTHORIZED',
+                message: result === 'unavailable' ? 'Store access is unavailable.' : 'Invalid storefront internal request',
+            } }, result === 'unavailable' ? 503 : 401);
+        }
+        await next();
+        return;
+    }
+
     const entries = allowlistEntries(c.env);
     const production = isProductionRuntime(c.env);
 
