@@ -43,7 +43,7 @@ const proofText = tokens => tokenText(tokens.map((token,index) =>
     token.kind === 'string' && tokens[index-2]?.value === 'raise' && tokens[index-1]?.value === 'exception'
         ? {...token,value:'__refusal__'} : token));
 
-export function normalizeVerifiedManagedCatalogFences(sql) {
+export function verifiedManagedCatalogFences(sql) {
     const edits = [];
     for (const statement of sqlStatements(sql)) {
         if (statement[0]?.value !== 'do' || statement.length !== 3 || statement[1]?.kind !== 'body') continue;
@@ -62,10 +62,15 @@ export function normalizeVerifiedManagedCatalogFences(sql) {
         const expected = MANAGED_FENCE_BODY.replace('__CATALOG_LOCK__', tokenText(lock)).replace('__CATALOG_OIDS__', held);
         if (proofText(tokens) !== proofText(sqlTokens(expected))) continue;
         // Equal-length replacement retains guard/restoration source offsets.
-        const replacement = tokenText(lock);
         const from = statement[0].start, to = statement.at(-1).end;
-        edits.push([from,to,replacement+' '.repeat(to-from-replacement.length)]);
+        edits.push({from,to,nativeLock:tokenText(lock),catalogs});
     }
-    for (const [from,to,text] of edits.reverse()) sql = sql.slice(0,from)+text+sql.slice(to);
+    return edits;
+}
+
+export function normalizeVerifiedManagedCatalogFences(sql) {
+    for (const {from,to,nativeLock} of verifiedManagedCatalogFences(sql).reverse()) {
+        sql = sql.slice(0,from)+nativeLock+' '.repeat(to-from-nativeLock.length)+sql.slice(to);
+    }
     return sql;
 }

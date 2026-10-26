@@ -536,17 +536,21 @@ export async function createOwnedManagedSupabaseFixture(owned:OwnedDatabase) {
     const runId=newRunId(),name=`letbuyy-managed-admission-${runId}`;
     const volume=createVolume({name:`${name}-data`,runId});
     const connections:OwnedProviderSession[]=[];
-    const execute=(sql:string,role:'postgres'|'supabase_admin'='postgres')=>{
+    const applicationPassword=randomBytes(32).toString('hex');
+    let applicationPasswordInstalled=false;
+    const execute=(sql:string,role:'postgres'|'supabase_admin'|'authenticator'='postgres')=>{
         try {
-            const stdout=execFileSync('docker',['exec','-i',name,'psql','-U',role,'-d','postgres','-qAtX','-v','ON_ERROR_STOP=1'],{
+            const application=role==='authenticator';
+            const stdout=execFileSync('docker',['exec','-i',...(application?['-e','PGPASSWORD']:[]),name,'psql',...(application?['-h','127.0.0.1']:[]),'-U',role,'-d','postgres','-qAtX','-v','ON_ERROR_STOP=1'],{
                 input:'SET search_path=public,extensions;\n'+sql,encoding:'utf8',timeout:90_000,stdio:['pipe','pipe','pipe'],
+                ...(application?{env:{...process.env,PGPASSWORD:applicationPassword}}:{}),
             });
             return {ok:true,stdout:stdout.trim(),error:''};
         } catch(error) {
             return {ok:false,stdout:'',error:String((error as {stderr?:Buffer|string}).stderr??'Managed fixture SQL failed').slice(-1800)};
         }
     };
-    const query=(sql:string,role:'postgres'|'supabase_admin'='postgres')=>{
+    const query=(sql:string,role:'postgres'|'supabase_admin'|'authenticator'='postgres')=>{
         const result=execute(sql,role);if(!result.ok) throw new Error(result.error);return result.stdout;
     };
     function session():OwnedProviderSession {
@@ -591,7 +595,14 @@ export async function createOwnedManagedSupabaseFixture(owned:OwnedDatabase) {
         await waitUntilAccepting(name);
     } catch(error) {removeCluster({name,runId,volume});throw error;}
     return {
-        psql:(sql:string)=>query(sql),admin:(sql:string)=>query(sql,'supabase_admin'),session,
+        psql:(sql:string)=>query(sql),admin:(sql:string)=>query(sql,'supabase_admin'),
+        application:(sql:string)=>{
+            if(!applicationPasswordInstalled) {
+                query(`ALTER ROLE authenticator PASSWORD '${applicationPassword}';`,'supabase_admin');
+                applicationPasswordInstalled=true;
+            }
+            return query(sql,'authenticator');
+        },session,
         psqlExpectError(sql:string){const result=execute(sql);if(result.ok)throw new Error('Refused managed-fixture operation unexpectedly succeeded');return result.error;},
         async close(){
             for(const connection of connections)connection.close();
