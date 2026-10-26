@@ -25,12 +25,12 @@ export function ResourceGrid({ items }: { items: ResourceLink[] }) {
         <Link href={item.href} className="marketplace-text-link" aria-label={`${item.label || resourceAction(item.href)}: ${item.title}`}>{item.label || resourceAction(item.href)} <ArrowRight size={16} aria-hidden="true" /></Link></div>
     </Card>)}</div>;
 }
-export default function MarketplaceContentPage({ title, intro, eyebrow = 'LetBuyy Themes', children, parent, artwork = 'discover' }: {
-    title: string; intro: string; eyebrow?: string; children: ReactNode; parent?: { label: string; href: string }; artwork?: MarketplaceArtworkKind;
+export default function MarketplaceContentPage({ title, intro, eyebrow = 'LetBuyy Themes', children, parent, artwork = 'discover', headingActions, className = '', breadcrumbLabel }: {
+    title: string; intro: string; eyebrow?: string; children: ReactNode; parent?: { label: string; href: string }; artwork?: MarketplaceArtworkKind; headingActions?: ReactNode; className?: string; breadcrumbLabel?: string;
 }) {
-    return <Page className="marketplace marketplace-content-page"><div className="marketplace-container">
-        <nav className="marketplace-breadcrumbs" aria-label="Breadcrumb"><Link href="/">Themes home</Link><span aria-hidden="true">/</span>{parent && <><Link href={parent.href}>{parent.label}</Link><span aria-hidden="true">/</span></>}<span aria-current="page">{title}</span></nav>
-        <header className="marketplace-content-heading marketplace-illustrated-heading"><div><p className="marketplace-eyebrow">{eyebrow}</p><h1>{title}</h1><p className="marketplace-intro">{intro}</p></div><MarketplaceArtwork kind={artwork} priority /></header>
+    return <Page className={`marketplace marketplace-content-page ${className}`}><div className="marketplace-container">
+        <nav className="marketplace-breadcrumbs" aria-label="Breadcrumb"><Link href="/">Themes home</Link><span aria-hidden="true">/</span>{parent && <><Link href={parent.href}>{parent.label}</Link><span aria-hidden="true">/</span></>}<span aria-current="page">{breadcrumbLabel || title}</span></nav>
+        <header className="marketplace-content-heading marketplace-illustrated-heading"><div><p className="marketplace-eyebrow">{eyebrow}</p><h1>{title}</h1><p className="marketplace-intro">{intro}</p>{headingActions && <div className="marketplace-heading-actions">{headingActions}</div>}</div><MarketplaceArtwork kind={artwork} priority /></header>
         <div className="marketplace-content-sections">{children}</div>
     </div></Page>;
 }

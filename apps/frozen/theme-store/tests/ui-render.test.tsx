@@ -25,6 +25,7 @@ import Footer from '../src/components/layout/footer';
 import ThemeStyleGallery from '../src/components/theme-style-gallery';
 import ThemeDevicePreview from '../src/components/theme-device-preview';
 import MarketplaceMobileMenu from '../src/components/marketplace-mobile-menu';
+import CreatorGuidancePage from '../src/app/for-creators/page';
 import MarketplaceArtwork, { artworkForHref } from '../src/components/marketplace-artwork';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
@@ -517,4 +518,17 @@ test('compact mobile menu keeps destinations inside native expandable groups', (
     for(const href of ['/themes','/themes?category=store','/guides','/legal','/dashboard/downloads','/support','/contact'])assert.ok(html.includes(`href="${href}"`),href);
     const activeLink = (html.match(/<a\b[^>]*>/g) || []).find(link=>link.includes('href="/guides"'));
     assert.ok(activeLink?.includes('aria-current="page"'));
+});
+
+test('creator handbook preserves preparation, approval boundaries and real workspace destinations', () => {
+    const html = renderToStaticMarkup(<CreatorGuidancePage />);
+    assert.equal((html.match(/<h1\b/g)||[]).length, 1);
+    assert.match(html, /Prepare your theme for review/);
+    assert.match(html, /id="creator-checklist"/);
+    assert.match(html, /href="#creator-checklist"/);
+    for(const title of ['Package essentials','Screenshots &amp; presentation','Quality &amp; usability','Rights &amp; ongoing support'])assert.ok(html.includes(title),title);
+    for(const href of ['/developer','/developer/listings/new','/docs/api','/legal/creator-agreement','/contact'])assert.ok(html.includes(`href="${href}"`),href);
+    assert.match(html, /payout arrangements require separate approval/);
+    assert.match(html, /submitted record is not automatically a published theme/);
+    assert.match(html, /aria-label="Preparation guidance"/);
 });
