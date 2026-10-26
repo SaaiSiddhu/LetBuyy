@@ -137,7 +137,7 @@ test('Marketplace reachability accepts the real shared toggle and rejects a remo
         };
 
         assert.deepEqual(marketplaceFailures(navbar), [], 'the actual Marketplace canonical toggle must satisfy its gate');
-        const removed = navbar.replace(/<ThemeToggleButton\b[^>]*\/>/, '');
+        const removed = navbar.replace(/<ThemeToggleButton\b[^>]*\/>/g, '');
         assert.notEqual(removed, navbar, 'remove the rendered control while retaining its import');
         assert.match(marketplaceFailures(removed).join('\n'), /dark mode must be reachable through the canonical provider toggle/);
 
