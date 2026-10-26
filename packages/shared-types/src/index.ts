@@ -1170,7 +1170,7 @@ export const CustomDomainHealthSchema = /* @__PURE__ */ (() => z.object({
   vercel: MetadataSchema.default({}),
 }))();
 
-export const DomainRegistrarProviderSchema = /* @__PURE__ */ (() => z.enum(['resellerclub', 'opensrs', 'sandbox']))();
+export const DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'sandbox']);
 
 export const DomainAvailabilityQuoteSchema = /* @__PURE__ */ (() => z.object({
   domain: z.string().min(3).max(255),
