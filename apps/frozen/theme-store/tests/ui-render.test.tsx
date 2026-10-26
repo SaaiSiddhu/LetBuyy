@@ -26,6 +26,8 @@ import ThemeStyleGallery from '../src/components/theme-style-gallery';
 import ThemeDevicePreview from '../src/components/theme-device-preview';
 import MarketplaceMobileMenu from '../src/components/marketplace-mobile-menu';
 import CreatorGuidancePage from '../src/app/for-creators/page';
+import MarketplaceContactForm, { prepareContactEmail } from '../src/components/marketplace-contact-form';
+import ContactPage from '../src/app/contact/page';
 import MarketplaceArtwork, { artworkForHref } from '../src/components/marketplace-artwork';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
@@ -531,4 +533,36 @@ test('creator handbook preserves preparation, approval boundaries and real works
     assert.match(html, /payout arrangements require separate approval/);
     assert.match(html, /submitted record is not automatically a published theme/);
     assert.match(html, /aria-label="Preparation guidance"/);
+});
+
+test('contact email preparation validates fields and safely encodes a reviewable draft', () => {
+    const fields = {name:'Sam',email:'sam@example.test',topic:'installation',theme:'Core & Everyday',reference:'ref-123',message:'My theme is not appearing in the library after adding it.'};
+    const result = prepareContactEmail(fields,'support@example.test');
+    assert.ok(result.ok);
+    const url = new URL(result.draft.url);
+    assert.equal(url.protocol,'mailto:');
+    assert.equal(url.pathname,'support@example.test');
+    assert.equal(url.searchParams.size,2);
+    assert.match(url.searchParams.get('subject')!,/Core & Everyday/);
+    assert.match(url.searchParams.get('body')!,/Reply email: sam@example.test/);
+    assert.match(url.searchParams.get('body')!,/ref-123/);
+    const invalid = prepareContactEmail({...fields,name:'',email:'bad',topic:'invented',message:'short'},'support@example.test');
+    assert.equal(invalid.ok,false);
+    if(!invalid.ok)for(const key of ['name','email','topic','message'])assert.ok(key in invalid.errors);
+    assert.equal(prepareContactEmail({...fields,reference:'ref\nBcc: other@example.test'},'support@example.test').ok,false);
+    assert.equal(prepareContactEmail(fields,'support@example.test?bcc=other@example.test').ok,false);
+});
+
+test('contact form offers labelled fields and truthful email preparation without a backend submission', () => {
+    const html = renderToStaticMarkup(<MarketplaceContactForm recipient="support@example.test"/>);
+    for(const name of ['name','email','topic','theme','reference','message'])assert.ok(html.includes(`name="${name}"`));
+    assert.match(html,/Prepare email/);
+    assert.match(html,/review and send it in your email app/);
+    assert.match(html,/href="\/legal\/privacy"/);
+    assert.match(html,/<fieldset disabled=""/);
+    assert.match(html,/<noscript>/);
+    assert.doesNotMatch(html,/Message sent|request received|method="post"/);
+    const page = renderToStaticMarkup(<ContactPage/>);
+    assert.equal((page.match(/<h1\b/g)||[]).length,1);
+    for(const href of ['/support','/faq','/legal','/legal/grievance'])assert.ok(page.includes(`href="${href}"`));
 });

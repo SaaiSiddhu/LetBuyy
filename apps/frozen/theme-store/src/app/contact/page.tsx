@@ -1,12 +1,24 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import {Card,Mail} from '@letbuyy/ui';
+import { CircleHelp } from 'lucide-react';
+import { ArrowRight, Mail, FileText, ShieldCheck } from '@letbuyy/ui';
 import MarketplaceContentPage from '@/components/marketplace-content-page';
-export const metadata:Metadata={title:'Contact theme support'};
-const email=process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@letbuyy.com';
-const topics=[{title:'Account, purchase, or installation',subject:'Theme marketplace support',body:'Include the theme slug and relevant purchase or installation reference. Explain the result you expected and the result you see.'},{title:'Creator listing or package',subject:'Theme submission question',body:'Include your listing slug, package version, current review state, and the question you need answered.'},{title:'Privacy, policy, or rights concern',subject:'Theme marketplace privacy or policy question',body:'Identify the relevant document or listing and describe the concern. Include only the information necessary for the question.'}];
-export default function ContactPage(){return <MarketplaceContentPage artwork="support" title="Talk to us about your theme." eyebrow="Contact" intro="Choose the subject that fits your question. Your email app will open so you can review and send the message yourself.">
-    <div className="marketplace-resource-grid">{topics.map(topic=><Card layout="stack" key={topic.title} className="marketplace-resource-card"><Mail size={20} aria-hidden="true"/><h2>{topic.title}</h2><p>{topic.body}</p><a href={`mailto:${email}?subject=${encodeURIComponent(topic.subject)}`} className="marketplace-text-link">Email {email}</a></Card>)}</div>
-    <div className="marketplace-reading-layout"><section className="marketplace-article"><h2>Before you send</h2><ul className="marketplace-checklist"><li>Check the related purchase or installation record for the latest result.</li><li>Include the affected page, browser, and steps to reproduce the problem.</li><li>Redact customer data and account details in screenshots.</li><li>Never send passwords, payment credentials, session cookies, or private preview links.</li></ul></section><aside className="marketplace-content-note"><h3>Looking for an immediate next step?</h3><p>The support center and FAQs explain common access, preview, payment, and download questions.</p><Link href="/support" className="marketplace-text-link">Open support center</Link><Link href="/faq" className="marketplace-text-link">Browse FAQs</Link></aside></div>
-    <section><h2>Formal and privacy questions</h2><p>Review the policy directory for document scope and current review status. Verified operator and accountable contact details must be finalized before the review documents become effective.</p><div className="marketplace-hero-actions"><Link href="/legal" className="marketplace-text-link">Legal and privacy directory</Link><Link href="/legal/grievance" className="marketplace-text-link">Grievance and legal contact information</Link></div></section>
-</MarketplaceContentPage>;}
+import MarketplaceContactForm from '@/components/marketplace-contact-form';
+
+export const metadata: Metadata = { title: 'Contact theme support' };
+const email = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@letbuyy.com';
+
+export default function ContactPage() {
+    return <MarketplaceContentPage className="marketplace-contact-page" artwork="support" breadcrumbLabel="Contact" title="Let’s find your next step." eyebrow="Contact theme support" intro="A question about a theme, your store, or a listing? Share the details below and prepare an email for our support team." headingActions={<a href="#contact-form" className="marketplace-text-link">Write your message<ArrowRight size={17} aria-hidden="true"/></a>}>
+        <section className="contact-page-layout" aria-label="Contact theme support">
+            <MarketplaceContactForm recipient={email}/>
+            <aside className="contact-page-aside">
+                <div className="contact-support-card"><Mail size={22} aria-hidden="true"/><h2>Prefer to email directly?</h2><p>Use your own email app and include the theme name and relevant reference.</p><a href={`mailto:${email}`} className="marketplace-text-link">{email}<ArrowRight size={15} aria-hidden="true"/></a></div>
+                <div className="contact-support-card"><FileText size={22} aria-hidden="true"/><h2>A few details help.</h2><ul><li>Theme name, slug, and version.</li><li>The page or step where you need help.</li><li>What you expected and what happened.</li><li>A purchase or listing reference, if relevant.</li></ul></div>
+                <div className="contact-support-card"><CircleHelp size={22} aria-hidden="true"/><h2>Find an answer now.</h2><p>Our guides explain choosing, adding, and managing a theme.</p><Link href="/support" className="marketplace-text-link">Visit the support center<ArrowRight size={15} aria-hidden="true"/></Link><Link href="/faq" className="marketplace-text-link">Browse common questions<ArrowRight size={15} aria-hidden="true"/></Link></div>
+                <div className="contact-privacy-note"><ShieldCheck size={18} aria-hidden="true"/><p>Keep passwords, payment credentials, session cookies, private preview links, and unrelated customer information out of your message.</p></div>
+            </aside>
+        </section>
+        <section className="contact-policy-strip"><div><h2>Privacy, policies, or rights?</h2><p>Choose that topic in the form, or review the policy directory for scope and accountable-contact information.</p></div><div><Link href="/legal" className="marketplace-text-link">Legal and privacy<ArrowRight size={15} aria-hidden="true"/></Link><Link href="/legal/grievance" className="marketplace-text-link">Grievance information<ArrowRight size={15} aria-hidden="true"/></Link></div></section>
+    </MarketplaceContentPage>;
+}
