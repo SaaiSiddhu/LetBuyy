@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import {useEffect,useRef,useState} from 'react';
 import {Button,Search,Heart} from '@letbuyy/ui';
+import { Pause, Play } from 'lucide-react';
 
 const DESIGNS=[
     {key:'wardrobe',name:'Everyday wardrobe',title:'Made for everyday.',category:'Fashion',layout:'split'},
@@ -48,8 +49,7 @@ export default function ThemeShowcase(){
     },[]);
     return <section ref={ref} className="marketplace-showcase" aria-label="Animated sample theme lookbook" aria-describedby="theme-showcase-description" data-paused={paused||reduced||!inView||!documentVisible}>
         <div className="marketplace-showcase-window"><DesignRow/><DesignRow reverse/></div>
-        <p className="marketplace-showcase-label">Sample design inspiration</p>
         <p id="theme-showcase-description" className="sr-only">Illustrative designs using LetBuyy sample imagery. Browse the catalog for currently available themes. Animation pauses on hover or keyboard focus.</p>
-        <Button className="marketplace-showcase-pause" variant="secondary" size="sm" type="button" disabled={reduced} aria-label={reduced?'Animation disabled for reduced motion':paused?'Resume theme animation':'Pause theme animation'} aria-pressed={paused||reduced} onClick={()=>setPaused(value=>!value)}>{reduced?'Motion reduced':paused?'Play':'Pause'}</Button>
+        <Button className="marketplace-showcase-pause" variant="secondary" size="icon" type="button" disabled={reduced} aria-label={reduced?'Animation disabled for reduced motion':paused?'Resume theme animation':'Pause theme animation'} aria-pressed={paused||reduced} onClick={()=>setPaused(value=>!value)}>{paused||reduced?<Play size={16} aria-hidden="true"/>:<Pause size={16} aria-hidden="true"/>}</Button>
     </section>;
 }

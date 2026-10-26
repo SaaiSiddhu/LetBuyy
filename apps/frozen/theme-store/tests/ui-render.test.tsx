@@ -376,7 +376,8 @@ test('homepage lookbook renders opposite rows, noninteractive duplicate artwork 
     assert.match(html, /data-direction="right"/);
     assert.equal((html.match(/class="marketplace-showcase-group"[^>]*aria-hidden="true"/g) || []).length, 2);
     assert.match(html, /aria-label="Pause theme animation"[^>]*aria-pressed="false"/);
-    assert.match(html, /Sample design inspiration/);
+    assert.doesNotMatch(html, /marketplace-showcase-label|>Pause<|>Play<|>Motion reduced</);
+    assert.match(html, /lucide-pause/);
     assert.doesNotMatch(html, /<iframe|href="\/themes\//);
     const home = readAppFile('src/app/page.tsx');
     assert.ok(home.indexOf('<ThemeShowcase />') < home.indexOf('<section className="marketplace-hero">'));
