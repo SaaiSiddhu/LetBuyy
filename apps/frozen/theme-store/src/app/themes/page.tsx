@@ -367,9 +367,9 @@ export default async function ThemesPage({
         <Page className="theme-marketplace-page marketplace marketplace-catalog-page">
             <header className="catalog-page-header">
                 <p className="marketplace-eyebrow">LetBuyy Theme Store</p>
-                <div className="catalog-page-title"><h1>{query ? `Themes for “${query}”` : 'Explore LetBuyy themes.'}</h1><Link href="/themes/compare" className="marketplace-text-link"><LayoutGrid size={16} aria-hidden="true"/>Compare themes</Link></div>
-                <p>Discover published designs for stores, portfolios, and more. Inspect the screenshots, compare the details, and choose your starting point.</p>
-                <form action="/themes" method="get" role="search" className="catalog-page-search"><Search size={20} aria-hidden="true"/><label htmlFor="catalog-keyword" className="sr-only">Search the theme catalog</label><Input unstyled id="catalog-keyword" name="q" type="search" defaultValue={query} maxLength={80} placeholder="Search by theme, style, or feature" />
+                <div className="catalog-page-title"><h1>{query ? `Themes for “${query}”` : 'Explore themes.'}</h1><Link href="/themes/compare" className="marketplace-text-link" aria-label="Compare themes"><LayoutGrid size={16} aria-hidden="true"/>Compare</Link></div>
+                <p>Preview designs and find the right fit for your website.</p>
+                <form action="/themes" method="get" role="search" className="catalog-page-search"><Search size={20} aria-hidden="true"/><label htmlFor="catalog-keyword" className="sr-only">Search the theme catalog</label><Input unstyled id="catalog-keyword" name="q" type="search" defaultValue={query} maxLength={80} placeholder="Search themes" />
                     {Object.entries({ category: category === 'all' ? '' : category, pricing: pricing === 'all' ? '' : pricing, sort, industry, layout, tag, feature, price_min: priceMin, price_max: priceMax }).filter(([,value])=>value!==undefined&&value!=='').map(([name,value])=><Input unstyled type="hidden" key={name} name={name} value={String(value)} />)}
                     <Button type="submit">Search<ArrowRight size={16} aria-hidden="true"/></Button>
                 </form>

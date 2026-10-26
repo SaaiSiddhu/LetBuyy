@@ -92,6 +92,22 @@
 .marketplace-menu-footer { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-3); }
 .marketplace-menu-footer > a { color: var(--lb-color-text); font-size: var(--lb-font-size-body); font-weight: var(--lb-font-weight-medium); text-underline-offset: var(--lb-space-1); }
 .marketplace-menu-content :where(a, summary):focus-visible, .marketplace-menu-footer a:focus-visible { outline: medium solid var(--lb-color-focus-ring); outline-offset: var(--lb-space-1); }
+/* Keep catalog discovery close to the first results on smaller screens. */
+@media (width < 48rem) {
+    .marketplace-catalog-page { gap: var(--lb-space-4); padding-block: var(--lb-space-4); }
+    .catalog-page-header { min-width: 0; padding-bottom: var(--lb-space-3); }
+    .catalog-page-header > .marketplace-eyebrow { margin-bottom: var(--lb-space-1); font-size: var(--lb-font-size-caption); }
+    .catalog-page-title { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--lb-space-2); }
+    .catalog-page-title h1 { min-width: 0; font-size: var(--lb-font-size-h2-fluid); line-height: 1.2; letter-spacing: -0.025em; overflow-wrap: anywhere; }
+    .catalog-page-title > a { gap: var(--lb-space-1); font-size: var(--lb-font-size-caption); white-space: nowrap; }
+    .catalog-page-header > p:not(.marketplace-eyebrow) { margin: var(--lb-space-2) 0 var(--lb-space-3); font-size: var(--lb-font-size-body); line-height: 1.5; }
+    .catalog-page-search { min-width: 0; gap: var(--lb-space-2); padding: var(--lb-space-1) var(--lb-space-2); }
+    .catalog-page-search > input[type="search"] { font-size: var(--lb-font-size-body-large); }
+    .catalog-page-search > button { flex-shrink: 0; min-height: var(--lb-size-touch-target); padding-inline: var(--lb-space-3); font-size: var(--lb-font-size-body); }
+    .catalog-page-search > button > svg { display: none; }
+    .catalog-category-tabs { gap: var(--lb-space-3); margin-top: var(--lb-space-2); }
+    .catalog-category-tabs a { font-size: var(--lb-font-size-caption); }
+}
 @media (width >= 40rem) {
     .marketplace-catalog-page .marketplace-device-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .marketplace-catalog-page .marketplace-device-grid[data-single="true"] { grid-template-columns: minmax(0, 1fr); }
