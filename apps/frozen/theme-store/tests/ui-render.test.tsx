@@ -593,12 +593,16 @@ test('theme detail introduction uses listing media and clear library/preview/com
     assert.doesNotMatch(unavailable,/<iframe|Desktop preview|Maximize demo/);
 });
 
-test('appearance toggle is a single canonical control in the header on every breakpoint', () => {
+test('appearance toggle is composed once in the page footer and absent from header and drawer', () => {
     const navbar = readAppFile('src/components/layout/navbar.tsx');
-    assert.equal((navbar.match(/<ThemeToggleButton\b/g)||[]).length,1);
-    assert.match(navbar,/marketplace-appearance-control/);
-    assert.match(navbar,/label="Switch light or dark appearance"/);
-    const drawer = navbar.slice(navbar.indexOf('<Drawer'));
-    assert.doesNotMatch(drawer,/<ThemeToggleButton/);
-    assert.doesNotMatch(navbar,/localStorage|documentElement|setAttribute/);
+    const layout = readAppFile('src/app/layout.tsx');
+    assert.doesNotMatch(navbar, /<ThemeToggleButton/);
+    assert.equal((layout.match(/<ThemeToggleButton\b/g)||[]).length, 1);
+    assert.match(layout, /<Footer appearanceControl=\{<ThemeToggleButton/);
+    const html = renderToStaticMarkup(<LetbuyyThemeProvider surface="marketplace"><Footer appearanceControl={<ThemeToggleButton label="Switch light or dark appearance" />} /></LetbuyyThemeProvider>);
+    assert.equal((html.match(/aria-label="Switch light or dark appearance"/g)||[]).length, 1);
+    assert.match(html, /marketplace-footer-appearance/);
+    assert.match(html, /marketplace-footer-legal/);
+    assert.match(html, /marketplace-footer-preferences/);
+    assert.ok(html.indexOf('marketplace-footer-legal') < html.indexOf('marketplace-footer-copyright'));
 });

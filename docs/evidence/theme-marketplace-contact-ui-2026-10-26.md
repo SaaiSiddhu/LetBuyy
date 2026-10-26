@@ -16,3 +16,16 @@ Verification: package74 tests pass (source contracts24 + UI/API/session/render50
 Backend/API/client/services/database/shared packages/identity/config/marketing/header/footer unchanged. No new dependency, schema, endpoint, architecture, merge, push, deployment or external message. Local preview: http://localhost:9005/contact.
 
 Logs: `/private/tmp/letbuyy-contact-{tests,types,build,lint,css,design}.log`; post-commit quick gate `/private/tmp/letbuyy-contact-close-20261026/`.
+
+## Contact focus and mobile footer refinement — 2026-10-26
+
+Execution mode: SINGLE AGENT · Subagents invoked: NO · Agent/Task delegation: NO
+Background agents: NO · Parallel worktree agents: NO · Workflow orchestration: NO
+
+Owner screenshots show the contact input focus outline extending into the label area, and loose mobile footer legal/privacy alignment. Source confirms a medium outline with positive space-1 offset surrounding the field; label/input primitive gap is also space-1. Change the contact-only outline to half-space-1 thickness with an equal negative offset, so the focus indication stays inside the field rather than extending into surrounding content. Keep border/error semantics, focus visibility, form validation and draft behavior. No clipping or overflow hiding introduced.
+
+Owner superseded the preceding header placement: the canonical ThemeToggleButton now composes through the root layout into the page footer’s appearance slot. Header and drawer contain no toggle. Shared provider/persistence and appearance behavior remain unchanged. Mobile footer legal links use two equal columns; a separate wrapping utility row holds Appearance and Privacy choices with canonical touch targets, followed by caption-sized copyright. Tablet/desktop legal links wrap in a horizontal row. Legal destinations, compact mobile link groups and privacy-clearing handler are unchanged.
+
+Verification: package76 tests pass (24 source contracts +52 UI/API/session/render). The updated footer test initially failed because its harness omitted LetbuyyThemeProvider; using the actual provider composition resolves it. Typecheck, build, stylelint, design-system invariants/ratchet and whitespace checks pass. App lint reports zero errors/seven existing warnings. Read-only HTTP checks for homepage/contact/free catalog return200, parse exactly one footer switch/zero header switches and all five legal links; contact retains six fields. Wi-Fi contact URL also returns200. Compiled CSS confirms mobile two-column grid and negative focus offset. An initial HTTP CSS check assumed declaration order; minifier output reorders declarations, so the check now inspects the rule declarations independently.
+
+Browser/device visual, focus interaction and assistive checks remain deferred under the owner’s automated-only preference; source/HTTP verification does not certify exact mobile layout. No backend, API, identity, shared package, marketing source or runtime configuration change. Logs `/private/tmp/letbuyy-footer-focus-{tests,types,lint,css,design,build}.log`, HTTP `/private/tmp/letbuyy-footer-focus-http.json`; post-commit quick gate `/private/tmp/letbuyy-footer-focus-close-20261026/`.

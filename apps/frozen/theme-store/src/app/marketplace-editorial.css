@@ -169,11 +169,20 @@
 .marketplace-footer-mobile details[open] summary svg { transform: rotate(180deg); }
 .marketplace-footer-mobile ul { gap: 0; padding-bottom: var(--lb-space-3); }
 .marketplace-footer li a { font-size: var(--lb-font-size-body); }
-.marketplace-footer-bottom { margin-top: var(--lb-space-5); padding-top: var(--lb-space-4); gap: var(--lb-space-3); border-color: color-mix(in srgb, var(--lb-color-text-subdued) 16%, transparent); }
-.marketplace-footer-bottom nav { gap: var(--lb-space-1) var(--lb-space-3); }
-.marketplace-footer-bottom a { display: inline-flex; align-items: center; min-height: var(--lb-size-touch-target); }
+.marketplace-footer-bottom { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: var(--lb-space-5); padding-top: var(--lb-space-4); gap: var(--lb-space-3); border-color: color-mix(in srgb, var(--lb-color-text-subdued) 16%, transparent); }
+.marketplace-footer-bottom .marketplace-footer-legal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--lb-space-4); }
+.marketplace-footer-bottom a { display: inline-flex; align-items: center; min-height: var(--lb-size-touch-target); font-size: var(--lb-font-size-caption); }
+.marketplace-footer-preferences { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--lb-space-2) var(--lb-space-4); padding-block: var(--lb-space-2); border-top: thin solid var(--lb-color-border); }
+.marketplace-footer-preferences > button { min-height: var(--lb-size-touch-target); }
+.marketplace-footer-appearance { display: inline-flex; align-items: center; gap: var(--lb-space-2); color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); }
+.marketplace-footer-appearance button { min-height: var(--lb-size-touch-target); min-width: var(--lb-size-touch-target); border-radius: var(--lb-radius-md); }
+.marketplace-footer-copyright { margin: 0; color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); line-height: 1.6; }
 .marketplace-footer :where(a, button, summary):focus-visible { outline: medium solid var(--lb-color-focus-ring); outline-offset: var(--lb-space-1); border-radius: var(--lb-radius-sm); }
 @media (width >= 48rem) {
+    .marketplace-footer-bottom { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+    .marketplace-footer-bottom .marketplace-footer-legal { display: flex; flex-wrap: wrap; gap: 0 var(--lb-space-4); }
+    .marketplace-footer-preferences { padding: 0; border: 0; }
+    .marketplace-footer-copyright { grid-column: 1 / -1; }
     .marketplace-footer-desktop { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--lb-space-5); }
     .marketplace-footer-mobile { display: none; }
     .marketplace-footer h3 { color: var(--lb-color-text); font-size: var(--lb-font-size-body); margin-bottom: var(--lb-space-3); }
@@ -319,7 +328,7 @@
 .contact-form-panel { border-color: color-mix(in srgb, var(--lb-color-text-subdued) 16%, transparent); box-shadow: none; }
 .contact-form-fields :where(input, select, textarea), .contact-draft-review textarea { border-color: color-mix(in srgb, var(--lb-color-text-subdued) 36%, transparent); background: var(--lb-color-bg); color: var(--lb-color-text); box-shadow: none; }
 .contact-form-fields :where(input, select, textarea):hover:not(:disabled):not(:focus-visible) { border-color: color-mix(in srgb, var(--lb-color-text-subdued) 64%, transparent); }
-.contact-form-fields :where(input, select, textarea):focus-visible, .contact-draft-review textarea:focus-visible { outline: medium solid var(--lb-color-focus-ring); outline-offset: var(--lb-space-1); border-color: var(--lb-color-focus-ring); box-shadow: none; }
+.contact-form-fields :where(input, select, textarea):focus-visible, .contact-draft-review textarea:focus-visible { outline: calc(var(--lb-space-1) / 2) solid var(--lb-color-focus-ring); outline-offset: calc(var(--lb-space-1) / -2); border-color: var(--lb-color-focus-ring); box-shadow: none; }
 .contact-form-fields :where(input, select, textarea)[aria-invalid="true"] { border-color: var(--lb-color-critical); }
 .contact-form-fields :where(input, textarea)::placeholder { color: var(--lb-color-text-subdued); opacity: 0.8; }
 .contact-form-fields label { font-weight: var(--lb-font-weight-medium); line-height: 1.5; }

@@ -6,7 +6,7 @@ import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
 import AuthProvider from '@/components/auth-provider';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
-import { LetbuyyThemeProvider, ThemeScript, ToastProvider } from '@letbuyy/ui';
+import { LetbuyyThemeProvider, ThemeScript, ThemeToggleButton, ToastProvider } from '@letbuyy/ui';
 import { getThemeMarketplaceUrl } from '@/lib/site-url';
 import { ThemeService } from '@/lib/theme-service';
 
@@ -141,7 +141,7 @@ export default async function RootLayout({
                             <main id="marketplace-main" className="marketplace marketplace-main flex-grow">
                                 {children}
                             </main>
-                            <Footer />
+                            <Footer appearanceControl={<ThemeToggleButton variant="ghost" label="Switch light or dark appearance" />} />
                         </ToastProvider>
                     </AuthProvider>
                 </LetbuyyThemeProvider>

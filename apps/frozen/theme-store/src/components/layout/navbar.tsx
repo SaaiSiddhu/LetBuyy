@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, type MouseEvent } from 'react';
 import { usePathname } from 'next/navigation';
-import { Button, ChevronDown, Drawer, Input, Menu, Modal, Popover, Search, ThemeToggleButton } from '@letbuyy/ui';
+import { Button, ChevronDown, Drawer, Input, Menu, Modal, Popover, Search } from '@letbuyy/ui';
 import BrandLogo from '@/components/brand-logo';
 import MarketplaceMobileMenu from '@/components/marketplace-mobile-menu';
 import { useAuth } from '@/hooks/useAuth';
@@ -79,7 +79,6 @@ export default function Navbar() {
                 </nav>
                 <div className="marketplace-header-actions">
                     <Button variant="ghost" size="icon" aria-label="Search themes" onClick={()=>setSearchOpen(true)}><Search aria-hidden="true" /></Button>
-                    <span className="marketplace-appearance-control"><ThemeToggleButton variant="ghost" label="Switch light or dark appearance" /></span>
                     <div className="marketplace-account-nav">
                         {isAuthenticated ? <><Link href="/dashboard" className="marketplace-header-login">Your library</Link><Button variant="ghost" onClick={()=>void signOut()}>Log out</Button></> : <><a href={accountHref('/lookup')} onClick={preserveReturnTo} className="marketplace-header-login">Log in</a></>}
                     </div>
