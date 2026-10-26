@@ -423,9 +423,11 @@ export interface ModalProps {
     onClose: () => void;
     footer?: React.ReactNode;
     className?: string;
+    initialFocusRef?: React.RefObject<HTMLElement | null>;
+    returnFocusRef?: React.RefObject<HTMLElement | null>;
 }
 
-export function Modal({ open, title, description, children, onClose, footer, className = '' }: ModalProps) {
+export function Modal({ open, title, description, children, onClose, footer, className = '', initialFocusRef, returnFocusRef }: ModalProps) {
     const titleId = useId();
     const descriptionId = useId();
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -436,7 +438,7 @@ export function Modal({ open, title, description, children, onClose, footer, cla
         setOverlayElement(node);
     }, []);
 
-    useFocusTrap(overlayRef, { active: open && overlayElement !== null });
+    useFocusTrap(overlayRef, { active: open && overlayElement !== null, initialFocusRef, returnFocusRef });
     useDismiss(dialogRef, { active: open, onDismiss: onClose });
     useScrollLock(open);
 

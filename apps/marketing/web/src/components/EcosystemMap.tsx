@@ -1,14 +1,14 @@
 'use client'
 
+import Copy from '@/components/i18n/Copy'
+
 import Link from '@/components/i18n/LocaleLink'
+import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, CreditCard, MaterialIcon, Package, Palette, Store, Zap, type LucideIcon } from '@letbuyy/ui'
+import { ArrowRight, Store } from '@letbuyy/ui'
+import styles from './platform-surfaces.module.css'
 import {
     getAccountsUrl,
-    getAppMarketplaceUrl,
-    getDeveloperPortalUrl,
-    getMarketingSiteUrl,
-    getThemeMarketplaceUrl,
 } from '@/lib/public-urls'
 
 // ── Static data ─────────────────────────────────────────────────────────────
@@ -25,13 +25,13 @@ const FLAGSHIP_CHIPS = [
 ]
 
 const OS_MODS = [
-    { label: 'Products',   color: 'rgb(139 92 246)',  active: false },
-    { label: 'Orders',     color: 'rgb(59 130 246)',  active: true  },
-    { label: 'Inventory',  color: 'rgb(245 158 11)',  active: false },
-    { label: 'Payments',   color: 'rgb(16 185 129)',  active: false },
-    { label: 'Customers',  color: 'rgb(236 72 153)',  active: false },
-    { label: 'Analytics',  color: 'rgb(139 92 246)',  active: false },
-    { label: 'AI Copilot', color: 'rgb(167 139 250)', active: false },
+    { label: 'Products',   color: 'var(--lb-primitive-color-purple-500)',  active: false },
+    { label: 'Orders',     color: 'var(--lb-primitive-color-blue-500)',  active: true  },
+    { label: 'Inventory',  color: 'var(--lb-primitive-color-amber-500)',  active: false },
+    { label: 'Payments',   color: 'var(--lb-primitive-color-emerald-500)',  active: false },
+    { label: 'Customers',  color: 'var(--lb-primitive-color-pink-500)',  active: false },
+    { label: 'Analytics',  color: 'var(--lb-primitive-color-purple-500)',  active: false },
+    { label: 'AI Copilot', color: 'var(--lb-primitive-color-purple-400)', active: false },
 ]
 
 const CHART_BARS = [42, 68, 55, 78, 62, 90, 74]
@@ -48,15 +48,14 @@ function MerchantOSMock() {
                 </div>
                 <div className="ecos-os-live">
                     <span className="ecos-os-live-dot" />
-                    Live
-                </div>
+                    <Copy text={"Preview"} /></div>
             </div>
             <div className="ecos-os-body">
                 <nav className="ecos-os-sidebar">
                     {OS_MODS.map(m => (
                         <div key={m.label} className={`ecos-os-mod${m.active ? ' is-active' : ''}`}>
                             <span className="ecos-os-mod-dot" style={{ background: m.color }} />
-                            <span className="ecos-os-mod-label">{m.label}</span>
+                            <span className="ecos-os-mod-label"><Copy text={m.label} /></span>
                         </div>
                     ))}
                 </nav>
@@ -70,7 +69,7 @@ function MerchantOSMock() {
                         ].map(k => (
                             <div key={k.l} className="ecos-os-kpi">
                                 <span className="ecos-os-kpi-v">{k.v}</span>
-                                <span className="ecos-os-kpi-l">{k.l}</span>
+                                <span className="ecos-os-kpi-l"><Copy text={k.l} /></span>
                             </div>
                         ))}
                     </div>
@@ -107,8 +106,7 @@ interface EcosRailCard {
     cta: string
     href: string
     accent: string
-    Icon?: LucideIcon
-    materialIcon?: string
+    artwork: string
 }
 
 function EcosRailItem({
@@ -120,7 +118,6 @@ function EcosRailItem({
     index: number
     reduced: boolean
 }) {
-    const Icon = card.Icon
     return (
         <motion.div
             className="ecos-rail-item-wrap"
@@ -135,25 +132,22 @@ function EcosRailItem({
         >
             <Link
                 href={card.href}
-                className="ecos-rail-item"
+                className={`ecos-rail-item ${styles.item}`}
                 style={{ '--ecos-accent': card.accent } as React.CSSProperties}
             >
                 {/* Icon box */}
-                <span className="ecos-rail-icon" aria-hidden="true">
-                    {card.materialIcon
-                        ? <MaterialIcon name={card.materialIcon} size={16} />
-                        : Icon ? <Icon width={16} height={16} strokeWidth={1.8} /> : null
-                    }
+                <span className={styles.artwork} aria-hidden="true">
+                    <Image src={card.artwork} alt="" width={512} height={512} sizes="64px" loading="eager" unoptimized />
                 </span>
 
                 {/* Label + tagline */}
                 <span className="ecos-rail-text">
-                    <span className="ecos-rail-label">{card.title}</span>
-                    <span className="ecos-rail-tagline">{card.tagline}</span>
+                    <span className="ecos-rail-label"><Copy text={card.title} /></span>
+                    <span className="ecos-rail-tagline"><Copy text={card.tagline} /></span>
                 </span>
 
                 {/* Live badge */}
-                <span className="ecos-rail-badge">Live</span>
+                <span className="ecos-rail-badge"><Copy text={card.title === "Pricing" ? "Plans" : "Guide"} /></span>
 
                 {/* Arrow */}
                 <ArrowRight
@@ -175,35 +169,35 @@ export default function EcosystemMap() {
     const cards: EcosRailCard[] = [
         {
             title: 'Themes',
-            tagline: 'Production-ready storefronts',
+            tagline: 'Storefront themes guide',
             cta: 'Browse Themes',
-            href: getThemeMarketplaceUrl('/themes'),
-            accent: 'rgb(6 182 212)',
-            Icon: Palette,
+            href: '/resources/platform/how-themes-work',
+            accent: 'var(--lb-primitive-color-cyan-500)',
+            artwork: '/illustrations/surfaces/surface-themes-v1.webp',
         },
         {
             title: 'Apps',
-            tagline: 'Payments, shipping & loyalty',
+            tagline: 'App integrations guide',
             cta: 'Browse Apps',
-            href: getAppMarketplaceUrl('/'),
-            accent: 'rgb(16 185 129)',
-            Icon: Package,
+            href: '/resources/platform/introduction-to-apps',
+            accent: 'var(--lb-primitive-color-emerald-500)',
+            artwork: '/illustrations/surfaces/surface-apps-v1.webp',
         },
         {
             title: 'Developers',
             tagline: 'APIs, Webhooks, OAuth, SDKs',
             cta: 'Explore Docs',
-            href: getDeveloperPortalUrl('/docs'),
-            accent: 'rgb(245 158 11)',
-            materialIcon: 'code',
+            href: '/resources/developers',
+            accent: 'var(--lb-primitive-color-amber-500)',
+            artwork: '/illustrations/surfaces/surface-developers-v1.webp',
         },
         {
             title: 'Pricing',
             tagline: 'Founder & growth plans',
             cta: 'View Pricing',
-            href: getMarketingSiteUrl('/pricing'),
-            accent: 'rgb(139 92 246)',
-            Icon: CreditCard,
+            href: '/pricing',
+            accent: 'var(--lb-primitive-color-purple-500)',
+            artwork: '/illustrations/surfaces/surface-pricing-v1.webp',
         },
     ]
 
@@ -223,20 +217,14 @@ export default function EcosystemMap() {
                             : { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }
                     }
                 >
-                    <div className="ecosystem-eyebrow">
-                        <Zap width={11} height={11} aria-hidden="true" />
-                        LetBuyy Ecosystem
-                    </div>
+                    <p className="section-label"><Copy text={"LetBuyy Ecosystem"} /></p>
                     <h2 className="ecosystem-headline">
-                        One platform.{' '}
+                        <Copy text={"One platform."} />{' '}
                         <span className="ecosystem-headline-accent">
-                            Many powerful surfaces.
-                        </span>
+                            <Copy text={"Many powerful surfaces."} /></span>
                     </h2>
                     <p className="ecosystem-subhead">
-                        Everything merchants, developers, operators, and partners need
-                        to run commerce from one connected ecosystem.
-                    </p>
+                        <Copy text={"Everything merchants, developers, operators, and partners need to run commerce from one connected ecosystem."} /></p>
                 </motion.div>
 
                 {/* ── Metrics strip ── */}
@@ -253,8 +241,8 @@ export default function EcosystemMap() {
                 >
                     {METRICS.map((m, i) => (
                         <div key={i} className="ecosystem-metric">
-                            <span className="ecosystem-metric-val">{m.value}</span>
-                            <span className="ecosystem-metric-lbl">{m.label}</span>
+                            <span className="ecosystem-metric-val"><Copy text={m.value} /></span>
+                            <span className="ecosystem-metric-lbl"><Copy text={m.label} /></span>
                         </div>
                     ))}
                 </motion.div>
@@ -276,7 +264,7 @@ export default function EcosystemMap() {
                     >
                         <div className="ecosystem-flagship-badge">
                             <span className="ecosystem-flagship-badge-dot" />
-                            <span className="ecosystem-flagship-badge-text">Core Platform</span>
+                            <span className="ecosystem-flagship-badge-text"><Copy text={"Core Platform"} /></span>
                         </div>
 
                         <div className="ecosystem-flagship-body">
@@ -285,31 +273,29 @@ export default function EcosystemMap() {
                                     <Store width={18} height={18} strokeWidth={1.6} />
                                 </span>
                                 <div>
-                                    <div className="ecosystem-flagship-kicker">Merchant Control Plane</div>
+                                    <div className="ecosystem-flagship-kicker"><Copy text={"Merchant Control Plane"} /></div>
                                     <p className="ecosystem-flagship-desc">
-                                        The operating system behind every LetBuyy store.
-                                    </p>
+                                        <Copy text={"The operating system behind every LetBuyy store."} /></p>
                                 </div>
                             </div>
 
                             <div className="ecosystem-flagship-chips">
                                 {FLAGSHIP_CHIPS.map(c => (
-                                    <span key={c} className="ecosystem-flagship-chip">{c}</span>
+                                    <span key={c} className="ecosystem-flagship-chip"><Copy text={c} /></span>
                                 ))}
                             </div>
 
                             <MerchantOSMock />
 
                             <Link href={getAccountsUrl('/signup')} className="ecosystem-flagship-cta">
-                                Open Control Plane
-                                <ArrowRight width={14} height={14} aria-hidden="true" />
+                                <Copy text={"Open Control Plane"} /><ArrowRight width={14} height={14} aria-hidden="true" />
                             </Link>
                         </div>
                     </motion.article>
 
                     {/* Right — Ecosystem rail (mirrors cmap-nav exactly) */}
                     <div className="ecosystem-rail">
-                        <p className="ecosystem-rail-label">Platform surfaces</p>
+                        <p className="ecosystem-rail-label"><Copy text={"Platform surfaces"} /></p>
                         <div className="ecosystem-rail-items">
                             {cards.map((card, i) => (
                                 <EcosRailItem
@@ -321,9 +307,7 @@ export default function EcosystemMap() {
                             ))}
                         </div>
                         <p className="ecosystem-rail-foot">
-                            All surfaces share the same commerce engine,
-                            identity system, and data layer.
-                        </p>
+                            <Copy text={"All surfaces share the same commerce engine, identity system, and data layer."} /></p>
                     </div>
 
                 </div>

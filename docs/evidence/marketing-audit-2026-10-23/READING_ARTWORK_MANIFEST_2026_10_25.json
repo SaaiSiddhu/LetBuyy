@@ -1,0 +1,42 @@
+{
+  "generator": "built-in image_gen",
+  "transparent_background": true,
+  "assets": [
+    {
+      "key": "payments-choice",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial illustration for an Indian ecommerce reading guide comparing UPI and cash on delivery. Primary request: a polished photoreal 3D still-life showing two equally considered payment choices. A graphite smartphone displaying a generic QR grid and tiny neutral green check symbol stands beside a beautifully packed kraft parcel with folded ivory tissue; beside the parcel a restrained stack of unmarked rupee-like banknotes and coins represents cash at delivery. A fine curved violet ribbon connects the phone and parcel. Actual transparent background, isolated foreground, no floor plane or enclosing frame. Refined materials: graphite metal, smoked glass, natural paper, soft satin violet and teal highlights. Soft editorial studio light, realistic gentle contact shadows, sophisticated commerce magazine quality. Landscape 3:2 composition with generous clean transparent margins; every object fully visible and readable at 350px width. No logos, no watermarks, no readable text, no numbers, no charts, no floating decorative confetti. Concept illustration, not a product screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-a5041c03-90c2-432f-9f9c-d1eb9dba240b.png",
+      "asset": "/illustrations/resources/reading-payments-choice-v1.webp"
+    },
+    {
+      "key": "tax-documents",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for ecommerce GST and invoice guides. Primary request: beautifully composed business still-life of layered ivory invoice sheets with blank ruled rows, a small graphite calculator with blank keys, an unbranded violet document folder, restrained brass paperclip, a compact kraft product box, and one teal glass verification seal bearing only a simple check. Actual transparent background, no floor plane, no outer card or enclosing frame. Photoreal polished 3D editorial rendering, rich paper grain, precision metal, soft satin materials, realistic soft shadows and subtle violet edge lighting. Landscape 3:2, balanced compact composition, all objects fully visible with clean transparent margins, legible at 350px wide. No readable text, letters, numbers, logos, watermark, fake government seals or guarantees. Communicate organizing sales documents, not legal certification.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-7d1911b8-17b0-4b8f-8f05-858f34787f80.png",
+      "asset": "/illustrations/resources/reading-tax-documents-v1.webp"
+    },
+    {
+      "key": "growth-audience",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for ecommerce customer acquisition, retention and brand growth reading guides. Primary request: a sophisticated still-life of a small immaculate kraft shipping parcel opening into a delicate fan of ivory customer profile cards with abstract portrait circles, a folded cream thank-you card, a small plum ribbon and a smoked glass megaphone. A refined violet curved path connects the cards back to the parcel to suggest relationships, not guaranteed financial returns. Photoreal polished 3D editorial rendering, natural paper texture, satin plum/violet and subtle teal details, warm brass highlights, soft studio light and realistic shadows. Actual transparent background, no floor plane or rectangle, no arrows charting guaranteed growth, no logos, no readable text or numbers, no confetti. Landscape 3:2 composition, compact and premium, all objects fully visible with generous transparent margins, designed for a 350px reading column.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-fec6b103-ab0a-4513-9e72-ecfe9fa5ea4d.png",
+      "asset": "/illustrations/resources/reading-growth-audience-v1.webp"
+    },
+    {
+      "key": "fulfillment",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for ecommerce fulfillment and inventory reading guides. Primary request: elegant miniature packing workspace in a compact composition: an open kraft parcel with ivory tissue and folded indigo shirt, two neatly stacked smaller sealed boxes, a precise graphite handheld barcode scanner, an unbranded delivery van model in satin ivory, and a small violet shipping label with abstract bars but no text. Beautiful realistic paper, fabric and metal textures, photoreal polished 3D editorial rendering, understated violet and teal details, soft studio lighting and realistic shadows. Actual transparent background; no floor plane, platform, frame or rectangle. Landscape 3:2, every object fully visible with generous transparent margins, readable at 350px. No logos, no readable numbers or letters, no watermark, no celebratory decorations. Teach the connection between stock, packing and delivery; not a product screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-3bceeebe-9716-4b3c-92f4-04c8023b0875.png",
+      "asset": "/illustrations/resources/reading-fulfillment-v1.webp"
+    },
+    {
+      "key": "developer-connections",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for APIs, webhooks and software integration reading guides. Primary request: restrained designer still-life of a graphite laptop seen at a slight angle, screen showing minimal abstract violet and teal code lines with one pair of curly braces only, three small smoked glass modules connected by fine curved violet cables to an ivory product parcel and a polished silver key. Connections should be simple and legible, suggesting requests, events and authorization rather than an orbital diagram. Photoreal 3D editorial rendering, precision metal, soft paper, warm neutral highlights, subtle violet glow, excellent material detail, soft studio light and realistic shadows. Actual transparent background, no outer panel or floor plane, no platform. Landscape 3:2, balanced composition, all objects fully visible with generous clear margins, readable at 350px wide. No readable UI text, statistics, logos, watermarks or exaggerated neon.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-f2a22bdb-98b4-4931-bc17-37a8fb5e260d.png",
+      "asset": "/illustrations/resources/reading-developer-connections-v1.webp"
+    },
+    {
+      "key": "search-discovery",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for store SEO and product discovery reading guides. Primary request: a polished graphite magnifying glass hovering just in front of three layered ivory storefront product cards; cards show beautiful small ceramic vase, folded fabric and a plant, with short abstract gray lines below each and a tiny violet link symbol. A gently curved teal connector links one card to a miniature unbranded browser search strip with no words. Sophisticated photoreal 3D editorial illustration, natural paper grain, glass optical detail, brushed metal, satin violet and restrained teal accents. Soft studio light with realistic shadows. Actual transparent background, no floor or platform, no enclosing frame or big background panel. Landscape 3:2, every object fully visible, compact balanced composition with generous transparent margins, readable at 350px width. No rankings, numbers, readable text, guarantees, logos, watermark or confetti.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-ab86b95a-22d7-4791-827a-f29c0c020d76.png",
+      "asset": "/illustrations/resources/reading-search-discovery-v1.webp"
+    }
+  ]
+}

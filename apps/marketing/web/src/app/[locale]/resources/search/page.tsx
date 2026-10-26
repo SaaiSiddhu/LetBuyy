@@ -1,66 +1,101 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Button, Input } from '@letbuyy/ui'
-import Link from '@/components/i18n/LocaleLink'
-import ArticleCard from '@/components/resources/ArticleCard'
-import { CATEGORIES, getCategory } from '@/lib/resources/categories'
-import { searchArticles, getAllTags } from '@/lib/resources/utils'
-import type { Article } from '@/lib/resources/types'
+import Copy from '@/components/i18n/Copy'
 
-const TRENDING_SEARCHES = ['upi payments', 'gst invoice', 'cart abandonment', 'inventory management', 'COD strategy', 'shopify alternative']
-const READING_TIME_FILTERS = [
-  { label: 'Quick read', max: 5 },
-  { label: '5–10 min', min: 5, max: 10 },
-  { label: '10+ min', min: 10 },
-]
+import { usePathname, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useRef, type KeyboardEvent } from 'react'
+import { ArrowRight, Button, Input, Search, X } from '@letbuyy/ui'
+import { useCopy } from '@/components/i18n/useCopy'
+import { localizeArticleSummary } from '@/lib/i18n/article-summary'
+import Link from '@/components/i18n/LocaleLink'
+import Image from 'next/image'
+import ResourceArticleArtwork from '@/components/resources/ResourceArticleArtwork'
+import { getEditorialScene } from '@/lib/resources/artwork'
+import visualStyles from '@/components/resources/resource-list-visuals.module.css'
+import { CATEGORIES, getCategory } from '@/lib/resources/categories'
+import { ARTICLES } from '@/lib/resources/articles'
+import {
+  filterResourceArticles,
+  getResourceResultPage,
+  readResourceSearch,
+  RESOURCE_READING_LENGTHS,
+  RESOURCE_SUGGESTIONS,
+} from '@/lib/resources/resource-search'
 
 export default function SearchPage() {
-  const [query, setQuery] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('')
-  const [timeFilter, setTimeFilter] = useState<{ label: string; min?: number; max?: number } | null>(null)
-  const [activeIdx, setActiveIdx] = useState(-1)
+  return (
+    <Suspense fallback={<div className="container res-v3-search-page" role="status"><Copy text={"Loading resource search…"} /></div>}>
+      <ResourceSearch />
+    </Suspense>
+  )
+}
+
+function ResourceSearch() {
+  const { t, locale } = useCopy()
+  const params = useSearchParams()
+  const pathname = usePathname()
+  const state = readResourceSearch(params)
+  const translatedArticles = ARTICLES.map(a => localizeArticleSummary(a, locale.language.code))
+  const localMatches = filterResourceArticles(translatedArticles, state)
+  const sourceMatches = filterResourceArticles(ARTICLES, state)
+  const matchSlugs = new Set([...localMatches, ...sourceMatches].map(a => a.slug))
+  const results = translatedArticles.filter(a => matchSlugs.has(a.slug))
+  const resultPage = getResourceResultPage(results, state.page)
   const inputRef = useRef<HTMLInputElement>(null)
-  const topTags = getAllTags().slice(0, 12)
+  const resultsRef = useRef<HTMLUListElement>(null)
+  const resultsHeadingRef = useRef<HTMLHeadingElement>(null)
+  const hasFilters = Boolean(state.category || state.length)
 
-  const applyFilters = useCallback((articles: Article[]) => {
-    let results = articles
-    if (categoryFilter) results = results.filter(a => a.category === categoryFilter)
-    if (timeFilter) {
-      results = results.filter(a => {
-        if (timeFilter.min && a.readingTime < timeFilter.min) return false
-        if (timeFilter.max && a.readingTime > timeFilter.max) return false
-        return true
-      })
+  // Next integrates the native history API with search params. Replacing the
+  // current entry keeps typing out of Back history and preserves the query on return.
+  function updateSearch(changes: Record<string, string>, paging = false) {
+    const next = new URLSearchParams(params.toString())
+    if (!paging) next.delete('page')
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) next.set(key, value)
+      else next.delete(key)
     }
-    return results
-  }, [categoryFilter, timeFilter])
+    const query = next.toString()
+    window.history.replaceState(null, '', `${pathname}${query ? `?${query}` : ''}`)
+  }
 
-  const rawResults = query.length >= 1 ? searchArticles(query) : []
-  const results = applyFilters(rawResults)
-
-  useEffect(() => {
-    setActiveIdx(-1)
-  }, [query, categoryFilter, timeFilter])
-
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActiveIdx(i => Math.min(i + 1, results.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setActiveIdx(i => Math.max(i - 1, -1))
-    } else if (e.key === 'Escape') {
-      setQuery('')
+  function focusResults(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.nativeEvent.isComposing) return
+    if (event.key === 'ArrowDown' && resultsRef.current) {
+      event.preventDefault()
+      resultsRef.current.querySelector<HTMLAnchorElement>('a')?.focus()
+    } else if (event.key === 'Escape') {
       inputRef.current?.blur()
     }
   }
 
-  // Global Cmd+K
+  function navigateResults(event: KeyboardEvent<HTMLUListElement>) {
+    if (event.nativeEvent.isComposing || event.altKey || event.ctrlKey || event.metaKey) return
+    const links = Array.from(event.currentTarget.querySelectorAll<HTMLAnchorElement>('a'))
+    const current = links.findIndex(link => link === document.activeElement)
+    if (current < 0) return
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      links[Math.min(current + 1, links.length - 1)]?.focus()
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      if (current === 0) inputRef.current?.focus()
+      else links[current - 1]?.focus()
+    } else if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault()
+      links[event.key === 'Home' ? 0 : links.length - 1]?.focus()
+    } else if (event.key === 'Escape') {
+      event.preventDefault()
+      inputRef.current?.focus()
+    }
+  }
+
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
+    function onKey(event: globalThis.KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k' && !event.altKey) {
+        // A modal owns keyboard focus while open.
+        if (document.querySelector('[role="dialog"][aria-modal="true"]')) return
+        event.preventDefault()
         inputRef.current?.focus()
       }
     }
@@ -68,208 +103,123 @@ export default function SearchPage() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const showEmpty = query.length >= 1 && results.length === 0
-  const showResults = results.length > 0
+  function changePage(page: number) {
+    updateSearch({ page: page === 1 ? '' : String(page) }, true)
+    resultsHeadingRef.current?.focus()
+  }
+
+  const countText = state.query.trim() ? t('{count} guides for “{query}”', { count: results.length, query: state.query.trim() }) : t('{count} guides in the library', { count: results.length })
 
   return (
-    <div className="res-v3-search-page">
-      <div className="container" style={{ maxWidth: 780 }}>
-        {/* Breadcrumb */}
-        <nav className="rc-article-breadcrumb" style={{ marginBottom: 24 }} aria-label="Breadcrumb">
-          <Link href="/resources">Resources</Link>
-          <span aria-hidden="true">›</span>
-          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Search</span>
+    <div className={`res-v3-search-page ${visualStyles.searchPage}`}>
+      <div className="container res-search-container">
+        <nav className="rc-article-breadcrumb res-search-breadcrumb" aria-label="Breadcrumb">
+          <Link href="/resources"><Copy text={"Resources"} /></Link><span aria-hidden="true">›</span><span aria-current="page"><Copy text={"Search"} /></span>
         </nav>
+        <div className={visualStyles.searchHeader}><div><h1 className="res-v3-search-heading"><Copy text={"Search resources"} /></h1>
+        <p className="res-v3-search-sub"><Copy text={"Find guides, tutorials, and playbooks for Indian merchants"} /></p></div><Image src={getEditorialScene('search').thumbnailSrc} alt="" width={1536} height={1024} sizes="200px" loading="eager" unoptimized className={visualStyles.searchHero} /></div>
 
-        <h1 className="res-v3-search-heading">Search resources</h1>
-        <p className="res-v3-search-sub">Find guides, tutorials, and playbooks for Indian merchants</p>
-
-        {/* Search input */}
-        <div className="res-v3-search-wrap" role="search">
+        <div className="res-v3-search-wrap" role="search" aria-label="Resource library">
           <div className="res-v3-search-input-row">
-            <svg className="res-v3-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
+            <Search className="res-v3-search-icon" size={18} aria-hidden="true" />
             <Input
               unstyled
               ref={inputRef}
               className="res-v3-search-input"
               type="search"
-              placeholder="Search articles, guides, topics…"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus
-              aria-label="Search resources"
-              aria-autocomplete="list"
-              aria-controls="search-results"
-              role="combobox"
-              aria-expanded={showResults}
+              placeholder={t('Search articles, guides, topics…')}
+              value={state.query}
+              onChange={event => updateSearch({ q: event.target.value })}
+              onKeyDown={focusResults}
+              aria-label={t('Search resources')}
+              aria-describedby="resource-search-help"
+              aria-controls={results.length ? 'search-results' : undefined}
             />
-            {query && (
-              <Button
-                unstyled
-                type="button"
-                className="res-v3-search-clear"
-                onClick={() => { setQuery(''); inputRef.current?.focus() }}
-                aria-label="Clear search"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+            {state.query && (
+              <Button unstyled type="button" className="res-v3-search-clear" aria-label={t('Clear search')}
+                onClick={() => { updateSearch({ q: '' }); inputRef.current?.focus() }}>
+                <X size={16} aria-hidden="true" />
               </Button>
             )}
-            <kbd className="res-v3-kbd" aria-label="Keyboard shortcut: Command K">⌘K</kbd>
+            <kbd className="res-v3-kbd" aria-hidden="true">Ctrl / ⌘ K</kbd>
           </div>
+          <p id="resource-search-help" className="res-search-help"><Copy text={"Use ↓ to reach results, ↑ / ↓ to browse, and Enter to open a guide."} /></p>
 
-          {/* Filters */}
           <div className="res-v3-search-filters" role="group" aria-label="Filters">
-            <div className="res-v3-filter-group">
-              <span className="res-v3-filter-label">Category:</span>
-              <Button
-                unstyled
-                type="button"
-                className={`res-v3-filter-chip${!categoryFilter ? ' active' : ''}`}
-                onClick={() => setCategoryFilter('')}
-              >All</Button>
-              {CATEGORIES.map(cat => (
-                <Button
-                  unstyled
-                  key={cat.slug}
-                  type="button"
-                  className={`res-v3-filter-chip${categoryFilter === cat.slug ? ' active' : ''}`}
-                  onClick={() => setCategoryFilter(categoryFilter === cat.slug ? '' : cat.slug)}
-                  style={categoryFilter === cat.slug ? { borderColor: cat.color, color: cat.color, background: cat.accent } : {}}
-                >
-                  {cat.label}
-                </Button>
+            <div className="res-v3-filter-group" role="group" aria-label="Category">
+              <span className="res-v3-filter-label"><Copy text={"Category:"} /></span>
+              <Button unstyled type="button" className={`res-v3-filter-chip${!state.category ? ' active' : ''}`}
+                aria-pressed={!state.category} onClick={() => updateSearch({ category: '' })}><Copy text={"All"} /></Button>
+              {CATEGORIES.map(category => (
+                <Button unstyled key={category.slug} type="button"
+                  className={`res-v3-filter-chip${state.category === category.slug ? ' active' : ''}`}
+                  aria-pressed={state.category === category.slug}
+                  onClick={() => updateSearch({ category: category.slug })}>{t(category.label)}</Button>
               ))}
             </div>
-            <div className="res-v3-filter-group">
-              <span className="res-v3-filter-label">Length:</span>
-              <Button
-                unstyled
-                type="button"
-                className={`res-v3-filter-chip${!timeFilter ? ' active' : ''}`}
-                onClick={() => setTimeFilter(null)}
-              >Any</Button>
-              {READING_TIME_FILTERS.map(f => (
-                <Button
-                  unstyled
-                  key={f.label}
-                  type="button"
-                  className={`res-v3-filter-chip${timeFilter?.label === f.label ? ' active' : ''}`}
-                  onClick={() => setTimeFilter(timeFilter?.label === f.label ? null : f as typeof timeFilter)}
-                >
-                  {f.label}
-                </Button>
+            <div className="res-v3-filter-group" role="group" aria-label="Reading time">
+              <span className="res-v3-filter-label"><Copy text={"Length:"} /></span>
+              <Button unstyled type="button" className={`res-v3-filter-chip${!state.length ? ' active' : ''}`}
+                aria-pressed={!state.length} onClick={() => updateSearch({ length: '' })}><Copy text={"Any"} /></Button>
+              {RESOURCE_READING_LENGTHS.map(length => (
+                <Button unstyled key={length.value} type="button"
+                  className={`res-v3-filter-chip${state.length === length.value ? ' active' : ''}`}
+                  aria-pressed={state.length === length.value}
+                  onClick={() => updateSearch({ length: length.value })}>{t(length.label)}</Button>
               ))}
+              {hasFilters && <Button unstyled type="button" className="res-search-reset"
+                onClick={() => updateSearch({ category: '', length: '' })}><Copy text={"Clear filters"} /></Button>}
             </div>
           </div>
         </div>
 
-        {/* Results */}
-        {showResults && (
-          <div id="search-results" className="res-v3-search-results" role="listbox" aria-label="Search results">
-            <div className="res-v3-results-meta">
-              <span>{results.length} result{results.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;</span>
-              {results.length > 0 && <span style={{ color: 'var(--text-subtle)', fontSize: 12 }}>Use ↑↓ to navigate, Enter to open</span>}
-            </div>
-            {results.map((article, idx) => {
-              const cat = getCategory(article.category)
-              return (
-                <Link
-                  key={article.slug}
-                  href={`/resources/${article.slug}`}
-                  className={`res-v3-result-item${idx === activeIdx ? ' active' : ''}`}
-                  role="option"
-                  aria-selected={idx === activeIdx}
-                  onMouseEnter={() => setActiveIdx(idx)}
-                >
-                  <div className="res-v3-result-content">
-                    <div className="res-v3-result-cat" style={{ color: cat?.color }}>
-                      {cat?.label} · {article.readingTime} min read
+        {!state.query.trim() && !hasFilters && (
+          <div className="res-search-suggestions" role="group" aria-label="Suggested searches">
+            <span><Copy text={"Try a topic"} /></span>
+            {RESOURCE_SUGGESTIONS.map(query => (
+              <Button unstyled key={query} type="button" className="res-v3-trending-chip"
+                onClick={() => { updateSearch({ q: query }); inputRef.current?.focus() }}>{query}</Button>
+            ))}
+          </div>
+        )}
+
+        <div className="res-search-results-heading">
+          <h2 ref={resultsHeadingRef} tabIndex={-1}><Copy text={"Guides"} /></h2>
+          <p role="status" aria-live="polite" aria-atomic="true">{countText}</p>
+        </div>
+
+        {results.length > 0 ? (
+          <>
+            <ul id="search-results" ref={resultsRef} className="res-v3-search-results" aria-label="Resource guides" onKeyDown={navigateResults}>
+              {resultPage.articles.map(article => (
+                <li key={article.slug}>
+                  <Link href={`/resources/${article.category}/${article.slug}`} className={`res-v3-search-result ${visualStyles.searchResult}`}>
+                    <div className={visualStyles.searchArtwork}><ResourceArticleArtwork slug={article.slug} thumbnail /></div>
+                    <div className="res-v3-result-body">
+                      <p className="res-v3-result-meta">{t(getCategory(article.category)?.label ?? '')}<span aria-hidden="true">·</span>{article.readingTime} <Copy text={"min read"} /></p>
+                      <h3 className="res-v3-result-title">{article.title}</h3>
+                      <p className="res-v3-result-sub">{article.description}</p>
                     </div>
-                    <div className="res-v3-result-title">{article.title}</div>
-                    <div className="res-v3-result-excerpt">{article.description}</div>
-                  </div>
-                  <svg className="res-v3-result-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </Link>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Empty state */}
-        {showEmpty && (
-          <div className="res-v3-search-empty">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-subtle)', marginBottom: 12 }} aria-hidden="true">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
-            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>No results found</p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              Try different keywords or{' '}
-              {categoryFilter && <Button unstyled type="button" onClick={() => setCategoryFilter('')} style={{ color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, padding: 0 }}>clear category filter</Button>}
-            </p>
-          </div>
-        )}
-
-        {/* Trending + tags — shown when no query */}
-        {query.length < 1 && (
-          <div className="res-v3-search-discover">
-            <div className="res-v3-discover-section">
-              <p className="res-v3-discover-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }}>
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg>
-                Trending searches
-              </p>
-              <div className="res-v3-discover-chips">
-                {TRENDING_SEARCHES.map(s => (
-                  <Button
-                    unstyled
-                    key={s}
-                    type="button"
-                    className="res-v3-trending-chip"
-                    onClick={() => { setQuery(s); inputRef.current?.focus() }}
-                  >
-                    {s}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="res-v3-discover-section">
-              <p className="res-v3-discover-label">Popular topics</p>
-              <div className="rc-tags-cloud">
-                {topTags.map(({ tag, count }) => (
-                  <Link key={tag} href={`/resources/tag/${tag}`} className="rc-tag">
-                    #{tag}
-                    <span style={{ opacity: 0.55, fontSize: 10, marginLeft: 3 }}>{count}</span>
+                    <ArrowRight className="res-v3-result-arrow" size={17} aria-hidden="true" />
                   </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="res-v3-discover-section">
-              <p className="res-v3-discover-label">Browse categories</p>
-              <div className="res-v3-discover-cats">
-                {CATEGORIES.map(cat => (
-                  <Button
-                    unstyled
-                    key={cat.slug}
-                    type="button"
-                    className="res-v3-filter-chip"
-                    onClick={() => { setCategoryFilter(cat.slug); inputRef.current?.focus() }}
-                    style={{ borderColor: `${cat.color}30`, color: cat.color }}
-                  >
-                    {cat.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
+                </li>
+              ))}
+            </ul>
+            <nav className="res-search-pagination" aria-label="Search result pages">
+              <span>{t('Showing {start}–{end} of {count}', { start: resultPage.start + 1, end: resultPage.start + resultPage.articles.length, count: results.length })}</span>
+              {resultPage.pageCount > 1 && <div>
+                <Button unstyled type="button" disabled={resultPage.page === 1} onClick={() => changePage(resultPage.page - 1)}><Copy text={"Previous"} /></Button>
+                <span>{t('Page {page} of {count}', { page: resultPage.page, count: resultPage.pageCount })}</span>
+                <Button unstyled type="button" disabled={resultPage.page === resultPage.pageCount} onClick={() => changePage(resultPage.page + 1)}><Copy text={"Next"} /></Button>
+              </div>}
+            </nav>
+          </>
+        ) : (
+          <div className="res-v3-search-empty">
+            <Search size={34} aria-hidden="true" />
+            <h3><Copy text={"No matching guides"} /></h3>
+            <p>{t(hasFilters ? 'Try a different topic or remove the reading-time and category filters.' : 'Try fewer words or a different topic.')}</p>
+            {hasFilters && <Button unstyled type="button" className="res-search-reset" onClick={() => updateSearch({ category: '', length: '' })}><Copy text={"Clear filters"} /></Button>}
           </div>
         )}
       </div>

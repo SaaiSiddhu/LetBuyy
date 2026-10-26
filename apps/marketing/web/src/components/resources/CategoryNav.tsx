@@ -1,5 +1,9 @@
 'use client'
 
+import { useCopy } from '@/components/i18n/useCopy'
+
+import Copy from '@/components/i18n/Copy'
+
 import Link from '@/components/i18n/LocaleLink'
 import { usePathname } from 'next/navigation'
 import type { Category } from '@/lib/resources/types'
@@ -10,17 +14,17 @@ interface Props {
 }
 
 export default function CategoryNav({ categories, activeCategory }: Props) {
+    const { t } = useCopy()
   const pathname = usePathname()
   const isAll = !activeCategory || pathname === '/resources'
 
   return (
-    <nav className="rc-cat-nav" aria-label="Resource categories">
+    <nav className="rc-cat-nav" aria-label={t("Resource categories")}>
       <Link
         href="/resources"
         className={`rc-cat-pill${isAll ? ' active' : ''}`}
       >
-        All
-      </Link>
+        <Copy text={"All"} /></Link>
       {categories.map(cat => (
         <Link
           key={cat.slug}
@@ -28,7 +32,7 @@ export default function CategoryNav({ categories, activeCategory }: Props) {
           className={`rc-cat-pill${activeCategory === cat.slug ? ' active' : ''}`}
           style={activeCategory === cat.slug ? { background: cat.color, borderColor: cat.color } : undefined}
         >
-          {cat.label}
+          <Copy text={cat.label} />
         </Link>
       ))}
     </nav>

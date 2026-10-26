@@ -1,0 +1,8 @@
+{
+  "components/Hero.tsx": "469ac1a5f04bbc80947ad225542f605897ed2d1242c865178f5d28853a62230e",
+  "components/CommerceNetwork.tsx": "a537ae41feabf35e56c1b62793558ca81f15888a4f3546658f020e6f2be884d0",
+  "components/CapabilityMap.tsx": "077d511fe5b963a7d6ee3ade3950969aa5bc9848bfc2d68b01b2feadac592afb",
+  "components/MerchantJourney.tsx": "1188b6cf4724220dffed5519bc8cbe47c022ab23cd5f5a89dfa65d4644bb6486",
+  "components/Features.tsx": "20f207f65987306b672f59ca1e9ddb45e67edadb7b1e610bd1d13d3e8137da13",
+  "components/EcosystemMap.tsx": "fd04bd52b022d168dc7343cec1ed466fd97bcf748c2adfc0af126057f4cc2941"
+}

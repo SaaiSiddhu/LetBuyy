@@ -1,0 +1,120 @@
+{
+  "origin": "https://www.letbuyy.com",
+  "scripts": [
+    {
+      "path": "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+      "status": 200,
+      "bytes": 198492,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+      "status": 200,
+      "bytes": 188639,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/main-app-a5f2984222edc062.js",
+      "status": 200,
+      "bytes": 529,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+      "status": 200,
+      "bytes": 9006,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+      "status": 200,
+      "bytes": 13680,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/6518-c4e35885b9698aae.js",
+      "status": 200,
+      "bytes": 54229,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/2310-b446817103c2e2b9.js",
+      "status": 200,
+      "bytes": 98505,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/9731-21f967b8d31df952.js",
+      "status": 200,
+      "bytes": 121511,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/1848-fc69f82615ee7454.js",
+      "status": 200,
+      "bytes": 165901,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/4419-7111bcc1c3851253.js",
+      "status": 200,
+      "bytes": 173547,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/8947-216731afb483e518.js",
+      "status": 200,
+      "bytes": 1020,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/9368-805468f58cd1e6de.js",
+      "status": 200,
+      "bytes": 144370,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/1911-3957132ffe3735b1.js",
+      "status": 200,
+      "bytes": 52750,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/5249-df9c667587467d3b.js",
+      "status": 200,
+      "bytes": 4474,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/app/%5Blocale%5D/contact/page-0e0ed71395cc4f91.js",
+      "status": 200,
+      "bytes": 35215,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+      "status": 200,
+      "bytes": 452,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "status": 200,
+      "bytes": 112541,
+      "ok": true
+    },
+    {
+      "path": "/_next/static/chunks/webpack-2939bc8b3035161a.js",
+      "status": 200,
+      "bytes": 3875,
+      "ok": true
+    }
+  ],
+  "publicTurnstileKeyInClientBundle": true,
+  "pricing": {
+    "status": 200,
+    "plans": 4,
+    "ok": true
+  },
+  "failures": 0
+}

@@ -1,0 +1,98 @@
+{
+  "generator": "Built-in image_gen",
+  "role": "Decorative narrative illustrations supporting the visible customer-facing explanation in Features.tsx",
+  "date": "2026-10-24",
+  "style": "Editorial pen-and-ink with subtle gouache washes, navy/ivory/lavender/teal, transparent background",
+  "assets": [
+    {
+      "file": "build-store-v1.webp",
+      "prompt": "Create an original premium editorial commerce illustration for LetBuyy's public website. Transparent background with genuine alpha; no ground rectangle, no full-bleed backdrop, no text, no letters, no logos, no floating UI dashboard, no circular orbit diagram, no neon glow, no plastic 3D. Art direction: sophisticated hand-drawn architectural pen-and-ink lines, subtle gouache color washes, warm ivory objects, midnight navy outlines, restrained lavender and teal accents, realistic product proportions and material texture. Clear immediately understandable visual story, cohesive objects on a subtle isometric tabletop composition, generous 8% transparent margins, landscape 4:3 framing. Designed to read at 360px wide in both light and dark UI. Story 1: Build your own online shop. A beautifully drawn open laptop displaying a small boutique storefront with a photograph of an ivory sneaker and simple product tiles without any text, beside a physical ivory sneaker, folded navy tee, a small color swatch fan and a simple kraft hang tag. The screen and real merchandise clearly connect the physical business to its new online store. This is one integrated vignette, not a collage.",
+      "transparent": true,
+      "intendedWidth": "280–440 CSS pixels",
+      "use": "src/components/Features.tsx",
+      "semantics": "Decorative: adjacent headings, descriptions and lists provide the information."
+    },
+    {
+      "file": "fulfill-order-v1.webp",
+      "prompt": "Create an original premium editorial commerce illustration for LetBuyy's public website. Transparent background with genuine alpha; no ground rectangle, no full-bleed backdrop, no text, no letters, no logos, no floating UI dashboard, no circular orbit diagram, no neon glow, no plastic 3D. Art direction: sophisticated hand-drawn architectural pen-and-ink lines, subtle gouache color washes, warm ivory objects, midnight navy outlines, restrained lavender and teal accents, realistic product proportions and material texture. Clear immediately understandable visual story, cohesive objects on a subtle isometric tabletop composition, generous 8% transparent margins, landscape 4:3 framing. Designed to read at 360px wide in both light and dark UI. Story 2: From online order to packed parcel. A clearly drawn smartphone with a simple product thumbnail and a small green check, next to an open kraft shipping box holding a folded navy tee and an ivory sneaker wrapped in tissue, with a small scanner, a plain shipping label without text or barcode numbers, and three neat stock cartons behind. Show precise tactile packaging, no hands or people. One coherent shop fulfillment vignette.",
+      "transparent": true,
+      "intendedWidth": "280–440 CSS pixels",
+      "use": "src/components/Features.tsx",
+      "semantics": "Decorative: adjacent headings, descriptions and lists provide the information."
+    },
+    {
+      "file": "grow-customers-v1.webp",
+      "prompt": "Create an original premium editorial commerce illustration for LetBuyy's public website. Transparent background with genuine alpha; no ground rectangle, no full-bleed backdrop, no text, no letters, no logos, no floating UI dashboard, no circular orbit diagram, no neon glow, no plastic 3D. Art direction: sophisticated hand-drawn architectural pen-and-ink lines, subtle gouache color washes, warm ivory objects, midnight navy outlines, restrained lavender and teal accents, realistic product proportions and material texture. Clear immediately understandable visual story, cohesive objects on a subtle isometric tabletop composition, generous 8% transparent margins, landscape 4:3 framing. Designed to read at 360px wide in both light and dark UI. Story 3: Bring customers back. A small open laptop displaying a thoughtfully designed email newsletter with a sneaker photograph and plain colored blocks without writing, an open paper envelope emerging next to it, two small customer portrait cards in navy linework, and a modest four-bar sales chart in the composition. Connect an existing shop's product, a promotional email, customer relationships and reviewing results. No giant arrows or floating spheres. One restrained coherent editorial vignette.",
+      "transparent": true,
+      "intendedWidth": "280–440 CSS pixels",
+      "use": "src/components/Features.tsx",
+      "semantics": "Decorative: adjacent headings, descriptions and lists provide the information."
+    },
+    {
+      "file": "everyday-merchant-v1.webp",
+      "prompt": "Create one original premium editorial illustration for LetBuyy's 'What does that mean for your day?' section. It must visually communicate a small business owner handling everyday online-shop work, not a decorative abstract object. Transparent background with genuine alpha, no background rectangle, no text or lettering, no brand logos, no UI chart clouds, no orbit diagram, no neon glow or plastic 3D. Match an established pen-and-ink/gouache commerce illustration family: precise navy ink outlines, tactile subtle watercolor/gouache washes, warm ivory, midnight navy, restrained muted lavender and teal, natural human proportions and realistic product materials. One Indian woman shop owner in a navy overshirt sits at a compact worktable reviewing a laptop with simple order rows and a small green check without text; next to her is an open kraft parcel holding a folded navy T-shirt and a small product card, and a tidy short stack of stock boxes. Show her comfortably engaged with the laptop, hands natural and anatomically correct. A simple leafy branch is acceptable to soften the composition. A coherent grounded vignette with clear silhouettes and generous transparent margins, no busy background. Landscape 4:3 canvas, designed to read at 320 CSS px wide beneath a heading in a website's left column, in both light and dark themes. Keep the owner, laptop and parcel fully visible.",
+      "transparent": true,
+      "intendedWidth": "240 CSS pixels on phones; up to 340 CSS pixels on desktop",
+      "use": "src/components/Features.tsx: how-everyday-heading",
+      "semantics": "Decorative shop-owner vignette beneath the everyday tasks heading. Text and task disclosures carry the information."
+    },
+    {
+      "file": "order-story-background-v1.webp",
+      "prompt": "Generate an original photorealistic editorial background photograph for a premium ecommerce software website's explanatory order-workflow card. Very wide landscape composition, intended 2.5:1 banner crop. The rightmost 45 percent contains an open kraft shipping parcel with neatly folded midnight-navy cotton T-shirt, ivory tissue paper, a blank matte shipping label and a small wooden packing surface. Show realistic weave, soft paper fibers, believable creases and natural imperfect materials. Slight overhead three-quarter perspective, sophisticated soft daylight, restrained warm ivory/slate/navy palette, authentic independent boutique packing station. Keep the entire shirt and parcel clustered in the right half, with ample top/bottom safety for responsive cropping. The left 55 percent must be clean quiet pale ivory negative space with extremely subtle paper texture, no objects or strong shadows, suitable for separately rendered text. Smooth natural tonal transition between left and right, no division line. No readable text, no letters, no logos, no hands, no people, no stickers or UI, no arrows, no circles, no illustration, no neon, no purple glowing gradient, no plastic rendering. The result should look like high-end commissioned product photography, calm, tactile and credible, not a glossy AI montage. Opaque background.",
+      "transparent": false,
+      "style": "Photorealistic editorial product photography; warm ivory, navy cotton and kraft packaging.",
+      "intendedWidth": "Card header background; up to 1280 CSS pixels, with a separate 180px image band below the text on phones.",
+      "use": "Retired: no runtime references",
+      "semantics": "Decorative background for the explicitly illustrative T-shirt sale. Visible text describes the process. Not an actual customer order or product advertisement.",
+      "status": "Removed from card at owner request; historical asset retained."
+    },
+    {
+      "file": "step-order-v1.webp",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustrated workflow icon for LetBuyy ecommerce website, order step. Create one isolated premium crafted three-dimensional object: a cobalt-blue shopping bag with ivory handles, paired with one small ivory order slip showing just three embossed blank item lines; no lettering. Consistent art direction: refined tactile matte ceramic, finely brushed silver details, warm ivory accents and midnight navy secondary details. Dominant accent cobalt blue, naturally shaded rather than neon. Three-quarter isometric view, soft upper-left studio lighting, crisp carefully modeled edges, subtle restrained contact shadow only. Simple recognizable silhouette readable at 80 CSS pixels. Subject centered, occupies 80 percent of square canvas with generous transparent breathing room on every edge. Actual transparent background, no ground plane, no enclosing tile or circle, no border, no UI panel, no gradient backdrop, no text, no watermarks. Sophisticated product illustration, not toy-like, no plastic gloss, no busy scene. Works on both near-black and pale ivory website surfaces.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-e5d2caea-3c58-4966-aa50-a28e2d913ea6.png",
+      "transparent": true,
+      "width": 256,
+      "height": 256,
+      "style": "Coordinated tactile 3D workflow illustrations with blue, emerald, amber and violet accents; ivory and navy details.",
+      "intendedWidth": "72px on phones; 96px on larger cards",
+      "use": "src/components/Features.tsx: how-sale-step--order",
+      "semantics": "Decorative, redundant with adjacent workflow heading. No interactive icon or payment confirmation."
+    },
+    {
+      "file": "step-payment-v1.webp",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustrated workflow icon for LetBuyy ecommerce website, payment step. Create one isolated premium crafted three-dimensional object: an emerald-green payment card standing at a slight angle with a small ivory verification seal; restrained brushed-metal chip and simple embossed checkmark; no lettering or numbers. Consistent art direction: refined tactile matte ceramic, finely brushed silver details, warm ivory accents and midnight navy secondary details. Dominant accent emerald green, naturally shaded rather than neon. Three-quarter isometric view, soft upper-left studio lighting, crisp carefully modeled edges, subtle restrained contact shadow only. Simple recognizable silhouette readable at 80 CSS pixels. Subject centered, occupies 80 percent of square canvas with generous transparent breathing room on every edge. Actual transparent background, no ground plane, no enclosing tile or circle, no border, no UI panel, no gradient backdrop, no text, no watermarks. Sophisticated product illustration, not toy-like, no plastic gloss, no busy scene. Works on both near-black and pale ivory website surfaces.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-73a4dd3f-9559-421b-9035-3793779226c9.png",
+      "transparent": true,
+      "width": 256,
+      "height": 256,
+      "style": "Coordinated tactile 3D workflow illustrations with blue, emerald, amber and violet accents; ivory and navy details.",
+      "intendedWidth": "72px on phones; 96px on larger cards",
+      "use": "src/components/Features.tsx: how-sale-step--payment",
+      "semantics": "Decorative, redundant with adjacent workflow heading. No interactive icon or payment confirmation."
+    },
+    {
+      "file": "step-stock-v1.webp",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustrated workflow icon for LetBuyy ecommerce website, stock step. Create one isolated premium crafted three-dimensional object: an open amber kraft inventory carton with three neatly arranged folded navy and ivory garments and a small ivory stock tag with three simple embossed bars; no lettering or numbers. Consistent art direction: refined tactile matte ceramic, finely brushed silver details, warm ivory accents and midnight navy secondary details. Dominant accent warm amber, naturally shaded rather than neon. Three-quarter isometric view, soft upper-left studio lighting, crisp carefully modeled edges, subtle restrained contact shadow only. Simple recognizable silhouette readable at 80 CSS pixels. Subject centered, occupies 80 percent of square canvas with generous transparent breathing room on every edge. Actual transparent background, no ground plane, no enclosing tile or circle, no border, no UI panel, no gradient backdrop, no text, no watermarks. Sophisticated product illustration, not toy-like, no plastic gloss, no busy scene. Works on both near-black and pale ivory website surfaces.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-2e36c422-1d95-4eef-b571-fceebb08df78.png",
+      "transparent": true,
+      "width": 256,
+      "height": 256,
+      "style": "Coordinated tactile 3D workflow illustrations with blue, emerald, amber and violet accents; ivory and navy details.",
+      "intendedWidth": "72px on phones; 96px on larger cards",
+      "use": "src/components/Features.tsx: how-sale-step--stock",
+      "semantics": "Decorative, redundant with adjacent workflow heading. No interactive icon or payment confirmation."
+    },
+    {
+      "file": "step-delivery-v1.webp",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustrated workflow icon for LetBuyy ecommerce website, delivery step. Create one isolated premium crafted three-dimensional object: a compact violet delivery van carrying a single kraft parcel, beautifully proportioned silver wheels, a tiny curved route line behind it; no lettering or logos. Consistent art direction: refined tactile matte ceramic, finely brushed silver details, warm ivory accents and midnight navy secondary details. Dominant accent violet, naturally shaded rather than neon. Three-quarter isometric view, soft upper-left studio lighting, crisp carefully modeled edges, subtle restrained contact shadow only. Simple recognizable silhouette readable at 80 CSS pixels. Subject centered, occupies 80 percent of square canvas with generous transparent breathing room on every edge. Actual transparent background, no ground plane, no enclosing tile or circle, no border, no UI panel, no gradient backdrop, no text, no watermarks. Sophisticated product illustration, not toy-like, no plastic gloss, no busy scene. Works on both near-black and pale ivory website surfaces.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-ac72bff3-2a72-43c3-b249-18ae2485cb55.png",
+      "transparent": true,
+      "width": 256,
+      "height": 256,
+      "style": "Coordinated tactile 3D workflow illustrations with blue, emerald, amber and violet accents; ivory and navy details.",
+      "intendedWidth": "72px on phones; 96px on larger cards",
+      "use": "src/components/Features.tsx: how-sale-step--delivery",
+      "semantics": "Decorative, redundant with adjacent workflow heading. No interactive icon or payment confirmation."
+    }
+  ]
+}

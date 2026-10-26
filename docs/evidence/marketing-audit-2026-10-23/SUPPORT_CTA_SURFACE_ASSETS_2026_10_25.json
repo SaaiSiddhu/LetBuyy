@@ -1,0 +1,62 @@
+{
+  "generator": "built-in image_gen",
+  "transparent_background": true,
+  "assets": [
+    {
+      "key": "storefront-launch-cta",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground illustration for the final call to action of an India-first commerce platform website. Primary request: a beautifully art-directed storefront launch still-life, with an elegant graphite laptop showing a minimal ivory storefront with sculptural ceramic and linen products, a matching phone with a small product card, and one carefully packed natural kraft parcel with an understated violet seal. A restrained ivory checklist rests beside the laptop. Calm, inviting and professional, not an exuberant technology fantasy. High-end product photography meets precise 3D editorial design, matte graphite, anti-reflective glass, rich ivory paper, natural ceramic and linen, restrained violet and sage accents, soft professional studio lighting and realistic gentle shadows. Actual transparent background. Landscape 3:2, all objects fully visible inside generous transparent margins, strong balanced composition legible at 350px wide. No solar system, orbit, radial diagram, connected icon network, planets, platform, floor plane, enclosing backdrop, robot, glowing cube, gold trim, confetti, logos, watermark, readable words, prices, statistics or claims. Concept storefront, not a screenshot of a real merchant.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-7a7776df-63ef-491c-bd94-93aad4bb14e8.png",
+      "asset": "/illustrations/storefront-launch-cta-v1.webp",
+      "maxSize": 1536
+    },
+    {
+      "key": "grievance-care-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground illustration for an ecommerce grievance and complaint-escalation information page. Primary request: a calm and respectful still-life of an open ivory case folder containing two orderly paper sheets with abstract gray lines, an unsealed cream envelope, a graphite pen, and a small clear-glass conversation shape with one restrained violet accent. One thin muted sage paper tab marks the next step in the folder. Convey careful listening, documentation and a clear process, not a guaranteed outcome or legal verdict. Sophisticated high-end product photography meets precise editorial 3D design, tactile natural paper grain, matte graphite, subtle optical glass, soft professional light and realistic shadows. Actual transparent background, landscape 3:2, all objects fully inside generous margins, legible at 350px. No scales of justice, hammer, judge, police badge, approval seal, check mark implying resolution, gold trim, robot, orb, platform, floor plane, enclosing backdrop, logos, watermark, readable words, dates, numbers or metrics.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-025a3802-a0e3-4196-9992-75f447e0f124.png",
+      "asset": "/illustrations/support/grievance-care-studio-v1.webp",
+      "maxSize": 1536
+    },
+    {
+      "key": "support-care-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground illustration for a commerce help and support page. Primary request: a refined graphite over-ear support headset resting beside a tactile ivory help guide book with small abstract page markers, a small kraft product parcel and one simple translucent lilac conversation card. Suggest finding answers and asking for assistance, no fake availability indicator. Elegant high-end studio product photography meets precise 3D editorial design, natural paper grain, matte graphite, soft fabric ear cushions, fine glass refraction, restrained sage and violet accents. Soft professional studio light and realistic gentle shadows. Actual transparent background, landscape 3:2, all objects fully visible with generous clean margins and a strong silhouette at 350px width. No robot, person portrait, glowing orb, gold trim, clock or 24/7 indicator, guarantees, fake notifications, platform, floor plane, enclosing backdrop, logos, watermark, readable words, dates, numbers or metrics.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-277ee53e-5822-4729-a8c3-6872a90ceb7a.png",
+      "asset": "/illustrations/support/support-care-studio-v1.webp",
+      "maxSize": 1536
+    },
+    {
+      "key": "contact-conversation-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground illustration for a professional commerce contact page. Primary request: an elegant tactile ivory envelope partly open with a blank folded letter, two clear-glass conversation cards with subtle graphite dot marks, a beautifully machined graphite pen and a small muted violet paperclip. Compose them as an inviting thoughtful conversation rather than a notification or completed submission. Sophisticated high-end product photography meets precise editorial 3D design, beautiful paper grain, brushed graphite metal, optical glass and restrained lilac/sage accents. Soft professional studio light and realistic gentle shadows. Actual transparent background. Landscape 3:2, all objects fully within generous transparent margins and clearly readable at 350px width. No readable words, names, email addresses, numbers, logos, watermark, checkmarks implying success, stamps implying sent mail, robots, glowing orb, gold trim, confetti, platform, floor plane or enclosing rectangular background.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-132c426a-39ec-40be-a15a-0b356505095c.png",
+      "asset": "/illustrations/support/contact-conversation-studio-v1.webp",
+      "maxSize": 1536
+    },
+    {
+      "key": "surface-themes",
+      "prompt": "Use case: stylized-concept. Asset type: small premium illustrated navigation shortcut for storefront themes. Primary request: a single compact ivory storefront window with three blank violet swatches and one beautifully simple sage product tile, with a tiny graphite designer pencil leaning beside it. Strong iconic silhouette, at most three objects, readable at 56px. Refined high-end 3D editorial design, tactile ivory, matte graphite and restrained violet and teal details, soft professional lighting. Actual transparent background, no enclosing decorative square, no floor, platform or background plane, no words, letters, numbers, logos, watermark, gold trim or confetti. Square balanced composition with generous transparent padding. This is supporting shortcut artwork beside an HTML label, not a functional icon or screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-18bbaf18-29e3-4f00-ae62-c45eff3d449e.png",
+      "asset": "/illustrations/surfaces/surface-themes-v1.webp",
+      "maxSize": 512
+    },
+    {
+      "key": "surface-apps",
+      "prompt": "Use case: stylized-concept. Asset type: small premium illustrated navigation shortcut for commerce apps. Primary request: three tactile modular blocks that fit together, one graphite block, one ivory block and one muted lilac glass block, arranged in a simple compact stepped group with visible interlocking connectors. Strong immediately recognizable silhouette, readable at 56px, minimal detail, no labels. Refined high-end 3D editorial design, precise rounded edges, matte graphite, paper-like ivory, subtle glass refraction and a restrained teal highlight, soft professional lighting. Actual transparent background, no enclosing decorative square, no floor, platform or background plane, no readable words, letters, numbers, logos, watermark, gold trim or confetti. Square balanced composition with generous transparent padding. Supporting shortcut artwork beside an HTML label, not a screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-fe81980f-6ec5-42e4-a072-866eafe33e2e.png",
+      "asset": "/illustrations/surfaces/surface-apps-v1.webp",
+      "maxSize": 512
+    },
+    {
+      "key": "surface-developers",
+      "prompt": "Use case: stylized-concept. Asset type: small premium illustrated navigation shortcut for a commerce developer platform. Primary request: one pair of solid sculptural graphite curly braces gently framing a small clear-violet glass connector, with a tiny ivory code sheet behind. Strong compact silhouette and minimal detail, readable at 56px. Refined high-end 3D editorial design, matte graphite metal, tactile ivory paper, restrained violet optical glass and one muted teal detail. Soft professional lighting. Actual transparent background, no enclosing decorative square, no floor, platform or background plane, no readable words or numbers, no logos, watermark, gold trim, extra code lines or confetti. Square balanced composition with generous transparent padding. Supporting shortcut artwork beside an HTML label, not a functional code icon or screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-57e8f980-b410-4007-a654-24486fa3a809.png",
+      "asset": "/illustrations/surfaces/surface-developers-v1.webp",
+      "maxSize": 512
+    },
+    {
+      "key": "surface-pricing",
+      "prompt": "Use case: stylized-concept. Asset type: small premium illustrated navigation shortcut for commerce pricing plans. Primary request: two elegant tactile ivory plan cards standing together, each with two simple graphite horizontal lines and one small violet square, one card slightly taller behind the other. A subtle graphite binder clip joins the cards, suggesting comparing plans without money symbols or prices. Strong compact silhouette, readable at 56px, minimal detail. Refined high-end 3D editorial design, rich ivory paper, matte graphite, restrained violet and muted teal details, soft professional light. Actual transparent background, no enclosing decorative square, no floor, platform or background plane, no readable words, currency symbols, numbers, logos, watermark, gold trim or confetti. Square balanced composition with generous transparent padding. Supporting shortcut artwork beside an HTML label, not a screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-20de197f-16ee-467f-a8ea-949b843f314a.png",
+      "asset": "/illustrations/surfaces/surface-pricing-v1.webp",
+      "maxSize": 512
+    }
+  ]
+}

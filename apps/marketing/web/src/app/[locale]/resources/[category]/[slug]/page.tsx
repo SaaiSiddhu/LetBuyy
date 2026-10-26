@@ -1,3 +1,7 @@
+import { createCopy } from '@/lib/i18n/copy'
+import { localizeCategory, localizeAuthor } from '@/lib/i18n/resource-metadata'
+
+import Copy from '@/components/i18n/Copy'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LOCALES, getLocale } from '@/lib/i18n/locales'
@@ -10,6 +14,15 @@ import ReadingProgress from '@/components/resources/ReadingProgress'
 import TableOfContents from '@/components/resources/TableOfContents'
 import ArticleDock from '@/components/resources/ArticleDock'
 import ArticleBody from '@/components/resources/ArticleBody'
+import ResourceArticleArtwork from '@/components/resources/ResourceArticleArtwork'
+import ArticleVisualOverview from '@/components/resources/ArticleVisualOverview'
+import { getArticleArtwork } from '@/lib/resources/artwork'
+import { getReadingTopics } from '@/lib/resources/reading-visuals'
+import { getSectionVisuals } from '@/lib/resources/section-visuals'
+import LiquidGuide from '@/components/resources/LiquidGuide'
+import liquidGuideStyles from '@/components/resources/liquid-guide.module.css'
+import { ThemeGuideHero, ThemeGuideContent } from '@/components/resources/ThemeGuide'
+import themeGuideStyles from '@/components/resources/theme-guide.module.css'
 import ArticleSidebar from '@/components/resources/ArticleSidebar'
 import CopyLinkButton from '@/components/resources/CopyLinkButton'
 import BookmarkButton from '@/components/resources/BookmarkButton'
@@ -25,12 +38,13 @@ import {
   getRelatedArticles,
   getAuthorArticles,
   generateStaticArticleParams,
-  formatDate,
   getPrevNextInCategory,
   getSeriesArticles,
   getArticlesByCategory,
 } from '@/lib/resources/utils'
 import type { ContentBlock } from '@/lib/resources/types'
+import { localizeArticleContent } from '@/lib/i18n/article-content'
+import { resourceHeadingId } from '@/lib/resources/headings'
 
 export function generateStaticParams() {
   return generateStaticArticleParams()
@@ -42,8 +56,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string; category: string; slug: string }>
 }): Promise<Metadata> {
   const { locale: localeSegment, category, slug } = await params
-  const article = getArticleBySlug(category, slug)
-  if (!article) return {}
+  const sourceArticle = getArticleBySlug(category, slug)
+  if (!sourceArticle) return {}
+  const { article } = localizeArticleContent(sourceArticle, getLocale(localeSegment).language.code)
   const author = getAuthor(article.author)
   return {
     title: article.title,
@@ -64,19 +79,10 @@ export async function generateMetadata({
   }
 }
 
-function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-}
-
 function extractHeadings(body: ContentBlock[]) {
   return body
-    .filter((b): b is { type: 'h2' | 'h3'; text: string } => b.type === 'h2' || b.type === 'h3')
-    .map(b => ({ id: slugify(b.text), text: b.text, level: (b.type === 'h2' ? 2 : 3) as 2 | 3 }))
-}
-
-function getDifficultyLabel(diff: string | null) {
-  if (!diff) return null
-  return diff.charAt(0).toUpperCase() + diff.slice(1)
+    .filter((b): b is Extract<ContentBlock, { type: 'h2' | 'h3' }> => b.type === 'h2' || b.type === 'h3')
+    .map(b => ({ id: b.id ?? resourceHeadingId(b.text), text: b.text, level: (b.type === 'h2' ? 2 : 3) as 2 | 3 }))
 }
 
 export default async function ArticlePage({
@@ -85,37 +91,46 @@ export default async function ArticlePage({
   params: Promise<{ locale: string; category: string; slug: string }>
 }) {
   const { locale: localeSegment, category, slug } = await params
-  const article = getArticleBySlug(category, slug)
-  if (!article) notFound()
+  const sourceArticle = getArticleBySlug(category, slug)
+  if (!sourceArticle) notFound()
 
   const locale = getLocale(localeSegment)
   const dict = getDictionary(locale)
+  const t = createCopy(locale.language.code)
+  const { article, translated } = localizeArticleContent(sourceArticle, locale.language.code)
 
-  const cat = getCategory(category)!
-  const author = getAuthor(article.author)
+  const cat = localizeCategory(getCategory(category)!, locale.language.code)
+  const author = localizeAuthor(getAuthor(article.author), locale.language.code)
   const headings = extractHeadings(article.body)
+  const isThemeGuide = category === 'platform' && slug === 'how-themes-work'
+  const isLiquidGuide = category === 'developers' && slug === 'liquid-theming-guide'
+  const artwork = getArticleArtwork(slug)
+  const readingTopics = getReadingTopics(article)
+  const ArticleContainer = isThemeGuide || isLiquidGuide ? 'article' : 'main'
 
   // Related + recommended
-  const related = getRelatedArticles(article.relatedSlugs ?? [], article.slug)
-  const relatedWithCats = related.map(r => ({ article: r, category: getCategory(r.category)! }))
+  const related = getRelatedArticles(article.relatedSlugs ?? [], article.slug).map(a => localizeArticleContent(a, locale.language.code).article)
+  const relatedWithCats = related.map(r => ({ article: r, category: localizeCategory(getCategory(r.category)!, locale.language.code) }))
 
   // Recommended = related first, fill with same-category articles
-  const catArticles = getArticlesByCategory(category).filter(a => a.slug !== slug)
+  const catArticles = getArticlesByCategory(category).filter(a => a.slug !== slug).map(a => localizeArticleContent(a, locale.language.code).article)
   const recommendedSlugs = new Set(related.map(a => a.slug))
   const extra = catArticles.filter(a => !recommendedSlugs.has(a.slug))
   const recommendedPool = [...related, ...extra].slice(0, 3)
-  const recommended = recommendedPool.map(a => ({ article: a, category: getCategory(a.category)! }))
+  const recommended = recommendedPool.map(a => ({ article: a, category: localizeCategory(getCategory(a.category)!, locale.language.code) }))
 
   // Prev/Next
-  const { prev, next } = getPrevNextInCategory(category, slug)
+  const adjacent = getPrevNextInCategory(category, slug)
+  const prev = adjacent.prev ? localizeArticleContent(adjacent.prev, locale.language.code).article : null
+  const next = adjacent.next ? localizeArticleContent(adjacent.next, locale.language.code).article : null
 
   // Series
-  const seriesArticles = article.seriesSlug ? getSeriesArticles(article.seriesSlug) : []
+  const seriesArticles = article.seriesSlug ? getSeriesArticles(article.seriesSlug).map(a => localizeArticleContent(a, locale.language.code).article) : []
 
   // Author stats
   const authorArticles = getAuthorArticles(article.author)
   const authorArticleCount = authorArticles.length
-  const authorTopics = Array.from(new Set(authorArticles.map(a => getCategory(a.category)?.label).filter(Boolean) as string[])).slice(0, 4)
+  const authorTopics = Array.from(new Set(authorArticles.map(a => t(getCategory(a.category)?.label ?? '')).filter(Boolean) as string[])).slice(0, 4)
 
   // Structured data
   const structuredData = {
@@ -166,11 +181,11 @@ export default async function ArticlePage({
       <ReadingProgress />
 
       {/* ════ THREE-COLUMN ARTICLE SHELL ════ */}
-      <div className="arc-container">
+      <div className={`arc-container${isThemeGuide ? ` ${themeGuideStyles.guide}` : isLiquidGuide ? ` ${liquidGuideStyles.guide}` : ''}`}>
         <div className="arc-layout">
 
           {/* ── Left: sticky TOC (desktop) ── */}
-          <div className="arc-left" aria-hidden="true">
+          <div className="arc-left">
             <TableOfContents
               headings={headings}
               readingTime={article.readingTime}
@@ -179,19 +194,19 @@ export default async function ArticlePage({
           </div>
 
           {/* ── Center: article ── */}
-          <main className="arc-center">
+          <ArticleContainer className="arc-center" lang={translated ? locale.language.bcp47 : 'en'}>
 
             {/* Article header */}
             <header className="arc-header">
               {/* Eyebrow: breadcrumb + category chip */}
               <div className="arc-eyebrow">
                 <nav className="arc-breadcrumb" aria-label="Breadcrumb">
-                  <Link href="/resources">Resources</Link>
+                  <Link href="/resources"><Copy text={"Resources"} /></Link>
                   <span className="arc-breadcrumb-sep" aria-hidden="true">›</span>
                   <Link href={`/resources/${category}`} style={{ color: cat.color }}>{cat.label}</Link>
                 </nav>
                 {/* No category chip here — the breadcrumb above already names it */}
-                {article.featured && <span className="arc-flag">Featured</span>}
+                {article.featured && <span className="arc-flag"><Copy text={"Featured"} /></span>}
               </div>
 
               <h1 className="arc-title">{article.title}</h1>
@@ -210,13 +225,12 @@ export default async function ArticlePage({
                       <span className="arc-byline-role">{author.role}</span>
                     </p>
                     <p className="arc-byline-secondary">
-                      <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
+                      <time dateTime={article.publishedAt}>{new Date(article.publishedAt).toLocaleDateString(locale.hreflang, { day: 'numeric', month: 'short', year: 'numeric' })}</time>
                       <span className="arc-byline-sep" aria-hidden="true" />
-                      {article.readingTime} min read
-                      {article.updatedAt !== article.publishedAt && (
+                      {article.readingTime} <Copy text={"min read"} />{article.updatedAt !== article.publishedAt && (
                         <>
                           <span className="arc-byline-sep" aria-hidden="true" />
-                          Updated {formatDate(article.updatedAt)}
+                          <Copy text={"Updated"} />{' '}{new Date(article.updatedAt).toLocaleDateString(locale.hreflang, { day: 'numeric', month: 'short', year: 'numeric' })}
                         </>
                       )}
                     </p>
@@ -239,6 +253,9 @@ export default async function ArticlePage({
                   ))}
                 </div>
               )}
+              {isThemeGuide && <ThemeGuideHero />}
+              {isLiquidGuide && <ResourceArticleArtwork slug={slug} />}
+              {!isThemeGuide && !isLiquidGuide && artwork && <ArticleVisualOverview key={slug} artwork={artwork} topics={readingTopics} />}
             </header>
 
             {/* Series navigation */}
@@ -247,14 +264,14 @@ export default async function ArticlePage({
             )}
 
             {/* Article body */}
-            <UntranslatedNotice locale={locale} dict={dict} variant="article" />
+            {!translated && <UntranslatedNotice locale={locale} dict={dict} variant="article" />}
 
-            <ArticleBody body={article.body} />
+            {isThemeGuide ? <ThemeGuideContent body={article.body} /> : isLiquidGuide ? <LiquidGuide body={article.body} /> : <ArticleBody body={article.body} visuals={getSectionVisuals(sourceArticle)} />}
 
             {/* Completion banner */}
             <ArticleCompletionBanner next={next} />
 
-          </main>
+          </ArticleContainer>
 
           {/* ── Right: sticky sidebar (desktop) ── */}
           <div className="arc-right">

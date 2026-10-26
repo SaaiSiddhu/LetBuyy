@@ -1,0 +1,18 @@
+.cardArtwork figure { height: 180px; margin-bottom: var(--lb-space-4); background: transparent; }
+.compactArtwork { display: grid; place-items: center; width: 80px; min-width: 80px; align-self: center; }
+.compactArtwork figure { width: 80px; height: 70px; margin: 0; background: transparent; }
+.searchPage .searchResult { display: grid; grid-template-columns: 110px minmax(0, 1fr) 20px; align-items: center; gap: var(--lb-space-5); }
+.searchArtwork figure { width: 110px; height: 95px; margin: 0; background: transparent; }
+.searchHeader { display: grid; grid-template-columns: minmax(0, 1fr) 200px; align-items: center; gap: var(--lb-space-6); margin-bottom: var(--lb-space-5); }
+.searchHero { display: block; width: 200px; height: 130px; object-fit: contain; }
+.releaseArtwork { display: block; width: 100%; max-width: 260px; height: 165px; object-fit: contain; margin-bottom: var(--lb-space-5); }
+.subpageHeader { display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: center; gap: var(--lb-space-6); }
+.subpageHeader img { display: block; width: 240px; height: 165px; object-fit: contain; }
+@media (max-width: 640px) {
+  .searchPage .searchResult { grid-template-columns: 74px minmax(0, 1fr) 16px; gap: var(--lb-space-3); }
+  .searchArtwork figure { width: 74px; height: 70px; }
+  .searchHeader { grid-template-columns: minmax(0, 1fr) 100px; gap: var(--lb-space-3); }
+  .searchHero { width: 100px; height: 100px; }
+  .subpageHeader { grid-template-columns: minmax(0, 1fr); gap: var(--lb-space-3); }
+  .subpageHeader img { width: 100%; height: 170px; }
+}

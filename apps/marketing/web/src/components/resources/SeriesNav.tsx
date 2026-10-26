@@ -1,3 +1,5 @@
+
+import Copy from '@/components/i18n/Copy'
 import Link from '@/components/i18n/LocaleLink'
 import type { Article } from '@/lib/resources/types'
 
@@ -19,7 +21,7 @@ export default function SeriesNav({ seriesArticles, currentSlug }: Props) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M4 6h16M4 10h16M4 14h10M4 18h6" />
           </svg>
-          Series · {currentIdx + 1} of {seriesArticles.length}
+          <Copy text={"Series ·"} />{' '}{currentIdx + 1} <Copy text={"of"} />{' '}{seriesArticles.length}
         </div>
         <div className="rc-series-progress-bar" role="progressbar" aria-valuenow={currentIdx + 1} aria-valuemin={1} aria-valuemax={seriesArticles.length}>
           <div className="rc-series-progress-fill" style={{ width: `${progress}%` }} />
@@ -45,7 +47,7 @@ export default function SeriesNav({ seriesArticles, currentSlug }: Props) {
               ) : (
                 <Link href={`/resources/${article.category}/${article.slug}`} className="rc-series-link">
                   {article.title}
-                  <span className="rc-series-link-meta">{article.readingTime} min</span>
+                  <span className="rc-series-link-meta">{article.readingTime} <Copy text={"min"} /></span>
                 </Link>
               )}
             </li>

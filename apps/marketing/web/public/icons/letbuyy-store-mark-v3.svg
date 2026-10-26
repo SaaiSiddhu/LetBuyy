@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="176" height="180" viewBox="0 0 176 180" fill="none" role="img" aria-labelledby="lb-title lb-description"><title id="lb-title">LetBuyy</title><desc id="lb-description">LetBuyy storefront shopping-bag mark.</desc><defs>
+<linearGradient id="lb-bag" x1="30" y1="48" x2="146" y2="161" gradientUnits="userSpaceOnUse"><stop stop-color="#2378FF"/><stop offset=".5" stop-color="#3456EE"/><stop offset="1" stop-color="#7C3AED"/></linearGradient>
+<linearGradient id="lb-side" x1="7" y1="64" x2="42" y2="153" gradientUnits="userSpaceOnUse"><stop stop-color="#143DAA"/><stop offset="1" stop-color="#11256B"/></linearGradient>
+<linearGradient id="lb-handle" x1="49" y1="40" x2="121" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#2C91FF"/><stop offset=".5" stop-color="#435FF0"/><stop offset="1" stop-color="#9951F4"/></linearGradient>
+<linearGradient id="lb-roof" x1="39" y1="66" x2="128" y2="91" gradientUnits="userSpaceOnUse"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCD5FF"/></linearGradient>
+<linearGradient id="lb-sweep" x1="8" y1="136" x2="163" y2="136" gradientUnits="userSpaceOnUse"><stop stop-color="#70D9FA"/><stop offset=".4" stop-color="#3B96F5"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+<linearGradient id="lb-word" x1="354" y1="63" x2="632" y2="134" gradientUnits="userSpaceOnUse"><stop stop-color="#246BEE"/><stop offset="1" stop-color="#783BEC"/></linearGradient>
+</defs><g id="lb-store-bag">
+<!-- The handle is a single continuous silhouette; no fragile micro-details. -->
+<path d="M50 58V47C50 24 64 11 85 11S120 24 120 47V58" stroke="url(#lb-handle)" stroke-width="13" stroke-linecap="round"/>
+<path d="M54 39C57 22 69 17 82 17" stroke="#A5CBFF" stroke-opacity=".8" stroke-width="2" stroke-linecap="round"/>
+<!-- Folded side and front of the merchant's bag. -->
+<path d="M31 51L16 61C11 64 9 69 10 76L17 146C18 154 23 158 32 158H46V51Z" fill="url(#lb-side)"/>
+<path d="M39 49H129C136 49 141 53 142 60L152 145C153 154 147 162 138 162H40C31 162 25 156 25 147L25 64C25 55 30 49 39 49Z" fill="url(#lb-bag)"/>
+<path d="M40 51H128C134 51 138 55 139 61" stroke="#B7D9FF" stroke-opacity=".6" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M28 142V65C28 58 31 54 37 53" stroke="#7AD8FF" stroke-width="2" stroke-linecap="round"/>
+<!-- A storefront is the bag's face: awning, display window and open doorway. -->
+<rect x="43" y="87" width="87" height="53" rx="7" fill="#122B79" fill-opacity=".83"/>
+<path d="M46 99V133H78V99Z" fill="#EDF4FF"/>
+<path d="M51 104H72V128H51Z" fill="#A9CBFF"/>
+<path d="M88 140V105C88 101 91 98 95 98H113C117 98 120 101 120 105V140Z" fill="#F5F4FF"/>
+<path d="M94 106H114V140H94Z" fill="#BCD0FF"/>
+<circle cx="110" cy="123" r="2" fill="#354BB8"/>
+<path d="M42 79L52 64H118L131 79V83C131 89 127 93 121 93C115 93 111 90 109 85C107 90 103 93 98 93C92 93 88 90 86 85C84 90 80 93 74 93C69 93 65 90 63 85C61 90 57 93 51 93C45 93 41 89 41 83V79Z" fill="url(#lb-roof)"/>
+<path d="M64 64H79L74 79V93C69 93 65 90 63 85V79Z" fill="#3D6BEF"/>
+<path d="M95 64H110L109 79V85C107 90 103 93 98 93V79Z" fill="#7051DF"/>
+<path d="M43 79H130" stroke="#FFFFFF" stroke-opacity=".68" stroke-width="1.3"/>
+<!-- One restrained forward sweep preserves the supplied commerce motif. -->
+<path d="M8 123C7 142 44 154 86 150C119 147 149 135 163 117" stroke="url(#lb-sweep)" stroke-width="8" stroke-linecap="round"/>
+<path d="M149 115L167 111L164 130" fill="none" stroke="#8B5CF6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14 132C25 143 53 148 79 146" stroke="#D3F5FF" stroke-opacity=".7" stroke-width="1.4" stroke-linecap="round"/>
+</g></svg>

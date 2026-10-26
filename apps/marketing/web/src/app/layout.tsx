@@ -1,21 +1,15 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "./locale-typography.css";
 import { getAccountsUrl, getMarketingSiteUrl, getSupportEmail } from "@/lib/public-urls";
 import { getPlatformNavigationLinks } from "@/lib/platform-links";
 import { BRAND, buildBrandSameAs } from "@letbuyy/shared-types";
 import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 
 const letbuyySans = localFont({
-  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+  src: "../../public/fonts/Inter-Variable.woff2",
   variable: "--font-letbuyy-sans",
-  display: "swap",
-  weight: "100 900",
-});
-
-const letbuyyDisplay = localFont({
-  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
-  variable: "--font-letbuyy-display",
   display: "swap",
   weight: "100 900",
 });
@@ -27,7 +21,7 @@ const letbuyyMono = localFont({
   weight: "100 900",
 });
 
-const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
+const fontVariables = `${letbuyySans.variable} ${letbuyyMono.variable}`;
 
 const siteUrl = getMarketingSiteUrl();
 const supportEmail = getSupportEmail();
@@ -129,13 +123,13 @@ const organizationNode = {
   email: supportEmail,
   foundingLocation: { "@type": "Country", name: "India" },
   areaServed: { "@type": "Country", name: "India" },
-  knowsLanguage: ["en", "hi"],
+  knowsLanguage: ["en", "hi", "ta"],
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
     email: supportEmail,
     areaServed: "IN",
-    availableLanguage: ["en", "hi"],
+    availableLanguage: ["en", "hi", "ta"],
   },
   ...(BRAND.founder.name
     ? { founder: { "@type": "Person", name: BRAND.founder.name, jobTitle: BRAND.founder.jobTitle } }
@@ -189,7 +183,7 @@ const websiteNode = {
   hasPart: siteNavigationLinks.map((link) => ({
     "@type": "WebPage",
     name: link.label,
-    url: link.href,
+    url: link.href.startsWith('/') ? `${siteUrl}${link.href}` : link.href,
     description: link.description,
   })),
 };
@@ -197,7 +191,7 @@ const websiteNode = {
 const navigationNodes = siteNavigationLinks.map((link) => ({
   "@type": "SiteNavigationElement",
   name: link.label,
-  url: link.href,
+  url: link.href.startsWith('/') ? `${siteUrl}${link.href}` : link.href,
   description: link.description,
   isPartOf: { "@id": websiteId },
 }));
@@ -243,7 +237,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <LetbuyyThemeProvider surface="storefront">
+        <LetbuyyThemeProvider surface="storefront" className="marketing-site">
           {children}
         </LetbuyyThemeProvider>
       </body>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ResourcesNav from '@/components/resources/ResourcesNav'
+import ResourcesScrollRestoration from '@/components/resources/ResourcesScrollRestoration'
 import NewsletterModalHost from '@/components/resources/NewsletterModal'
 import { getMarketingSiteUrl } from '@/lib/public-urls'
 
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 export default function ResourcesLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="resources-shell">
+      <ResourcesScrollRestoration />
       <Header />
       <ResourcesNav />
       <main style={{ paddingTop: 0 }}>{children}</main>

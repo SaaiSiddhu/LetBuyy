@@ -1,435 +1,192 @@
-import type { Metadata } from 'next'
-import Link from '@/components/i18n/LocaleLink'
-import {
-  BarChart3,
-  Code2,
-  IndianRupee,
-  Package,
-  Rocket,
-  ShoppingBag,
-  Sparkles,
-  type LucideIcon,
-} from '@letbuyy/ui'
-import NewsletterInline from '@/components/resources/NewsletterInline'
-import { getCategory } from '@/lib/resources/categories'
-import {
-  CATEGORIES,
-  ARTICLES,
-  LEARNING_PATHS,
-  AUTHORS,
-  getFeaturedArticles,
-  getLatestArticles,
-  getTrendingArticles,
-  getArticlesByCategory,
-} from '@/lib/resources/utils'
+import { localizeMetadata } from '@/lib/i18n/metadata'
 
-export const metadata: Metadata = {
+import Copy from '@/components/i18n/Copy'
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from '@/components/i18n/LocaleLink'
+import { ArrowRight, BookOpen, ChevronDown, Search, BarChart3, Code2, IndianRupee, Package, Rocket, ShoppingBag, Sparkles, Input, Button, type LucideIcon } from '@letbuyy/ui'
+import NewsletterInline from '@/components/resources/NewsletterInline'
+import { ARTICLES, CATEGORIES, LEARNING_PATHS, getFeaturedArticles, getLatestArticles, getArticlesByCategory } from '@/lib/resources/utils'
+import { getCategory } from '@/lib/resources/categories'
+import { getLearningPathArticles } from '@/lib/resources/learning-path-articles'
+import { getArticleArtwork, getEditorialScene, getLearningPathArtwork } from '@/lib/resources/artwork'
+import ResourceArticleArtwork from '@/components/resources/ResourceArticleArtwork'
+import { localizeArticleSummary } from '@/lib/i18n/article-summary'
+import { createCopy } from '@/lib/i18n/copy'
+import { getLocale } from '@/lib/i18n/locales'
+import { localePath } from '@/lib/i18n/routing'
+import styles from './resources-home.module.css'
+
+const sourceMetadata: Metadata = {
   title: 'Resources — Commerce guides for Indian merchants',
-  description: 'Guides, playbooks, tutorials, and platform updates for 35,000+ Indian ecommerce merchants and developers.',
+  description: 'Practical guides for starting, running, and growing an online business in India. Explore store setup, payments, operations, and more.',
   alternates: { canonical: '/resources' },
 }
 
-const LEVEL_LABELS = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' }
-const LEVEL_CLASS = { beginner: 'res-path-level-beginner', intermediate: 'res-path-level-intermediate', advanced: 'res-path-level-advanced' }
-
-/* Each category already declares its own icon — map the name to the component
-   so the hubs stop rendering one identical glyph for everything. */
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  ShoppingBag,
-  // @letbuyy/ui does not re-export TrendingUp; BarChart3 is the nearest
-  // exported equivalent for the Growth category.
-  TrendingUp: BarChart3,
-  IndianRupee,
-  Package,
-  Sparkles,
-  Code2,
-  Rocket,
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    return localizeMetadata(sourceMetadata, (await params).locale, "/resources")
 }
 
-// Category hub order — show these 4 prominently, rest as compact
-const HUB_CATEGORIES = ['ecommerce', 'payments', 'growth', 'operations']
 
-export default function ResourcesPage() {
-  const featured = getFeaturedArticles(1)[0]
-  const featuredCat = featured ? getCategory(featured.category) : null
-  const trending = getTrendingArticles(3)
-  const latest = getLatestArticles(6)
+const ICONS: Record<string, LucideIcon> = { ShoppingBag, TrendingUp: BarChart3, IndianRupee, Package, Sparkles, Code2, Rocket }
+const PICKS = ['upi-vs-cod-india', 'first-100-orders-guide', 'inventory-management-guide']
+const TOPICS: Record<string, string> = {
+  ecommerce: 'Build a better store', growth: 'Find your next customer', payments: 'Make sense of payments',
+  operations: 'Keep orders moving', 'ai-commerce': 'Explore commerce AI', developers: 'Work with the platform', platform: 'Get to know LetBuyy',
+}
+const PATH_COPY: Record<string, string> = {
+  'start-selling-online': 'Set up your store, add products, and prepare for your first sale.',
+  'first-100-orders': 'Find customers and improve the journey from browsing to buying.',
+  'payments-mastery': 'Understand UPI, COD, invoicing, and returns.',
+  'scale-your-operations': 'Bring inventory, fulfilment, and shipping into a daily routine.',
+  'developer-foundations': 'Read about APIs, webhooks, Liquid themes, and integrations.',
+}
+
+export default async function ResourcesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const locale = getLocale((await params).locale)
+  const t = createCopy(locale.language.code)
+  const sourceFeatured = getFeaturedArticles(1)[0]
+  const featured = sourceFeatured && localizeArticleSummary(sourceFeatured, locale.language.code)
+  const picks = PICKS.flatMap(slug => ARTICLES.find(a => a.slug === slug) ?? []).map(a => localizeArticleSummary(a, locale.language.code))
+  const latest = getLatestArticles(3).map(a => localizeArticleSummary(a, locale.language.code))
 
   return (
-    <>
-      {/* ── HERO V3 ────────────────────────────────────────────────────── */}
-      <section className="res-v3-hero">
-        <div className="res-hero-aurora" aria-hidden="true" />
-        <div className="container res-hero-inner">
-
-          <div className="res-v3-hero-eyebrow">
-            <span className="res-v3-hero-dot" aria-hidden="true" />
-            Merchant Education Platform
+    <div className={styles.page}>
+      <section className={styles.intro} aria-labelledby="resources-title">
+        <div className="container">
+          <div className={styles.masthead}>
+            <div>
+              <p className={styles.eyebrow}><Copy text={"THE LETBUYY RESOURCE LIBRARY"} /></p>
+              <h1 id="resources-title"><Copy text={"A little know-how."} /><br /><span><Copy text={"A better business."} /></span></h1>
+              <p className={styles.introText}><Copy text={"Practical reading for every part of running an online store in India. Start with a question. Leave with a next step."} /></p>
+            </div>
+            <div className={styles.find}>
+              <form action={localePath(locale, '/resources/search')} role="search" className={styles.search}>
+                <label htmlFor="library-search"><Copy text={"What are you working on?"} /></label>
+                <div className={styles.searchField}>
+                  <Search size={19} aria-hidden="true" />
+                  <Input unstyled id="library-search" name="q" type="search" placeholder={t('Search resources…')} />
+                  <Button unstyled type="submit" aria-label={t('Search the resource library')}><ArrowRight size={20} aria-hidden="true" /></Button>
+                </div>
+              </form>
+              <p className={styles.quickLinks}><Copy text={"Explore"} />{' '}<Link href="/resources/tag/upi">UPI</Link><Link href="/resources/tag/gst">GST</Link><Link href="/resources/tag/cod">COD</Link><Link href="/resources/tag/inventory"><Copy text={"Inventory"} /></Link></p>
+              <span className={styles.libraryNote}>{t('{guides} guides · {topics} topics · Made for Indian merchants', { guides: ARTICLES.length, topics: CATEGORIES.length })}</span>
+            </div>
           </div>
 
-          <h1 className="res-v3-hero-heading">
-            Everything you need to{' '}
-            <span className="res-v3-hero-accent">build and scale</span>{' '}
-            your Indian store.
-          </h1>
-
-          <p className="res-v3-hero-sub">
-            Guides, playbooks, and tutorials built for Indian merchants — covering GST, UPI, COD,
-            D2C growth, and commerce automation.
-          </p>
-
-          {/* Full-width search — the primary entry point to the library */}
-          <Link href="/resources/search" className="res-hero-search" aria-label="Search resources">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
-            <span className="res-hero-search-placeholder">Search guides, topics, categories…</span>
-            <kbd className="res-v3-hero-kbd">⌘K</kbd>
-          </Link>
-
-          <div className="res-hero-tags">
-            <span className="res-v3-trending-label">Popular</span>
-            {['upi', 'gst', 'cod', 'd2c', 'inventory', 'shopify'].map(tag => (
-              <Link key={tag} href={`/resources/tag/${tag}`} className="rc-tag">#{tag}</Link>
-            ))}
+          <div className={styles.frontPage}>
+            {featured && (
+              <Link href={`/resources/${featured.category}/${featured.slug}`} className={styles.feature}>
+                <div className={styles.featureCopy}>
+                  <p className={styles.eyebrow}><BookOpen size={15} aria-hidden="true" /> <Copy text={"THE STARTING POINT"} /></p>
+                  <h2>{featured.title}</h2>
+                  <p>{featured.subtitle}</p>
+                  <span className={styles.featureAction}><Copy text={"Read the guide"} />{' '}<ArrowRight size={17} aria-hidden="true" /><span>{featured.readingTime} <Copy text={"min read"} /></span></span>
+                </div>
+                <div className={styles.featureArt} aria-hidden="true">
+                  <span className={styles.artCaption}><Copy text={"FROM AN IDEA TO YOUR FIRST ORDER"} /></span>
+                  <Image src="/illustrations/journey/growth-commerce-v2.webp" alt="" width={640} height={640} sizes="(max-width: 600px) 40vw, (max-width: 1000px) 32vw, 300px" priority />
+                  <span className={styles.artFoot}><Copy text={"Your next chapter starts here."} /></span>
+                </div>
+              </Link>
+            )}
+            <aside className={styles.picks} aria-labelledby="picks-title">
+              <p className={styles.eyebrow}><Copy text={"ON THE READING LIST"} /></p>
+              <h2 id="picks-title"><Copy text={"Small reads. Useful next steps."} /></h2>
+              <ol>{picks.map((article, i) => {
+                const artwork = getArticleArtwork(article.slug)
+                return (
+                <li key={article.slug}>
+                  <Link href={`/resources/${article.category}/${article.slug}`}>
+                    <span className={styles.pickArt} aria-hidden="true">{artwork && <Image src={artwork.thumbnailSrc} alt="" width={artwork.width} height={artwork.height} sizes="100px" loading="eager" unoptimized />}</span>
+                    <span><small><span className={styles.pickNumber}>0{i + 1}</span>{t(getCategory(article.category)?.label ?? '')} · {article.readingTime} <Copy text={"min"} /></small><strong>{article.title}</strong></span>
+                    <ArrowRight size={16} aria-hidden="true" />
+                  </Link>
+                </li>
+              )})}</ol>
+            </aside>
           </div>
-
         </div>
       </section>
 
-      {/* ── FEATURED GUIDE ─────────────────────────────────────────────── */}
-      {featured && featuredCat && (
-        <section className="res-featured-band">
-          <div className="container">
-            <div className="res-section-header">
-              <div>
-                <h2 className="res-section-title">Featured guide</h2>
-                <p className="res-section-sub">Start here if you are new to selling online</p>
-              </div>
-            </div>
-            <Link
-              href={`/resources/${featured.category}/${featured.slug}`}
-              className="res-featured-card"
-              style={{ '--feat-accent': featuredCat.color } as React.CSSProperties}
-            >
-              <span className="res-featured-glow" aria-hidden="true" />
-
-              <div className="res-featured-main">
-                <div className="res-featured-kicker">
-                  <span className="res-featured-tag">{featuredCat.label}</span>
-                  <span className="res-featured-sep" aria-hidden="true" />
-                  <span className="res-featured-time">{featured.readingTime} min read</span>
-                </div>
-
-                <h3 className="res-featured-title">{featured.title}</h3>
-                <p className="res-featured-sub">{featured.subtitle}</p>
-
-                <div className="res-featured-byline">
-                  <span className="res-featured-avatar" aria-hidden="true">
-                    {AUTHORS.find(a => a.slug === featured.author)?.name.charAt(0) ?? 'L'}
-                  </span>
-                  <span className="res-featured-author">
-                    {AUTHORS.find(a => a.slug === featured.author)?.name}
-                  </span>
-                </div>
-              </div>
-
-              <span className="res-featured-cta">
-                Read guide
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </span>
+      <section className={styles.section} id="topics" aria-labelledby="topics-title">
+        <div className="container">
+          <div className={styles.sectionHead}>
+            <div><p className={styles.eyebrow}><Copy text={"FIND YOUR FOCUS"} /></p><h2 id="topics-title"><Copy text={"What’s on your mind?"} /></h2></div>
+            <p><Copy text={"Go straight to the part of your business"} /><br className={styles.desktopBreak} /> <Copy text={"you want to work on."} /></p>
+          </div>
+          <div className={styles.topicGrid}>
+            {CATEGORIES.map(cat => {
+              const Icon = ICONS[cat.icon] ?? BookOpen
+              return <Link key={cat.slug} href={`/resources/${cat.slug}`} className={styles.topic}>
+                <Icon size={23} strokeWidth={1.5} aria-hidden="true" />
+                <span><strong>{t(cat.label)}</strong><span>{t(TOPICS[cat.slug])}</span></span>
+                <small>{t('{count} guides', { count: getArticlesByCategory(cat.slug).length })}</small><ArrowRight size={17} aria-hidden="true" />
+              </Link>
+            })}
+            <Link href="/resources/changelog" className={`${styles.topic} ${styles.topicUpdates}`}>
+              <span className={styles.updateDot} aria-hidden="true" /><span><strong><Copy text={"What’s new at LetBuyy"} /></strong><span><Copy text={"Browse the changelog"} /></span></span><ArrowRight size={17} aria-hidden="true" />
             </Link>
           </div>
-        </section>
-      )}
-
-      {/* ── LEARNING PATHS CAROUSEL ────────────────────────────────────── */}
-      <section className="res-v3-section" id="learning-paths">
-        <div className="container">
-          <div className="res-section-header">
-            <div>
-              <h2 className="res-section-title">Learning paths</h2>
-              <p className="res-section-sub">Structured journeys from zero to expert</p>
-            </div>
-          </div>
-        </div>
-        <div className="res-v3-paths-scroll-wrap">
-          <div className="container">
-            <div className="res-v3-paths-grid">
-              {LEARNING_PATHS.map(path => {
-                const articlesInPath = ARTICLES.filter(a => path.articleSlugs.includes(a.slug))
-                const totalMinutes = articlesInPath.reduce((sum, a) => sum + a.readingTime, 0)
-                return (
-                  <article
-                    key={path.slug}
-                    className="res-path-card"
-                    style={{ '--path-accent': path.color } as React.CSSProperties}
-                  >
-                    <span className="res-path-glow" aria-hidden="true" />
-
-                    <div className="res-path-top">
-                      <span className={`res-path-level ${LEVEL_CLASS[path.level]}`}>
-                        {LEVEL_LABELS[path.level]}
-                      </span>
-                      <span className="res-path-count">{articlesInPath.length} steps</span>
-                    </div>
-
-                    <h3 className="res-path-title">{path.title}</h3>
-                    <p className="res-path-desc">{path.description}</p>
-
-                    {/* The steps are drawn as a connected route — the card shows
-                        the journey rather than just listing its articles. */}
-                    <ol className="res-path-track">
-                      {articlesInPath.slice(0, 4).map((a, i) => (
-                        <li key={a.slug} className="res-path-step">
-                          <span className="res-path-node" aria-hidden="true">{i + 1}</span>
-                          <Link href={`/resources/${a.category}/${a.slug}`} className="res-path-step-link">
-                            <span className="res-path-step-title">{a.title}</span>
-                            <span className="res-path-step-time">{a.readingTime}m</span>
-                          </Link>
-                        </li>
-                      ))}
-                      {articlesInPath.length > 4 && (
-                        <li className="res-path-step is-rest">
-                          <span className="res-path-node is-rest" aria-hidden="true">
-                            +{articlesInPath.length - 4}
-                          </span>
-                          <span className="res-path-rest-text">
-                            {articlesInPath.length - 4} more in this path
-                          </span>
-                        </li>
-                      )}
-                    </ol>
-
-                    <div className="res-path-foot">
-                      <span className="res-path-total">~{totalMinutes} min total</span>
-                      {articlesInPath[0] && (
-                        <Link
-                          href={`/resources/${articlesInPath[0].category}/${articlesInPath[0].slug}`}
-                          className="res-path-cta"
-                        >
-                          Start path
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                          </svg>
-                        </Link>
-                      )}
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* ── TRENDING ──────────────────────────────────────────────────── */}
-      {trending.length > 0 && (
-        <section className="res-v3-section res-v3-section-muted">
-          <div className="container">
-            <div className="res-section-header">
-              <div>
-                <h2 className="res-section-title">Trending now</h2>
-                <p className="res-section-sub">Most read by Indian merchants this week</p>
-              </div>
-            </div>
-            <div className="res-v3-trending-grid">
-              {trending.map((article, i) => {
-                const cat = getCategory(article.category)!
-                return (
-                  <Link key={article.slug} href={`/resources/${article.category}/${article.slug}`} className="res-v3-trending-item">
-                    <span className="res-v3-trending-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                    <div className="res-v3-trending-body">
-                      <div className="res-v3-trending-meta">
-                        <span style={{ color: cat.color, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{cat.label}</span>
-                        <span className="rc-card-meta-dot" aria-hidden="true" />
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{article.readingTime} min read</span>
-                      </div>
-                      <p className="res-v3-trending-title">{article.title}</p>
-                    </div>
-                    <svg className="res-v3-trending-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                )
-              })}
-            </div>
+      <section className={`${styles.section} ${styles.pathsSection}`} id="learning-paths" aria-labelledby="paths-title">
+        <div className={`container ${styles.pathsLayout}`}>
+          <div className={styles.pathsIntro}>
+            <p className={styles.eyebrow}><Copy text={"ONE STEP AT A TIME"} /></p>
+            <h2 id="paths-title"><Copy text={"A reading plan."} /><br /><Copy text={"For the road ahead."} /></h2>
+            <p><Copy text={"Not sure where to begin? Pick a goal and follow a short sequence of guides, at your own pace."} /></p>
+            <span className={styles.pathNote}><BookOpen size={17} aria-hidden="true" /> <Copy text={"No sign-up. Just start reading."} /></span>
+            <Image className={styles.readingJourney} src={getEditorialScene('learning').src} alt="An illustrated reading journey from a field guide to a storefront and first parcel." width={1536} height={1024} sizes="(max-width: 760px) 85vw, 350px" loading="eager" unoptimized />
           </div>
-        </section>
-      )}
-
-      {/* ── CATEGORY HUBS ────────────────────────────────────────────── */}
-      <section className="res-v3-section">
-        <div className="container">
-          <div className="res-section-header">
-            <div>
-              <h2 className="res-section-title">Browse by topic</h2>
-              <p className="res-section-sub">Deep-dive into what matters most to your business</p>
-            </div>
-          </div>
-          <div className="res-v3-hubs-grid">
-            {HUB_CATEGORIES.map(catSlug => {
-              const cat = CATEGORIES.find(c => c.slug === catSlug)!
-              const articles = getArticlesByCategory(catSlug).slice(0, 3)
-              return (
-                <article
-                  key={catSlug}
-                  className="res-hub"
-                  style={{ '--hub-accent': cat.color } as React.CSSProperties}
-                >
-                  {/* Left rail carries the identity, right column is the index —
-                      a directory entry, not a sequence. */}
-                  <div className="res-hub-rail">
-                    <span className="res-hub-icon" aria-hidden="true">
-                      {(() => {
-                        const Icon = CATEGORY_ICONS[cat.icon] ?? ShoppingBag
-                        return <Icon width={20} height={20} strokeWidth={1.75} />
-                      })()}
-                    </span>
-                    <h3 className="res-hub-title">{cat.label}</h3>
-                    <p className="res-hub-count">
-                      {getArticlesByCategory(catSlug).length} guides
-                    </p>
-                    <p className="res-hub-desc">{cat.description}</p>
-                    <Link href={`/resources/${catSlug}`} className="res-hub-cta">
-                      See all
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </div>
-
-                  <ol className="res-hub-index">
-                    {articles.map((a, i) => (
-                      <li key={a.slug}>
-                        <Link href={`/resources/${a.category}/${a.slug}`} className="res-hub-entry">
-                          <span className="res-hub-entry-num" aria-hidden="true">
-                            {String(i + 1).padStart(2, '0')}
-                          </span>
-                          <span className="res-hub-entry-title">{a.title}</span>
-                          <span className="res-hub-entry-time">{a.readingTime}m</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ol>
-                </article>
-              )
+          <div className={styles.paths}>
+            {LEARNING_PATHS.map((path, i) => {
+              const articles = getLearningPathArticles(path).map(a => localizeArticleSummary(a, locale.language.code))
+              const total = articles.reduce((sum, a) => sum + a.readingTime, 0)
+              const art = getLearningPathArtwork(path.slug)
+              return <details className={styles.path} key={path.slug} name="reading-plan" open={i === 0}>
+                <summary>
+                  {art && <span className={styles.pathArt} aria-hidden="true"><Image src={art.thumbnailSrc} alt="" width={art.width} height={art.height} sizes="110px" loading="eager" unoptimized /></span>}
+                  <span className={styles.pathHeading}><strong><span className={styles.pathNumber}>0{i + 1}</span>{t(path.title)}</strong><small>{t('{count} guides', { count: articles.length })} · {total} {t('min')} · {t(path.level)}</small></span>
+                  <ChevronDown size={19} className={styles.chevron} aria-hidden="true" />
+                </summary>
+                <div className={styles.pathBody}>
+                  <p>{t(PATH_COPY[path.slug])}</p>
+                  <ol>{articles.map((article, index) => {
+                    const articleArt = getArticleArtwork(article.slug)
+                    return <li key={article.slug}>
+                    <Link href={`/resources/${article.category}/${article.slug}`}>
+                      {articleArt && <span className={styles.pathGuideArt} aria-hidden="true"><Image src={articleArt.thumbnailSrc} alt="" width={articleArt.width} height={articleArt.height} sizes="80px" loading="eager" unoptimized /></span>}
+                      <span className={styles.pathGuideCopy}><small><Copy text={"GUIDE"} />{' '}{String(index + 1).padStart(2, '0')} · {article.readingTime} <Copy text={"min"} /></small><strong>{article.title}</strong></span>
+                      <ArrowRight size={14} aria-hidden="true" /></Link>
+                  </li>})}</ol>
+                </div>
+              </details>
             })}
           </div>
-
-          {/* Remaining categories as compact chips */}
-          <div className="res-v3-cat-chips">
-            {CATEGORIES.filter(c => !HUB_CATEGORIES.includes(c.slug)).map(cat => (
-              <Link key={cat.slug} href={`/resources/${cat.slug}`} className="res-v3-cat-chip" style={{ borderColor: `${cat.color}30`, color: cat.color }}>
-                <span>{cat.label}</span>
-                <span className="res-v3-cat-chip-count">{getArticlesByCategory(cat.slug).length}</span>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* ── LATEST ARTICLES — editorial 2+4 layout ───────────────────── */}
-      <section className="res-v3-section res-v3-section-muted">
+      <section className={styles.section} aria-labelledby="latest-title">
         <div className="container">
-          <div className="res-section-header">
-            <div>
-              <h2 className="res-section-title">Latest articles</h2>
-              <p className="res-section-sub">Fresh from the LetBuyy editorial team</p>
-            </div>
-            <Link href="/resources/search" className="res-section-link">Browse all →</Link>
+          <div className={styles.sectionHead}>
+            <div><p className={styles.eyebrow}><Copy text={"FROM THE LIBRARY"} /></p><h2 id="latest-title"><Copy text={"More to get into."} /></h2></div>
+            <Link href="/resources/search" className={styles.textLink}><Copy text={"Browse all guides"} />{' '}<ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
-
-          {/* Front-page rhythm: one lead story, the rest as a ruled column —
-              deliberately not a grid of uniform cards. */}
-          <div className="res-wire">
-            {latest.slice(0, 1).map(article => {
-              const cat = getCategory(article.category)!
-              const author = AUTHORS.find(a => a.slug === article.author)
-              return (
-                <Link
-                  key={article.slug}
-                  href={`/resources/${article.category}/${article.slug}`}
-                  className="res-wire-lead"
-                  style={{ '--wire-accent': cat.color } as React.CSSProperties}
-                >
-                  <span className="res-wire-dateline">
-                    <span className="res-wire-cat">{cat.label}</span>
-                    <span className="res-wire-rule" aria-hidden="true" />
-                    <time dateTime={article.publishedAt}>
-                      {new Date(article.publishedAt).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </time>
-                  </span>
-
-                  <h3 className="res-wire-lead-title">{article.title}</h3>
-                  <p className="res-wire-lead-sub">{article.subtitle}</p>
-
-                  <span className="res-wire-byline">
-                    <span className="res-wire-avatar" aria-hidden="true">
-                      {author?.name.charAt(0) ?? 'L'}
-                    </span>
-                    <span className="res-wire-author">{author?.name}</span>
-                    <span className="res-wire-dot" aria-hidden="true" />
-                    <span className="res-wire-time">{article.readingTime} min read</span>
-                  </span>
-                </Link>
-              )
-            })}
-
-            <ol className="res-wire-list">
-              {latest.slice(1, 6).map(article => {
-                const cat = getCategory(article.category)!
-                const author = AUTHORS.find(a => a.slug === article.author)
-                return (
-                  <li key={article.slug}>
-                    <Link
-                      href={`/resources/${article.category}/${article.slug}`}
-                      className="res-wire-item"
-                      style={{ '--wire-accent': cat.color } as React.CSSProperties}
-                    >
-                      <span className="res-wire-item-cat">{cat.label}</span>
-                      <span className="res-wire-item-title">{article.title}</span>
-                      <span className="res-wire-item-meta">
-                        {author?.name}
-                        <span className="res-wire-dot" aria-hidden="true" />
-                        {article.readingTime} min
-                      </span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ol>
+          <div className={styles.articles}>{latest.map(article => <article key={article.slug}>
+            <Link href={`/resources/${article.category}/${article.slug}`}>
+              <ResourceArticleArtwork slug={article.slug} thumbnail />
+              <span className={styles.articleMeta}>{t(getCategory(article.category)?.label ?? '')}<span>{article.readingTime} <Copy text={"min read"} /></span></span>
+              <h3>{article.title}</h3><p>{article.subtitle}</p><span className={styles.textLink}><Copy text={"Read article"} />{' '}<ArrowRight size={16} aria-hidden="true" /></span>
+            </Link>
+          </article>)}</div>
+          <div className={styles.follow}>
+            <div><p className={styles.eyebrow}><Copy text={"KEEP A GOOD THING GOING"} /></p><h2><Copy text={"A place in your reading routine."} /></h2><p><Copy text={"Follow new guides and platform updates."} /></p></div>
+            <div className={styles.followAction}><NewsletterInline /></div>
           </div>
         </div>
       </section>
-
-      {/* ── NEWSLETTER ────────────────────────────────────────────────── */}
-      <section className="res-v3-section">
-        <div className="container">
-          <div className="res-v3-newsletter">
-            <div className="res-v3-newsletter-left">
-              <div className="res-v3-newsletter-icon" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="res-v3-newsletter-title">Commerce insights, weekly</h2>
-                <p className="res-v3-newsletter-sub">35,000+ Indian merchants · No spam · Unsubscribe anytime</p>
-              </div>
-            </div>
-            <div className="res-v3-newsletter-right">
-              <NewsletterInline />
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+    </div>
   )
 }

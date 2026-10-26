@@ -1,0 +1,12 @@
+{
+  "protectedFiles": [
+    "Hero",
+    "CommerceNetwork",
+    "MerchantJourney",
+    "Features",
+    "EcosystemMap"
+  ],
+  "allOtherCapabilityMapDeclarations": "identical",
+  "existingStylesheet": "identical prefix",
+  "result": "PASS"
+}

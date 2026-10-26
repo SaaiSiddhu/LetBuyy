@@ -39,17 +39,7 @@ export function getArticlesByTag(tag: string): Article[] {
   return ARTICLES.filter(a => a.tags.includes(tag))
 }
 
-export function searchArticles(query: string): Article[] {
-  const q = query.toLowerCase().trim()
-  if (!q) return []
-  return ARTICLES.filter(a =>
-    a.title.toLowerCase().includes(q) ||
-    a.subtitle.toLowerCase().includes(q) ||
-    a.description.toLowerCase().includes(q) ||
-    a.tags.some(t => t.includes(q)) ||
-    a.category.includes(q)
-  )
-}
+export { searchArticles } from './articles'
 
 export function getAllTags(): Array<{ tag: string; count: number }> {
   const counts = new Map<string, number>()

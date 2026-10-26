@@ -1,0 +1,19 @@
+{
+  "source": "https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_land.geojson",
+  "download": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson",
+  "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+  "license": "Public domain. Land geometry only; no political boundaries.",
+  "source_sha256": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+  "asset_sha256": "e1f1ab8ba13fcd0bc9e8b0f0bb665f7a327167e17184733a93fda45fbaa77de8",
+  "derivation": "22,000 evenly distributed Fibonacci sphere samples: latitude=asin(1-2*(n+0.5)/22000), longitude=(n*137.50776405003785)%360-180. Keep samples inside Natural Earth land polygon exterior rings and outside interior holes; round latitude/longitude to 3 decimals.",
+  "points": 6363,
+  "asset": "apps/marketing/web/public/maps/earth-land-dots-v1.json",
+  "reference": "https://www.cloudflare.com/ \u2014 Region: Earth (visually inspected 2026-10-23). No Cloudflare source, artwork, branding or data copied.",
+  "regional_maps": {
+    "source": "https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_10m_admin_1_states_provinces.geojson",
+    "license": "Natural Earth public domain; illustrative geography, not an authoritative boundary service.",
+    "source_sha256": "22d0e3ad85eb3e27f17cabf8ba2d50e554fbc27a87796ff891d958185da62fb5",
+    "asset": "apps/marketing/web/public/maps/india-states-v1.json",
+    "derivation": "36 India state/union territory polygons. Douglas-Peucker simplification: 0.003 degrees Tamil Nadu, 0.014 degrees others; round coordinates to 4 decimal places. Polygon holes retained."
+  }
+}

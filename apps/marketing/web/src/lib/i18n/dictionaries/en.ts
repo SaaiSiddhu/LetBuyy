@@ -6,9 +6,8 @@
  * production. Add a key here first, then the compiler tells you what else to
  * write.
  *
- * Long-form content (the 15 legal documents, the 36-article library) is NOT
- * here. Those live in their own libraries and are served in English across all
- * locales — see `contentFallback` below for the notice shown on those pages.
+ * Long-form content has source-locked catalogues in legal-content.ts and
+ * article-content.ts. Standard presentation copy also uses copy-catalog.ts.
  */
 export const en = {
     meta: {
@@ -31,6 +30,19 @@ export const en = {
         back: 'Back',
         mainNavigation: 'Main navigation',
         mobileNavigation: 'Mobile navigation',
+    },
+
+    mobileMenu: {
+        title: 'Explore LetBuyy',
+        intro: 'Tools and guidance for your next stage.',
+        platform: 'The platform',
+        resources: 'Resources & plans',
+        whyLetbuyy: 'Discover our approach to commerce',
+        products: 'Explore your commerce workspace',
+        themes: 'Storefront design and themes',
+        apps: 'Understand platform integrations',
+        developers: 'APIs, webhooks and technical guides',
+        pricing: 'Find a plan for your business',
     },
 
     footer: {
@@ -66,6 +78,9 @@ export const en = {
             support: 'Support',
         },
         links: {
+            themeGuide: 'Theme guide',
+            appGuide: 'App integrations guide',
+            supportCentre: 'Support centre',
             whatIsLetbuyy: 'What is LetBuyy?',
             pricing: 'Pricing',
             startYourStore: 'Start your store',
@@ -121,6 +136,20 @@ export const en = {
     },
 
     legal: {
+        contents: 'Contents', clauseIndex: 'Clause index', everyone: 'Everyone', merchants: 'Merchants', shoppers: 'Shoppers', developers: 'Developers',
+        agreements: 'Agreements', money: 'Money & orders', data: 'Data & privacy', trust: 'Trust & safety',
+        howToRaise: 'How to raise a concern', getSupport: 'Get support', reportVulnerability: 'Report a vulnerability', supportCentre: 'Visit the support centre',
+        translationTitle: 'Translation for reference', translationBody: 'This translation is provided to help you read the policy. The English version remains the governing text.', viewEnglish: 'Read the English version',
+        statusTitle: 'These policies are published for review and are not yet in force.',
+        statusBody: 'LetBuyy has not opened to merchants, so no agreement has been formed with anyone. They take effect on the day the platform launches, and the effective date will be stated here. Last revised {date}.',
+        contactBefore: 'Write to', contactAfter: 'and quote the clause number. For a complaint rather than a question, use the', grievanceProcess: 'grievance process', otherDocuments: 'Other legal documents',
+        groupBlurbs: { agreements: 'The contracts that govern using LetBuyy — as a merchant, a partner, or a developer.', money: 'How payments, settlements, refunds, and delivery obligations work.', data: 'What we collect, why, who processes it, and the rights you hold over it.', trust: 'Security practice, complaint escalation, and intellectual-property enforcement.' },
+        officer: {
+            title: 'Grievance Officer', requirement: 'Published under Rule 4(5), Consumer Protection (E-Commerce) Rules 2020 and Rule 3(2), IT (Intermediary Guidelines) Rules 2021.',
+            name: 'Name', designation: 'Designation', email: 'Email', phone: 'Phone', entity: 'Registered entity', address: 'Registered address', pending: 'To be published at launch',
+            gap: 'LetBuyy has not opened to merchants, so no officer has been appointed yet. Until one is, complaints sent to the address above reach the team directly and are handled on the same timelines.',
+            acknowledgeTime: '48 hours', acknowledge: 'to acknowledge your complaint', resolveTime: '1 month', resolve: 'to resolve it, or explain the delay',
+        },
         title: 'Legal',
         intro:
             'Every agreement, policy and disclosure that governs LetBuyy — written to be read, not to be survived. One page per subject, plain language at the top of each, and the exact clause underneath.',
@@ -152,6 +181,8 @@ export const en = {
      * needs to know that, not just notice the language.
      */
     contentFallback: {
+        pageTitle: 'This page is in English',
+        pageBody: 'Navigation is available in your selected language. The page content is currently available in English.',
         legalTitle: 'Available in English',
         legalBody:
             'LetBuyy’s legal documents are published in English. Translations may follow, but the English text is the version that applies. Ask us if any clause is unclear and we will explain it in your language.',

@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-24",
+  "mode": "built-in image_gen",
+  "purpose": "Original illustrative merchant stories, not actual merchant photographs or testimonials",
+  "assets": [
+    {
+      "id": "launch",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide editorial photograph for LetBuyy merchant growth journey website, crop-friendly landscape 3:2 image. Realistic contemporary small Indian retail business, human warmth, credible working details, premium documentary photography, quiet neutral colors (ivory, charcoal, natural oak) with subtle navy accents, soft window daylight, natural skin and fabric texture, restrained lighting, no glossy 3D, no neon, no purple haze, no lens bloom, no floating symbols. Horizontal composition with main action centered and generous breathing room around it, readable at small web size. No text, lettering, brand logos, watermark, posed handshake, or fake legible screen UI. People and business are illustrative fictional examples, not testimonial portraits. A young Tamil Indian woman merchant in a tidy apparel studio publishing her online store at an open laptop. Three-quarter side view: merchant hand on trackpad, a cream sneaker and folded navy sweatshirt neatly staged beside the laptop, clothing rack softly visible behind. Laptop screen shows only abstract neutral product image tiles, no text or numbers. Optimistic modest first-business setup, action is clearly starting an online store.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-f5465cce-94e4-46ab-b4b9-d714e0694cca.png",
+      "output": "apps/marketing/web/public/illustrations/journey/launch-story-v1.webp",
+      "bytes": 71456,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "first-order",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide editorial photograph for LetBuyy merchant growth journey website, crop-friendly landscape 3:2 image. Realistic contemporary small Indian retail business, human warmth, credible working details, premium documentary photography, quiet neutral colors (ivory, charcoal, natural oak) with subtle navy accents, soft window daylight, natural skin and fabric texture, restrained lighting, no glossy 3D, no neon, no purple haze, no lens bloom, no floating symbols. Horizontal composition with main action centered and generous breathing room around it, readable at small web size. No text, lettering, brand logos, watermark, posed handshake, or fake legible screen UI. People and business are illustrative fictional examples, not testimonial portraits. Close waist-level candid photograph of an Indian small-business merchant's hands carefully wrapping a cream sneaker in ivory tissue and placing it into an open kraft shipping carton at a clean oak packing desk. A small blank shipping label and tape dispenser nearby. Face not required. First customer order being packed, clear one parcel focal subject. Natural realistic textile, cardboard, paper textures.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-9ea25499-ab70-416a-a983-bdf50f73c9bb.png",
+      "output": "apps/marketing/web/public/illustrations/journey/first-order-story-v1.webp",
+      "bytes": 56108,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "scale",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide editorial photograph for LetBuyy merchant growth journey website, crop-friendly landscape 3:2 image. Realistic contemporary small Indian retail business, human warmth, credible working details, premium documentary photography, quiet neutral colors (ivory, charcoal, natural oak) with subtle navy accents, soft window daylight, natural skin and fabric texture, restrained lighting, no glossy 3D, no neon, no purple haze, no lens bloom, no floating symbols. Horizontal composition with main action centered and generous breathing room around it, readable at small web size. No text, lettering, brand logos, watermark, posed handshake, or fake legible screen UI. People and business are illustrative fictional examples, not testimonial portraits. An Indian retail warehouse associate in a navy overshirt scanning a small labeled carton with a handheld barcode scanner next to neat metal stock shelves. Apparel cartons and folded garments in orderly rows, plain unprinted labels without readable text. Medium-wide crop, focus on scanner and merchandise at working height. Credible small warehouse, efficient inventory operations, no giant industrial scale.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-ee0da3d1-3104-475c-8e0f-f33cbcf20577.png",
+      "output": "apps/marketing/web/public/illustrations/journey/scale-story-v1.webp",
+      "bytes": 78924,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "brand",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide editorial photograph for LetBuyy merchant growth journey website, crop-friendly landscape 3:2 image. Realistic contemporary small Indian retail business, human warmth, credible working details, premium documentary photography, quiet neutral colors (ivory, charcoal, natural oak) with subtle navy accents, soft window daylight, natural skin and fabric texture, restrained lighting, no glossy 3D, no neon, no purple haze, no lens bloom, no floating symbols. Horizontal composition with main action centered and generous breathing room around it, readable at small web size. No text, lettering, brand logos, watermark, posed handshake, or fake legible screen UI. People and business are illustrative fictional examples, not testimonial portraits. Candid eye-level photograph inside a bright minimal Indian neighborhood apparel boutique: a woman store owner recognizing and warmly helping a returning female customer choose a navy overshirt. They look at a garment together, relaxed natural expressions, a paper shopping bag on counter, neatly spaced clothing rail behind. Distinct people, believable everyday customer relationship, no posed looking into camera.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-ed93187b-8002-4df3-a5bf-c2111f65e625.png",
+      "output": "apps/marketing/web/public/illustrations/journey/brand-story-v1.webp",
+      "bytes": 81220,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "enterprise",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide editorial photograph for LetBuyy merchant growth journey website, crop-friendly landscape 3:2 image. Realistic contemporary small Indian retail business, human warmth, credible working details, premium documentary photography, quiet neutral colors (ivory, charcoal, natural oak) with subtle navy accents, soft window daylight, natural skin and fabric texture, restrained lighting, no glossy 3D, no neon, no purple haze, no lens bloom, no floating symbols. Horizontal composition with main action centered and generous breathing room around it, readable at small web size. No text, lettering, brand logos, watermark, posed handshake, or fake legible screen UI. People and business are illustrative fictional examples, not testimonial portraits. Editorial photograph at a modest organized wholesale dispatch area in India: two small-business colleagues coordinating a group of securely packed kraft cartons on a wheeled trolley near the open back of a clean unbranded navy delivery van. One colleague holds a tablet with screen turned away, another checks the cartons. Warm natural daylight, orderly business growth, human operational collaboration, no huge logistics fleet.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-7ccef6f3-90c0-4b4e-80fa-201f1e7c95ab.png",
+      "output": "apps/marketing/web/public/illustrations/journey/enterprise-story-v1.webp",
+      "bytes": 91256,
+      "width": 1000,
+      "height": 667
+    }
+  ]
+}

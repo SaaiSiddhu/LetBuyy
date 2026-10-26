@@ -1,5 +1,9 @@
 'use client'
 
+import Copy from '@/components/i18n/Copy'
+import { useCopy } from '@/components/i18n/useCopy'
+import { formatResponseTime } from '@/lib/i18n/response-time'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Checkbox, Input, Select, Textarea } from '@letbuyy/ui'
 import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
@@ -18,7 +22,6 @@ import {
     CONTACT_TOPICS,
     CONTACT_URGENCIES,
     INDIA_STATES,
-    describeResponseHours,
     getContactTopic,
     resolveContactResponseHours,
     type ContactRequestReceipt,
@@ -142,12 +145,12 @@ function gatewayBaseUrl(): string {
     })
 }
 
-function toOptions(values: readonly string[]) {
-    return values.map((value) => ({ value, label: value }))
+function toOptions(values: readonly string[], t: (text: string) => string) {
+    return values.map((value) => ({ value, label: t(value) }))
 }
 
-function idOptions(values: readonly { id: string; label: string }[]) {
-    return values.map((entry) => ({ value: entry.id, label: entry.label }))
+function idOptions(values: readonly { id: string; label: string }[], t: (text: string) => string) {
+    return values.map((entry) => ({ value: entry.id, label: t(entry.label) }))
 }
 
 /**
@@ -189,8 +192,9 @@ const EMAIL_SHAPE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const PHONE_SHAPE = /^[\d\s()+-]{6,24}$/
 
 export default function ContactForm() {
+    const { t, locale } = useCopy()
     const [step, setStep] = useState(1)
-    const [values, setValues] = useState<FormValues>(INITIAL)
+    const [values, setValues] = useState<FormValues>(() => ({ ...INITIAL, preferred_language: locale.language.code }))
     const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({})
     const [submitting, setSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -266,7 +270,7 @@ export default function ContactForm() {
                     next.subject_text = 'Add a short subject line'
                 }
                 if (values.message.trim().length < CONTACT_LIMITS.messageMin) {
-                    next.message = `A little more detail helps — at least ${CONTACT_LIMITS.messageMin} characters`
+                    next.message = t('A little more detail helps — at least {count} characters', { count: CONTACT_LIMITS.messageMin })
                 }
             }
 
@@ -277,7 +281,7 @@ export default function ContactForm() {
             setErrors(next)
             return Object.keys(next).length ? next : null
         },
-        [values],
+        [values, t],
     )
 
     const goTo = useCallback(
@@ -432,7 +436,7 @@ export default function ContactForm() {
     if (receipt) {
         /* Shared with the acknowledgement email, so the screen and the inbox
            cannot phrase the same promise two different ways. */
-        const phrase = describeResponseHours(receipt.response_hours)
+        const phrase = formatResponseTime(receipt.response_hours, locale.language.code)
 
         return (
             <div className="ctc-panel ctc-success" ref={headingRef} tabIndex={-1}>
@@ -443,16 +447,16 @@ export default function ContactForm() {
                 </span>
 
                 <h2 className="ctc-success-title">
-                    {receipt.duplicate ? 'You already sent this one' : 'Message received'}
+                    {t(receipt.duplicate ? 'You already sent this one' : 'Message received')}
                 </h2>
                 <p className="ctc-success-note">
                     {receipt.duplicate
-                        ? 'We had this message already, so nothing was sent twice. Here is the ticket it went to.'
-                        : `A person from our team will reply ${phrase}. A copy of everything is on its way to your inbox.`}
+                        ? t('We had this message already, so nothing was sent twice. Here is the ticket it went to.')
+                        : t('A person from our team will reply {time}. A copy of everything is on its way to your inbox.', { time: phrase })}
                 </p>
 
                 <div className="ctc-ticket">
-                    <span className="ctc-ticket-label">Your ticket reference</span>
+                    <span className="ctc-ticket-label"><Copy text={"Your ticket reference"} /></span>
                     <span className="ctc-ticket-ref">{receipt.ticket_ref}</span>
                     <Button
                         unstyled
@@ -461,39 +465,37 @@ export default function ContactForm() {
                         className="ctc-ticket-copy"
                         aria-label={`Copy ticket reference ${receipt.ticket_ref}`}
                     >
-                        {copied ? 'Copied' : 'Copy'}
+                        {t(copied ? 'Copied' : 'Copy')}
                     </Button>
                 </div>
 
                 <dl className="ctc-success-facts">
                     <div>
-                        <dt>Subject</dt>
+                        <dt><Copy text={"Subject"} /></dt>
                         <dd>{receipt.subject_line}</dd>
                     </div>
                     <div>
-                        <dt>First reply</dt>
+                        <dt><Copy text={"First reply"} /></dt>
                         <dd>{phrase}</dd>
                     </div>
                 </dl>
 
                 <p className="ctc-success-fine">
-                    Keep the reference handy. Replying to the confirmation email adds to the same
-                    ticket — no need to fill this in again.
-                </p>
+                    <Copy text={"Keep the reference handy. Replying to the confirmation email adds to the same ticket — no need to fill this in again."} /></p>
             </div>
         )
     }
 
     /* ─── Form ────────────────────────────────────────────────────────────── */
 
-    const subjectOptions = topic ? topic.subjects.map((s) => ({ value: s.id, label: s.label })) : []
+    const subjectOptions = topic ? topic.subjects.map((s) => ({ value: s.id, label: t(s.label) })) : []
     const messageLeft = CONTACT_LIMITS.message - values.message.length
 
     return (
         <div className="ctc-panel">
             {/* Progress rail. Completed steps are navigable so nobody has to
                 click Back four times to fix a typo in their name. */}
-            <ol className="ctc-rail" aria-label="Form progress">
+            <ol className="ctc-rail" aria-label={t("Form progress")}>
                 {STEPS.map((entry) => {
                     const state = entry.id === step ? 'current' : entry.id < step ? 'done' : 'todo'
                     return (
@@ -516,8 +518,8 @@ export default function ContactForm() {
                                     )}
                                 </span>
                                 <span className="ctc-rail-text">
-                                    <span className="ctc-rail-label">{entry.label}</span>
-                                    <span className="ctc-rail-hint">{entry.hint}</span>
+                                    <span className="ctc-rail-label">{t(entry.label)}</span>
+                                    <span className="ctc-rail-hint">{t(entry.hint)}</span>
                                 </span>
                             </Button>
                         </li>
@@ -529,14 +531,12 @@ export default function ContactForm() {
                 {/* ── Step 1 ─────────────────────────────────────────────── */}
                 {step === 1 && (
                     <>
-                        <h2 className="ctc-step-title">Who are we talking to?</h2>
+                        <h2 className="ctc-step-title"><Copy text={"Who are we talking to?"} /></h2>
                         <p className="ctc-step-sub">
-                            We answer in English, Hindi and Tamil. Nothing here is shared outside
-                            LetBuyy.
-                        </p>
+                            <Copy text={"We answer in English, Hindi and Tamil. Nothing here is shared outside LetBuyy."} /></p>
 
                         <fieldset className="ctc-field ctc-fieldset">
-                            <legend className="ctc-label">Which best describes you?</legend>
+                            <legend className="ctc-label"><Copy text={"Which best describes you?"} /></legend>
                             <div className="ctc-chips">
                                 {CONTACT_RELATIONSHIPS.map((entry) => (
                                     <Button
@@ -547,7 +547,7 @@ export default function ContactForm() {
                                         aria-pressed={values.relationship === entry.id}
                                         onClick={() => set('relationship', entry.id)}
                                     >
-                                        {entry.label}
+                                        {t(entry.label)}
                                     </Button>
                                 ))}
                             </div>
@@ -556,7 +556,7 @@ export default function ContactForm() {
                         <div className="ctc-grid-2">
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-name">
-                                    Full name <span className="ctc-req">*</span>
+                                    <Copy text={"Full name"} />{' '}<span className="ctc-req">*</span>
                                 </label>
                                 <Input
                                     unstyled
@@ -571,13 +571,13 @@ export default function ContactForm() {
                                     aria-describedby={errors.full_name ? 'ctc-name-err' : undefined}
                                 />
                                 {errors.full_name && (
-                                    <p className="ctc-err" id="ctc-name-err">{errors.full_name}</p>
+                                    <p className="ctc-err" id="ctc-name-err">{t(errors.full_name ?? '')}</p>
                                 )}
                             </div>
 
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-email">
-                                    Email <span className="ctc-req">*</span>
+                                    <Copy text={"Email"} />{' '}<span className="ctc-req">*</span>
                                 </label>
                                 <Input
                                     unstyled
@@ -594,26 +594,25 @@ export default function ContactForm() {
                                     aria-describedby={errors.email ? 'ctc-email-err' : 'ctc-email-help'}
                                 />
                                 {errors.email ? (
-                                    <p className="ctc-err" id="ctc-email-err">{errors.email}</p>
+                                    <p className="ctc-err" id="ctc-email-err">{t(errors.email ?? '')}</p>
                                 ) : (
                                     <p className="ctc-help" id="ctc-email-help">
-                                        Your ticket confirmation goes here.
-                                    </p>
+                                        <Copy text={"Your ticket confirmation goes here."} /></p>
                                 )}
                             </div>
                         </div>
 
                         <div className="ctc-field">
                             <label className="ctc-label" htmlFor="ctc-phone">
-                                Phone <span className="ctc-req">*</span>
+                                <Copy text={"Phone"} />{' '}<span className="ctc-req">*</span>
                             </label>
                             <div className={`ctc-phone${errors.phone ? ' is-bad' : ''}`}>
                                 <Select
                                     unstyled
-                                    aria-label="Country dialling code"
+                                    aria-label={t("Country dialling code")}
                                     className="ctc-phone-code"
                                     value={values.phone_country_code}
-                                    options={toOptions(DIAL_CODES)}
+                                    options={toOptions(DIAL_CODES, t)}
                                     onChange={(e) => set('phone_country_code', e.target.value)}
                                 />
                                 <Input
@@ -632,15 +631,14 @@ export default function ContactForm() {
                                 />
                             </div>
                             {errors.phone && (
-                                <p className="ctc-err" id="ctc-phone-err">{errors.phone}</p>
+                                <p className="ctc-err" id="ctc-phone-err">{t(errors.phone ?? '')}</p>
                             )}
                         </div>
 
                         <div className="ctc-grid-2">
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-company">
-                                    Business or brand name
-                                </label>
+                                    <Copy text={"Business or brand name"} /></label>
                                 <Input
                                     unstyled
                                     id="ctc-company"
@@ -648,14 +646,13 @@ export default function ContactForm() {
                                     value={values.company_name}
                                     maxLength={CONTACT_LIMITS.company}
                                     autoComplete="organization"
-                                    placeholder="Optional"
+                                    placeholder={t("Optional")}
                                     onChange={(e) => set('company_name', e.target.value)}
                                 />
                             </div>
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-website">
-                                    Website or social page
-                                </label>
+                                    <Copy text={"Website or social page"} /></label>
                                 <Input
                                     unstyled
                                     id="ctc-website"
@@ -669,7 +666,7 @@ export default function ContactForm() {
                                     aria-describedby={errors.website_url ? 'ctc-website-err' : undefined}
                                 />
                                 {errors.website_url && (
-                                    <p className="ctc-err" id="ctc-website-err">{errors.website_url}</p>
+                                    <p className="ctc-err" id="ctc-website-err">{t(errors.website_url ?? '')}</p>
                                 )}
                             </div>
                         </div>
@@ -677,8 +674,7 @@ export default function ContactForm() {
                         {isMerchant && (
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-store">
-                                    Your LetBuyy store address
-                                </label>
+                                    <Copy text={"Your LetBuyy store address"} /></label>
                                 <div className="ctc-suffixed">
                                     <Input
                                         unstyled
@@ -697,9 +693,7 @@ export default function ContactForm() {
                                     <span className="ctc-suffix">.letbuyy.com</span>
                                 </div>
                                 <p className="ctc-help">
-                                    Lets us find your store before we reply, so the first answer is a
-                                    real one.
-                                </p>
+                                    <Copy text={"Lets us find your store before we reply, so the first answer is a real one."} /></p>
                             </div>
                         )}
                     </>
@@ -708,15 +702,13 @@ export default function ContactForm() {
                 {/* ── Step 2 ─────────────────────────────────────────────── */}
                 {step === 2 && (
                     <>
-                        <h2 className="ctc-step-title">What can we help with?</h2>
+                        <h2 className="ctc-step-title"><Copy text={"What can we help with?"} /></h2>
                         <p className="ctc-step-sub">
-                            Pick the closest topic. It decides which team sees this and how fast we
-                            come back.
-                        </p>
+                            <Copy text={"Pick the closest topic. It decides which team sees this and how fast we come back."} /></p>
 
                         <fieldset className="ctc-field ctc-fieldset">
                             <legend className="ctc-label">
-                                Topic <span className="ctc-req">*</span>
+                                <Copy text={"Topic"} />{' '}<span className="ctc-req">*</span>
                             </legend>
                             <div
                                 className="ctc-topics"
@@ -736,16 +728,16 @@ export default function ContactForm() {
                                         aria-pressed={values.topic === entry.id}
                                         onClick={() => chooseTopic(entry.id)}
                                     >
-                                        <span className="ctc-topic-name">{entry.label}</span>
-                                        <span className="ctc-topic-note">{entry.description}</span>
+                                        <span className="ctc-topic-name">{t(entry.label)}</span>
+                                        <span className="ctc-topic-note">{t(entry.description)}</span>
                                         <span className="ctc-topic-sla">
-                                            Replies in {entry.responseHours}h
+                                            <Copy text={"Replies in"} />{' '}{entry.responseHours}h
                                         </span>
                                     </Button>
                                 ))}
                             </div>
                             {errors.topic && (
-                                <p className="ctc-err" id="ctc-topic-err">{errors.topic}</p>
+                                <p className="ctc-err" id="ctc-topic-err">{t(errors.topic ?? '')}</p>
                             )}
                         </fieldset>
 
@@ -753,31 +745,31 @@ export default function ContactForm() {
                             <>
                                 <div className="ctc-field">
                                     <label className="ctc-label" htmlFor="ctc-subject">
-                                        Subject <span className="ctc-req">*</span>
+                                        <Copy text={"Subject"} />{' '}<span className="ctc-req">*</span>
                                     </label>
                                     <Select
                                         unstyled
                                         id="ctc-subject"
                                         className={`ctc-select${errors.subject_id ? ' is-bad' : ''}`}
                                         value={values.subject_id}
-                                        placeholder="Choose the closest match"
+                                        placeholder={t("Choose the closest match")}
                                         options={subjectOptions}
                                         onChange={(e) => set('subject_id', e.target.value)}
                                         aria-invalid={Boolean(errors.subject_id)}
                                         aria-describedby={errors.subject_id ? 'ctc-subject-err' : undefined}
                                     />
                                     {errors.subject_id && (
-                                        <p className="ctc-err" id="ctc-subject-err">{errors.subject_id}</p>
+                                        <p className="ctc-err" id="ctc-subject-err">{t(errors.subject_id ?? '')}</p>
                                     )}
                                 </div>
 
                                 <div className="ctc-field">
                                     <label className="ctc-label" htmlFor="ctc-subject-text">
-                                        Your own subject line{' '}
+                                        <Copy text={"Your own subject line"} />{' '}
                                         {values.subject_id === 'other' ? (
                                             <span className="ctc-req">*</span>
                                         ) : (
-                                            <span className="ctc-optional">optional</span>
+                                            <span className="ctc-optional"><Copy text={"optional"} /></span>
                                         )}
                                     </label>
                                     <Input
@@ -786,7 +778,7 @@ export default function ContactForm() {
                                         className={`ctc-input${errors.subject_text ? ' is-bad' : ''}`}
                                         value={values.subject_text}
                                         maxLength={CONTACT_LIMITS.subjectText}
-                                        placeholder="Payout for 12 March has not landed"
+                                        placeholder={t("Payout for 12 March has not landed")}
                                         onChange={(e) => set('subject_text', e.target.value)}
                                         aria-invalid={Boolean(errors.subject_text)}
                                         aria-describedby={
@@ -795,17 +787,16 @@ export default function ContactForm() {
                                     />
                                     {errors.subject_text ? (
                                         <p className="ctc-err" id="ctc-subject-text-err">
-                                            {errors.subject_text}
+                                            {t(errors.subject_text ?? '')}
                                         </p>
                                     ) : (
                                         <p className="ctc-help">
-                                            This becomes the subject of your ticket email.
-                                        </p>
+                                            <Copy text={"This becomes the subject of your ticket email."} /></p>
                                     )}
                                 </div>
 
                                 <fieldset className="ctc-field ctc-fieldset">
-                                    <legend className="ctc-label">How urgent is it?</legend>
+                                    <legend className="ctc-label"><Copy text={"How urgent is it?"} /></legend>
                                     <div className="ctc-chips">
                                         {CONTACT_URGENCIES.map((level) => (
                                             <Button
@@ -815,9 +806,9 @@ export default function ContactForm() {
                                                 className={`ctc-chip${values.urgency === level.id ? ' is-on' : ''}${level.id === 'critical' ? ' is-alarm' : ''}`}
                                                 aria-pressed={values.urgency === level.id}
                                                 onClick={() => set('urgency', level.id)}
-                                                title={level.description}
+                                                title={t(level.description)}
                                             >
-                                                {level.label}
+                                                {t(level.label)}
                                             </Button>
                                         ))}
                                     </div>
@@ -825,7 +816,7 @@ export default function ContactForm() {
 
                                 <div className="ctc-field">
                                     <label className="ctc-label" htmlFor="ctc-message">
-                                        Tell us what is happening <span className="ctc-req">*</span>
+                                        <Copy text={"Tell us what is happening"} />{' '}<span className="ctc-req">*</span>
                                     </label>
                                     <Textarea
                                         unstyled
@@ -834,18 +825,17 @@ export default function ContactForm() {
                                         className={`ctc-textarea${errors.message ? ' is-bad' : ''}`}
                                         value={values.message}
                                         maxLength={CONTACT_LIMITS.message}
-                                        placeholder="The more specific, the better. Dates, order numbers, what you expected and what happened instead."
+                                        placeholder={t("The more specific, the better. Dates, order numbers, what you expected and what happened instead.")}
                                         onChange={(e) => set('message', e.target.value)}
                                         aria-invalid={Boolean(errors.message)}
                                         aria-describedby={errors.message ? 'ctc-message-err' : undefined}
                                     />
                                     <div className="ctc-counter-row">
                                         {errors.message ? (
-                                            <p className="ctc-err" id="ctc-message-err">{errors.message}</p>
+                                            <p className="ctc-err" id="ctc-message-err">{t(errors.message ?? '')}</p>
                                         ) : (
                                             <p className="ctc-help">
-                                                Please do not include passwords, OTPs or card numbers.
-                                            </p>
+                                                <Copy text={"Please do not include passwords, OTPs or card numbers."} /></p>
                                         )}
                                         <span
                                             className={`ctc-counter${messageLeft < 200 ? ' is-low' : ''}`}
@@ -858,8 +848,7 @@ export default function ContactForm() {
                                 {reveals.has('order') && (
                                     <div className="ctc-field">
                                         <label className="ctc-label" htmlFor="ctc-ref">
-                                            Order, payment or payout reference
-                                        </label>
+                                            <Copy text={"Order, payment or payout reference"} /></label>
                                         <Input
                                             unstyled
                                             id="ctc-ref"
@@ -870,8 +859,7 @@ export default function ContactForm() {
                                             onChange={(e) => set('order_reference', e.target.value)}
                                         />
                                         <p className="ctc-help">
-                                            With a reference we can look it up before replying.
-                                        </p>
+                                            <Copy text={"With a reference we can look it up before replying."} /></p>
                                     </div>
                                 )}
                             </>
@@ -882,15 +870,13 @@ export default function ContactForm() {
                 {/* ── Step 3 ─────────────────────────────────────────────── */}
                 {step === 3 && (
                     <>
-                        <h2 className="ctc-step-title">A little context</h2>
+                        <h2 className="ctc-step-title"><Copy text={"A little context"} /></h2>
                         <p className="ctc-step-sub">
-                            All optional — but it is the difference between a generic reply and a
-                            useful one.
-                        </p>
+                            <Copy text={"All optional — but it is the difference between a generic reply and a useful one."} /></p>
 
                         <div className="ctc-grid-2">
                             <div className="ctc-field">
-                                <label className="ctc-label" htmlFor="ctc-city">City</label>
+                                <label className="ctc-label" htmlFor="ctc-city"><Copy text={"City"} /></label>
                                 <Input
                                     unstyled
                                     id="ctc-city"
@@ -903,14 +889,14 @@ export default function ContactForm() {
                                 />
                             </div>
                             <div className="ctc-field">
-                                <label className="ctc-label" htmlFor="ctc-state">State</label>
+                                <label className="ctc-label" htmlFor="ctc-state"><Copy text={"State"} /></label>
                                 <Select
                                     unstyled
                                     id="ctc-state"
                                     className="ctc-select"
                                     value={values.state}
-                                    placeholder="Select a state"
-                                    options={toOptions(INDIA_STATES)}
+                                    placeholder={t("Select a state")}
+                                    options={toOptions(INDIA_STATES, t)}
                                     onChange={(e) => set('state', e.target.value)}
                                 />
                             </div>
@@ -920,15 +906,14 @@ export default function ContactForm() {
                             <div className="ctc-grid-2">
                                 <div className="ctc-field">
                                     <label className="ctc-label" htmlFor="ctc-category">
-                                        What do you sell?
-                                    </label>
+                                        <Copy text={"What do you sell?"} /></label>
                                     <Select
                                         unstyled
                                         id="ctc-category"
                                         className="ctc-select"
                                         value={values.business_type}
-                                        placeholder="Choose a category"
-                                        options={toOptions(CONTACT_BUSINESS_TYPES)}
+                                        placeholder={t("Choose a category")}
+                                        options={toOptions(CONTACT_BUSINESS_TYPES, t)}
                                         onChange={(e) => set('business_type', e.target.value)}
                                     />
                                 </div>
@@ -951,44 +936,41 @@ export default function ContactForm() {
                             <>
                                 <div className="ctc-field">
                                     <label className="ctc-label" htmlFor="ctc-channel">
-                                        Where do you sell today?
-                                    </label>
+                                        <Copy text={"Where do you sell today?"} /></label>
                                     <Select
                                         unstyled
                                         id="ctc-channel"
                                         className="ctc-select"
                                         value={values.current_channel}
-                                        placeholder="Choose one"
-                                        options={toOptions(CONTACT_CURRENT_CHANNELS)}
+                                        placeholder={t("Choose one")}
+                                        options={toOptions(CONTACT_CURRENT_CHANNELS, t)}
                                         onChange={(e) => set('current_channel', e.target.value)}
                                     />
                                 </div>
                                 <div className="ctc-grid-2">
                                     <div className="ctc-field">
                                         <label className="ctc-label" htmlFor="ctc-orders">
-                                            Orders a month
-                                        </label>
+                                            <Copy text={"Orders a month"} /></label>
                                         <Select
                                             unstyled
                                             id="ctc-orders"
                                             className="ctc-select"
                                             value={values.monthly_orders}
-                                            placeholder="Choose a range"
-                                            options={toOptions(CONTACT_ORDER_BANDS)}
+                                            placeholder={t("Choose a range")}
+                                            options={toOptions(CONTACT_ORDER_BANDS, t)}
                                             onChange={(e) => set('monthly_orders', e.target.value)}
                                         />
                                     </div>
                                     <div className="ctc-field">
                                         <label className="ctc-label" htmlFor="ctc-gmv">
-                                            Monthly sales
-                                        </label>
+                                            <Copy text={"Monthly sales"} /></label>
                                         <Select
                                             unstyled
                                             id="ctc-gmv"
                                             className="ctc-select"
                                             value={values.monthly_gmv_band}
-                                            placeholder="Choose a range"
-                                            options={toOptions(CONTACT_GMV_BANDS)}
+                                            placeholder={t("Choose a range")}
+                                            options={toOptions(CONTACT_GMV_BANDS, t)}
                                             onChange={(e) => set('monthly_gmv_band', e.target.value)}
                                         />
                                     </div>
@@ -1000,29 +982,27 @@ export default function ContactForm() {
                             <div className="ctc-grid-2">
                                 <div className="ctc-field">
                                     <label className="ctc-label" htmlFor="ctc-plan">
-                                        Plan you are looking at
-                                    </label>
+                                        <Copy text={"Plan you are looking at"} /></label>
                                     <Select
                                         unstyled
                                         id="ctc-plan"
                                         className="ctc-select"
                                         value={values.interested_plan}
-                                        placeholder="Choose a plan"
-                                        options={toOptions(PLAN_OPTIONS)}
+                                        placeholder={t("Choose a plan")}
+                                        options={toOptions(PLAN_OPTIONS, t)}
                                         onChange={(e) => set('interested_plan', e.target.value)}
                                     />
                                 </div>
                                 <div className="ctc-field">
                                     <label className="ctc-label" htmlFor="ctc-timeline">
-                                        When do you want to go live?
-                                    </label>
+                                        <Copy text={"When do you want to go live?"} /></label>
                                     <Select
                                         unstyled
                                         id="ctc-timeline"
                                         className="ctc-select"
                                         value={values.timeline}
-                                        placeholder="Choose a timeline"
-                                        options={idOptions(CONTACT_TIMELINES)}
+                                        placeholder={t("Choose a timeline")}
+                                        options={idOptions(CONTACT_TIMELINES, t)}
                                         onChange={(e) => set('timeline', e.target.value)}
                                     />
                                 </div>
@@ -1032,8 +1012,7 @@ export default function ContactForm() {
                         {reveals.has('technical') && !isMerchant && (
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-store-2">
-                                    Store address, if this is about one
-                                </label>
+                                    <Copy text={"Store address, if this is about one"} /></label>
                                 <div className="ctc-suffixed">
                                     <Input
                                         unstyled
@@ -1056,15 +1035,14 @@ export default function ContactForm() {
 
                         <div className="ctc-field">
                             <label className="ctc-label" htmlFor="ctc-heard">
-                                How did you hear about LetBuyy?
-                            </label>
+                                <Copy text={"How did you hear about LetBuyy?"} /></label>
                             <Select
                                 unstyled
                                 id="ctc-heard"
                                 className="ctc-select"
                                 value={values.heard_about_us}
-                                placeholder="Choose one"
-                                options={toOptions(CONTACT_HEARD_ABOUT)}
+                                placeholder={t("Choose one")}
+                                options={toOptions(CONTACT_HEARD_ABOUT, t)}
                                 onChange={(e) => set('heard_about_us', e.target.value)}
                             />
                         </div>
@@ -1074,14 +1052,13 @@ export default function ContactForm() {
                 {/* ── Step 4 ─────────────────────────────────────────────── */}
                 {step === 4 && (
                     <>
-                        <h2 className="ctc-step-title">How should we reach you?</h2>
+                        <h2 className="ctc-step-title"><Copy text={"How should we reach you?"} /></h2>
                         <p className="ctc-step-sub">
-                            One last thing, then it is with the{' '}
-                            {topic ? topic.label.toLowerCase() : 'right'} team.
-                        </p>
+                            <Copy text={"One last thing, then it is with the"} />{' '}
+                            {t(topic?.label ?? 'Our team')} <Copy text={"team."} /></p>
 
                         <fieldset className="ctc-field ctc-fieldset">
-                            <legend className="ctc-label">Reply by</legend>
+                            <legend className="ctc-label"><Copy text={"Reply by"} /></legend>
                             <div className="ctc-chips">
                                 {CONTACT_CHANNELS.map((channel) => (
                                     <Button
@@ -1092,7 +1069,7 @@ export default function ContactForm() {
                                         aria-pressed={values.preferred_channel === channel.id}
                                         onClick={() => set('preferred_channel', channel.id)}
                                     >
-                                        {channel.label}
+                                        {t(channel.label)}
                                     </Button>
                                 ))}
                             </div>
@@ -1101,42 +1078,40 @@ export default function ContactForm() {
                         <div className="ctc-grid-2">
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-language">
-                                    Answer me in
-                                </label>
+                                    <Copy text={"Answer me in"} /></label>
                                 <Select
                                     unstyled
                                     id="ctc-language"
                                     className="ctc-select"
                                     value={values.preferred_language}
-                                    options={idOptions(CONTACT_LANGUAGES)}
+                                    options={idOptions(CONTACT_LANGUAGES, t)}
                                     onChange={(e) => set('preferred_language', e.target.value)}
                                 />
                             </div>
                             <div className="ctc-field">
                                 <label className="ctc-label" htmlFor="ctc-window">
-                                    Best time to reach you
-                                </label>
+                                    <Copy text={"Best time to reach you"} /></label>
                                 <Select
                                     unstyled
                                     id="ctc-window"
                                     className="ctc-select"
                                     value={values.preferred_time_window}
-                                    options={idOptions(CONTACT_TIME_WINDOWS)}
+                                    options={idOptions(CONTACT_TIME_WINDOWS, t)}
                                     onChange={(e) => set('preferred_time_window', e.target.value)}
                                 />
                             </div>
                         </div>
 
                         <div className="ctc-summary">
-                            <span className="ctc-summary-label">Going to</span>
+                            <span className="ctc-summary-label"><Copy text={"Going to"} /></span>
                             <p className="ctc-summary-line">
                                 {/* Same phrasing helper as the success screen and the
                                     acknowledgement email — "48 working hours" here and
                                     "within 6 working days" in the inbox are the same
                                     promise described two ways, which reads as a change
                                     of terms rather than a formatting choice. */}
-                                <strong>{topic?.label ?? 'Our team'}</strong> · first reply{' '}
-                                <strong>{describeResponseHours(responseHours)}</strong>
+                                <strong>{t(topic?.label ?? 'Our team')}</strong> <Copy text={"· first reply"} />{' '}
+                                <strong>{formatResponseTime(responseHours, locale.language.code)}</strong>
                             </p>
                         </div>
 
@@ -1155,20 +1130,18 @@ export default function ContactForm() {
                                     }
                                 />
                                 <span className="ctc-check-text">
-                                    I agree that LetBuyy may use these details to answer my enquiry,
-                                    as described in the{' '}
+                                    <Copy text={"I agree that LetBuyy may use these details to answer my enquiry, as described in the"} />{' '}
                                     {/* LocaleLink, not a raw anchor: a hardcoded /in/
                                         would throw a Tamil or Hindi reader back into
                                         English at the exact moment they are asked to
                                         consent to something. */}
                                     <LocaleLink href="/legal/privacy" target="_blank" rel="noopener noreferrer">
-                                        privacy notice
-                                    </LocaleLink>
+                                        <Copy text={"privacy notice"} /></LocaleLink>
                                     . <span className="ctc-req">*</span>
                                 </span>
                             </label>
                             {errors.consent_privacy && (
-                                <p className="ctc-err" id="ctc-consent-err">{errors.consent_privacy}</p>
+                                <p className="ctc-err" id="ctc-consent-err">{t(errors.consent_privacy ?? '')}</p>
                             )}
 
                             <label className="ctc-check" htmlFor="ctc-consent-marketing">
@@ -1181,9 +1154,7 @@ export default function ContactForm() {
                                     onCheckedChange={(checked) => set('consent_marketing', checked)}
                                 />
                                 <span className="ctc-check-text">
-                                    Send me occasional product news for Indian sellers. Unsubscribe
-                                    any time.
-                                </span>
+                                    <Copy text={"Send me occasional product news for Indian sellers. Unsubscribe any time."} /></span>
                             </label>
                         </div>
 
@@ -1191,7 +1162,7 @@ export default function ContactForm() {
 
                         {submitError && (
                             <p className="ctc-alert" role="alert">
-                                {submitError}
+                                {t(submitError)}
                             </p>
                         )}
                     </>
@@ -1202,16 +1173,14 @@ export default function ContactForm() {
             <div className="ctc-actions">
                 {step > 1 ? (
                     <Button unstyled type="button" className="ctc-btn ctc-btn-ghost" onClick={back}>
-                        Back
-                    </Button>
+                        <Copy text={"Back"} /></Button>
                 ) : (
                     <span className="ctc-actions-spacer" />
                 )}
 
                 {step < STEPS.length ? (
                     <Button unstyled type="button" className="ctc-btn ctc-btn-primary" onClick={next}>
-                        Continue
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <Copy text={"Continue"} /><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                     </Button>
@@ -1223,7 +1192,7 @@ export default function ContactForm() {
                         onClick={submit}
                         disabled={submitting}
                     >
-                        {submitting ? 'Sending…' : 'Send message'}
+                        {t(submitting ? 'Sending…' : 'Send message')}
                         {!submitting && (
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                 <path d="M5 12h14M12 5l7 7-7 7" />
@@ -1234,9 +1203,7 @@ export default function ContactForm() {
             </div>
 
             <p className="ctc-legal">
-                Protected by Cloudflare Turnstile. We never ask for passwords, OTPs or card details
-                over email.
-            </p>
+                <Copy text={"Protected by Cloudflare Turnstile. We never ask for passwords, OTPs or card details over email."} /></p>
         </div>
     )
 }

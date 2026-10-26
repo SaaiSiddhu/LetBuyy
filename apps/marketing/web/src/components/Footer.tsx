@@ -1,15 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useCopy } from '@/components/i18n/useCopy'
+
+import { useRef, useState } from 'react'
 import Link from '@/components/i18n/LocaleLink'
 import {
     Button,
+    Modal,
     Check,
     Checkbox,
     Facebook,
     Instagram,
     Linkedin,
-    X,
     Youtube,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
@@ -17,64 +19,62 @@ import { XMark } from './BrandGlyphs'
 import LanguageSwitcher from './i18n/LanguageSwitcher'
 import { getDictionaryForSegment } from '@/lib/i18n'
 import { localeFromPathname } from '@/lib/i18n/routing'
+import Copy from '@/components/i18n/Copy'
 import { usePathname } from 'next/navigation'
-import { getAssetPublicUrl } from '@/lib/public-urls'
 import { BRAND_PROFILES } from '@letbuyy/shared-types'
 import { getPlatformNavigationLinks } from '@/lib/platform-links'
-import { getAppDownloadTargets } from '@/lib/app-downloads'
 
 const platformLinks = getPlatformNavigationLinks()
 const platformHref = (label: string) => platformLinks.find((link) => link.label === label)?.href ?? '/'
 
 const footerColumns = [
     {
-        title: 'LetBuyy',
+        title: 'letbuyy',
         links: [
-            { label: 'What is LetBuyy?', href: '/' },
-            { label: 'Pricing', href: '/pricing' },
-            { label: 'Start your store', href: '/create' },
-            { label: 'Platform sitemap', href: '/sitemap' },
+            { label: 'whatIsLetbuyy', href: '/' },
+            { label: 'pricing', href: '/pricing' },
+            { label: 'startYourStore', href: '/create' },
         ],
     },
     {
-        title: 'Ecosystem',
+        title: 'ecosystem',
         links: [
-            { label: 'Theme Marketplace', href: platformHref('Themes') },
-            { label: 'App Marketplace', href: platformHref('Apps') },
-            { label: 'Developer Docs', href: platformHref('Developers') },
-            { label: 'Merchant login', href: platformHref('Log in') },
+            { label: 'themeGuide', href: platformHref('Themes') },
+            { label: 'appGuide', href: platformHref('Apps') },
+            { label: 'developerDocs', href: platformHref('Developers') },
+            { label: 'merchantLogin', href: platformHref('Log in') },
         ],
     },
     {
-        title: 'Resources',
+        title: 'resources',
         links: [
-            { label: 'All resources', href: '/resources' },
-            { label: 'Ecommerce guides', href: '/resources/ecommerce' },
-            { label: 'Developer docs', href: '/resources/developers' },
-            { label: 'Changelog', href: '/resources/changelog' },
+            { label: 'allResources', href: '/resources' },
+            { label: 'ecommerceGuides', href: '/resources/ecommerce' },
+            { label: 'developerDocs', href: '/resources/developers' },
+            { label: 'changelog', href: '/resources/changelog' },
         ],
     },
     {
-        title: 'Support',
+        title: 'support',
         links: [
-            { label: 'Contact us', href: '/contact' },
-            { label: 'Grievance redressal', href: '/legal/grievance' },
-            { label: 'Security', href: '/legal/security' },
-            { label: 'Account access', href: platformHref('Log in') },
-            { label: 'Public sitemap', href: '/sitemap' },
+            { label: 'supportCentre', href: '/support' },
+            { label: 'contactUs', href: '/contact' },
+            { label: 'grievanceRedressal', href: '/legal/grievance' },
+            { label: 'security', href: '/legal/security' },
+            { label: 'accountAccess', href: platformHref('Log in') },
         ],
     },
-]
+] as const
 
 /* Every policy lives under /legal/<slug>; /legal is the index. The four here
    are the ones people look for in a footer — the rest are one click deeper. */
 const legalLinks = [
-    { label: 'Legal', href: '/legal' },
-    { label: 'Terms', href: '/legal/terms' },
-    { label: 'Privacy', href: '/legal/privacy' },
-    { label: 'Refunds', href: '/legal/refunds' },
-    { label: 'Sitemap', href: '/sitemap' },
-]
+    { label: 'legal', href: '/legal' },
+    { label: 'terms', href: '/legal/terms' },
+    { label: 'privacy', href: '/legal/privacy' },
+    { label: 'refunds', href: '/legal/refunds' },
+    { label: 'sitemap', href: '/sitemap' },
+] as const
 
 /* Built from BRAND_PROFILES so the handles live in one place — that registry
    also feeds Organization.sameAs in the structured data, and a footer link
@@ -89,10 +89,10 @@ const socialLinks = [
     { label: 'LinkedIn', href: BRAND_PROFILES.linkedin, icon: Linkedin },
 ].filter(link => link.href)
 
-const privacyChoicesIconUrl = getAssetPublicUrl('/assets/legal/privacy-choices.svg')
+const privacyChoicesIconUrl = '/assets/legal/privacy-choices.svg'
 
 export default function Footer() {
-    const downloads = getAppDownloadTargets()
+    const { t } = useCopy()
     /* The footer is already a client component, so it reads the locale from
        the pathname rather than threading a prop through every page. */
     const pathname = usePathname()
@@ -101,112 +101,66 @@ export default function Footer() {
     const [analyticsEnabled, setAnalyticsEnabled] = useState(false)
     const [personalizationEnabled, setPersonalizationEnabled] = useState(false)
 
+    const privacyReturnRef = useRef<HTMLElement | null>(null)
+    const [privacyError, setPrivacyError] = useState('')
+
+    function openPrivacyChoices() {
+        privacyReturnRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+        setPrivacyError('')
+        try {
+            const saved: unknown = JSON.parse(window.localStorage.getItem('letbuyy_privacy_choices') ?? 'null')
+            if (saved && typeof saved === 'object') {
+                const choices = saved as Record<string, unknown>
+                setAnalyticsEnabled(choices.analytics === true)
+                setPersonalizationEnabled(choices.personalization === true)
+            }
+        } catch {
+            setPrivacyError('Saved choices could not be read. You can choose again below.')
+        }
+        setPrivacyPanelOpen(true)
+    }
+
     function savePrivacyChoices() {
-        window.localStorage.setItem(
-            'letbuyy_privacy_choices',
-            JSON.stringify({
-                analytics: analyticsEnabled,
-                personalization: personalizationEnabled,
-                savedAt: new Date().toISOString(),
-            }),
-        )
-        setPrivacyPanelOpen(false)
+        try {
+            window.localStorage.setItem(
+                'letbuyy_privacy_choices',
+                JSON.stringify({
+                    analytics: analyticsEnabled,
+                    personalization: personalizationEnabled,
+                    savedAt: new Date().toISOString(),
+                }),
+            )
+            setPrivacyPanelOpen(false)
+        } catch {
+            setPrivacyError('Your browser could not save these choices. Please allow site storage and try again.')
+        }
     }
 
     return (
         <footer className="footer" aria-labelledby="site-footer-heading">
             <div className="footer-container">
                 <h2 id="site-footer-heading" className="sr-only">
-                    LetBuyy footer
+                    {dict.footer.heading}
                 </h2>
 
                 <div className="footer-nav">
                     <div className="footer-brand">
-                        <Link href="/" className="footer-mark" aria-label="LetBuyy home">
+                        <Link href="/" className="footer-mark" aria-label={t("LetBuyy home")}>
                             <BrandLogo className="footer-logo-image" width={178} height={58} />
                         </Link>
 
-                        <div className="footer-get-app">
-                            <p className="footer-get-app-label">Merchant app for Android</p>
 
-                            <div className="footer-get-app-row">
-                                {downloads.playStoreUrl ? (
-                                    <a
-                                        href={downloads.playStoreUrl}
-                                        className="app-badge app-badge-primary"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span className="app-badge-icon" aria-hidden="true">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.3-9.7L3.6 2.3Zm10.7 8.1 2.9-3-9.8-5.6 6.9 8.6Zm0 3.2-6.9 8.6 9.8-5.6-2.9-3Zm1.4-1.6 3.4-1.9c.6-.4.6-1.4 0-1.8l-3.4-1.9-3.1 3.2 3.1 3.2Z" />
-                                            </svg>
-                                        </span>
-                                        <span className="app-badge-text">
-                                            <span className="app-badge-kicker">Get it on</span>
-                                            <span className="app-badge-name">Google Play</span>
-                                        </span>
-                                    </a>
-                                ) : (
-                                    <span className="app-badge app-badge-primary is-pending" aria-disabled="true">
-                                        <span className="app-badge-icon" aria-hidden="true">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.3-9.7L3.6 2.3Zm10.7 8.1 2.9-3-9.8-5.6 6.9 8.6Zm0 3.2-6.9 8.6 9.8-5.6-2.9-3Zm1.4-1.6 3.4-1.9c.6-.4.6-1.4 0-1.8l-3.4-1.9-3.1 3.2 3.1 3.2Z" />
-                                            </svg>
-                                        </span>
-                                        <span className="app-badge-text">
-                                            <span className="app-badge-kicker">Coming soon to</span>
-                                            <span className="app-badge-name">Google Play</span>
-                                        </span>
-                                    </span>
-                                )}
-
-                                {downloads.apkUrl ? (
-                                    <a href={downloads.apkUrl} className="app-badge" download>
-                                        <span className="app-badge-icon" aria-hidden="true">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
-                                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-                                            </svg>
-                                        </span>
-                                        <span className="app-badge-text">
-                                            <span className="app-badge-kicker">Download</span>
-                                            <span className="app-badge-name">Android APK</span>
-                                        </span>
-                                    </a>
-                                ) : (
-                                    <span className="app-badge is-pending" aria-disabled="true">
-                                        <span className="app-badge-icon" aria-hidden="true">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
-                                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-                                            </svg>
-                                        </span>
-                                        <span className="app-badge-text">
-                                            <span className="app-badge-kicker">Coming soon</span>
-                                            <span className="app-badge-name">Android APK</span>
-                                        </span>
-                                    </span>
-                                )}
-                            </div>
-
-                            {!downloads.available && (
-                                <p className="footer-get-app-note">
-                                    Launching with the private beta.
-                                </p>
-                            )}
-                        </div>
                     </div>
 
                     <div className="footer-columns">
                         {footerColumns.map((column) => (
-                            <nav key={column.title} className="footer-column" aria-label={column.title}>
-                                <h3 className="footer-column-title">{column.title}</h3>
+                            <nav key={column.title} className="footer-column" aria-label={dict.footer.columns[column.title]}>
+                                <h3 className="footer-column-title">{dict.footer.columns[column.title]}</h3>
                                 <ul className="footer-links">
                                     {column.links.map((link) => (
                                         <li key={link.label}>
                                             <Link href={link.href} className="footer-link">
-                                                {link.label}
+                                                {dict.footer.links[link.label]}
                                             </Link>
                                         </li>
                                     ))}
@@ -223,24 +177,24 @@ export default function Footer() {
                         <LanguageSwitcher dict={dict} />
                     </div>
 
-                    <nav className="footer-legal-row" aria-label="Legal links">
+                    <nav className="footer-legal-row" aria-label={dict.footer.legalLinks}>
                         {legalLinks.map((link) => (
                             <Link key={link.label} href={link.href} className="footer-legal-link">
-                                {link.label}
+                                {dict.footer.links[link.label]}
                             </Link>
                         ))}
                         <Button
                             unstyled
                             type="button"
                             className="footer-privacy-choice"
-                            onClick={() => setPrivacyPanelOpen(true)}
+                            onClick={openPrivacyChoices}
                         >
-                            <span>Your Privacy Choices</span>
+                            <span>{dict.footer.privacyChoices}</span>
                             <img src={privacyChoicesIconUrl} alt="" width="32" height="16" aria-hidden="true" />
                         </Button>
                     </nav>
 
-                    <nav className="footer-social" aria-label="Social links">
+                    <nav className="footer-social" aria-label={dict.footer.socialLinks}>
                         {socialLinks.map((link) => {
                             const Icon = link.icon
                             return (
@@ -253,34 +207,23 @@ export default function Footer() {
                 </div>
 
                 <p className="footer-copyright">
-                    © {new Date().getFullYear()} LetBuyy. All rights reserved.
+                    © {new Date().getFullYear()} LetBuyy. {dict.footer.allRightsReserved}
                 </p>
             </div>
 
-            {privacyPanelOpen && (
-                <div className="footer-privacy-sheet" role="dialog" aria-modal="true" aria-labelledby="footer-privacy-title">
-                    <div className="footer-privacy-card">
-                        <Button
-                            unstyled
-                            type="button"
-                            className="footer-privacy-close"
-                            aria-label="Close privacy choices"
-                            onClick={() => setPrivacyPanelOpen(false)}
-                        >
-                            <X width={20} height={20} aria-hidden="true" />
-                        </Button>
-
+            <Modal className="marketing-dialog" open={privacyPanelOpen} onClose={() => setPrivacyPanelOpen(false)} title={dict.footer.privacyChoices} returnFocusRef={privacyReturnRef}>
+                    <div>
                         <img className="footer-privacy-icon" src={privacyChoicesIconUrl} alt="" width="48" height="24" aria-hidden="true" />
-                        <h3 id="footer-privacy-title">Your Privacy Choices</h3>
+                        {privacyError && <p role="alert"><Copy text={privacyError} /></p>}
                         <p>
-                            Choose how LetBuyy uses optional cookies and similar technologies on this marketing site.
+                            {dict.footer.privacyIntro}
                         </p>
 
                         <div className="footer-privacy-options">
                             <label className="footer-privacy-option footer-privacy-option-locked">
                                 <span>
-                                    <strong>Essential</strong>
-                                    <small>Required for security, routing, and checkout-safe experiences.</small>
+                                    <strong>{dict.footer.essential}</strong>
+                                    <small>{dict.footer.essentialNote}</small>
                                 </span>
                                 <span className="footer-privacy-check">
                                     <Check width={16} height={16} aria-hidden="true" />
@@ -289,12 +232,12 @@ export default function Footer() {
 
                             <label className="footer-privacy-option">
                                 <span>
-                                    <strong>Analytics</strong>
-                                    <small>Help us understand page performance and product interest.</small>
+                                    <strong>{dict.footer.analytics}</strong>
+                                    <small>{dict.footer.analyticsNote}</small>
                                 </span>
                                 <Checkbox
                                     unstyled
-                                    label="Analytics"
+                                    label={dict.footer.analytics}
                                     checked={analyticsEnabled}
                                     onCheckedChange={setAnalyticsEnabled}
                                 />
@@ -302,12 +245,12 @@ export default function Footer() {
 
                             <label className="footer-privacy-option">
                                 <span>
-                                    <strong>Personalization</strong>
-                                    <small>Remember non-sensitive marketing preferences for future visits.</small>
+                                    <strong>{dict.footer.personalization}</strong>
+                                    <small>{dict.footer.personalizationNote}</small>
                                 </span>
                                 <Checkbox
                                     unstyled
-                                    label="Personalization"
+                                    label={dict.footer.personalization}
                                     checked={personalizationEnabled}
                                     onCheckedChange={setPersonalizationEnabled}
                                 />
@@ -315,11 +258,10 @@ export default function Footer() {
                         </div>
 
                         <Button unstyled type="button" className="footer-privacy-save" onClick={savePrivacyChoices}>
-                            Save choices
+                            {dict.footer.saveChoices}
                         </Button>
                     </div>
-                </div>
-            )}
+            </Modal>
         </footer>
     )
 }

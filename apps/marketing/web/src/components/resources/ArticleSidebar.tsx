@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { Button, Input } from '@letbuyy/ui'
+import Copy from '@/components/i18n/Copy'
+
+import NewsletterAvailability from './NewsletterAvailability'
+
 import Link from '@/components/i18n/LocaleLink'
 import type { Article, Author, Category } from '@/lib/resources/types'
 
@@ -22,14 +24,6 @@ const NEWSLETTER_FEATURES = [
 ]
 
 export default function ArticleSidebar({ author, related, authorArticleCount, authorTopics }: Props) {
-  const [email, setEmail] = useState('')
-  const [subscribed, setSubscribed] = useState(false)
-
-  function handleSubscribe(e: React.FormEvent) {
-    e.preventDefault()
-    if (email) setSubscribed(true)
-  }
-
   return (
     <div className="arc-sidebar">
 
@@ -49,10 +43,8 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
 
         {/* Inline facts rather than boxed tiles — two numbers do not need panels */}
         <p className="arc-author-facts">
-          <strong>{authorArticleCount}</strong> articles
-          <span className="arc-author-facts-sep" aria-hidden="true" />
-          <strong>{authorTopics.length}</strong> topics
-        </p>
+          <strong>{authorArticleCount}</strong> <Copy text={"articles"} /><span className="arc-author-facts-sep" aria-hidden="true" />
+          <strong>{authorTopics.length}</strong> <Copy text={"topics"} /></p>
 
         {authorTopics.length > 0 && (
           <div className="arc-author-topics-row">
@@ -82,7 +74,7 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
         </div>
 
         <Link href={`/resources/authors/${author.slug}`} className="arc-author-all">
-          All articles by {author.name.split(' ')[0]}
+          <Copy text={"All articles by"} />{' '}{author.name.split(' ')[0]}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
@@ -95,57 +87,32 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
           <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
-          Weekly Newsletter
-        </div>
-        <p className="arc-nl-sub-count">35,000+ merchants subscribed</p>
-        <p className="arc-nl-title">Commerce Insights Weekly</p>
+          <Copy text={"Weekly Newsletter"} /></div>
+        <p className="arc-nl-sub-count"><Copy text={"Commerce guides and platform updates"} /></p>
+        <p className="arc-nl-title"><Copy text={"Commerce Insights Weekly"} /></p>
         <div className="arc-nl-features">
           {NEWSLETTER_FEATURES.map(f => (
             <div key={f} className="arc-nl-feat">
               <svg className="arc-nl-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
-              {f}
+              <Copy text={f} />
             </div>
           ))}
         </div>
 
-        {subscribed ? (
-          <p className="arc-nl-success">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}>
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            You&apos;re in! Check your inbox.
-          </p>
-        ) : (
-          <>
-            <form onSubmit={handleSubscribe}>
-              <Input
-                unstyled
-                type="email"
-                className="arc-nl-input"
-                placeholder="your@email.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                aria-label="Email address for newsletter"
-              />
-              <Button unstyled type="submit" className="arc-nl-btn">Subscribe free</Button>
-            </form>
-            <p className="arc-nl-hint">No spam. Unsubscribe anytime.</p>
-          </>
-        )}
+        <NewsletterAvailability />
       </div>
 
       {/* ── Related articles ── */}
       {related.length > 0 && (
         <div className="arc-sidebar-block">
-          <p className="arc-related-hd">Related guides</p>
+          <p className="arc-related-hd"><Copy text={"Related guides"} /></p>
           {related.map(({ article: a, category: c }) => (
             <Link key={a.slug} href={`/resources/${a.category}/${a.slug}`} className="arc-rel-item">
               <p className="arc-rel-cat" style={{ color: c.color }}>{c.label}</p>
               <p className="arc-rel-title">{a.title}</p>
-              <p className="arc-rel-meta">{a.readingTime} min read</p>
+              <p className="arc-rel-meta">{a.readingTime} <Copy text={"min read"} /></p>
             </Link>
           ))}
         </div>

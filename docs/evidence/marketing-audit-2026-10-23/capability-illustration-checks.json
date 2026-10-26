@@ -1,0 +1,279 @@
+[
+  {
+    "label": "Orders",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 174,
+        "loaded": true,
+        "src": "/illustrations/capabilities/orders-scene-v1.webp",
+        "width": 220
+      }
+    ],
+    "thumbs": 5,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "Inventory",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 174,
+        "loaded": true,
+        "src": "/illustrations/capabilities/inventory-scene-v1.webp",
+        "width": 220
+      }
+    ],
+    "thumbs": 5,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "Payments",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 174,
+        "loaded": true,
+        "src": "/illustrations/capabilities/payments-scene-v1.webp",
+        "width": 220
+      }
+    ],
+    "thumbs": 0,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "Customers",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 174,
+        "loaded": true,
+        "src": "/illustrations/capabilities/customers-scene-v1.webp",
+        "width": 220
+      }
+    ],
+    "thumbs": 0,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "Analytics",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 174,
+        "loaded": true,
+        "src": "/illustrations/capabilities/analytics-scene-v1.webp",
+        "width": 220
+      }
+    ],
+    "thumbs": 0,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "AI Operator & Automation",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 174,
+        "loaded": true,
+        "src": "/illustrations/capabilities/ai-scene-v1.webp",
+        "width": 220
+      }
+    ],
+    "thumbs": 0,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "B2B & Wholesale",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 174,
+        "loaded": true,
+        "src": "/illustrations/capabilities/b2b-scene-v1.webp",
+        "width": 220
+      }
+    ],
+    "thumbs": 4,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "Orders",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/orders-scene-v1.webp",
+        "width": 180
+      }
+    ],
+    "viewport": [
+      320,
+      780
+    ],
+    "visual": [
+      {
+        "clientHeight": 354,
+        "clientWidth": 278,
+        "scrollHeight": 354,
+        "scrollWidth": 278
+      }
+    ]
+  },
+  {
+    "label": "Inventory",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/inventory-scene-v1.webp",
+        "width": 180
+      }
+    ],
+    "viewport": [
+      320,
+      780
+    ],
+    "visual": [
+      {
+        "clientHeight": 451,
+        "clientWidth": 278,
+        "scrollHeight": 451,
+        "scrollWidth": 278
+      }
+    ]
+  },
+  {
+    "label": "Payments",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/inventory-scene-v1.webp",
+        "width": 180
+      },
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/payments-scene-v1.webp",
+        "width": 180
+      }
+    ],
+    "viewport": [
+      320,
+      780
+    ]
+  },
+  {
+    "label": "Customers",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/payments-scene-v1.webp",
+        "width": 180
+      },
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/customers-scene-v1.webp",
+        "width": 180
+      }
+    ],
+    "viewport": [
+      320,
+      780
+    ]
+  },
+  {
+    "label": "Analytics",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/customers-scene-v1.webp",
+        "width": 180
+      },
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/analytics-scene-v1.webp",
+        "width": 180
+      }
+    ],
+    "viewport": [
+      320,
+      780
+    ]
+  },
+  {
+    "label": "AI Operator & Automation",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/analytics-scene-v1.webp",
+        "width": 180
+      },
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/ai-scene-v1.webp",
+        "width": 180
+      }
+    ],
+    "viewport": [
+      320,
+      780
+    ]
+  },
+  {
+    "label": "B2B & Wholesale",
+    "overflow": false,
+    "scene": [
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/ai-scene-v1.webp",
+        "width": 180
+      },
+      {
+        "height": 140,
+        "loaded": true,
+        "src": "/illustrations/capabilities/b2b-scene-v1.webp",
+        "width": 180
+      }
+    ],
+    "viewport": [
+      320,
+      780
+    ]
+  }
+]

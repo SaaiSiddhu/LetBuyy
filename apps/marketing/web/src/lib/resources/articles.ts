@@ -1,4 +1,5 @@
 import type { Article } from './types'
+import { matchResourceArticles } from './resource-search'
 
 export const ARTICLES: Article[] = [
   // ── ECOMMERCE ─────────────────────────────────────────────────────────────
@@ -991,12 +992,5 @@ export function getAllTags(): string[] {
 }
 
 export function searchArticles(query: string): Article[] {
-  const q = query.toLowerCase()
-  return ARTICLES.filter(a =>
-    a.title.toLowerCase().includes(q) ||
-    a.subtitle.toLowerCase().includes(q) ||
-    a.description.toLowerCase().includes(q) ||
-    a.tags.some(t => t.includes(q)) ||
-    a.category.includes(q)
-  )
+  return matchResourceArticles(ARTICLES, query)
 }

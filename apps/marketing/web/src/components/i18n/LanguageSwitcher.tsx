@@ -1,15 +1,14 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Button, Check, ChevronDown, Globe } from '@letbuyy/ui'
+import { Button, Check, ChevronDown, Globe, X } from '@letbuyy/ui'
 import {
-    COUNTRIES,
     LANGUAGES,
     localesForCountry,
     type Locale,
 } from '@/lib/i18n/locales'
-import { localeFromPathname, localePath, stripLocale } from '@/lib/i18n/routing'
+import { localeFromPathname, switchLocaleHref } from '@/lib/i18n/routing'
 import type { Dictionary } from '@/lib/i18n/dictionaries/en'
 
 /**
@@ -39,14 +38,18 @@ export default function LanguageSwitcher({ dict }: { dict: Dictionary }) {
     const current = localeFromPathname(pathname)
     const [open, setOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
+    const panelId = useId()
+
+    function close() { setOpen(false); ref.current?.querySelector<HTMLButtonElement>('.footer-region-button')?.focus({ preventScroll: true }) }
 
     useEffect(() => {
         if (!open) return
+        ref.current?.querySelector<HTMLButtonElement>('.lang-switch-option[aria-current="true"]')?.focus({ preventScroll: true })
         const onPointerDown = (event: MouseEvent) => {
             if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false)
         }
         const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') setOpen(false)
+            if (event.key === 'Escape') { event.preventDefault(); setOpen(false); ref.current?.querySelector<HTMLButtonElement>('.footer-region-button')?.focus({ preventScroll: true }) }
         }
         document.addEventListener('mousedown', onPointerDown)
         document.addEventListener('keydown', onKeyDown)
@@ -58,16 +61,15 @@ export default function LanguageSwitcher({ dict }: { dict: Dictionary }) {
 
     function choose(next: Locale) {
         persistLocale(next.segment)
-        setOpen(false)
+        close()
         // Same page, different locale — never a reset to the home page.
-        router.push(localePath(next, stripLocale(pathname)))
+        router.push(switchLocaleHref(next, pathname, window.location.search, window.location.hash))
     }
 
     const options = localesForCountry(current.country.code)
-    const countries = Object.values(COUNTRIES)
 
     return (
-        <div className="lang-switch" ref={ref}>
+        <div className="lang-switch" ref={ref} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false) }}>
             <Button
                 unstyled
                 type="button"
@@ -75,44 +77,19 @@ export default function LanguageSwitcher({ dict }: { dict: Dictionary }) {
                 aria-label={dict.languageSwitcher.title}
                 aria-expanded={open}
                 aria-haspopup="dialog"
+                aria-controls={open ? panelId : undefined}
                 onClick={() => setOpen(value => !value)}
             >
                 <Globe width={19} height={19} aria-hidden="true" />
-                <span>{current.country.label}</span>
+                <span>{dict.legal.india}</span>
                 <span className="footer-region-divider" aria-hidden="true" />
                 <span>{current.language.label}</span>
                 <ChevronDown width={18} height={18} aria-hidden="true" />
             </Button>
 
             {open && (
-                <div className="lang-switch-panel" role="dialog" aria-label={dict.languageSwitcher.title}>
-                    <section className="lang-switch-group">
-                        <p className="lang-switch-label">{dict.languageSwitcher.country}</p>
-                        <ul className="lang-switch-list">
-                            {countries.map(country => (
-                                <li key={country.code}>
-                                    {/* One country today. It is rendered as a real
-                                        list rather than a hardcoded line so adding
-                                        the second needs no markup change. */}
-                                    <span
-                                        className={`lang-switch-option${
-                                            country.code === current.country.code ? ' is-active' : ''
-                                        }`}
-                                        aria-current={country.code === current.country.code}
-                                    >
-                                        <span>{country.label}</span>
-                                        {country.code === current.country.code && (
-                                            <Check width={15} height={15} aria-hidden="true" />
-                                        )}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                        {countries.length === 1 && (
-                            <p className="lang-switch-note">{dict.languageSwitcher.moreCountriesSoon}</p>
-                        )}
-                    </section>
-
+                <div id={panelId} className="lang-switch-panel" role="dialog" aria-label={dict.languageSwitcher.title}>
+                    <div className="lang-switch-head"><span><Globe size={15} aria-hidden="true" />{dict.legal.india}</span><Button unstyled type="button" onClick={close} aria-label={dict.languageSwitcher.close}><X size={16} aria-hidden="true" /></Button></div>
                     <section className="lang-switch-group">
                         <p className="lang-switch-label">{dict.languageSwitcher.language}</p>
                         <ul className="lang-switch-list">

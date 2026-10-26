@@ -1,5 +1,9 @@
 'use client'
 
+import { useCopy } from '@/components/i18n/useCopy'
+
+import Copy from '@/components/i18n/Copy'
+
 import { useState } from 'react'
 import { Button } from '@letbuyy/ui'
 
@@ -10,12 +14,13 @@ interface Heading {
 }
 
 export default function MobileTOC({ headings }: { headings: Heading[] }) {
+    const { t } = useCopy()
   const [open, setOpen] = useState(false)
 
   if (headings.length === 0) return null
 
   return (
-    <nav className="arc-mobile-toc" aria-label="Table of contents">
+    <nav className="arc-mobile-toc" aria-label={t("Table of contents")}>
       <Button
         unstyled
         type="button"
@@ -24,7 +29,7 @@ export default function MobileTOC({ headings }: { headings: Heading[] }) {
         aria-expanded={open}
         aria-controls="mob-toc-list"
       >
-        <span>Contents</span>
+        <span><Copy text={"Contents"} /></span>
         <svg
           width="14"
           height="14"

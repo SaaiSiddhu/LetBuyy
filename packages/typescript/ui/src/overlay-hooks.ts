@@ -82,9 +82,11 @@ export function useFocusTrap(
     {
         active,
         initialFocusRef,
+        returnFocusRef,
     }: {
         active: boolean;
         initialFocusRef?: React.RefObject<HTMLElement | null>;
+        returnFocusRef?: React.RefObject<HTMLElement | null>;
     },
 ) {
     useEffect(() => {
@@ -139,9 +141,10 @@ export function useFocusTrap(
                 container.setAttribute('tabindex', previousTabIndex);
             }
 
-            previouslyFocused?.focus();
+            const returnTarget = returnFocusRef?.current ?? previouslyFocused;
+            if (returnTarget?.isConnected) returnTarget.focus();
         };
-    }, [active, containerRef, initialFocusRef]);
+    }, [active, containerRef, initialFocusRef, returnFocusRef]);
 }
 
 /** Nesting depth of active scroll locks; the page unfreezes only at zero. */

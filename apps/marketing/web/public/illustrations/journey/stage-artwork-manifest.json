@@ -1,0 +1,76 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-10-24",
+  "role": "Merchant journey stage illustrations",
+  "assets": [
+    {
+      "file": "first-order-illustration-v2.webp",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-6283e46c-3b50-4471-91b7-c1537a173828.png",
+      "prompt": "Use case: stylized-concept. Asset type: original editorial illustration for LetBuyy's five-stage merchant walkthrough, stage first-order. Subject: an open kraft shipping box holding a neatly folded midnight-navy T-shirt in ivory tissue, beside a cobalt shopping bag, a small ivory order slip with simple blank rules, and a compact emerald payment terminal with a small check symbol. One coherent carefully arranged vignette with clear product purpose, no people. Refined miniature product photography aesthetic, tactile paper fibers, woven cotton, matte painted wood and brushed silver details. Ivory, midnight navy and restrained lavender palette with small functional blue, emerald or warm kraft accents as appropriate to the subject. Consistent three-quarter isometric camera, soft upper-left studio light, realistic proportions and crisp material detail. Premium quiet commissioned illustration, not a cartoon, not glossy plastic. Square framing with all objects comfortably inside 10 percent transparent padding, designed to remain clear at 200px wide. Actual transparent background, subtle restrained contact shadow only, no floor rectangle, no enclosing tile, no full backdrop. No readable text, no letters, no numbers, no logos, no floating dashboards, no neon, no arrows, no growth graphs, no orbit diagram. No unsupported feature claims or notification claims.",
+      "width": 640,
+      "height": 640,
+      "bytes": 72054,
+      "transparent": true,
+      "alpha": [
+        0,
+        255
+      ],
+      "use": "src/components/MerchantJourney.tsx",
+      "intendedWidth": "128px on phones; up to 300px on larger screens",
+      "semantics": "Decorative, illustrative retail arrangement. Adjacent HTML describes the business tasks; not actual customer photography or product UI."
+    },
+    {
+      "file": "scale-illustration-v2.webp",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-d0dfc441-7a15-4fc5-a8c1-eb9ea479b379.png",
+      "prompt": "Use case: stylized-concept. Asset type: original editorial illustration for LetBuyy's five-stage merchant walkthrough, stage scale. Subject: a compact midnight-navy stockroom shelving unit holding neatly folded ivory and navy garments and labeled kraft cartons without writing, with a handheld barcode scanner and one neatly sealed outgoing parcel in front. One coherent carefully arranged vignette with clear product purpose, no people. Refined miniature product photography aesthetic, tactile paper fibers, woven cotton, matte painted wood and brushed silver details. Ivory, midnight navy and restrained lavender palette with small functional blue, emerald or warm kraft accents as appropriate to the subject. Consistent three-quarter isometric camera, soft upper-left studio light, realistic proportions and crisp material detail. Premium quiet commissioned illustration, not a cartoon, not glossy plastic. Square framing with all objects comfortably inside 10 percent transparent padding, designed to remain clear at 200px wide. Actual transparent background, subtle restrained contact shadow only, no floor rectangle, no enclosing tile, no full backdrop. No readable text, no letters, no numbers, no logos, no floating dashboards, no neon, no arrows, no growth graphs, no orbit diagram. No unsupported feature claims or notification claims.",
+      "width": 640,
+      "height": 640,
+      "bytes": 82178,
+      "transparent": true,
+      "alpha": [
+        0,
+        255
+      ],
+      "use": "src/components/MerchantJourney.tsx",
+      "intendedWidth": "128px on phones; up to 300px on larger screens",
+      "semantics": "Decorative, illustrative retail arrangement. Adjacent HTML describes the business tasks; not actual customer photography or product UI."
+    },
+    {
+      "file": "brand-illustration-v2.webp",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-a4dcf6d4-2845-43b7-9f76-e00923637a41.png",
+      "prompt": "Use case: stylized-concept. Asset type: original editorial illustration for LetBuyy's five-stage merchant walkthrough, stage brand. Subject: an elegant violet gift box with an ivory fabric ribbon, two refined blank loyalty cards and a small fan of unprinted cream product cards, beside one neatly folded navy T-shirt and a tiny ivory desk lamp; show thoughtful packaging that brings a customer back. One coherent carefully arranged vignette with clear product purpose, no people. Refined miniature product photography aesthetic, tactile paper fibers, woven cotton, matte painted wood and brushed silver details. Ivory, midnight navy and restrained lavender palette with small functional blue, emerald or warm kraft accents as appropriate to the subject. Consistent three-quarter isometric camera, soft upper-left studio light, realistic proportions and crisp material detail. Premium quiet commissioned illustration, not a cartoon, not glossy plastic. Square framing with all objects comfortably inside 10 percent transparent padding, designed to remain clear at 200px wide. Actual transparent background, subtle restrained contact shadow only, no floor rectangle, no enclosing tile, no full backdrop. No readable text, no letters, no numbers, no logos, no floating dashboards, no neon, no arrows, no growth graphs, no orbit diagram. No unsupported feature claims or notification claims.",
+      "width": 640,
+      "height": 640,
+      "bytes": 81462,
+      "transparent": true,
+      "alpha": [
+        0,
+        255
+      ],
+      "use": "src/components/MerchantJourney.tsx",
+      "intendedWidth": "128px on phones; up to 300px on larger screens",
+      "semantics": "Decorative, illustrative retail arrangement. Adjacent HTML describes the business tasks; not actual customer photography or product UI."
+    },
+    {
+      "file": "enterprise-illustration-v2.webp",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-ab8f41d1-94a7-4d37-ad6b-c63f1e5c5793.png",
+      "prompt": "Use case: stylized-concept. Asset type: original editorial illustration for LetBuyy's five-stage merchant walkthrough, stage enterprise. Subject: two complementary miniature retail storefront counters with midnight-navy and ivory finishes, one compact supplier shelving unit with kraft cartons, and a tablet displaying three plain ordered rows without writing; one coherent retail business arrangement that suggests managing several sales channels together. One coherent carefully arranged vignette with clear product purpose, no people. Refined miniature product photography aesthetic, tactile paper fibers, woven cotton, matte painted wood and brushed silver details. Ivory, midnight navy and restrained lavender palette with small functional blue, emerald or warm kraft accents as appropriate to the subject. Consistent three-quarter isometric camera, soft upper-left studio light, realistic proportions and crisp material detail. Premium quiet commissioned illustration, not a cartoon, not glossy plastic. Square framing with all objects comfortably inside 10 percent transparent padding, designed to remain clear at 200px wide. Actual transparent background, subtle restrained contact shadow only, no floor rectangle, no enclosing tile, no full backdrop. No readable text, no letters, no numbers, no logos, no floating dashboards, no neon, no arrows, no growth graphs, no orbit diagram. No unsupported feature claims or notification claims.",
+      "width": 640,
+      "height": 640,
+      "bytes": 78566,
+      "transparent": true,
+      "alpha": [
+        0,
+        255
+      ],
+      "use": "src/components/MerchantJourney.tsx",
+      "intendedWidth": "128px on phones; up to 300px on larger screens",
+      "semantics": "Decorative, illustrative retail arrangement. Adjacent HTML describes the business tasks; not actual customer photography or product UI."
+    }
+  ],
+  "reused": {
+    "file": "growth-commerce-v2.webp",
+    "role": "Launch store stage",
+    "sourceManifest": "growth-artwork-manifest.json"
+  }
+}

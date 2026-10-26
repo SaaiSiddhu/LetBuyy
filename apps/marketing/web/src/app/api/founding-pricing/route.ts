@@ -24,9 +24,9 @@ export async function GET() {
             api.foundingProgram.remaining(),
         ]);
         return NextResponse.json({ data: { pricing, remaining } });
-    } catch (err) {
+    } catch {
         return NextResponse.json(
-            { error: err instanceof Error ? err.message : 'Founding pricing unavailable' },
+            { error: 'Pricing is temporarily unavailable. Please try again later.' },
             { status: 502 },
         );
     }

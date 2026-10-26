@@ -19,6 +19,7 @@ const PATHS: Array<{ path: string; priority: number; changeFrequency: MetadataRo
     { path: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
     { path: '/resources', priority: 0.9, changeFrequency: 'daily' },
     { path: '/contact', priority: 0.8, changeFrequency: 'monthly' },
+    { path: '/support', priority: 0.8, changeFrequency: 'monthly' },
     { path: '/resources/changelog', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/create', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/resources/releases', priority: 0.7, changeFrequency: 'weekly' },

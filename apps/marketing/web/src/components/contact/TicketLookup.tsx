@@ -1,8 +1,10 @@
 'use client'
 
+import Copy from '@/components/i18n/Copy'
+import { useCopy } from '@/components/i18n/useCopy'
+
 import { useCallback, useEffect, useState } from 'react'
 import { Button, Input } from '@letbuyy/ui'
-import { formatIndiaDateWithTime } from '@letbuyy/ui/formatting'
 import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
 
 /**
@@ -47,6 +49,7 @@ function gatewayBaseUrl(): string {
 }
 
 export default function TicketLookup() {
+    const { t, locale } = useCopy()
     const [open, setOpen] = useState(false)
     const [ticketRef, setTicketRef] = useState('')
     const [email, setEmail] = useState('')
@@ -111,7 +114,7 @@ export default function TicketLookup() {
                 aria-expanded={open}
                 onClick={() => setOpen((current) => !current)}
             >
-                <span>Already have a ticket reference?</span>
+                <span><Copy text={"Already have a ticket reference?"} /></span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="m6 9 6 6 6-6" />
                 </svg>
@@ -122,8 +125,7 @@ export default function TicketLookup() {
                     <div className="ctc-lookup-fields">
                         <div className="ctc-field">
                             <label className="ctc-label" htmlFor="ctc-lookup-ref">
-                                Ticket reference
-                            </label>
+                                <Copy text={"Ticket reference"} /></label>
                             <Input
                                 unstyled
                                 id="ctc-lookup-ref"
@@ -136,8 +138,7 @@ export default function TicketLookup() {
                         </div>
                         <div className="ctc-field">
                             <label className="ctc-label" htmlFor="ctc-lookup-email">
-                                Email you used
-                            </label>
+                                <Copy text={"Email you used"} /></label>
                             <Input
                                 unstyled
                                 id="ctc-lookup-email"
@@ -157,13 +158,13 @@ export default function TicketLookup() {
                             onClick={lookup}
                             disabled={loading}
                         >
-                            {loading ? 'Checking…' : 'Check status'}
+                            {t(loading ? 'Checking…' : 'Check status')}
                         </Button>
                     </div>
 
                     {error && (
                         <p className="ctc-alert" role="alert">
-                            {error}
+                            {t(error)}
                         </p>
                     )}
 
@@ -172,23 +173,23 @@ export default function TicketLookup() {
                             <div className="ctc-lookup-head">
                                 <span className="ctc-lookup-ref">{status.ticket_ref}</span>
                                 <span className={`ctc-lookup-badge is-${status.status}`}>
-                                    {copy.label}
+                                    {t(copy.label)}
                                 </span>
                             </div>
                             <p className="ctc-lookup-subject">{status.subject_line}</p>
-                            <p className="ctc-lookup-note">{copy.note}</p>
+                            <p className="ctc-lookup-note">{t(copy.note)}</p>
                             <dl className="ctc-lookup-facts">
                                 <div>
-                                    <dt>Submitted</dt>
-                                    <dd>{status.submitted_at ? formatIndiaDateWithTime(status.submitted_at) : '—'}</dd>
+                                    <dt><Copy text={"Submitted"} /></dt>
+                                    <dd>{status.submitted_at ? new Date(status.submitted_at).toLocaleString(locale.hreflang, { timeZone: 'Asia/Kolkata' }) : '—'}</dd>
                                 </div>
                                 <div>
-                                    <dt>Reply due</dt>
-                                    <dd>{status.first_response_due_at ? formatIndiaDateWithTime(status.first_response_due_at) : '—'}</dd>
+                                    <dt><Copy text={"Reply due"} /></dt>
+                                    <dd>{status.first_response_due_at ? new Date(status.first_response_due_at).toLocaleString(locale.hreflang, { timeZone: 'Asia/Kolkata' }) : '—'}</dd>
                                 </div>
                                 <div>
-                                    <dt>First replied</dt>
-                                    <dd>{status.responded_at ? formatIndiaDateWithTime(status.responded_at) : '—'}</dd>
+                                    <dt><Copy text={"First replied"} /></dt>
+                                    <dd>{status.responded_at ? new Date(status.responded_at).toLocaleString(locale.hreflang, { timeZone: 'Asia/Kolkata' }) : '—'}</dd>
                                 </div>
                             </dl>
                         </div>

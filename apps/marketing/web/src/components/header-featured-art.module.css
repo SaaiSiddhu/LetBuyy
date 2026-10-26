@@ -1,0 +1,45 @@
+.card[class~='mobile-drawer-featured'] {
+  isolation: isolate;
+  overflow: hidden;
+  grid-template-rows: 76px 1fr;
+  align-content: stretch;
+  gap: var(--lb-space-4);
+  padding: var(--lb-space-4);
+  min-height: 224px;
+}
+
+.art {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  z-index: -1;
+  display: block;
+  width: 68%;
+  height: 116px;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+}
+
+.card .copy {
+  position: relative;
+  align-self: stretch;
+  margin: 0 calc(-1 * var(--lb-space-4)) calc(-1 * var(--lb-space-4));
+  padding: var(--lb-space-4);
+  border-top: 1px solid var(--lb-color-border);
+  background: var(--lb-color-surface);
+  color: var(--lb-color-text);
+}
+
+.card [class~='mobile-nav-icon'] { align-self: start; }
+.card [class~='mobile-nav-arrow'] { z-index: 1; padding: var(--lb-space-1); border-radius: var(--lb-radius-full); background: var(--lb-color-surface); box-sizing: content-box; }
+.card .copy small { color: var(--lb-color-text-subdued); }
+
+.resourceArt { display: flex; align-items: center; justify-content: center; flex: 0 0 56px; width: 56px; height: 56px; overflow: hidden; }
+.resourceArt img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+
+@media (max-width: 400px) {
+  .resourceArt { flex-basis: 48px; width: 48px; height: 48px; }
+  .card[class~='mobile-drawer-featured'] { grid-template-rows: 64px 1fr; min-height: 210px; }
+  .art { width: 70%; height: 100px; }
+}

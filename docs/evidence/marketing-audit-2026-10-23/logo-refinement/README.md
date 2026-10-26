@@ -1,0 +1,7 @@
+# LetBuyy signature refinement — 24 October 2026
+
+Replaced the marketing BrandLogo asset pair with a repo-native vector signature: a simplified storefront inside the familiar tilted phone, one restrained blue/silver orbit, and an upright Inter 650 wordmark. Letters are outlined paths, so rendering does not depend on an SVG image loading a web font or OS fallback. The original assets remain available. New files are about 10 KB each, with transparent backgrounds and no embedded raster images, scripts, external dependencies or runtime font requests.
+
+One shared BrandLogo owner updates the header, mobile drawer and footer. Removed redundant wrapper glow while preserving link labels, slot geometry, navigation and all other website features. No globe, Commerce OS, app-icon, backend, or deployment changes.
+
+Verification: production build passes (494 generated pages). SVG XML/geometry metadata parse, TypeScript, marketing package tests (4 federation + 16 marketing), ESLint and CSS lint pass (19 existing warnings elsewhere). Browser-inspected the light/dark signatures at 430 CSS pixels, the actual desktop header, and the 320×568 phone header and expanded drawer. New assets load successfully; accessible LetBuyy names remain. Native browser capture: signature-review.png. The temporary same-origin review fixture was removed before the production build. See asset-manifest.json for provenance and font license.

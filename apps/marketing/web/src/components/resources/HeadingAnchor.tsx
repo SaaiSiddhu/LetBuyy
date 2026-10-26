@@ -1,8 +1,11 @@
 'use client'
 
+import { useCopy } from '@/components/i18n/useCopy'
+
 import { Button } from '@letbuyy/ui'
 
 export function HeadingAnchor({ id }: { id: string }) {
+    const { t } = useCopy()
   function handleCopy() {
     const url = `${window.location.origin}${window.location.pathname}#${id}`
     navigator.clipboard.writeText(url).catch(() => {})
@@ -14,8 +17,8 @@ export function HeadingAnchor({ id }: { id: string }) {
       type="button"
       onClick={handleCopy}
       className="arc-heading-anchor"
-      aria-label="Copy link to this section"
-      title="Copy link"
+      aria-label={t("Copy link to this section")}
+      title={t("Copy link")}
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />

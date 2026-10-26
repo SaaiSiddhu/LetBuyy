@@ -1,3 +1,5 @@
+
+import Copy from '@/components/i18n/Copy'
 import Link from '@/components/i18n/LocaleLink'
 import type { Article } from '@/lib/resources/types'
 import { getCategory } from '@/lib/resources/categories'
@@ -22,11 +24,10 @@ export default function PrevNextArticle({ prev, next }: Props) {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
-              Previous
-            </div>
-            <p className="arc-pn-cat" style={{ color: prevCat.color }}>{prevCat.label}</p>
+              <Copy text={"Previous"} /></div>
+            <p className="arc-pn-cat" style={{ color: prevCat.color }}><Copy text={prevCat.label} /></p>
             <p className="arc-pn-title">{prev.title}</p>
-            <p className="arc-pn-meta">{prev.readingTime} min read</p>
+            <p className="arc-pn-meta">{prev.readingTime} <Copy text={"min read"} /></p>
           </Link>
         ) : (
           <div />
@@ -35,14 +36,13 @@ export default function PrevNextArticle({ prev, next }: Props) {
         {next && nextCat ? (
           <Link href={`/resources/${next.category}/${next.slug}`} className="arc-pn-card arc-pn-next-card">
             <div className="arc-pn-dir">
-              Next
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <Copy text={"Next"} /><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M9 18l6-6-6-6" />
               </svg>
             </div>
-            <p className="arc-pn-cat" style={{ color: nextCat.color }}>{nextCat.label}</p>
+            <p className="arc-pn-cat" style={{ color: nextCat.color }}><Copy text={nextCat.label} /></p>
             <p className="arc-pn-title">{next.title}</p>
-            <p className="arc-pn-meta">{next.readingTime} min read</p>
+            <p className="arc-pn-meta">{next.readingTime} <Copy text={"min read"} /></p>
           </Link>
         ) : (
           <div />
