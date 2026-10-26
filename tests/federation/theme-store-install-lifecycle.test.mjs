@@ -88,7 +88,7 @@ test('theme marketplace install surface calls the gateway through the typed clie
   assert.doesNotMatch(installPage, /@supabase\//);
 
   assert.match(detailPage, /const addHref = isFree \? `\/install\?theme=\$\{encodeURIComponent\(theme\.slug\)\}&version=\$\{encodeURIComponent\(theme\.version\)\}` : `\/checkout\?theme=\$\{encodeURIComponent\(theme\.slug\)\}`/);
-  assert.match(detailPage, /href: addHref/);
+  assert.match(detailPage, /<ThemeDetailHero theme=\{theme\} addHref=\{addHref\} addLabel=\{addLabel\}/);
   assert.match(detailPage, /href=\{addHref\}/);
   assert.match(checkoutSuccess, /`\/install\?theme=\$\{themeSlug\}`/);
   assert.match(proxy, /const PROTECTED_ROUTES = \['\/checkout', '\/dashboard', '\/install'\]/);

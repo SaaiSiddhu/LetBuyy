@@ -1,6 +1,6 @@
 import MarketplacePageHeader from '@/components/marketplace-page-header';
 import { hasRenderableThemeTemplate } from '@letbuyy/theme-engine';
-import Image from 'next/image';
+import ThemeDetailHero from '@/components/theme-detail-hero';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -453,78 +453,15 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
             />
-            <MarketplacePageHeader artwork="discover"
-                title={theme.name}
-                eyebrow="Theme marketplace"
-                description={theme.description}
-                identity="themes"
-                showBreadcrumbs
-                showDescription
-                showEyebrow
-                breadcrumbs={[
-                    { label: 'Themes', href: '/themes' },
-                    { label: categoryLabel, href: `/themes/category/${theme.category}` },
-                    { label: theme.name },
-                ]}
-                primaryAction={{
-                    label: addLabel,
-                    href: addHref,
-                    icon: isFree ? <Download aria-hidden="true" /> : <ShoppingCart aria-hidden="true" />,
-                }}
-                secondaryActions={[
-                    {
-                        label: 'Sandbox preview',
-                        href: sandboxPreviewHref,
-                        icon: <ExternalLink aria-hidden="true" />,
-                    },
-                    {
-                        label: 'Compare',
-                        href: compareHref,
-                        icon: <Package aria-hidden="true" />,
-                    },
-                ]}
-            />
+            <ThemeDetailHero theme={theme} addHref={addHref} addLabel={addLabel} />
 
             <PageContent>
                 <nav className="marketplace-detail-nav" aria-label="Theme details">
-                    <a href="#demo">Demo</a><a href="#overview">Overview</a><a href="#features">Features</a><a href="#reviews">Reviews</a><a href="#theme-support">Support & details</a>
+                    <a href="#demo">Preview</a><a href="#overview">Overview</a><a href="#features">Features</a><a href="#reviews">Reviews</a><a href="#theme-support">Support & details</a>
                 </nav>
                 <ThemeLiveDemoEmbed theme={theme} available={hasRenderableThemeTemplate(record.default_template)} />
 
-                <Card className="overflow-hidden">
-                    <div className="relative aspect-video min-h-[260px] bg-[var(--lb-color-surface-subdued)]">
-                        <Image
-                            src={galleryImages[0] ?? CATEGORY_PREVIEW_FALLBACK[theme.category]}
-                            alt={`${theme.name} full-width preview`}
-                            fill
-                            className="object-cover"
-                            sizes="100vw"
-                            priority
-                        />
-
-                    </div>
-
-                    {galleryImages.length > 1 && (
-                        <div className="flex gap-[var(--lb-space-3)] overflow-x-auto border-t border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]" aria-label="Theme screenshots">
-                            {galleryImages.slice(1, 7).map((image, index) => (
-                                <div
-                                    key={image}
-                                    className="relative h-20 w-32 shrink-0 overflow-hidden rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)]"
-                                >
-                                    <Image
-                                        src={image}
-                                        alt={`${theme.name} screenshot ${index + 1}`}
-                                        fill
-                                        className="object-cover"
-                                        sizes="128px"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </Card>
-
-                <div className="grid gap-[var(--lb-density-section-gap)] lg:grid-cols-[minmax(0,1fr)_340px]">
+                <div className="theme-detail-body-layout">
                     <div className="flex min-w-0 flex-col gap-[var(--lb-density-section-gap)]">
                         <Section
                             id="overview"

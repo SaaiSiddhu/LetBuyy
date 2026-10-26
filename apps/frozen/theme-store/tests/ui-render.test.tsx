@@ -28,6 +28,7 @@ import MarketplaceMobileMenu from '../src/components/marketplace-mobile-menu';
 import CreatorGuidancePage from '../src/app/for-creators/page';
 import MarketplaceContactForm, { prepareContactEmail } from '../src/components/marketplace-contact-form';
 import ContactPage from '../src/app/contact/page';
+import ThemeDetailHero from '../src/components/theme-detail-hero';
 import MarketplaceArtwork, { artworkForHref } from '../src/components/marketplace-artwork';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
@@ -181,14 +182,15 @@ test('theme card freshness helpers suppress stale badges and keep relative updat
     assert.equal(formatRelativeUpdatedAt('2026-06-07T00:00:00.000Z', now), 'Updated 1 day ago');
 });
 
-test('detail page enrichment components render demo iframe, measured scores, compatibility, changelog, and share control', () => {
+test('detail page enrichment retains optional demo destination, measured facts, changelog, and share control', () => {
     const demoHtml = renderToStaticMarkup(<ThemeLiveDemoEmbed theme={baseTheme} />);
     const qualityHtml = renderToStaticMarkup(<ThemeQualityFacts theme={baseTheme} />);
     const changelogHtml = renderToStaticMarkup(<ThemeChangelog theme={baseTheme} />);
     const shareHtml = renderToStaticMarkup(<ThemeDetailSharePanel theme={baseTheme} />);
 
-    assert.match(demoHtml, /data-testid="theme-live-demo-iframe"/);
-    assert.match(demoHtml, /src="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0&amp;embedded=1"/);
+    assert.doesNotMatch(demoHtml, /<iframe/);
+    assert.match(demoHtml, /Load interactive preview/);
+    assert.match(demoHtml, /href="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0&amp;embedded=1"/);
     assert.match(qualityHtml, /data-testid="theme-performance-score"[^>]*>91</);
     assert.match(qualityHtml, /data-testid="theme-accessibility-score"[^>]*>96</);
     assert.match(qualityHtml, /latest-chrome, latest-safari/);
@@ -573,4 +575,20 @@ test('contact form offers labelled fields and truthful email preparation without
     const page = renderToStaticMarkup(<ContactPage/>);
     assert.equal((page.match(/<h1\b/g)||[]).length,1);
     for(const href of ['/support','/faq','/legal','/legal/grievance'])assert.ok(page.includes(`href="${href}"`));
+});
+
+test('theme detail introduction uses listing media and clear library/preview/compare actions', () => {
+    const html = renderToStaticMarkup(<ThemeDetailHero theme={baseTheme} addHref="/install?theme=urban-kicks&amp;version=1.2.0" addLabel="Add to library"/>);
+    assert.equal((html.match(/<h1\b/g)||[]).length,1);
+    assert.match(html,/catalog-device-phone/);
+    assert.match(html,/catalog-device-desktop/);
+    assert.match(html,/href="#demo"/);
+    assert.match(html,/Add to library/);
+    assert.match(html,/Compare/);
+    assert.match(html,/Version/);
+    assert.doesNotMatch(html,/Illustrative sample layout|theme-scene/);
+    const unavailable = renderToStaticMarkup(<ThemeDemo src={null} name="Theme" defer/>);
+    assert.match(unavailable,/Demo unavailable/);
+    assert.match(unavailable,/Ask about this theme/);
+    assert.doesNotMatch(unavailable,/<iframe|Desktop preview|Maximize demo/);
 });

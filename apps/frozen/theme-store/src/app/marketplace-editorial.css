@@ -316,6 +316,13 @@
 .contact-form-fields :where(input, select, textarea), .contact-draft-review textarea { min-height: var(--lb-size-touch-target); border-radius: var(--lb-radius-md); font-size: var(--lb-font-size-body); }
 .contact-form-fields label, .contact-draft-review label { font-size: var(--lb-font-size-body); }
 .contact-form-fields textarea, .contact-draft-review textarea { resize: vertical; line-height: 1.65; }
+.contact-form-panel { border-color: color-mix(in srgb, var(--lb-color-text-subdued) 16%, transparent); box-shadow: none; }
+.contact-form-fields :where(input, select, textarea), .contact-draft-review textarea { border-color: color-mix(in srgb, var(--lb-color-text-subdued) 36%, transparent); background: var(--lb-color-bg); color: var(--lb-color-text); box-shadow: none; }
+.contact-form-fields :where(input, select, textarea):hover:not(:disabled):not(:focus-visible) { border-color: color-mix(in srgb, var(--lb-color-text-subdued) 64%, transparent); }
+.contact-form-fields :where(input, select, textarea):focus-visible, .contact-draft-review textarea:focus-visible { outline: medium solid var(--lb-color-focus-ring); outline-offset: var(--lb-space-1); border-color: var(--lb-color-focus-ring); box-shadow: none; }
+.contact-form-fields :where(input, select, textarea)[aria-invalid="true"] { border-color: var(--lb-color-critical); }
+.contact-form-fields :where(input, textarea)::placeholder { color: var(--lb-color-text-subdued); opacity: 0.8; }
+.contact-form-fields label { font-weight: var(--lb-font-weight-medium); line-height: 1.5; }
 .contact-form-submit { display: flex; align-items: flex-start; flex-direction: column; gap: var(--lb-space-3); border-top: thin solid var(--lb-color-border); padding-top: var(--lb-space-5); }
 .contact-form-submit p { margin: 0; font-size: var(--lb-font-size-caption); line-height: 1.6; color: var(--lb-color-text-subdued); }
 .contact-form-submit a { color: var(--lb-color-text); text-underline-offset: var(--lb-space-1); }

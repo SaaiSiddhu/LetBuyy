@@ -23,7 +23,7 @@ function changelogEntries(theme: Theme) {
 export function ThemeLiveDemoEmbed({ theme, available = true }: { theme: Theme; available?: boolean }) {
     const src = getAnonymousPreviewFrameSrc('', { ...theme, demoAvailable: available });
 
-    return <section id="demo" className="marketplace-detail-anchor" aria-label="Theme demo"><ThemeDemo src={src} name={theme.name} /></section>;
+    return <section id="demo" className="marketplace-detail-anchor" aria-label="Theme demo"><ThemeDemo src={src} name={theme.name} defer /></section>;
 }
 
 export function ThemeQualityFacts({ theme }: { theme: Theme }) {
