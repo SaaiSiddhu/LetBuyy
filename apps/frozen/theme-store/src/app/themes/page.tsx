@@ -29,12 +29,8 @@ interface NormalizedFilters {
 }
 
 const CATEGORY_OPTIONS: Array<{ value: 'all' | ThemeCategory; label: string; description: string }> = [
-    { value: 'all', label: 'All themes', description: 'Every storefront, portfolio, resume, and landing page template.' },
+    { value: 'all', label: 'All themes', description: 'All currently available online store themes.' },
     { value: 'store', label: 'Store', description: 'Commerce-ready themes for catalogs, carts, and checkout.' },
-    { value: 'portfolio', label: 'Portfolio', description: 'Visual case studies and creator showcases.' },
-    { value: 'resume', label: 'Resume', description: 'Profiles, CVs, and professional proof pages.' },
-    { value: 'landing', label: 'Landing', description: 'Launch, lead capture, and campaign layouts.' },
-    { value: 'saas', label: 'SaaS', description: 'Product-led software and subscription pages.' },
 ];
 
 const PRICING_OPTIONS: Array<{ value: PricingFilter; label: string; description: string }> = [
@@ -317,7 +313,7 @@ export default async function ThemesPage({
         ThemeService.getIndustries(),
         ThemeService.getThemeSuggestions(query),
         ThemeService.listThemes({
-            category: category === 'all' ? undefined : category,
+            category: category === 'all' ? 'store' : category,
             pricingType: pricingForService(pricing),
             industry: industry || undefined,
             layout: layout || undefined,
@@ -373,7 +369,7 @@ export default async function ThemesPage({
                     {Object.entries({ category: category === 'all' ? '' : category, pricing: pricing === 'all' ? '' : pricing, sort, industry, layout, tag, feature, price_min: priceMin, price_max: priceMax }).filter(([,value])=>value!==undefined&&value!=='').map(([name,value])=><Input unstyled type="hidden" key={name} name={name} value={String(value)} />)}
                     <Button type="submit">Search<ArrowRight size={16} aria-hidden="true"/></Button>
                 </form>
-                <nav className="catalog-category-tabs" aria-label="Theme website types">{CATEGORY_OPTIONS.map(option=><Link key={option.value} href={buildThemesHref(filters,{category:option.value,offset:0})} aria-current={category===option.value?'page':undefined}>{option.value==='store'?'Online stores':option.label}</Link>)}</nav>
+                <nav className="catalog-category-tabs" aria-label="Store theme catalog">{CATEGORY_OPTIONS.map(option=><Link key={option.value} href={buildThemesHref(filters,{category:option.value,offset:0})} aria-current={category===option.value?'page':undefined}>{option.value==='store'?'Online stores':option.label}</Link>)}</nav>
             </header>
 
             <PageContent>
@@ -437,7 +433,7 @@ export default async function ThemesPage({
                         {activeFilterCount > 0 && <nav className="marketplace-active-filters" aria-label="Applied filters">
                             {[
                                 [filters.query, 'Search', {query:''}],
-                                [filters.category !== 'all' ? filters.category : '', 'Website type', {category:'all'}],
+                                [filters.category !== 'all' ? filters.category : '', 'Theme category', {category:'all'}],
                                 [filters.pricing !== 'all' ? filters.pricing : '', 'Price', {pricing:'all'}],
                                 [filters.industry, 'Industry', {industry:''}],
                                 [filters.layout, 'Layout', {layout:''}],

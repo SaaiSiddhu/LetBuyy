@@ -45,9 +45,9 @@ export const metadata: Metadata = {
         template: '%s | LetBuyy Themes',
     },
     description:
-        'Discover governed LetBuyy themes for online stores, portfolios, resumes, blogs, and landing pages with store-scoped preview and install flows.',
+        'Discover LetBuyy online store themes with store-scoped preview and install flows.',
     keywords: [
-        'themes', 'templates', 'ecommerce', 'store themes', 'portfolio themes',
+        'themes', 'templates', 'ecommerce', 'store themes', 'online store themes',
         'website templates', 'letbuyy', 'india',
     ],
     alternates: { canonical: '/' },
@@ -105,7 +105,7 @@ const structuredData = [
                 '@type': 'CollectionPage',
                 name: 'LetBuyy Theme Marketplace',
                 url: siteUrl,
-                description: 'Professionally designed themes for stores, portfolios, blogs, and landing pages.',
+                description: 'Themes for online stores, product catalogs, and retail storefronts.',
                 isPartOf: { '@id': `${siteUrl}/#website` },
             },
         ],

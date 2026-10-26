@@ -11,7 +11,7 @@ const API_ROWS = [
     ['Catalog', 'GET /v1/themes', 'Filters by category, site type, layout, tag, feature, price, pagination, and sort.'],
     ['Suggestions', 'GET /v1/themes/suggest', 'Returns catalog-wide theme, tag, industry, and feature suggestions.'],
     ['Collections', 'GET /v1/themes/collections', 'Lists curated or generated marketplace collections.'],
-    ['Author profiles', 'GET /v1/themes/authors/:handle', 'Returns developer profile and public theme portfolio data.'],
+    ['Author profiles', 'GET /v1/themes/authors/:handle', 'Returns developer profile and published theme listing data.'],
     ['Reviews', 'GET/POST /v1/themes/:slug/reviews', 'Lists published reviews and accepts verified-purchase review submissions.'],
     ['Preview', 'POST /v1/themes/:slug/preview-session', 'Creates a signed store preview session for authenticated merchants.'],
     ['Purchase', 'POST /v1/themes/:slug/purchase', 'Creates a provider-backed INR purchase order with server-side price lookup.'],

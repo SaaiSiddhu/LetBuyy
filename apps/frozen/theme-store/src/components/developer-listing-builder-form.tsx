@@ -52,7 +52,7 @@ export default function DeveloperListingBuilderForm({ action, controls }: Develo
                             name="category"
                             required
                             className={inputClass}
-                            options={['store', 'portfolio', 'resume', 'landing', 'saas'].map((category) => ({ label: category, value: category }))}
+                            options={['store'].map((category) => ({ label: category, value: category }))}
                         />
                     </label>
                     <label className={labelClass}>

@@ -17,10 +17,6 @@ const BROWSE_LINKS = [
     {label:'New themes',href:'/themes?sort=recent'},
     {label:'Popular themes',href:'/themes?sort=popular'},
     {label:'Online stores',href:'/themes?category=store'},
-    {label:'Portfolios',href:'/themes?category=portfolio'},
-    {label:'Landing pages',href:'/themes?category=landing'},
-    {label:'Professional profiles',href:'/themes?category=resume'},
-    {label:'SaaS presentation',href:'/themes?category=saas'},
     {label:'Compare themes',href:'/themes/compare'},
 ];
 
@@ -91,7 +87,7 @@ export default function Navbar() {
         </Drawer>
         <Modal className="marketplace-search-modal" open={searchOpen} onClose={()=>setSearchOpen(false)} title="Find your theme" description="Search by name, style, or a feature your business needs.">
             <form action="/themes" method="get" role="search" className="marketplace-search-form" onSubmit={()=>setSearchOpen(false)}>
-                <Input label="Search themes" name="q" type="search" placeholder="Try minimal, clothing, or portfolio" maxLength={80} autoFocus />
+                <Input label="Search themes" name="q" type="search" placeholder="Try minimal, clothing, or homeware" maxLength={80} autoFocus />
                 <Button type="submit">Search themes</Button>
             </form>
             <div className="marketplace-search-suggestions"><p>Explore a little</p>{BROWSE_LINKS.slice(0,4).map(link=><Link key={link.href} href={link.href} onClick={()=>setSearchOpen(false)}>{link.label}</Link>)}</div>

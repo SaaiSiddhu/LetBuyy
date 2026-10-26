@@ -9,7 +9,7 @@ import { ThemeService } from '@/lib/theme-service';
 // is unavailable, the sitemap still ships with the static routes.
 export const revalidate = 3600;
 
-const CATEGORY_ROUTES: ThemeCategory[] = ['store', 'portfolio', 'resume', 'landing', 'saas'];
+const CATEGORY_ROUTES: ThemeCategory[] = ['store'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const now = new Date();
@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     try {
-        const result = await ThemeService.listThemes({ limit: 200, sort: 'popular' });
+        const result = await ThemeService.listThemes({ category: 'store', limit: 200, sort: 'popular' });
         if (result.ok) {
             for (const theme of result.value.themes) {
                 const slug = (theme as { slug?: string }).slug;

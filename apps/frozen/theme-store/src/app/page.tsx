@@ -10,8 +10,8 @@ import MarketplaceHero from '@/components/marketplace-hero';
 
 export default async function HomePage() {
     const [featuredResult, recentResult] = await Promise.all([
-        ThemeService.listThemes({ sort: 'popular', limit: 8 }),
-        ThemeService.listThemes({ sort: 'recent', limit: 4 }),
+        ThemeService.listThemes({ category: 'store', sort: 'popular', limit: 8 }),
+        ThemeService.listThemes({ category: 'store', sort: 'recent', limit: 4 }),
     ]);
     const featured = featuredResult.ok ? featuredResult.value.themes.map(normalizeThemeRecord) : [];
     const featuredIds = new Set(featured.map(theme => theme.id));

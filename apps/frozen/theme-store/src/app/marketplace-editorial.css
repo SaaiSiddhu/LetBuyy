@@ -399,9 +399,10 @@
 .marketplace-hero-backdrop { z-index: 0; }
 .marketplace-hero-backdrop .marketplace-showcase { --showcase-row-height: clamp(calc(var(--lb-space-8) * 9), 36svh, calc(var(--lb-space-8) * 13)); height: 100%; display: grid; align-content: center; padding-block: var(--lb-space-3); }
 .marketplace-hero-backdrop .marketplace-showcase-card { width: clamp(calc(var(--lb-space-8) * 15), 44vw, calc(var(--lb-space-8) * 22)); }
-.marketplace-home .marketplace-hero-overlay { z-index: 1; display: flex; align-items: flex-end; padding-block: calc(var(--lb-space-8) * 5) var(--lb-space-6); background: linear-gradient(to right, var(--lb-color-surface), transparent); background: linear-gradient(to right, color-mix(in srgb, var(--lb-color-surface) 96%, transparent), color-mix(in srgb, var(--lb-color-surface) 94%, transparent) 45%, color-mix(in srgb, var(--lb-color-surface) 72%, transparent) 62%, transparent 90%), linear-gradient(to top, color-mix(in srgb, var(--lb-color-surface) 90%, transparent), transparent 70%); border: 0; pointer-events: none; }
-.marketplace-hero-overlay > .marketplace-container { width: 100%; }
-.marketplace-hero-copy { max-width: calc(var(--lb-space-8) * 20); min-width: 0; pointer-events: auto; }
+.marketplace-home .marketplace-hero-overlay { z-index: 1; display: flex; align-items: flex-end; position: relative; padding-block: calc(var(--lb-space-8) * 5) var(--lb-space-6); background: transparent; border: 0; pointer-events: none; }
+.marketplace-home .marketplace-hero-overlay > .marketplace-container { width: 100%; max-width: none; padding-inline: clamp(var(--lb-space-4), 2vw, var(--lb-space-8)); }
+.marketplace-hero-overlay::before { content: ""; position: absolute; z-index: -1; inset: auto auto 0 0; width: min(100%, calc(var(--lb-space-8) * 25)); height: 90%; pointer-events: none; background: radial-gradient(ellipse at bottom left, var(--lb-color-surface), transparent 85%); background: radial-gradient(ellipse at bottom left, color-mix(in srgb, var(--lb-color-surface) 94%, transparent), color-mix(in srgb, var(--lb-color-surface) 86%, transparent) 36%, color-mix(in srgb, var(--lb-color-surface) 35%, transparent) 65%, transparent 85%); }
+.marketplace-hero-copy { max-width: calc(var(--lb-space-8) * 18); min-width: 0; pointer-events: auto; }
 .marketplace-home .marketplace-hero-copy h1 { max-width: 20ch; font-size: clamp(calc(var(--lb-font-size-page-title) * 1.2), 3.3vw, calc(var(--lb-font-size-page-title) * 2)); line-height: 1.12; }
 .marketplace-home .marketplace-hero-copy .marketplace-eyebrow { margin-bottom: var(--lb-space-3); color: var(--lb-color-primary-text); }
 .marketplace-home .marketplace-hero-copy :where(.marketplace-intro, .marketplace-hero-note) { color: color-mix(in srgb, var(--lb-color-text) 80%, var(--lb-color-surface)); }
@@ -416,7 +417,8 @@
 @media (width < 40rem) {
     .marketplace-hero-backdrop .marketplace-showcase { --showcase-row-height: clamp(calc(var(--lb-space-8) * 6), 32svh, calc(var(--lb-space-8) * 8)); }
     .marketplace-hero-backdrop .marketplace-showcase-card { width: clamp(calc(var(--lb-space-8) * 11), 94vw, calc(var(--lb-space-8) * 15)); }
-    .marketplace-home .marketplace-hero-overlay { padding-block: calc(var(--lb-space-8) * 4) calc(var(--lb-space-8) * 2); background: linear-gradient(to top, var(--lb-color-surface), transparent); background: linear-gradient(to top, color-mix(in srgb, var(--lb-color-surface) 98%, transparent), color-mix(in srgb, var(--lb-color-surface) 96%, transparent) 58%, color-mix(in srgb, var(--lb-color-surface) 88%, transparent) 78%, transparent); }
+    .marketplace-home .marketplace-hero-overlay { padding-block: calc(var(--lb-space-8) * 4) calc(var(--lb-space-8) * 2); }
+    .marketplace-hero-overlay::before { width: 100%; height: 85%; }
     .marketplace-home .marketplace-hero-copy .marketplace-hero-actions { grid-template-columns: minmax(0, 1fr); gap: var(--lb-space-2); }
     .marketplace-home .marketplace-hero-copy .marketplace-hero-actions > a { font-size: var(--lb-font-size-body); }
 }

@@ -4,10 +4,6 @@ import ThemeShowcase from './theme-showcase';
 
 const CATEGORIES = [
     { slug: 'store', label: 'Online stores' },
-    { slug: 'portfolio', label: 'Portfolios' },
-    { slug: 'landing', label: 'Landing pages' },
-    { slug: 'resume', label: 'Resumes' },
-    { slug: 'saas', label: 'SaaS' },
 ];
 
 export default function MarketplaceHero() {

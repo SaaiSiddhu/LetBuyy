@@ -14,7 +14,7 @@ import {
     ThemeLiveDemoEmbed,
     ThemeQualityFacts,
 } from '../src/components/theme-detail-experience';
-import ThemeCategoryLanding from '../src/components/theme-category-landing';
+import ThemeCategoryLanding, { isThemeCategorySlug } from '../src/components/theme-category-landing';
 import ThemeCard from '../src/components/theme-card';
 import ThemeShowcase from '../src/components/theme-showcase';
 import MarketplaceHero from '../src/components/marketplace-hero';
@@ -32,7 +32,7 @@ import ContactPage from '../src/app/contact/page';
 import ThemeDetailHero from '../src/components/theme-detail-hero';
 import MarketplaceArtwork, { artworkForHref } from '../src/components/marketplace-artwork';
 import PolicyDraftPage from '../src/components/policy-draft-page';
-import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
+import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, DISCOVERY_PATHS, findMarketplaceGuide } from '../src/lib/marketplace-content';
 import { MARKETPLACE_POLICIES, policySectionId } from '../src/lib/marketplace-policies';
 import { clearSavedThemeChoices, FAVORITES_KEY, COMPARE_KEY } from '../src/lib/browser-preferences';
 import CatalogFilterPanel from '../src/components/catalog-filter-panel';
@@ -617,4 +617,24 @@ test('appearance toggle is composed once in the page footer and absent from head
     assert.match(html, /marketplace-footer-legal/);
     assert.match(html, /marketplace-footer-preferences/);
     assert.ok(html.indexOf('marketplace-footer-legal') < html.indexOf('marketplace-footer-copyright'));
+});
+
+test('store-only marketplace does not advertise undeveloped website categories', () => {
+    assert.equal(isThemeCategorySlug('store'), true);
+    const hero = renderToStaticMarkup(<MarketplaceHero />);
+    const navbar = readAppFile('src/components/layout/navbar.tsx');
+    const catalog = readAppFile('src/app/themes/page.tsx');
+    const options = catalog.slice(catalog.indexOf('const CATEGORY_OPTIONS'), catalog.indexOf('const PRICING_OPTIONS'));
+    const sitemap = readAppFile('src/app/sitemap.ts');
+    for (const category of ['portfolio', 'resume', 'landing', 'saas']) {
+        assert.equal(isThemeCategorySlug(category), false, category);
+        assert.ok(!hero.includes(`category=${category}`));
+        assert.ok(!navbar.includes(`category=${category}`));
+        assert.ok(!options.includes(`value: '${category}'`));
+        assert.ok(!DISCOVERY_PATHS.some(item => item.href.includes(`/category/${category}`)));
+    }
+    assert.match(sitemap, /CATEGORY_ROUTES: ThemeCategory\[\] = \['store'\]/);
+    const answer = MARKETPLACE_FAQS.find(item => item.id === 'which-website-types')?.answer;
+    assert.match(answer ?? '', /currently offers themes for the LetBuyy store builder/);
+    assert.doesNotMatch(answer ?? '', /portfolio|resume|landing.page|SaaS/i);
 });

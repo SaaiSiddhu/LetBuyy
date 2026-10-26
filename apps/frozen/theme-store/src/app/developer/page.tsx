@@ -127,7 +127,7 @@ export default async function DeveloperPage({ searchParams }: { searchParams?: P
                                         name="category"
                                         required
                                         className="min-h-[44px] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)]"
-                                        options={['store', 'portfolio', 'resume', 'landing', 'saas'].map((category) => ({ label: category, value: category }))}
+                                        options={['store'].map((category) => ({ label: category, value: category }))}
                                     />
                                 </label>
                                 <label className="grid gap-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">

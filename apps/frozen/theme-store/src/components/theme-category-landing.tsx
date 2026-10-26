@@ -3,52 +3,27 @@ import { ArrowRight, Card, EmptyState, Section } from '@letbuyy/ui';
 import type { Theme, ThemeCategory } from '@letbuyy/theme-engine';
 import ThemeCard from './theme-card';
 
-export const THEME_CATEGORY_LANDING_COPY: Record<ThemeCategory, { title: string; intro: string; seo: string }> = {
+type StoreThemeCategory = Extract<ThemeCategory, 'store'>;
+
+export const THEME_CATEGORY_LANDING_COPY: Record<StoreThemeCategory, { title: string; intro: string; seo: string }> = {
     store: {
         title: 'Store Themes',
         intro: 'Retail-ready storefront themes for India-first catalogs, product storytelling, and checkout-led journeys.',
         seo: 'Browse LetBuyy store themes for e-commerce and retail storefronts.',
     },
-    portfolio: {
-        title: 'Portfolio Themes',
-        intro: 'Portfolio themes for designers, creators, consultants, and agencies that need project-first presentation.',
-        seo: 'Browse LetBuyy portfolio themes for creators and service businesses.',
-    },
-    resume: {
-        title: 'Resume Themes',
-        intro: 'Resume and profile themes for professionals who need a polished personal site and structured work history.',
-        seo: 'Browse LetBuyy resume and CV themes for professional profiles.',
-    },
-    landing: {
-        title: 'Landing Page Themes',
-        intro: 'Conversion-focused launch pages for campaigns, waitlists, services, and product announcements.',
-        seo: 'Browse LetBuyy landing page themes for campaigns and launches.',
-    },
-    saas: {
-        title: 'SaaS Themes',
-        intro: 'Product-led themes for SaaS, tools, dashboards, pricing pages, and software launches.',
-        seo: 'Browse LetBuyy SaaS themes for software and subscription products.',
-    },
+
 };
 
-const CATEGORY_CHECKS: Record<ThemeCategory, {focus:string; checks:string[]}> = {
+const CATEGORY_CHECKS: Record<StoreThemeCategory, {focus:string; checks:string[]}> = {
     store:{focus:'Follow the shopping journey, from finding a collection to understanding a product.',checks:['Collection navigation and the density of your catalog.','Product images, long names, options, and useful descriptions.','The supported cart journey and mobile navigation.']},
-    portfolio:{focus:'Let your work lead, with project layouts that support the story behind it.',checks:['A clear project index and readable case-study pages.','Image crops and layouts for the kind of work you produce.','A direct route from your services or profile to contact.']},
-    resume:{focus:'Make a professional profile easy to scan and comfortable to read.',checks:['Experience, education, skills, and a clear introduction.','Long text and structured dates on narrow screens.','Actual contact or CV links provided by the selected package.']},
-    landing:{focus:'Choose a focused structure for one offer and the action it needs.',checks:['A specific offer, useful explanation, and clear next action.','Real evidence and appropriate FAQ sections.','The actual behavior of any supported enquiry or signup form.']},
-    saas:{focus:'Explain the product with the right page structure and supporting detail.',checks:['Product screenshots, feature explanations, and relevant page variations.','Pricing presentation and useful documentation links.','Which calls to action are functional and which are sample content.']},
 };
 
-const CATEGORY_CHECK_LABELS: Record<ThemeCategory, string[]> = {
+const CATEGORY_CHECK_LABELS: Record<StoreThemeCategory, string[]> = {
     store: ['Find a collection', 'Understand the product', 'Follow the mobile journey'],
-    portfolio: ['Tell the project story', 'Let your imagery work', 'Make contact simple'],
-    resume: ['Introduce your experience', 'Keep the detail readable', 'Check your contact links'],
-    landing: ['Focus on one action', 'Give useful context', 'Try the complete journey'],
-    saas: ['Show the product clearly', 'Explain the offer', 'Check each next step'],
 };
 
-export function isThemeCategorySlug(value: string): value is ThemeCategory {
-    return Object.prototype.hasOwnProperty.call(THEME_CATEGORY_LANDING_COPY, value);
+export function isThemeCategorySlug(value: string): value is StoreThemeCategory {
+    return value === 'store';
 }
 
 export default function ThemeCategoryLanding({
@@ -57,7 +32,7 @@ export default function ThemeCategoryLanding({
     total,
     renderCardImages = true,
 }: {
-    category: ThemeCategory;
+    category: StoreThemeCategory;
     themes: Theme[];
     total: number;
     renderCardImages?: boolean;

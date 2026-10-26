@@ -6,14 +6,14 @@ import MarketplaceContentPage, { ResourceGrid } from '@/components/marketplace-c
 export const metadata: Metadata = { title: 'Theme creator guidance', robots: { index: false, follow: true } };
 
 const PREPARATION = [
-    { title: 'Prepare the package', text: 'Start with a useful website type and content that demonstrates the pages your theme supports.', href: '#creator-checklist', label: 'Check the essentials' },
+    { title: 'Prepare the package', text: 'Start with a useful storefront layout and content that demonstrates the pages your theme supports.', href: '#creator-checklist', label: 'Check the essentials' },
     { title: 'Tell the design’s story', text: 'Bring actual screenshots, clear feature descriptions, setup notes, and the right version details.', href: '/developer/listings/new', label: 'Open the listing builder' },
     { title: 'Follow the review', text: 'Check your listing’s current status and feedback in the author workspace. Submission and publication are separate.', href: '/developer', label: 'Visit the author workspace' },
 ];
 
 const CHECKLIST = [
     { title: 'Package essentials', icon: Package, items: [
-        ['Identify the version', 'Provide a clear theme name, slug, version, and website type.'],
+        ['Identify the version', 'Provide a clear theme name, slug, version, and store category.'],
         ['Describe what is included', 'List supported platforms, page types, sections, and known limitations.'],
         ['Use representative content', 'Show the design with realistic images, product names, and long text.'],
     ] },
