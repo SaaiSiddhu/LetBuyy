@@ -1,7 +1,8 @@
-import { Card, ExternalLink, Section } from '@letbuyy/ui';
+import { Card, Section } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
 import { getAnonymousPreviewFrameSrc } from './anonymous-preview-shell';
 import ThemeShareButton from './theme-share-button';
+import ThemeDemo from './theme-demo';
 
 function numberScore(value: unknown): number | null {
     return typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -19,35 +20,10 @@ function changelogEntries(theme: Theme) {
     return Array.isArray(theme.changelog) ? theme.changelog.filter((entry) => entry.version && entry.changes.length > 0) : [];
 }
 
-export function ThemeLiveDemoEmbed({ theme }: { theme: Theme }) {
-    const src = getAnonymousPreviewFrameSrc('', theme);
+export function ThemeLiveDemoEmbed({ theme, available = true }: { theme: Theme; available?: boolean }) {
+    const src = getAnonymousPreviewFrameSrc('', { ...theme, demoAvailable: available });
 
-    return (
-        <Section title="Live demo" description="Preview this theme inside the marketplace before installing it." className="px-0 py-0">
-            <Card className="overflow-hidden">
-                <div className="flex items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] p-[var(--lb-space-3)]">
-                    <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
-                        Embedded preview
-                    </p>
-                    {src && <a
-                        href={src}
-                        className="inline-flex min-h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]"
-                    >
-                        <ExternalLink className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                        Open preview
-                    </a>}
-                </div>
-                {src ? <iframe
-                    title={`${theme.name} live demo`}
-                    src={src}
-                    className="h-[520px] w-full border-0 bg-[var(--lb-color-surface-subdued)]"
-                    loading="lazy"
-                    sandbox="allow-same-origin allow-scripts allow-forms"
-                    data-testid="theme-live-demo-iframe"
-                /> : <p role="status" className="p-[var(--lb-space-4)]">Demo unavailable. Reload this theme’s details to confirm its package version.</p>}
-            </Card>
-        </Section>
-    );
+    return <section id="demo" className="marketplace-detail-anchor" aria-label="Theme demo"><ThemeDemo src={src} name={theme.name} /></section>;
 }
 
 export function ThemeQualityFacts({ theme }: { theme: Theme }) {

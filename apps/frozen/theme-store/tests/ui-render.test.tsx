@@ -16,6 +16,8 @@ import {
 } from '../src/components/theme-detail-experience';
 import ThemeCategoryLanding from '../src/components/theme-category-landing';
 import ThemeCard from '../src/components/theme-card';
+import CatalogFilterPanel from '../src/components/catalog-filter-panel';
+import ThemeDemo from '../src/components/theme-demo';
 import { buildThemeShareUrl } from '../src/components/theme-share-button';
 import {
     formatRelativeUpdatedAt,
@@ -138,17 +140,17 @@ function readAppFile(pathFromAppRoot: string) {
     return readFileSync(join(appRoot, pathFromAppRoot), 'utf8');
 }
 
-test('theme card renders linked facets, freshness, relative update, compare, preview, and quick-look dialog', () => {
+test('theme card renders linked facets, relative update, compare, preview, and a quick-look trigger', () => {
     const html = renderToStaticMarkup(<ThemeCard theme={baseTheme} initialQuickLookOpen renderPreviewImages={false} />);
 
     assert.ok(html.includes(`href="${themeFacetHref('tag', 'minimal')}"`));
     assert.ok(html.includes(`href="${themeFacetHref('feature', 'Mobile cart')}"`));
-    assert.match(html, /New|Updated/);
     assert.match(html, /Updated (today|[0-9]+ days? ago|[0-9]+ months? ago|[0-9]+ years? ago)/);
     assert.ok(html.includes(`href="${themeCompareSingleHref(baseTheme.slug)}"`));
     assert.ok(html.includes(`href="${themeSandboxPreviewHref(baseTheme.slug, baseTheme.version).replaceAll('&', '&amp;')}"`));
-    assert.match(html, /role="dialog"/);
-    assert.match(html, /Compare this theme/);
+    assert.match(html, /aria-haspopup="dialog"/);
+    assert.match(html, /Quick look/);
+    assert.match(html, /Compare Urban Kicks/);
 });
 
 test('theme card freshness helpers suppress stale badges and keep relative update honest', () => {
@@ -169,7 +171,7 @@ test('detail page enrichment components render demo iframe, measured scores, com
     const shareHtml = renderToStaticMarkup(<ThemeDetailSharePanel theme={baseTheme} />);
 
     assert.match(demoHtml, /data-testid="theme-live-demo-iframe"/);
-    assert.match(demoHtml, /src="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0"/);
+    assert.match(demoHtml, /src="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0&amp;embedded=1"/);
     assert.match(qualityHtml, /data-testid="theme-performance-score"[^>]*>91</);
     assert.match(qualityHtml, /data-testid="theme-accessibility-score"[^>]*>96</);
     assert.match(qualityHtml, /latest-chrome, latest-safari/);
@@ -187,12 +189,12 @@ test('anonymous preview shell renders without a store-owned preview session', ()
     assert.match(html, /Sandbox store preview/);
     assert.doesNotMatch(html, /devtoken|Token:/);
     assert.match(html, /data-testid="anonymous-preview-iframe"/);
-    assert.match(html, /src="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0"/);
+    assert.match(html, /src="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0&amp;embedded=1"/);
 });
 
 test('anonymous demo ignores arbitrary frame URLs and never turns the token into authority', () => {
     const target = getAnonymousPreviewFrameSrc('private-token', { ...baseTheme, demo_url: 'https://untrusted.invalid/collect', preview_url: 'javascript:alert(1)' });
-    assert.ok(target?.endsWith('/theme-preview/urban-kicks?version=1.2.0'));
+    assert.ok(target?.endsWith('/theme-preview/urban-kicks?version=1.2.0&embedded=1'));
     assert.doesNotMatch(target!, /untrusted|private-token|javascript/);
     assert.equal(getAnonymousPreviewFrameSrc('private-token'), null);
     assert.equal(getAnonymousPreviewFrameSrc('private-token', { ...baseTheme, slug: '../private' }), null);
@@ -235,22 +237,23 @@ test('command search shortcut and route source expose the expected UI hooks', ()
     assert.equal(isCommandSearchShortcut({ key: 'j', metaKey: true, ctrlKey: false }), false);
 
     const catalog = readAppFile('src/app/themes/page.tsx');
-    assert.match(catalog, /data-testid="mobile-theme-filter-sheet"/);
-    assert.match(catalog, /lg:hidden/);
-    assert.match(catalog, /hidden flex-col gap-\[var\(--lb-density-section-gap\)\] lg:flex/);
+    assert.match(catalog, /<CatalogFilterPanel/);
+    const filters = readAppFile('src/components/catalog-filter-panel.tsx');
+    assert.match(filters, /data-testid="mobile-theme-filter-sheet"/);
+    assert.match(filters, /<Drawer title="Filter and sort themes"/);
     assert.doesNotMatch(catalog, /Open developer console/);
     assert.doesNotMatch(catalog, /Build and submit themes/);
 });
 
-test('home and sitemap source expose responsive bento, category landing links, and ultra-wide layout', () => {
+test('home and sitemap expose catalog navigation and responsive theme grids', () => {
     const home = readAppFile('src/app/page.tsx');
     const sitemap = readAppFile('src/app/sitemap.ts');
     const globals = readAppFile('src/app/globals.css');
 
-    assert.match(home, /grid grid-cols-1 gap-\[10px\] sm:grid-cols-2/);
-    assert.match(home, /href=\{`\/themes\/category\/\$\{cat\.slug\}`\}/);
+    assert.match(home, /marketplace-theme-grid/);
+    assert.match(home, /href=\{`\/themes\?category=\$\{category\.slug\}`\}/);
     assert.match(sitemap, /\/themes\/category\/\$\{category\}/);
-    assert.match(globals, /@media \(min-width: 1536px\)/);
+    assert.match(globals, /@import "\.\/marketplace\.css"/);
 });
 
 test('legacy app chrome aliases now resolve through shared lb design tokens and raw img elements are gone', () => {
@@ -268,4 +271,37 @@ test('legacy app chrome aliases now resolve through shared lb design tokens and 
     for (const file of rawImageFiles) {
         assert.doesNotMatch(readAppFile(file), /<img\b/);
     }
+});
+
+test('non-renderable catalog records show an unavailable demo instead of a broken frame', () => {
+    assert.equal(getAnonymousPreviewFrameSrc('', { ...baseTheme, demoAvailable: false }), null);
+    const html = renderToStaticMarkup(<ThemeLiveDemoEmbed theme={baseTheme} available={false} />);
+    assert.match(html, /Demo unavailable/);
+    assert.doesNotMatch(html, /<iframe/);
+});
+
+test('catalog filter form preserves every supported field and an explicit zero price', () => {
+    const html = renderToStaticMarkup(<CatalogFilterPanel
+        values={{query:'minimal',category:'store',pricing:'one_time',sort:'recent',industry:'fashion',layout:'grid',tag:'minimal',feature:'Mobile cart',priceMin:0,priceMax:4999}}
+        industries={['fashion']} categories={[{value:'store',label:'Online stores'}]}
+        pricing={[{value:'paid',label:'Paid'}]} layouts={['grid']}
+        sorting={[{value:'recent',label:'Newest'}]} activeCount={8}
+    />);
+    for (const field of ['q','sort','category','pricing','industry','layout','price_min','price_max','feature','tag']) {
+        assert.match(html, new RegExp(`name="${field}"`));
+    }
+    assert.match(html, /name="price_min"[^>]*value="0"/);
+    assert.match(html, /name="price_max"[^>]*value="4999"/);
+    assert.match(html, /value="paid" selected=""/);
+    assert.match(html, /Filter and sort/);
+    assert.match(html, /action="\/themes" method="get"/);
+});
+
+test('demo controls expose device state and keep embedded preview authority constrained', () => {
+    const html = renderToStaticMarkup(<ThemeDemo src="http://localhost:9000/theme-preview/example?version=2.0.0&embedded=1" name="Example" />);
+    assert.match(html, /aria-label="Desktop preview"[^>]*aria-pressed="true"/);
+    assert.match(html, /aria-label="Mobile preview"[^>]*aria-pressed="false"/);
+    assert.match(html, /sandbox="allow-same-origin allow-scripts allow-forms"/);
+    assert.match(html, /referrerPolicy="no-referrer"/i);
+    assert.doesNotMatch(html, /allow-popups|allow-top-navigation/);
 });

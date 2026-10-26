@@ -1,3 +1,4 @@
+import { hasRenderableThemeTemplate } from '@letbuyy/theme-engine';
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -341,7 +342,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
     const record = await ThemeService.getThemeBySlug(slug);
     if (!record) {
         return (
-            <Page className="theme-marketplace-page">
+            <Page className="theme-marketplace-page marketplace marketplace-theme-detail">
                 <PageHeader
                     title="Theme not found"
                     eyebrow="Theme marketplace"
@@ -447,7 +448,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
     const defaultPreviewStoreId = defaultPreviewStore ? stringValue(defaultPreviewStore, 'id') : '';
 
     return (
-        <Page className="theme-marketplace-page">
+        <Page className="theme-marketplace-page marketplace marketplace-theme-detail">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -485,7 +486,10 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
             />
 
             <PageContent>
-                <ThemeLiveDemoEmbed theme={theme} />
+                <nav className="marketplace-detail-nav" aria-label="Theme details">
+                    <a href="#demo">Demo</a><a href="#overview">Overview</a><a href="#features">Features</a><a href="#reviews">Reviews</a><a href="#theme-support">Support & details</a>
+                </nav>
+                <ThemeLiveDemoEmbed theme={theme} available={hasRenderableThemeTemplate(record.default_template)} />
 
                 <Card className="overflow-hidden">
                     <div className="relative aspect-video min-h-[260px] bg-[var(--lb-color-surface-subdued)]">
@@ -497,27 +501,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
                             sizes="100vw"
                             priority
                         />
-                        <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end gap-[var(--lb-space-3)] bg-gradient-to-t from-black/80 via-black/20 to-transparent p-[var(--lb-density-card-padding)] text-white">
-                            <div className="min-w-0 flex-1">
-                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-white/70">
-                                    {categoryLabel} theme
-                                </p>
-                                <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-section-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-section-title)] text-white">
-                                    {theme.name}
-                                </p>
-                            </div>
-                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                <span className="inline-flex min-h-[var(--lb-density-pill-height)] items-center rounded-[var(--lb-radius-full)] border border-white/20 bg-[var(--lb-color-surface)]/15 px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] text-white backdrop-blur-md">
-                                    {priceLabel}
-                                </span>
-                                {hasReviews && (
-                                    <span className="inline-flex min-h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border border-white/20 bg-[var(--lb-color-surface)]/15 px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] text-white backdrop-blur-md">
-                                        <Star className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] fill-[var(--lb-color-warning)] text-[color:var(--lb-color-warning)]" aria-hidden="true" />
-                                        {ratingLabel}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
+
                     </div>
 
                     {galleryImages.length > 1 && (
@@ -543,6 +527,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
                 <div className="grid gap-[var(--lb-density-section-gap)] lg:grid-cols-[minmax(0,1fr)_340px]">
                     <div className="flex min-w-0 flex-col gap-[var(--lb-density-section-gap)]">
                         <Section
+                            id="overview"
                             title="Overview"
                             description={`Built by ${theme.author_name}. Version ${theme.version}.`}
                             className="px-0 py-0"
@@ -558,7 +543,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
 
                         <ThemeChangelog theme={theme} />
 
-                        <Section title="Features" className="px-0 py-0">
+                        <Section id="features" title="Features" className="px-0 py-0">
                             {theme.features.length > 0 ? (
                                 <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                                     {theme.features.map((feature) => (
@@ -595,7 +580,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
                             </Section>
                         )}
 
-                        <Section title="Reviews" className="px-0 py-0">
+                        <Section id="reviews" title="Reviews" className="px-0 py-0">
                             <Card className="grid gap-[var(--lb-space-4)] p-[var(--lb-density-card-padding)]">
                                 <div className="grid gap-[var(--lb-space-3)] md:grid-cols-[220px_minmax(0,1fr)]">
                                     <div>
@@ -735,7 +720,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
                         )}
                     </div>
 
-                    <aside className="flex min-w-0 flex-col gap-[var(--lb-density-section-gap)]" aria-label="Theme actions and details">
+                    <aside id="theme-support" className="flex min-w-0 flex-col gap-[var(--lb-density-section-gap)]" aria-label="Theme actions and details">
                         <Card layout="stack" className="gap-[var(--lb-space-4)] p-[var(--lb-density-card-padding)]">
                             <div className="space-y-[var(--lb-space-1)] text-center">
                                 <p className="m-0 text-[length:var(--lb-font-size-section-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-section-title)] text-[color:var(--lb-color-text)]">

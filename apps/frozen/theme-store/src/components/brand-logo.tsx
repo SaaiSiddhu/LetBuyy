@@ -31,20 +31,20 @@ export default function BrandLogo({
     return (
         <span className={`brand-logo ${className}`.trim()} role="img" aria-label={label} style={style}>
             <Image
-                src="/icons/letbuyy-logo-light.svg"
+                src="/icons/letbuyy-store-logo-light-v3.svg"
                 alt=""
-                width={680}
-                height={220}
+                width={636}
+                height={180}
                 className="brand-logo-image brand-logo-image-light"
                 priority={priority}
                 unoptimized
                 aria-hidden="true"
             />
             <Image
-                src="/icons/letbuyy-logo-dark.svg"
+                src="/icons/letbuyy-store-logo-dark-v3.svg"
                 alt=""
-                width={680}
-                height={220}
+                width={636}
+                height={180}
                 className="brand-logo-image brand-logo-image-dark"
                 priority={priority}
                 unoptimized

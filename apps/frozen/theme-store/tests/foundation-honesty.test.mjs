@@ -101,7 +101,8 @@ test('footer routes exist for every newly wired legal and support destination', 
 test('navbar search submits to the real themes query and notification polling is not shipped', () => {
     const navbar = readAppFile('src/components/layout/navbar.tsx');
 
-    assert.match(navbar, /\/themes\?q=/);
+    assert.match(navbar, /<form action="\/themes" method="get" role="search"/);
+    assert.match(navbar, /name="q" type="search"/);
     assert.doesNotMatch(navbar, /api\/notifications\/count/);
     assert.match(navbar, /\/themes\?sort=popular/);
 });
@@ -158,7 +159,8 @@ test('UI completion routes and chrome avoid false affordances', () => {
         requiredRoutes.filter((route) => !existsSync(join(appRoot, route))),
         [],
     );
-    assert.match(catalog, /data-testid="mobile-theme-filter-sheet"/);
+    assert.match(catalog, /<CatalogFilterPanel/);
+    assert.match(readAppFile('src/components/catalog-filter-panel.tsx'), /data-testid="mobile-theme-filter-sheet"/);
     assert.doesNotMatch(catalog, /Open developer console/);
     assert.match(detail, /ThemeLiveDemoEmbed/);
     assert.match(detail, /ThemeQualityFacts/);

@@ -1,3 +1,4 @@
+import { hasRenderableThemeTemplate } from '@letbuyy/theme-engine';
 import type { Metadata } from 'next';
 import AnonymousPreviewShell from '@/components/anonymous-preview-shell';
 import { ThemeService } from '@/lib/theme-service';
@@ -24,6 +25,7 @@ export default async function AnonymousPreviewPage({ params, searchParams }: Pre
     const slug = typeof query?.theme === 'string' ? query.theme : token;
     const record = slug ? await ThemeService.getThemeBySlug(slug) : null;
     const theme = record && (!query?.version || query.version === record.version) ? {
+        demoAvailable: hasRenderableThemeTemplate(record.default_template),
         slug: stringValue(record, 'slug', slug),
         name: stringValue(record, 'name', 'Sandbox theme preview'),
         version: stringValue(record, 'version'),

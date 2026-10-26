@@ -15,14 +15,14 @@ const PLATFORM_ORIGIN = process.env.NEXT_PUBLIC_MARKETING_URL?.trim() || siteUrl
 const sharedOgImage = `${PLATFORM_ORIGIN}/og/letbuyy-default.png`;
 
 const letbuyySans = localFont({
-    src: '../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2',
+    src: '../../public/fonts/Inter-Variable.woff2',
     variable: '--font-letbuyy-sans',
     display: 'swap',
     weight: '100 900',
 });
 
 const letbuyyDisplay = localFont({
-    src: '../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2',
+    src: '../../public/fonts/Inter-Variable.woff2',
     variable: '--font-letbuyy-display',
     display: 'swap',
     weight: '100 900',
@@ -138,7 +138,7 @@ export default async function RootLayout({
                     <AuthProvider initialAuthenticated={Boolean(initialUser)} initialUser={initialUser}>
                         <ToastProvider>
                             <Navbar />
-                            <main className="flex-grow pt-[72px]">
+                            <main id="marketplace-main" className="marketplace marketplace-main flex-grow">
                                 {children}
                             </main>
                             <Footer />

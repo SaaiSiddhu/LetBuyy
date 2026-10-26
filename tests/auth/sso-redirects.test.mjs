@@ -63,6 +63,7 @@ test('identity lookup is the shared return_to entry point for federated SSO', ()
   const themeNavbarSource = readFileSync('apps/frozen/theme-store/src/components/layout/navbar.tsx', 'utf8');
 
   assert.match(lookupSource, /searchParams\.get\('return_to'\)/);
-  assert.match(themeNavbarSource, /\?return_to=/);
-  assert.match(themeNavbarSource, /\$\{ACCOUNTS_URL\}\/lookup/);
+  assert.match(themeNavbarSource, /new URL\(path,getAccountsUrl\(\)\)/);
+  assert.match(themeNavbarSource, /searchParams\.set\('return_to',window\.location\.href\)/);
+  assert.match(themeNavbarSource, /accountHref\('\/lookup'\)/);
 });

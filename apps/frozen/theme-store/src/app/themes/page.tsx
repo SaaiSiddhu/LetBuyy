@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { Theme, ThemeCategory, ThemePricingType, ThemeSearchFilters } from '@letbuyy/theme-engine';
-import { Button, Card, EmptyState, Input, Page, PageContent, PageHeader, Search, Section, X } from '@letbuyy/ui';
+import { Button, Card, EmptyState, Input, Page, PageContent, Section, X } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
+import CatalogFilterPanel from '@/components/catalog-filter-panel';
 import { ThemeService } from '@/lib/theme-service';
 import MarketplaceUnavailable from '@/components/marketplace-unavailable';
 import { CATEGORY_LABELS } from '@/lib/utils';
@@ -98,7 +99,9 @@ function normalizeFacet(value: SearchParamValue): string {
 }
 
 function normalizePrice(value: SearchParamValue): number | undefined {
-    const numeric = Number(firstParam(value));
+    const raw = firstParam(value)?.trim();
+    if (!raw) return undefined;
+    const numeric = Number(raw);
     if (!Number.isFinite(numeric) || numeric < 0) return undefined;
     return Math.floor(numeric);
 }
@@ -361,336 +364,18 @@ export default async function ThemesPage({
     const currentHref = buildThemesHref(filters, { offset });
 
     return (
-        <Page className="theme-marketplace-page">
-            <PageHeader
-                title="Theme Gallery"
-                eyebrow="Theme marketplace"
-                description="Browse governed LetBuyy themes by category, pricing, and launch intent."
-                identity="themes"
-                showEyebrow
-                showDescription
-                primaryAction={{ label: 'View pricing', href: '/pricing' }}
-                secondaryActions={[
-                    { label: 'Compare', href: '/themes/compare' },
-                    { label: 'Saved themes', href: '/dashboard/favorites' },
-                    { label: 'Dashboard', href: '/dashboard' },
-                ]}
-            />
+        <Page className="theme-marketplace-page marketplace">
+            <header className="marketplace-browse-header marketplace-container">
+                <p className="marketplace-eyebrow">LetBuyy Theme Store</p>
+                <div className="marketplace-browse-heading"><h1>{query ? `Themes for “${query}”` : 'Find a look that feels like you.'}</h1><Link href="/themes/compare" className="marketplace-text-link">Compare themes</Link></div>
+                <p>Explore the designs. Find your fit. Make it yours.</p>
+            </header>
 
             <PageContent>
-                <div className="grid gap-[var(--lb-density-section-gap)] lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)] xl:grid-cols-[minmax(240px,280px)_minmax(0,1fr)]">
-                    <details className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)] lg:hidden" data-testid="mobile-theme-filter-sheet">
-                        <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
-                            Filter themes
-                            <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                {activeFilterCount} active
-                            </span>
-                        </summary>
-                        <div className="mt-[var(--lb-space-3)] grid gap-[var(--lb-space-3)]">
-                            <form action="/themes" method="get" className="grid gap-[var(--lb-space-2)]">
-                                <label htmlFor="theme-mobile-search" className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Search
-                                </label>
-                                <Input unstyled
-                                    id="theme-mobile-search"
-                                    name="q"
-                                    type="search"
-                                    defaultValue={query}
-                                    placeholder="Search by name or tag"
-                                    className="h-[var(--lb-density-input-height)] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)]"
-                                />
-                                {category !== 'all' && <Input unstyled type="hidden" name="category" value={category} />}
-                                {pricing !== 'all' && <Input unstyled type="hidden" name="pricing" value={pricing} />}
-                                {industry && <Input unstyled type="hidden" name="industry" value={industry} />}
-                                {layout && <Input unstyled type="hidden" name="layout" value={layout} />}
-                                {tag && <Input unstyled type="hidden" name="tag" value={tag} />}
-                                {feature && <Input unstyled type="hidden" name="feature" value={feature} />}
-                                <Button unstyled
-                                    type="submit"
-                                    className="inline-flex min-h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-primary-text)]"
-                                >
-                                    Apply mobile filter
-                                </Button>
-                            </form>
-                            <div className="flex flex-wrap gap-[var(--lb-space-2)]" aria-label="Mobile category filters">
-                                {CATEGORY_OPTIONS.map((option) => (
-                                    <Link
-                                        key={option.value}
-                                        href={buildThemesHref(filters, { category: option.value, offset: 0 })}
-                                        aria-current={category === option.value ? 'page' : undefined}
-                                        className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
-                                    >
-                                        {option.label}
-                                    </Link>
-                                ))}
-                            </div>
-                            {activeFilterCount > 0 && (
-                                <Link
-                                    href="/themes"
-                                    className="inline-flex min-h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-secondary-text)]"
-                                >
-                                    Clear filters
-                                </Link>
-                            )}
-                        </div>
-                    </details>
-
-                    <aside className="hidden flex-col gap-[var(--lb-density-section-gap)] lg:flex" aria-label="Theme filters">
-                        <Card layout="stack" className="theme-filter-rail gap-[var(--lb-space-4)] p-[var(--lb-density-card-padding)]">
-                            {firstParam(params?.saved_search) === 'created' && (
-                                <p className="m-0 rounded-[var(--lb-radius-md)] border border-[var(--lb-component-banner-success-border)] bg-[var(--lb-component-banner-success-bg)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-component-banner-success-text)]" role="status">
-                                    Saved search created.
-                                </p>
-                            )}
-                            {firstParam(params?.saved_search) === 'auth' && (
-                                <p className="m-0 rounded-[var(--lb-radius-md)] border border-[var(--lb-component-banner-warning-border)] bg-[var(--lb-component-banner-warning-bg)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-component-banner-warning-text)]" role="status">
-                                    Sign in before saving this search.
-                                </p>
-                            )}
-                            <div>
-                                <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                    Search and filter
-                                </p>
-                                <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                    URL-backed filters keep marketplace reviews and QA reproducible.
-                                </p>
-                            </div>
-
-                            <form action="/themes" method="get" className="flex flex-col gap-[var(--lb-space-2)]">
-                                <label htmlFor="theme-search" className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Search themes
-                                </label>
-                                <div className="relative">
-                                    <Search className="pointer-events-none absolute left-[var(--lb-space-3)] top-1/2 h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] -translate-y-1/2 text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
-                                    <Input unstyled
-                                        id="theme-search"
-                                        name="q"
-                                        type="search"
-                                        list="theme-search-suggestions"
-                                        autoComplete="off"
-                                        defaultValue={query}
-                                        placeholder="Search by name or tag"
-                                        className="h-[var(--lb-density-input-height)] w-full rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] pl-[calc(var(--lb-space-6)+var(--lb-space-1))] pr-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none transition-colors placeholder:text-[color:var(--lb-color-text-muted)] focus:border-[var(--lb-component-input-focus-border)] focus:ring-2 focus:ring-[var(--lb-color-focus-ring)]"
-                                    />
-                                </div>
-                                <datalist id="theme-search-suggestions">
-                                    {searchSuggestions.map((suggestion) => (
-                                        <option key={suggestion} value={suggestion} />
-                                    ))}
-                                </datalist>
-                                <div className="space-y-[var(--lb-space-2)]" aria-label="Theme autocomplete suggestions">
-                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                        Autocomplete suggestions
-                                    </p>
-                                    {searchSuggestions.length > 0 ? (
-                                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                            {searchSuggestions.map((suggestion) => (
-                                                <Link
-                                                    key={suggestion}
-                                                    href={buildThemesHref(filters, { query: suggestion, offset: 0 })}
-                                                    className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                                >
-                                                    {suggestion}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                            Enter a search term to load catalog-wide suggestions.
-                                        </p>
-                                    )}
-                                </div>
-                                {category !== 'all' && <Input unstyled type="hidden" name="category" value={category} />}
-                                {pricing !== 'all' && <Input unstyled type="hidden" name="pricing" value={pricing} />}
-                                {industry && <Input unstyled type="hidden" name="industry" value={industry} />}
-                                {layout && <Input unstyled type="hidden" name="layout" value={layout} />}
-                                {tag && <Input unstyled type="hidden" name="tag" value={tag} />}
-                                {feature && <Input unstyled type="hidden" name="feature" value={feature} />}
-                                {priceMin !== undefined && <Input unstyled type="hidden" name="price_min" value={String(priceMin)} />}
-                                {priceMax !== undefined && <Input unstyled type="hidden" name="price_max" value={String(priceMax)} />}
-                                {sort !== 'popular' && <Input unstyled type="hidden" name="sort" value={sort} />}
-                                <Button unstyled
-                                    type="submit"
-                                    className="inline-flex h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-primary-text)] transition-colors hover:bg-[var(--lb-component-button-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                >
-                                    Apply search
-                                </Button>
-                            </form>
-
-                            <div className="space-y-[var(--lb-space-2)]">
-                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Category
-                                </p>
-                                <div className="flex flex-col gap-[var(--lb-space-2)]">
-                                    {CATEGORY_OPTIONS.map((option) => (
-                                        <Link
-                                            key={option.value}
-                                            href={buildThemesHref(filters, { category: option.value, offset: 0 })}
-                                            aria-current={category === option.value ? 'page' : undefined}
-                                            className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-small)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
-                                        >
-                                            <span className="block font-[var(--lb-font-weight-semibold)]">{option.label}</span>
-                                            <span className="block text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]">
-                                                {option.description}
-                                            </span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="space-y-[var(--lb-space-2)]">
-                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Free / paid
-                                </p>
-                                <div className="grid grid-cols-3 gap-[var(--lb-space-2)]">
-                                    {PRICING_OPTIONS.map((option) => (
-                                        <Link
-                                            key={option.value}
-                                            href={buildThemesHref(filters, { pricing: option.value, offset: 0 })}
-                                            aria-current={pricing === option.value ? 'page' : undefined}
-                                            className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-2)] text-center text-[length:var(--lb-font-size-small)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
-                                        >
-                                            <span className="block font-[var(--lb-font-weight-semibold)]">{option.label}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {industryOptions.length > 0 && (
-                                <div className="space-y-[var(--lb-space-2)]">
-                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                        Industry
-                                    </p>
-                                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                        <Link
-                                            href={buildThemesHref(filters, { industry: '', offset: 0 })}
-                                            aria-current={industry === '' ? 'page' : undefined}
-                                            className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
-                                        >
-                                            All
-                                        </Link>
-                                        {industryOptions.map((option) => (
-                                            <Link
-                                                key={option}
-                                                href={buildThemesHref(filters, { industry: option, offset: 0 })}
-                                                aria-current={industry === option ? 'page' : undefined}
-                                                className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] capitalize text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
-                                            >
-                                                {option}
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            <form action="/themes" method="get" className="flex flex-col gap-[var(--lb-space-2)]">
-                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Price range
-                                </p>
-                                {query && <Input unstyled type="hidden" name="q" value={query} />}
-                                {category !== 'all' && <Input unstyled type="hidden" name="category" value={category} />}
-                                {pricing !== 'all' && <Input unstyled type="hidden" name="pricing" value={pricing} />}
-                                {industry && <Input unstyled type="hidden" name="industry" value={industry} />}
-                                {layout && <Input unstyled type="hidden" name="layout" value={layout} />}
-                                {tag && <Input unstyled type="hidden" name="tag" value={tag} />}
-                                {feature && <Input unstyled type="hidden" name="feature" value={feature} />}
-                                {sort !== 'popular' && <Input unstyled type="hidden" name="sort" value={sort} />}
-                                <div className="grid grid-cols-2 gap-[var(--lb-space-2)]">
-                                    <label htmlFor="theme-price-min" className="grid gap-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]">
-                                        Min INR
-                                        <Input unstyled
-                                            id="theme-price-min"
-                                            name="price_min"
-                                            type="number"
-                                            min="0"
-                                            step="1"
-                                            defaultValue={priceMin ?? ''}
-                                            className="h-[var(--lb-density-input-height)] w-full rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)]"
-                                        />
-                                    </label>
-                                    <label htmlFor="theme-price-max" className="grid gap-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]">
-                                        Max INR
-                                        <Input unstyled
-                                            id="theme-price-max"
-                                            name="price_max"
-                                            type="number"
-                                            min="0"
-                                            step="1"
-                                            defaultValue={priceMax ?? ''}
-                                            className="h-[var(--lb-density-input-height)] w-full rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)]"
-                                        />
-                                    </label>
-                                </div>
-                                <Button unstyled
-                                    type="submit"
-                                    className="inline-flex h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-secondary-text)] transition-colors hover:bg-[var(--lb-component-button-secondary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                >
-                                    Apply price
-                                </Button>
-                            </form>
-
-                            <div className="space-y-[var(--lb-space-2)]">
-                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Layout
-                                </p>
-                                <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                    {LAYOUT_OPTIONS.map((option) => (
-                                        <Link
-                                            key={option}
-                                            href={buildThemesHref(filters, { layout: layout === option ? '' : option, offset: 0 })}
-                                            aria-current={layout === option ? 'page' : undefined}
-                                            className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] capitalize text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
-                                        >
-                                            {option.replace('-', ' ')}
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <form action="/themes" method="get" className="flex flex-col gap-[var(--lb-space-2)]">
-                                <label htmlFor="theme-sort" className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Sort
-                                </label>
-                                {query && <Input unstyled type="hidden" name="q" value={query} />}
-                                {category !== 'all' && <Input unstyled type="hidden" name="category" value={category} />}
-                                {pricing !== 'all' && <Input unstyled type="hidden" name="pricing" value={pricing} />}
-                                {industry && <Input unstyled type="hidden" name="industry" value={industry} />}
-                                {layout && <Input unstyled type="hidden" name="layout" value={layout} />}
-                                {tag && <Input unstyled type="hidden" name="tag" value={tag} />}
-                                {feature && <Input unstyled type="hidden" name="feature" value={feature} />}
-                                {priceMin !== undefined && <Input unstyled type="hidden" name="price_min" value={String(priceMin)} />}
-                                {priceMax !== undefined && <Input unstyled type="hidden" name="price_max" value={String(priceMax)} />}
-                                <select
-                                    id="theme-sort"
-                                    name="sort"
-                                    defaultValue={sort}
-                                    className="h-[var(--lb-density-input-height)] w-full rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none focus:border-[var(--lb-component-input-focus-border)] focus:ring-2 focus:ring-[var(--lb-color-focus-ring)]"
-                                >
-                                    {SORT_OPTIONS.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                                <Button unstyled
-                                    type="submit"
-                                    className="inline-flex h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-secondary-text)] transition-colors hover:bg-[var(--lb-component-button-secondary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                >
-                                    Apply sort
-                                </Button>
-                            </form>
-
-                            {activeFilterCount > 0 && (
-                                <Link
-                                    href="/themes"
-                                    className="inline-flex min-h-[var(--lb-density-button-height)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                >
-                                    <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                    Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
-                                </Link>
-                            )}
-                        </Card>
-
+                <div className="marketplace-catalog-grid">
+                    <div>
+                        <CatalogFilterPanel values={filters} industries={industryOptions} categories={CATEGORY_OPTIONS} pricing={PRICING_OPTIONS} layouts={LAYOUT_OPTIONS} sorting={SORT_OPTIONS} activeCount={activeFilterCount} />
+                        <details className="marketplace-saved-search"><summary>Save this search</summary>
                         <Card layout="stack" className="gap-[var(--lb-space-3)] p-[var(--lb-density-card-padding)]">
                             <div>
                                 <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
@@ -735,18 +420,34 @@ export default async function ThemesPage({
                                 </Button>
                             </form>
                         </Card>
-
-                    </aside>
-
+                        </details>
+                        {firstParam(params?.saved_search) === 'created' && <p role="status">Saved search created.</p>}
+                        {firstParam(params?.saved_search) === 'auth' && <p role="status">Sign in before saving this search.</p>}
+                    </div>
                     <Section
-                        title={activeFilterCount > 0 ? 'Filtered theme results' : 'Theme directory'}
+                        title={activeFilterCount > 0 ? 'Your search results' : 'All themes'}
                         description={`${themeTotal} theme${themeTotal === 1 ? '' : 's'} found. ${getActiveFilterSummary(filters)}.`}
                     >
+                        {activeFilterCount > 0 && <nav className="marketplace-active-filters" aria-label="Applied filters">
+                            {[
+                                [filters.query, 'Search', {query:''}],
+                                [filters.category !== 'all' ? filters.category : '', 'Website type', {category:'all'}],
+                                [filters.pricing !== 'all' ? filters.pricing : '', 'Price', {pricing:'all'}],
+                                [filters.industry, 'Industry', {industry:''}],
+                                [filters.layout, 'Layout', {layout:''}],
+                                [filters.feature, 'Feature', {feature:''}],
+                                [filters.tag, 'Style', {tag:''}],
+                                [filters.priceMin !== undefined ? `₹${filters.priceMin}` : '', 'Minimum', {priceMin:undefined}],
+                                [filters.priceMax !== undefined ? `₹${filters.priceMax}` : '', 'Maximum', {priceMax:undefined}],
+                            ].filter(([value])=>Boolean(value)).map(([value,label,update])=><Link key={String(label)} href={buildThemesHref(filters,{...(update as Partial<NormalizedFilters>),offset:0})} aria-label={`Remove ${label} filter: ${value}`}>{String(label)}: {String(value)} <X size={12} aria-hidden="true" /></Link>)}
+                            <Link href="/themes">Clear all</Link>
+                        </nav>}
+                        {query && searchSuggestions.length > 0 && <p className="marketplace-search-related">Related: {searchSuggestions.slice(0,4).map(suggestion=><Link key={suggestion} href={buildThemesHref(filters,{query:suggestion,offset:0})}>{suggestion}</Link>)}</p>}
                         {themesUnavailable ? (
                             <MarketplaceUnavailable />
                         ) : themes.length > 0 ? (
                             <div className="space-y-[var(--lb-space-4)]">
-                                <div className="grid grid-cols-1 gap-[var(--lb-space-4)] lg:grid-cols-2 xl:grid-cols-3">
+                                <div className="marketplace-theme-grid">
                                     {themes.map((theme) => (
                                         <ThemeCard key={theme.id} theme={theme} />
                                     ))}
