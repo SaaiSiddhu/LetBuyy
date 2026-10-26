@@ -242,10 +242,17 @@ test('developer listing builder renders the distinct create-listing form fields'
 test('category landing component renders category copy and a filtered theme grid', () => {
     const html = renderToStaticMarkup(<ThemeCategoryLanding category="store" themes={[baseTheme]} total={1} renderCardImages={false} />);
 
-    assert.match(html, /Store Themes/);
-    assert.match(html, /Retail-ready storefront themes/);
+    assert.match(html, /Available designs/);
+    assert.match(html, /Follow the shopping journey/);
     assert.match(html, /Urban Kicks/);
-    assert.match(html, /1 theme available/);
+    assert.match(html, /1 published theme/);
+    assert.match(html, /category-selection-checks/);
+    assert.match(html, /Find a collection/);
+    assert.match(html, /Understand the product/);
+    assert.match(html, /Follow the mobile journey/);
+    assert.match(html, /href="\/guides\/choose-the-right-theme"/);
+    assert.match(html, /catalog-device-phone/);
+    assert.doesNotMatch(html, /class="marketplace-checklist"/);
 });
 
 test('command search shortcut and route source expose the expected UI hooks', () => {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Card, EmptyState, Section } from '@letbuyy/ui';
+import { ArrowRight, Card, EmptyState, Section } from '@letbuyy/ui';
 import type { Theme, ThemeCategory } from '@letbuyy/theme-engine';
 import ThemeCard from './theme-card';
 
@@ -39,6 +39,14 @@ const CATEGORY_CHECKS: Record<ThemeCategory, {focus:string; checks:string[]}> = 
     saas:{focus:'Explain the product with the right page structure and supporting detail.',checks:['Product screenshots, feature explanations, and relevant page variations.','Pricing presentation and useful documentation links.','Which calls to action are functional and which are sample content.']},
 };
 
+const CATEGORY_CHECK_LABELS: Record<ThemeCategory, string[]> = {
+    store: ['Find a collection', 'Understand the product', 'Follow the mobile journey'],
+    portfolio: ['Tell the project story', 'Let your imagery work', 'Make contact simple'],
+    resume: ['Introduce your experience', 'Keep the detail readable', 'Check your contact links'],
+    landing: ['Focus on one action', 'Give useful context', 'Try the complete journey'],
+    saas: ['Show the product clearly', 'Explain the offer', 'Check each next step'],
+};
+
 export function isThemeCategorySlug(value: string): value is ThemeCategory {
     return Object.prototype.hasOwnProperty.call(THEME_CATEGORY_LANDING_COPY, value);
 }
@@ -54,24 +62,22 @@ export default function ThemeCategoryLanding({
     total: number;
     renderCardImages?: boolean;
 }) {
-    const copy = THEME_CATEGORY_LANDING_COPY[category];
-
     return (
-        <div className="grid gap-[var(--lb-density-section-gap)]">
+        <div className="marketplace-category-page-content">
             <Section
-                title={copy.title}
-                description={`${copy.intro} ${total} theme${total === 1 ? '' : 's'} available in this category.`}
+                title="Available designs"
+                description={`${total} published theme${total === 1 ? '' : 's'} in this category. Review the listing and available preview before you choose.`}
                 className="px-0 py-0"
             >
                 {themes.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-[var(--lb-space-4)] md:grid-cols-2 2xl:grid-cols-4">
-                        {themes.map((theme) => <ThemeCard key={theme.id} theme={theme} renderPreviewImages={renderCardImages} />)}
+                    <div className="marketplace-category-theme-grid marketplace-device-grid" data-single={themes.length === 1}>
+                        {themes.map((theme) => <ThemeCard key={theme.id} theme={theme} devicePreview renderPreviewImages={renderCardImages} />)}
                     </div>
                 ) : (
                     <Card className="flex min-h-[320px] items-center justify-center p-[var(--lb-density-card-padding)]">
                         <EmptyState
                             kind="themes"
-                            title={`No ${copy.title.toLowerCase()} yet`}
+                            title={`No ${THEME_CATEGORY_LANDING_COPY[category].title.toLowerCase()} yet`}
                             body="Browse the full marketplace while this category is being expanded."
                             primaryAction={(
                                 <Link
@@ -85,7 +91,11 @@ export default function ThemeCategoryLanding({
                     </Card>
                 )}
             </Section>
-            <section className="marketplace-content-note"><h2>What to look for in this category</h2><p>{CATEGORY_CHECKS[category].focus}</p><ul className="marketplace-checklist">{CATEGORY_CHECKS[category].checks.map(check=><li key={check}>{check}</li>)}</ul><p>Capabilities vary by listing and version. Review the actual package features and use your own content for the final preview.</p><Link href="/guides/choose-the-right-theme" className="marketplace-text-link">Read the theme selection guide</Link></section>
+            <section className="category-selection-guide" aria-labelledby="category-selection-heading">
+                <div className="category-selection-intro"><p className="marketplace-eyebrow">Choose with confidence</p><h2 id="category-selection-heading">What to look for in this category</h2><p>{CATEGORY_CHECKS[category].focus}</p></div>
+                <ol className="category-selection-checks">{CATEGORY_CHECKS[category].checks.map((check,index)=><li key={check}><span aria-hidden="true">0{index+1}</span><div><h3>{CATEGORY_CHECK_LABELS[category][index]}</h3><p>{check}</p></div></li>)}</ol>
+                <div className="category-selection-footer"><p>Features vary by theme and version. Check the listing, then preview with your own content.</p><Link href="/guides/choose-the-right-theme" className="marketplace-text-link">Read the selection guide<ArrowRight size={16} aria-hidden="true"/></Link></div>
+            </section>
         </div>
     );
 }
