@@ -277,6 +277,8 @@ owner's first push of `develop`/`staging`/`main` is a fast-forward on every ref.
 | `codex/marketing-release-20261025` | `11fdfeba4b277064fd35232c60dcb138dc103d84` | MERGED_DEVELOP | 2026-10-25 | Owner request in Codex | All marketing source, assets, translations and required shared UI fixes integrated with latest remote history; 114-validator gate, build and tests passed. | `11fdfeba4b277064fd35232c60dcb138dc103d84` (fast-forward) |
 | `codex/local-work-preserved-20261025` | `118209b4f` | LEGACY_INTEGRATED | 2026-10-25 | Owner marketing release scope | Preserve the original checkout and unrelated uncommitted merchant, console, service and database work during marketing release. Do not treat uncommitted work as integrated. | — |
 
+| `codex/storefront-request-deadline` | `4616aa6b81b3a9cb10e0da257669f5274c73fcf0` | ACTIVE | 2026-10-26 | PHASE-STOREFRONT-REQUEST-DEADLINE-20261026 | Hosted staging browser returns503 and exact active deployment logs confirm its store-access request aborts at3seconds while Gateway permits5seconds for a legitimate cold start. May repair the existing Commerce proxy/helper/server callers and focused actual-proxy regressions, package test command if required, evidence and existing ledgers. Retain finite deadlines, signed method/path/body/caller binding, durable replay and fail-closed behavior. No Gateway or database safety changes. Base4616aa6b8; primary/managed clean and no colliding active branch. Single agent; stage before production. | N/A — pending |
+
 ## Promotions
 
 | Date | Source SHA | Target | Pushed | Owner's word (quoted) | CI run |
