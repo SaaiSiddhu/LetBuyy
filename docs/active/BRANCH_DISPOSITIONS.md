@@ -2,7 +2,9 @@
 
 Authority: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` > root `AGENTS.md` > this ledger.
 Operating rules: `.claude/skills/letbuyy/references/merge.md` (rows, claims, worktree lifecycle) and
-`references/promote.md` (the `## Promotions` table). Enforced by
+`references/promote.md` (the `| `codex/supabase-supported-migrations` | `b17280f2925e24ede53642004c813f5fe55d4960` | ACTIVE | 2026-10-26 | PHASE-SUPABASE-SUPPORTED-MIGRATIONS-20261026 | Owner explicitly approves the support-free migration safety redesign, with hosted release only after fresh backup/restore rehearsal and staging pass. Preserve immutable historical migration SQL; implement a versioned, provenance-recorded managed execution adapter, finite admission checks, application-table locks and cooperating-runner serialization under a trusted-admin maintenance window. May write scripts/governance and scripts/supabase admission/runner code, database/supabase/deploy profiles, owned-db/governance tests and reviewed inventory, evidence and existing ledgers. Preserve runtime tenant RLS, financial checks, current data, backups, credentials and local apps. Production merchant outcome remains all ten themes, Circuit default, and tenant stores on letbuyy.store; no independent privileged DDL exclusion is claimed. Primary and managed checkout clean at b17280f29; git worktree/branch/ACTIVE checks find no collision. Single agent. | N/A — pending |
+
+## Promotions` table). Enforced by
 `scripts/validators/branch-dispositions-validator.mjs` (gate lane).
 
 ## Claim protocol
