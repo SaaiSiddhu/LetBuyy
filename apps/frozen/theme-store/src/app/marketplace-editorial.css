@@ -414,11 +414,19 @@
 .marketplace-home .marketplace-home-categories .marketplace-category-nav { margin: 0; border: 0; padding-block: var(--lb-space-2); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 .marketplace-home-categories .marketplace-category-nav a { flex-shrink: 0; min-height: var(--lb-size-touch-target); }
 .marketplace-hero-stage:hover .marketplace-showcase-track, .marketplace-hero-stage:focus-within .marketplace-showcase-track { animation-play-state: paused; }
+/* Mobile/tablet use normal document flow; only desktop overlays the lookbook. */
+@media (width < 64rem) {
+    .marketplace-hero-stage { display: block; }
+    .marketplace-hero-backdrop .marketplace-showcase { --showcase-row-height: clamp(calc(var(--lb-space-8) * 4.5), 24svh, calc(var(--lb-space-8) * 6)); height: auto; padding-block: 0 var(--lb-space-2); }
+    .marketplace-hero-backdrop .marketplace-showcase-card { width: clamp(calc(var(--lb-space-8) * 9), 84vw, calc(var(--lb-space-8) * 14)); }
+    .marketplace-home .marketplace-hero-overlay { display: block; padding-block: var(--lb-space-5); background: var(--lb-color-surface); pointer-events: auto; border-top: thin solid var(--lb-color-border); }
+    .marketplace-hero-overlay::before { content: none; }
+    .marketplace-home .marketplace-hero-overlay > .marketplace-container { max-width: calc(var(--lb-space-6) * 56); padding-inline: clamp(var(--lb-space-4), 4vw, var(--lb-space-8)); }
+    .marketplace-hero-copy { max-width: none; }
+    .marketplace-home .marketplace-hero-copy h1 { font-size: var(--lb-font-size-h1-fluid); }
+    .marketplace-home .marketplace-hero-copy .marketplace-intro { margin-block: var(--lb-space-3); }
+}
 @media (width < 40rem) {
-    .marketplace-hero-backdrop .marketplace-showcase { --showcase-row-height: clamp(calc(var(--lb-space-8) * 6), 32svh, calc(var(--lb-space-8) * 8)); }
-    .marketplace-hero-backdrop .marketplace-showcase-card { width: clamp(calc(var(--lb-space-8) * 11), 94vw, calc(var(--lb-space-8) * 15)); }
-    .marketplace-home .marketplace-hero-overlay { padding-block: calc(var(--lb-space-8) * 4) calc(var(--lb-space-8) * 2); }
-    .marketplace-hero-overlay::before { width: 100%; height: 85%; }
     .marketplace-home .marketplace-hero-copy .marketplace-hero-actions { grid-template-columns: minmax(0, 1fr); gap: var(--lb-space-2); }
     .marketplace-home .marketplace-hero-copy .marketplace-hero-actions > a { font-size: var(--lb-font-size-body); }
 }
