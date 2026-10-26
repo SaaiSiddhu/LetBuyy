@@ -393,22 +393,22 @@
     .creator-reference-panel { position: sticky; top: calc(var(--lb-space-8) * 2.5); }
 }
 
-/* One hero: larger moving storefronts behind a readable, left-aligned panel. */
+/* Unboxed hero copy rests at the lower left over an edge-to-edge reading fade. */
 .marketplace-hero-stage { display: grid; position: relative; isolation: isolate; min-width: 0; }
 .marketplace-hero-backdrop, .marketplace-home .marketplace-hero-overlay { grid-area: 1 / 1; min-width: 0; }
 .marketplace-hero-backdrop { z-index: 0; }
 .marketplace-hero-backdrop .marketplace-showcase { --showcase-row-height: clamp(calc(var(--lb-space-8) * 9), 36svh, calc(var(--lb-space-8) * 13)); height: 100%; display: grid; align-content: center; padding-block: var(--lb-space-3); }
 .marketplace-hero-backdrop .marketplace-showcase-card { width: clamp(calc(var(--lb-space-8) * 15), 44vw, calc(var(--lb-space-8) * 22)); }
-.marketplace-home .marketplace-hero-overlay { z-index: 1; display: flex; align-items: center; padding-block: var(--lb-space-8) calc(var(--lb-space-8) * 2); background: transparent; pointer-events: none; }
+.marketplace-home .marketplace-hero-overlay { z-index: 1; display: flex; align-items: flex-end; padding-block: calc(var(--lb-space-8) * 5) var(--lb-space-6); background: linear-gradient(to right, var(--lb-color-surface), transparent); background: linear-gradient(to right, color-mix(in srgb, var(--lb-color-surface) 96%, transparent), color-mix(in srgb, var(--lb-color-surface) 94%, transparent) 45%, color-mix(in srgb, var(--lb-color-surface) 72%, transparent) 62%, transparent 90%), linear-gradient(to top, color-mix(in srgb, var(--lb-color-surface) 90%, transparent), transparent 70%); border: 0; pointer-events: none; }
 .marketplace-hero-overlay > .marketplace-container { width: 100%; }
-.marketplace-hero-panel { max-width: calc(var(--lb-space-8) * 20); padding: clamp(var(--lb-space-5), 3vw, var(--lb-space-8)); border: thin solid color-mix(in srgb, var(--lb-color-text-subdued) 28%, transparent); border-radius: var(--lb-radius-xl); background: var(--lb-color-surface); background: color-mix(in srgb, var(--lb-color-surface) 94%, transparent); backdrop-filter: blur(var(--lb-space-4)) saturate(0.8); box-shadow: var(--lb-shadow-lg); pointer-events: auto; }
-.marketplace-home .marketplace-hero-panel h1 { max-width: 20ch; font-size: clamp(calc(var(--lb-font-size-page-title) * 1.2), 3.3vw, calc(var(--lb-font-size-page-title) * 2)); line-height: 1.12; }
-.marketplace-home .marketplace-hero-panel .marketplace-eyebrow { margin-bottom: var(--lb-space-3); color: var(--lb-color-primary-text); }
-.marketplace-home .marketplace-hero-panel :where(.marketplace-intro, .marketplace-hero-note) { color: color-mix(in srgb, var(--lb-color-text) 80%, var(--lb-color-surface)); }
-.marketplace-home .marketplace-hero-panel .marketplace-intro { margin-block: var(--lb-space-4); font-size: var(--lb-font-size-body); line-height: 1.6; }
-.marketplace-home .marketplace-hero-panel .marketplace-hero-search input { font-size: var(--lb-font-size-body-large); }
-.marketplace-hero-panel .marketplace-hero-search > button { min-height: var(--lb-size-touch-target); }
-.marketplace-home .marketplace-hero-panel .marketplace-hero-note { margin-top: var(--lb-space-4); }
+.marketplace-hero-copy { max-width: calc(var(--lb-space-8) * 20); min-width: 0; pointer-events: auto; }
+.marketplace-home .marketplace-hero-copy h1 { max-width: 20ch; font-size: clamp(calc(var(--lb-font-size-page-title) * 1.2), 3.3vw, calc(var(--lb-font-size-page-title) * 2)); line-height: 1.12; }
+.marketplace-home .marketplace-hero-copy .marketplace-eyebrow { margin-bottom: var(--lb-space-3); color: var(--lb-color-primary-text); }
+.marketplace-home .marketplace-hero-copy :where(.marketplace-intro, .marketplace-hero-note) { color: color-mix(in srgb, var(--lb-color-text) 80%, var(--lb-color-surface)); }
+.marketplace-home .marketplace-hero-copy .marketplace-intro { margin-block: var(--lb-space-4); font-size: var(--lb-font-size-body); line-height: 1.6; }
+.marketplace-home .marketplace-hero-copy .marketplace-hero-search input { font-size: var(--lb-font-size-body-large); }
+.marketplace-hero-copy .marketplace-hero-search > button { min-height: var(--lb-size-touch-target); }
+.marketplace-home .marketplace-hero-copy .marketplace-hero-note { margin-top: var(--lb-space-4); }
 .marketplace-home-categories { background: var(--lb-color-surface); border-top: thin solid var(--lb-color-border); }
 .marketplace-home .marketplace-home-categories .marketplace-category-nav { margin: 0; border: 0; padding-block: var(--lb-space-2); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 .marketplace-home-categories .marketplace-category-nav a { flex-shrink: 0; min-height: var(--lb-size-touch-target); }
@@ -416,7 +416,7 @@
 @media (width < 40rem) {
     .marketplace-hero-backdrop .marketplace-showcase { --showcase-row-height: clamp(calc(var(--lb-space-8) * 6), 32svh, calc(var(--lb-space-8) * 8)); }
     .marketplace-hero-backdrop .marketplace-showcase-card { width: clamp(calc(var(--lb-space-8) * 11), 94vw, calc(var(--lb-space-8) * 15)); }
-    .marketplace-home .marketplace-hero-overlay { padding-block: calc(var(--lb-space-8) * 2) calc(var(--lb-space-8) * 2); }
-    .marketplace-home .marketplace-hero-panel .marketplace-hero-actions { grid-template-columns: minmax(0, 1fr); gap: var(--lb-space-2); }
-    .marketplace-home .marketplace-hero-panel .marketplace-hero-actions > a { font-size: var(--lb-font-size-body); }
+    .marketplace-home .marketplace-hero-overlay { padding-block: calc(var(--lb-space-8) * 4) calc(var(--lb-space-8) * 2); background: linear-gradient(to top, var(--lb-color-surface), transparent); background: linear-gradient(to top, color-mix(in srgb, var(--lb-color-surface) 98%, transparent), color-mix(in srgb, var(--lb-color-surface) 96%, transparent) 58%, color-mix(in srgb, var(--lb-color-surface) 88%, transparent) 78%, transparent); }
+    .marketplace-home .marketplace-hero-copy .marketplace-hero-actions { grid-template-columns: minmax(0, 1fr); gap: var(--lb-space-2); }
+    .marketplace-home .marketplace-hero-copy .marketplace-hero-actions > a { font-size: var(--lb-font-size-body); }
 }

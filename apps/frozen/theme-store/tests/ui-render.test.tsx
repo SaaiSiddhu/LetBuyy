@@ -386,7 +386,8 @@ test('homepage lookbook renders opposite rows, noninteractive duplicate artwork 
     assert.match(home, /<MarketplaceHero \/>/);
     const hero = renderToStaticMarkup(<MarketplaceHero />);
     assert.match(hero, /class="marketplace-hero-stage"/);
-    assert.match(hero, /marketplace-hero-panel/);
+    assert.match(hero, /marketplace-hero-copy/);
+    assert.doesNotMatch(hero, /marketplace-hero-panel/);
     assert.match(hero, /aria-labelledby="marketplace-hero-heading"/);
     assert.match(hero, /action="\/themes" method="get"/);
     assert.match(hero, /<input(?=[^>]*id="home-theme-search")(?=[^>]*name="q")[^>]*>/);

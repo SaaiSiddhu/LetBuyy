@@ -15,7 +15,7 @@ export default function MarketplaceHero() {
             <div className="marketplace-hero-stage">
                 <div className="marketplace-hero-backdrop"><ThemeShowcase /></div>
             <section className="marketplace-hero marketplace-hero-overlay" aria-labelledby="marketplace-hero-heading">
-                <div className="marketplace-container"><div className="marketplace-hero-panel">
+                <div className="marketplace-container"><div className="marketplace-hero-copy">
                     <p className="marketplace-eyebrow"><Palette size={16} aria-hidden="true" /> LetBuyy Theme Store</p>
                     <h1 id="marketplace-hero-heading">Make your business <span>look like you.</span></h1>
                     <p className="marketplace-intro">Find a theme that fits your next chapter. Explore the design, try the demo, and make it your own with LetBuyy.</p>
