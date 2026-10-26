@@ -1,8 +1,7 @@
-import MarketplaceArtwork from '@/components/marketplace-artwork';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { Theme, ThemeCategory, ThemePricingType, ThemeSearchFilters } from '@letbuyy/theme-engine';
-import { Button, Card, EmptyState, Input, Page, PageContent, Section, X } from '@letbuyy/ui';
+import { Button, Card, EmptyState, Input, Page, PageContent, Section, X, Search, LayoutGrid, ArrowRight } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
 import CatalogFilterPanel from '@/components/catalog-filter-panel';
 import { ThemeService } from '@/lib/theme-service';
@@ -365,16 +364,21 @@ export default async function ThemesPage({
     const currentHref = buildThemesHref(filters, { offset });
 
     return (
-        <Page className="theme-marketplace-page marketplace">
-            <header className="marketplace-browse-header marketplace-container marketplace-catalog-masthead"><div>
+        <Page className="theme-marketplace-page marketplace marketplace-catalog-page">
+            <header className="catalog-page-header">
                 <p className="marketplace-eyebrow">LetBuyy Theme Store</p>
-                <div className="marketplace-browse-heading"><h1>{query ? `Themes for “${query}”` : 'Find a look that feels like you.'}</h1><Link href="/themes/compare" className="marketplace-text-link">Compare themes</Link></div>
-                <p>Explore the designs. Find your fit. Make it yours.</p></div><MarketplaceArtwork kind="discover" priority />
+                <div className="catalog-page-title"><h1>{query ? `Themes for “${query}”` : 'Explore LetBuyy themes.'}</h1><Link href="/themes/compare" className="marketplace-text-link"><LayoutGrid size={16} aria-hidden="true"/>Compare themes</Link></div>
+                <p>Discover published designs for stores, portfolios, and more. Inspect the screenshots, compare the details, and choose your starting point.</p>
+                <form action="/themes" method="get" role="search" className="catalog-page-search"><Search size={20} aria-hidden="true"/><label htmlFor="catalog-keyword" className="sr-only">Search the theme catalog</label><Input unstyled id="catalog-keyword" name="q" type="search" defaultValue={query} maxLength={80} placeholder="Search by theme, style, or feature" />
+                    {Object.entries({ category: category === 'all' ? '' : category, pricing: pricing === 'all' ? '' : pricing, sort, industry, layout, tag, feature, price_min: priceMin, price_max: priceMax }).filter(([,value])=>value!==undefined&&value!=='').map(([name,value])=><Input unstyled type="hidden" key={name} name={name} value={String(value)} />)}
+                    <Button type="submit">Search<ArrowRight size={16} aria-hidden="true"/></Button>
+                </form>
+                <nav className="catalog-category-tabs" aria-label="Theme website types">{CATEGORY_OPTIONS.map(option=><Link key={option.value} href={buildThemesHref(filters,{category:option.value,offset:0})} aria-current={category===option.value?'page':undefined}>{option.value==='store'?'Online stores':option.label}</Link>)}</nav>
             </header>
 
             <PageContent>
                 <div className="marketplace-catalog-grid">
-                    <div>
+                    <div className="catalog-tools">
                         <CatalogFilterPanel values={filters} industries={industryOptions} categories={CATEGORY_OPTIONS} pricing={PRICING_OPTIONS} layouts={LAYOUT_OPTIONS} sorting={SORT_OPTIONS} activeCount={activeFilterCount} />
                         <details className="marketplace-saved-search"><summary>Save this search</summary>
                         <Card layout="stack" className="gap-[var(--lb-space-3)] p-[var(--lb-density-card-padding)]">
@@ -383,7 +387,7 @@ export default async function ThemesPage({
                                     Save this search
                                 </p>
                                 <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                    Persist the current filters to your marketplace account.
+                                    Save these filters to your account so you can return to them later.
                                 </p>
                             </div>
                             <form action={createSavedSearchAction} className="grid gap-[var(--lb-space-2)]">
@@ -411,7 +415,7 @@ export default async function ThemesPage({
                                 </label>
                                 <label className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]">
                                     <Input unstyled name="alerts_enabled" type="checkbox" className="h-4 w-4" />
-                                    Enable account alerts when provider notifications are configured
+                                    Receive alerts when available
                                 </label>
                                 <Button unstyled
                                     type="submit"
@@ -426,8 +430,9 @@ export default async function ThemesPage({
                         {firstParam(params?.saved_search) === 'auth' && <p role="status">Sign in before saving this search.</p>}
                     </div>
                     <Section
-                        title={activeFilterCount > 0 ? 'Your search results' : 'All themes'}
-                        description={`${themeTotal} theme${themeTotal === 1 ? '' : 's'} found. ${getActiveFilterSummary(filters)}.`}
+                        className="marketplace-catalog-results"
+                        title={activeFilterCount > 0 ? 'Your search results' : 'Available themes'}
+                        description={themesUnavailable ? 'The catalog is temporarily unavailable.' : `${themeTotal} published theme${themeTotal === 1 ? '' : 's'}${activeFilterCount ? ` · ${getActiveFilterSummary(filters)}` : '. Browse the listing images in phone and desktop frames.'}`}
                     >
                         {activeFilterCount > 0 && <nav className="marketplace-active-filters" aria-label="Applied filters">
                             {[
@@ -448,16 +453,16 @@ export default async function ThemesPage({
                             <MarketplaceUnavailable />
                         ) : themes.length > 0 ? (
                             <div className="space-y-[var(--lb-space-4)]">
-                                <div className="marketplace-theme-grid">
+                                <div className="marketplace-theme-grid marketplace-device-grid" data-single={themes.length === 1}>
                                     {themes.map((theme) => (
-                                        <ThemeCard key={theme.id} theme={theme} />
+                                        <ThemeCard key={theme.id} theme={theme} devicePreview />
                                     ))}
                                 </div>
-                                <div className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)] sm:flex-row sm:items-center sm:justify-between">
+                                <div className="catalog-pagination">
                                     <p className="m-0 text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        Showing {pageStart}-{pageEnd} of {themeTotal} themes.
+                                        Showing {pageStart}-{pageEnd} of {themeTotal} theme{themeTotal === 1 ? '' : 's'}.
                                     </p>
-                                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                    {totalPages > 1 && <nav aria-label="Theme catalog pages" className="catalog-page-links">
                                         {hasPreviousPage && (
                                             <Link
                                                 href={buildThemesHref(filters, { offset: previousOffset })}
@@ -484,7 +489,7 @@ export default async function ThemesPage({
                                                 Next
                                             </Link>
                                         )}
-                                    </div>
+                                    </nav>}
                                 </div>
                             </div>
                         ) : (

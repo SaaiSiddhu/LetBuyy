@@ -23,6 +23,8 @@ import MarketplacePageHeader from '../src/components/marketplace-page-header';
 import MarketplaceArticleContents from '../src/components/marketplace-article-contents';
 import Footer from '../src/components/layout/footer';
 import ThemeStyleGallery from '../src/components/theme-style-gallery';
+import ThemeDevicePreview from '../src/components/theme-device-preview';
+import MarketplaceMobileMenu from '../src/components/marketplace-mobile-menu';
 import MarketplaceArtwork, { artworkForHref } from '../src/components/marketplace-artwork';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
@@ -473,4 +475,46 @@ test('style gallery distinguishes one published preset from illustrative studies
     assert.match(html, /Style studies are visual inspiration/);
     assert.match(html, /href="\/themes\/letbuyy-core"/);
     assert.doesNotMatch(html, /Use this preset|Install this style|ready-made designs/);
+});
+
+test('catalog device carousel uses actual media, deduplicates screenshots and exposes frame controls', () => {
+    const html = renderToStaticMarkup(<ThemeDevicePreview theme={{...baseTheme, screenshots:[baseTheme.thumbnail_url, '/previews/another-screen.png']}} />);
+    assert.match(html, /Urban Kicks screenshot carousel/);
+    assert.equal((html.match(/aria-roledescription="slide"/g) || []).length, 3);
+    assert.match(html, /catalog-device-phone/);
+    assert.match(html, /catalog-device-desktop/);
+    assert.match(html, /aria-label="Screenshot frame"/);
+    assert.match(html, /Listing images in device frames/);
+    assert.match(html, /Previous Urban Kicks screenshot/);
+    assert.match(html, /Next Urban Kicks screenshot/);
+    assert.doesNotMatch(html, /<iframe/);
+    const empty = renderToStaticMarkup(<ThemeDevicePreview theme={{name:'Empty media', thumbnail_url:'', screenshots:[]}} />);
+    assert.equal((empty.match(/Screenshot unavailable/g) || []).length, 2);
+    assert.doesNotMatch(empty, /<img/);
+});
+
+test('catalog card keeps real detail/preview and shortlist actions within its device presentation', () => {
+    const html = renderToStaticMarkup(<ThemeCard theme={baseTheme} devicePreview renderPreviewImages={false} />);
+    assert.match(html, /marketplace-catalog-card/);
+    assert.match(html, /catalog-device-phone/);
+    assert.match(html, /catalog-device-desktop/);
+    assert.match(html, /href="\/themes\/urban-kicks"/);
+    assert.match(html, /Explore theme/);
+    assert.match(html, /Quick look/);
+    assert.match(html, /Save|Saved/);
+    assert.match(html, /Compare/);
+    assert.match(html, /Version/);
+});
+
+test('compact mobile menu keeps destinations inside native expandable groups', () => {
+    const html = renderToStaticMarkup(<MarketplaceMobileMenu pathname="/guides" onNavigate={()=>undefined} groups={[
+        {key:'browse',label:'Browse themes',links:[{label:'All themes',href:'/themes'},{label:'Online stores',href:'/themes?category=store'}]},
+        {key:'learn',label:'Learn',links:[{label:'Theme guides',href:'/guides'},{label:'Legal and privacy',href:'/legal'}]},
+        {key:'library',label:'My themes',links:[{label:'Downloads',href:'/dashboard/downloads'}]},
+    ]} />);
+    assert.equal((html.match(/<details>/g)||[]).length, 3);
+    assert.doesNotMatch(html, /<details[^>]*\bopen/);
+    for(const href of ['/themes','/themes?category=store','/guides','/legal','/dashboard/downloads','/support','/contact'])assert.ok(html.includes(`href="${href}"`),href);
+    const activeLink = (html.match(/<a\b[^>]*>/g) || []).find(link=>link.includes('href="/guides"'));
+    assert.ok(activeLink?.includes('aria-current="page"'));
 });

@@ -5,6 +5,7 @@
 @import "./marketplace.css";
 @import "./marketplace-editorial.css";
 @import "./marketplace-website-art.css";
+@import "./marketplace-catalog.css";
 @source "./**/*.{ts,tsx}";
 @source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
@@ -24,7 +25,8 @@
     --radius-xl: var(--lb-radius-xl);
     --radius-full: var(--lb-radius-full);
 }
-:root {
+:root,
+[data-letbuyy-surface="marketplace"] {
     --font-inter: var(--lb-font-family-body);
     --font-display-premium: var(--lb-font-family-body);
     --font-mono-premium: var(--lb-font-family-mono);

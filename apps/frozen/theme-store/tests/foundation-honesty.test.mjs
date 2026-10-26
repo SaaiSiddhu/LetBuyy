@@ -116,7 +116,7 @@ test('catalog page exposes backend-supported filters and keeps pagination URL-ba
     assert.doesNotMatch(catalog, /unsupportedFilterCount/);
     assert.match(catalog, /offset/);
     assert.match(catalog, /pageNumbers/);
-    assert.match(catalog, /Showing \{pageStart\}-\{pageEnd\} of \{themeTotal\} themes/);
+    assert.match(catalog, /Showing \{pageStart\}-\{pageEnd\} of \{themeTotal\} theme/);
 });
 
 test('preview, review, saved-search, report, refund, download, and developer controls are wired to real service methods', () => {
@@ -135,7 +135,7 @@ test('preview, review, saved-search, report, refund, download, and developer con
     assert.match(catalog, /createSavedSearch/);
     assert.match(purchases, /requestThemeRefund/);
     assert.match(card, /ThemePreferenceActions/);
-    assert.doesNotMatch(card, /Preview theme/);
+    assert.doesNotMatch(card, />\s*Preview theme\s*</);
     assert.match(card, /View details/);
     assert.match(downloads, /getThemeDownloads/);
     assert.match(developer, /createDeveloperListing/);

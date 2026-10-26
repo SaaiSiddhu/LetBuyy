@@ -5,6 +5,7 @@ import { useEffect, useState, type MouseEvent } from 'react';
 import { usePathname } from 'next/navigation';
 import { Button, ChevronDown, Drawer, Input, Menu, Modal, Popover, Search, ThemeToggleButton } from '@letbuyy/ui';
 import BrandLogo from '@/components/brand-logo';
+import MarketplaceMobileMenu from '@/components/marketplace-mobile-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { getAccountsUrl, getThemeMarketplaceUrl } from '@/lib/public-urls';
 import { isCommandSearchShortcut } from '@/lib/utils';
@@ -86,15 +87,10 @@ export default function Navbar() {
                 </div>
             </div>
         </header>
-        <Drawer open={mobileOpen} onClose={()=>setMobileOpen(false)} title="LetBuyy Themes" side="right" size="md">
-            <nav aria-label="Mobile navigation" className="marketplace-mobile-navigation">
-                {MENUS.map(menu=><section key={menu.key} className="marketplace-mobile-nav-group"><h2>{menu.label}</h2>{menu.links.map(link=><Link href={link.href} key={link.href} aria-current={pathname===link.href?'page':undefined} onClick={closeNavigation}>{link.label}</Link>)}</section>)}
-                <Link href="/support" onClick={closeNavigation}>Support center</Link><Link href="/contact" onClick={closeNavigation}>Contact</Link>
-                {isAuthenticated ? <Link href="/dashboard" onClick={closeNavigation}>Your library</Link> : <a href={accountHref('/lookup')} onClick={preserveReturnTo}>Log in</a>}
-                <ThemeToggleButton />
-            </nav>
+        <Drawer open={mobileOpen} onClose={()=>setMobileOpen(false)} title="Explore LetBuyy Themes" description="Find a design, return to your library, or get a little guidance." side="right" size="md" className="marketplace-navigation-drawer" footer={<div className="marketplace-menu-footer">{isAuthenticated ? <Link href="/dashboard" onClick={closeNavigation}>Your library</Link> : <a href={accountHref('/lookup')} onClick={preserveReturnTo}>Log in to your account</a>}<ThemeToggleButton label="Change appearance" /></div>}>
+            <MarketplaceMobileMenu groups={MENUS} pathname={pathname} onNavigate={closeNavigation} />
         </Drawer>
-        <Modal open={searchOpen} onClose={()=>setSearchOpen(false)} title="Find your theme" description="Search by name, style, or a feature your business needs.">
+        <Modal className="marketplace-search-modal" open={searchOpen} onClose={()=>setSearchOpen(false)} title="Find your theme" description="Search by name, style, or a feature your business needs.">
             <form action="/themes" method="get" role="search" className="marketplace-search-form" onSubmit={()=>setSearchOpen(false)}>
                 <Input label="Search themes" name="q" type="search" placeholder="Try minimal, clothing, or portfolio" maxLength={80} autoFocus />
                 <Button type="submit">Search themes</Button>

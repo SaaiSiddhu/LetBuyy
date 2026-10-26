@@ -7,15 +7,17 @@ import { Button, Eye, LayoutGrid, Modal, Star } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
 import { CATEGORY_LABELS, formatRelativeUpdatedAt, formatReviewSummary, formatThemePrice, getThemeFreshnessBadge, themeCompareSingleHref, themeFacetHref, themeSandboxPreviewHref } from '@/lib/utils';
 import ThemePreferenceActions from '@/components/theme-preference-actions';
+import ThemeDevicePreview from '@/components/theme-device-preview';
 
 interface ThemeCardProps {
     theme: Theme;
     featured?: boolean;
+    devicePreview?: boolean;
     initialQuickLookOpen?: boolean;
     renderPreviewImages?: boolean;
 }
 
-export default function ThemeCard({ theme, featured = false, initialQuickLookOpen = false, renderPreviewImages = true }: ThemeCardProps) {
+export default function ThemeCard({ theme, featured = false, devicePreview = false, initialQuickLookOpen = false, renderPreviewImages = true }: ThemeCardProps) {
     const [quickLookOpen, setQuickLookOpen] = useState(initialQuickLookOpen);
     const priceLabel = formatThemePrice(theme);
     const categoryLabel = CATEGORY_LABELS[theme.category]?.label ?? theme.category;
@@ -26,24 +28,25 @@ export default function ThemeCard({ theme, featured = false, initialQuickLookOpe
     const detailsHref = `/themes/${encodeURIComponent(theme.slug)}`;
 
     return <>
-        <article className={`marketplace-theme-card${featured ? ' marketplace-theme-spotlight' : ''}`}>
-            <Link href={detailsHref} aria-label={`Open ${theme.name} theme details`} className="marketplace-card-art">
+        <article className={`marketplace-theme-card${featured ? ' marketplace-theme-spotlight' : ''}${devicePreview ? ' marketplace-catalog-card' : ''}`}>
+            {devicePreview ? <ThemeDevicePreview theme={theme} renderImages={renderPreviewImages} /> : <Link href={detailsHref} aria-label={`Open ${theme.name} theme details`} className="marketplace-card-art">
                 {renderPreviewImages ? <Image src={theme.thumbnail_url} alt={`${theme.name} theme screenshot`} fill sizes={featured ? '(max-width: 1024px) 100vw, 50vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'} /> : <div role="img" aria-label={theme.name} data-testid="theme-card-preview-fallback" />}
                 {freshness && <span className="marketplace-card-freshness" data-testid="theme-card-freshness">{freshness}</span>}
-            </Link>
+            </Link>}
             <div className="marketplace-card-content">
             <div className="marketplace-card-heading"><h3><Link href={detailsHref}>{theme.name}</Link></h3><span className="marketplace-card-price">{priceLabel}</span></div>
             <div className="marketplace-card-meta">
                 <span>{theme.author_name}</span><span aria-hidden="true">·</span><span>{categoryLabel}</span>
                 {theme.review_count > 0 && <span className="marketplace-rating" aria-label={formatReviewSummary(theme.review_count, theme.rating)}><Star aria-hidden="true" /> {theme.rating.toFixed(1)} ({theme.review_count})</span>}
             </div>
-            <p className="marketplace-card-description">{theme.description}</p>
+            <p className="marketplace-card-description">{devicePreview && theme.slug === 'letbuyy-core' ? 'A flexible starting point for your store, with collection browsing, product layouts, and space for your brand story.' : theme.description}</p>
             <div className="marketplace-card-facets" aria-label={`${theme.name} facets`}>
-                {theme.tags.slice(0, 2).map(tag => <Link key={`tag-${tag}`} href={themeFacetHref('tag', tag)}>{tag}</Link>)}
-                {theme.features.slice(0, 1).map(feature => <Link key={`feature-${feature}`} href={themeFacetHref('feature', feature)}>{feature}</Link>)}
+                {!devicePreview && theme.tags.slice(0, 2).map(tag => <Link key={`tag-${tag}`} href={themeFacetHref('tag', tag)}>{tag}</Link>)}
+                {theme.features.slice(0, devicePreview ? 3 : 1).map(feature => <Link key={`feature-${feature}`} href={themeFacetHref('feature', feature)}>{feature}</Link>)}
             </div>
-            <p className="marketplace-card-meta" data-testid="theme-card-updated">{updated}</p>
+            <p className="marketplace-card-meta" data-testid="theme-card-updated">{devicePreview && <span>Version {theme.version} · </span>}{updated}</p>
             <div className="marketplace-card-footer">
+                {devicePreview && <Link href={detailsHref} className="marketplace-action">Explore theme</Link>}
                 <Link href={previewHref} className="marketplace-card-control"><Eye aria-hidden="true" /> Preview</Link>
                 <Button unstyled className="marketplace-card-control" type="button" aria-haspopup="dialog" onClick={() => setQuickLookOpen(true)}>Quick look</Button>
                 <Link href={compareHref} className="sr-only" data-testid="theme-card-compare-link">Compare {theme.name}</Link>
@@ -51,9 +54,9 @@ export default function ThemeCard({ theme, featured = false, initialQuickLookOpe
             <ThemePreferenceActions theme={theme} compact className="marketplace-card-preferences" />
             </div>
         </article>
-        <Modal open={quickLookOpen} onClose={() => setQuickLookOpen(false)} title={`${theme.name} quick look`} description={theme.description}>
+        <Modal className="marketplace-theme-quick-look" open={quickLookOpen} onClose={() => setQuickLookOpen(false)} title={`${theme.name} quick look`} description={theme.description}>
             <div className="marketplace-quick-look">
-                <div className="marketplace-quick-look-art">{renderPreviewImages ? <Image src={theme.thumbnail_url} alt={`${theme.name} quick look preview`} fill sizes="(max-width: 640px) 100vw, 640px" /> : <div role="img" aria-label={`${theme.name} quick look preview`} data-testid="theme-card-quick-look-preview-fallback" />}</div>
+                {devicePreview ? <ThemeDevicePreview theme={theme} renderImages={renderPreviewImages} /> : <div className="marketplace-quick-look-art">{renderPreviewImages ? <Image src={theme.thumbnail_url} alt={`${theme.name} quick look preview`} fill sizes="(max-width: 640px) 100vw, 640px" /> : <div role="img" aria-label={`${theme.name} quick look preview`} data-testid="theme-card-quick-look-preview-fallback" />}</div>}
                 <div className="marketplace-card-heading"><strong>{priceLabel}</strong><span>{theme.letbuyy_pricing_type === 'free' ? 'No purchase required' : theme.letbuyy_pricing_type === 'subscription' ? 'Subscription theme' : 'One-time purchase'}</span></div>
                 <p className="marketplace-card-meta">Version {theme.version} · {updated}</p>
                 <div className="marketplace-hero-actions">

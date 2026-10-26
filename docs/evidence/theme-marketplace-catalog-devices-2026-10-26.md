@@ -1,0 +1,30 @@
+# All Themes catalog and navigation drawer — 26 October 2026
+
+Owner request: entirely redesign `/themes`, improve professionalism/content, display listing media in iPhone-like frames and expose desktop views through a carousel. Additional steering: improve the sidebar navigation and fix incomplete light-mode support. UI only; backend remains owned by the owner's friend. Existing isolated worktree/branch `codex/theme-marketplace-20261026`, base `79b74edbe`.
+
+Execution mode: SINGLE AGENT · Subagents invoked: NO · Agent/Task delegation: NO
+Background agents: NO · Parallel worktree agents: NO · Workflow orchestration: NO
+
+## Implemented composition and authority
+
+Replaced the tall generic sample-art catalog masthead with a clear title/description, real GET search, website-type tabs and comparison link. Query inputs retain existing filters and reset paging through the existing URL contract. Desktop uses an aligned filter rail and catalog area; mobile uses the canonical filter drawer. Advanced feature/layout and price-range groups collapse natively, opening when their selected values need attention. Existing keyword/sort/category/pricing/industry/layout/tag/feature/min/max fields, explicit zero prices, clear/remove chips, saved-search form/action and pagination URLs are retained.
+
+Catalog cards now use a presentation variant with a screenshot carousel: phone frame initially, desktop frame and further supplied screenshots via toggle/previous/next/swipe controls. The frames contain **actual listing images**, not invented mobile screenshots or a new commerce renderer. The caption explains this distinction. Available responsive demos remain behind the existing Preview route. The carousel has unique control IDs, pressed frame controls, selected-slide semantics, reduced-motion-aware horizontal scrolling, deduplicated sources, unavailable-media fallback and image-load failure fallback. Quick look uses the same device presentation. No external iframe or unverified demo origin is added.
+
+Cards retain the actual name, author, price, version, update information, features and any real review summary. Core's customer-facing summary uses its known collection/product/story capabilities rather than internal architecture copy. Details, preview, quick look, browser-local save and compare actions remain connected to their existing paths/logic. Single-result desktop presentation pairs the device stage with details; multiple results use a bounded responsive grid. Pagination is a compact result count, with page controls only when more than one page exists; singular theme grammar is corrected.
+
+The mobile navigation drawer now has four clear quick destinations, three native collapsed groups for discovery/resources/library, support/contact links and a compact login/library + shared theme-control footer. All prior destinations remain reachable. Canonical Drawer owns dismissal/focus/scroll locking. No second navigation runtime or theme controller is introduced.
+
+Light-mode repair: existing compatibility aliases were declared only at `:root`, so inherited alias values could remain tied to root palette values when a nested marketplace/portal had another theme. Rebind the same aliases at the existing marketplace surface boundary; retain canonical `--lb-*` authority. App-local portal heading/text styles use current semantic roles and native color-scheme follows the mirrored overlay theme attribute. The shared overlay already mirrors light/dark surface attributes and observes theme changes; shared packages are unchanged.
+
+## Verification
+
+Package71 tests pass: source contracts24 and UI/API/session/render47. New regressions cover deduplicated listing media, phone/desktop controls and slide semantics, missing-media fallback, actual card destinations/shortlist actions, and preserved navigation destinations in native collapsed groups. Existing zero-price and full filter-field assertions remain. A source guard originally matched `Preview theme` inside a component invocation; narrowed it to the actual placeholder label boundary. Pagination source assertion follows the corrected singular/plural text. No auth/security assertion was removed or relaxed.
+
+Typecheck, production build, app lint (zero errors/seven existing warnings), changed CSS stylelint, design-system invariants/ratchet and whitespace checks pass. AST comparison confirms21 non-render catalog normalizers/URL helpers/server-action functions are identical to base. Boundary diff for backend/services/database/packages/marketing/API/client/proxy/config is empty. Root identity/session logic and stored preference behavior are untouched.
+
+Read-only HTTP checks cover `/themes`, real-query/free/category/zero-price/empty-result variants, resulting links and form fields, actual device frames/controls, absence of the old generic header art and redundant single-page control, and delivered responsive/theme-scoped CSS. Article/header/footer regression routes remain checked. Mobile-menu contents are server-render-tested separately because canonical closed portal overlays are not emitted into HTTP markup. In-context light/dark, open-drawer keyboard/focus, actual carousel swipe/scroll and device visual acceptance remain deferred under the owner's automated-only preference. Passing source/render/HTTP checks do not certify exact layout or full accessibility.
+
+No backend architecture, migration, API/DTO, auth behavior, theme bundle or live preview renderer change. No production deploy, merge, push, external message, install or purchase. Local preview: http://localhost:9005/themes.
+
+Logs: `/private/tmp/letbuyy-catalog-{tests,types,build,lint,css,design}.log`; route results `/private/tmp/letbuyy-catalog-http-checks.json`; post-commit quick gate `/private/tmp/letbuyy-catalog-close-20261026/`.
