@@ -26,6 +26,7 @@ export function ThemeWorkspace({ marketplace = false }: {
     const [loading, setLoading] = useState(true), [error, setError] = useState(''), [busy, setBusy] = useState<string | null>(null);
     const [revision, setRevision] = useState(0), [search, setSearch] = useState(''), [category, setCategory] = useState('all');
     const [storefrontRevision, setStorefrontRevision] = useState(0);
+    const [publicPreview, setPublicPreview] = useState<{ store: string; visible: boolean } | null>(null);
     const [preview, setPreview] = useState<ThemeCatalogItem | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
     const { notify } = useToast();
@@ -97,7 +98,7 @@ export function ThemeWorkspace({ marketplace = false }: {
     const storefront = getStorefrontStoreUrl(store), editor = (slug: string) => `/${store}/online-store/themes/${encodeURIComponent(slug)}/editor`;
     return <div className={styles.workspace}>
   <PageHeader recipe="workbench" title={marketplace ? 'Theme marketplace' : 'Online Store'} icon={<Store aria-hidden="true" className="letbuyy-icon"/>} overflowAction={<div className={styles.actions}>
-   {marketplace ? <Link href={`/${store}/online-store/themes`}>Back to themes</Link> : <StorefrontVisibility store={store} onChanged={() => setStorefrontRevision(value => value + 1)}/>}
+   {marketplace ? <Link href={`/${store}/online-store/themes`}>Back to themes</Link> : <StorefrontVisibility key={store} store={store} onLoaded={(loadedStore, visible) => setPublicPreview({ store: loadedStore, visible })} onChanged={() => { setStorefrontRevision(value => value + 1); void load(); }}/>}
    <a className="themes-button themes-button-secondary" href={storefront} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true"/>View store</a>
    <Dropdown align="end" trigger={<Button variant="secondary" aria-label="More online store actions"><MoreHorizontal size={16}/></Button>} items={[
             { id: 'preferences', label: 'Storefront preferences', onSelect: () => { router.push(`/${store}/online-store/preferences`); } },
@@ -106,7 +107,7 @@ export function ThemeWorkspace({ marketplace = false }: {
   {error && <Banner variant="critical" title="Themes could not load">{error}<Button variant="secondary" onClick={() => void load()}>Retry</Button></Banner>}
   {!error && <>
   {!marketplace && <>{loading ? <Skeleton variant="card"/> : <Card className={styles.hero} aria-label="Current theme">
-   <div className={styles.heroMedia}>{current ? <iframe key={`${current.slug}:${storefrontRevision}`} title="Current storefront" src={storefront} loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms" className="theme-current-storefront-frame"/> : <div className={styles.empty}><Palette size={32}/><h2>Make your store your own</h2><p>Choose a design below and add it to your theme library.</p></div>}</div>
+   <div className={styles.heroMedia}>{current && publicPreview?.store === store && publicPreview.visible ? <iframe key={`${current.slug}:${storefrontRevision}`} title="Current storefront" src={storefront} loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms" className="theme-current-storefront-frame"/> : current ? <div className={styles.empty}><Palette size={32}/><h2>{status === 'published' ? 'Preview your saved design' : 'Your store is not live yet'}</h2><p>Open the theme editor to preview your saved design.</p></div> : <div className={styles.empty}><Palette size={32}/><h2>Make your store your own</h2><p>Choose a design below and add it to your theme library.</p></div>}</div>
    <div className={styles.heroFooter}><div><h2>{current?.name || 'No current theme'}{current && <Badge label={status === 'published' ? 'Current theme' : 'Unpublished'} variant={status === 'published' ? 'success' : 'default'}/>}</h2><p>{current ? `Version ${current.version || '1.0'} · ${status === 'published' ? 'Published design' : 'Your store is not live yet'}` : 'Adding a theme keeps it private until you publish.'}</p></div>
     {current && <div className={styles.actions}><Dropdown align="end" trigger={<Button variant="secondary" aria-label="More current theme actions" disabled={!!busy}><MoreHorizontal size={16}/></Button>} items={[
                         { id: 'duplicate', label: 'Duplicate', onSelect: () => void duplicateCurrent() },

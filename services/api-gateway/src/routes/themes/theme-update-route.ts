@@ -1,3 +1,4 @@
+import { assertReadyFirstPartyStorefrontDomain } from '../../lib/first-party-storefront-domain';
 // ──────────────────────────────────────────────────────────────────────────────
 // Phase AB — Tenant-safe theme VERSION UPDATE routes.
 //
@@ -253,6 +254,14 @@ export function mountThemeUpdateRoutes(router: Hono<{ Bindings: Env }>): void {
 
             // Step 5: Convert merged ThemeDocument → LiquidThemePackageBundle for publishing
             const mergedBundle = fromThemeDocumentV2(result.updatedDoc);
+
+            if (makeStoreLive) {
+                const store = await adapter.verifyThemeEditorStore(scope.siteId, scope.customUser.id);
+                await assertReadyFirstPartyStorefrontDomain(c.env, {
+                    subdomain: store.subdomain || store.store_name || '', store_name: store.store_name,
+                    published: store.published === true, status: store.status as 'draft' | 'published' | undefined,
+                });
+            }
 
             // Step 6: Commit the selected version, existing publisher and exact receipt together.
             const release = await adapter.publishVersionUpdateRelease({

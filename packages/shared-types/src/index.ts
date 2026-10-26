@@ -1136,6 +1136,14 @@ export const StoreSummarySchema = StoreSchema.pick({
   theme_settings: MetadataSchema.optional().nullable(),
 }).passthrough();
 
+/** Hosting readiness is separate from publication and visitor access. */
+export const StorefrontDomainProvisioningSchema = z.object({
+  hostname: z.string().min(3).max(253).nullable(),
+  status: z.enum(['ready', 'pending', 'local']),
+  reason: z.enum(['provider_not_configured', 'provider_pending', 'provider_unavailable', 'invalid_host', 'local_runtime']).optional(),
+});
+export type StorefrontDomainProvisioning = z.infer<typeof StorefrontDomainProvisioningSchema>;
+
 export const DomainHealthRecordSchema = z.object({
   type: z.string().min(1).max(16),
   host: z.string().min(1).max(255),

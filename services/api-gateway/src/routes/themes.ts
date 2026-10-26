@@ -1,3 +1,4 @@
+import { assertReadyFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import type { Theme } from '@letbuyy/shared-types';
 import { Hono } from 'hono';
 import { DiscardThemeDraftSchema } from '@letbuyy/theme-engine';
@@ -635,6 +636,13 @@ router.post('/:slug/publish', validate('json', PublishThemeSchema), async (c) =>
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
     const service = new ThemeExecutionAdapter(db, auth.user.storeId);
+    if (body.make_store_live) {
+        const store = await service.verifyThemeEditorStore(body.store_id, customUser.id);
+        await assertReadyFirstPartyStorefrontDomain(c.env, {
+            subdomain: store.subdomain || store.store_name || '', store_name: store.store_name,
+            published: store.published === true, status: store.status as 'draft' | 'published' | undefined,
+        });
+    }
     const published = await service.publish(slug, body, customUser.id, getRequestId(c));
     await purgeThemeStorefrontCache(c, body.store_id);
     return c.json(success(published));
