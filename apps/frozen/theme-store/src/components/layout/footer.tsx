@@ -1,45 +1,28 @@
 'use client';
-
 import Link from 'next/link';
-import { useState } from 'react';
-import { Button, Checkbox, Modal } from '@letbuyy/ui';
+import {useState} from 'react';
+import {Banner,Button,Modal} from '@letbuyy/ui';
 import BrandLogo from '@/components/brand-logo';
-
-const PLATFORM_URL = process.env.NEXT_PUBLIC_MARKETING_URL?.trim() || 'https://letbuyy.com';
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@letbuyy.com';
-const columns = [
-    {title:'Explore',links:[['All themes','/themes'],['Free themes','/themes?pricing=free'],['Recently added','/themes?sort=recent'],['Compare themes','/themes/compare']]},
-    {title:'Make it yours',links:[['Theme guide','/docs'],['Your library','/dashboard'],['Saved themes','/dashboard/favorites'],['LetBuyy platform',PLATFORM_URL]]},
-    {title:'We’re here to help',links:[['Help centre','/support'],['Contact us','/contact'],['About Themes','/about'],['Theme licence','/legal/license']]},
+import {clearSavedThemeChoices} from '@/lib/browser-preferences';
+const SUPPORT_EMAIL=process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@letbuyy.com';
+const columns=[
+    {title:'Explore',links:[['All themes','/themes'],['Collections and categories','/collections'],['Free themes','/themes?pricing=free'],['New themes','/themes?sort=recent'],['Compare themes','/themes/compare']]},
+    {title:'Learn',links:[['Theme guides','/guides'],['Documentation','/docs'],['Pricing explained','/pricing'],['Frequently asked questions','/faq'],['About Themes','/about']]},
+    {title:'My themes',links:[['Your library','/dashboard'],['Saved themes','/dashboard/favorites'],['Installations','/dashboard/installations'],['Purchases and licenses','/dashboard/purchases'],['Downloads','/dashboard/downloads'],['Settings','/dashboard/settings']]},
+    {title:'Help and creators',links:[['Support center','/support'],['Contact us','/contact'],['Creator guidance','/for-creators'],['Author workspace','/developer'],['API reference','/docs/api'],['Legal and privacy','/legal']]},
 ];
-
-export default function Footer() {
+export default function Footer(){
     const [privacyOpen,setPrivacyOpen]=useState(false);
-    const [analytics,setAnalytics]=useState(false);
-    const [personalization,setPersonalization]=useState(false);
-    function openPrivacy() {
-        try {
-            const stored=JSON.parse(window.localStorage.getItem('letbuyy_privacy_choices') || '{}');
-            setAnalytics(stored.analytics===true);setPersonalization(stored.personalization===true);
-        } catch { setAnalytics(false);setPersonalization(false); }
-        setPrivacyOpen(true);
-    }
-    function savePrivacy() {
-        window.localStorage.setItem('letbuyy_privacy_choices',JSON.stringify({analytics,personalization,savedAt:new Date().toISOString()}));
-        setPrivacyOpen(false);
-    }
-    return <footer className="marketplace-footer" aria-labelledby="site-footer-heading">
-        <div className="marketplace-container">
-            <h2 id="site-footer-heading" className="sr-only">LetBuyy Themes footer</h2>
-            <div className="marketplace-footer-grid">
-                <div><Link href="/" aria-label="LetBuyy Themes home"><BrandLogo width={158} height={48} /></Link><p className="marketplace-footer-tagline">A home for your next great look.<br />Built for your business, on LetBuyy.</p></div>
-                {columns.map(column=><nav key={column.title} aria-label={column.title}><h3>{column.title}</h3><ul>{column.links.map(([label,href])=><li key={label}><Link href={href}>{label}</Link></li>)}</ul></nav>)}
-            </div>
-            <div className="marketplace-footer-bottom"><span>© {new Date().getFullYear()} LetBuyy</span><span>India · English</span><nav aria-label="Legal links"><Link href="/legal/terms">Terms</Link><Link href="/legal/privacy">Privacy</Link><Link href="/legal/refund">Refunds</Link><Button variant="ghost" size="sm" onClick={openPrivacy}>Your Privacy Choices</Button></nav></div>
-            <a className="marketplace-footer-contact" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+    const [result,setResult]=useState<'cleared'|'error'|null>(null);
+    function clearChoices(){try{clearSavedThemeChoices(window.localStorage);window.dispatchEvent(new CustomEvent('letbuyy-theme-preferences-changed'));setResult('cleared');}catch{setResult('error');}}
+    return <footer className="marketplace-footer" aria-labelledby="site-footer-heading"><div className="marketplace-container"><h2 id="site-footer-heading" className="sr-only">LetBuyy Themes footer</h2>
+        <div className="marketplace-footer-grid"><div><Link href="/" aria-label="LetBuyy Themes home"><BrandLogo width={158} height={48}/></Link><p className="marketplace-footer-tagline">A home for your next great look.<br/>Built for your business, on LetBuyy.</p></div>{columns.map(column=><nav key={column.title} aria-label={column.title}><h3>{column.title}</h3><ul>{column.links.map(([label,href])=><li key={label}><Link href={href}>{label}</Link></li>)}</ul></nav>)}</div>
+        <div className="marketplace-footer-bottom"><span>© {new Date().getFullYear()} LetBuyy · India · English</span><nav aria-label="Legal links"><Link href="/legal/terms">Terms</Link><Link href="/legal/privacy">Privacy</Link><Link href="/legal/cookies">Cookies and storage</Link><Link href="/legal/license">Theme license</Link><Link href="/legal/refund">Refunds</Link><Button variant="ghost" size="sm" onClick={()=>{setResult(null);setPrivacyOpen(true);}}>Privacy choices</Button></nav></div>
+        <a className="marketplace-footer-contact" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+    </div><Modal title="Your browser preferences" description="Manage the theme choices saved on this browser." open={privacyOpen} onClose={()=>setPrivacyOpen(false)} footer={<Button variant="secondary" onClick={()=>setPrivacyOpen(false)}>Done</Button>}>
+        <div className="marketplace-filter-fields"><p>Clear your saved themes and comparison shortlist on this browser. Your account, purchases, licenses, store installations, and color theme are unchanged.</p><Button variant="secondary" onClick={clearChoices}>Clear saved themes and comparison</Button>
+            {result==='cleared'&&<Banner variant="success">Saved themes and comparison cleared on this browser.</Banner>}{result==='error'&&<Banner variant="warning">Could not clear all saved choices. Check your browser’s storage settings and try again.</Banner>}
+            <p>These controls do not change the privacy settings of an external payment or demo provider.</p><Link href="/legal/cookies" className="marketplace-text-link">Read cookies and browser storage information</Link><Link href="/legal/privacy" className="marketplace-text-link">Read the privacy review document</Link>
         </div>
-        <Modal title="Your Privacy Choices" description="Essential preferences keep the site working. Choose whether to allow optional preferences on this browser." open={privacyOpen} onClose={()=>setPrivacyOpen(false)} footer={<Button onClick={savePrivacy}>Save choices</Button>}>
-            <div className="marketplace-filter-fields"><Checkbox label="Analytics" checked={analytics} onCheckedChange={setAnalytics} /><Checkbox label="Personalization" checked={personalization} onCheckedChange={setPersonalization} /></div>
-        </Modal>
-    </footer>;
+    </Modal></footer>;
 }

@@ -6,8 +6,7 @@ import { Button, Heart, LayoutGrid } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
 import { cn } from '@/lib/utils';
 
-const FAVORITES_KEY = 'letbuyy.themeMarketplace.favorites.v1';
-const COMPARE_KEY = 'letbuyy.themeMarketplace.compare.v1';
+import { FAVORITES_KEY, COMPARE_KEY } from '@/lib/browser-preferences';
 const MAX_COMPARE_THEMES = 4;
 
 function readStoredSlugs(key: string, maxItems = 100): string[] {

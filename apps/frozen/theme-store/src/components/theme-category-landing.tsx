@@ -31,6 +31,14 @@ export const THEME_CATEGORY_LANDING_COPY: Record<ThemeCategory, { title: string;
     },
 };
 
+const CATEGORY_CHECKS: Record<ThemeCategory, {focus:string; checks:string[]}> = {
+    store:{focus:'Follow the shopping journey, from finding a collection to understanding a product.',checks:['Collection navigation and the density of your catalog.','Product images, long names, options, and useful descriptions.','The supported cart journey and mobile navigation.']},
+    portfolio:{focus:'Let your work lead, with project layouts that support the story behind it.',checks:['A clear project index and readable case-study pages.','Image crops and layouts for the kind of work you produce.','A direct route from your services or profile to contact.']},
+    resume:{focus:'Make a professional profile easy to scan and comfortable to read.',checks:['Experience, education, skills, and a clear introduction.','Long text and structured dates on narrow screens.','Actual contact or CV links provided by the selected package.']},
+    landing:{focus:'Choose a focused structure for one offer and the action it needs.',checks:['A specific offer, useful explanation, and clear next action.','Real evidence and appropriate FAQ sections.','The actual behavior of any supported enquiry or signup form.']},
+    saas:{focus:'Explain the product with the right page structure and supporting detail.',checks:['Product screenshots, feature explanations, and relevant page variations.','Pricing presentation and useful documentation links.','Which calls to action are functional and which are sample content.']},
+};
+
 export function isThemeCategorySlug(value: string): value is ThemeCategory {
     return Object.prototype.hasOwnProperty.call(THEME_CATEGORY_LANDING_COPY, value);
 }
@@ -77,6 +85,7 @@ export default function ThemeCategoryLanding({
                     </Card>
                 )}
             </Section>
+            <section className="marketplace-content-note"><h2>What to look for in this category</h2><p>{CATEGORY_CHECKS[category].focus}</p><ul className="marketplace-checklist">{CATEGORY_CHECKS[category].checks.map(check=><li key={check}>{check}</li>)}</ul><p>Capabilities vary by listing and version. Review the actual package features and use your own content for the final preview.</p><Link href="/guides/choose-the-right-theme" className="marketplace-text-link">Read the theme selection guide</Link></section>
         </div>
     );
 }

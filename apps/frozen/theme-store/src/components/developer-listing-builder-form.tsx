@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ButtonHTMLAttributes, ComponentType, InputHTMLAttributes } from 'react';
 import { Button as UiButton, Input as UiInput, Select, Textarea } from '@letbuyy/ui';
 
@@ -105,6 +106,8 @@ export default function DeveloperListingBuilderForm({ action, controls }: Develo
 
             <fieldset className="grid gap-[var(--lb-space-3)] border-0 p-0">
                 <legend className={legendClass}>License tiers and review</legend>
+                <Link href="/legal/creator-agreement" className="marketplace-text-link">Read the creator submission review document</Link>
+                <p>Commercial programme terms remain subject to approval; this document is a review copy.</p>
                 <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                     <label className={labelClass}>
                         Standard license tier

@@ -16,6 +16,10 @@ import {
 } from '../src/components/theme-detail-experience';
 import ThemeCategoryLanding from '../src/components/theme-category-landing';
 import ThemeCard from '../src/components/theme-card';
+import PolicyDraftPage from '../src/components/policy-draft-page';
+import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
+import { MARKETPLACE_POLICIES, policySectionId } from '../src/lib/marketplace-policies';
+import { clearSavedThemeChoices, FAVORITES_KEY, COMPARE_KEY } from '../src/lib/browser-preferences';
 import CatalogFilterPanel from '../src/components/catalog-filter-panel';
 import ThemeDemo from '../src/components/theme-demo';
 import { buildThemeShareUrl } from '../src/components/theme-share-button';
@@ -304,4 +308,43 @@ test('demo controls expose device state and keep embedded preview authority cons
     assert.match(html, /sandbox="allow-same-origin allow-scripts allow-forms"/);
     assert.match(html, /referrerPolicy="no-referrer"/i);
     assert.doesNotMatch(html, /allow-popups|allow-top-navigation/);
+});
+
+test('privacy action clears only browser shortlist keys and propagates storage failure', () => {
+    const values = new Map([[FAVORITES_KEY,'["example"]'],[COMPARE_KEY,'["example"]'],['letbuyy-theme','dark'],['lb_session','untouched']]);
+    clearSavedThemeChoices({ removeItem: key => { values.delete(key); } });
+    assert.equal(values.has(FAVORITES_KEY), false);
+    assert.equal(values.has(COMPARE_KEY), false);
+    assert.equal(values.get('letbuyy-theme'), 'dark');
+    assert.equal(values.get('lb_session'), 'untouched');
+    assert.throws(() => clearSavedThemeChoices({ removeItem: () => { throw new Error('blocked'); } }), /blocked/);
+});
+
+test('legal documents render review status, all paragraphs, and valid contents anchors', () => {
+    for (const document of MARKETPLACE_POLICIES) {
+        const html = renderToStaticMarkup(<PolicyDraftPage document={document} />);
+        assert.match(html, /Review copy/);
+        assert.match(html, /Not effective terms/);
+        assert.match(html, /marketplace-review-2026-10-26/);
+        const ids = document.sections.map(section => policySectionId(section.title));
+        assert.equal(new Set(ids).size, ids.length, document.slug);
+        for (const id of ids) {
+            assert.ok(html.includes(`href="#${id}"`), `${document.slug}: missing contents link`);
+            assert.ok(html.includes(`id="${id}"`), `${document.slug}: missing section`);
+        }
+    }
+});
+
+test('learning content links resolve to published routes or a known guide/document', () => {
+    const guideSlugs = new Set(MARKETPLACE_GUIDES.map(guide=>guide.slug));
+    const policySlugs = new Set(MARKETPLACE_POLICIES.map(policy=>policy.slug));
+    assert.equal(findMarketplaceGuide('not-a-guide'), undefined);
+    for (const guide of MARKETPLACE_GUIDES) {
+        assert.equal(new Set(guide.sections.map(section=>section.id)).size,guide.sections.length);
+        for (const related of guide.related) assert.ok(guideSlugs.has(related),related);
+    }
+    for (const faq of MARKETPLACE_FAQS) {
+        if (faq.href.startsWith('/guides/')) assert.ok(guideSlugs.has(faq.href.slice('/guides/'.length)),faq.href);
+        if (faq.href.startsWith('/legal/')) assert.ok(policySlugs.has(faq.href.slice('/legal/'.length)),faq.href);
+    }
 });

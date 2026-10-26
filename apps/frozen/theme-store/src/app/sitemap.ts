@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import type { ThemeCategory } from '@letbuyy/theme-engine';
 import { appendOriginPath, getPlatformRequestOrigin } from '@/lib/platform-request-origin';
 import { getThemeMarketplaceUrl } from '@/lib/site-url';
+import { MARKETPLACE_GUIDES } from '@/lib/marketplace-content';
 import { ThemeService } from '@/lib/theme-service';
 
 // Regenerate hourly. Dynamic theme entries are best-effort: if the Commerce API
@@ -19,6 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { url: url('/'), lastModified: now, changeFrequency: 'daily', priority: 1 },
         { url: url('/themes'), lastModified: now, changeFrequency: 'daily', priority: 0.9 },
         { url: url('/pricing'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+        ...['/collections','/guides','/docs','/faq','/support','/contact','/about'].map(path=>({url:url(path),changeFrequency:'monthly' as const,priority:0.6})),
+        ...MARKETPLACE_GUIDES.map(guide=>({url:url(`/guides/${guide.slug}`),changeFrequency:'monthly' as const,priority:0.65})),
         ...CATEGORY_ROUTES.map((category) => ({
             url: url(`/themes/category/${category}`),
             lastModified: now,

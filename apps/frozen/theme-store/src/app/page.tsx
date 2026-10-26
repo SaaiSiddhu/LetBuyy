@@ -4,6 +4,7 @@ import ThemeCard from '@/components/theme-card';
 import { ThemeService } from '@/lib/theme-service';
 import { normalizeThemeRecord } from '@/lib/theme-catalog';
 import MarketplaceUnavailable from '@/components/marketplace-unavailable';
+import MarketplaceHomeResources from '@/components/marketplace-home-resources';
 
 const CATEGORIES = [
     { slug: 'store', label: 'Online stores' },
@@ -73,6 +74,8 @@ export default async function HomePage() {
                 <div className="marketplace-section-heading"><div><h2 id="recent-themes-heading">Fresh perspectives</h2><p>The latest additions to the theme catalog.</p></div><Link href="/themes?sort=recent" className="marketplace-text-link">See what’s new ↗</Link></div>
                 <div className="marketplace-theme-grid">{recent.map(theme => <ThemeCard key={theme.id} theme={theme} />)}</div>
             </section>}
+
+            <MarketplaceHomeResources />
 
             <section className="marketplace-section marketplace-container">
                 <div className="marketplace-callout"><p className="marketplace-eyebrow"><ShieldCheck size={16} aria-hidden="true" /> Your brand. Your storefront.</p><h2>A new look. The same business.</h2><p>Your products and orders belong to your store. Choose a design, then personalise it from your merchant workspace when you’re ready.</p><Link href="/themes" className="marketplace-action">Find your theme <ArrowRight aria-hidden="true" /></Link></div>

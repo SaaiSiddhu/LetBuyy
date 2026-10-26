@@ -1,0 +1,23 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import MarketplaceContentPage, { ResourceGrid } from '@/components/marketplace-content-page';
+import { DISCOVERY_PATHS } from '@/lib/marketplace-content';
+import { ThemeService } from '@/lib/theme-service';
+import { stringValue } from '@/lib/theme-catalog';
+export const metadata: Metadata = { title:'Explore theme collections',description:'Discover LetBuyy themes by purpose, website type and published collections.' };
+export default async function CollectionsPage() {
+    const [collections,industries]=await Promise.all([ThemeService.getCollections(),ThemeService.getIndustries()]);
+    const published=collections.filter(item=>/^[a-z0-9-]+$/.test(stringValue(item,'slug')));
+    return <MarketplaceContentPage title="Find a direction that feels right." eyebrow="Explore themes" intro="Start with your website’s purpose, explore a different style, or narrow the catalog around the features your business needs.">
+        <section><h2>A few ways to begin</h2><ResourceGrid items={DISCOVERY_PATHS} /></section>
+        <section><h2>Browse by website type</h2><ResourceGrid items={[
+            {title:'Online stores',description:'Product pages, collection navigation, and layouts for your catalog.',href:'/themes/category/store'},
+            {title:'Portfolios',description:'Projects, case studies, services, and a clear introduction to your work.',href:'/themes/category/portfolio'},
+            {title:'Resume and profile',description:'Experience, education, skills, and a focused professional profile.',href:'/themes/category/resume'},
+            {title:'Landing pages',description:'A focused offer, campaign story, or product introduction with a clear next action.',href:'/themes/category/landing'},
+            {title:'SaaS and products',description:'Product features, screenshots, and software presentation. Check each theme for supported sections.',href:'/themes/category/saas'},
+        ]} /></section>
+        {industries.length>0 && <section><h2>Explore an industry</h2><p>Industry is a starting point. Review each theme’s features to decide whether it fits your content.</p><div className="marketplace-category-nav">{Array.from(new Set(industries)).map(industry=><Link key={industry} href={`/themes?industry=${encodeURIComponent(industry)}`}>{industry.replaceAll('-',' ')}</Link>)}</div></section>}
+        <section><h2>Published collections</h2>{published.length>0?<ResourceGrid items={published.map(item=>({title:stringValue(item,'title',stringValue(item,'name','Theme collection')),description:stringValue(item,'description','Explore the themes in this published collection.'),href:`/collections/${encodeURIComponent(stringValue(item,'slug'))}`}))}/>:<div className="marketplace-content-note"><p>Published collections are not available here right now. You can still use the full catalog’s filters and sorting to explore the available themes.</p><Link className="marketplace-text-link" href="/themes">Browse the full catalog</Link></div>}</section>
+    </MarketplaceContentPage>;
+}

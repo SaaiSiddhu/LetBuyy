@@ -11,20 +11,28 @@ import { isCommandSearchShortcut } from '@/lib/utils';
 
 const BROWSE_LINKS = [
     {label:'All themes',href:'/themes'},
+    {label:'Explore collections',href:'/collections'},
     {label:'Free themes',href:'/themes?pricing=free'},
     {label:'New themes',href:'/themes?sort=recent'},
     {label:'Popular themes',href:'/themes?sort=popular'},
     {label:'Online stores',href:'/themes?category=store'},
     {label:'Portfolios',href:'/themes?category=portfolio'},
     {label:'Landing pages',href:'/themes?category=landing'},
+    {label:'Professional profiles',href:'/themes?category=resume'},
+    {label:'SaaS presentation',href:'/themes?category=saas'},
+    {label:'Compare themes',href:'/themes/compare'},
 ];
+
+const LEARN_LINKS = [{label:'Theme guides',href:'/guides'},{label:'Documentation',href:'/docs'},{label:'Frequently asked questions',href:'/faq'},{label:'Theme pricing',href:'/pricing'},{label:'For theme creators',href:'/for-creators'},{label:'About LetBuyy Themes',href:'/about'},{label:'Legal and privacy',href:'/legal'}];
+const LIBRARY_LINKS = [{label:'Your theme library',href:'/dashboard'},{label:'Saved themes',href:'/dashboard/favorites'},{label:'Installations and releases',href:'/dashboard/installations'},{label:'Purchases and licenses',href:'/dashboard/purchases'},{label:'Downloads',href:'/dashboard/downloads'},{label:'Marketplace settings',href:'/dashboard/settings'}];
+const MENUS = [{key:'browse',label:'Browse themes',links:BROWSE_LINKS},{key:'learn',label:'Learn',links:LEARN_LINKS},{key:'library',label:'My themes',links:LIBRARY_LINKS}];
 
 export default function Navbar() {
     const { isAuthenticated, signOut } = useAuth();
     const pathname = usePathname();
     const [searchOpen,setSearchOpen] = useState(false);
     const [mobileOpen,setMobileOpen] = useState(false);
-    const [browseOpen,setBrowseOpen] = useState(false);
+    const [openMenu,setOpenMenu] = useState<string | null>(null);
 
     useEffect(()=>{
         function shortcut(event:KeyboardEvent) {
@@ -47,7 +55,7 @@ export default function Navbar() {
         event.currentTarget.href = url.toString();
     }
 
-    function closeNavigation() { setMobileOpen(false); setBrowseOpen(false); }
+    function closeNavigation() { setMobileOpen(false); setOpenMenu(null); }
 
     return <>
         <a href="#marketplace-main" className="marketplace-skip-link">Skip to themes</a>
@@ -55,11 +63,10 @@ export default function Navbar() {
             <div className="marketplace-container marketplace-header-inner">
                 <Link href="/" className="marketplace-brand" aria-label="LetBuyy Themes home" onClick={closeNavigation}><BrandLogo width={142} height={44} priority /><span>Themes</span></Link>
                 <nav className="marketplace-desktop-nav" aria-label="Main navigation">
-                    <Popover open={browseOpen} onOpenChange={setBrowseOpen} ariaLabel="Browse themes" trigger={<Button variant="ghost">Browse themes <ChevronDown size={14} aria-hidden="true" /></Button>}>
-                        <div className="marketplace-browse-menu">{BROWSE_LINKS.map(link=><Link href={link.href} key={link.href} onClick={closeNavigation}>{link.label}</Link>)}</div>
-                    </Popover>
-                    <Link href="/themes?pricing=free">Free themes</Link>
-                    <Link href="/docs">Theme guide</Link>
+                    {MENUS.map(menu => <Popover key={menu.key} open={openMenu===menu.key} onOpenChange={open=>setOpenMenu(open?menu.key:null)} ariaLabel={menu.label} trigger={<Button variant="ghost">{menu.label} <ChevronDown size={14} aria-hidden="true" /></Button>}>
+                        <div className="marketplace-browse-menu">{menu.links.map(link=><Link href={link.href} key={link.href} aria-current={pathname===link.href?'page':undefined} onClick={closeNavigation}>{link.label}</Link>)}</div>
+                    </Popover>)}
+                    <Link href="/support" aria-current={pathname==='/support'?'page':undefined}>Support</Link>
                 </nav>
                 <div className="marketplace-header-actions">
                     <Button variant="ghost" size="icon" aria-label="Search themes" onClick={()=>setSearchOpen(true)}><Search aria-hidden="true" /></Button>
@@ -73,8 +80,8 @@ export default function Navbar() {
         </header>
         <Drawer open={mobileOpen} onClose={()=>setMobileOpen(false)} title="LetBuyy Themes" side="right" size="md">
             <nav aria-label="Mobile navigation" className="marketplace-mobile-navigation">
-                {BROWSE_LINKS.map(link=><Link key={link.href} href={link.href} onClick={closeNavigation}>{link.label}</Link>)}
-                <Link href="/themes/compare" onClick={closeNavigation}>Compare themes</Link><Link href="/dashboard/favorites" onClick={closeNavigation}>Saved themes</Link><Link href="/docs" onClick={closeNavigation}>Theme guide</Link><Link href="/support" onClick={closeNavigation}>Get help</Link>
+                {MENUS.map(menu=><section key={menu.key} className="marketplace-mobile-nav-group"><h2>{menu.label}</h2>{menu.links.map(link=><Link href={link.href} key={link.href} aria-current={pathname===link.href?'page':undefined} onClick={closeNavigation}>{link.label}</Link>)}</section>)}
+                <Link href="/support" onClick={closeNavigation}>Support center</Link><Link href="/contact" onClick={closeNavigation}>Contact</Link>
                 {isAuthenticated ? <Link href="/dashboard" onClick={closeNavigation}>Your library</Link> : <a href={accountHref('/lookup')} onClick={preserveReturnTo}>Log in</a>}
                 <ThemeToggleButton />
             </nav>

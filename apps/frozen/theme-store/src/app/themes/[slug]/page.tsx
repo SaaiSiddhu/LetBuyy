@@ -921,6 +921,15 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
                             />
                         </Card>
 
+                        <Card layout="stack" className="gap-[var(--lb-space-3)] p-[var(--lb-density-card-padding)]">
+                            <h2 className="m-0 text-[length:var(--lb-font-size-card-title)]">Before you choose</h2>
+                            <p className="m-0 text-[color:var(--lb-color-text-subdued)]">Review the package’s price, usage information, and support route. Adding a design to your store library is separate from publishing it.</p>
+                            <Link href="/guides/preview-a-theme" className="marketplace-text-link">What to check in a preview</Link>
+                            <Link href="/legal/license" className="marketplace-text-link">Theme license information</Link>
+                            <Link href="/legal/refund" className="marketplace-text-link">Refund and purchase information</Link>
+                            <Link href="/support" className="marketplace-text-link">Get help with this theme</Link>
+                        </Card>
+
                         {standaloneDownloads.length > 0 && (
                             <Card layout="stack" className="gap-[var(--lb-space-3)] p-[var(--lb-density-card-padding)]">
                                 <h2 className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">

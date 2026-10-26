@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Page, PageContent, PageHeader } from '@letbuyy/ui';
-import type { Theme } from '@letbuyy/theme-engine';
+import { normalizeThemeRecord } from '@/lib/theme-catalog';
 import ThemeCategoryLanding, {
     isThemeCategorySlug,
     THEME_CATEGORY_LANDING_COPY,
@@ -55,7 +55,7 @@ export default async function ThemeCategoryPage({ params }: CategoryPageProps) {
                 {result.ok ? (
                     <ThemeCategoryLanding
                         category={category}
-                        themes={result.value.themes as unknown as Theme[]}
+                        themes={result.value.themes.map(normalizeThemeRecord)}
                         total={result.value.total}
                     />
                 ) : (

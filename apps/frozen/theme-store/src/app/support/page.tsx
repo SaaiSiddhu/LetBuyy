@@ -1,72 +1,19 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
-import { Card, Download, Package, Page, PageContent, PageHeader, Section, ShoppingBag, Upload } from '@letbuyy/ui';
-
-export const metadata: Metadata = {
-    title: 'Support',
-    robots: { index: false, follow: true },
-};
-
-const SUPPORT_ITEMS = [
-    {
-        title: 'Purchases and receipts',
-        body: 'View completed purchases, receipt numbers, and license keys from the purchases dashboard.',
-        href: '/dashboard/purchases',
-        icon: ShoppingBag,
-    },
-    {
-        title: 'Installations and rollback',
-        body: 'Open active installations, apply marketplace updates, and roll back releases from the installation dashboard.',
-        href: '/dashboard/installations',
-        icon: Package,
-    },
-    {
-        title: 'Downloads',
-        body: 'Download entitlement-checked artifacts when storage records are available for your purchased themes.',
-        href: '/dashboard/downloads',
-        icon: Download,
-    },
-    {
-        title: 'Developer submissions',
-        body: 'Create listings, submit review-ready metadata, and inspect review status from the developer console.',
-        href: '/developer',
-        icon: Upload,
-    },
-];
-
-export default function SupportPage() {
-    return (
-        <Page className="theme-marketplace-page">
-            <PageHeader
-                title="Theme Marketplace Support"
-                eyebrow="Support"
-                description="Use these workflow surfaces first; they read from the same marketplace records support will ask about."
-                identity="themes"
-                showEyebrow
-                showDescription
-                primaryAction={{ label: 'Contact support', href: 'mailto:support@letbuyy.com' }}
-                secondaryActions={[{ label: 'Browse docs', href: '/docs' }]}
-            />
-            <PageContent>
-                <Section title="Support workflows" className="px-0 py-0">
-                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                        {SUPPORT_ITEMS.map((item) => (
-                            <Card key={item.title} layout="stack" className="gap-[var(--lb-space-3)] p-[var(--lb-density-card-padding)]">
-                                <item.icon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
-                                <h2 className="m-0 text-[length:var(--lb-font-size-heading-3)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
-                                    {item.title}
-                                </h2>
-                                <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
-                                    {item.body}
-                                </p>
-                                <Link href={item.href} className="btn-secondary w-fit px-4 py-2 text-sm">
-                                    Open
-                                </Link>
-                            </Card>
-                        ))}
-                    </div>
-                </Section>
-            </PageContent>
-        </Page>
-    );
-}
+import Link from 'next/link';
+import MarketplaceContentPage,{ResourceGrid} from '@/components/marketplace-content-page';
+import MarketplaceFaqs from '@/components/marketplace-faqs';
+import {MARKETPLACE_FAQS} from '@/lib/marketplace-content';
+export const metadata:Metadata={title:'Theme support center'};
+export default function SupportPage(){return <MarketplaceContentPage title="Let’s find the next useful step." eyebrow="Support center" intro="Get help choosing a theme, checking a purchase, adding a design, or managing an installed version.">
+    <section><h2>What do you need help with?</h2><ResourceGrid items={[
+        {title:'Choosing or previewing',description:'Understand public samples, store-specific previews, and what to do when a demo version is unavailable.',href:'/guides/preview-a-theme'},
+        {title:'Adding a theme',description:'Check the account, selected store, package version, and private library result before trying again.',href:'/guides/install-and-publish'},
+        {title:'Purchase or license records',description:'Check the purchase outcome and available receipt or license before repeating a payment.',href:'/dashboard/purchases'},
+        {title:'Files and downloads',description:'Review entitlement and available platform files. An expired link or missing format is different from a failed store installation.',href:'/legal/delivery'},
+        {title:'Updates and release recovery',description:'Read the changelog, inspect the current store release, and review the eligible update or rollback action.',href:'/guides/updates-and-rollback'},
+        {title:'Creator submissions',description:'Understand draft, submitted, and reviewed listing states and the information needed for a review.',href:'/for-creators'},
+    ]}/></section>
+    <section><h2>Common things to check first</h2><MarketplaceFaqs items={MARKETPLACE_FAQS.filter(item=>['missing-demo','no-store','downloads','receipt','rollback'].includes(item.id))}/></section>
+    <section className="marketplace-reading-layout"><div><h2>Help us understand the issue</h2><p>A clear description makes it easier to identify whether the problem belongs to the listing, your store, a purchase, or an available package file.</p><ol className="marketplace-checklist"><li>Theme name, slug, and version.</li><li>Affected page or workflow and the store you manage, if relevant.</li><li>What you expected, what happened, and the steps that reproduce it.</li><li>The relevant purchase, installation, or listing reference.</li></ol></div><aside className="marketplace-content-note"><h3>Keep private information private</h3><p>Do not send passwords, payment credentials, session cookies, private preview tokens, or unrelated customer information.</p><Link className="marketplace-text-link" href="/contact">View contact options</Link></aside></section>
+    <section><h2>Know who can help</h2><p>Use marketplace support for access, purchase records, entitlement, or installation concerns. Check the listing’s author and documentation for theme-specific behavior. Custom design work and feature requests need a separate scope.</p><div className="marketplace-hero-actions"><Link className="marketplace-action" href="/contact">Contact support</Link><Link className="marketplace-text-link" href="/legal/support">Support and update information</Link><Link className="marketplace-text-link" href="/legal/grievance">Grievance information</Link></div></section>
+</MarketplaceContentPage>;}

@@ -1,67 +1,14 @@
+import type {Metadata} from 'next';
 import Link from 'next/link';
-import type { Metadata } from 'next';
-import { Card, Page, PageContent, PageHeader, Section } from '@letbuyy/ui';
-
-export const metadata: Metadata = {
-    title: 'About LetBuyy Themes',
-    robots: { index: false, follow: true },
-};
-
-const PRINCIPLES = [
-    ['Governed catalog', 'Themes are listed through the API gateway and backed by catalog metadata, reviews, purchases, installs, and releases.'],
-    ['Try before publish', 'Merchants can preview themes against a selected store before publishing changes.'],
-    ['India-first commerce', 'Paid listings use INR checkout, receipt, and license records; subscription billing is not part of this marketplace path.'],
-    ['Developer pipeline', 'Theme authors can draft listings, submit for review, and track review status from the developer console.'],
-];
-
-export default function AboutPage() {
-    return (
-        <Page className="theme-marketplace-page">
-            <PageHeader
-                title="About LetBuyy Themes"
-                eyebrow="Marketplace"
-                description="A governed theme marketplace for LetBuyy storefront, portfolio, resume, SaaS, and landing-page sites."
-                identity="themes"
-                showEyebrow
-                showDescription
-                primaryAction={{ label: 'Browse themes', href: '/themes' }}
-                secondaryActions={[{ label: 'Developer console', href: '/developer' }]}
-            />
-            <PageContent>
-                <Section title="What this marketplace owns" className="px-0 py-0">
-                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                        {PRINCIPLES.map(([title, body]) => (
-                            <Card key={title} className="p-[var(--lb-density-card-padding)]">
-                                <h2 className="m-0 text-[length:var(--lb-font-size-heading-3)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
-                                    {title}
-                                </h2>
-                                <p className="m-0 mt-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
-                                    {body}
-                                </p>
-                            </Card>
-                        ))}
-                    </div>
-                </Section>
-
-                <Card layout="stack" className="gap-[var(--lb-space-3)] p-[var(--lb-density-card-padding)]">
-                    <h2 className="m-0 text-[length:var(--lb-font-size-heading-3)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
-                        Key workflows
-                    </h2>
-                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                        {[
-                            ['Catalog', '/themes'],
-                            ['Compare', '/themes/compare'],
-                            ['Saved themes', '/dashboard/favorites'],
-                            ['Purchases', '/dashboard/purchases'],
-                            ['Installations', '/dashboard/installations'],
-                        ].map(([label, href]) => (
-                            <Link key={href} href={href} className="btn-secondary px-4 py-2 text-sm">
-                                {label}
-                            </Link>
-                        ))}
-                    </div>
-                </Card>
-            </PageContent>
-        </Page>
-    );
-}
+import MarketplaceContentPage,{ResourceGrid} from '@/components/marketplace-content-page';
+export const metadata:Metadata={title:'About LetBuyy Themes'};
+export default function AboutPage(){return <MarketplaceContentPage title="A starting point for your next chapter." eyebrow="About LetBuyy Themes" intro="Explore designs for the way your business presents its products, shares its work, or introduces an idea.">
+    <section className="marketplace-reading-layout"><div><h2>A design choice with useful context</h2><p>A good theme decision starts with your content. The marketplace brings listing details, screenshots, available samples, version information, reviews, and support routes together so you can decide what fits.</p><p>The catalog covers online store, portfolio, professional profile, landing-page, and SaaS presentation categories. Availability varies. Each listing’s actual package and supported features matter more than the label of its category.</p></div><aside className="marketplace-content-note"><h3>Choose with your own content in mind</h3><p>Look beyond a polished demo. Check long titles, your image style, the pages you need, and the mobile journey.</p><Link href="/guides/choose-the-right-theme" className="marketplace-text-link">Read the selection guide</Link></aside></section>
+    <section><h2>From discovery to your store</h2><ResourceGrid items={[
+        {title:'Explore and compare',description:'Filter the real catalog, save candidates on this browser, and compare the details that matter to your website.',href:'/collections'},
+        {title:'Preview and make it yours',description:'Explore an available sample, then add the selected package to your store library and customize it in the merchant workspace.',href:'/guides/install-and-publish'},
+        {title:'Review and maintain',description:'Make a separate publication decision, inspect the public result, and keep version and release information available.',href:'/guides/updates-and-rollback'},
+    ]}/></section>
+    <section><h2>Your business stays at the center</h2><p>Your products and orders belong to your store. A saved favorite is a shortlist choice; a library addition creates a private theme instance; publication changes the selected live release. These are distinct steps so you can review a design before making it live.</p><p>We show available information without inventing reviews, measurements, or sample stores. If a package does not have a ready public demo, use the listing details and support route to understand what you need before choosing.</p></section>
+    <section className="marketplace-content-note"><h2>Here for the next question, too</h2><p>Use the guides for practical steps, support for troubleshooting, and the legal directory for review documents about use, data, rights, and purchases.</p><div className="marketplace-hero-actions"><Link href="/guides" className="marketplace-text-link">Theme guides</Link><Link href="/support" className="marketplace-text-link">Support center</Link><Link href="/legal" className="marketplace-text-link">Legal and privacy</Link></div></section>
+</MarketplaceContentPage>;}
