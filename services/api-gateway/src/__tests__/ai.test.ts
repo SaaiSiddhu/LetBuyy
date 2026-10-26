@@ -207,7 +207,11 @@ test('AI wrangler config documents sandbox defaults and production human approva
     assert.match(wranglerSource, /AI_PROVIDER_MODEL = "letbuyy-sandbox-copywriter"/);
     assert.match(wranglerSource, /AI_CREDIT_PURCHASE_MODE = "sandbox"/);
     assert.match(wranglerSource, /AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"/);
-    assert.match(wranglerSource, /AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"/);
+    const production = wranglerSource.split('[env.production.vars]')[1].split('[[env.production.queues.producers]]')[0];
+    assert.doesNotMatch(production, /^AI_CREDIT_RAZORPAY_KEY_ID\s*=/m);
+    assert.match(production, /FEATURE_AI_CREDIT_PURCHASE = "false"/);
+    assert.match(production, /AI_CREDIT_PURCHASE_MODE = "sandbox"/);
+    assert.match(production, /AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"/);
     assert.doesNotMatch(wranglerSource, /AI_PROVIDER_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_AI_PROVIDER_MODEL/);
     assert.doesNotMatch(wranglerSource, /AI_CREDIT_PURCHASE_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID/);
 });

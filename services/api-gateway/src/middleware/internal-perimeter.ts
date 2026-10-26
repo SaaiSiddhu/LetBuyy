@@ -1,7 +1,8 @@
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { isBoundStorefrontRequestTarget } from '@letbuyy/auth-core';
+import { isBoundStorefrontRequestTarget, isBoundDomainReconcileTarget } from '@letbuyy/auth-core';
+import { authenticateDomainReconcileRequest } from '../lib/domain-reconcile-internal-request';
 import { authenticateBoundStorefrontRequest } from '../lib/storefront-internal-request';
 
 type RuntimeEnvironmentFlags = Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'DEPLOYMENT_ENV'>;
@@ -97,6 +98,16 @@ export const internalPerimeter = createMiddleware<{ Bindings: Env }>(async (c, n
         return;
     }
 
+    // Owner-approved exception for exactly this queue-owned operation. A configured
+    // keyring opts in; every other path and an unconfigured deployment retain the IP gate.
+    if (c.env.INTERNAL_API_KEYRING && isBoundDomainReconcileTarget(c.req.method, c.req.url)) {
+        const result = await authenticateDomainReconcileRequest(c);
+        if (result !== 'accepted') return c.json({ success: false, error: {
+            code: result === 'unavailable' ? 'DOMAIN_RECONCILE_UNAVAILABLE' : 'UNAUTHORIZED',
+            message: result === 'unavailable' ? 'Domain reconciliation is unavailable.' : 'Invalid domain reconciliation request',
+        } }, result === 'unavailable' ? 503 : 401);
+        await next(); return;
+    }
     const entries = allowlistEntries(c.env);
     const production = isProductionRuntime(c.env);
 

@@ -188,6 +188,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "core-presets-browser.postgres.test.ts",
         "core-scheduled-search.postgres.test.ts",
         "core-store-bootstrap.postgres.test.ts",
+        "domain-reconcile-boundary.postgres.test.ts",
         "loyalty-earn-worker.postgres.test.ts",
         "loyalty-refund-scheduler.postgres.test.ts",
         "loyalty-reversal-recovery.postgres.test.ts",

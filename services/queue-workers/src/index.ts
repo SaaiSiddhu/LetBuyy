@@ -1,3 +1,4 @@
+import { createBoundDomainReconcileHeaders, domainReconcileEnvironment } from '@letbuyy/auth-core';
 import { insertSupabaseRows, upsertSupabaseRows, type SupabaseServiceEnv } from '@letbuyy/infrastructure/supabase-adapter';
 import {
   writeRuntimeTelemetryDataPoint,
@@ -64,6 +65,7 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   MONEY_LEDGER_RECONCILIATION_BATCH_LIMIT?: string;
   API_GATEWAY_SERVICE?: Fetcher;
   INTERNAL_API_SECRET?: string;
+  DOMAIN_RECONCILE_REQUEST_SECRET?: string;
   QUEUE_TENANT_ENVELOPE_SECRET?: string;
   CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
   RESEND_API_KEY?: string;
@@ -529,7 +531,7 @@ async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDeli
   }
 }
 
-async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<void> {
+export async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<void> {
   if (!env.API_GATEWAY_SERVICE || !env.INTERNAL_API_SECRET) {
     writeQueueLog('error', {
       route: 'scheduled.custom_domain_reconciler',
@@ -538,17 +540,26 @@ async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<vo
     return;
   }
 
+  const environment = domainReconcileEnvironment(env);
+  if (!environment || !env.DOMAIN_RECONCILE_REQUEST_SECRET) {
+    writeQueueLog('error', { route: 'scheduled.custom_domain_reconciler', status: 'missing-signing-secret-or-environment' });
+    return;
+  }
   const url = new URL('https://queue-workers.internal/v1/internal/custom-domain-reconcile/run');
   if (env.CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT) {
     url.searchParams.set('limit', env.CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT);
   }
 
+  const bodyText = '{}';
+  const signed = await createBoundDomainReconcileHeaders({ secret: env.DOMAIN_RECONCILE_REQUEST_SECRET,
+    environment, method: 'POST', url: url.toString(), body: bodyText });
   const response = await env.API_GATEWAY_SERVICE.fetch(new Request(url.toString(), {
-    method: 'POST',
+    method: 'POST', body: bodyText, redirect: 'error', signal: AbortSignal.timeout(60_000),
     headers: {
       'Content-Type': 'application/json',
       'X-Internal-API-Secret': env.INTERNAL_API_SECRET,
       'X-Request-ID': `custom-domain-reconcile:${cron}:${Date.now()}`,
+      ...signed,
     },
   }));
 

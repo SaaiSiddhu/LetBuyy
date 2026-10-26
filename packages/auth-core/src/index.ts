@@ -1771,3 +1771,63 @@ export async function verifyBoundStorefrontRequestSignature(input: {
     || !timingSafeEqualHex(await hmacSha256Hex(input.secret, payload), signature)) return { status: 'invalid' };
   return { status: 'accepted', jti };
 }
+
+
+// One queue-owned platform job. This capability cannot represent an Identity app.
+export const DOMAIN_RECONCILE_INTERNAL_CALLER = 'queue-workers-domain-reconcile';
+export const DOMAIN_RECONCILE_REQUEST_VERSION = 'domain-reconcile-request-v1';
+export const DOMAIN_RECONCILE_REQUEST_MAX_AGE_MS = 120_000;
+export const DOMAIN_RECONCILE_REQUEST_MAX_BODY_BYTES = 512;
+export type DomainReconcileEnvironment = 'development' | 'staging' | 'production';
+export function domainReconcileEnvironment(flags: { ENVIRONMENT?: string; APP_ENV?: string; DEPLOYMENT_ENV?: string }): DomainReconcileEnvironment | undefined {
+  const environment = flags.ENVIRONMENT;
+  if (!['development', 'staging', 'production'].includes(environment || '')
+    || [flags.APP_ENV, flags.DEPLOYMENT_ENV].some(value => value !== undefined && value !== environment)) return undefined;
+  return environment as DomainReconcileEnvironment;
+}
+export function isBoundDomainReconcileTarget(method: string, url: string): boolean {
+  try { const target = new URL(url); return method === 'POST' && target.pathname === '/v1/internal/custom-domain-reconcile/run'; }
+  catch { return false; }
+}
+function validDomainReconcileSecret(secret: string | undefined): secret is string {
+  return Boolean(secret && secret.trim().length >= 32 && !/SKIP_NEEDS_HUMAN|replace-with/i.test(secret));
+}
+async function domainReconcilePayload(input: { environment: DomainReconcileEnvironment; method: string; url: string;
+  body?: string | Uint8Array; timestamp: string; jti: string }): Promise<string | null> {
+  if (!isBoundDomainReconcileTarget(input.method, input.url) || !domainReconcileEnvironment({ ENVIRONMENT: input.environment })) return null;
+  const bytes = typeof input.body === 'string' ? new TextEncoder().encode(input.body) : new Uint8Array(input.body ?? []);
+  if (bytes.byteLength > DOMAIN_RECONCILE_REQUEST_MAX_BODY_BYTES) return null;
+  const target = new URL(input.url);
+  if (!['https:', 'http:'].includes(target.protocol) || target.username || target.password) return null;
+  return JSON.stringify([DOMAIN_RECONCILE_REQUEST_VERSION, DOMAIN_RECONCILE_INTERNAL_CALLER, 'api-gateway:domain-reconcile', input.environment,
+    input.method, target.pathname + target.search, bytesToHex(await crypto.subtle.digest('SHA-256', bytes)), input.timestamp, input.jti]);
+}
+export async function createBoundDomainReconcileHeaders(input: { secret: string; environment: DomainReconcileEnvironment;
+  method: string; url: string; body?: string; nowMs?: number; jti?: string }): Promise<Record<string, string>> {
+  if (!validDomainReconcileSecret(input.secret)) throw new Error('Dedicated domain reconciliation secret is not configured');
+  const timestamp = String(input.nowMs ?? Date.now()), jti = input.jti ?? randomInternalJti();
+  if (!/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)) throw new Error('Invalid domain reconciliation request metadata');
+  const payload = await domainReconcilePayload({ ...input, timestamp, jti });
+  if (!payload) throw new Error('Unsupported domain reconciliation request');
+  return { 'X-LetBuyy-Internal-Version': DOMAIN_RECONCILE_REQUEST_VERSION, 'X-LetBuyy-Internal-Caller': DOMAIN_RECONCILE_INTERNAL_CALLER,
+    'X-LetBuyy-Internal-App': 'api-gateway:domain-reconcile', 'X-LetBuyy-Internal-Environment': input.environment,
+    'X-LetBuyy-Internal-Timestamp': timestamp, 'X-LetBuyy-Internal-JTI': jti,
+    'X-LetBuyy-Internal-Signature': await hmacSha256Hex(input.secret, payload) };
+}
+export async function verifyBoundDomainReconcileSignature(input: { secret: string | undefined; environment: DomainReconcileEnvironment;
+  method: string; url: string; body?: Uint8Array; headers: Headers; nowMs?: number }):
+  Promise<{ status: 'accepted'; jti: string } | { status: 'misconfigured' | 'malformed' | 'expired' | 'invalid' }> {
+  if (!validDomainReconcileSecret(input.secret) || !domainReconcileEnvironment({ ENVIRONMENT: input.environment })) return { status: 'misconfigured' };
+  const timestamp = input.headers.get('X-LetBuyy-Internal-Timestamp'), jti = input.headers.get('X-LetBuyy-Internal-JTI');
+  if (input.headers.get('X-LetBuyy-Internal-Version') !== DOMAIN_RECONCILE_REQUEST_VERSION
+    || input.headers.get('X-LetBuyy-Internal-Caller') !== DOMAIN_RECONCILE_INTERNAL_CALLER
+    || input.headers.get('X-LetBuyy-Internal-App') !== 'api-gateway:domain-reconcile'
+    || input.headers.get('X-LetBuyy-Internal-Environment') !== input.environment
+    || !timestamp || !/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)) return { status: 'malformed' };
+  if (!isFreshLetbuyyInternalTimestamp(timestamp, input.nowMs, DOMAIN_RECONCILE_REQUEST_MAX_AGE_MS)) return { status: 'expired' };
+  const payload = await domainReconcilePayload({ ...input, timestamp, jti });
+  const signature = input.headers.get('X-LetBuyy-Internal-Signature');
+  if (!payload || !signature || !/^[a-f0-9]{64}$/.test(signature)
+    || !timingSafeEqualHex(await hmacSha256Hex(input.secret, payload), signature)) return { status: 'invalid' };
+  return { status: 'accepted', jti };
+}

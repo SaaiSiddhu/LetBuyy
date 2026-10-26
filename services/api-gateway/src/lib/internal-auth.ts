@@ -1,6 +1,7 @@
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import {
+    DOMAIN_RECONCILE_INTERNAL_CALLER,
     bytesToHex,
     getLetbuyyInternalAuthSecret,
     hmacSha256Hex,
@@ -46,6 +47,8 @@ export function isLegacyAcceptEnabled(env: Env): boolean {
 }
 
 export function getSecretsForCaller(env: Env, callerId?: string | null): string[] {
+    // The queue job key is transport-only, never an Identity/Console app credential.
+    if (callerId === DOMAIN_RECONCILE_INTERNAL_CALLER) return [];
     const keyring = getInternalApiKeyring(env);
     const callerSecret = callerId && keyring[callerId] ? [keyring[callerId]] : [];
     const legacySecrets = isLegacyAcceptEnabled(env) ? getInternalAuthSecrets(env) : [];

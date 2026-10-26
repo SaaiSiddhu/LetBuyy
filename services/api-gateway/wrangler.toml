@@ -269,7 +269,7 @@ AI_PROVIDER_MODE = "sandbox"
 AI_CREDIT_PURCHASE_MODE = "sandbox"
 AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"
 AI_CREDIT_PRICE_INR_PAISE = "100"
-AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"
+# Disabled credit purchases need no invalid provider-key placeholder; FEATURE_AI_CREDIT_PURCHASE remains false.
 LETBUYY_IDENTITY_ISSUER = "https://accounts.letbuyy.com"
 WHATSAPP_PROVIDER_MODE = "sandbox"
 WHATSAPP_PROVIDER = "letbuyy_sandbox"

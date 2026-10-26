@@ -55,6 +55,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/core-presets-browser.postgres.test.ts',
     'tests/owned-db/core-scheduled-search.postgres.test.ts',
     'tests/owned-db/core-store-bootstrap.postgres.test.ts',
+    'tests/owned-db/domain-reconcile-boundary.postgres.test.ts',
     'tests/owned-db/loyalty-earn-worker.postgres.test.ts',
     'tests/owned-db/loyalty-refund-scheduler.postgres.test.ts',
     'tests/owned-db/loyalty-reversal-recovery.postgres.test.ts',
