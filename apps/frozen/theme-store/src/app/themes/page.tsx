@@ -1,3 +1,4 @@
+import MarketplaceArtwork from '@/components/marketplace-artwork';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { Theme, ThemeCategory, ThemePricingType, ThemeSearchFilters } from '@letbuyy/theme-engine';
@@ -365,10 +366,10 @@ export default async function ThemesPage({
 
     return (
         <Page className="theme-marketplace-page marketplace">
-            <header className="marketplace-browse-header marketplace-container">
+            <header className="marketplace-browse-header marketplace-container marketplace-catalog-masthead"><div>
                 <p className="marketplace-eyebrow">LetBuyy Theme Store</p>
                 <div className="marketplace-browse-heading"><h1>{query ? `Themes for “${query}”` : 'Find a look that feels like you.'}</h1><Link href="/themes/compare" className="marketplace-text-link">Compare themes</Link></div>
-                <p>Explore the designs. Find your fit. Make it yours.</p>
+                <p>Explore the designs. Find your fit. Make it yours.</p></div><MarketplaceArtwork kind="discover" priority />
             </header>
 
             <PageContent>

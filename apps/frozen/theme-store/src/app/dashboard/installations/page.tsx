@@ -1,3 +1,4 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -101,7 +102,7 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
                 </div>
             )}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-1">Active Installations</h1>
+                <MarketplaceTaskTitle artwork="library">Active Installations</MarketplaceTaskTitle>
                 <p className="text-sm text-text-muted">{installations.length} themes installed across your stores</p>
             </div>
 

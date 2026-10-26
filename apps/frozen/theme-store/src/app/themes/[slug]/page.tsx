@@ -1,3 +1,4 @@
+import MarketplacePageHeader from '@/components/marketplace-page-header';
 import { hasRenderableThemeTemplate } from '@letbuyy/theme-engine';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -16,7 +17,6 @@ import {
     Input,
     Page,
     PageContent,
-    PageHeader,
     Package,
     Section,
     ShoppingCart,
@@ -343,7 +343,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
     if (!record) {
         return (
             <Page className="theme-marketplace-page marketplace marketplace-theme-detail">
-                <PageHeader
+                <MarketplacePageHeader artwork="discover"
                     title="Theme not found"
                     eyebrow="Theme marketplace"
                     description="This theme is not available in the current catalog data."
@@ -453,7 +453,7 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
             />
-            <PageHeader
+            <MarketplacePageHeader artwork="discover"
                 title={theme.name}
                 eyebrow="Theme marketplace"
                 description={theme.description}

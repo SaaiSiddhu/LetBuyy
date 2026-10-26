@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { artworkForHref } from '@/components/marketplace-artwork';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MarketplaceContentPage, { ResourceGrid } from '@/components/marketplace-content-page';
@@ -12,7 +13,7 @@ export default async function GuidePage({ params }: Props) {
     const guide = findMarketplaceGuide((await params).slug);
     if (!guide) notFound();
     const related = MARKETPLACE_GUIDES.filter(item => guide.related.includes(item.slug));
-    return <MarketplaceContentPage title={guide.title} intro={guide.summary} eyebrow={guide.topic} parent={{label:'Theme guides',href:'/guides'}}>
+    return <MarketplaceContentPage artwork={artworkForHref(`/guides/${guide.slug}`)} title={guide.title} intro={guide.summary} eyebrow={guide.topic} parent={{label:'Theme guides',href:'/guides'}}>
         <div className="marketplace-reading-layout">
             <aside className="marketplace-contents"><nav aria-label="On this page"><strong>In this guide</strong>{guide.sections.map(section => <a key={section.id} href={`#${section.id}`}>{section.title}</a>)}</nav><Link href="/guides" className="marketplace-text-link">All theme guides</Link></aside>
             <article className="marketplace-article"><div className="marketplace-content-note"><strong>What you’ll leave with</strong><p>{guide.outcome}</p></div>

@@ -1,37 +1,11 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import { MousePointer2 } from 'lucide-react';
-import { ArrowRight, Check, Monitor, Smartphone, Card } from '@letbuyy/ui';
+import MarketplaceArtwork from './marketplace-artwork';
+import { ArrowRight, Card } from '@letbuyy/ui';
 
-/** Decorative, code-native illustrations; these are examples, not live editor controls. */
-function StoreWindow() {
-    return <div className="journey-store">
-        <div className="journey-window-bar"><i /><i /><i /><span /></div>
-        <div className="journey-store-nav"><b>YOUR BRAND</b><span>Shop&nbsp;&nbsp; About</span></div>
-        <div className="journey-store-hero"><div><small>EVERYDAY, REIMAGINED</small><strong>A little more you.</strong><i /></div><div className="journey-photo"><Image src="/showcase/living.webp" alt="" fill sizes="180px" /></div></div>
-        <div className="journey-store-products"><i /><i /><i /></div>
-    </div>;
-}
-
+/** Editorial illustrations depict the task, not a live editor or publication result. */
 function JourneyIllustration({ kind }: { kind: 'choose' | 'personalise' | 'prepare' }) {
-    return <div className={`journey-art journey-art-${kind}`} aria-hidden="true">
-        {kind === 'choose' && <>
-            <div className="journey-sample-behind"><div className="journey-window-bar"><i /><i /><i /></div><div className="journey-photo"><Image src="/showcase/wardrobe.webp" alt="" fill sizes="110px" /></div></div>
-            <StoreWindow />
-            <div className="journey-floating-label"><Monitor /><span>Explore the details</span></div>
-            <MousePointer2 className="journey-cursor" />
-        </>}
-        {kind === 'personalise' && <>
-            <StoreWindow />
-            <div className="journey-editor"><span>Make it yours</span><div className="journey-swatches"><i /><i /><i /><i /></div><div className="journey-editor-line" /><div className="journey-editor-line" /><div className="journey-type"><b>Aa</b><span>Your type.<br />Your personality.</span></div></div>
-            <MousePointer2 className="journey-cursor" />
-        </>}
-        {kind === 'prepare' && <>
-            <StoreWindow />
-            <div className="journey-phone"><div className="journey-phone-speaker" /><div className="journey-photo"><Image src="/showcase/living-detail.webp" alt="" fill sizes="90px" /></div><b>Your next chapter.</b><i /><i /></div>
-            <div className="journey-review"><span><Check /> Pages &amp; content</span><span><Check /> Navigation</span><span><Smartphone /> Mobile experience</span></div>
-        </>}
-    </div>;
+    const artwork = kind === 'choose' ? 'discover' : kind === 'personalise' ? 'create' : 'library';
+    return <div className={`journey-art journey-art-${kind}`} aria-hidden="true"><MarketplaceArtwork kind={artwork} /></div>;
 }
 
 const STEPS = [

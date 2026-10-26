@@ -9,7 +9,7 @@ export default async function FaqPage({ searchParams }: { searchParams?: Promise
     const params=await searchParams; const query=typeof params?.q==='string'?params.q.trim().slice(0,80):'';
     const items=MARKETPLACE_FAQS.filter(item=>`${item.question} ${item.answer}`.toLowerCase().includes(query.toLowerCase()));
     const groups=Array.from(new Set(items.map(item=>item.category)));
-    return <MarketplaceContentPage title="Good questions. Clear answers." eyebrow="Frequently asked questions" intro="Understand what happens before you choose a theme, when you add it, and after it reaches your store.">
+    return <MarketplaceContentPage artwork="support" title="Good questions. Clear answers." eyebrow="Frequently asked questions" intro="Understand what happens before you choose a theme, when you add it, and after it reaches your store.">
         <form action="/faq" method="get" role="search" className="marketplace-resource-search"><Input label="Search questions and answers" name="q" type="search" defaultValue={query} maxLength={80} placeholder="Try downloads, refund, or mobile" /><Button type="submit">Find an answer</Button></form>
         <nav className="marketplace-category-nav" aria-label="FAQ topics">{groups.map((group,index)=><a key={group} href={`#faq-topic-${index}`}>{group}</a>)}</nav>
         {groups.map((group,index)=><section className="marketplace-detail-anchor" key={group} id={`faq-topic-${index}`}><h2>{group}</h2><MarketplaceFaqs expanded={Boolean(query)} items={items.filter(item=>item.category===group)} /></section>)}

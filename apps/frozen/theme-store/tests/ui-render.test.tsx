@@ -18,6 +18,9 @@ import ThemeCategoryLanding from '../src/components/theme-category-landing';
 import ThemeCard from '../src/components/theme-card';
 import ThemeShowcase from '../src/components/theme-showcase';
 import MarketplaceThemeJourney from '../src/components/marketplace-theme-journey';
+import MarketplaceContentPage, { ResourceGrid } from '../src/components/marketplace-content-page';
+import MarketplacePageHeader from '../src/components/marketplace-page-header';
+import { artworkForHref } from '../src/components/marketplace-artwork';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
 import { MARKETPLACE_POLICIES, policySectionId } from '../src/lib/marketplace-policies';
@@ -376,4 +379,35 @@ test('illustrated theme journey offers real guide destinations without exposing 
     for (const slug of guideLinks) assert.ok(findMarketplaceGuide(slug), slug);
     assert.doesNotMatch(html, /<button|<input|<iframe/);
     assert.doesNotMatch(readAppFile('src/app/page.tsx'), /marketplace-benefits/);
+});
+
+test('editorial resource cards keep destinations and use specific named actions', () => {
+    const items = [
+        { title: 'Explore collections', description: 'Find a starting point.', href: '/collections' },
+        { title: 'Theme pricing', description: 'Understand your purchase.', href: '/pricing' },
+        { title: 'Your library', description: 'Return to saved themes.', href: '/dashboard' },
+    ];
+    const html = renderToStaticMarkup(<ResourceGrid items={items} />);
+    assert.doesNotMatch(html, /Read more/);
+    for (const item of items) assert.match(html, new RegExp(`href="${item.href}"`));
+    assert.match(html, /aria-label="Explore collections: Explore collections"/);
+    assert.match(html, /aria-label="Understand pricing: Theme pricing"/);
+    assert.match(html, /aria-label="Open your library: Your library"/);
+    for (const kind of ['discover', 'legal', 'library']) assert.ok(decodeURIComponent(html).includes(`/illustrations/${kind}.webp`));
+    assert.equal((html.match(/aria-hidden="true"/g) || []).length, 6); // Art and arrows are decorative.
+});
+
+test('article and catalog header compositions retain a single page title and real actions', () => {
+    const article = renderToStaticMarkup(<MarketplaceContentPage title="Privacy information" intro="Review the document." artwork="legal"><p>Document body</p></MarketplaceContentPage>);
+    assert.equal((article.match(/<h1\b/g) || []).length, 1);
+    assert.match(article, /Document body/);
+    assert.ok(decodeURIComponent(article).includes('/illustrations/legal.webp'));
+    const header = renderToStaticMarkup(<MarketplacePageHeader title="Theme collection" artwork="discover" primaryAction={{ label: 'Browse themes', href: '/themes' }} />);
+    assert.equal((header.match(/<h1\b/g) || []).length, 1);
+    assert.match(header, /href="\/themes"/);
+    assert.ok(decodeURIComponent(header).includes('/illustrations/discover.webp'));
+    assert.equal(artworkForHref('/guides/install-and-publish'), 'create');
+    assert.equal(artworkForHref('/guides/before-you-publish'), 'library');
+    assert.equal(artworkForHref('/legal/privacy'), 'legal');
+    assert.equal(artworkForHref('/contact'), 'support');
 });

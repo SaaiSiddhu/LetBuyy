@@ -1,3 +1,4 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import Link from 'next/link';
 import { Button, Input, ShoppingBag, ExternalLink, Star, Calendar } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
@@ -71,7 +72,7 @@ export default async function PurchasesPage({ searchParams }: { searchParams?: P
         <div>
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold mb-1">My Purchases</h1>
+                    <MarketplaceTaskTitle artwork="library">My Purchases</MarketplaceTaskTitle>
                     <p className="text-sm text-text-muted">{purchases.length} themes purchased</p>
                 </div>
                 <Link href="/themes" className="btn-primary text-sm py-2 px-4 flex items-center gap-2">

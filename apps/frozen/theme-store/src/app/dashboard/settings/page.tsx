@@ -1,3 +1,4 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import Link from 'next/link';
 import { Bell, Button, Input, Shield, User } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
@@ -38,7 +39,7 @@ export default async function SettingsPage({ searchParams }: { searchParams?: Pr
     return (
         <div>
             <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-1">Settings</h1>
+                <MarketplaceTaskTitle artwork="library">Settings</MarketplaceTaskTitle>
                 <p className="text-sm text-text-muted">Account and marketplace preference status</p>
             </div>
 

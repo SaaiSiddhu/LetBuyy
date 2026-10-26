@@ -1,7 +1,8 @@
+import MarketplacePageHeader from '@/components/marketplace-page-header';
 import type { Metadata } from 'next';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { Button, Card, Input, Page, PageContent, PageHeader, Select, Textarea } from '@letbuyy/ui';
+import { Button, Card, Input, Page, PageContent, Select, Textarea } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 
 export const metadata: Metadata = {
@@ -81,7 +82,7 @@ export default async function DeveloperPage({ searchParams }: { searchParams?: P
 
     return (
         <Page>
-            <PageHeader
+            <MarketplacePageHeader artwork="create"
                 title="Developer Console"
                 eyebrow="Theme developer program"
                 description="Create listings, submit themes for review, and track payout readiness from the marketplace backend."

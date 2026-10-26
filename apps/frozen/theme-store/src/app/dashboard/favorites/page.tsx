@@ -1,3 +1,4 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import Link from 'next/link';
 import { Heart } from '@letbuyy/ui';
 import type { Metadata } from 'next';
@@ -15,7 +16,7 @@ export default async function FavoritesPage() {
         <div>
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold mb-1">Saved Themes</h1>
+                    <MarketplaceTaskTitle artwork="library">Saved Themes</MarketplaceTaskTitle>
                     <p className="text-sm text-text-muted">
                         Private device-local favorites for shortlisting marketplace themes.
                     </p>

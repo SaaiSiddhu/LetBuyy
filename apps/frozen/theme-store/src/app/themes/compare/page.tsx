@@ -1,7 +1,8 @@
+import MarketplacePageHeader from '@/components/marketplace-page-header';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { Button, Card, EmptyState, LayoutGrid, Page, PageContent, PageHeader, Section, Star, Table } from '@letbuyy/ui';
+import { Button, Card, EmptyState, LayoutGrid, Page, PageContent, Section, Star, Table } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
 import ThemeCompareSelection from '@/components/theme-compare-selection';
 import ThemePreferenceActions from '@/components/theme-preference-actions';
@@ -81,7 +82,7 @@ export default async function ThemeComparePage({
 
     return (
         <Page className="theme-marketplace-page">
-            <PageHeader
+            <MarketplacePageHeader artwork="discover"
                 title="Compare Themes"
                 eyebrow="Theme marketplace"
                 description="Compare pricing, platform support, metadata, proof, and features before installing or buying."

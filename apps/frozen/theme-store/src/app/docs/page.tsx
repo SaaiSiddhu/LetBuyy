@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import MarketplaceContentPage, { ResourceGrid } from '@/components/marketplace-content-page';
 export const metadata:Metadata={title:'Theme documentation'};
-export default function DocsPage(){return <MarketplaceContentPage title="Your theme, from first look to live store." eyebrow="Documentation" intro="Understand the tools, records, and next steps behind your LetBuyy theme journey.">
+export default function DocsPage(){return <MarketplaceContentPage artwork="learn" title="Your theme, from first look to live store." eyebrow="Documentation" intro="Understand the tools, records, and next steps behind your LetBuyy theme journey.">
     <section><h2>Start with the task in front of you</h2><ResourceGrid items={[
         {title:'Choose and evaluate',description:'Use website types and features to narrow the catalog. Save candidates, compare them, and inspect the current version’s screenshots and available sample.',href:'/guides/choose-the-right-theme'},
         {title:'Add and customize',description:'Choose the correct store, add a private library instance, and use the merchant editor to bring in your own content. Adding and publishing are separate actions.',href:'/guides/install-and-publish'},

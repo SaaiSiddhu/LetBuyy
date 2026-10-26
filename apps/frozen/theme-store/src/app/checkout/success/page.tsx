@@ -1,3 +1,4 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import Link from 'next/link';
 import { CheckCircle, Download, Palette, LayoutDashboard, ArrowRight, Key } from '@letbuyy/ui';
 import { ThemePurchaseSuccessToast } from '@/components/theme-action-feedback';
@@ -34,7 +35,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 <CheckCircle className="w-10 h-10 text-success" />
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">Purchase Complete!</h1>
+            <MarketplaceTaskTitle artwork="legal">Purchase Complete!</MarketplaceTaskTitle>
             <p className="text-text-body text-lg mb-10">
                 Thank you for your purchase. Payment verification has completed for this checkout attempt.
             </p>

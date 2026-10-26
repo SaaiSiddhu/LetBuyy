@@ -8,7 +8,7 @@ export const metadata: Metadata = { title:'Explore theme collections',descriptio
 export default async function CollectionsPage() {
     const [collections,industries]=await Promise.all([ThemeService.getCollections(),ThemeService.getIndustries()]);
     const published=collections.filter(item=>/^[a-z0-9-]+$/.test(stringValue(item,'slug')));
-    return <MarketplaceContentPage title="Find a direction that feels right." eyebrow="Explore themes" intro="Start with your website’s purpose, explore a different style, or narrow the catalog around the features your business needs.">
+    return <MarketplaceContentPage artwork="discover" title="Find a direction that feels right." eyebrow="Explore themes" intro="Start with your website’s purpose, explore a different style, or narrow the catalog around the features your business needs.">
         <section><h2>A few ways to begin</h2><ResourceGrid items={DISCOVERY_PATHS} /></section>
         <section><h2>Browse by website type</h2><ResourceGrid items={[
             {title:'Online stores',description:'Product pages, collection navigation, and layouts for your catalog.',href:'/themes/category/store'},

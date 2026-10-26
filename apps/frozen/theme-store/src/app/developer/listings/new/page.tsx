@@ -1,7 +1,8 @@
+import MarketplacePageHeader from '@/components/marketplace-page-header';
 import type { Metadata } from 'next';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { Card, Page, PageContent, PageHeader } from '@letbuyy/ui';
+import { Card, Page, PageContent } from '@letbuyy/ui';
 import DeveloperListingBuilderForm from '@/components/developer-listing-builder-form';
 import { ThemeService } from '@/lib/theme-service';
 
@@ -58,7 +59,7 @@ async function submitDeveloperListingAction(formData: FormData) {
 export default function NewDeveloperListingPage() {
     return (
         <Page>
-            <PageHeader
+            <MarketplacePageHeader artwork="create"
                 title="Create Theme Listing"
                 eyebrow="Developer console"
                 description="Build a marketplace listing with pricing, license tiers, screenshots, upload metadata, and review submission status."

@@ -102,6 +102,7 @@ test('unconfirmed install identity returns to canonical sign-in with exact theme
     const loaded = load(source('app/install/page.tsx'), id => {
         if (id === 'react/jsx-runtime') return jsx;
         if (id === 'next/link') return stub;
+        if (id === '@/components/marketplace-task-title') return stub;
         if (id === 'next/navigation') return { redirect: url => { const error = new Error('redirect'); error.url = url; throw error; } };
         if (id === '@/lib/public-urls') return urls();
         if (id === '@/lib/theme-service') return { MarketplaceInstallUnconfirmedError: Error,

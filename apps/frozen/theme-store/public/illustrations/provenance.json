@@ -1,0 +1,96 @@
+{
+  "created": "2026-10-26",
+  "purpose": "Decorative marketplace editorial artwork; never actual catalog or account state",
+  "artDirection": "Tactile paper and matte ceramic; frosted lavender glass; purple/periwinkle/ivory/ink; transparent isolated foreground, no logos, text or success claims",
+  "optimization": "Existing sharp: resize to width960, WebP quality84, alphaQuality100; no cropping or content edits",
+  "assets": [
+    {
+      "name": "discover",
+      "file": "discover.webp",
+      "source": "exec-519e4850-bb80-48a2-aa73-fb96631432ce.png",
+      "generation": "Built-in image_gen; new editorial illustration",
+      "width": 960,
+      "height": 720,
+      "bytes": 69730,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "create",
+      "file": "create.webp",
+      "source": "exec-656154f1-6c4b-4098-93b5-ad6d33252123.png",
+      "generation": "Built-in image_gen; new editorial illustration",
+      "width": 960,
+      "height": 720,
+      "bytes": 92638,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "learn",
+      "file": "learn.webp",
+      "source": "exec-8c916f73-9d16-4bb7-85b7-4faa64cc1a79.png",
+      "generation": "Built-in image_gen; new editorial illustration",
+      "width": 960,
+      "height": 720,
+      "bytes": 62378,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "support",
+      "file": "support.webp",
+      "source": "exec-c7b7d3d4-84b0-4a07-b699-a7a464a4a8a7.png",
+      "generation": "Built-in image_gen; new editorial illustration",
+      "width": 960,
+      "height": 720,
+      "bytes": 96180,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "legal",
+      "file": "legal.webp",
+      "source": "exec-a32e307b-665f-4fea-a7b9-a893415c461d.png",
+      "generation": "Built-in image_gen; new editorial illustration",
+      "width": 960,
+      "height": 720,
+      "bytes": 83146,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "library",
+      "file": "library.webp",
+      "source": "exec-87fddf7d-83ea-4cc2-a478-53f70f6f1b3e.png",
+      "generation": "Built-in image_gen; new editorial illustration",
+      "width": 960,
+      "height": 720,
+      "bytes": 81130,
+      "alpha": [
+        0,
+        255
+      ]
+    }
+  ],
+  "generationMode": "Built-in image_gen, six separate generation calls; not CLI/API fallback.",
+  "promptSet": {
+    "common": "Generate one premium editorial 3D illustration for the LetBuyy theme marketplace. Transparent background with real alpha, isolated foreground, no backdrop rectangle. Landscape 4:3 compact centered still life with generous margins. Sophisticated tactile paper, matte ceramic, frosted lavender glass accents, purple #7c3aed, periwinkle, warm ivory and deep ink. Soft realistic shadows, crisp crafted forms. Professional and restrained. No people, no cartoon mascots, no logos, no words, no numbers, no lettering, no watermark. Large coherent objects legible at 320px wide. Match a family of luxurious lavender/ivory clay-and-paper illustrations.",
+    "discover": "Three layered miniature storefront browser canvases, a sculptural magnifying glass inspecting one canvas, small material/color swatches. Abstract website layouts only, no illegible text. Main objects should be large and form one compact centered still life. No branding, watermark or backdrop; transparent isolated foreground.",
+    "create": "A sculptural artist's palette with four tactile color swatches, a designer's pen, one abstract storefront browser canvas in the background and elegant type-block geometric forms in foreground. The subject is personalising a theme, not painting art.",
+    "learn": "An open ivory handbook with abstract diagram layouts, two lavender chapter tabs and one small freestanding browser layout card rising from its pages, a pencil resting diagonally. Subject: practical theme guides and documentation.",
+    "support": "Two overlapping sculptural paper speech bubbles, one small lavender headset, a neat folded envelope and a tiny abstract question-shaped ceramic form. Subject: thoughtful theme support and clear answers.",
+    "legal": "Three elegantly stacked ivory document sheets with abstract line embossing, a lavender folded page corner, a fountain pen and a small frosted geometric lock. Subject: transparent policies, privacy and theme licensing. No seals, no certification badge, no check mark, no scales of justice.",
+    "library": "An open sculptural ivory archive folder containing three neatly organized miniature storefront layout cards, one lavender bookmark and a compact desktop monitor with a smaller mobile display alongside. Subject: an organized theme library and preparing website layouts. No check marks or success badges."
+  }
+}

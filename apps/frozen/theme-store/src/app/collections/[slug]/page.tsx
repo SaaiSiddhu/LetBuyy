@@ -1,6 +1,7 @@
+import MarketplacePageHeader from '@/components/marketplace-page-header';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { Card, EmptyState, Page, PageContent, PageHeader, Section } from '@letbuyy/ui';
+import { Card, EmptyState, Page, PageContent, Section } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
 import { ThemeService } from '@/lib/theme-service';
 import type { Theme, ThemeCategory, ThemePricingType } from '@letbuyy/theme-engine';
@@ -91,7 +92,7 @@ export default async function ThemeCollectionPage({ params }: Props) {
 
     return (
         <Page className="theme-marketplace-page">
-            <PageHeader
+            <MarketplacePageHeader artwork="discover"
                 title={stringValue(collection || {}, 'title', 'Theme collection')}
                 eyebrow="Theme collection"
                 description={stringValue(collection || {}, 'description', 'Curated marketplace themes.')}

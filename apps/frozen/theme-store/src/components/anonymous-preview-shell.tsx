@@ -1,4 +1,5 @@
-import { Eye, Page, PageContent, PageHeader } from '@letbuyy/ui';
+import MarketplacePageHeader from '@/components/marketplace-page-header';
+import { Eye, Page, PageContent } from '@letbuyy/ui';
 import ThemeDemo from './theme-demo';
 import type { Theme } from '@letbuyy/theme-engine';
 import { ThemeBundlePackageMetadataSchema } from '@letbuyy/theme-engine';
@@ -26,7 +27,7 @@ export default function AnonymousPreviewShell({ token, theme }: AnonymousPreview
 
     return (
         <Page className="theme-marketplace-page marketplace">
-            <PageHeader
+            <MarketplacePageHeader artwork="discover"
                 title={themeName}
                 eyebrow="Anonymous sandbox"
                 description={theme?.description || 'Preview a marketplace theme without selecting or owning a store.'}

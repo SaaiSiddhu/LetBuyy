@@ -1,3 +1,4 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingBag, Package, Star, ArrowRight, Clock } from '@letbuyy/ui';
@@ -49,7 +50,7 @@ export default async function DashboardOverview() {
         <div>
             {/* Page Header */}
             <div className="mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold mb-1">My Themes Dashboard</h1>
+                <MarketplaceTaskTitle artwork="library">My Themes Dashboard</MarketplaceTaskTitle>
                 <p className="text-sm text-text-muted">Manage your themes, installations, and purchases.</p>
             </div>
 

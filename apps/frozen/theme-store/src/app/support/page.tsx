@@ -4,7 +4,7 @@ import MarketplaceContentPage,{ResourceGrid} from '@/components/marketplace-cont
 import MarketplaceFaqs from '@/components/marketplace-faqs';
 import {MARKETPLACE_FAQS} from '@/lib/marketplace-content';
 export const metadata:Metadata={title:'Theme support center'};
-export default function SupportPage(){return <MarketplaceContentPage title="Let’s find the next useful step." eyebrow="Support center" intro="Get help choosing a theme, checking a purchase, adding a design, or managing an installed version.">
+export default function SupportPage(){return <MarketplaceContentPage artwork="support" title="Let’s find the next useful step." eyebrow="Support center" intro="Get help choosing a theme, checking a purchase, adding a design, or managing an installed version.">
     <section><h2>What do you need help with?</h2><ResourceGrid items={[
         {title:'Choosing or previewing',description:'Understand public samples, store-specific previews, and what to do when a demo version is unavailable.',href:'/guides/preview-a-theme'},
         {title:'Adding a theme',description:'Check the account, selected store, package version, and private library result before trying again.',href:'/guides/install-and-publish'},

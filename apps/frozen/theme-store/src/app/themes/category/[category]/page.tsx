@@ -1,6 +1,7 @@
+import MarketplacePageHeader from '@/components/marketplace-page-header';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Page, PageContent, PageHeader } from '@letbuyy/ui';
+import { Page, PageContent } from '@letbuyy/ui';
 import { normalizeThemeRecord } from '@/lib/theme-catalog';
 import ThemeCategoryLanding, {
     isThemeCategorySlug,
@@ -37,7 +38,7 @@ export default async function ThemeCategoryPage({ params }: CategoryPageProps) {
 
     return (
         <Page className="theme-marketplace-page">
-            <PageHeader
+            <MarketplacePageHeader artwork="discover"
                 title={copy.title}
                 eyebrow="Theme category"
                 description={copy.intro}

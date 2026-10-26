@@ -1,5 +1,7 @@
 'use client';
 
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
+
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -352,7 +354,7 @@ function CheckoutContent() {
     if (!theme) {
         return (
             <div className="container-main py-20 text-center">
-                <h1 className="text-2xl font-bold mb-4">No theme selected</h1>
+                <MarketplaceTaskTitle artwork="legal">No theme selected</MarketplaceTaskTitle>
                 <Link href="/themes" className="btn-primary">Browse Themes</Link>
             </div>
         );
@@ -370,7 +372,7 @@ function CheckoutContent() {
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3 space-y-6">
-                    <h1 className="text-2xl font-bold">Checkout</h1>
+                    <MarketplaceTaskTitle artwork="legal">Checkout</MarketplaceTaskTitle>
 
                     <div>
                         <h3 className="text-sm font-semibold text-text-heading mb-3">Payment Method</h3>

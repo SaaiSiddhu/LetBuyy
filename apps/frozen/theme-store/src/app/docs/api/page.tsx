@@ -1,5 +1,6 @@
+import MarketplacePageHeader from '@/components/marketplace-page-header';
 import type { Metadata } from 'next';
-import { Card, Page, PageContent, PageHeader, Section, Table } from '@letbuyy/ui';
+import { Card, Page, PageContent, Section, Table } from '@letbuyy/ui';
 
 export const metadata: Metadata = {
     title: 'API Reference',
@@ -22,7 +23,7 @@ const API_ROWS = [
 export default function ApiDocsPage() {
     return (
         <Page className="theme-marketplace-page">
-            <PageHeader
+            <MarketplacePageHeader artwork="learn"
                 title="Theme Marketplace API Reference"
                 eyebrow="API"
                 description="Versioned gateway surfaces consumed by the theme marketplace app through `@letbuyy/api-client`."

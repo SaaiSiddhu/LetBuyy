@@ -1,3 +1,4 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import { Download, Globe, Code, ShoppingBag, Monitor } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import type { Metadata } from 'next';
@@ -36,7 +37,7 @@ export default async function DownloadsPage() {
     return (
         <div>
             <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-1">Downloads</h1>
+                <MarketplaceTaskTitle artwork="library">Downloads</MarketplaceTaskTitle>
                 <p className="text-sm text-text-muted">Theme package delivery status for purchased themes</p>
             </div>
 

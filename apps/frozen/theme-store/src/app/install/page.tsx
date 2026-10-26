@@ -1,6 +1,7 @@
+import MarketplaceTaskTitle from '@/components/marketplace-task-title';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { ArrowLeft, CheckCircle, ExternalLink, Input, Select, Package, Store } from '@letbuyy/ui';
+import { ArrowLeft, ExternalLink, Input, Select, Package, Store } from '@letbuyy/ui';
 import { MarketplaceInstallUnconfirmedError, ThemeService } from '@/lib/theme-service';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { InstallThemeSchema, ThemeSlugParamSchema } from '@letbuyy/theme-engine';
@@ -98,7 +99,7 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                 </Link>
                 <div className="glass-card p-8 text-center">
                     <Package className="w-10 h-10 text-text-subtle mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold mb-2">Theme not found</h1>
+                    <MarketplaceTaskTitle artwork="library">Theme not found</MarketplaceTaskTitle>
                     <p className="text-sm text-text-muted mb-6">Choose an approved theme from the marketplace before installing.</p>
                     <Link href="/themes" className="btn-primary inline-flex">Browse Themes</Link>
                 </div>
@@ -115,12 +116,9 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
 
             <div className="glass-card p-6 md:p-8">
                 <ThemeInstallFeedbackToast error={error} themeName={stringValue(theme.name)} />
-                <div className="flex items-start gap-4 mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
-                        <CheckCircle className="w-6 h-6 text-primary-light" />
-                    </div>
+                <div className="mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold mb-1">Install {stringValue(theme.name)}</h1>
+                        <MarketplaceTaskTitle artwork="library">Install {stringValue(theme.name)}</MarketplaceTaskTitle>
                         <p className="text-sm text-text-muted">Add this theme to the selected store’s private library. Customize and publish separately.</p>
                         {selection && <p className="text-sm text-text-muted mt-2">Version {selection.version}</p>}
                     </div>
