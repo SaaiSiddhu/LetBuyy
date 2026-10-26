@@ -140,6 +140,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "store-password-admission.postgres.test.ts",
         "storefront-access-boundary.postgres.test.ts",
         "storefront-bootstrap-projection.postgres.test.ts",
+        "storefront-bound-request.postgres.test.ts",
         "storefront-buyer-data.postgres.test.ts",
         "storefront-buyer-link.postgres.test.ts",
         "storefront-buyer-loyalty.postgres.test.ts",
