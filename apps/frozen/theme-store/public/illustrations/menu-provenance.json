@@ -1,0 +1,11 @@
+{
+  "purpose": "Decorative theme navigation artwork, not actual catalog inventory",
+  "source": "apps/marketing/web/public/illustrations/surfaces/surface-themes-v1.webp",
+  "file": "menu-storefront.webp",
+  "operation": "Unmodified copy of existing LetBuyy landing-page theme surface art; no cross-app imports",
+  "otherAssets": [
+    "discover.webp",
+    "library.webp"
+  ],
+  "reference": "apps/marketing/web/src/components/header-featured-art.module.css"
+}

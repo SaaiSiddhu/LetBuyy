@@ -537,9 +537,11 @@ test('compact mobile menu keeps destinations inside native expandable groups', (
         {key:'learn',label:'Learn',links:[{label:'Theme guides',href:'/guides'},{label:'Legal and privacy',href:'/legal'}]},
         {key:'library',label:'My themes',links:[{label:'Downloads',href:'/dashboard/downloads'}]},
     ]} />);
-    for (const kind of ['themes','collections','free','compare']) assert.ok(html.includes(`menu-shortcut-art-${kind}\" aria-hidden=\"true`));
-    assert.equal((html.match(/class="menu-shortcut-heading"/g)||[]).length, 4);
-    assert.doesNotMatch(html, /<img|showcase\/|marketplace-menu-shortcut-image/);
+    assert.equal((html.match(/class="menu-shortcut-background[^\"]*" aria-hidden="true"/g)||[]).length, 4);
+    assert.equal((html.match(/class="menu-shortcut-copy"/g)||[]).length, 4);
+    for (const art of ['discover','library','menu-storefront']) assert.ok(html.includes(`${art}.webp`));
+    assert.match(html, /menu-shortcut-background-compare/);
+    assert.doesNotMatch(html, /menu-mini-store|showcase\/|marketplace-menu-shortcut-image/);
     assert.equal((html.match(/<details>/g)||[]).length, 3);
     assert.doesNotMatch(html, /<details[^>]*\bopen/);
     for(const href of ['/themes','/themes?category=store','/guides','/legal','/dashboard/downloads','/support','/contact'])assert.ok(html.includes(`href="${href}"`),href);
