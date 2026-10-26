@@ -536,17 +536,23 @@ export async function createOwnedManagedSupabaseFixture(owned:OwnedDatabase) {
     const runId=newRunId(),name=`letbuyy-managed-admission-${runId}`;
     const volume=createVolume({name:`${name}-data`,runId});
     const connections:OwnedProviderSession[]=[];
-    const execute=(sql:string,role:'postgres'|'supabase_admin'='postgres')=>{
+    const applicationPassword=randomBytes(32).toString('hex');
+    const migratorPassword=randomBytes(32).toString('hex');
+    let applicationPasswordInstalled=false;
+    let migratorPasswordInstalled=false;
+    const execute=(sql:string,role:'postgres'|'supabase_admin'|'authenticator'|'cli_login_postgres'='postgres')=>{
         try {
-            const stdout=execFileSync('docker',['exec','-i',name,'psql','-U',role,'-d','postgres','-qAtX','-v','ON_ERROR_STOP=1'],{
-                input:'SET search_path=public,extensions;\n'+sql,encoding:'utf8',timeout:90_000,stdio:['pipe','pipe','pipe'],
+            const password=role==='authenticator'?applicationPassword:role==='cli_login_postgres'?migratorPassword:undefined;
+            const stdout=execFileSync('docker',['exec','-i',...(password?['-e','PGPASSWORD']:[]),name,'psql',...(password?['-h','127.0.0.1']:[]),'-U',role,'-d','postgres','-qAtX','-v','ON_ERROR_STOP=1'],{
+                input:(role==='cli_login_postgres'?'SET ROLE postgres;\n':'')+'SET search_path=public,extensions;\n'+sql,encoding:'utf8',timeout:90_000,stdio:['pipe','pipe','pipe'],
+                ...(password?{env:{...process.env,PGPASSWORD:password}}:{}),
             });
             return {ok:true,stdout:stdout.trim(),error:''};
         } catch(error) {
             return {ok:false,stdout:'',error:String((error as {stderr?:Buffer|string}).stderr??'Managed fixture SQL failed').slice(-1800)};
         }
     };
-    const query=(sql:string,role:'postgres'|'supabase_admin'='postgres')=>{
+    const query=(sql:string,role:'postgres'|'supabase_admin'|'authenticator'|'cli_login_postgres'='postgres')=>{
         const result=execute(sql,role);if(!result.ok) throw new Error(result.error);return result.stdout;
     };
     function session():OwnedProviderSession {
@@ -591,7 +597,20 @@ export async function createOwnedManagedSupabaseFixture(owned:OwnedDatabase) {
         await waitUntilAccepting(name);
     } catch(error) {removeCluster({name,runId,volume});throw error;}
     return {
-        psql:(sql:string)=>query(sql),admin:(sql:string)=>query(sql,'supabase_admin'),session,
+        psql:(sql:string)=>query(sql),admin:(sql:string)=>query(sql,'supabase_admin'),
+        application:(sql:string)=>{
+            if(!applicationPasswordInstalled) {
+                query(`ALTER ROLE authenticator PASSWORD '${applicationPassword}';`,'supabase_admin');
+                applicationPasswordInstalled=true;
+            }
+            return query(sql,'authenticator');
+        },migrator:(sql:string)=>{
+            if(!migratorPasswordInstalled) {
+                query(`ALTER ROLE cli_login_postgres PASSWORD '${migratorPassword}';`,'supabase_admin');
+                migratorPasswordInstalled=true;
+            }
+            return query(sql,'cli_login_postgres');
+        },session,
         psqlExpectError(sql:string){const result=execute(sql);if(result.ok)throw new Error('Refused managed-fixture operation unexpectedly succeeded');return result.error;},
         async close(){
             for(const connection of connections)connection.close();
