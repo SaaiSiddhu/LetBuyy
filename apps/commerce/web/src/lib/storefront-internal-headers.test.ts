@@ -10,7 +10,7 @@ test('Commerce signs both callers with only its dedicated key and refuses broken
     process.env.STOREFRONT_INTERNAL_PERIMETER = 'bound-request-v1';
     process.env.STOREFRONT_INTERNAL_REQUEST_SECRET = 'synthetic-commerce-dedicated-key-0123456789';
     process.env.INTERNAL_API_SECRET = 'synthetic-shared-key-that-must-not-be-sent';
-    for (const [method, path, body] of [['GET', '/resolve?host=syn.letbuyy.store', ''], ['POST', '/verify', '{"password":"synthetic"}']] as const) {
+    for (const [method, path, body] of [['GET', '/resolve?host=syn.example.invalid', ''], ['POST', '/verify', '{"password":"synthetic"}']] as const) {
       const url = 'https://api.letbuyy.test/v1/internal/store-access' + path;
       const headers = new Headers(await storefrontInternalHeaders(method, url, body));
       assert.equal(headers.has('x-internal-api-secret'), false);

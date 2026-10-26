@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test, { before, after } from 'node:test';
 import { createBoundStorefrontRequestHeaders, createLetbuyyInternalAppHeaders } from '@letbuyy/auth-core';
+import { DEFAULT_STOREFRONT_DOMAIN } from '@letbuyy/shared-types';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, tapRest, restJson, INTERNAL_SECRET, type RestTap } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
@@ -9,7 +10,7 @@ import { hashStoreAccessPassword } from '../../lib/store-access-password';
 const owned = requireOwnedDatabase();
 const key = 'synthetic-dedicated-commerce-key-0123456789';
 const tenant = newSyntheticTenant('bound-request');
-const host = tenant.subdomain + '.letbuyy.store';
+const host = tenant.subdomain + '.' + DEFAULT_STOREFRONT_DOMAIN;
 const path = '/v1/internal/store-access/resolve?host=' + encodeURIComponent(host);
 const verificationPath = '/v1/internal/store-access/verify';
 const password = crypto.randomUUID() + crypto.randomUUID();
@@ -20,7 +21,7 @@ before(async () => {
   const hash = await hashStoreAccessPassword(password);
   owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(tenant.siteId)};`);
   gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
-    NODE_ENV: 'production', NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'letbuyy.store',
+    NODE_ENV: 'production', NEXT_PUBLIC_STORE_ROOT_DOMAIN: DEFAULT_STOREFRONT_DOMAIN,
     STOREFRONT_INTERNAL_PERIMETER: 'bound-request-v1',
     STOREFRONT_INTERNAL_REQUEST_KEYRING: JSON.stringify({ 'commerce-storefront': key }),
     STORE_ACCESS_SIGNING_KEY: 'synthetic-owned-store-access-signing-key-0123456789',

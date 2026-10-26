@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createBoundStorefrontRequestHeaders, verifyBoundStorefrontRequestSignature } from '../src/index';
 const secret = 'synthetic-dedicated-storefront-key-0123456789';
-const resolve = 'https://api.letbuyy.test/v1/internal/store-access/resolve?host=synthetic.letbuyy.store';
+const resolve = 'https://api.letbuyy.test/v1/internal/store-access/resolve?host=synthetic.example.invalid';
 const verify = 'https://api.letbuyy.test/v1/internal/store-access/verify';
 const nowMs = 1793000000000;
 const bytes = (body: string) => new TextEncoder().encode(body);
