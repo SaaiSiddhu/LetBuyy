@@ -15,7 +15,7 @@ interface ThemeCardProps {
     renderPreviewImages?: boolean;
 }
 
-export default function ThemeCard({ theme, initialQuickLookOpen = false, renderPreviewImages = true }: ThemeCardProps) {
+export default function ThemeCard({ theme, featured = false, initialQuickLookOpen = false, renderPreviewImages = true }: ThemeCardProps) {
     const [quickLookOpen, setQuickLookOpen] = useState(initialQuickLookOpen);
     const priceLabel = formatThemePrice(theme);
     const categoryLabel = CATEGORY_LABELS[theme.category]?.label ?? theme.category;
@@ -26,11 +26,12 @@ export default function ThemeCard({ theme, initialQuickLookOpen = false, renderP
     const detailsHref = `/themes/${encodeURIComponent(theme.slug)}`;
 
     return <>
-        <article className="marketplace-theme-card">
+        <article className={`marketplace-theme-card${featured ? ' marketplace-theme-spotlight' : ''}`}>
             <Link href={detailsHref} aria-label={`Open ${theme.name} theme details`} className="marketplace-card-art">
-                {renderPreviewImages ? <Image src={theme.thumbnail_url} alt={`${theme.name} theme screenshot`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" /> : <div role="img" aria-label={theme.name} data-testid="theme-card-preview-fallback" />}
+                {renderPreviewImages ? <Image src={theme.thumbnail_url} alt={`${theme.name} theme screenshot`} fill sizes={featured ? '(max-width: 1024px) 100vw, 50vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'} /> : <div role="img" aria-label={theme.name} data-testid="theme-card-preview-fallback" />}
                 {freshness && <span className="marketplace-card-freshness" data-testid="theme-card-freshness">{freshness}</span>}
             </Link>
+            <div className="marketplace-card-content">
             <div className="marketplace-card-heading"><h3><Link href={detailsHref}>{theme.name}</Link></h3><span className="marketplace-card-price">{priceLabel}</span></div>
             <div className="marketplace-card-meta">
                 <span>{theme.author_name}</span><span aria-hidden="true">·</span><span>{categoryLabel}</span>
@@ -48,6 +49,7 @@ export default function ThemeCard({ theme, initialQuickLookOpen = false, renderP
                 <Link href={compareHref} className="sr-only" data-testid="theme-card-compare-link">Compare {theme.name}</Link>
             </div>
             <ThemePreferenceActions theme={theme} compact className="marketplace-card-preferences" />
+            </div>
         </article>
         <Modal open={quickLookOpen} onClose={() => setQuickLookOpen(false)} title={`${theme.name} quick look`} description={theme.description}>
             <div className="marketplace-quick-look">

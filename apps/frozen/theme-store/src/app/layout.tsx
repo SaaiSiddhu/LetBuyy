@@ -22,7 +22,7 @@ const letbuyySans = localFont({
 });
 
 const letbuyyDisplay = localFont({
-    src: '../../public/fonts/Inter-Variable.woff2',
+    src: '../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2',
     variable: '--font-letbuyy-display',
     display: 'swap',
     weight: '100 900',

@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {useState} from 'react';
-import {Banner,Button,Modal} from '@letbuyy/ui';
+import {Banner,Button,Modal,ChevronDown} from '@letbuyy/ui';
 import BrandLogo from '@/components/brand-logo';
 import {clearSavedThemeChoices} from '@/lib/browser-preferences';
 const SUPPORT_EMAIL=process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@letbuyy.com';
@@ -16,9 +16,11 @@ export default function Footer(){
     const [result,setResult]=useState<'cleared'|'error'|null>(null);
     function clearChoices(){try{clearSavedThemeChoices(window.localStorage);window.dispatchEvent(new CustomEvent('letbuyy-theme-preferences-changed'));setResult('cleared');}catch{setResult('error');}}
     return <footer className="marketplace-footer" aria-labelledby="site-footer-heading"><div className="marketplace-container"><h2 id="site-footer-heading" className="sr-only">LetBuyy Themes footer</h2>
-        <div className="marketplace-footer-grid"><div><Link href="/" aria-label="LetBuyy Themes home"><BrandLogo width={158} height={48}/></Link><p className="marketplace-footer-tagline">A home for your next great look.<br/>Built for your business, on LetBuyy.</p></div>{columns.map(column=><nav key={column.title} aria-label={column.title}><h3>{column.title}</h3><ul>{column.links.map(([label,href])=><li key={label}><Link href={href}>{label}</Link></li>)}</ul></nav>)}</div>
+        <div className="marketplace-footer-grid"><div className="marketplace-footer-brand"><Link href="/" aria-label="LetBuyy Themes home"><BrandLogo width={136} height={42}/></Link><p className="marketplace-footer-tagline">A home for your next great look.</p><a className="marketplace-footer-contact" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></div>
+            <div className="marketplace-footer-desktop">{columns.map(column=><nav key={column.title} aria-label={column.title}><h3>{column.title}</h3><ul>{column.links.map(([label,href])=><li key={label}><Link href={href}>{label}</Link></li>)}</ul></nav>)}</div>
+            <div className="marketplace-footer-mobile">{columns.map(column=><details key={column.title}><summary>{column.title}<ChevronDown size={16} aria-hidden="true" /></summary><nav aria-label={column.title}><ul>{column.links.map(([label,href])=><li key={label}><Link href={href}>{label}</Link></li>)}</ul></nav></details>)}</div>
+        </div>
         <div className="marketplace-footer-bottom"><span>© {new Date().getFullYear()} LetBuyy · India · English</span><nav aria-label="Legal links"><Link href="/legal/terms">Terms</Link><Link href="/legal/privacy">Privacy</Link><Link href="/legal/cookies">Cookies and storage</Link><Link href="/legal/license">Theme license</Link><Link href="/legal/refund">Refunds</Link><Button variant="ghost" size="sm" onClick={()=>{setResult(null);setPrivacyOpen(true);}}>Privacy choices</Button></nav></div>
-        <a className="marketplace-footer-contact" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
     </div><Modal title="Your browser preferences" description="Manage the theme choices saved on this browser." open={privacyOpen} onClose={()=>setPrivacyOpen(false)} footer={<Button variant="secondary" onClick={()=>setPrivacyOpen(false)}>Done</Button>}>
         <div className="marketplace-filter-fields"><p>Clear your saved themes and comparison shortlist on this browser. Your account, purchases, licenses, store installations, and color theme are unchanged.</p><Button variant="secondary" onClick={clearChoices}>Clear saved themes and comparison</Button>
             {result==='cleared'&&<Banner variant="success">Saved themes and comparison cleared on this browser.</Banner>}{result==='error'&&<Banner variant="warning">Could not clear all saved choices. Check your browser’s storage settings and try again.</Banner>}

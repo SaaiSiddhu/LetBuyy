@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { ArrowRight, Check, EmptyState, Palette, Search, ShieldCheck, Input, Button } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
+import ThemeStyleGallery from '@/components/theme-style-gallery';
 import { ThemeService } from '@/lib/theme-service';
 import { normalizeThemeRecord } from '@/lib/theme-catalog';
 import MarketplaceUnavailable from '@/components/marketplace-unavailable';
 import MarketplaceHomeResources from '@/components/marketplace-home-resources';
 import ThemeShowcase from '@/components/theme-showcase';
+import MarketplaceArtwork from '@/components/marketplace-artwork';
 
 const CATEGORIES = [
     { slug: 'store', label: 'Online stores' },
@@ -44,8 +46,9 @@ export default async function HomePage() {
                                 <Link href="/themes" className="marketplace-action">Explore all themes <ArrowRight aria-hidden="true" /></Link>
                                 <Link href="/themes?pricing=free" className="marketplace-text-link">Start with a free theme</Link>
                             </div>
+                            <p className="marketplace-hero-note"><Check size={16} aria-hidden="true" /><span>Preview before you choose. Your products stay yours.</span></p>
                         </div>
-                        <p className="marketplace-hero-note"><Check size={16} aria-hidden="true" /><span>Preview before you choose.</span><span>Your products stay yours.</span></p>
+                        <div className="marketplace-home-preview"><MarketplaceArtwork kind="library" /><p>Find your look. Make it your own.</p></div>
                     </div>
                     <nav className="marketplace-category-nav" aria-label="Browse theme categories">
                         <Link href="/themes" aria-current="page">All themes</Link>
@@ -54,13 +57,13 @@ export default async function HomePage() {
                 </div>
             </section>
 
-            <section className="marketplace-section marketplace-container" aria-labelledby="featured-themes-heading">
+            <section className="marketplace-section marketplace-container marketplace-featured-section" aria-labelledby="featured-themes-heading">
                 <div className="marketplace-section-heading">
-                    <div><h2 id="featured-themes-heading">Find your starting point</h2><p>Explore the themes available for your LetBuyy website.</p></div>
+                    <div><p className="marketplace-eyebrow">Find your starting point</p><h2 id="featured-themes-heading">A theme. Your own point of view.</h2><p>Explore the published design, then discover a few directions for making it yours.</p></div>
                     <Link className="marketplace-text-link" href="/themes">View all themes <span aria-hidden="true">↗</span></Link>
                 </div>
                 {!featuredResult.ok ? <MarketplaceUnavailable /> : featured.length ? (
-                    <div className="marketplace-theme-grid">{featured.map(theme => <ThemeCard key={theme.id} theme={theme} />)}</div>
+                    featured.length === 1 && featured[0].slug === 'letbuyy-core' ? <ThemeStyleGallery theme={featured[0]} /> : <div className="marketplace-theme-grid">{featured.map(theme => <ThemeCard key={theme.id} theme={theme} />)}</div>
                 ) : <EmptyState kind="themes" title="New themes are on the way" body="There are no published themes to browse yet. Check back soon." primaryAction={<Link href="/themes" className="marketplace-action">Browse themes</Link>} />}
             </section>
 

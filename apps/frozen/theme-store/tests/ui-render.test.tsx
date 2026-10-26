@@ -20,6 +20,9 @@ import ThemeShowcase from '../src/components/theme-showcase';
 import MarketplaceThemeJourney from '../src/components/marketplace-theme-journey';
 import MarketplaceContentPage, { ResourceGrid } from '../src/components/marketplace-content-page';
 import MarketplacePageHeader from '../src/components/marketplace-page-header';
+import MarketplaceArticleContents from '../src/components/marketplace-article-contents';
+import Footer from '../src/components/layout/footer';
+import ThemeStyleGallery from '../src/components/theme-style-gallery';
 import MarketplaceArtwork, { artworkForHref } from '../src/components/marketplace-artwork';
 import PolicyDraftPage from '../src/components/policy-draft-page';
 import { MARKETPLACE_GUIDES, MARKETPLACE_FAQS, findMarketplaceGuide } from '../src/lib/marketplace-content';
@@ -423,4 +426,45 @@ test('website illustrations depict photographic storefronts and editor layouts w
         if (kind === 'create') assert.match(html, /Theme editor/);
         if (kind === 'library') assert.match(html, /theme-scene-phone/);
     }
+});
+
+test('article contents retain anchor destinations in compact native mobile and desktop navigation', () => {
+    const guide = MARKETPLACE_GUIDES[0];
+    const html = renderToStaticMarkup(<MarketplaceArticleContents items={guide.sections} label="In this guide" backHref="/guides" backLabel="All theme guides" />);
+    assert.match(html, /<details class="marketplace-contents-mobile">/);
+    assert.doesNotMatch(html, /<details[^>]*\bopen/);
+    assert.match(html, /<summary>/);
+    for (const section of guide.sections) assert.equal(html.split(`href="#${section.id}"`).length - 1, 2);
+    assert.match(html, /href="\/guides"/);
+    assert.match(html, new RegExp(`${guide.sections.length} sections`));
+});
+
+test('compact footer preserves legal/privacy access and four collapsed mobile link groups', () => {
+    const html = renderToStaticMarkup(<Footer />);
+    assert.equal((html.match(/<details>/g) || []).length, 4);
+    assert.doesNotMatch(html, /<details[^>]*\bopen/);
+    for (const path of ['/legal/terms', '/legal/privacy', '/legal/license', '/legal/refund', '/support', '/dashboard', '/for-creators']) assert.ok(html.includes(`href="${path}"`), path);
+    assert.match(html, /Privacy choices/);
+    assert.match(html, /mailto:/);
+});
+
+test('theme spotlight retains the actual theme and its preview/quick-look actions', () => {
+    const html = renderToStaticMarkup(<ThemeCard theme={baseTheme} featured renderPreviewImages={false} />);
+    assert.match(html, /marketplace-theme-spotlight/);
+    assert.match(html, /marketplace-card-content/);
+    assert.match(html, /Urban Kicks/);
+    assert.match(html, /Open Urban Kicks theme details/);
+    assert.match(html, /Quick look/);
+    assert.match(html, /Preview/);
+});
+
+test('style gallery distinguishes one published preset from illustrative studies and keeps selection local', () => {
+    const html = renderToStaticMarkup(<ThemeStyleGallery theme={{ ...baseTheme, slug: 'letbuyy-core', name: 'LetBuyy Core', theme_preset_id: 'letbuyy-core-default' }} />);
+    assert.equal((html.match(/type="radio"/g) || []).length, 4);
+    assert.equal((html.match(/data-selected="true"/g) || []).length, 1);
+    assert.match(html, /1 published preset/);
+    assert.match(html, /3 style studies/);
+    assert.match(html, /Style studies are visual inspiration/);
+    assert.match(html, /href="\/themes\/letbuyy-core"/);
+    assert.doesNotMatch(html, /Use this preset|Install this style|ready-made designs/);
 });

@@ -80,9 +80,8 @@ export default function Navbar() {
                     <Button variant="ghost" size="icon" aria-label="Search themes" onClick={()=>setSearchOpen(true)}><Search aria-hidden="true" /></Button>
                     <span className="marketplace-theme-toggle"><ThemeToggleButton /></span>
                     <div className="marketplace-account-nav">
-                        {isAuthenticated ? <><Link href="/dashboard" className="marketplace-header-login">Your library</Link><Button variant="ghost" onClick={()=>void signOut()}>Log out</Button></> : <><a href={accountHref('/lookup')} onClick={preserveReturnTo} className="marketplace-header-login">Log in</a><a href={accountHref('/signup')} onClick={preserveReturnTo} className="marketplace-action">Start for free</a></>}
+                        {isAuthenticated ? <><Link href="/dashboard" className="marketplace-header-login">Your library</Link><Button variant="ghost" onClick={()=>void signOut()}>Log out</Button></> : <><a href={accountHref('/lookup')} onClick={preserveReturnTo} className="marketplace-header-login">Log in</a></>}
                     </div>
-                    {!isAuthenticated && <a href={accountHref('/signup')} onClick={preserveReturnTo} className="marketplace-mobile-start-link">Start for free</a>}
                     <Button className="marketplace-mobile-menu-trigger" variant="ghost" size="icon" aria-label="Open menu" aria-expanded={mobileOpen} onClick={()=>setMobileOpen(true)}><Menu aria-hidden="true" /></Button>
                 </div>
             </div>
