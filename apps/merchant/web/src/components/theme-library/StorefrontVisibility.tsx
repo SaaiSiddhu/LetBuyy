@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Banner, Button, Lock, Modal, Input, Select, Textarea, useToast } from '@letbuyy/ui';
 import styles from './theme-workspace.module.css';
+import { useReadRequest } from '@/lib/api/use-read-request';
 type AccessMode = 'public' | 'password' | 'preview_only' | 'offline';
 interface AccessState {
     access_mode: AccessMode;
@@ -10,10 +11,11 @@ interface AccessState {
     published: boolean;
     status: string;
 }
-export function StorefrontVisibility({ store, inline = false, onChanged }: {
+export function StorefrontVisibility({ store, inline = false, onChanged, onLoaded }: {
     store: string;
     inline?: boolean;
     onChanged?: () => void;
+    onLoaded?: (store: string, publicPreview: boolean) => void;
 }) {
     const [open, setOpen] = useState(false);
     const [state, setState] = useState<AccessState | null>(null);
@@ -24,29 +26,37 @@ export function StorefrontVisibility({ store, inline = false, onChanged }: {
     const [busy, setBusy] = useState(false);
     const [loading, setLoading] = useState(true);
     const { notify } = useToast();
+    const beginRead = useReadRequest(store);
+    const onLoadedRef = useRef(onLoaded);
+    onLoadedRef.current = onLoaded;
     const intent = useRef<{
         fingerprint: string;
         key: string;
     } | null>(null);
     const load = useCallback(async () => {
+        const request = beginRead();
         setLoading(true);
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/access`, { cache: 'no-store' });
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/access`, { cache: 'no-store', signal: request.signal });
             const payload = await response.json();
+            if (!request.isCurrent()) return;
             if (!response.ok)
                 throw new Error(payload.error?.message || 'Storefront access could not load.');
             setState(payload.data);
+            onLoadedRef.current?.(store, payload.data.published === true && payload.data.status === 'published' && payload.data.access_mode === 'public');
             setMode(payload.data.access_mode);
             setMessage(payload.data.access_message || '');
             setError('');
         }
         catch (cause) {
+            if (!request.isCurrent()) return;
+            onLoadedRef.current?.(store, false);
             setError(cause instanceof Error ? cause.message : 'Storefront access could not load.');
         }
         finally {
-            setLoading(false);
+            if (request.isCurrent()) setLoading(false);
         }
-    }, [store]);
+    }, [beginRead, store]);
     useEffect(() => { void load(); }, [load]);
     async function save() {
         setBusy(true);

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { assertReadyFirstPartyStorefrontDomain, provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
@@ -728,6 +729,16 @@ router.get('/:id', async (c) => {
     return c.json(success(data));
 });
 
+async function ownedStorefrontDomainAdmission(
+    db: ReturnType<typeof getSupabaseAdmin>, env: Env, storeId: string, ownerId: string,
+) {
+    const { data, error } = await db.from('sites').select('id,subdomain,store_name,published,status')
+        .eq('id', storeId).or(ownedByCustomUserFilter(ownerId)).is('deleted_at', null).maybeSingle();
+    if (error) throw new AppError('Storefront ownership could not be verified', 503, 'STOREFRONT_OWNERSHIP_UNAVAILABLE');
+    if (!data) throw new AppError('Store not found or not owned by you', 404, 'NOT_FOUND');
+    await assertReadyFirstPartyStorefrontDomain(env, data);
+}
+
 // POST /stores — Create a new store
 // FIX: Uses Zod validation with reserved subdomain blocking
 router.post('/', validate('json', CreateStoreSchema), async (c) => {
@@ -800,8 +811,9 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             ownerUserId: customUser.id,
             requestId: getRequestId(c),
         });
+        const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, store as { subdomain: string; store_name?: string });
         c.header('X-Idempotent-Replay', 'true');
-        return c.json(success(store), 201);
+        return c.json(success(store, { meta: { storefront_domain: storefrontDomain } }), 201);
     };
 
     if (idempotencyKey) {
@@ -919,7 +931,8 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         requestId: getRequestId(c),
     });
 
-    return c.json(success(data), 201);
+    const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, data);
+    return c.json(success(data, { meta: { storefront_domain: storefrontDomain } }), 201);
 });
 
 // PATCH /stores/:id — Update a store
@@ -959,6 +972,7 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
 
     // Publish timestamp
     if (updates.status === 'published') {
+        await ownedStorefrontDomainAdmission(db, c.env, storeId, customUser.id);
         updates.published_at = new Date().toISOString();
     }
 
@@ -1010,6 +1024,7 @@ router.post('/:id/publish', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    await ownedStorefrontDomainAdmission(db, c.env, storeId, customUser.id);
     const publishUpdates = {
         status: 'published',
         published_at: new Date().toISOString(),

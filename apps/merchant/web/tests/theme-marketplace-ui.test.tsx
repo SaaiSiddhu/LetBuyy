@@ -15,7 +15,7 @@ const theme = { id: site, slug: 'letbuyy-sense', name: 'Threadline', version: '2
 const installReceipt = { theme: { id: site, slug: theme.slug, name: theme.name, version: theme.version }, theme_instance_id: instance, theme_package_id: packageId, theme_package_version_id: versionId, installed_version: theme.version, already_installed: false };
 const catalog = { themes: [theme], total: 25, page: 2, limit: 12, has_more: true, storeId: site, categories: ['fashion'], selectedRuntime: { id: theme.id, slug: theme.slug, name: theme.name, renderer_key: theme.slug, theme_package_id: packageId, theme_package_version_id: versionId }, selectedRuntimeStatus: 'ready' };
 
-async function mount(url: string, transport: (url: string, init?: RequestInit) => Promise<Response>) {
+async function mount(url: string, transport: (url: string, init?: RequestInit) => Promise<Response>, workspace = false) {
     const { JSDOM } = await loadThemeServerDom();
     const dom = new (JSDOM as unknown as QaDomConstructor)('<!doctype html><div id="root"></div>', { url: `http://localhost${url}` });
     const names = ['window', 'document', 'navigator', 'self', 'localStorage', 'MutationObserver', 'HTMLElement', 'Element', 'fetch', 'React', 'IS_REACT_ACT_ENVIRONMENT'];
@@ -25,6 +25,8 @@ async function mount(url: string, transport: (url: string, init?: RequestInit) =
     const oldCss = requireApp.extensions['.css'];
     requireApp.extensions['.css'] = module => { module.exports = {}; };
     const { ThemeMarketplace } = await import('../src/components/theme-library/ThemeMarketplace');
+    const { ThemeWorkspace } = await import('../src/components/theme-library/ThemeWorkspace');
+    const { ToastProvider } = await import('@letbuyy/ui');
     const { createRoot } = await import('react-dom/client');
     const { AppRouterContext } = await import('next/dist/shared/lib/app-router-context.shared-runtime.js');
     const { PathParamsContext, SearchParamsContext, PathnameContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js');
@@ -34,7 +36,7 @@ async function mount(url: string, transport: (url: string, init?: RequestInit) =
     async function render(next = url) {
         const parsed = new URL(next, 'http://localhost');
         const store = parsed.pathname.split('/')[1];
-        await act(async () => root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}><SearchParamsContext.Provider value={parsed.searchParams}><PathnameContext.Provider value={parsed.pathname}><ThemeMarketplace/></PathnameContext.Provider></SearchParamsContext.Provider></PathParamsContext.Provider></AppRouterContext.Provider>));
+        await act(async () => root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}><SearchParamsContext.Provider value={parsed.searchParams}><PathnameContext.Provider value={parsed.pathname}>{workspace ? <ToastProvider><ThemeWorkspace/></ToastProvider> : <ThemeMarketplace/>}</PathnameContext.Provider></SearchParamsContext.Provider></PathParamsContext.Provider></AppRouterContext.Provider>));
     }
     await render();
     return { render, pushes, document: dom.window.document,
@@ -129,5 +131,25 @@ test('unconfirmed package metadata keeps demo details available while Add is dis
         const add = [...h.document.querySelectorAll('button')].find(button => button.textContent === 'Add to library')!;
         assert.ok(add.disabled); await h.click('Add to library'); assert.equal(writes, 0);
         assert.ok([...h.document.querySelectorAll('a')].some(link => link.textContent === 'View demo'));
+    } finally { await h.close(); }
+});
+
+for (const visibility of [
+    { label: 'unpublished', published: false, status: 'draft', access_mode: 'public', embedded: false },
+    { label: 'private published', published: true, status: 'published', access_mode: 'preview_only', embedded: false },
+    { label: 'public published', published: true, status: 'published', access_mode: 'public', embedded: true },
+    { label: 'visibility unavailable', published: true, status: 'published', access_mode: 'public', embedded: false, unavailable: true },
+]) test(`current-theme hero uses live scoped visibility: ${visibility.label}`, async () => {
+    const h = await mount('/sample-store/online-store/themes', async url => {
+        if (url.includes('/access')) return visibility.unavailable
+            ? Response.json({ error: { message: 'Synthetic visibility outage' } }, { status: 503 })
+            : Response.json({ data: { ...visibility, access_message: null, has_password: false } });
+        if (url.includes('/library')) return Response.json({ data: { themes: [] } });
+        return Response.json({ themes: [theme], currentTheme: theme, storeId: site, storeStatus: visibility.status });
+    }, true);
+    try {
+        assert.equal(Boolean(h.document.querySelector('iframe[title="Current storefront"]')), visibility.embedded);
+        if (!visibility.embedded) assert.match(h.text(), /Open the theme editor to preview your saved design/);
+        assert.match(h.text(), /Threadline/);
     } finally { await h.close(); }
 });
