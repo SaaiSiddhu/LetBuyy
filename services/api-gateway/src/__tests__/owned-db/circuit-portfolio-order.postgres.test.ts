@@ -13,13 +13,13 @@ test('Circuit portfolio order survives popularity differences and idempotent app
  // Install counts are deliberately different; the portfolio must not falsify popularity.
  owned.psql(`UPDATE themes SET install_count=CASE slug WHEN 'letbuyy-sense' THEN 7 ELSE 2 END WHERE slug IN ('letbuyy-forge','letbuyy-sense');`);
  const before=conserved();
- const read=async(sort:string)=>{const response=await gateway.request('/v1/themes?sort='+sort+'&limit=50');assert.equal(response.status,200,response.text);return response.json!.data as Array<{slug:string;install_count:number}>;};
+ const read=async(sort?:string)=>{const response=await gateway.request('/v1/themes?limit=50'+(sort?'&sort='+sort:''));assert.equal(response.status,200,response.text);return response.json!.data as Array<{slug:string;install_count:number}>;};
  try {
   owned.script(rollback);
   assert.equal((await read('portfolio'))[0].slug,'letbuyy-sense','negative control reproduces the historical rank0 before Circuit100');
   const previous=owned.psql(`SELECT jsonb_agg(jsonb_build_array(slug,sort_order) ORDER BY slug) FROM themes WHERE slug IN ('letbuyy-forge','letbuyy-sense');`);
   owned.script(forward);owned.script(forward);
-  const catalog=await read('portfolio');assert.equal(catalog.length,10);assert.equal(catalog[0].slug,'letbuyy-forge');
+  const catalog=await read('portfolio');assert.equal(catalog.length,10);assert.equal(catalog[0].slug,'letbuyy-forge');assert.equal((await read())[0].slug,'letbuyy-forge','the default API catalog uses authored portfolio order too');
   assert.equal((await read('popular'))[0].slug,'letbuyy-sense','real popularity is preserved');
   assert.equal(conserved(),before,'tenant data, immutable packages and all other catalog fields are conserved');
   owned.script(rollback);
