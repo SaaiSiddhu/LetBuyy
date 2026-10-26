@@ -17,6 +17,7 @@ import {
 import ThemeCategoryLanding from '../src/components/theme-category-landing';
 import ThemeCard from '../src/components/theme-card';
 import ThemeShowcase from '../src/components/theme-showcase';
+import MarketplaceHero from '../src/components/marketplace-hero';
 import MarketplaceThemeJourney from '../src/components/marketplace-theme-journey';
 import MarketplaceContentPage, { ResourceGrid } from '../src/components/marketplace-content-page';
 import MarketplacePageHeader from '../src/components/marketplace-page-header';
@@ -277,7 +278,7 @@ test('home and sitemap expose catalog navigation and responsive theme grids', ()
     const globals = readAppFile('src/app/globals.css');
 
     assert.match(home, /marketplace-theme-grid/);
-    assert.match(home, /href=\{`\/themes\?category=\$\{category\.slug\}`\}/);
+    assert.match(readAppFile('src/components/marketplace-hero.tsx'), /href=\{`\/themes\?category=\$\{category\.slug\}`\}/);
     assert.match(sitemap, /\/themes\/category\/\$\{category\}/);
     assert.match(globals, /@import "\.\/marketplace\.css"/);
 });
@@ -382,9 +383,19 @@ test('homepage lookbook renders opposite rows, noninteractive duplicate artwork 
     assert.match(html, /lucide-pause/);
     assert.doesNotMatch(html, /<iframe|href="\/themes\//);
     const home = readAppFile('src/app/page.tsx');
-    assert.ok(home.indexOf('<ThemeShowcase />') < home.indexOf('<section className="marketplace-hero">'));
-    assert.match(home, /Search themes, styles, or features/);
-    assert.match(home, /Start with a free theme/);
+    assert.match(home, /<MarketplaceHero \/>/);
+    const hero = renderToStaticMarkup(<MarketplaceHero />);
+    assert.match(hero, /class="marketplace-hero-stage"/);
+    assert.match(hero, /marketplace-hero-panel/);
+    assert.match(hero, /aria-labelledby="marketplace-hero-heading"/);
+    assert.match(hero, /action="\/themes" method="get"/);
+    assert.match(hero, /<input(?=[^>]*id="home-theme-search")(?=[^>]*name="q")[^>]*>/);
+    assert.match(hero, /Search themes, styles, or features/);
+    assert.match(hero, /Start with a free theme/);
+    assert.match(hero, /href="\/themes\?pricing=free"/);
+    assert.match(hero, /aria-label="Browse theme categories"/);
+    assert.match(hero, /aria-label="Pause theme animation"/);
+    assert.doesNotMatch(hero, /marketplace-home-preview|Illustrative sample layout/);
 });
 
 test('illustrated theme journey offers real guide destinations without exposing mock editor controls', () => {

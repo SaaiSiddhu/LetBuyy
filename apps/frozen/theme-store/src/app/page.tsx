@@ -1,21 +1,12 @@
 import Link from 'next/link';
-import { ArrowRight, Check, EmptyState, Palette, Search, ShieldCheck, Input, Button } from '@letbuyy/ui';
+import { ArrowRight, EmptyState, ShieldCheck } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
 import ThemeStyleGallery from '@/components/theme-style-gallery';
 import { ThemeService } from '@/lib/theme-service';
 import { normalizeThemeRecord } from '@/lib/theme-catalog';
 import MarketplaceUnavailable from '@/components/marketplace-unavailable';
 import MarketplaceHomeResources from '@/components/marketplace-home-resources';
-import ThemeShowcase from '@/components/theme-showcase';
-import MarketplaceArtwork from '@/components/marketplace-artwork';
-
-const CATEGORIES = [
-    { slug: 'store', label: 'Online stores' },
-    { slug: 'portfolio', label: 'Portfolios' },
-    { slug: 'landing', label: 'Landing pages' },
-    { slug: 'resume', label: 'Resumes' },
-    { slug: 'saas', label: 'SaaS' },
-];
+import MarketplaceHero from '@/components/marketplace-hero';
 
 export default async function HomePage() {
     const [featuredResult, recentResult] = await Promise.all([
@@ -28,34 +19,7 @@ export default async function HomePage() {
 
     return (
         <div className="marketplace marketplace-home">
-            <ThemeShowcase />
-            <section className="marketplace-hero">
-                <div className="marketplace-container">
-                    <p className="marketplace-eyebrow"><Palette size={16} aria-hidden="true" /> LetBuyy Theme Store</p>
-                    <div className="marketplace-hero-layout">
-                        <div>
-                            <h1>Make your business <span>look like you.</span></h1>
-                            <p className="marketplace-intro">Find a theme that fits your next chapter. Explore the design, try the demo, and make it your own with LetBuyy.</p>
-                            <form action="/themes" method="get" className="marketplace-hero-search" role="search">
-                                <label className="sr-only" htmlFor="home-theme-search">Search themes</label>
-                                <Search size={20} aria-hidden="true" />
-                                <Input unstyled id="home-theme-search" name="q" type="search" placeholder="Search themes, styles, or features" maxLength={80} />
-                                <Button type="submit" size="sm">Search</Button>
-                            </form>
-                            <div className="marketplace-hero-actions">
-                                <Link href="/themes" className="marketplace-action">Explore all themes <ArrowRight aria-hidden="true" /></Link>
-                                <Link href="/themes?pricing=free" className="marketplace-text-link">Start with a free theme</Link>
-                            </div>
-                            <p className="marketplace-hero-note"><Check size={16} aria-hidden="true" /><span>Preview before you choose. Your products stay yours.</span></p>
-                        </div>
-                        <div className="marketplace-home-preview"><MarketplaceArtwork kind="library" /><p>Find your look. Make it your own.</p></div>
-                    </div>
-                    <nav className="marketplace-category-nav" aria-label="Browse theme categories">
-                        <Link href="/themes" aria-current="page">All themes</Link>
-                        {CATEGORIES.map(category => <Link key={category.slug} href={`/themes?category=${category.slug}`}>{category.label}</Link>)}
-                    </nav>
-                </div>
-            </section>
+            <MarketplaceHero />
 
             <div className="marketplace-home-band marketplace-home-band-featured"><section className="marketplace-section marketplace-container marketplace-featured-section" aria-labelledby="featured-themes-heading">
                 <div className="marketplace-section-heading">
