@@ -86,7 +86,7 @@ test('storefront resolver and composition engine render full Liquid documents wi
   assert.match(source, /import \{[^}]*assembleLiquidPageFromRenderResult[^}]*\} from '\.\/liquid-page-assembly';/);
   assert.match(
     source,
-    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) return null;\s*const assembled = assembleLiquidPageFromRenderResult\(result\.liquid, \{ beforeContentHtml: catalogDemo \? '' : productOriginFilterMarkup\(plan\.route, editorMode\), afterContentHtml \}\);/,
+    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) \{\s*console\.warn\(JSON\.stringify\(\{ event: 'lb:liquid:render-unavailable', \.\.\.liquidRenderFailureDiagnostics\(result\) \}\)\);\s*return null;\s*\}\s*const assembled = assembleLiquidPageFromRenderResult\(result\.liquid, \{ beforeContentHtml: catalogDemo \? '' : productOriginFilterMarkup\(plan\.route, editorMode\), afterContentHtml \}\);/,
   );
   assert.match(assemblySource, /export function assembleLiquidPageFromRenderResult\(\s*liquid: LiquidRenderedTheme,\s*controls: LiquidPlatformControls = \{\},?\s*\)/);
   assert.match(assemblySource, /const \{ header, contentForLayout, footer(?:, \w+)* \} = liquid;/);
