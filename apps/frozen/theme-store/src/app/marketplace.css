@@ -374,10 +374,10 @@
 
 /* Compact homepage lookbook; decorative sample artwork, separate from catalog inventory. */
 .marketplace-showcase {
-    --showcase-row-height: clamp(calc(var(--lb-space-8) * 1.2), 10svh, calc(var(--lb-space-8) * 2.4));
+    --showcase-row-height: clamp(calc(var(--lb-space-8) * 4), 22svh, calc(var(--lb-space-8) * 5.5));
     position: relative;
     overflow: hidden;
-    padding-block: var(--lb-space-3) var(--lb-space-2);
+    padding-block: 0 var(--lb-space-2);
     background: var(--lb-color-bg);
 }
 .marketplace-showcase-window { display: grid; gap: var(--lb-space-3); overflow: hidden; mask-image: linear-gradient(to right, transparent, var(--lb-color-text) 4%, var(--lb-color-text) 96%, transparent); }
@@ -385,18 +385,18 @@
 .marketplace-showcase-track { display: flex; width: max-content; animation: marketplace-lookbook-drift 46s linear infinite; }
 .marketplace-showcase-row[data-direction="right"] .marketplace-showcase-track { animation-direction: reverse; animation-duration: 54s; }
 .marketplace-showcase-group { display: flex; flex-shrink: 0; gap: var(--lb-space-3); list-style: none; margin: 0; padding: 0 var(--lb-space-3) 0 0; }
-.marketplace-showcase-card { flex-shrink: 0; width: clamp(calc(var(--lb-space-8) * 5), 24vw, calc(var(--lb-space-8) * 16)); height: var(--showcase-row-height); overflow: hidden; border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-xl); background: var(--lb-color-surface); }
+.marketplace-showcase-card { flex-shrink: 0; width: clamp(calc(var(--lb-space-8) * 7), 30vw, calc(var(--lb-space-8) * 12)); height: var(--showcase-row-height); overflow: hidden; border: thin solid var(--lb-color-border); border-radius: var(--lb-radius-xl); background: var(--lb-color-surface); }
 .marketplace-sample-site { height: 100%; color: var(--lb-color-text); background: var(--lb-color-surface-raised); }
-.marketplace-sample-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-2); height: calc(var(--showcase-row-height) * 0.18); padding-inline: var(--lb-space-3); font-size: calc(var(--lb-font-size-caption) * 0.45); white-space: nowrap; }
-.marketplace-sample-nav > strong { text-transform: uppercase; letter-spacing: 0.12em; font-size: calc(var(--lb-font-size-caption) * 0.55); }
+.marketplace-sample-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-2); height: calc(var(--showcase-row-height) * 0.18); padding-inline: var(--lb-space-3); font-size: calc(var(--showcase-row-height) * 0.045); white-space: nowrap; }
+.marketplace-sample-nav > strong { text-transform: uppercase; letter-spacing: 0.12em; font-size: calc(var(--showcase-row-height) * 0.06); }
 .marketplace-sample-hero { display: grid; grid-template-columns: 1fr 1.25fr; height: calc(var(--showcase-row-height) * 0.63); }
 .marketplace-sample-photo { position: relative; min-width: 0; overflow: hidden; }
 .marketplace-sample-photo img { object-fit: cover; }
 .marketplace-sample-copy { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: calc(var(--lb-space-1) * 0.7); padding-inline: var(--lb-space-3); background: var(--lb-color-primary-soft); }
-.marketplace-sample-copy > span { text-transform: uppercase; letter-spacing: 0.1em; font-size: calc(var(--lb-font-size-caption) * 0.48); }
+.marketplace-sample-copy > span { text-transform: uppercase; letter-spacing: 0.1em; font-size: calc(var(--showcase-row-height) * 0.05); }
 .marketplace-sample-copy > strong { max-width: 15ch; font-family: var(--lb-font-family-display); font-size: calc(var(--showcase-row-height) * 0.15); line-height: 1.05; letter-spacing: -0.04em; }
-.marketplace-sample-copy > i { padding: calc(var(--lb-space-1) * 0.5) var(--lb-space-2); background: var(--lb-color-text); color: var(--lb-color-bg); font-size: calc(var(--lb-font-size-caption) * 0.43); font-style: normal; }
-.marketplace-sample-bottom { display: flex; justify-content: space-around; align-items: center; height: calc(var(--showcase-row-height) * 0.19); padding-inline: var(--lb-space-3); gap: var(--lb-space-2); font-size: calc(var(--lb-font-size-caption) * 0.48); }
+.marketplace-sample-copy > i { padding: calc(var(--lb-space-1) * 0.5) var(--lb-space-2); background: var(--lb-color-text); color: var(--lb-color-bg); font-size: calc(var(--showcase-row-height) * 0.045); font-style: normal; }
+.marketplace-sample-bottom { display: flex; justify-content: space-around; align-items: center; height: calc(var(--showcase-row-height) * 0.19); padding-inline: var(--lb-space-3); gap: var(--lb-space-2); font-size: calc(var(--showcase-row-height) * 0.05); }
 .marketplace-sample-bottom img { width: 23%; height: 100%; object-fit: cover; }
 .marketplace-sample-site[data-layout="editorial"] .marketplace-sample-hero { grid-template-columns: 1.2fr 1fr; }
 .marketplace-sample-site[data-layout="editorial"] .marketplace-sample-copy { order: 2; background: var(--lb-color-surface-subdued); }
@@ -418,12 +418,13 @@
 .marketplace-home .marketplace-category-nav { margin-top: var(--lb-space-4); }
 @keyframes marketplace-lookbook-drift { to { transform: translateX(-50%); } }
 @media (width < 40rem) {
+    .marketplace-showcase { --showcase-row-height: clamp(calc(var(--lb-space-8) * 3.5), 22svh, calc(var(--lb-space-8) * 4.5)); }
+    .marketplace-showcase-card { width: clamp(calc(var(--lb-space-8) * 6.5), 78vw, calc(var(--lb-space-8) * 8.5)); }
     .marketplace-home .marketplace-hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--lb-space-3); }
     .marketplace-home .marketplace-hero-actions > a { min-height: var(--lb-size-touch-target); padding-inline: var(--lb-space-3); font-size: var(--lb-font-size-caption); }
     .marketplace-home .marketplace-hero-actions > .marketplace-text-link { display: inline-flex; align-items: center; justify-content: center; }
 }
 @media (height < 45rem) {
-    .marketplace-showcase { --showcase-row-height: var(--lb-space-8); padding-top: var(--lb-space-2); }
     .marketplace-home > .marketplace-hero { padding-block: var(--lb-space-3); }
 }
 @media (prefers-reduced-motion: reduce) {

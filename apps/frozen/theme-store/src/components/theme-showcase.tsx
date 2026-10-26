@@ -20,7 +20,7 @@ function DesignRow({reverse=false}:{reverse?:boolean}) {
             {items.map((design,index)=><li className="marketplace-showcase-card" key={design.key}>
                 <div className="marketplace-sample-site" data-layout={design.layout} aria-hidden="true">
                     <div className="marketplace-sample-nav"><strong>{design.name}</strong><span>Explore &nbsp; Our story &nbsp; Contact</span><span><Search size={7} aria-hidden="true"/><Heart size={7} aria-hidden="true"/></span></div>
-                    <div className="marketplace-sample-hero"><div className="marketplace-sample-copy"><span>{design.category}</span><strong>{design.title}</strong><i>Discover the collection</i></div><div className="marketplace-sample-photo"><Image src={`/showcase/${design.key}.webp`} alt="" fill sizes="(max-width: 640px) 140px, 220px" loading={!duplicate&&index<2?'eager':'lazy'} quality={65}/></div></div>
+                    <div className="marketplace-sample-hero"><div className="marketplace-sample-copy"><span>{design.category}</span><strong>{design.title}</strong><i>Discover the collection</i></div><div className="marketplace-sample-photo"><Image src={`/showcase/${design.key}.webp`} alt="" fill sizes="(max-width: 640px) 180px, 260px" loading={!duplicate&&index<2?'eager':'lazy'} quality={65}/></div></div>
                     <div className="marketplace-sample-bottom"><span>Thoughtful details.<br/>Your own story.</span><Image src={`/showcase/${design.key}-detail.webp`} alt="" width={240} height={160} sizes="80px" loading="lazy" quality={60}/><span>Discover more</span></div>
                 </div>
                 <span className="sr-only">{design.name} — illustrative sample design</span>
