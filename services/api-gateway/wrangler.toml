@@ -1,10 +1,10 @@
 name = "letbuyy-api"
-main = "src/index.ts"
+main = "src/worker-entry.ts"
 compatibility_date = "2026-05-25"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 
-# No [build] command on purpose. wrangler bundles `main` (src/index.ts) via its own
+# No [build] command on purpose. wrangler bundles `main` (src/worker-entry.ts) via its own
 # esbuild, so a custom command here is only an extra gate. The previous
 # `command = "pnpm build"` ran `tsc --noEmit` on EVERY hot-reload, which churned and
 # wedged workerd whenever backend source changed (recurring "fetch failed"). Type
