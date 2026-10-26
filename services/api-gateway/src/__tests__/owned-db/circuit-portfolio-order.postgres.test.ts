@@ -8,7 +8,7 @@ const owned=requireOwnedDatabase();
 const forward=readFileSync(new URL('../../../../../database/supabase/migrations/397_circuit_portfolio_order.sql',import.meta.url),'utf8');
 const rollback=readFileSync(new URL('../../../../../database/supabase/rollback/397_circuit_portfolio_order.rollback.sql',import.meta.url),'utf8');
 test('Circuit portfolio order survives popularity differences and idempotent apply; rollback restores ranks without touching tenant or package data',async()=>{
- const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),{NEXT_PUBLIC_STORE_ROOT_DOMAIN:'letbuyy.store'}));
+ const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));
  const conserved=()=>owned.psql(`SELECT md5(jsonb_build_object('sites',(SELECT coalesce(jsonb_agg(to_jsonb(s) ORDER BY id),'[]') FROM sites s),'versions',(SELECT coalesce(jsonb_agg(to_jsonb(v) ORDER BY id),'[]') FROM theme_package_versions v),'catalog',(SELECT jsonb_agg(to_jsonb(t)-'sort_order'-'updated_at'-'config'||jsonb_build_object('config',coalesce(t.config,'{}')-'circuitPortfolioOrder397') ORDER BY id) FROM themes t))::text);`);
  // Install counts are deliberately different; the portfolio must not falsify popularity.
  owned.psql(`UPDATE themes SET install_count=CASE slug WHEN 'letbuyy-sense' THEN 7 ELSE 2 END WHERE slug IN ('letbuyy-forge','letbuyy-sense');`);

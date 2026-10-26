@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {readFileSync} from 'node:fs';
 import type { Env } from '../index';
 import { provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import { StorefrontDomainProvisioningSchema } from '@letbuyy/shared-types';
-const env = { ENVIRONMENT:'production',NEXT_PUBLIC_STORE_ROOT_DOMAIN:'letbuyy.store',VERCEL_API_TOKEN:'synthetic-commerce-only',VERCEL_STOREFRONT_PROJECT_ID:'synthetic-commerce',VERCEL_TEAM_ID:'synthetic-team' } as Env;
-const domain='synthetic-owned.letbuyy.store';
+const root = readFileSync(new URL('../../wrangler.toml',import.meta.url),'utf8').split('[env.production.vars]')[1].match(/^NEXT_PUBLIC_STORE_ROOT_DOMAIN = "([^"]+)"/m)![1];
+const env = { ENVIRONMENT:'production',NEXT_PUBLIC_STORE_ROOT_DOMAIN:root,VERCEL_API_TOKEN:'synthetic-commerce-only',VERCEL_STOREFRONT_PROJECT_ID:'synthetic-commerce',VERCEL_TEAM_ID:'synthetic-team' } as Env;
+const domain='synthetic-owned.'+root;
 const store={subdomain:'synthetic-owned'};
 const response=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}});
 function provider(attached=false,postOutcome:'success'|'lost'|'failed'='success') {
@@ -56,7 +58,7 @@ test('a hung request aborts within the shared finite deadline',async(t)=>{
  t.mock.timers.tick(6001);assert.equal((await result).reason,'provider_unavailable');assert.equal(signal?.aborted,true);
 });
 test('a response naming a different host never admits publication',async()=>{
- const p=provider(true);const result=await provisionFirstPartyStorefrontDomain(env,store,(async(input,init)=>{const r=await p.fetchImpl(input,init);if(String(input).includes('/v9/'))return response({name:'another.letbuyy.store',verified:true});return r;}) as typeof fetch);assert.equal(result.status,'pending');
+ const p=provider(true);const result=await provisionFirstPartyStorefrontDomain(env,store,(async(input,init)=>{const r=await p.fetchImpl(input,init);if(String(input).includes('/v9/'))return response({name:'another.'+root,verified:true});return r;}) as typeof fetch);assert.equal(result.status,'pending');
 });
 
 test('existing published stores retain successful replay through a provider outage',async()=>{
