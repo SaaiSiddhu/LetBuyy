@@ -1511,7 +1511,7 @@ class LbReviewFormElement extends LiquidIslandBase {
             `  <${liquidInputTag} type="text" name="review_name" class="lb-review-form__field" placeholder="Your name" autocomplete="name" maxlength="120">`,
             `  <${liquidInputTag} type="text" name="review_title" class="lb-review-form__field" placeholder="Review title (optional)" maxlength="120">`,
             '  <textarea name="review_body" class="lb-review-form__field" placeholder="Share your experience with this product" maxlength="2000"></textarea>',
-            '  <div data-lb-review-turnstile hidden></div>',
+            '  <div data-lb-review-turnstile></div>',
             '  <p data-lb-review-status class="lb-review-form__status" aria-live="polite"></p>',
             `  <${liquidButtonTag} type="submit" class="lb-review-form__submit">Submit review</${liquidButtonTag}>`,
             '</form>',
@@ -1665,7 +1665,7 @@ class LbReviewFormElement extends LiquidIslandBase {
 
         this.turnstileWidgetId = turnstile.render(container, {
             sitekey: siteKey,
-            size: 'invisible',
+            size: 'flexible',
             callback: (token: string) => { this.turnstileToken = token; },
             'expired-callback': () => { this.turnstileToken = null; },
             'error-callback': () => { this.turnstileToken = null; },
@@ -2661,7 +2661,7 @@ function canUseFormTurnstileDevBypass(): boolean {
 // T1/W2 — generic Turnstile-for-a-plain-<form> island for the transitional customer login form.
 // It is a no-JS-first <form method="post"> submission that POSTs directly to /api/customer/login;
 // there is no client-side submit handler to attach a token to. This island fills the same role
-// TurnstileWidget.tsx plays for React forms: render an invisible
+// TurnstileWidget.tsx plays for React forms: render a visible responsive
 // challenge and, on solve, write the token straight into the sibling hidden
 // <input name="turnstileToken"> that the Liquid section already renders — so the native form
 // submission (JS or no-JS) carries a real token with zero extra wiring in the section markup.
@@ -2733,7 +2733,7 @@ class LbTurnstileElement extends LiquidIslandBase {
 
         this.widgetId = turnstile.render(this, {
             sitekey: siteKey,
-            size: 'invisible',
+            size: 'flexible',
             callback: (token: string) => this.writeToken(token),
             'expired-callback': () => this.writeToken(''),
             'error-callback': () => this.writeToken(''),
