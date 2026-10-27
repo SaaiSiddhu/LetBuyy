@@ -66,7 +66,10 @@ test('identity login, lookup, and password routes never receive or create passwo
     assert.match(setPassword, /password,\s*\n\s*\}\)/);
     assert.doesNotMatch(resetPassword, /hashPassword/);
     assert.doesNotMatch(resetPassword, /password_hash/);
-    assert.match(resetPassword, /password,\s*\n\s*\}\)/);
+    assert.match(resetPassword, /JSON\.stringify\(\{ \.\.\.parsed\.data, purpose: 'password_reset' \}\)/);
+    assert.match(resetPassword, /MerchantPasswordResetSchema\.safeParse/);
+    assert.doesNotMatch(resetPassword, /validateToken\(|users\/by-email|destroyAllUserSessions\(/);
+    assert.doesNotMatch(resetPassword, /setSessionCookie\(|createSession\(/);
     assert.doesNotMatch(identityPassword, /bcrypt/);
     assert.doesNotMatch(identityPassword, /hashPassword/);
     assert.doesNotMatch(identityPassword, /verifyPassword/);
@@ -79,4 +82,19 @@ test('domain boundary validator forbids password hash handling in every app-loca
     assert.match(validator, /appLocalCredentialStoragePattern/);
     assert.match(validator, /must not handle password hashes in app-local API\/lib files/);
     assert.doesNotMatch(validator, /appLocalCredentialStoragePattern\.test\(content\) \|\| isAuthOwnedLocalFile/);
+});
+
+
+test('Merchant reset is an internally guarded atomic capability redemption, with no privileged recovery session', () => {
+    const block = routeBlock(read(authRoutePath), '/custom/users/set-password');
+    const sql = read(join(testDir, '../../database/supabase/migrations/399_verified_merchant_buyer_connection.sql'));
+    assert.match(block, /requireAccountsInternal/);
+    assert.match(block, /MerchantPasswordResetCommitSchema\.safeParse/);
+    assert.match(block, /rpc\('complete_merchant_password_reset'/);
+    assert.match(block, /hashMerchantPassword\(parsedReset\.data\.password\)/);
+    assert.match(sql, /t\.user_id IS DISTINCT FROM u\.id/);
+    assert.match(sql, /t\.used IS DISTINCT FROM false OR t\.expires_at<=v_now/);
+    assert.match(sql, /UPDATE public\.users_custom SET password_hash=p_password_hash/);
+    assert.match(sql, /UPDATE public\.sessions SET revoked_at=v_now,revoked_reason='password_reset'/);
+    assert.match(sql, /REVOKE ALL ON FUNCTION public\.complete_merchant_password_reset\(text,text\) FROM PUBLIC,anon,authenticated,app_tenant/);
 });

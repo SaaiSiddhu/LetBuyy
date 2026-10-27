@@ -1,3 +1,4 @@
+import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, paragraph, smallPrint, verificationCode, escapeHtml, safeSubject, formatEmailSender } from '@letbuyy/notification-core/email';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import type { Env } from '../index';
@@ -65,20 +66,20 @@ function buildOrderConfirmationEmail(order: OrderRow, items: OrderItemRow[]) {
     const htmlItems = items.map((item) => {
         const quantity = numberValue(item.quantity) || 1;
         const total = item.total ?? Number(item.unit_price ?? item.price ?? 0) * quantity;
-        return `<li>${lineTitle(item)} x ${quantity} - ${money(total, currency)}</li>`;
+        return `<li>${escapeHtml(lineTitle(item))} x ${quantity} - ${escapeHtml(money(total, currency))}</li>`;
     }).join('');
 
     return {
         to: recipient,
-        subject: `Order ${orderLabel} confirmed`,
+        subject: safeSubject(`Order ${orderLabel} confirmed`),
         text,
-        html: [
-            `<p>Hi ${greetingName},</p>`,
-            `<p>Your LetBuyy order <strong>${orderLabel}</strong> is confirmed.</p>`,
+        html: renderEmailShell(DEFAULT_EMAIL_BRAND, heading('Your order update') + [
+            `<p>Hi ${escapeHtml(greetingName)},</p>`,
+            `<p>Your LetBuyy order <strong>${escapeHtml(orderLabel)}</strong> is confirmed.</p>`,
             htmlItems ? `<ul>${htmlItems}</ul>` : '',
-            `<p><strong>Total:</strong> ${money(order.total, currency)}</p>`,
+            `<p><strong>Total:</strong> ${escapeHtml(money(order.total, currency))}</p>`,
             '<p>We will share fulfilment updates as the merchant processes your order.</p>',
-        ].join(''),
+        ].join(''), {preheader:'An update about your LetBuyy order.',reason:'You received this message about an order placed through LetBuyy.',category:'transactional'}),
         order_id: order.id,
         store_id: order.store_id,
         order_number: order.order_number,
@@ -146,7 +147,7 @@ export async function enqueueOrderConfirmationEmail(
 
     await sendResendEmail({
         apiKey: env.RESEND_API_KEY,
-        from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+        from: formatEmailSender(env.RESEND_FROM_EMAIL),
         to: email.to,
         subject: email.subject,
         text: email.text,
@@ -169,12 +170,12 @@ function buildOrderLifecycleEmail(order: OrderRow, kind: OrderLifecycleEmailKind
     if (kind === 'cancelled') {
         return {
             to: recipient,
-            subject: `Order ${orderLabel} cancelled`,
+            subject: safeSubject(`Order ${orderLabel} cancelled`),
             text: `Hi ${greetingName},\n\nYour LetBuyy order ${orderLabel} has been cancelled. If you were charged, your refund is being processed.`,
-            html: [
-                `<p>Hi ${greetingName},</p>`,
-                `<p>Your LetBuyy order <strong>${orderLabel}</strong> has been cancelled. If you were charged, your refund is being processed.</p>`,
-            ].join(''),
+            html: renderEmailShell(DEFAULT_EMAIL_BRAND, heading('Your order update') + [
+                `<p>Hi ${escapeHtml(greetingName)},</p>`,
+                `<p>Your LetBuyy order <strong>${escapeHtml(orderLabel)}</strong> has been cancelled. If you were charged, your refund is being processed.</p>`,
+            ].join(''), {preheader:'An update about your LetBuyy order.',reason:'You received this message about an order placed through LetBuyy.',category:'transactional'}),
             order_id: order.id,
             store_id: order.store_id,
             order_number: order.order_number,
@@ -184,12 +185,12 @@ function buildOrderLifecycleEmail(order: OrderRow, kind: OrderLifecycleEmailKind
     const amount = money(refundAmount ?? order.total, currency);
     return {
         to: recipient,
-        subject: `Refund issued for order ${orderLabel}`,
+        subject: safeSubject(`Refund issued for order ${orderLabel}`),
         text: `Hi ${greetingName},\n\nA refund of ${amount} for order ${orderLabel} has been issued and should reach your original payment method shortly.`,
-        html: [
-            `<p>Hi ${greetingName},</p>`,
-            `<p>A refund of <strong>${amount}</strong> for order <strong>${orderLabel}</strong> has been issued and should reach your original payment method shortly.</p>`,
-        ].join(''),
+        html: renderEmailShell(DEFAULT_EMAIL_BRAND, heading('Your order update') + [
+            `<p>Hi ${escapeHtml(greetingName)},</p>`,
+            `<p>A refund of <strong>${escapeHtml(amount)}</strong> for order <strong>${escapeHtml(orderLabel)}</strong> has been issued and should reach your original payment method shortly.</p>`,
+        ].join(''), {preheader:'An update about your LetBuyy order.',reason:'You received this message about an order placed through LetBuyy.',category:'transactional'}),
         order_id: order.id,
         store_id: order.store_id,
         order_number: order.order_number,
@@ -247,7 +248,7 @@ export async function enqueueOrderLifecycleEmail(
 
     await sendResendEmail({
         apiKey: env.RESEND_API_KEY,
-        from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+        from: formatEmailSender(env.RESEND_FROM_EMAIL),
         to: email.to,
         subject: email.subject,
         text: email.text,

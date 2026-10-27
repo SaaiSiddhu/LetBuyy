@@ -1,386 +1,172 @@
+import { AUTH_OTP_EXPIRY_MS, AUTH_TOKEN_EXPIRY_MS } from '@letbuyy/auth-core'
+import {
+  DEFAULT_EMAIL_BRAND, ctaButton, ctaRow, detailRow, detailTable, divider,
+  escapeHtml, eyebrow, formatEmailSender, heading, paragraph, renderEmailShell,
+  safeSubject, sectionLabel, smallPrint, verificationCode,
+  type EmailShellOptions, type RenderedEmailMessage,
+} from '@letbuyy/notification-core/email'
 import { identityApiRequest } from '../api/client'
 import { getAccountsUrl } from '../config/urls'
-import { letbuyyPrimitiveTokens } from '@letbuyy/ui/tokens'
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.com'
-const emailTableTag = 'table'
-// Email clients cannot resolve CSS variables, so the identity surface's admin ink brand (D-AUTH-LIGHT)
-// is inlined from the token source rather than repeated here as hex.
-const EMAIL_INK = letbuyyPrimitiveTokens.color.brandInk[800]
-const EMAIL_INK_LIGHT = letbuyyPrimitiveTokens.color.brandInk[600]
+export { escapeHtml } from '@letbuyy/notification-core/email'
 
-/**
- * Every value that did not come from this file goes through this before it enters an email's HTML
- * (APPID-SEC2). Until then a store name, a link, a device name or an IP address was inserted raw, so
- * whoever supplied one supplied markup in a message sent from LetBuyy's own address.
- */
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
-
-/** An http(s) URL for an href, escaped; anything else (javascript:, data:, a bare string) becomes '#'. */
+/** Compatibility helper: callers pass raw URLs to the shared shell's safeHref boundary. */
 export function safeHttpUrl(value: string): string {
   return /^https?:\/\//i.test(value.trim()) ? escapeHtml(value.trim()) : '#'
 }
 
-interface SendEmailOptions {
-  to: string
-  subject: string
-  html: string
+function emailBrand() {
+  const configured = process.env.EMAIL_ASSET_BASE_URL?.trim()
+  let assetUrl = DEFAULT_EMAIL_BRAND.assetUrl
+  if (configured) {
+    try {
+      const value = new URL(configured)
+      if (value.protocol === 'https:' && !value.username && !value.password && value.hostname !== 'localhost' && !value.hostname.endsWith('.localhost')) assetUrl = value.origin
+    } catch { /* Public canonical logo remains available when image configuration is invalid. */ }
+  }
+  return { ...DEFAULT_EMAIL_BRAND, assetUrl }
 }
 
-/**
- * Send a transactional email via Resend.
- */
-export async function sendEmail({ to, subject, html }: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
+function message(subject: string, body: string, text: string, options: EmailShellOptions): RenderedEmailMessage {
+  return {
+    subject: safeSubject(subject),
+    html: renderEmailShell(emailBrand(), body, options),
+    text: `LetBuyy\n\n${text}\n\n${options.reason}\nSupport: ${DEFAULT_EMAIL_BRAND.supportEmail}`,
+  }
+}
+
+interface SendEmailOptions { to: string; subject: string; html: string; text?: string }
+
+/** Delivery uses the existing signed Identity → Gateway → Resend transport. */
+export async function sendEmail({ to, subject, html, text }: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
     const response = await identityApiRequest<{
-      data?: { success: boolean; error?: string }
-      success?: boolean
-      error?: string
+      data?: { success: boolean; error?: string }; success?: boolean; error?: string
     }>('/auth/custom/emails/send', {
       method: 'POST',
-      body: JSON.stringify({
-      from: `LetBuyy <${FROM_EMAIL}>`,
-      to,
-      subject,
-      html,
-      }),
+      body: JSON.stringify({ from: formatEmailSender(process.env.RESEND_FROM_EMAIL), to, subject: safeSubject(subject), html, ...(text ? { text } : {}) }),
     })
-    const payload = await response.json()
-    const result = payload?.data || payload
-
-    if (!response.ok || !result?.success) {
-      const error = result?.error || response.statusText || 'Email provider request failed'
-      console.error('Resend error:', error)
-      return { success: false, error }
+    const payload = await response.json().catch(() => null)
+    if (!response.ok || !(payload?.data || payload)?.success) {
+      console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'email_delivery_failed', status: response.status }))
+      return { success: false, error: 'Failed to send email' }
     }
-
     return { success: true }
-  } catch (err) {
-    console.error('Email send failed:', err)
+  } catch {
+    console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'email_delivery_unavailable' }))
     return { success: false, error: 'Failed to send email' }
   }
 }
 
-/**
- * Send verification email with a link.
- */
-export async function sendVerificationEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
-  const verifyUrl = `${getAccountsUrl('/api/auth/verify')}?token=${token}&type=email_verify`
-
-  return sendEmail({
-    to: email,
-    subject: 'Verify your LetBuyy account',
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <h1 style="font-size: 24px; font-weight: 700; color: rgb(17 17 17); margin: 0;">LetBuyy</h1>
-        </div>
-        <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 16px;">Verify your email</h2>
-        <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px;">
-          Click the button below to verify your email address and complete your account setup.
-        </p>
-        <a href="${verifyUrl}" style="display: block; background: rgb(17 17 17); color: rgb(255 255 255); text-align: center; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
-          Verify email address
-        </a>
-        <p style="font-size: 13px; color: rgb(153 153 153); margin: 24px 0 0; line-height: 1.5;">
-          This link expires in 1 hour. If you didn't create a LetBuyy account, you can safely ignore this email.
-        </p>
-      </div>
-    `,
-  })
+function actionUrl(path: string, token: string, type?: string): string {
+  const url = new URL(getAccountsUrl(path))
+  url.searchParams.set('token', token)
+  if (type) url.searchParams.set('type', type)
+  return url.toString()
 }
 
-/**
- * Send OTP verification email with a 6-digit code.
- */
-export async function sendOTPEmail(email: string, otp: string): Promise<{ success: boolean; error?: string }> {
-  return sendEmail({
-    to: email,
-    subject: `${otp} is your LetBuyy verification code`,
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, ${EMAIL_INK}, ${EMAIL_INK_LIGHT}); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
-        </div>
-        <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px; text-align: center;">Verify your email</h2>
-        <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px; text-align: center;">
-          Enter this code to verify your email address and create your LetBuyy account.
-        </p>
-        <div style="background: rgb(248 249 250); border: 2px solid rgb(229 231 235); border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 24px;">
-          <div style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: rgb(17 17 17); font-family: 'SF Mono', 'Fira Code', monospace;">${otp}</div>
-        </div>
-        <p style="font-size: 13px; color: rgb(153 153 153); line-height: 1.5; text-align: center; margin: 0;">
-          This code expires in 10 minutes. If you didn't request this code, you can safely ignore this email.
-        </p>
-      </div>
-    `,
-  })
+const minutes = (milliseconds: number) => `${Math.round(milliseconds / 60_000)} minutes`
+
+export function verificationEmail(token: string): RenderedEmailMessage {
+  const url = actionUrl('/api/auth/verify', token, 'email_verify')
+  return message('Verify your LetBuyy account',
+    eyebrow('Welcome to LetBuyy') + heading('One step closer to your next idea.') +
+    paragraph('Confirm your email address to finish setting up your LetBuyy account.') +
+    ctaRow([ctaButton(url, 'Verify email address')]) +
+    smallPrint(`This link expires in ${minutes(AUTH_TOKEN_EXPIRY_MS.email_verify)}. If you did not create an account, you can ignore this email.`),
+    `Confirm your email address: ${url}\nThis link expires in ${minutes(AUTH_TOKEN_EXPIRY_MS.email_verify)}. If you did not create an account, ignore this email.`,
+    { preheader: 'Confirm your email address to finish setting up LetBuyy.', reason: 'You received this message because this address was used to create a LetBuyy account.', category: 'security' })
 }
 
-/**
- * Send magic link login email.
- */
-export async function sendMagicLinkEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
-  const magicUrl = `${getAccountsUrl('/api/auth/verify')}?token=${token}&type=magic_link`
+export async function sendVerificationEmail(email: string, token: string) { return sendEmail({ to: email, ...verificationEmail(token) }) }
 
-  return sendEmail({
-    to: email,
-    subject: 'Your LetBuyy login link',
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <h1 style="font-size: 24px; font-weight: 700; color: rgb(17 17 17); margin: 0;">LetBuyy</h1>
-        </div>
-        <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 16px;">Log in to LetBuyy</h2>
-        <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px;">
-          Click the button below to securely log in. This link is single-use and expires in 15 minutes.
-        </p>
-        <a href="${magicUrl}" style="display: block; background: rgb(17 17 17); color: rgb(255 255 255); text-align: center; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
-          Log in to LetBuyy
-        </a>
-        <p style="font-size: 13px; color: rgb(153 153 153); margin: 24px 0 0; line-height: 1.5;">
-          If you didn't request this link, you can safely ignore this email.
-        </p>
-      </div>
-    `,
-  })
+export function otpEmail(otp: string): RenderedEmailMessage {
+  return message('Your LetBuyy verification code',
+    eyebrow('Account verification') + heading('Your verification code') +
+    paragraph('Enter this one-time code to continue creating your LetBuyy account.') + verificationCode(otp) +
+    smallPrint(`Expires in ${minutes(AUTH_OTP_EXPIRY_MS)}. Do not share this code with anyone, including anyone claiming to be LetBuyy support.`),
+    `Your verification code is ${otp}.\nIt expires in ${minutes(AUTH_OTP_EXPIRY_MS)}. Do not share it with anyone.`,
+    { preheader: 'A one-time code to verify your email address.', reason: 'You requested an email verification code. If this was not you, ignore this message.', category: 'security' })
 }
 
-/**
- * Send password reset email.
- */
-export async function sendPasswordResetEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
-  const resetUrl = `${getAccountsUrl('/reset-password')}?token=${token}`
+export async function sendOTPEmail(email: string, otp: string) { return sendEmail({ to: email, ...otpEmail(otp) }) }
 
-  return sendEmail({
-    to: email,
-    subject: 'Reset your LetBuyy password',
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <h1 style="font-size: 24px; font-weight: 700; color: rgb(17 17 17); margin: 0;">LetBuyy</h1>
-        </div>
-        <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 16px;">Reset your password</h2>
-        <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px;">
-          Click the button below to set a new password for your account. This link expires in 1 hour.
-        </p>
-        <a href="${resetUrl}" style="display: block; background: rgb(17 17 17); color: rgb(255 255 255); text-align: center; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
-          Reset password
-        </a>
-        <p style="font-size: 13px; color: rgb(153 153 153); margin: 24px 0 0; line-height: 1.5;">
-          If you didn't request a password reset, you can safely ignore this email. Your password won't be changed.
-        </p>
-      </div>
-    `,
-  })
+export function magicLinkEmail(token: string): RenderedEmailMessage {
+  const url = actionUrl('/api/auth/verify', token, 'magic_link')
+  return message('Your secure LetBuyy sign-in link',
+    eyebrow('Secure sign-in') + heading('Welcome back.') +
+    paragraph('Use this single-use link to sign in to your LetBuyy account.') + ctaRow([ctaButton(url, 'Sign in to LetBuyy')]) +
+    smallPrint(`This link expires in ${minutes(AUTH_TOKEN_EXPIRY_MS.magic_link)}. If you did not request it, you can ignore this email.`),
+    `Sign in to LetBuyy: ${url}\nThis single-use link expires in ${minutes(AUTH_TOKEN_EXPIRY_MS.magic_link)}. If you did not request it, ignore this email.`,
+    { preheader: 'Your single-use sign-in link is ready.', reason: 'You requested a secure sign-in link for your LetBuyy account.', category: 'security' })
 }
 
-/* ====================================
-   STORE CREATION EMAILS
-   ==================================== */
+export async function sendMagicLinkEmail(email: string, token: string) { return sendEmail({ to: email, ...magicLinkEmail(token) }) }
 
-const SITE_TYPE_LABELS: Record<string, string> = {
-  ecommerce: 'Online Store',
-  portfolio: 'Portfolio',
-  resume: 'Resume / CV',
-  landing_page: 'Landing Page',
+export function passwordResetEmail(token: string): RenderedEmailMessage {
+  const url = actionUrl('/reset-password', token)
+  return message('Reset your LetBuyy password',
+    eyebrow('Account security') + heading('Reset your password') +
+    paragraph('We received a request to reset your LetBuyy merchant account password. Choose a new password using the secure link below.') +
+    ctaRow([ctaButton(url, 'Reset password')]) +
+    smallPrint(`This single-use link expires in ${minutes(AUTH_TOKEN_EXPIRY_MS.password_reset)}. Your password will stay the same until you complete the reset.`) +
+    divider() + paragraph('Did not request this? You can safely ignore this email. Never share your password or reset link.'),
+    `Reset your LetBuyy merchant password: ${url}\nThis single-use link expires in ${minutes(AUTH_TOKEN_EXPIRY_MS.password_reset)}. Your password does not change until you complete the reset. If you did not request this, ignore this email.`,
+    { preheader: 'Use this secure link to choose a new password.', reason: 'A password reset was requested for your LetBuyy account.', category: 'security' })
 }
 
-/**
- * The store-created email. Pure, so its escaping can be tested without sending anything.
- */
-export function storeCreatedEmail(input: {
-  storeName: string
-  siteType: string
-  storeUrl: string
-  adminUrl: string
-}): { subject: string; html: string } {
-  const typeLabel = SITE_TYPE_LABELS[input.siteType] || 'Store'
-  const storeName = escapeHtml(input.storeName)
-  const storeUrl = safeHttpUrl(input.storeUrl)
-  const adminUrl = safeHttpUrl(input.adminUrl)
+export async function sendPasswordResetEmail(email: string, token: string) { return sendEmail({ to: email, ...passwordResetEmail(token) }) }
 
-  return {
-    subject: `🎉 Your ${typeLabel} is ready!`,
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <h1 style="font-size: 24px; font-weight: 700; color: rgb(17 17 17); margin: 0;">LetBuyy</h1>
-        </div>
-
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="width: 56px; height: 56px; background: rgb(240 253 244); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px;">OK</div>
-        </div>
-
-        <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px; text-align: center;">Your ${typeLabel} is Ready! 🎉</h2>
-        <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px; text-align: center;">
-          Congratulations! Your ${typeLabel.toLowerCase()} has been created.
-        </p>
-
-        <div style="background: rgb(249 250 251); border: 1px solid rgb(229 231 235); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-          <div style="margin-bottom: 12px;">
-            <span style="font-size: 13px; color: rgb(107 114 128);">Store Name</span><br/>
-            <span style="font-size: 15px; font-weight: 600; color: rgb(17 17 17);">${storeName}</span>
-          </div>
-          <div style="margin-bottom: 12px;">
-            <span style="font-size: 13px; color: rgb(107 114 128);">Type</span><br/>
-            <span style="font-size: 15px; color: rgb(17 17 17);">${typeLabel}</span>
-          </div>
-          <div>
-            <span style="font-size: 13px; color: rgb(107 114 128);">URL</span><br/>
-            <a href="${storeUrl}" style="font-size: 15px; color: ${EMAIL_INK}; text-decoration: none;">${storeUrl}</a>
-          </div>
-        </div>
-
-        <a href="${adminUrl}" style="display: block; background: ${EMAIL_INK}; color: rgb(255 255 255); text-align: center; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
-          Open Dashboard →
-        </a>
-
-        <div style="margin-top: 24px;">
-          <p style="font-size: 14px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px;">Next Steps:</p>
-          <ul style="font-size: 14px; color: rgb(85 85 85); line-height: 1.8; padding-left: 20px; margin: 0;">
-            <li>Customize your store branding and theme</li>
-            <li>Add your products or content</li>
-            <li>Set up a custom domain</li>
-            <li>Publish when you're ready!</li>
-          </ul>
-        </div>
-
-        <p style="font-size: 12px; color: rgb(156 163 175); margin: 32px 0 0; text-align: center;">
-          © LetBuyy · <a href="https://letbuyy.com/support" style="color: ${EMAIL_INK};">Support</a>
-        </p>
-      </div>
-    `,
-  }
+export function storeCreatedEmail(input: { storeName: string; siteType: string; storeUrl: string; adminUrl: string }): RenderedEmailMessage {
+  const name = escapeHtml(input.storeName)
+  return message('Your LetBuyy store is ready to shape',
+    eyebrow('Your next chapter starts here') + heading(`Welcome to ${name}.`) +
+    paragraph('Your store workspace is set up. Bring your products, your story and your first customers together in one place.') +
+    ctaRow([ctaButton(input.adminUrl, 'Open your store dashboard')]) +
+    sectionLabel('Three steps to your first launch') +
+    detailTable([
+      detailRow('01 · Add your products', 'Start with a clear photo, a useful description and your price.'),
+      detailRow('02 · Make it yours', 'Choose your design and customize the details that make your brand recognizable.'),
+      detailRow('03 · Get ready to sell', 'Review payment and delivery settings, then publish when you are ready.'),
+    ]) + smallPrint('Your dashboard is the place to check your store visibility and preview your storefront before you share it.'),
+    `${input.storeName} is ready to shape.\nOpen your dashboard: ${input.adminUrl}\n1. Add your products.\n2. Customize your design.\n3. Review payments, delivery and store visibility before publishing.`,
+    { preheader: 'Your store workspace is ready. Take the first steps toward launch.', reason: 'You received this message because you created a store on LetBuyy.', category: 'onboarding' })
 }
 
-/**
- * Send the store-created email. Only create-store calls this, for the store it just created and the
- * signed-in merchant it created it for.
- */
-export async function sendStoreCreatedEmail(
-  email: string,
-  storeName: string,
-  siteType: string,
-  storeUrl: string,
-  adminUrl: string
-): Promise<{ success: boolean; error?: string }> {
+export async function sendStoreCreatedEmail(email: string, storeName: string, siteType: string, storeUrl: string, adminUrl: string) {
   return sendEmail({ to: email, ...storeCreatedEmail({ storeName, siteType, storeUrl, adminUrl }) })
 }
 
-/**
- * The new-device sign-in alert. Pure, so its escaping can be tested without sending anything. The
- * device name comes from the User-Agent header and the address from X-Forwarded-For, both of which
- * the client writes.
- */
-export function newDeviceLoginEmail(
-  deviceInfo: { device: string; ip: string; location?: string },
-  timestamp: Date = new Date()
-): { subject: string; html: string } {
-  const formattedTime = timestamp.toLocaleString('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-  const device = escapeHtml(deviceInfo.device || 'Unknown')
-  const ip = escapeHtml(deviceInfo.ip || 'Unknown')
-  const location = deviceInfo.location ? escapeHtml(deviceInfo.location) : ''
-
-  return {
-    subject: 'New sign-in to your LetBuyy account',
-    html: `
-      <div style="max-width: 480px; margin: 0 auto; font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; padding: 40px 20px;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, ${EMAIL_INK}, ${EMAIL_INK_LIGHT}); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
-        </div>
-
-        <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px; text-align: center;">New Sign-In Detected</h2>
-        <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px; text-align: center;">
-          Your account was signed into from a new device.
-        </p>
-
-        <div style="background: rgb(248 249 250); border: 1px solid rgb(229 231 235); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-          <${emailTableTag} style="width: 100%; font-size: 14px; color: rgb(51 51 51);">
-            <tr><td style="padding: 4px 0; font-weight: 600;">Device</td><td style="padding: 4px 0; text-align: right;">${device}</td></tr>
-            <tr><td style="padding: 4px 0; font-weight: 600;">IP Address</td><td style="padding: 4px 0; text-align: right; font-family: monospace;">${ip}</td></tr>
-            ${location ? '<tr><td style="padding: 4px 0; font-weight: 600;">Location</td><td style="padding: 4px 0; text-align: right;">' + location + '</td></tr>' : ''}
-            <tr><td style="padding: 4px 0; font-weight: 600;">Time</td><td style="padding: 4px 0; text-align: right;">${formattedTime}</td></tr>
-          </${emailTableTag}>
-        </div>
-
-        <div style="background: rgb(255 251 235); border: 1px solid rgb(253 230 138); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-          <p style="font-size: 14px; color: rgb(146 64 14); margin: 0;">
-            <strong>Wasn't you?</strong> Change your password immediately and contact support.
-          </p>
-        </div>
-
-        <p style="font-size: 13px; color: rgb(153 153 153); margin: 24px 0 0; text-align: center;">
-          You received this because a new device signed into your LetBuyy account.
-        </p>
-      </div>
-    `,
-  }
+function formattedTime(timestamp: Date): string {
+  return timestamp.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' }) + ' IST'
 }
 
-/**
- * Send a security alert when a user logs in from a new device.
- */
-export async function sendNewDeviceLoginEmail(
-  email: string,
-  deviceInfo: { device: string; ip: string; location?: string },
-  timestamp: Date = new Date()
-) {
+export function newDeviceLoginEmail(deviceInfo: { device: string; ip: string; location?: string }, timestamp: Date = new Date()): RenderedEmailMessage {
+  const time = formattedTime(timestamp)
+  const device = deviceInfo.device || 'Not available'
+  const ip = deviceInfo.ip || 'Not available'
+  return message('New sign-in to your LetBuyy account',
+    eyebrow('Account security') + heading('A new device signed in') +
+    paragraph('We noticed a sign-in to your account from a new device. If this was you, no action is needed.') +
+    detailTable([detailRow('When', escapeHtml(time)), detailRow('Device', escapeHtml(device)), detailRow('Location', escapeHtml(deviceInfo.location || 'Not available')), detailRow('IP address', escapeHtml(ip))]) +
+    sectionLabel('Was this not you?') + paragraph('Reset your password to secure your account. LetBuyy support will never ask for your password or verification code.') +
+    ctaRow([ctaButton(getAccountsUrl('/forgot-password'), 'Secure your account')]),
+    `A new device signed in.\nWhen: ${time}\nDevice: ${device}\nLocation: ${deviceInfo.location || 'Not available'}\nIP address: ${ip}\nIf this was not you, secure your account: ${getAccountsUrl('/forgot-password')}`,
+    { preheader: 'Review a recent sign-in to your LetBuyy account.', reason: 'This is a security notification about activity on your LetBuyy account.', category: 'security' })
+}
+
+export async function sendNewDeviceLoginEmail(email: string, deviceInfo: { device: string; ip: string; location?: string }, timestamp: Date = new Date()) {
   return sendEmail({ to: email, ...newDeviceLoginEmail(deviceInfo, timestamp) })
 }
 
-/**
- * Send a notification when the user's password has been changed.
- */
-export async function sendPasswordChangedEmail(
-  email: string,
-  timestamp: Date = new Date()
-) {
-  const formattedTime = timestamp.toLocaleString('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-
-  return sendEmail({
-    to: email,
-    subject: '🔑 Your LetBuyy password was changed',
-    html: `
-      <div style="max-width: 480px; margin: 0 auto; font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; padding: 40px 20px;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, ${EMAIL_INK}, ${EMAIL_INK_LIGHT}); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
-        </div>
-
-        <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px; text-align: center;">Password Changed</h2>
-        <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px; text-align: center;">
-          Your account password was successfully changed on ${formattedTime}.
-        </p>
-
-        <div style="background: rgb(240 253 244); border: 1px solid rgb(187 247 208); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-          <p style="font-size: 14px; color: rgb(22 101 52); margin: 0;">
-            All other sessions have been signed out for security.
-          </p>
-        </div>
-
-        <div style="background: rgb(255 251 235); border: 1px solid rgb(253 230 138); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-          <p style="font-size: 14px; color: rgb(146 64 14); margin: 0;">
-            <strong>Didn't change your password?</strong> Contact support immediately.
-          </p>
-        </div>
-
-        <p style="font-size: 13px; color: rgb(153 153 153); margin: 24px 0 0; text-align: center;">
-          This is an automated security notification from LetBuyy.
-        </p>
-      </div>
-    `,
-  })
+export function passwordChangedEmail(timestamp: Date = new Date()): RenderedEmailMessage {
+  const time = formattedTime(timestamp)
+  return message('Your LetBuyy password was changed',
+    eyebrow('Account security') + heading('Your password was changed') + paragraph(`Your LetBuyy merchant account password was changed on ${escapeHtml(time)}.`) +
+    paragraph('If you made this change, no action is needed. If you did not, reset your password immediately and contact support.') +
+    ctaRow([ctaButton(getAccountsUrl('/forgot-password'), 'Secure your account')]),
+    `Your LetBuyy merchant password was changed on ${time}.\nIf this was not you, reset your password immediately: ${getAccountsUrl('/forgot-password')}`,
+    { preheader: 'A password change was completed for your LetBuyy account.', reason: 'This is a security notification about a password change.', category: 'security' })
 }
+
+export async function sendPasswordChangedEmail(email: string, timestamp: Date = new Date()) { return sendEmail({ to: email, ...passwordChangedEmail(timestamp) }) }

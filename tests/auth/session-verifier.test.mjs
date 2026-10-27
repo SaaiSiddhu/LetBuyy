@@ -3,10 +3,14 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
 import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
+const authDependency = createRequire(new URL('../../packages/auth-core/package.json', import.meta.url));
+const { z } = authDependency('zod');
+const AUTH_CORE_CONNECTION_SOURCE = 'packages/auth-core/src/merchant-buyer-connection.ts';
 const AUTH_CORE_CUSTOMER_SESSION_SOURCE = 'packages/auth-core/src/customer-session.ts';
 const AUTH_CORE_STOREFRONT_ACCESS_SOURCE = 'packages/auth-core/src/storefront-access.ts';
 
@@ -30,10 +34,6 @@ function transpileTypeScript(sourcePath) {
 
 function loadAuthCore() {
   const moduleCache = new Map();
-  const zChain = new Proxy(function zChain() {}, {
-    get: () => zChain,
-    apply: () => zChain,
-  });
 
   function evaluateModule(sourcePath) {
     const cached = moduleCache.get(sourcePath);
@@ -47,8 +47,9 @@ function loadAuthCore() {
     require(specifier) {
       if (specifier === './customer-session') return evaluateModule(AUTH_CORE_CUSTOMER_SESSION_SOURCE);
       if (specifier === './storefront-access') return evaluateModule(AUTH_CORE_STOREFRONT_ACCESS_SOURCE);
-      if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
-      if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
+      if (specifier === './merchant-buyer-connection') return evaluateModule(AUTH_CORE_CONNECTION_SOURCE);
+      if (specifier === 'zod') return { z };
+      if (specifier === '@letbuyy/shared-types') return { EmailSchema: z.string().email() };
       throw new Error(`Unexpected test require: ${specifier}`);
     },
     TextEncoder,

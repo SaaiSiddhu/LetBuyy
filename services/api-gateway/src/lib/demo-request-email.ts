@@ -1,4 +1,4 @@
-import { BRAND_PROFILES } from '@letbuyy/shared-types';
+import { renderEmailShell, ctaButton, ctaRow } from '@letbuyy/notification-core/email';
 
 /**
  * Demo-request transactional emails.
@@ -19,18 +19,18 @@ import { BRAND_PROFILES } from '@letbuyy/shared-types';
  *     broken-image box that shipped in the first version of this file.
  */
 
-const INK = '#0a0912';
-const INK_SOFT = '#141122';
-const PRIMARY = '#7c5cff';
-const PRIMARY_DEEP = '#6944f5';
+const INK = '#271F2D';
+const INK_SOFT = '#271F2D';
+const PRIMARY = '#6A436B';
+const PRIMARY_DEEP = '#4D3652';
 const ON_DARK = '#ffffff';
 const ON_DARK_MUTED = 'rgba(255,255,255,0.60)';
-const BODY = '#403a54';
-const HEADING = '#14111f';
-const SUBTLE = '#8b849c';
-const CANVAS = '#f4f2fa';
+const BODY = '#6A5E70';
+const HEADING = '#2D2431';
+const SUBTLE = '#6A5E70';
+const CANVAS = '#F4F0F5';
 const CARD = '#ffffff';
-const HAIRLINE = '#ece8f8';
+const HAIRLINE = '#8B7C90';
 
 const FONT =
     "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif";
@@ -59,140 +59,21 @@ function escapeHtml(value: string): string {
         .replace(/"/g, '&quot;');
 }
 
-function socialRow(): string {
-    const entries: Array<[string, string]> = [
-        ['X', BRAND_PROFILES.x],
-        ['Instagram', BRAND_PROFILES.instagram],
-        ['YouTube', BRAND_PROFILES.youtube],
-        ['Facebook', BRAND_PROFILES.facebook],
-        ['LinkedIn', BRAND_PROFILES.linkedin],
-    ];
-    return entries
-        .filter(([, href]) => Boolean(href))
-        .map(
-            ([label, href]) =>
-                `<a href="${href}" style="color:${ON_DARK_MUTED};text-decoration:none;font-size:12px;font-weight:500;">${label}</a>`,
-        )
-        .join(`<span style="color:rgba(255,255,255,0.20);padding:0 9px;">&#183;</span>`);
-}
-
-/**
- * The shell.
- *
- * `mso-hide` / conditional comments are avoided by keeping the structure
- * simple enough that Word renders it unaided — one 600px table, nested tables
- * for rows, no negative margins and no positioning.
- */
 function shell(brand: DemoEmailBrand, bodyHtml: string, preheader: string): string {
-    const logo = `${brand.assetUrl}/icons/letbuyy-logo-512.png`;
-
-    return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="x-apple-disable-message-reformatting" />
-<meta name="color-scheme" content="light dark" />
-<meta name="supported-color-schemes" content="light dark" />
-<title>LetBuyy</title>
-<style>
-  /* Progressive enhancement only. Everything the layout needs is inline, so a
-     client that drops this block still renders correctly. */
-  body { margin:0 !important; padding:0 !important; width:100% !important; }
-  table { border-collapse:collapse !important; }
-  img { border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
-  a { text-decoration:none; }
-
-  /* Phones. 600px is the historical safe width; below that the shell and its
-     gutters have to shrink or the message scrolls sideways in the app. */
-  @media only screen and (max-width:620px) {
-    .lb-shell { width:100% !important; border-radius:0 !important; }
-    .lb-pad { padding-left:22px !important; padding-right:22px !important; }
-    .lb-pad-y { padding-top:26px !important; padding-bottom:26px !important; }
-    .lb-h1 { font-size:21px !important; line-height:1.25 !important; }
-    /* Label/value pairs stack rather than squeezing a 170px label column
-       against a value that then wraps every second word. */
-    .lb-row-label, .lb-row-value {
-      display:block !important;
-      width:100% !important;
-      padding-left:0 !important;
-      padding-right:0 !important;
-    }
-    .lb-row-label { padding-bottom:2px !important; }
-    .lb-row-value { padding-bottom:12px !important; }
-    .lb-cta { display:block !important; width:100% !important; text-align:center !important; }
-    .lb-social a { display:inline-block !important; padding:4px 0 !important; }
-  }
-
-  /* Dark mode where the client honours it — Apple Mail, iOS, Outlook.com.
-     Gmail ignores this, which is why the design already works on light. */
-  @media (prefers-color-scheme: dark) {
-    .lb-canvas { background:#08070d !important; }
-    .lb-card { background:${INK_SOFT} !important; }
-    .lb-h1, .lb-strong { color:${ON_DARK} !important; }
-    .lb-body { color:rgba(255,255,255,0.72) !important; }
-    .lb-muted { color:rgba(255,255,255,0.48) !important; }
-    .lb-panel { background:rgba(255,255,255,0.05) !important; }
-    .lb-hairline { border-color:rgba(255,255,255,0.10) !important; }
-  }
-</style>
-</head>
-<body style="margin:0;padding:0;background:${CANVAS};">
-<!-- Preheader: the grey line inboxes show beside the subject. Padded so a
-     client does not pull body copy in after it. -->
-<div style="display:none;font-size:1px;color:${CANVAS};line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
-  ${escapeHtml(preheader)}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
-</div>
-
-<table role="presentation" class="lb-canvas" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${CANVAS};">
-<tr><td align="center" style="padding:32px 12px;">
-
-<table role="presentation" class="lb-shell lb-card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:${CARD};border-radius:20px;overflow:hidden;">
-
-  <!-- Header. Dark band so the light wordmark reads in every client, and a
-       thin accent rule beneath it so the panel has an edge without a border. -->
-  <tr><td class="lb-pad" style="background:${INK};padding:26px 34px;">
-    <a href="${brand.siteUrl}" style="text-decoration:none;">
-      <img src="${logo}" width="128" height="42" alt="LetBuyy"
-           style="display:block;height:42px;width:128px;color:${ON_DARK};font-family:${FONT};font-size:19px;font-weight:700;letter-spacing:-0.02em;" />
-    </a>
-  </td></tr>
-  <tr><td style="height:3px;background:linear-gradient(90deg,${PRIMARY} 0%,${PRIMARY_DEEP} 55%,#3ecfb2 100%);font-size:0;line-height:0;">&nbsp;</td></tr>
-
-  <tr><td class="lb-pad lb-pad-y" style="padding:34px;font-family:${FONT};">${bodyHtml}</td></tr>
-
-  <!-- Footer -->
-  <tr><td class="lb-pad" style="background:${INK};padding:26px 34px;font-family:${FONT};">
-    <p class="lb-muted" style="margin:0 0 14px;color:${ON_DARK_MUTED};font-size:12.5px;line-height:1.65;">
-      LetBuyy — an India-first commerce operating system.<br />
-      Questions? Reply to this email, or write to
-      <a href="mailto:${brand.supportEmail}" style="color:#c9b8ff;text-decoration:underline;">${brand.supportEmail}</a>.
-    </p>
-    <p class="lb-social" style="margin:0 0 12px;">${socialRow()}</p>
-    <p style="margin:0;color:rgba(255,255,255,0.30);font-size:11px;line-height:1.5;">
-      You are receiving this because you requested a LetBuyy demo.
-    </p>
-  </td></tr>
-
-</table>
-</td></tr></table>
-</body></html>`;
+    return renderEmailShell(brand, bodyHtml, {preheader,reason:'You requested a LetBuyy product demo or receive its team notifications.',category:'transactional'});
 }
 
 /** Bulletproof-ish button: table-wrapped so Word fills the background. */
 function button(href: string, label: string): string {
-    return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 6px;">
-<tr><td class="lb-cta" align="center" style="background:${PRIMARY};border-radius:11px;">
-<a href="${href}" class="lb-cta" style="display:inline-block;padding:14px 28px;font-family:${FONT};font-size:14.5px;font-weight:650;color:#ffffff;letter-spacing:-0.01em;">${label}</a>
-</td></tr></table>`;
+    return ctaRow([ctaButton(href,label)]);
 }
 
 /** One label/value pair. Stacks on narrow screens via .lb-row-* classes. */
 function row(label: string, value: string, last = false): string {
     const border = last ? '' : `border-bottom:1px solid ${HAIRLINE};`;
     return `<tr>
-<td class="lb-row-label lb-hairline lb-muted" style="${border}padding:11px 16px 11px 0;font-family:${FONT};font-size:11.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:${SUBTLE};width:168px;vertical-align:top;">${label}</td>
-<td class="lb-row-value lb-hairline lb-body" style="${border}padding:11px 0;font-family:${FONT};font-size:14px;line-height:1.55;color:${BODY};">${value}</td>
+<td class="lb-label lb-hairline lb-subtle" style="${border}padding:11px 16px 11px 0;font-family:${FONT};font-size:11.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:${SUBTLE};width:168px;vertical-align:top;">${label}</td>
+<td class="lb-value lb-hairline lb-body" style="${border}padding:11px 0;font-family:${FONT};font-size:14px;line-height:1.55;color:${BODY};">${value}</td>
 </tr>`;
 }
 
@@ -304,7 +185,7 @@ export function buildDemoConfirmationEmail(req: DemoRequestSummary, brand: DemoE
             ([title, detail], index) => `<tr>
 <td width="34" valign="top" style="padding:0 14px 0 0;">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-  <td width="26" height="26" align="center" valign="middle" style="width:26px;height:26px;background:#f1ecff;border-radius:13px;font-family:${MONO};font-size:11px;font-weight:700;color:${PRIMARY};">${index + 1}</td>
+  <td width="26" height="26" align="center" valign="middle" style="width:26px;height:26px;background:#F4F0F5;border-radius:13px;font-family:${MONO};font-size:11px;font-weight:700;color:${PRIMARY};">${index + 1}</td>
   </tr></table>
 </td>
 <td class="lb-bento" style="padding:15px 18px;background:${CANVAS};border-radius:14px;">
@@ -312,13 +193,13 @@ export function buildDemoConfirmationEmail(req: DemoRequestSummary, brand: DemoE
   <p class="lb-body" style="margin:0;font-family:${FONT};font-size:13px;line-height:1.55;color:${BODY};">${detail}</p>
 </td>
 </tr>
-${index < agenda.length - 1 ? `<tr><td width="34" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td width="1" height="14" class="lb-connector" style="width:1px;height:14px;background:#e6e1f5;font-size:0;line-height:0;">&nbsp;</td></tr></table></td><td style="height:14px;font-size:0;line-height:0;">&nbsp;</td></tr>` : ''}`,
+${index < agenda.length - 1 ? `<tr><td width="34" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td width="1" height="14" class="lb-connector" style="width:1px;height:14px;background:#8B7C90;font-size:0;line-height:0;">&nbsp;</td></tr></table></td><td style="height:14px;font-size:0;line-height:0;">&nbsp;</td></tr>` : ''}`,
         )
         .join('');
 
     const body = `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;">
-<tr><td style="background:#f1ecff;border-radius:20px;padding:6px 14px;">
+<tr><td style="background:#F4F0F5;border-radius:20px;padding:6px 14px;">
   <span style="font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:${PRIMARY};">
     ${booked ? 'Slot requested' : 'Request received'}
   </span>
@@ -368,7 +249,7 @@ ${index < agenda.length - 1 ? `<tr><td width="34" style="padding:0;"><table role
 
 ${button(`${brand.siteUrl}/in/pricing`, 'See pricing while you wait')}
 
-<p class="lb-muted" style="margin:16px 0 0;font-family:${FONT};font-size:12.5px;line-height:1.6;color:${SUBTLE};">
+<p class="lb-subtle" style="margin:16px 0 0;font-family:${FONT};font-size:12.5px;line-height:1.6;color:${SUBTLE};">
   Nothing is charged for a demo, and no card is required to start a store.
 </p>`;
 
@@ -420,7 +301,7 @@ export function buildDemoLeadAlertEmail(
 <h1 class="lb-h1" style="margin:0 0 6px;font-size:24px;line-height:1.2;font-weight:750;color:${HEADING};letter-spacing:-0.03em;">
   ${escapeHtml(req.fullName.trim())}
 </h1>
-<p class="lb-muted" style="margin:0 0 22px;font-size:14px;color:${SUBTLE};">${escapeHtml(company)}</p>
+<p class="lb-subtle" style="margin:0 0 22px;font-size:14px;color:${SUBTLE};">${escapeHtml(company)}</p>
 
 <!-- Contact first: this is what someone acts on. -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
