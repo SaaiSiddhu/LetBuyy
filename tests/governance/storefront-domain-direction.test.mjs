@@ -33,3 +33,12 @@ test('provider aliases are admitted only for the canonical Commerce project',()=
   assert.equal(run({'config/vercel/projects.json':config}),directory==='apps/commerce/web'?0:1);
  }
 });
+
+test('only matching deployed API environments admit the existing Commerce CNAME targets',()=>{
+ const file='services/api-gateway/wrangler.toml';
+ assert.equal(run({[file]:`[env.staging.vars]\nCUSTOM_DOMAIN_CNAME_TARGET = "storefront-staging.${storefront}"\n[env.production.vars]\nCUSTOM_DOMAIN_CNAME_TARGET = "storefront.${storefront}"`}),0);
+ for(const [environment,hostname] of [['production','storefront-staging'],['staging','storefront'],['production','accounts'],['production','admin'],['production','api'],['production','some-shop']]){
+  assert.notEqual(run({[file]:`[env.${environment}.vars]\nCUSTOM_DOMAIN_CNAME_TARGET = "${hostname}.${storefront}"`}),0);
+ }
+ assert.notEqual(run({'apps/merchant/web/.env.example':`CUSTOM_DOMAIN_CNAME_TARGET=storefront.${storefront}`}),0);
+});

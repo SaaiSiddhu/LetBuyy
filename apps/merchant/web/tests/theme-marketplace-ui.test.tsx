@@ -169,3 +169,23 @@ for (const artwork of [
  },true);
  try{const image=h.document.querySelector('img[alt="Circuit design preview"]');assert.ok(image);assert.equal(image.getAttribute('src'),artwork.expected);assert.match(h.text(),/Saved draft/);}finally{await h.close();}
 });
+
+test('a public overview frame uses the allowed Commerce platform origin while View store keeps the buyer hostname',async()=>{
+ const names: string[]=['NEXT_PUBLIC_STOREFRONT_URL','NEXT_PUBLIC_STORE_ROOT_DOMAIN','NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES','NODE_ENV'];
+ const prior=Object.fromEntries(names.map(name=>[name,process.env[name]]));
+ Object.assign(process.env,{NEXT_PUBLIC_STOREFRONT_URL:'https://storefront.stores.example.test',NEXT_PUBLIC_STORE_ROOT_DOMAIN:'stores.example.test',NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES:'storefront.stores.example.test',NODE_ENV:'production'});
+ try{
+  const h=await mount('/sample-store/online-store/themes',async url=>{
+   if(url.includes('/access'))return Response.json({data:{published:true,status:'published',access_mode:'public',access_message:null,has_password:false}});
+   if(url.includes('/library'))return Response.json({data:{themes:[]}});
+   return Response.json({themes:[theme],currentTheme:theme,storeId:site,storeStatus:'published'});
+  },true);
+  try{
+   const frame=h.document.querySelector<HTMLIFrameElement>('iframe[title="Current storefront"]');assert.ok(frame);
+   assert.equal(frame.src,'https://storefront.stores.example.test/store/sample-store');
+   const view=[...h.document.querySelectorAll('a')].find(a=>a.textContent?.includes('View store'));assert.ok(view);
+   assert.equal(new URL(view.href).hostname,'sample-store.stores.example.test');
+   assert.equal(frame.getAttribute('sandbox'),'allow-scripts allow-same-origin allow-forms');
+  }finally{await h.close();}
+ }finally{for(const name of names){if(prior[name]===undefined)delete process.env[name];else process.env[name]=prior[name];}}
+});
