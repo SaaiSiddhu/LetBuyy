@@ -1,3 +1,5 @@
+import {hashMerchantPassword} from '../../lib/merchant-password';
+import {otp,TOTP_SECRET} from './merchant-stepup-fixture';
 // Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
 // and public challenge test fixtures. Never use these values for a real account or live provider.
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
@@ -11,7 +13,7 @@ import test from 'node:test';
 import {exportJWK} from 'jose';
 import {chromium,expect,type Page} from '@playwright/test';
 import {LETBUYY_BUYER_SESSION_COOKIE} from '@letbuyy/auth-core';
-import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET} from './gateway-harness';
+import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,signedIdentityHeaders} from './gateway-harness';
 import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,type OwnedClientProcess} from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 
@@ -33,13 +35,22 @@ async function ready(origin:string,path:string,process:OwnedClientProcess) {
  throw new Error('owned browser runtime did not become ready');
 }
 
-test('built Commerce and Identity support normal registration/consent/PKCE, account Links, profile/address, restart and two-buyer isolation across real boundaries',{timeout:540_000},async()=>{
+test('built Commerce and Identity support normal registration/consent/PKCE, account Links, profile/address, restart and two-buyer isolation across real boundaries',{timeout:780_000},async()=>{
  for(const store of stores)seedSyntheticTenant(owned.psql,store);
  const keys=await newIdentityKeys();const identityPort=await port(),commercePort=await port();
  const identityOrigin=`http://localhost:${identityPort}`;
  const storeOrigin=`http://${stores[0].subdomain}.localhost:${commercePort}`;
  const otherOrigin=`http://${stores[1].subdomain}.localhost:${commercePort}`;
- const gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost'}));
+ const gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',TOTP_ENCRYPTION_KEY:TOTP_SECRET,RESEND_API_KEY:'synthetic-owned-email-transport'}));
+ const codes=new Map<string,string>(),originalInfo=console.info,originalFetch=globalThis.fetch;
+ const mail:{to:string[]|string;subject:string;html:string;text:string}[]=[];
+ console.info=(...args:unknown[])=>{try{const v=JSON.parse(String(args[0]));if(v.reason==='local_buyer_email_code'){codes.set(v.to,v.code);return}}catch{/* ordinary structured logs */}originalInfo(...args)};
+ globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
+  const url=new URL(typeof input==='string'?input:input instanceof URL?input.toString():input.url);
+  if(url.origin!=='https://api.resend.com')return originalFetch(input,init);
+  assert.equal(url.pathname,'/emails');mail.push(JSON.parse(String(init?.body)));
+  return new Response(JSON.stringify({id:'synthetic-owned-email-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});
+ }) as typeof fetch;
  const calls:{path:string;status:number}[]=[];
  let adapter:Server|undefined,identity:OwnedClientProcess|undefined,commerce:OwnedClientProcess|undefined;
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined;
@@ -54,7 +65,7 @@ test('built Commerce and Identity support normal registration/consent/PKCE, acco
   });
   await new Promise<void>(resolve=>adapter!.listen(0,'127.0.0.1',resolve));const apiOrigin=`http://127.0.0.1:${(adapter.address() as {port:number}).port}`;
   identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,env:{NODE_ENV:'production',LETBUYY_API_URL:apiOrigin+'/v1',INTERNAL_API_SECRET:INTERNAL_SECRET,
-   LETBUYY_IDENTITY_ISSUER:identityOrigin,LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
+   NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,LETBUYY_IDENTITY_ISSUER:identityOrigin,LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
    NEXT_PUBLIC_TURNSTILE_SITE_KEY:TEST_SITE_KEY,TURNSTILE_SECRET_KEY:TEST_SECRET_KEY,LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
   await ready(identityOrigin,'/api/buyer/login',identity);
   commerce=startOwnedClientRuntime(owned,'commerce-next-production',{port:commercePort,env:{LETBUYY_API_BASE_URL:apiOrigin+'/v1',NEXT_PUBLIC_API_URL:apiOrigin+'/v1',
@@ -69,7 +80,6 @@ test('built Commerce and Identity support normal registration/consent/PKCE, acco
   page.on('response',response=>{const url=new URL(response.url());if(url.pathname.includes('/account'))navigationResponses.push({path:url.pathname,rsc:url.searchParams.has('_rsc'),status:response.status(),type:response.headers()['content-type'],redirect:response.headers().location});if(response.status()>=400)failures.push(String(response.status())+' '+new URL(response.url()).origin+new URL(response.url()).pathname);});
   const email='syn-browser-'+crypto.randomUUID()+'@example.invalid',password='Synthetic-browser-pass-42';
   await page.goto(storeOrigin+'/customers/login');
-  await page.getByRole('link',{name:'Continue with LetBuyy',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible();
   await page.getByRole('link',{name:'Create an account',exact:true}).click();
   // The real widget success proves this newly navigated page has hydrated before typing.
@@ -123,7 +133,6 @@ test('built Commerce and Identity support normal registration/consent/PKCE, acco
   // different buyer must explicitly choose a different account, never inherit A.
   const emailB='syn-browser-b-'+crypto.randomUUID()+'@example.invalid';
   await page.goto(storeOrigin+'/customers/login');
-  await page.getByRole('link',{name:'Continue with LetBuyy',exact:true}).click();
   const [identityLogout]=await Promise.all([page.waitForResponse(response=>response.url().endsWith('/api/buyer/logout')&&response.request().method()==='POST'),page.getByRole('button',{name:'Use a different account',exact:true}).click()]);
   assert.equal(identityLogout.status(),200,'the normal account-switch action must actually sign out of Identity');
   await expect(page.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible({timeout:30_000});
@@ -148,12 +157,61 @@ test('built Commerce and Identity support normal registration/consent/PKCE, acco
   assert.equal(owned.psql(`SELECT full_name FROM buyer_accounts WHERE id='${buyerId}';`),'Synthetic Browser Profile');
   assert.equal(calls.filter(call=>call.path==='/v1/storefront/buyer/register'&&call.status===201).length,2);
   assert.ok(calls.filter(call=>call.path==='/v1/storefront/buyer/authorization-codes/redeem'&&call.status===200).length>=2);
+  // A Merchant joins the same canonical buyer system through fresh password,
+  // real enrolled MFA, inbox proof and explicit consent; no Merchant cookie is issued.
+  await context.close();context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);
+  const merchant=crypto.randomUUID(),merchantEmail=`syn-merchant-buyer-${merchant}@example.invalid`;
+  const merchantHash=await hashMerchantPassword(password);
+  owned.psql(`INSERT INTO users_custom(id,email,email_verified,password_hash,full_name) VALUES('${merchant}','${merchantEmail}',true,'${merchantHash}','Synthetic Merchant Buyer');UPDATE sites SET custom_user_id='${merchant}' WHERE id='${stores[0].siteId}';`);
+  const enroll=await gateway.request('/v1/2fa/totp/enroll',{method:'POST',headers:{...await signedIdentityHeaders(merchant,merchantEmail,stores[0].siteId),'X-Idempotency-Key':crypto.randomUUID()}});
+  assert.equal(enroll.status,201);const factor=enroll.json?.data;
+  const activate=await gateway.request('/v1/2fa/totp/verify',{method:'POST',headers:{...await signedIdentityHeaders(merchant,merchantEmail,stores[0].siteId),'X-Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({factor_id:factor.factor.id,code:otp(factor.secret)})});assert.equal(activate.status,200);
+  await page.goto(storeOrigin+'/customers/login');
+  await expect(page.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Continue with Merchant account',exact:true}).click();
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
+  await page.getByLabel('Merchant email',{exact:true}).fill(merchantEmail);await page.getByLabel('Merchant password',{exact:true}).fill(password);
+  const [requiresMfa]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().headers()['x-letbuyy-account-intent']==='connect-buyer-start'),page.getByRole('button',{name:'Verify Merchant sign-in',exact:true}).click()]);
+  assert.equal(requiresMfa.status(),403);assert.equal(owned.psql(`SELECT count(*) FROM merchant_buyer_connection_intents WHERE merchant_user_id='${merchant}';`),'0');
+  await page.getByLabel('Authenticator code',{exact:true}).fill(otp(factor.secret));
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
+  const [started]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().headers()['x-letbuyy-account-intent']==='connect-buyer-start'),page.getByRole('button',{name:'Verify Merchant sign-in',exact:true}).click()]);assert.equal(started.status(),200);
+  await expect(page.getByRole('heading',{name:'Connect your buyer profile',exact:true})).toBeVisible();
+  assert.equal((await context.cookies()).some(c=>c.name==='lb_session'),false);
+  const connectionCode=codes.get(merchantEmail);assert.match(connectionCode||'',/^\d{6}$/);
+  await page.getByLabel('Email verification code',{exact:true}).fill(connectionCode!);
+  await expect(page.getByRole('button',{name:'Connect buyer profile',exact:true})).toBeDisabled();
+  await page.getByRole('checkbox').check();
+  const [connected]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().headers()['x-letbuyy-account-intent']==='connect-buyer-confirm'),page.getByRole('button',{name:'Connect buyer profile',exact:true}).click()]);assert.equal(connected.status(),200);
+  await expect(page.getByText(merchantEmail,{exact:true})).toBeVisible();
+  assert.equal((await context.cookies()).some(c=>c.name==='lb_session'),false);
+  const buyerC=owned.psql(`SELECT id FROM buyer_accounts WHERE email='${merchantEmail}';`);assert.notEqual(buyerC,merchant);
+  assert.equal(owned.psql(`SELECT email_verified::text||':'||(password_hash IS NULL)::text FROM buyer_accounts WHERE id='${buyerC}';`),'true:true');
+  await page.getByRole('button',{name:`Continue to Synthetic ${stores[0].tag}`,exact:true}).click();
+  await page.waitForURL(url=>url.origin===storeOrigin&&url.pathname.endsWith('/account/orders'),{timeout:30_000});
+  assert.equal((await (await context.request.get(storeOrigin+'/api/buyer-auth/session')).json()).buyer.id,buyerC);
+  assert.equal((await (await context.request.get(otherOrigin+'/api/buyer-auth/session')).json()).buyer,null);
+  // Merchant recovery sends a real-shaped provider request with the professional
+  // HTML and text alternatives; the provider is a local synthetic capture, never an inbox.
+  await page.goto(identityOrigin+'/forgot-password');
+  await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
+  await page.getByLabel('Email',{exact:true}).fill(merchantEmail);
+  const [resetSent]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/send-reset')&&r.request().method()==='POST'),page.getByRole('button',{name:'Send reset link',exact:true}).click()]);assert.equal(resetSent.status(),200);
+  const resetMail=mail.find(m=>m.subject==='Reset your LetBuyy password');assert.ok(resetMail);assert.match(resetMail.html,/#6A436B/);assert.ok(resetMail.text.includes('merchant'));
+  const resetLink=resetMail.html.match(/href="([^"<>]+\/reset-password\?token=[^"<>]+)"/)?.[1];assert.ok(resetLink);
+  const ownedResetUrl=resetLink!.replaceAll('&amp;','&');assert.equal(new URL(ownedResetUrl).origin,identityOrigin,'a synthetic reset capability must never leave the owned Identity runtime');
+  await page.goto(ownedResetUrl);
+  await page.getByLabel('New password',{exact:true}).fill('Synthetic-Reset-Password-84');await page.getByLabel('Confirm password',{exact:true}).fill('Synthetic-Reset-Password-84');
+  const [resetCompleted]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/reset-password')&&r.request().method()==='POST'),page.getByRole('button',{name:'Reset password',exact:true}).click()]);assert.equal(resetCompleted.status(),200);
+  await page.waitForURL(url=>url.origin===identityOrigin&&url.pathname==='/login',{timeout:30_000});
+  assert.equal((await context.cookies()).some(c=>c.name==='lb_session'),false,'a reset email never issues a privileged Merchant cookie');
   assert.deepEqual(consoleErrors,[],'normal sign-in UI has no uncaught page error');
   await context.close();
  }catch(error){
   console.info(JSON.stringify({diagnostic:'normal_browser_failure',url:page?new URL(page.url()).origin+new URL(page.url()).pathname:null,text:await page?.locator('body').innerText().catch(()=>''),frames:page?.frames().map(frame=>{try{const url=new URL(frame.url());return url.origin+url.pathname;}catch{return 'initial-frame';}}),networkFailures:failures,navigationResponses,nextRequests:nextRequests.slice(-20),gatewayCalls:calls.slice(-15),nextErrors:nextErrors.slice(-8),consoleErrors,inputLengths:await page?.locator('input').evaluateAll(nodes=>nodes.map(node=>({name:(node as {name:string;type:string;value:string}).name,type:(node as {name:string;type:string;value:string}).type,length:(node as {name:string;type:string;value:string}).value.length}))).catch(()=>[])}));
   await page?.screenshot({path:`${ownedTmpDir()}/letbuyy-n1-browser-${owned.runId}.png`}).catch(()=>undefined);throw error;
  }finally{
+  console.info=originalInfo;globalThis.fetch=originalFetch;
   await browser?.close();await stopOwnedClientRuntime(commerce);await stopOwnedClientRuntime(identity);await gateway.settle();
   if(adapter){adapter.closeAllConnections();await new Promise<void>(resolve=>adapter!.close(()=>resolve()));}
  }

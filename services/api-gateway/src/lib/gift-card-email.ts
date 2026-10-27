@@ -1,3 +1,4 @@
+import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, paragraph, smallPrint, verificationCode, escapeHtml, safeSubject, formatEmailSender } from '@letbuyy/notification-core/email';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import type { Env } from '../index';
 import { signQueueTenantEnvelope } from './queue-tenant-envelope';
@@ -55,14 +56,11 @@ export function buildGiftCardIssuedEmail(input: GiftCardIssuedEmailInput) {
         ...(expiryLine ? ['', expiryLine] : []),
     ].join('\n');
 
-    const html = [
-        `<p>Hi ${greetingName},</p>`,
-        `<p>You have received a <strong>${amount}</strong> gift card from ${fromStore}.</p>`,
-        `<p>Gift card code: <strong style="font-family:monospace;letter-spacing:1px">${input.code}</strong></p>`,
-        note ? `<p>Message: ${note}</p>` : '',
-        '<p>Enter this code at checkout to redeem your balance.</p>',
-        expiryLine ? `<p>${expiryLine}</p>` : '',
-    ].join('');
+    const html = renderEmailShell(DEFAULT_EMAIL_BRAND,
+        heading('A gift, chosen for you') + paragraph(`Hi ${escapeHtml(greetingName)}, you received a ${escapeHtml(amount)} gift card from ${escapeHtml(fromStore)}.`) +
+        verificationCode(input.code) + (note ? paragraph(`Message: ${escapeHtml(note)}`) : '') +
+        paragraph('Enter this code at checkout to redeem your balance.') + (expiryLine ? smallPrint(escapeHtml(expiryLine)) : ''),
+        {preheader:'Your gift card and redemption instructions.',reason:'This gift card was issued to your email address.',category:'transactional'});
 
     return {
         to: recipient,
@@ -111,7 +109,7 @@ export async function enqueueGiftCardIssuedEmail(
 
     await sendResendEmail({
         apiKey: env.RESEND_API_KEY,
-        from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+        from: formatEmailSender(env.RESEND_FROM_EMAIL),
         to: email.to,
         subject: email.subject,
         text: email.text,

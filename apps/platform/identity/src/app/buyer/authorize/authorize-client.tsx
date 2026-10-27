@@ -1,5 +1,6 @@
 'use client'
 
+import { MerchantBuyerConnection } from './merchant-connection-client'
 import { useCallback, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, Input } from '@letbuyy/ui'
@@ -39,6 +40,7 @@ export function BuyerAuthorize({
     const storeName = destination.name
     const router = useRouter()
     const mode = initialMode
+    const [merchantConnection,setMerchantConnection]=useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
@@ -123,6 +125,8 @@ export function BuyerAuthorize({
         }
     }
 
+    if (merchantConnection && !buyerEmail) return <MerchantBuyerConnection request={request} destination={storeName} onCancel={()=>setMerchantConnection(false)}/>
+
     if (buyerEmail) {
         return (
             <main className="auth-container">
@@ -166,6 +170,11 @@ export function BuyerAuthorize({
                             : `One account for ${storeName} and every other LetBuyy store.`}
                 </p>
 
+                <Button unstyled className="auth-btn-secondary" onClick={()=>setMerchantConnection(true)} disabled={loading}>
+                    Continue with Merchant account
+                </Button>
+                <p className="auth-subtitle">Use your buyer account below, or connect your Merchant account securely.</p>
+                {destination.kind==='store' && <a href={new URL('/customers/login?legacy=1',request.redirectUri).toString()}>Have an older store-only account? Sign in to connect it</a>}
                 <form onSubmit={submitCredentials} className="auth-form">
                     <Input
                         id="buyerEmail"
@@ -210,7 +219,7 @@ export function BuyerAuthorize({
                             <span>New to LetBuyy?</span>{' '}
                             <a href={`${thisPage}&screen=register`}>Create an account</a>
                             {' · '}
-                            <a href={`/buyer/recover?continue=${encodeURIComponent(thisPage)}`}>Forgot password?</a>
+                            <a href={`/buyer/recover?continue=${encodeURIComponent(thisPage)}`}>Forgot buyer password?</a>
                         </>
                     ) : (
                         <>

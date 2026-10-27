@@ -42,6 +42,14 @@ export const PasswordUpdateSchema = z.object({
   password: PasswordSchema,
 });
 
+// The reset capability determines the account; browser input never selects a user.
+export const MerchantPasswordResetSchema = PasswordUpdateSchema.extend({
+  token: z.string().regex(/^[a-f0-9]{64}$/),
+}).strict();
+export const MerchantPasswordResetCommitSchema = MerchantPasswordResetSchema.extend({
+  purpose: z.literal('password_reset'),
+}).strict();
+
 export type ActorType = 'shopper' | 'customer' | 'merchant' | 'partner' | 'platform-employee' | 'platform-operator' | 'service';
 export type SessionKind = 'merchant' | 'customer' | 'employee' | 'service';
 export type PermissionAction = 'read' | 'create' | 'update' | 'delete' | 'manage';
@@ -1831,3 +1839,5 @@ export async function verifyBoundDomainReconcileSignature(input: { secret: strin
     || !timingSafeEqualHex(await hmacSha256Hex(input.secret, payload), signature)) return { status: 'invalid' };
   return { status: 'accepted', jti };
 }
+
+export * from './merchant-buyer-connection';

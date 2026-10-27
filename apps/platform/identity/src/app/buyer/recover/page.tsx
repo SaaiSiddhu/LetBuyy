@@ -88,6 +88,7 @@ function RecoverForm() {
     return (
         <main className="auth-container">
             <div className="auth-card">
+                <p className="auth-subtitle">This resets a buyer account. For a Merchant account, <a href="/forgot-password">reset your Merchant password</a>, then return to your store and choose Continue with Merchant account.</p>
                 <div className="auth-logo">
                     <BrandLogo />
                 </div>

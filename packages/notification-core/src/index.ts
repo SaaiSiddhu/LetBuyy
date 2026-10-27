@@ -1,3 +1,4 @@
+import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, safeSubject } from './email';
 import { z } from 'zod';
 import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
 
@@ -202,7 +203,10 @@ export function renderEmailTemplate(input: z.infer<typeof EmailRenderSchema>): R
   };
   const subject = renderLiquidLike(parsed.subject || fallback.subject, parsed.context);
   const rawBody = renderLiquidLike(parsed.body || fallback.body, parsed.context);
-  const html = normalizeMjml(rawBody);
+  const body = normalizeMjml(rawBody);
+  const html = parsed.body ? body : renderEmailShell(DEFAULT_EMAIL_BRAND, heading(subject) + body, {
+    preheader: safeSubject(subject), reason: 'This message relates to activity on your LetBuyy account or store.', category: 'transactional',
+  });
 
   return {
     template_key: parsed.template_key,

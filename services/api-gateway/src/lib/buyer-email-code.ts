@@ -1,3 +1,4 @@
+import { DEFAULT_EMAIL_BRAND, renderEmailShell, eyebrow, heading, paragraph, smallPrint, verificationCode, formatEmailSender } from '@letbuyy/notification-core/email';
 // APPID-P4a — delivering a buyer's one-time email code (migration 257).
 //
 // The database generates the code and hands it to the gateway once; this file sends it, and nothing
@@ -13,7 +14,7 @@ import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import type { Env } from '../index';
 import { isLocalSupabaseEnvironment } from './supabase';
 
-export type BuyerEmailCodePurpose = 'verify_email' | 'reset_password';
+export type BuyerEmailCodePurpose = 'verify_email' | 'reset_password' | 'connect_merchant';
 
 export interface BuyerEmailCodeDelivery {
     email: string;
@@ -31,10 +32,22 @@ function configuredProvider(env: Env): boolean {
 
 /// The code is kept out of the subject line: subjects show in lock-screen previews and in the
 /// provider's delivery logs, and the body shows in neither.
-export function buildBuyerEmailCodeMessage(delivery: BuyerEmailCodeDelivery): { subject: string; text: string } {
+export function buildBuyerEmailCodeMessage(delivery: BuyerEmailCodeDelivery): { subject: string; text: string; html: string } {
+    const reset = delivery.purpose === 'reset_password';
+    const connection = delivery.purpose === 'connect_merchant';
+    const html = renderEmailShell(DEFAULT_EMAIL_BRAND,
+        eyebrow('Buyer account security') + heading(connection ? 'Connect your LetBuyy account' : reset ? 'Reset your buyer password' : 'Verify your email address') +
+        paragraph(connection ? 'You signed in with your Merchant account. Enter this code and confirm consent on LetBuyy to create or connect your separate buyer profile. Your Merchant permissions are not shared with stores.' : reset ? 'Enter this one-time code on the LetBuyy password recovery page.' : 'Enter this one-time code to verify your LetBuyy buyer account.') + verificationCode(delivery.code) +
+        smallPrint('This code expires in 10 minutes. Never share it with anyone, including LetBuyy support. ' +
+            (reset ? 'Your password stays the same until you finish the reset. Resetting signs you out on every device.' : 'If you did not request this code, ignore this email.')),
+        {preheader: reset ? 'A one-time code to recover your buyer account.' : 'Confirm your email address securely.', reason: 'You requested a security code for your LetBuyy buyer account.', category: 'security'});
+
+    if (connection) return {subject:'Connect your LetBuyy buyer profile',html,
+        text:`Your connection code is ${delivery.code}.\nIt expires in 10 minutes. Enter it only on the LetBuyy account connection page after signing in with your Merchant account. Merchant permissions are not shared with stores. Ignore this email if you did not request this.`};
     if (delivery.purpose === 'reset_password') {
         return {
             subject: 'Reset your LetBuyy password',
+            html,
             text: [
                 `Your LetBuyy password reset code is ${delivery.code}.`,
                 '',
@@ -46,6 +59,7 @@ export function buildBuyerEmailCodeMessage(delivery: BuyerEmailCodeDelivery): { 
     }
     return {
         subject: 'Verify your email for LetBuyy',
+        html,
         text: [
             `Your LetBuyy verification code is ${delivery.code}.`,
             '',
@@ -78,10 +92,11 @@ export const sendBuyerEmailCode: BuyerEmailCodeSender = async (env, delivery) =>
 
     const result = await sendResendEmail({
         apiKey: env.RESEND_API_KEY,
-        from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+        from: formatEmailSender(env.RESEND_FROM_EMAIL),
         to: delivery.email,
         subject: message.subject,
         text: message.text,
+        html: message.html,
     }).catch(() => ({ success: false }));
     return { sent: Boolean(result.success) };
 };

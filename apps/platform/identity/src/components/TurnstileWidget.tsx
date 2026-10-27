@@ -112,24 +112,38 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
                 return
             }
 
+            let active=true
+            let readyTimer: ReturnType<typeof setInterval> | undefined
+            let attempts=0
+            const whenReady=()=>{
+                if(!active || !containerRef.current || widgetIdRef.current || !window.turnstile)return
+                renderWidget()
+                if(readyTimer)clearInterval(readyTimer)
+            }
             // Load Turnstile script if not already loaded
             if (!scriptLoaded.current && !document.querySelector('script[src*="turnstile"]')) {
                 scriptLoaded.current = true
-                window.onTurnstileLoad = renderWidget
+                window.onTurnstileLoad = whenReady
 
                 const script = document.createElement('script')
                 script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad'
                 script.async = true
                 document.head.appendChild(script)
-            } else if (window.turnstile) {
-                renderWidget()
             }
+            whenReady()
+            if(!widgetIdRef.current)readyTimer=setInterval(()=>{
+                whenReady()
+                if(++attempts>=100 && readyTimer)clearInterval(readyTimer)
+            },100)
 
             return () => {
+                active=false
+                if(readyTimer)clearInterval(readyTimer)
                 if (widgetIdRef.current) {
                     try {
                         window.turnstile?.remove(widgetIdRef.current)
                     } catch { /* ignore */ }
+                    widgetIdRef.current=null
                 }
             }
         }, [renderWidget])

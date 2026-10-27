@@ -1,3 +1,4 @@
+import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, paragraph, ctaRow, ctaButton, smallPrint, escapeHtml, formatEmailSender } from '@letbuyy/notification-core/email';
 import { Hono, type Context } from 'hono';
 import * as bcrypt from 'bcryptjs';
 import type { Env } from '../../index';
@@ -322,7 +323,7 @@ async function sendCustomerPasswordResetEmail(
     if (!isConfiguredResetEmailProvider(c)) return;
 
     const recipientName = input.fullName?.trim() || 'there';
-    const from = c.env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>';
+    const from = formatEmailSender(c.env.RESEND_FROM_EMAIL);
     const subject = 'Reset your LetBuyy store password';
     const text = [
         `Hi ${recipientName},`,
@@ -339,6 +340,10 @@ async function sendCustomerPasswordResetEmail(
         to: input.email,
         subject,
         text,
+        html: renderEmailShell(DEFAULT_EMAIL_BRAND, heading('Reset your store password') +
+            paragraph(`Hi ${escapeHtml(recipientName)}, use the secure link below to reset your existing store account password.`) +
+            ctaRow([ctaButton(input.resetUrl,'Reset store password')]) + smallPrint(`Expires at ${escapeHtml(input.expiresAt)}. If you did not request this, ignore this email.`),
+            {preheader:'A secure link for your existing store account.',reason:'You requested a password reset for your store account.',category:'security'}),
     }).catch(() => undefined);
 }
 

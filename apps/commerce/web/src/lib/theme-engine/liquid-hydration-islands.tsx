@@ -2670,6 +2670,7 @@ function canUseFormTurnstileDevBypass(): boolean {
 // race, never a bypass; the check itself is untouched.
 class LbTurnstileElement extends LiquidIslandBase {
     private widgetId: string | null = null;
+    private readyTimer: number | null = null;
 
     connectedCallback() {
         if (canUseFormTurnstileDevBypass()) {
@@ -2680,7 +2681,7 @@ class LbTurnstileElement extends LiquidIslandBase {
         const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
         if (!siteKey) return;
 
-        const render = () => this.renderWidget(siteKey);
+        const render = () => { if(this.isConnected) this.renderWidget(siteKey); };
         if (getFormTurnstile()) {
             render();
             return;
@@ -2696,18 +2697,23 @@ class LbTurnstileElement extends LiquidIslandBase {
         }
 
         let attempts = 0;
-        const timer = window.setInterval(() => {
+        this.readyTimer = window.setInterval(() => {
             attempts += 1;
             if (getFormTurnstile()) {
-                window.clearInterval(timer);
+                if(this.readyTimer !== null) window.clearInterval(this.readyTimer);
+                this.readyTimer = null;
                 render();
             } else if (attempts > 50) {
-                window.clearInterval(timer);
+                if(this.readyTimer !== null) window.clearInterval(this.readyTimer);
+                this.readyTimer = null;
             }
         }, 200);
     }
 
     disconnectedCallback() {
+        if(this.readyTimer !== null) window.clearInterval(this.readyTimer);
+        this.readyTimer = null;
+        this.writeToken('');
         const turnstile = getFormTurnstile();
         if (this.widgetId && turnstile) {
             try {
@@ -2716,6 +2722,7 @@ class LbTurnstileElement extends LiquidIslandBase {
                 // Ignore stale widget handles after navigation.
             }
         }
+        this.widgetId = null;
     }
 
     private renderWidget(siteKey: string) {

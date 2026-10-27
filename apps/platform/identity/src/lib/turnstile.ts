@@ -1,3 +1,4 @@
+import { isIP } from 'node:net'
 import { canUseIdentityDevAuthBypass } from './dev-auth-bypass'
 import { getLetbuyyInternalAuthSecret, verifyLetbuyySignedPayload } from '@letbuyy/auth-core'
 
@@ -81,6 +82,8 @@ export async function verifyTurnstileToken(token: string, ip?: string): Promise<
         return false
     }
 
+    const candidateIp=ip?.split(',')[0]?.trim()
+    const remoteIp=candidateIp && isIP(candidateIp) ? candidateIp : undefined
     try {
         const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
             method: 'POST',
@@ -88,14 +91,14 @@ export async function verifyTurnstileToken(token: string, ip?: string): Promise<
             body: JSON.stringify({
                 secret: secretKey,
                 response: token,
-                remoteip: ip,
+                ...(remoteIp ? {remoteip:remoteIp} : {}),
             }),
         })
 
         const data = await response.json()
         return data.success === true
-    } catch (error) {
-        console.error('Turnstile verification failed:', error)
+    } catch {
+        console.error(JSON.stringify({level:'error',service:'accounts',reason:'turnstile_verification_unavailable'}))
         return false
     }
 }

@@ -32,6 +32,7 @@ function formRedirect(request: NextRequest, params: Record<string, string>): Nex
         } catch { /* keep default target */ }
     }
     const url = new URL(target, request.url);
+    url.searchParams.set('legacy', '1');
     for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
     return NextResponse.redirect(url, 303);
 }
@@ -165,7 +166,7 @@ export async function POST(request: NextRequest) {
                     : error.message || 'Login temporarily unavailable';
             if (formPost) {
                 return formRedirect(request, {
-                    error: code === 'CUSTOMER_AUTH_RATE_LIMITED' ? 'rate_limited' : 'login_failed',
+                    error: code === 'CUSTOMER_AUTH_RATE_LIMITED' ? 'rate_limited' : code === 'TURNSTILE_REQUIRED' ? 'bot_verification' : 'login_failed',
                 });
             }
             return NextResponse.json({ error: message, code }, { status: error.status });
