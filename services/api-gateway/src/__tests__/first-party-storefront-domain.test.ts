@@ -9,35 +9,43 @@ const env = { ENVIRONMENT:'production',NEXT_PUBLIC_STORE_ROOT_DOMAIN:root,VERCEL
 const domain='synthetic-owned.'+root;
 const store={subdomain:'synthetic-owned'};
 const response=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}});
-function provider(attached=false,postOutcome:'success'|'lost'|'failed'='success') {
- const calls:Array<{url:URL;method:string;body:unknown}>=[];
+function provider(overrides: Record<string, unknown> = {}, config: Record<string, unknown> = {configuredBy:'CNAME',misconfigured:false}) {
+ const calls:Array<{url:URL;method:string}>=[];
  const fetchImpl=(async(input:RequestInfo|URL,init?:RequestInit)=>{
-  const url=new URL(String(input));const method=init?.method||'GET';calls.push({url,method,body:init?.body?JSON.parse(String(init.body)):null});
+  const url=new URL(String(input));const method=init?.method||'GET';calls.push({url,method});
+  assert.equal(method,'GET','first-party provisioning must never register per-store domains');
+  assert.equal(init?.redirect,'manual','provider credentials must not follow redirects');
   assert.equal(new Headers(init?.headers).get('Authorization'),'Bearer synthetic-commerce-only');
   assert.equal(url.searchParams.get('teamId'),'synthetic-team');
-  if(method==='POST'){
-   assert.deepEqual(JSON.parse(String(init?.body)),{name:domain});assert.match(url.pathname,/synthetic-commerce\/domains$/);
-   if(postOutcome==='failed')return response({error:{code:'provider_fault'}},500);
-   attached=true;if(postOutcome==='lost')throw new TypeError('synthetic lost write response');
-   return response({name:domain,verified:true});
+  if(url.pathname.endsWith('/config')) {
+   assert.ok(url.pathname.includes(domain));
+   return response(config);
   }
-  if(url.pathname.endsWith('/config'))return response({configuredBy:'CNAME',misconfigured:false});
-  assert.equal(url.pathname,`/v9/projects/synthetic-commerce/domains/${domain}`);
-  return attached?response({name:domain,verified:true}):response({error:{code:'not_found'}},404);
+  assert.equal(decodeURIComponent(url.pathname),`/v9/projects/synthetic-commerce/domains/*.${root}`);
+  return response({name:'*.'+root,verified:true,projectId:'synthetic-commerce',gitBranch:null,customEnvironmentId:null,redirect:null,...overrides});
  }) as typeof fetch;
  return {calls,fetchImpl};
 }
-test('existing verified same-project host is read without another registration',async()=>{
- const p=provider(true);assert.deepEqual(await provisionFirstPartyStorefrontDomain(env,store,p.fetchImpl),{hostname:domain,status:'ready'});assert.equal(p.calls.filter(x=>x.method==='POST').length,0);
+test('a new persisted store uses the verified same-project production wildcard with zero domain writes',async()=>{
+ const p=provider();const result=await provisionFirstPartyStorefrontDomain(env,store,p.fetchImpl);
+ assert.deepEqual(result,{hostname:domain,status:'ready'});assert.ok(StorefrontDomainProvisioningSchema.safeParse(result).success);
+ assert.equal(p.calls.length,2);assert.ok(p.calls.every(call=>call.method==='GET'));
 });
-test('new persisted host is registered once and read back before it is ready',async()=>{
- const p=provider();const result=await provisionFirstPartyStorefrontDomain(env,store,p.fetchImpl);assert.equal(result.status,'ready');assert.ok(StorefrontDomainProvisioningSchema.safeParse(result).success);assert.equal(p.calls.filter(x=>x.method==='POST').length,1);
+test('missing ownership, wrong project, wrong wildcard, preview target and redirects never admit a store',async()=>{
+ for(const invalid of [{verified:false},{projectId:'different-project'},{name:'*.different.invalid'},{gitBranch:'develop'},{customEnvironmentId:'other-environment'},{redirect:'https://elsewhere.invalid'}]) {
+  const p=provider(invalid);assert.equal((await provisionFirstPartyStorefrontDomain(env,store,p.fetchImpl)).status,'pending');
+  assert.ok(p.calls.every(call=>call.method==='GET'));
+ }
 });
-test('a committed POST with a lost acknowledgement is reconciled without duplicate writes',async()=>{
- const p=provider(false,'lost');assert.equal((await provisionFirstPartyStorefrontDomain(env,store,p.fetchImpl)).status,'ready');assert.equal(p.calls.filter(x=>x.method==='POST').length,1);
+test('unavailable or incorrect wildcard DNS never falsely promises a ready host',async()=>{
+ for(const config of [{configuredBy:null,misconfigured:false},{configuredBy:'CNAME',misconfigured:true}]) {
+  const p=provider({},config);assert.equal((await provisionFirstPartyStorefrontDomain(env,store,p.fetchImpl)).status,'pending');
+ }
+ const p=provider();const absent=(async(input:RequestInfo|URL,init?:RequestInit)=>String(input).includes('/v9/')?response({error:{code:'not_found'}},404):p.fetchImpl(input,init)) as typeof fetch;
+ assert.equal((await provisionFirstPartyStorefrontDomain(env,store,absent)).status,'pending');
 });
-test('an uncommitted provider error stays pending without falsely promising a working host',async()=>{
- const p=provider(false,'failed');assert.deepEqual(await provisionFirstPartyStorefrontDomain(env,store,p.fetchImpl),{hostname:domain,status:'pending',reason:'provider_pending'});assert.equal(p.calls.filter(x=>x.method==='POST').length,1);
+test('staging cannot claim readiness from a production wildcard',async()=>{
+ const p=provider();assert.equal((await provisionFirstPartyStorefrontDomain({...env,ENVIRONMENT:'staging',NODE_ENV:'production'},store,p.fetchImpl)).status,'pending');
 });
 test('reserved, arbitrary and path-injected labels never reach the provider',async()=>{
  for(const subdomain of ['admin','checkout','storefront','../outside','shop.example.com','synthetic-owned/other']){
@@ -50,7 +58,7 @@ test('missing credentials remain pending; a production flag cannot enter the loc
  assert.equal((await provisionFirstPartyStorefrontDomain({...env,ENVIRONMENT:'test',NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',VERCEL_API_TOKEN:undefined},store)).status,'local');
 });
 test('provider authorization failures are sanitized and do not trigger another credential or project',async()=>{
- let calls=0;const result=await provisionFirstPartyStorefrontDomain(env,store,(async()=>{calls++;return response({error:{code:'forbidden',message:'synthetic private provider detail'}},403);}) as typeof fetch);assert.equal(calls,1);assert.equal(result.reason,'provider_unavailable');assert.doesNotMatch(JSON.stringify(result),/private|synthetic-commerce-only/);
+ let calls=0;const result=await provisionFirstPartyStorefrontDomain(env,store,(async()=>{calls++;return response({error:{code:'forbidden',message:'synthetic private provider detail'}},403);}) as typeof fetch);assert.equal(calls,2);assert.equal(result.reason,'provider_unavailable');assert.doesNotMatch(JSON.stringify(result),/private|synthetic-commerce-only/);
 });
 test('a hung request aborts within the shared finite deadline',async(t)=>{
  t.mock.timers.enable({apis:['Date','setTimeout']});let signal:AbortSignal|undefined;
@@ -58,7 +66,7 @@ test('a hung request aborts within the shared finite deadline',async(t)=>{
  t.mock.timers.tick(6001);assert.equal((await result).reason,'provider_unavailable');assert.equal(signal?.aborted,true);
 });
 test('a response naming a different host never admits publication',async()=>{
- const p=provider(true);const result=await provisionFirstPartyStorefrontDomain(env,store,(async(input,init)=>{const r=await p.fetchImpl(input,init);if(String(input).includes('/v9/'))return response({name:'another.'+root,verified:true});return r;}) as typeof fetch);assert.equal(result.status,'pending');
+ const p=provider();const result=await provisionFirstPartyStorefrontDomain(env,store,(async(input,init)=>{const r=await p.fetchImpl(input,init);if(String(input).includes('/v9/'))return response({name:'another.'+root,verified:true});return r;}) as typeof fetch);assert.equal(result.status,'pending');
 });
 
 test('existing published stores retain successful replay through a provider outage',async()=>{

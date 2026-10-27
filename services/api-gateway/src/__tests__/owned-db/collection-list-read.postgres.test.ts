@@ -140,8 +140,10 @@ test('owned collection list counts preserve tenant authority, complete assignmen
   const before=allPublicHashes();for(const [statement,params] of statements){let code:string|undefined;await assert.rejects(()=>withTenantTx(gateway!.env,aScope.tenant,async tx=>{await bind(tx,aScope);assert.equal((await tx.unsafe('SELECT id FROM public.sites WHERE id=$1::uuid',[a.siteId])).length,1,'own-row positive before denial');assert.equal((await tx.unsafe('SELECT id FROM public.sites WHERE id=$1::uuid',[b.siteId])).length,0,'real foreign-site RLS denial');await tx.unsafe(statement,params);}),error=>{const e=error as{code?:string;message?:string};code=e.code;assert.equal(e.code,'42501');assert.match(e.message??'',/permission denied/);return true;});proof('ordinary-role-denial',{statement,code});await baseState();assert.deepEqual(allPublicHashes(),before);}
   assert.deepEqual(authority(),authorityBefore);
  });
+ // Tenant transactions intentionally ignore the optional storefront-read flag.
+ // Remove every real connection source to exercise an actually absent pool.
  await stage('5 known missing pool returns sanitized 503 without any REST count fallback',async()=>{
-  const before=allPublicHashes();assert(gateway);const noPool={...gateway.env,STOREFRONT_POOLED_SQL:'off'} as Env;restTap=tapRest(owned.restUrl,async(_call,forward)=>forward());
+  const before=allPublicHashes();assert(gateway);const noPool={...gateway.env,HYPERDRIVE:undefined,DATABASE_URL:undefined,SUPABASE_DB_URL:undefined} as Env;restTap=tapRest(owned.restUrl,async(_call,forward)=>forward());
   try{await assert.rejects(()=>readOwnedCollectionList(noPool,aScope,{page:1,limit:20}),forbidden(503,'COLLECTION_LIST_UNAVAILABLE'));assert.equal(restTap.calls.length,0,'direct operation must not reach REST at all');}finally{restTap.restore();restTap=undefined;}
   assert.deepEqual(allPublicHashes(),before);proof('missing-pool',{status:503,code:'COLLECTION_LIST_UNAVAILABLE',restCalls:0});
  });
@@ -151,7 +153,7 @@ test('owned collection list counts preserve tenant authority, complete assignmen
  });
  await stage('7 mounted Gateway own A/B positive before foreign denial; legitimate request records exactly classified',async()=>{
   await observedHttp(a,actors[0],200,a.siteId);await observedHttp(b,actors[1],200,b.siteId);const foreign=await observedHttp(a,actors[1],403,null);assert.equal(foreign.json?.error?.code,'FORBIDDEN');
-  const noPool={...gateway!.env,STOREFRONT_POOLED_SQL:'off'} as Env;restTap=tapRest(owned.restUrl,async(_call,forward)=>forward());try{const unavailable=await observedHttp(a,actors[0],503,a.siteId,noPool);assert.equal(unavailable.json?.error?.code,'COLLECTION_LIST_UNAVAILABLE');assert(!restTap.calls.some(call=>call.resource==='collection_products'||call.resource==='rpc/collection_membership_snapshot_v1'),'no REST count fallback after pooled refusal');}finally{restTap.restore();restTap=undefined;}
+  const noPool={...gateway!.env,HYPERDRIVE:undefined,DATABASE_URL:undefined,SUPABASE_DB_URL:undefined} as Env;restTap=tapRest(owned.restUrl,async(_call,forward)=>forward());try{const unavailable=await observedHttp(a,actors[0],503,a.siteId,noPool);assert.equal(unavailable.json?.error?.code,'COLLECTION_LIST_UNAVAILABLE');assert(!restTap.calls.some(call=>call.resource==='collection_products'||call.resource==='rpc/collection_membership_snapshot_v1'),'no REST count fallback after pooled refusal');}finally{restTap.restore();restTap=undefined;}
   assert.deepEqual(authority(),authorityBefore);assert.deepEqual(migrationSources(),initialMigrationSources,'Migration source changed during suite');proof('final-scope',{migrationSourcesExact:true,authorityExact:true,notProven:['Normal merchant UI count retest M05','All-ten-theme acceptance','Injected count-window role/restore/rollback native faults','Normal merchant/browser authentication']});
  });
 });

@@ -89,9 +89,11 @@ export function projectDiscoveryPage(page: StorefrontDiscoveryProductPage, path:
     const toyAgeBands = suppliedOptions('age_band'), toyInterests = suppliedOptions('interest');
     const sortOptions = sortChoices.map(([value,label]) => ({value,label,selected: activeQuery.sort === value}));
     const pages = Math.ceil(page.total / page.limit);
-    const pagination = { total: page.total, page: page.page, limit: page.limit, pages, has_more: page.has_more,
-        previous_url: page.page > 1 ? storefrontDiscoveryUrl(path, activeQuery, {page:page.page-1}) : null,
-        next_url: page.has_more ? storefrontDiscoveryUrl(path, activeQuery, {page:page.page+1}) : null };
+    // An empty result has no display page. Keep the requested page in query and
+    // the loaded response; captured Liquid themes omit their caption for null.
+    const pagination = { total: page.total, page: page.total > 0 ? page.page : null, limit: page.limit, pages: page.total > 0 ? pages : null, has_more: page.has_more,
+        previous_url: page.total > 0 && page.page > 1 ? storefrontDiscoveryUrl(path, activeQuery, {page:page.page-1}) : null,
+        next_url: page.total > 0 && page.has_more ? storefrontDiscoveryUrl(path, activeQuery, {page:page.page+1}) : null };
     return {
         query: activeQuery,
         collection: {

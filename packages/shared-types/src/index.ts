@@ -814,6 +814,47 @@ export const ResumeContentSectionSchema = z.enum([
 /** Default for newly created stores; saved merchant selections are never inferred from this. */
 export const DEFAULT_STOREFRONT_THEME_SLUG = 'letbuyy-forge';
 
+/** Anonymous discovery contains public launch metadata, never account/contact data. */
+export const StorefrontDirectoryEntrySchema = z.object({
+  store_name: z.string().min(1),
+  subdomain: z.string().min(1),
+  name: z.string().min(1),
+  logo_url: z.string().nullable(),
+  theme_id: z.string().nullable(),
+  theme_name: z.string().nullable(),
+  status: z.literal('published'),
+  site_type: z.literal('store'),
+  created_at: z.string().datetime({ offset: true }),
+  published_at: z.string().datetime({ offset: true }),
+}).strict();
+export const StorefrontDirectoryQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(24).default(12),
+  cursor: z.string().min(1).max(512).optional(),
+}).strict();
+export const StorefrontDirectoryCursorSchema = z.object({
+  id: z.string().uuid(),
+  value: z.string().datetime({ offset: true }),
+}).strict();
+const PublicDirectoryCountSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
+export const StorefrontDirectoryPayloadSchema = z.object({
+  stores: z.array(StorefrontDirectoryEntrySchema).max(24),
+  stats: z.object({
+    scope: z.literal('public_stores'),
+    totalStores: PublicDirectoryCountSchema,
+    totalThemes: PublicDirectoryCountSchema,
+    totalProducts: PublicDirectoryCountSchema,
+    totalOrders: PublicDirectoryCountSchema,
+  }).strict(),
+  pagination: z.object({
+    limit: z.number().int().min(1).max(24),
+    has_more: z.boolean(),
+    next_cursor: z.string().nullable(),
+  }).strict(),
+}).strict();
+export type StorefrontDirectoryEntry = z.infer<typeof StorefrontDirectoryEntrySchema>;
+export type StorefrontDirectoryPayload = z.infer<typeof StorefrontDirectoryPayloadSchema>;
+export type StorefrontDirectoryQuery = z.infer<typeof StorefrontDirectoryQuerySchema>;
+
 export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
 export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
 export const ShippingRateTypeSchema = z.enum(['flat', 'weight_based', 'price_based', 'free']);

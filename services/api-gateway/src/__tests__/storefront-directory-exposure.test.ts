@@ -1,28 +1,18 @@
-// F-DIRECTORY-1 — GET /v1/storefront/directory must never disclose unpublished stores.
-//
-// The route is mounted on the ANONYMOUS storefront router, so every row and every count it returns
-// is public. A `draft` site is a store a merchant created and has not launched. Listing one — or
-// counting it in the platform-wide `totalStores` figure — publishes that merchant's store_name,
-// logo_url, theme_id and created_at before they chose to be public. Before this phase the listing
-// filtered `.in('status', ['draft', 'published'])` and the count filtered
-// `.not('status', 'eq', 'suspended')`; both admitted drafts.
-//
-// The second half of this file pins a fact the first half depends on for its risk assessment: the
-// route does not execute today. `sites` is a registered tenant table, `status` is not one of its
-// accepted scope columns, and createTenantGuardedSupabaseClient rejects the chain before it runs.
-// That fail-closed state is what makes the exposure latent rather than live, and this phase does
-// NOT change it — turning a platform-wide public store directory on is an owner decision (CAP-C60).
-// If a later phase makes the route live, these tests are what stop drafts riding along.
-
+// Owner decision CAP-C60, 27 October: anonymous public launches use a fixed service-only SQL projection.
+// These contracts preserve the ordinary tenant guard and public-only eligibility; the owned
+// public-storefront-directory suite separately proves the actual Gateway/RPC/PG behavior.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import { Hono } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import type { StorefrontDirectoryPayload } from '@letbuyy/shared-types';
 import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
 import { registerStorefrontPublicRoutes } from '../routes/storefront/public-routes';
 import type { Env } from '../index';
+import { AppError, formatAppError } from '../lib/errors';
 
 const srcRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -52,35 +42,17 @@ function handlerBody(source: string, mountExpression: string): string {
 const routeSource = readFileSync(join(srcRoot, ROUTE_FILE), 'utf8');
 const directory = handlerBody(routeSource, "router.get('/directory'");
 
-test('the extracted /directory span is the real handler, not a fragment', () => {
-    // A span assertion that silently matched two lines would make every check below vacuous.
-    assert.match(directory, /getSupabaseAdmin\(c\)/);
-    assert.match(directory, /totalStores/);
-    assert.match(directory, /totalThemes/);
-    assert.ok(directory.includes("from('sites')"), 'the span must contain the sites queries it constrains');
-    assert.ok(directory.length > 400, `span suspiciously short (${directory.length} chars)`);
+const directorySql=readFileSync(join(srcRoot,'../../../database/supabase/migrations/398_public_storefront_directory.sql'),'utf8');
+test('the real directory handler uses the fixed public RPC through the ordinary guarded client',()=>{
+ assert.match(directory,/getSupabaseAdmin/);assert.match(directory,/public_storefront_directory_v1/);
+ assert.doesNotMatch(directory,/getSupabaseAdminUnguarded|from\('sites'\)/);
+ assert.match(directory,/StorefrontDirectoryPayloadSchema/);
 });
-
-test('the public directory listing selects published stores only', () => {
-    assert.ok(
-        !/['"]draft['"]/.test(directory),
-        "GET /storefront/directory admits 'draft' again. This route is anonymous: a draft site is an "
-            + 'unlaunched store, and listing it publishes its name, logo and theme before its merchant chose to be public.',
-    );
-    assert.equal(
-        (directory.match(/\.eq\('status', 'published'\)/g) || []).length,
-        2,
-        'both the listing query and the totalStores count must filter on published',
-    );
-});
-
-test('the totalStores count cannot be widened back to "everything except suspended"', () => {
-    // `.not('status', 'eq', 'suspended')` counted drafts. It is a different shape from the listing
-    // filter, so the draft-literal check above would not have caught it.
-    assert.ok(
-        !/\.not\(\s*['"]status['"]/.test(directory),
-        'the store count must not filter by exclusion — exclusion counts every future status, including draft',
-    );
+test('the SQL projection requires published/public/nondeleted stores and the same population owns counts',()=>{
+ for(const predicate of ["s.status = 'published'","s.published IS TRUE","COALESCE(s.access_mode, 'public') = 'public'","s.deleted_at IS NULL","s.site_type = 'store'"]) assert.ok(directorySql.includes(predicate),predicate);
+ assert.match(directorySql,/totalStores'[\s\S]*?count\(\*\) FROM eligible/);
+ assert.match(directorySql,/p_limit > 24/);assert.match(directorySql,/REVOKE ALL[\s\S]*FROM PUBLIC, anon, authenticated/);
+ assert.doesNotMatch(directorySql,/user_id|email|access_password_hash|template_config/);
 });
 
 // ── the fail-closed half ────────────────────────────────────────────────────────────────────────
@@ -108,7 +80,7 @@ test('the guard resolves a sites query that carries an accepted scope predicate 
     assert.deepEqual(data, [{ store_name: 'scoped' }]);
 });
 
-test('the guard rejects the /directory listing chain — the route is fail-closed today', async () => {
+test('the guard continues rejecting an unscoped sites listing after the public directory decision', async () => {
     const db = createTenantGuardedSupabaseClient(fakeClient([{ store_name: 'leaked' }]));
     await assert.rejects(
         async () =>
@@ -120,7 +92,7 @@ test('the guard rejects the /directory listing chain — the route is fail-close
                 .order('created_at', { ascending: false })
                 .limit(12),
         /Tenant table sites requires a tenant\/owner predicate before execution/,
-        'if this now resolves, the directory went live without an owner decision — see CAP-C60',
+        'the fixed directory RPC must not relax arbitrary sites queries',
     );
 });
 
@@ -147,56 +119,31 @@ test('status is not an accepted scope column for sites — the reason the route 
     );
 });
 
-// ── the graceful-unavailable half (F1.5, foundation-phase1-closure, 2026-09-26) ────────────────
-//
-// Before this phase, the guard's rejection above propagated uncaught out of the route handler to
-// the gateway's global error handler, so a real anonymous caller saw an opaque `500
-// INTERNAL_ERROR` — logged and reported identically to a genuine crash. The route now catches
-// exactly that one documented rejection and reports it as the deliberate unavailability it is.
-// These tests exercise the REAL route through a real Hono app (not the fake-client stand-in
-// above), so what is asserted is the wire contract a caller actually receives.
-
+// Hermetic wire-contract checks. Actual SQL/privacy behavior is covered by the owned suite.
 type PublicDeps = Parameters<typeof registerStorefrontPublicRoutes>[1];
-
-function publicApp() {
-    const app = new Hono<{ Bindings: Env }>();
-    // `/directory` calls the module-level getSupabaseAdmin() directly, not an injected dependency —
-    // an empty deps object is sufficient to register every route; only `/directory` is invoked below.
-    registerStorefrontPublicRoutes(
-        app as unknown as Parameters<typeof registerStorefrontPublicRoutes>[0],
-        {} as unknown as PublicDeps,
-    );
-    return app;
+type Loader = NonNullable<PublicDeps['loadPublicDirectory']>;
+function publicApp(loader: Loader = async()=>({data:null,error:{code:'unavailable'}})) {
+ const app = new Hono<{Bindings:Env}>();
+ app.onError((error,c)=>error instanceof AppError?c.json(formatAppError(error).body,error.statusCode as ContentfulStatusCode):c.json({error:{code:'INTERNAL_ERROR',message:'Unexpected error'}},500));
+ registerStorefrontPublicRoutes(app as unknown as Parameters<typeof registerStorefrontPublicRoutes>[0],{loadPublicDirectory:loader} as PublicDeps);
+ return app;
 }
-
-// Plausible but unreachable — createClient() never validates reachability at construction time,
-// and the guard rejects the query chain before any network call would happen (proved above).
-const workingEnv = () => ({
-    SUPABASE_URL: 'https://example.test',
-    SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
-} as unknown as Env);
-
-test('GET /directory returns a deliberate 503 DIRECTORY_UNAVAILABLE, not an opaque 500', async () => {
-    const res = await publicApp().request('/directory', undefined, workingEnv());
-    assert.equal(res.status, 503);
-    const body = (await res.json()) as { error: { code: string; message: string } };
-    assert.equal(body.error.code, 'DIRECTORY_UNAVAILABLE');
-    assert.match(body.error.message, /not available/i);
+const publicData={stores:[],stats:{scope:'public_stores',totalStores:0,totalThemes:10,totalProducts:0,totalOrders:0},pagination:{limit:12,has_more:false,next_cursor:null}};
+test('an unavailable public read returns sanitized503 instead of a fabricated empty directory',async()=>{
+ const res=await publicApp().request('/directory');assert.equal(res.status,503);
+ const body=await res.json<{error:{code:string}}>();assert.equal(body.error.code,'DIRECTORY_UNAVAILABLE');assert.doesNotMatch(JSON.stringify(body),/totalStores|private/);
 });
-
-test('the 503 is still produced by the tenant guard, not by skipping it — the isolation boundary', async () => {
-    // If a future edit routed around getSupabaseAdmin (e.g. swapped in getSupabaseAdminUnguarded,
-    // or added a site_id/tenant predicate that let the query through), this route would start
-    // returning 200 with real store rows instead of 503. That is exactly the regression this test
-    // exists to catch — CAP-C60 stays an owner decision, never an accidental side effect of an
-    // error-handling change.
-    const res = await publicApp().request('/directory', undefined, workingEnv());
-    assert.equal(res.status, 503, 'a 200 here means the tenant guard no longer blocks the unscoped sites read');
+test('a successful zero-store directory preserves the real nonzero theme count and no-store response',async()=>{
+ const res=await publicApp(async(_c,args)=>{assert.deepEqual(args,{p_limit:12,p_after_at:null,p_after_id:null});return{data:publicData,error:null};}).request('/directory');
+ assert.equal(res.status,200);assert.equal(res.headers.get('cache-control'),'no-store');assert.deepEqual((await res.json<{data:StorefrontDirectoryPayload}>()).data,publicData);
 });
-
-test('a genuinely different failure is NOT reported as DIRECTORY_UNAVAILABLE', async () => {
-    // No SUPABASE_URL/KEY makes createClient() throw synchronously with an unrelated message,
-    // proving the catch block recognizes only the one documented guard rejection, never everything.
-    const res = await publicApp().request('/directory', undefined, {} as unknown as Env);
-    assert.notEqual(res.status, 503, 'an unrelated construction failure must not be reported as the directory being deliberately unavailable');
+test('malformed/private upstream fields are refused rather than serialized publicly',async()=>{
+ for(const data of [{...publicData,account_email:'synthetic-private@example.invalid'},{...publicData,stats:{...publicData.stats,totalStores:-1}}]){
+  const res=await publicApp(async()=>({data,error:null})).request('/directory');assert.equal(res.status,503);assert.doesNotMatch(await res.text(),/synthetic-private/);
+ }
+});
+test('invalid pagination cannot reach SQL and an unrelated programmer failure stays an internal error',async()=>{
+ let calls=0;const app=publicApp(async()=>{calls++;throw new Error('synthetic private diagnostic');});
+ for(const query of ['limit=25','cursor=invalid','include_private=true'])assert.equal((await app.request('/directory?'+query)).status,400);
+ assert.equal(calls,0);const res=await app.request('/directory');assert.equal(res.status,500);assert.doesNotMatch(await res.text(),/private diagnostic/);
 });

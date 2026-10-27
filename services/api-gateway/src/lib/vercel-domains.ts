@@ -97,7 +97,7 @@ async function requestVercelJson(
     try {
         const result = await Promise.race([
             (async () => {
-                const received = await fetchImpl(vercelUrl(path, env), { ...init, headers, signal: controller.signal });
+                const received = await fetchImpl(vercelUrl(path, env), { ...init, redirect: 'manual', headers, signal: controller.signal });
                 const payload: unknown = await received.json().catch(() => null);
                 return { response: received, body: payload };
             })(),
@@ -188,10 +188,11 @@ export async function readVercelDomainStatus(
     env: VercelDomainEnv,
     domain: string,
     fetchImpl: FetchLike = fetch,
+    configDomain: string = domain,
 ): Promise<VercelDomainStatusResult> {
     const [projectDomain, config] = await Promise.all([
         getVercelProjectDomain(env, domain, fetchImpl),
-        getVercelDomainConfig(env, domain, fetchImpl),
+        getVercelDomainConfig(env, configDomain, fetchImpl),
     ]);
     const verified = boolField(projectDomain, 'verified');
     const configuredBy = stringField(config, 'configuredBy');

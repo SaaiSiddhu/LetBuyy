@@ -1,4 +1,5 @@
 import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
+import { StorefrontDirectoryPayloadSchema, type StorefrontDirectoryPayload } from '@letbuyy/shared-types';
 import {CollectionListPageSchema} from '@letbuyy/shared-types';
 export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
 import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, type PersonalizationReviewContext, type StorefrontDiscoveryQueryInput, type StorefrontDiscoveryMetadata } from '@letbuyy/shared-types';
@@ -2977,15 +2978,7 @@ export type StorefrontLookupResult = JsonRecord & {
   };
 };
 
-export type StorefrontDirectoryPayload = {
-  stores: JsonRecord[];
-  stats: {
-    totalStores: number;
-    totalThemes: number;
-    totalProducts: number;
-    totalOrders: number;
-  };
-};
+export type { StorefrontDirectoryPayload } from '@letbuyy/shared-types';
 
 export interface StorefrontCouponValidationQuery extends QueryParams {
   code: string;
@@ -5588,7 +5581,7 @@ export class LetbuyyApiClient {
     lookup: (query: { q?: string; host?: string; subdomain?: string }, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontLookupResult>('/storefront/lookup', { ...options, query }),
     directory: (options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontDirectoryPayload>('/storefront/directory', options),
+      this.requestData<StorefrontDirectoryPayload>('/storefront/directory', options).then(value => StorefrontDirectoryPayloadSchema.parse(value)),
     getStoreById: (storeId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/store/${encodePathSegment(storeId)}`, options),
     getStore: (subdomain: string, options?: LetbuyyRequestOptions) =>

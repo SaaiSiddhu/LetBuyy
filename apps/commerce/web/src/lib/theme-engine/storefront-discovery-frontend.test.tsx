@@ -113,6 +113,30 @@ test('binder preserves exact empty/past-end pages and page metadata, never selec
     const direct=await build({store:f.store,route:f.route,sections:plan.template.sections,preloadedProducts:[]});for(const row of direct.values())assert.deepEqual(row.products,[]);assert.equal(h.calls.length,1);
 });
 
+test('empty catalog renders no page caption while retaining the requested empty page and filter',async()=>{
+    for (const requestedPage of [1, 7]) {
+        const f=fixture('letbuyy-forge'),h=serviceHarness({empty:true,total:0,facets:[]});
+        const query=discoveryRouteQuery({page:String(requestedPage),search:'unmatched model'});
+        const supplied=await h.createClient().storefront.listProducts(f.store.subdomain,query);
+        assert.deepEqual(supplied.data,[]);
+        assert.equal(supplied.total,0);
+        const route={...f.route,discoveryQuery:query,searchParams:scalarDiscoveryQuery(query)};
+        const plan=resolveStorefrontTemplate(f.store,route);
+        const data=await binder(h.ProductService)({store:f.store,route,sections:plan.template.sections});
+        for (const row of data.values()) {
+            if (row.pagination) assert.equal(row.pagination.page,requestedPage);
+        }
+        const context=await compositor().buildLiquidCommerceContext({store:f.store,plan,sectionData:data,customer:null,buyerWishlist:{authenticated:false,buyerId:null,linked:false,unavailable:false,storeAccountUnavailable:false,productIds:[],products:[]},productBasePath:'',discoveredCollections:[]});
+        const result=await new LiquidRenderer().render({context:{storeId,subdomain:f.store.subdomain,path:route.path,previewMode:false,locale:'en-IN'},storeTemplate:{themeId:'letbuyy-forge',themeSettings:DEFAULT_THEME_SETTINGS,sections:[]},routeTemplate:{id:'collection',type:'collection',layoutKey:'theme',sections:[]},liquidBundle:f.bundle,liquidTemplateKey:'collection',liquidContext:context});
+        assert.equal(result.status,'rendered');
+        assert.deepEqual(result.warnings,[]);
+        const document=new JSDOM(result.liquid!.contentForLayout).window.document;
+        assert.equal(document.querySelector('[aria-label="Product pages"]')?.textContent?.trim(),'');
+        assert.doesNotMatch(document.body.textContent??'',/Page\s+\d+\s+of\s+0/);
+        assert.equal((context.collection as {total:number}).total,0);
+    }
+});
+
 test('missing capability stays hidden, selected unsupported niche filters and malformed responses fail closed',async()=>{
     const h=serviceHarness({metadata:false});const query=discoveryRouteQuery({size:'M'});const page=await h.ProductService.getProductPage('discovery-test',query);
     const drop=projectDiscoveryPage(page,'/products',query);assert.equal(drop.collection.capabilities.discovery,false);assert.equal(drop.collection.capabilities.toys_filters,false);assert.deepEqual(drop.collection.toy_facets.age_bands,[]);assert.equal(drop.shop.gift_discovery_enabled,false);

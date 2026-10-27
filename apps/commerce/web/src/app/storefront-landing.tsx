@@ -2,38 +2,23 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { buildTenantStorefrontUrl } from '@letbuyy/tenant-core';
+import type { StorefrontDirectoryEntry, StorefrontDirectoryPayload } from '@letbuyy/shared-types';
 import { Button, Input, MaterialIcon, ThemeToggleButton } from '@letbuyy/ui';
 import './storefront-landing.css';
 
 const accountsOrigin = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.com';
 
 // ─── Types ─────────────────────────────────────────────────────
-interface StoreShowcase {
-    storeName: string;
-    displayName: string;
-    subdomain: string;
-    logoUrl: string | null;
-    themeId: string | null;
-    status: 'draft' | 'published';
-    siteType: string;
-    createdAt: string;
-    ownerName: string | null;
-    maskedEmail: string;
-}
-
-interface PlatformStats {
-    totalStores: number;
-    totalThemes: number;
-    totalProducts: number;
-    totalOrders: number;
-}
-
+type StoreShowcase = StorefrontDirectoryEntry;
+type PlatformStats = StorefrontDirectoryPayload['stats'];
 interface StorefrontLandingProps {
     stores: StoreShowcase[];
-    stats: PlatformStats;
+    stats: PlatformStats | null;
+    directoryAvailable: boolean;
 }
 
-type FinderStatus = 'idle' | 'checking' | 'found' | 'not_found' | 'invalid' | 'draft';
+type FinderStatus = 'idle' | 'checking' | 'found' | 'not_found' | 'invalid' | 'draft' | 'unavailable';
 
 interface FinderResult {
     name: string;
@@ -56,18 +41,11 @@ function getSiteTypeLabel(siteType: string): string {
 }
 
 function getStorefrontUrl(subdomain: string): string {
-    const encodedSubdomain = encodeURIComponent(subdomain);
-    const configuredBaseUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL?.replace(/\/+$/, '');
-
-    if (configuredBaseUrl) {
-        return `${configuredBaseUrl}/store/${encodedSubdomain}`;
-    }
-
-    if (process.env.NODE_ENV === 'production') {
-        return `https://${encodedSubdomain}.letbuyy.com`;
-    }
-
-    return `/store/${encodedSubdomain}`;
+    return buildTenantStorefrontUrl(subdomain, {
+        rootDomain: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+        baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL,
+        rootDomainAliases: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES,
+    });
 }
 
 // ─── Utilities ─────────────────────────────────────────────────
@@ -88,62 +66,16 @@ function formatStat(n: number): string {
     return n.toString();
 }
 
-function getThemeMeta(themeId: string | null) {
+function getThemeMeta(themeId: string | null, themeName: string | null) {
     const fallback = { label: 'Theme', color: 'rgb(99 102 241)' };
     if (!themeId) return fallback;
 
     const palette = ['rgb(99 102 241)', 'rgb(14 165 233)', 'rgb(16 185 129)', 'rgb(245 158 11)', 'rgb(239 68 68)', 'rgb(139 92 246)'];
     const hash = [...themeId].reduce((sum, char) => sum + char.charCodeAt(0), 0);
     return {
-        label: themeId
-            .split(/[-_\s]+/)
-            .filter(Boolean)
-            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-            .join(' ') || fallback.label,
+        label: themeName || fallback.label,
         color: palette[hash % palette.length],
     };
-}
-
-// ─── Hook: Count-Up Animation ──────────────────────────────────
-function useCountUp(target: number, duration = 1500) {
-    const [count, setCount] = useState(0);
-    const ref = useRef<HTMLDivElement>(null);
-    const animated = useRef(false);
-
-    useEffect(() => {
-        const el = ref.current;
-        if (!el || animated.current) return;
-
-        // Check for reduced motion
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (prefersReduced) {
-            setCount(target);
-            animated.current = true;
-            return;
-        }
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting && !animated.current) {
-                    animated.current = true;
-                    const startTime = performance.now();
-                    const tick = (now: number) => {
-                        const progress = Math.min((now - startTime) / duration, 1);
-                        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-                        setCount(Math.floor(eased * target));
-                        if (progress < 1) requestAnimationFrame(tick);
-                    };
-                    requestAnimationFrame(tick);
-                    observer.unobserve(el);
-                }
-            },
-            { threshold: 0.3 }
-        );
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, [target, duration]);
-
-    return { ref, displayValue: formatStat(count) };
 }
 
 // ─── Store Finder Component ────────────────────────────────────
@@ -167,32 +99,44 @@ function StoreFinder() {
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         if (redirectRef.current) clearTimeout(redirectRef.current);
+        let current = true;
+        const controller = new AbortController();
+        const retire = () => {
+            current = false;
+            controller.abort();
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+            if (redirectRef.current) clearTimeout(redirectRef.current);
+        };
+        setStore(null);
 
         if (!query.trim()) {
             setStatus('idle');
             setStore(null);
-            return;
+            return retire;
         }
 
         if (query.trim().length < 3) {
             setStatus('invalid');
             setStore(null);
-            return;
+            return retire;
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(query.trim())) {
             setStatus('invalid');
             setStore(null);
-            return;
+            return retire;
         }
 
         debounceRef.current = setTimeout(async () => {
             setStatus('checking');
             try {
-                const res = await fetch(`/api/store-lookup?q=${encodeURIComponent(query.trim())}`);
+                const res = await fetch(`/api/store-lookup?q=${encodeURIComponent(query.trim())}`, { signal: controller.signal, cache: 'no-store' });
+                if (!res.ok) throw new Error('Lookup unavailable');
                 const data = await res.json();
+                if (!current) return;
 
-                if (data.status === 'found') {
+                if (data.status === 'found' && data.store?.status === 'published'
+                    && typeof data.store.name === 'string' && typeof data.store.subdomain === 'string') {
                     setStore(data.store);
                     if (data.store.status === 'draft') {
                         setStatus('draft');
@@ -208,10 +152,12 @@ function StoreFinder() {
                     setStore(null);
                 }
             } catch {
-                setStatus('not_found');
+                if (!current) return;
+                setStatus('unavailable');
                 setStore(null);
             }
         }, 400);
+        return retire;
     }, [query]);
 
     // Auto-redirect countdown
@@ -241,21 +187,26 @@ function StoreFinder() {
                 <Input unstyled
                     className="store-finder-input"
                     type="search"
-                    placeholder="Enter a site name or subdomain..."
+                    placeholder="Enter a store name or subdomain..."
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    aria-label="Search for a site"
+                    onChange={(e) => { setStore(null); setStatus('idle'); setQuery(e.target.value); }}
+                    aria-label="Search for a store"
                 />
                 <Button unstyled
                     className="store-finder-btn"
                     onClick={handleVisitClick}
                     disabled={status !== 'found' && status !== 'draft'}
                 >
-                    Visit Site →
+                    Visit Store →
                 </Button>
             </div>
 
             {/* Status Indicator */}
+            {status === 'unavailable' && (
+                <div className="finder-status status-invalid" role="alert">
+                    <span className="finder-status-text">Store lookup is temporarily unavailable. Please try again.</span>
+                </div>
+            )}
             {status === 'checking' && (
                 <div className="finder-status status-checking">
                     <div className="finder-spinner" />
@@ -328,7 +279,7 @@ function StoreFinder() {
 
 // ─── Store Card Component ──────────────────────────────────────
 function StoreCard({ store }: { store: StoreShowcase }) {
-    const theme = getThemeMeta(store.themeId);
+    const theme = getThemeMeta(store.theme_id, store.theme_name);
     const isLive = store.status === 'published';
     const storeUrl = getStorefrontUrl(store.subdomain);
 
@@ -339,10 +290,10 @@ function StoreCard({ store }: { store: StoreShowcase }) {
         >
             {/* Logo / Initial Avatar */}
             <div className="store-card-logo">
-                {store.logoUrl ? (
+                {store.logo_url ? (
                     <img
-                        src={store.logoUrl}
-                        alt={store.displayName}
+                        src={store.logo_url}
+                        alt={store.name}
                         className="store-card-logo-img"
                         loading="lazy"
                     />
@@ -354,7 +305,7 @@ function StoreCard({ store }: { store: StoreShowcase }) {
                             color: theme.color,
                         }}
                     >
-                        {store.displayName.charAt(0).toUpperCase()}
+                        {store.name.charAt(0).toUpperCase()}
                     </div>
                 )}
             </div>
@@ -363,16 +314,15 @@ function StoreCard({ store }: { store: StoreShowcase }) {
             <div className="store-card-body">
                 {/* Store Info */}
                 <div className="store-card-info">
-                    <h3 className="store-card-name">{store.displayName}</h3>
-                    <p className="store-card-subdomain">{store.subdomain}.letbuyy.com</p>
-                    <p className="store-card-owner">by {store.maskedEmail}</p>
+                    <h3 className="store-card-name">{store.name}</h3>
+                    <p className="store-card-subdomain">{new URL(storeUrl).host}</p>
                 </div>
 
                 {/* Badges */}
                 <div className="store-card-badges">
                     {/* Site Type Badge */}
                     {(() => {
-                        const siteTypeMeta = SITE_TYPE_META[store.siteType] || SITE_TYPE_META['store'];
+                        const siteTypeMeta = SITE_TYPE_META[store.site_type] || SITE_TYPE_META['store'];
                         return (
                             <span
                                 className="store-card-type-badge"
@@ -388,7 +338,7 @@ function StoreCard({ store }: { store: StoreShowcase }) {
                         );
                     })()}
                     {/* Theme Badge (only for stores/themes) */}
-                    {store.themeId && (
+                    {store.theme_id && (
                         <span
                             className="store-card-theme-badge"
                             style={{
@@ -409,9 +359,9 @@ function StoreCard({ store }: { store: StoreShowcase }) {
 
                 {/* Footer */}
                 <div className="store-card-footer">
-                    <span className="store-card-time">{timeAgo(store.createdAt)}</span>
+                    <span className="store-card-time">{timeAgo(store.published_at)}</span>
                     <a href={storeUrl} className="store-card-visit">
-                        {isLive ? `Visit ${getSiteTypeLabel(store.siteType)} →` : 'Preview →'}
+                        {isLive ? `Visit ${getSiteTypeLabel(store.site_type)} →` : 'Preview →'}
                     </a>
                 </div>
             </div>
@@ -420,18 +370,17 @@ function StoreCard({ store }: { store: StoreShowcase }) {
 }
 
 // ─── Stat Card Component ───────────────────────────────────────
-function StatCard({ value, label }: { value: number; label: string }) {
-    const { ref, displayValue } = useCountUp(value);
+function StatCard({ value, label }: { value: number | null; label: string }) {
     return (
-        <div className="stat-card" ref={ref}>
-            <p className="stat-value">{displayValue}</p>
+        <div className="stat-card">
+            <p className="stat-value">{value === null ? '—' : formatStat(value)}</p>
             <p className="stat-label">{label}</p>
         </div>
     );
 }
 
 // ─── Main Component ────────────────────────────────────────────
-export default function StorefrontLanding({ stores, stats }: StorefrontLandingProps) {
+export default function StorefrontLanding({ stores, stats, directoryAvailable }: StorefrontLandingProps) {
     return (
         <div className="landing">
             {/* ── Navbar ── */}
@@ -444,7 +393,7 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                     <div className="flex items-center gap-[var(--lb-space-3)]">
                         <ThemeToggleButton label="Toggle storefront theme" />
                         <a href={accountsOrigin} className="landing-nav-cta">
-                            Create Site →
+                            Create Store →
                         </a>
                     </div>
                 </div>
@@ -452,15 +401,15 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
 
             <main>
                 {/* ── Hero + Store Finder ── */}
-                <section className="landing-hero" aria-label="Site finder">
+                <section className="landing-hero" aria-label="Store finder">
                     <div className="landing-hero-content">
                         <h1>
-                            Discover Sites on{' '}
+                            Discover Stores on{' '}
                             <span className="accent">LetBuyy</span>
                         </h1>
                         <p className="landing-hero-subtitle">
-                            Find stores, blogs, portfolios, resumes &amp; landing pages built by the community.
-                            Type a site name below to get started.
+                            Explore public stores built by the LetBuyy community.
+                            Enter a store name or subdomain to visit.
                         </p>
                         <StoreFinder />
                         <div className="landing-divider">or explore the community</div>
@@ -479,7 +428,12 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                     </div>
 
                     <div className="landing-community-grid">
-                        {stores.length > 0 ? (
+                        {!directoryAvailable ? (
+                            <div className="landing-empty" role="alert">
+                                <p>Store discovery is temporarily unavailable. Please try again.</p>
+                                <Button unstyled type="button" className="landing-empty-cta" onClick={() => window.location.reload()}>Try again</Button>
+                            </div>
+                        ) : stores.length > 0 ? (
                             stores.map((store) => (
                                 <StoreCard key={store.subdomain} store={store} />
                             ))
@@ -501,12 +455,13 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                 <section className="landing-stats" aria-label="Platform statistics">
                     <div className="landing-stats-header">
                         <h2>Platform in Numbers</h2>
+                        <p>Public stores and their published catalog.</p>
                     </div>
                     <div className="landing-stats-grid">
-                        <StatCard value={stats.totalStores} label="Sites Created" />
-                        <StatCard value={stats.totalThemes} label="Themes Available" />
-                        <StatCard value={stats.totalProducts} label="Products Listed" />
-                        <StatCard value={stats.totalOrders} label="Orders Fulfilled" />
+                        <StatCard value={stats?.totalStores ?? null} label="Public Stores" />
+                        <StatCard value={stats?.totalThemes ?? null} label="Themes Available" />
+                        <StatCard value={stats?.totalProducts ?? null} label="Public Products" />
+                        <StatCard value={stats?.totalOrders ?? null} label="Delivered Orders" />
                     </div>
                 </section>
 
