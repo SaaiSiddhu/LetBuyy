@@ -15,6 +15,10 @@ function load(relative, modules, globals = {}) {
     } }).outputText;
     const exports = {};
     new Function('require', 'exports', ...Object.keys(globals), js)((name) => {
+        if (name === '@/lib/api/read-retry') return load('../src/lib/api/read-retry.ts', {
+            '@letbuyy/api-client': { LetbuyyApiError: ApiError },
+            './client': { MerchantApiRequestError: MerchantError },
+        }, globals);
         assert.ok(name in modules, `Unexpected dependency ${name}`);
         return modules[name];
     }, exports, ...Object.values(globals));
@@ -538,4 +542,43 @@ test('store reads share the React request cache despite different compatibility 
     assert.equal(reads, 2, 'a different handle still requires its own authorized read');
     await makeRequest().getStoreForUser('alpha');
     assert.equal(reads, 3, 'a different request cannot reuse private data');
+});
+
+
+test('customer list recovers one fast transient failure in each read and keeps the resolved store scope', async () => {
+    let storeReads = 0, customerReads = 0;
+    const queries = [];
+    const client = {
+        stores: { getByHandle: async () => { if (++storeReads === 1) throw new ApiError(503); return store; } },
+        customers: { list: async query => { queries.push(query); if (++customerReads === 1) throw new ApiError(503); return { data: [{ id: 'customer-a', display_name: 'Synthetic Buyer', order_count: 2 }], total: 1, page: 1, limit: 100, has_more: false }; } },
+    };
+    const api = { createMerchantApiClient: () => client, merchantApiErrorResponse: error => Response.json({ error: { code: error.code } }, { status: error.status || 500 }) };
+    const owned = load('../src/lib/stores/resolve-owned-store.ts', {
+        'next/server': { NextResponse: { json: Response.json } }, '@letbuyy/api-client': { LetbuyyApiError: ApiError }, '@/lib/api/client': api,
+    });
+    const { GET } = load('../src/app/api/stores/[store]/customers/route.ts', {
+        'next/server': { NextResponse: { json: Response.json } }, '@/lib/api/client': api, '@/lib/stores/resolve-owned-store': owned,
+    });
+    const response = await GET({ nextUrl: new URL('https://merchant.example.invalid/api/stores/alpha/customers?store_id=foreign&limit=100') }, { params: Promise.resolve({ store: 'alpha' }) });
+    assert.equal(response.status, 200);
+    assert.equal(storeReads, 2); assert.equal(customerReads, 2);
+    assert.ok(queries.every(query => query.store_id === store.id), 'both attempts remain bound to live ownership');
+    const payload = await response.json(); assert.equal(payload.data.length, 1);
+    const { mapCustomer } = load('../src/lib/customers/list-row.ts', {});
+    const rendered = mapCustomer(payload.data[0]);
+    assert.equal(rendered.full_name, 'Synthetic Buyer'); assert.equal(rendered.total_orders, 2);
+});
+
+test('customer read retry is bounded and never retries permission, throttle or deadline refusals', async () => {
+    const { retryMerchantRead } = load('../src/lib/api/read-retry.ts', {
+        '@letbuyy/api-client': { LetbuyyApiError: ApiError }, './client': { MerchantApiRequestError: MerchantError },
+    });
+    for (const status of [401, 403, 404, 429, 503]) {
+        let calls = 0; const failure = new ApiError(status);
+        await assert.rejects(retryMerchantRead(async () => { calls++; throw failure; }), error => error === failure);
+        assert.equal(calls, status === 503 ? 2 : 1);
+    }
+    let calls = 0;
+    await assert.rejects(retryMerchantRead(async () => { calls++; throw new DOMException('deadline', 'TimeoutError'); }));
+    assert.equal(calls, 1);
 });
