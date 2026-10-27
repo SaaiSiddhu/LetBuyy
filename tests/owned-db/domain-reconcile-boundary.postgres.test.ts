@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import test,{before,after} from 'node:test';
 import {randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {buildSync} from 'esbuild';
 import {Miniflare,createFetchMock} from 'miniflare';
 import {createBoundDomainReconcileHeaders,createLetbuyyInternalAppHeaders} from '@letbuyy/auth-core';
@@ -12,6 +13,7 @@ const owned=requireOwnedDatabase(),tenant=newSyntheticTenant('domain-job'),actor
 const key='synthetic-dedicated-queue-domain-key-01234567890123456789',caller='queue-workers-domain-reconcile';
 const path='/v1/internal/custom-domain-reconcile/run?limit=1',domain=tenant.subdomain+'.example.invalid',target='commerce.synthetic.invalid';
 let gateway:Gateway,tap:RestTap,coordinator:Miniflare,priorFetch:typeof fetch,providerCalls=0,fault=false;
+let dnsCnameTarget=target;
 let providerFailure: 'dns' | 'vercel' | 'servfail' | null = null;
 let writeFault: 'alert' | 'site' | 'race' | null = null;
 const cursorCache = new Map<string,string>();
@@ -34,7 +36,7 @@ before(async()=>{
  });
  priorFetch=globalThis.fetch;globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const u=new URL(input instanceof Request?input.url:String(input));
-  if(['cloudflare-dns.com','dns.google'].includes(u.hostname)){providerCalls++;if(providerFailure==='dns')return new Response(null,{status:503});assert.equal(init?.redirect,'manual');assert.ok(init?.signal);return Response.json({Status:providerFailure==='servfail'?2:0,Answer:[{data:u.searchParams.get('type')==='TXT'?'\"example-Domain-Proof\"':target+'.'}]});}
+  if(['cloudflare-dns.com','dns.google'].includes(u.hostname)){providerCalls++;if(providerFailure==='dns')return new Response(null,{status:503});assert.equal(init?.redirect,'manual');assert.ok(init?.signal);return Response.json({Status:providerFailure==='servfail'?2:0,Answer:[{data:u.searchParams.get('type')==='TXT'?'\"example-Domain-Proof\"':dnsCnameTarget+'.'}]});}
   if(u.hostname==='api.vercel.com'){providerCalls++;assert.equal(init?.redirect,'manual');if(providerFailure==='vercel')return new Response(null,{status:503});const parts=u.pathname.split('/');const domainName=decodeURIComponent(parts[parts.indexOf('domains')+1]);return Response.json(u.pathname.endsWith('/config')?{configuredBy:'CNAME',misconfigured:false}:{name:domainName,verified:true});}
   return priorFetch(input,init);
  }) as typeof fetch;
@@ -46,6 +48,19 @@ test('negative control: the original missing-keyring IP gate denies the exact va
 test('the actual mounted job reconciles a nonempty synthetic domain and preserves route credential authorization',async()=>{
  const calls=providerCalls;const missing=await run(await signed(path,'{}',{'X-Internal-API-Secret':'wrong'}));assert.equal(missing.status,401);assert.equal(providerCalls,calls);assert.equal(dbStatus(),'verifying');
  const result=await run();assert.equal(result.status,200,result.text);assert.equal(result.json?.data.checked,1);assert.equal(result.json?.data.changed,1);assert.equal(dbStatus(),'active');assert.ok(providerCalls>calls);assert.equal(owned.psql(`SELECT count(*) FROM platform_queue_jobs WHERE site_id='${tenant.siteId}' AND job_type='custom_domain.status_drift';`),'1');
+});
+test('the real staging and production deployment configuration can reconcile a nonempty routing candidate',async()=>{
+ const wrangler=readFileSync(new URL('../../services/api-gateway/wrangler.toml',import.meta.url),'utf8');
+ try{
+  for(const environment of ['staging','production']){
+   const vars=wrangler.split('[env.'+environment+'.vars]')[1]?.split('\n[')[0]||'';
+   const cname=vars.match(/^CUSTOM_DOMAIN_CNAME_TARGET\s*=\s*"([^"]+)"/m)?.[1];
+   dnsCnameTarget=cname||target;
+   const result=await run(undefined,path,'{}',{...gateway.env,CUSTOM_DOMAIN_CNAME_TARGET:cname,NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET:undefined});
+   assert.equal(result.status,200,environment+' actual configured target must reach the real candidate: '+result.text);
+   assert.equal(result.json?.data.checked,1);assert.equal(result.json?.data.results[0].status,'active');
+  }
+ }finally{dnsCnameTarget=target;}
 });
 test('durable concurrent replay permits exactly one job across fresh Gateway instances',async()=>{
  const h=await signed();const results=await Promise.all(Array.from({length:12},()=>new Gateway(gateway.env).request(path,{method:'POST',headers:h,body:'{}'})));

@@ -84,6 +84,26 @@ test('WhatsApp adapter supports sandbox sends and live Twilio credential gating'
     assert.match(liveAdapter.unavailableReason || '', /provider credentials/);
 });
 
+test('production keeps sandbox messaging and live credential refusal without the unused sender placeholder', async () => {
+    const production = wranglerSource.split('[env.production.vars]')[1].split('\n[')[0];
+    const value = (name: string) => production.match(new RegExp('^' + name + ' = "([^"]+)"', 'm'))?.[1];
+    assert.equal(value('WHATSAPP_PROVIDER_MODE'), 'sandbox');
+    assert.equal(value('WHATSAPP_PROVIDER'), 'letbuyy_sandbox');
+    assert.equal(value('TWILIO_WHATSAPP_FROM'), undefined);
+    const previous = globalThis.fetch; let providerCalls = 0;
+    globalThis.fetch = async () => { providerCalls++; throw new Error('Unexpected provider call'); };
+    try {
+        const adapter = createWhatsAppCommerceAdapter({mode:value('WHATSAPP_PROVIDER_MODE'),provider:value('WHATSAPP_PROVIDER'),
+            from:value('TWILIO_WHATSAPP_FROM'),accountSid:value('TWILIO_ACCOUNT_SID'),environment:'production'});
+        const result = await adapter.sendTemplate({storeId:'synthetic-config-only',toPhone:'+919999999999',template:'order_update',
+            variables:{order_number:'synthetic',status:'shipped'}});
+        assert.equal(result.providerMode,'sandbox');assert.equal(result.sandbox,true);assert.equal(result.status,'queued');
+        const live = createWhatsAppCommerceAdapter({mode:'live',provider:'twilio',from:value('TWILIO_WHATSAPP_FROM'),
+            accountSid:value('TWILIO_ACCOUNT_SID'),environment:'production'});
+        assert.equal(live.available,false);assert.equal(providerCalls,0);
+    } finally { globalThis.fetch = previous; }
+});
+
 test('WhatsApp timeline migration is tenant-scoped with RLS and approved trigger', () => {
     assert.match(migrationSource, /CREATE TABLE IF NOT EXISTS public\.customer_whatsapp_messages/);
     assert.match(migrationSource, /store_id uuid NOT NULL REFERENCES public\.sites\(id\)/);
@@ -98,7 +118,8 @@ test('WhatsApp config is sandbox-first and production human-gated', () => {
     assert.match(wranglerSource, /WHATSAPP_PROVIDER_MODE = "sandbox"/);
     assert.match(wranglerSource, /WHATSAPP_PROVIDER = "letbuyy_sandbox"/);
     assert.match(wranglerSource, /TWILIO_ACCOUNT_SID = "SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID"/);
-    assert.match(wranglerSource, /TWILIO_WHATSAPP_FROM = "SKIP_NEEDS_HUMAN_TWILIO_WHATSAPP_FROM"/);
+    const production = wranglerSource.split('[env.production.vars]')[1].split('\n[')[0];
+    assert.doesNotMatch(production, /^TWILIO_WHATSAPP_FROM\s*=/m);
     assert.doesNotMatch(wranglerSource, /WHATSAPP_PROVIDER_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID/);
 });
 
