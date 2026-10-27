@@ -148,3 +148,9 @@ test('single-use internal credentials use the shared replay-claim RPC, never an 
 test('sunset comment present on INTERNAL_AUTH_LEGACY_ACCEPT', () => {
     assert.match(internalAuthSource, /HR-SECRET-ROTATION/);
 });
+
+
+test('caller names cannot resolve inherited object properties as signing credentials', () => {
+    const env = fakeEnv({ INTERNAL_API_KEYRING: JSON.stringify({ 'queue-workers-domain-reconcile': 'synthetic-job-only-key' }), INTERNAL_AUTH_LEGACY_ACCEPT: 'false' });
+    for (const caller of ['__proto__', 'constructor', 'toString', 'valueOf']) assert.deepEqual(getSecretsForCaller(env, caller), []);
+});

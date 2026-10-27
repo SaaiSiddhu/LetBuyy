@@ -6,6 +6,8 @@ import {
 import type { Env } from '../index';
 import type { Context } from 'hono';
 import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
+import { AppError } from './errors';
+import { timingSafeEqualText } from './crypto';
 
 /**
  * Create a Supabase Admin client (service role — bypasses RLS)
@@ -104,6 +106,76 @@ export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): Supaba
  */
 export function getSupabaseAdminForOperatorRead(c: Context<{ Bindings: Env }>): SupabaseClient {
     return createSupabaseServiceClient(c.env);
+}
+
+/** A per-request admission receipt, recorded only after the dedicated signature and durable claim. */
+const domainMaintenanceAdmissions = new WeakMap<Request, Env>();
+
+export function recordDomainReconcileAdmission(c: Context<{ Bindings: Env }>): void {
+    domainMaintenanceAdmissions.set(c.req.raw, c.env);
+}
+
+export interface DomainMaintenanceCandidate {
+    id: string;
+    custom_domain: string;
+    custom_domain_status: 'active' | 'verifying' | 'error';
+    custom_domain_verification_token: string | null;
+}
+
+const DOMAIN_MAINTENANCE_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Owner-approved maintenance exception, 27 October: four routing fields only.
+ * Returns data, never an unguarded client. Bootstrap/operator/default clients are unchanged.
+ * The authentication verifier is the only permitted admission recorder; the mounted job is
+ * the only reader caller. The contract suite pins both call sites and this fixed query.
+ */
+export async function readDomainReconcileCandidates(
+    c: Context<{ Bindings: Env }>,
+    input: { limit: number; afterId?: string },
+): Promise<DomainMaintenanceCandidate[]> {
+    if (domainMaintenanceAdmissions.get(c.req.raw) !== c.env
+        || c.req.method !== 'POST'
+        || new URL(c.req.url).pathname !== '/v1/internal/custom-domain-reconcile/run'
+        || !c.env.INTERNAL_API_SECRET
+        || !timingSafeEqualText(c.req.header('X-Internal-API-Secret'), c.env.INTERNAL_API_SECRET)) {
+        throw new AppError('Invalid domain maintenance request', 401, 'UNAUTHORIZED');
+    }
+    if (!Number.isInteger(input.limit) || input.limit < 1 || input.limit > 100
+        || (input.afterId !== undefined && !DOMAIN_MAINTENANCE_UUID.test(input.afterId))) {
+        throw new AppError('Invalid domain maintenance page', 400, 'VALIDATION_ERROR');
+    }
+    const readPage = async (afterId?: string): Promise<DomainMaintenanceCandidate[]> => {
+        let query = createSupabaseServiceClient(c.env)
+            .from('sites')
+            .select('id, custom_domain, custom_domain_status, custom_domain_verification_token')
+            .in('custom_domain_status', ['active', 'verifying', 'error'])
+            .not('custom_domain', 'is', null)
+            .is('deleted_at', null)
+            .order('id', { ascending: true })
+            .limit(input.limit);
+        if (afterId) query = query.gt('id', afterId);
+        const { data, error } = await query;
+        if (error || !Array.isArray(data) || data.length > input.limit) {
+            throw new AppError('Domain maintenance is unavailable', 503, 'DOMAIN_RECONCILE_UNAVAILABLE');
+        }
+        return data.map((value: unknown) => {
+            const row = value as Partial<DomainMaintenanceCandidate> | null;
+            if (!row || typeof row.id !== 'string' || !DOMAIN_MAINTENANCE_UUID.test(row.id)
+                || typeof row.custom_domain !== 'string' || !row.custom_domain || row.custom_domain.length > 253
+                || !['active', 'verifying', 'error'].includes(String(row.custom_domain_status))
+                || !(row.custom_domain_verification_token === null
+                    || (typeof row.custom_domain_verification_token === 'string' && row.custom_domain_verification_token.length <= 512))) {
+                throw new AppError('Domain maintenance is unavailable', 503, 'DOMAIN_RECONCILE_UNAVAILABLE');
+            }
+            return { id: row.id, custom_domain: row.custom_domain,
+                custom_domain_status: row.custom_domain_status as DomainMaintenanceCandidate['custom_domain_status'],
+                custom_domain_verification_token: row.custom_domain_verification_token };
+        });
+    };
+    const rows = await readPage(input.afterId);
+    // A cursor is a scheduling hint only. An empty tail wraps to the fixed first page.
+    return input.afterId && rows.length === 0 ? readPage() : rows;
 }
 
 /**

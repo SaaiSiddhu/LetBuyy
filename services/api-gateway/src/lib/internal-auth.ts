@@ -50,7 +50,7 @@ export function getSecretsForCaller(env: Env, callerId?: string | null): string[
     // The queue job key is transport-only, never an Identity/Console app credential.
     if (callerId === DOMAIN_RECONCILE_INTERNAL_CALLER) return [];
     const keyring = getInternalApiKeyring(env);
-    const callerSecret = callerId && keyring[callerId] ? [keyring[callerId]] : [];
+    const callerSecret = callerId && Object.hasOwn(keyring, callerId) ? [keyring[callerId]] : [];
     const legacySecrets = isLegacyAcceptEnabled(env) ? getInternalAuthSecrets(env) : [];
     return Array.from(new Set([...callerSecret, ...legacySecrets]));
 }

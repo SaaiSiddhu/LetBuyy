@@ -4,7 +4,7 @@ import { DOMAIN_RECONCILE_INTERNAL_CALLER, DOMAIN_RECONCILE_REQUEST_MAX_AGE_MS, 
   domainReconcileEnvironment, verifyBoundDomainReconcileSignature } from '@letbuyy/auth-core';
 import type { Env } from '../index';
 import { getInternalApiKeyring } from './internal-auth';
-import { claimInternalAuthReplayJti } from './supabase';
+import { claimInternalAuthReplayJti, recordDomainReconcileAdmission } from './supabase';
 const EmptyBody = z.object({}).strict();
 const Query = z.object({ limit: z.string().regex(/^[1-9]\d{0,2}$/).refine(value => Number(value) <= 100).optional() }).strict();
 export async function authenticateDomainReconcileRequest(c: Context<{ Bindings: Env }>): Promise<'accepted' | 'denied' | 'unavailable'> {
@@ -35,7 +35,8 @@ export async function authenticateDomainReconcileRequest(c: Context<{ Bindings: 
     // Twice the freshness window also covers a valid sender clock ahead of ours.
     const replay = await claimInternalAuthReplayJti(c.env, { kind: 'app:domain-reconcile-bound-request', jti: result.jti,
       ttlSeconds: Math.ceil(DOMAIN_RECONCILE_REQUEST_MAX_AGE_MS * 2 / 1000) });
-    return replay === 'claimed' ? 'accepted' : replay === 'unavailable' ? 'unavailable' : 'denied';
+    if (replay === 'claimed') { recordDomainReconcileAdmission(c); return 'accepted'; }
+    return replay === 'unavailable' ? 'unavailable' : 'denied';
   } catch { return 'unavailable'; }
   finally { if (timer) clearTimeout(timer); reader?.releaseLock(); }
 }

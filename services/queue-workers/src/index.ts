@@ -554,7 +554,7 @@ export async function triggerCustomDomainReconciler(env: Env, cron: string): Pro
   const signed = await createBoundDomainReconcileHeaders({ secret: env.DOMAIN_RECONCILE_REQUEST_SECRET,
     environment, method: 'POST', url: url.toString(), body: bodyText });
   const response = await env.API_GATEWAY_SERVICE.fetch(new Request(url.toString(), {
-    method: 'POST', body: bodyText, redirect: 'error', signal: AbortSignal.timeout(60_000),
+    method: 'POST', body: bodyText, redirect: 'manual', signal: AbortSignal.timeout(60_000),
     headers: {
       'Content-Type': 'application/json',
       'X-Internal-API-Secret': env.INTERNAL_API_SECRET,
@@ -564,9 +564,13 @@ export async function triggerCustomDomainReconciler(env: Env, cron: string): Pro
   }));
 
   const body = await response.json().catch(() => null) as unknown;
-  writeQueueLog(response.ok ? 'info' : 'error', {
+  const data = (body as { data?: { deferred?: boolean; results?: unknown[] } } | null)?.data;
+  const accepted = response.ok && body !== null && typeof body === 'object' && 'success' in body && body.success === true;
+  const partial = data?.deferred === true || (Array.isArray(data?.results) && data.results.some(result =>
+    result !== null && typeof result === 'object' && 'status' in result && result.status === null));
+  writeQueueLog(accepted && !partial ? 'info' : 'error', {
     route: 'scheduled.custom_domain_reconciler',
-    status: response.ok ? 'completed' : 'failed',
+    status: !accepted ? 'failed' : partial ? 'partial' : 'completed',
     response_status: response.status,
     result: body,
   });
