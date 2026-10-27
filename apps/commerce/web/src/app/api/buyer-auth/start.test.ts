@@ -80,42 +80,42 @@ test('discovery auth moves to the tenant before minting a PKCE cookie', async ()
     globalThis.fetch = (async (input) => {
         const url = new URL(String(input));
         assert.equal(url.origin, 'https://gateway.example.invalid');
-        assert.equal(url.searchParams.get('host'), 'qa-wildcard-20261027.letbuyy.store');
-        return Response.json({ data: { site_id: crypto.randomUUID(), subdomain: 'qa-wildcard-20261027', custom_domain: customDomain, custom_domain_status: customDomain ? 'active' : 'pending', published: true, status: 'published', access_mode: 'public' } });
+        assert.equal(url.searchParams.get('host'), 'synthetic-store.stores.example.test');
+        return Response.json({ data: { site_id: crypto.randomUUID(), subdomain: 'synthetic-store', custom_domain: customDomain, custom_domain_status: customDomain ? 'active' : 'pending', published: true, status: 'published', access_mode: 'public' } });
     }) as typeof fetch;
     const previousRoot = process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN;
     const previousAliases = process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES;
-    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = 'letbuyy.store';
-    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES = 'storefront.letbuyy.com';
+    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = 'stores.example.test';
+    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES = 'discovery.platform.example.test';
     try {
-        const first = await GET(new NextRequest('https://storefront.letbuyy.com/api/buyer-auth/start?screen=register&return_to=%2Fstore%2Fqa-wildcard-20261027%2Faccount%2Fsettings', {
-            headers: { host: 'storefront.letbuyy.com' },
+        const first = await GET(new NextRequest('https://discovery.platform.example.test/api/buyer-auth/start?screen=register&return_to=%2Fstore%2Fsynthetic-store%2Faccount%2Fsettings', {
+            headers: { host: 'discovery.platform.example.test' },
         }));
         assert.equal(first.status, 303);
         assert.equal(first.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
         const destination = new URL(first.headers.get('location') || '');
-        assert.equal(destination.origin, 'https://qa-wildcard-20261027.letbuyy.store');
+        assert.equal(destination.origin, 'https://synthetic-store.stores.example.test');
         assert.equal(destination.pathname, '/api/buyer-auth/start');
         assert.equal(destination.searchParams.get('return_to'), '/account/settings');
         assert.equal(destination.searchParams.get('screen'), 'register');
         const next = await GET(new NextRequest(destination, { headers: { host: destination.host } }));
         const authorization = new URL(next.headers.get('location') || '');
-        assert.equal(authorization.searchParams.get('redirect_uri'), 'https://qa-wildcard-20261027.letbuyy.store/api/buyer-auth/callback');
+        assert.equal(authorization.searchParams.get('redirect_uri'), 'https://synthetic-store.stores.example.test/api/buyer-auth/callback');
         const flow = decodeFlow(next.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE)?.value);
         assert.equal(flow?.returnTo, '/account/settings');
         assert.ok(flow?.state);
         assert.ok(flow?.verifier);
         assert.equal(next.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE)?.domain, undefined);
         customDomain = 'shop.merchant.example';
-        const custom = await GET(new NextRequest('https://storefront.letbuyy.com/api/buyer-auth/start?return_to=%2Fstore%2Fqa-wildcard-20261027%2Faccount', { headers: { host: 'storefront.letbuyy.com' } }));
+        const custom = await GET(new NextRequest('https://discovery.platform.example.test/api/buyer-auth/start?return_to=%2Fstore%2Fsynthetic-store%2Faccount', { headers: { host: 'discovery.platform.example.test' } }));
         assert.equal(new URL(custom.headers.get('location') || '').origin, 'https://shop.merchant.example');
         assert.equal(custom.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
         globalThis.fetch = (async () => new Response('{}', { status: 503 })) as typeof fetch;
-        const down = await GET(new NextRequest('https://storefront.letbuyy.com/api/buyer-auth/start?return_to=%2Fstore%2Fqa-wildcard-20261027%2Faccount', { headers: { host: 'storefront.letbuyy.com' } }));
+        const down = await GET(new NextRequest('https://discovery.platform.example.test/api/buyer-auth/start?return_to=%2Fstore%2Fsynthetic-store%2Faccount', { headers: { host: 'discovery.platform.example.test' } }));
         assert.equal(down.status, 503);
         assert.equal(down.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
         for (const path of ['//attacker.invalid/account', '/store/attacker.invalid/account', '/store/checkout/account', '/account']) {
-            const bad = await GET(new NextRequest(`https://storefront.letbuyy.com/api/buyer-auth/start?return_to=${encodeURIComponent(path)}`, { headers: { host: 'storefront.letbuyy.com' } }));
+            const bad = await GET(new NextRequest(`https://discovery.platform.example.test/api/buyer-auth/start?return_to=${encodeURIComponent(path)}`, { headers: { host: 'discovery.platform.example.test' } }));
             assert.equal(bad.status, 400);
             assert.equal(bad.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
         }

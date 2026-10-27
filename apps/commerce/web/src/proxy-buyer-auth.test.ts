@@ -6,21 +6,21 @@ import { proxy } from './proxy';
 test('discovery account pages move to the resolved public primary store after access enforcement', async () => {
     const names = ['NEXT_PUBLIC_STORE_ROOT_DOMAIN', 'NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES', 'LETBUYY_API_BASE_URL', 'INTERNAL_API_SECRET'] as const;
     const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
-    Object.assign(process.env, { NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'letbuyy.store', NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES: 'storefront.letbuyy.com', LETBUYY_API_BASE_URL: 'https://gateway.example.invalid', INTERNAL_API_SECRET: crypto.randomUUID() });
+    Object.assign(process.env, { NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'stores.example.test', NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES: 'discovery.platform.example.test', LETBUYY_API_BASE_URL: 'https://gateway.example.invalid', INTERNAL_API_SECRET: crypto.randomUUID() });
     const originalFetch = globalThis.fetch;
     let mode = 'public';
     let customDomain: string | null = null;
     let status = 200;
     globalThis.fetch = (async (input) => {
         const url = new URL(String(input));
-        assert.equal(url.searchParams.get('host'), 'qa-wildcard-20261027.letbuyy.store');
-        return Response.json({ data: { site_id: crypto.randomUUID(), subdomain: 'qa-wildcard-20261027', access_mode: mode, published: true, status: 'published', custom_domain_status: customDomain ? 'active' : 'pending', custom_domain: customDomain } }, { status });
+        assert.equal(url.searchParams.get('host'), 'synthetic-store.stores.example.test');
+        return Response.json({ data: { site_id: crypto.randomUUID(), subdomain: 'synthetic-store', access_mode: mode, published: true, status: 'published', custom_domain_status: customDomain ? 'active' : 'pending', custom_domain: customDomain } }, { status });
     }) as typeof fetch;
-    const request = (path = '/customers/login') => new NextRequest(`https://storefront.letbuyy.com/store/qa-wildcard-20261027${path}`, { headers: { host: 'storefront.letbuyy.com' } });
+    const request = (path = '/customers/login') => new NextRequest(`https://discovery.platform.example.test/store/synthetic-store${path}`, { headers: { host: 'discovery.platform.example.test' } });
     try {
         const login = await proxy(request('/customers/login?error=invalid_credentials'));
         assert.equal(login.status, 303);
-        assert.equal(login.headers.get('location'), 'https://qa-wildcard-20261027.letbuyy.store/customers/login?error=invalid_credentials');
+        assert.equal(login.headers.get('location'), 'https://synthetic-store.stores.example.test/customers/login?error=invalid_credentials');
         assert.equal(login.headers.get('cache-control'), 'no-store');
         customDomain = 'shop.merchant.example';
         const register = await proxy(request('/customers/register'));
