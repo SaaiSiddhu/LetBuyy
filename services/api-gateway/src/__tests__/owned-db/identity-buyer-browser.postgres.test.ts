@@ -168,14 +168,14 @@ test('built Commerce and Identity support normal registration/consent/PKCE, acco
   const activate=await gateway.request('/v1/2fa/totp/verify',{method:'POST',headers:{...await signedIdentityHeaders(merchant,merchantEmail,stores[0].siteId),'X-Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({factor_id:factor.factor.id,code:otp(factor.secret)})});assert.equal(activate.status,200);
   await page.goto(storeOrigin+'/customers/login');
   await expect(page.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Continue with Merchant account',exact:true}).click();
+  await page.getByRole('button',{name:'Use an existing LetBuyy account',exact:true}).click();
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
-  await page.getByLabel('Merchant email',{exact:true}).fill(merchantEmail);await page.getByLabel('Merchant password',{exact:true}).fill(password);
-  const [requiresMfa]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().headers()['x-letbuyy-account-intent']==='connect-buyer-start'),page.getByRole('button',{name:'Verify Merchant sign-in',exact:true}).click()]);
+  await page.getByLabel('Account email',{exact:true}).fill(merchantEmail);await page.getByLabel('Account password',{exact:true}).fill(password);
+  const [requiresMfa]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().headers()['x-letbuyy-account-intent']==='connect-buyer-start'),page.getByRole('button',{name:'Verify account',exact:true}).click()]);
   assert.equal(requiresMfa.status(),403);assert.equal(owned.psql(`SELECT count(*) FROM merchant_buyer_connection_intents WHERE merchant_user_id='${merchant}';`),'0');
   await page.getByLabel('Authenticator code',{exact:true}).fill(otp(factor.secret));
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
-  const [started]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().headers()['x-letbuyy-account-intent']==='connect-buyer-start'),page.getByRole('button',{name:'Verify Merchant sign-in',exact:true}).click()]);assert.equal(started.status(),200);
+  const [started]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().headers()['x-letbuyy-account-intent']==='connect-buyer-start'),page.getByRole('button',{name:'Verify account',exact:true}).click()]);assert.equal(started.status(),200);
   await expect(page.getByRole('heading',{name:'Connect your buyer profile',exact:true})).toBeVisible();
   assert.equal((await context.cookies()).some(c=>c.name==='lb_session'),false);
   const connectionCode=codes.get(merchantEmail);assert.match(connectionCode||'',/^\d{6}$/);

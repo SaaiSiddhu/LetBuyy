@@ -24,8 +24,8 @@ export async function startMerchantBuyerConnection(request:NextRequest) {
   const authenticated=await identityApiRequest('/auth/custom/users/authenticate',{method:'POST',body:JSON.stringify({email:v.email.toLowerCase().trim(),password:v.password,mfa_code:v.mfaCode})})
   const identity=await authenticated.json() as {data?:{id:string;email_verified:boolean};error?:{code?:string}}|null
   if(!authenticated.ok||!identity?.data?.id||!identity.data.email_verified){
-   if(identity?.error?.code==='MFA_REQUIRED')return NextResponse.json({error:'Enter your Merchant authenticator code.',mfaRequired:true},{status:403})
-   return NextResponse.json({error:'Unable to sign in. Check your Merchant account details.'},{status:authenticated.status>=500?503:401})
+   if(identity?.error?.code==='MFA_REQUIRED')return NextResponse.json({error:'Enter your authenticator code.',mfaRequired:true},{status:403})
+   return NextResponse.json({error:'Unable to sign in. Check your account details.'},{status:authenticated.status>=500?503:401})
   }
   temporarySession=await createSession(identity.data.id)
   const verifier=freshConnectionVerifier()

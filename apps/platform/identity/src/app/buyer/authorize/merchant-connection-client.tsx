@@ -38,22 +38,22 @@ export function MerchantBuyerConnection({request,destination,onCancel}:{request:
  }
  return <main className="auth-container"><div className="auth-card">
   <div className="auth-logo"><BrandLogo/></div>
-  <h1 className="auth-title">{step==='sign-in'?'Continue with your Merchant account':'Connect your buyer profile'}</h1>
-  <p className="auth-subtitle">{step==='sign-in'?`Sign in to your Merchant account to connect a separate buyer profile for ${destination}. Your store permissions stay private.`:`Enter the code sent to ${email}. It expires in 10 minutes.`}</p>
+  <h1 className="auth-title">{step==='sign-in'?'Connect your LetBuyy account':'Connect your buyer profile'}</h1>
+  <p className="auth-subtitle">{step==='sign-in'?`Sign in with your existing LetBuyy account to shop at ${destination}. Your work permissions stay separate.`:`Enter the code sent to ${email}. It expires in 10 minutes.`}</p>
   <form onSubmit={submit} className="auth-form">
    {step==='sign-in'?<>
-    <Input id="connectionEmail" label="Merchant email" type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)}/>
-    <Input id="connectionPassword" label="Merchant password" type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)}/>
+    <Input id="connectionEmail" label="Account email" type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)}/>
+    <Input id="connectionPassword" label="Account password" type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)}/>
     {mfaRequired&&<Input id="connectionMfa" label="Authenticator code" autoComplete="one-time-code" required value={mfaCode} onChange={e=>setMfaCode(e.target.value)}/>}
-    <a href="/forgot-password" target="_blank" rel="noreferrer">Forgot Merchant password?</a>
+    <a href="/forgot-password" target="_blank" rel="noreferrer">Forgot password?</a>
    </>:<>
     <Input id="connectionCode" label="Email verification code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,''))}/>
     <Checkbox id="buyerConnectionConsent" checked={consent} onCheckedChange={setConsent} required label={`Create or connect my LetBuyy buyer profile using this verified email address. I choose to continue to ${destination}.`}/>
-    <p className="auth-subtitle">Your Merchant password and permissions are never shared. If a buyer profile already uses this address, this email code proves you own it.</p>
+    <p className="auth-subtitle">Your password and work permissions are never shared with the store. This code proves ownership of the email used for your buyer profile.</p>
    </>}
    {error&&<div className="auth-error" role="alert">{error}</div>}
    <Button unstyled type="submit" className="auth-btn-primary" disabled={loading||(step==='sign-in'?(!email.trim()||!password||(protectedByTurnstile&&!token)||(mfaRequired&&!mfaCode)):(!consent||code.length!==6))}>
-    {loading?'Please wait…':step==='sign-in'?'Verify Merchant sign-in':'Connect buyer profile'}
+    {loading?'Please wait…':step==='sign-in'?'Verify account':'Connect buyer profile'}
    </Button>
   </form>
   {step==='sign-in'&&<TurnstileWidget ref={widget} onVerify={onVerify}/>}

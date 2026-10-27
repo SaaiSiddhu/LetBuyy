@@ -171,9 +171,9 @@ export function BuyerAuthorize({
                 </p>
 
                 <Button unstyled className="auth-btn-secondary" onClick={()=>setMerchantConnection(true)} disabled={loading}>
-                    Continue with Merchant account
+                    Use an existing LetBuyy account
                 </Button>
-                <p className="auth-subtitle">Use your buyer account below, or connect your Merchant account securely.</p>
+                <p className="auth-subtitle">Customers can sign in below or create an account. Already use LetBuyy for work? Connect that account securely.</p>
                 {destination.kind==='store' && <a href={new URL('/customers/login?legacy=1',request.redirectUri).toString()}>Have an older store-only account? Sign in to connect it</a>}
                 <form onSubmit={submitCredentials} className="auth-form">
                     <Input
