@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { getSupabaseAdmin } from './supabase';
 import { cartLines, signedCartSubtotalMinor, type CartRow } from './hosted-checkout-order-command';
 import { selectedHostedDiscountCodes, type HostedCheckoutSession } from './hosted-checkout-session';
 
@@ -14,7 +14,7 @@ function refuse(code: string, message: string, status: 409 | 503, retryable?: bo
 
 /** Validate the signed cart's tenant against the existing promotion authority before
  * the delivery CAS. The client amount is only a reviewed-price comparison. */
-export async function verifyHostedDiscountSelection(db: SupabaseClient, input: DiscountInput): Promise<DiscountSelection> {
+export async function verifyHostedDiscountSelection(db: ReturnType<typeof getSupabaseAdmin>, input: DiscountInput): Promise<DiscountSelection> {
     const codes = input.codes ?? selectedHostedDiscountCodes(input.observed, input.cart.coupon_code);
     if (!codes) return refuse('CHECKOUT_DISCOUNT_INVALID', 'Coupon selection is unavailable. Please try again.', 409);
     let amount = 0;
