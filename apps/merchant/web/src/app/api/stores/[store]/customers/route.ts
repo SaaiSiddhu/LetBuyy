@@ -1,3 +1,4 @@
+import { retryMerchantRead } from '@/lib/api/read-retry'
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
@@ -22,7 +23,7 @@ export async function GET(
         if (searchParams.get('search')) query.search = searchParams.get('search')!
         if (searchParams.get('has_orders')) query.has_orders = searchParams.get('has_orders') === 'true'
 
-        const customers = await createMerchantApiClient().customers.list(query)
+        const customers = await retryMerchantRead(() => createMerchantApiClient().customers.list(query))
 
         return NextResponse.json({
             data: customers.data,

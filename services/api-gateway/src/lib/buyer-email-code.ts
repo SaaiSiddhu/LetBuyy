@@ -37,13 +37,13 @@ export function buildBuyerEmailCodeMessage(delivery: BuyerEmailCodeDelivery): { 
     const connection = delivery.purpose === 'connect_merchant';
     const html = renderEmailShell(DEFAULT_EMAIL_BRAND,
         eyebrow('Buyer account security') + heading(connection ? 'Connect your LetBuyy account' : reset ? 'Reset your buyer password' : 'Verify your email address') +
-        paragraph(connection ? 'You signed in with your Merchant account. Enter this code and confirm consent on LetBuyy to create or connect your separate buyer profile. Your Merchant permissions are not shared with stores.' : reset ? 'Enter this one-time code on the LetBuyy password recovery page.' : 'Enter this one-time code to verify your LetBuyy buyer account.') + verificationCode(delivery.code) +
+        paragraph(connection ? 'You signed in with your existing LetBuyy account. Enter this code and confirm consent to connect your buyer profile. Your work permissions stay separate.' : reset ? 'Enter this one-time code on the LetBuyy password recovery page.' : 'Enter this one-time code to verify your LetBuyy buyer account.') + verificationCode(delivery.code) +
         smallPrint('This code expires in 10 minutes. Never share it with anyone, including LetBuyy support. ' +
             (reset ? 'Your password stays the same until you finish the reset. Resetting signs you out on every device.' : 'If you did not request this code, ignore this email.')),
         {preheader: reset ? 'A one-time code to recover your buyer account.' : 'Confirm your email address securely.', reason: 'You requested a security code for your LetBuyy buyer account.', category: 'security'});
 
     if (connection) return {subject:'Connect your LetBuyy buyer profile',html,
-        text:`Your connection code is ${delivery.code}.\nIt expires in 10 minutes. Enter it only on the LetBuyy account connection page after signing in with your Merchant account. Merchant permissions are not shared with stores. Ignore this email if you did not request this.`};
+        text:`Your connection code is ${delivery.code}.\nIt expires in 10 minutes. Enter it only on the LetBuyy account connection page after signing in with your existing LetBuyy account. Your work permissions stay separate. Ignore this email if you did not request this.`};
     if (delivery.purpose === 'reset_password') {
         return {
             subject: 'Reset your LetBuyy password',

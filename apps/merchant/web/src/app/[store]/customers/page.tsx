@@ -4,19 +4,9 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { useDebouncedValue, useReadRequest } from '@/lib/api/use-read-request'
-import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
+import { mapCustomer, type CustomerRow } from '@/lib/customers/list-row'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
 import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
-
-type CustomerRow = Omit<Pick<SharedCustomer, 'id' | 'email' | 'phone' | 'status' | 'created_at' | 'total_spent' | 'last_order_at'>, 'email' | 'phone' | 'last_order_at'> & {
-    full_name: string
-    email: string
-    phone: string | null
-    total_orders: SharedCustomer['order_count']
-    first_order_at: string | null
-    last_order_at: string | null
-    last_order_id: string | null
-}
 
 type CustomerView = 'all' | 'active' | 'has-orders' | 'high-value' | 'new'
 type CustomerSortKey = 'name' | 'email' | 'phone' | 'total_orders' | 'total_spent' | 'last_order_at' | 'status'
@@ -52,16 +42,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function readString(row: Record<string, unknown>, key: string) {
-    const value = row[key]
-    return typeof value === 'string' ? value : ''
-}
-
-function readNullableString(row: Record<string, unknown>, key: string) {
-    const value = row[key]
-    return typeof value === 'string' && value.trim() ? value : null
 }
 
 function titleize(value: string | null | undefined) {
@@ -132,30 +112,6 @@ function customerStatusVariant(status: string) {
     if (['active', 'enabled'].includes(normalized)) return 'success'
     if (['blocked', 'disabled', 'suspended'].includes(normalized)) return 'critical'
     return 'info'
-}
-
-function normalizeCustomerStatus(value: string): CustomerRow['status'] {
-    const normalized = value.toLowerCase()
-    if (normalized === 'disabled' || normalized === 'invited') return normalized
-    return 'active'
-}
-
-function mapCustomer(row: Record<string, unknown>): CustomerRow {
-    const email = readString(row, 'email') || readString(row, 'customer_email')
-
-    return {
-        id: readString(row, 'id') || email,
-        full_name: readString(row, 'full_name') || readString(row, 'customer_name'),
-        email,
-        phone: readNullableString(row, 'phone') || readNullableString(row, 'customer_phone'),
-        total_orders: Number(row.total_orders || 0),
-        total_spent: Number(row.total_spent || 0),
-        status: normalizeCustomerStatus(readString(row, 'status')),
-        created_at: readString(row, 'created_at'),
-        first_order_at: readNullableString(row, 'first_order_at'),
-        last_order_at: readNullableString(row, 'last_order_at'),
-        last_order_id: readNullableString(row, 'last_order_id'),
-    }
 }
 
 export default function CustomersPage() {
