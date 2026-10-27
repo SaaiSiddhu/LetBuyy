@@ -9,6 +9,7 @@ import {requireOwnedDatabase} from './owned-db-support';
 const owned=requireOwnedDatabase(),hash=(s:string)=>createHash('sha256').update(s).digest('hex');
 let gateway:Gateway,keys:IdentityKeys;
 const codes=new Map<string,string>(),originalInfo=console.info;
+const replacementPassword=['Synthetic','!',randomBytes(18).toString('hex'),'42'].join('');
 before(async()=>{
  keys=await newIdentityKeys();gateway=new Gateway(gatewayEnv(owned,keys));
  console.info=(...args:unknown[])=>{try{const v=JSON.parse(String(args[0]));if(v.reason==='local_buyer_email_code'&&v.purpose==='connect_merchant'){codes.set(v.to,v.code);return;}}catch{/* ordinary structured logs */}originalInfo(...args)};
@@ -104,7 +105,7 @@ async function recoveryFixture(){
  return {user,email,token,session};
 }
 async function resetPassword(token:string,extra:Record<string,unknown>={}){
- return gateway.request('/v1/auth/custom/users/set-password',{method:'POST',headers:await appHeaders(),body:JSON.stringify({purpose:'password_reset',token,password:'Synthetic!New-Password42',...extra})});
+ return gateway.request('/v1/auth/custom/users/set-password',{method:'POST',headers:await appHeaders(),body:JSON.stringify({purpose:'password_reset',token,password:replacementPassword,...extra})});
 }
 test('Merchant recovery commits password, token, session revocation and audit together; replay is denied',async()=>{
  const f=await recoveryFixture();const result=await resetPassword(f.token);assert.equal(result.status,200,result.text);
