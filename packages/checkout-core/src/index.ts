@@ -1558,7 +1558,16 @@ export function planCouponValidation(
 
   let discount = 0;
   if (!failureCode && type === 'percentage') {
-    discount = Math.round(subtotal * (value / 100) * 100) / 100;
+    // Database coupon values have two decimal places. Quote in integer paise
+    // and basis points so e.g. 20.10 at5% agrees with PostgreSQL ROUND =1.01.
+    const subtotalMinor = Math.round(subtotal * 100);
+    const basisPoints = Math.round(value * 100);
+    if (!Number.isSafeInteger(subtotalMinor) || !Number.isSafeInteger(basisPoints) || subtotalMinor < 0 || basisPoints < 0) {
+      throw new RangeError('Coupon quote amount is unavailable');
+    }
+    const minor = Number((BigInt(subtotalMinor) * BigInt(basisPoints) + 5000n) / 10000n);
+    if (!Number.isSafeInteger(minor)) throw new RangeError('Coupon quote amount is unavailable');
+    discount = minor / 100;
     if (maximumDiscount !== null && maximumDiscount > 0) discount = Math.min(discount, maximumDiscount);
   } else if (!failureCode && (type === 'fixed' || type === 'fixed_amount')) {
     discount = Math.min(value, subtotal);

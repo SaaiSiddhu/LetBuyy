@@ -7,12 +7,12 @@ const sources = new Map<string, { list: string; detail: string }>();
 const originalHeading = '<h1>Order #{{ order.number }}</h1>';
 const totalOutlet = '<p class="lb-order-detail__total">Total: {{ order.total | money_with_currency: order.currency }}</p>';
 const listOutlet = '<span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span>';
-const receipt = '<!-- lb:saved-order-receipt:v1 --><dl class="lb-order-detail__amounts">'
-    + '{% if order.subtotal != nil %}<div><dt>Subtotal</dt><dd>{{ order.subtotal | money_with_currency: order.currency }}</dd></div>{% endif %}'
-    + '{% if order.coupon_code != blank or order.discount_total > 0 %}<div><dt>{% if order.coupon_code != blank %}Coupon ({{ order.coupon_code }}){% else %}Discount{% endif %}</dt><dd>−{{ order.discount_total | money_with_currency: order.currency }}</dd></div>{% endif %}'
-    + '{% if order.shipping_total != nil %}<div><dt>Shipping</dt><dd>{{ order.shipping_total | money_with_currency: order.currency }}</dd></div>{% endif %}'
-    + '{% if order.tax_total != nil %}<div><dt>Tax</dt><dd>{{ order.tax_total | money_with_currency: order.currency }}</dd></div>{% endif %}'
-    + '<div class="lb-order-detail__total"><dt>Final total</dt><dd>{{ order.total | money_with_currency: order.currency }}</dd></div></dl>';
+const receipt = '<!-- lb:saved-order-receipt:v1 --><dl class="lb-order-detail__amounts" style="display:grid;gap:var(--lb-space-2)">'
+    + '{% if order.subtotal != nil %}<div style="display:flex;justify-content:space-between;gap:var(--lb-space-3)"><dt>Subtotal</dt><dd style="margin:0;text-align:right;overflow-wrap:anywhere">{{ order.subtotal | money_with_currency: order.currency }}</dd></div>{% endif %}'
+    + '{% if order.coupon_code != blank or order.discount_total > 0 %}<div style="display:flex;justify-content:space-between;gap:var(--lb-space-3)"><dt>{% if order.coupon_code != blank %}Coupon ({{ order.coupon_code }}){% else %}Discount{% endif %}</dt><dd style="margin:0;text-align:right;overflow-wrap:anywhere">−{{ order.discount_total | money_with_currency: order.currency }}</dd></div>{% endif %}'
+    + '{% if order.shipping_total != nil %}<div style="display:flex;justify-content:space-between;gap:var(--lb-space-3)"><dt>Shipping</dt><dd style="margin:0;text-align:right;overflow-wrap:anywhere">{{ order.shipping_total | money_with_currency: order.currency }}</dd></div>{% endif %}'
+    + '{% if order.tax_total != nil %}<div style="display:flex;justify-content:space-between;gap:var(--lb-space-3)"><dt>Tax</dt><dd style="margin:0;text-align:right;overflow-wrap:anywhere">{{ order.tax_total | money_with_currency: order.currency }}</dd></div>{% endif %}'
+    + '<div class="lb-order-detail__total" style="display:flex;justify-content:space-between;gap:var(--lb-space-3);font-weight:var(--lb-font-weight-semibold)"><dt>Final total</dt><dd style="margin:0;text-align:right;overflow-wrap:anywhere">{{ order.total | money_with_currency: order.currency }}</dd></div></dl>';
 
 /** Rendering projection for exact shipped first-party account definitions only.
  * Persisted releases, package identity/checksum, settings and custom source remain untouched.
