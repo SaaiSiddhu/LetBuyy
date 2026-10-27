@@ -151,7 +151,8 @@ customDomainsRouter.get('/checkout-domain', async (c) => {
 
 customDomainsRouter.post('/checkout-domain', async (c) => {
     const parsed = z.object({ site_id: z.string().uuid() }).strict().safeParse(await c.req.json().catch(() => null));
-    if (!parsed.success || !z.string().min(8).max(200).safeParse(c.req.header('Idempotency-Key')).success)
+    const key = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key');
+    if (!parsed.success || !z.string().min(8).max(200).refine(value => value === value.trim() && !/[\u0000-\u001f\u007f]/.test(value)).safeParse(key).success)
         return c.json({ error: { code: 'VALIDATION', message: 'A valid site_id and idempotency key are required' } }, 400);
     const { response } = await requireOwnedSite(c, parsed.data.site_id);
     if (response) return response;

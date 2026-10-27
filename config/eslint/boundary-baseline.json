@@ -90,6 +90,7 @@
     "apps/merchant/web/src/app/api/stores/[store]/dashboard/setup/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/domains/[domain]/[action]/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/domains/[domain]/route.ts",
+    "apps/merchant/web/src/app/api/stores/[store]/domains/checkout/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/domains/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/exports/[jobId]/download/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/exports/[jobId]/route.ts",

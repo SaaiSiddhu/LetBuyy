@@ -77,6 +77,8 @@ test('Merchant setup reads and mutations require the owned site and bounded idem
   assert.equal((await gateway.request(`/v1/custom/checkout-domain?site_id=${b.siteId}`,{headers:await signedIdentityHeaders(actor,email,b.siteId)})).status,404);
   assert.equal((await gateway.request('/v1/custom/checkout-domain',{method:'POST',headers:await signedIdentityHeaders(actor,email,a.siteId),body:JSON.stringify({site_id:a.siteId})})).status,400);
   assert.equal((await gateway.request('/v1/custom/checkout-domain',{method:'POST',headers:{...await signedIdentityHeaders(actor,email,b.siteId),'Idempotency-Key':'synthetic-denied-domain'},body:JSON.stringify({site_id:b.siteId})})).status,404);
+  const accepted=await gateway.request('/v1/custom/checkout-domain',{method:'POST',headers:{...await signedIdentityHeaders(actor,email,a.siteId),'X-Idempotency-Key':'synthetic-sdk-domain-key'},body:JSON.stringify({site_id:a.siteId})});
+  assert.ok([200,202].includes(accepted.status),accepted.text);
 });
 
 test('tenant SQL can read its exact domain but cannot forge readiness, retirement or remove the hostname reservation',()=>{

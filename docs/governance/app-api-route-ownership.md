@@ -164,3 +164,15 @@ owned PostgreSQL/PostgREST and local R2 verify a 1,103-product, 7,412,460-byte e
 CSV content and ownership revocation. Extended order/customer/expiry acceptance also passes (1,103 live rows per dataset);
 the normal-sign-in production browser export/download also passes. User-account
 page-by-page acceptance remains tracked in the merchant performance audit evidence.
+
+### Verified checkout-host readiness transport — 28 October 2026
+
+Inventory227→228 adds only Merchant `stores/[store]/domains/checkout` as a
+`gateway-proxy`. GET resolves the signed-in merchant's owned store and reads the
+canonical readiness projection. POST first enforces the existing exact Merchant
+origin and request-key guard, then forwards that same key and server-resolved
+site ID through the shared API client. The Gateway owns exact hostname derivation,
+current parent/domain authority, provider assignment, TLS proof, retry and finite
+retirement. The app never supplies a hostname, mutates DNS/database records,
+grants readiness or publishes a store. This implements the existing owner-approved
+branded checkout plan; the API inventory is registered rather than exempted.

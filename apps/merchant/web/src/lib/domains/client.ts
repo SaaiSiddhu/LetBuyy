@@ -48,7 +48,7 @@ export const domainsClient = {
     checkout: (store: string, signal?: AbortSignal) =>
         call<CheckoutDomainSetup>(`${base(store)}/checkout`, { signal }),
     prepareCheckout: (store: string, signal?: AbortSignal) =>
-        call<CheckoutDomainSetup>(`${base(store)}/checkout`, { method: 'POST', signal }),
+        call<CheckoutDomainSetup>(`${base(store)}/checkout`, { method: 'POST', signal, headers: { 'X-Idempotency-Key': crypto.randomUUID() } }),
     list: (store: string, signal?: AbortSignal) =>
         call<DomainListResult>(base(store), { signal }),
 

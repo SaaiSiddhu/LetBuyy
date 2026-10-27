@@ -303,3 +303,25 @@ Private run receipts under the existing recovery directory:
 `branded-queue-all-unit.log`, `mail-queue-full-transport-test.log`,
 `qa10002-receipt-binding-facts.json`, `qa-theme-allowance-settings-facts.json`
 and `order-mail-runtime-config-facts.json`.
+
+### Local review corrections before hosted qualification
+
+The first actual governance sweep reports112 pass/two fail: generated tenant
+provenance omitted migration400 and the new Merchant proxy was absent from the
+app-route inventory. The canonical generator adds only400 to site_domains source
+provenance; table scope/roles/policies do not change. The exact thin owned-store
+proxy is registered as gateway-proxy in inventory228 and the matching lint baseline.
+Both actual validators and all6 inventory behavior tests now pass; no validator
+exception is added. The sweep clone now also has the real develop/staging/main
+refs, avoiding missing-ref advisories on branch disposition checks.
+
+The new Merchant setup POST now uses the existing exact-origin/request-key guard
+before resolving ownership, and forwards the browser's canonical X-Idempotency-Key
+through the actual SDK. The Gateway accepts that canonical key as well as its
+existing Idempotency-Key alias, rejecting malformed keys. Three actual BFF+SDK
+transport controls pass (including foreign origin, forged Host, missing key and
+foreign-store refusal), all3 readiness component controls pass, and a fresh real
+Gateway/PostgreSQL positive setup through the SDK header passes with all6 domain
+lifecycle controls. This corrects a local integration defect before deployment.
+The complete Commerce package passes194/173/1607/184/27, all without skips;
+these groups overlap other checks and are not a unique project test total.
