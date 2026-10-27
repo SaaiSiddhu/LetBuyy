@@ -1,3 +1,4 @@
+import ShopPage, { generateMetadata as generateShopMetadata } from '../../shop/page';
 import { discoveryRouteQuery, scalarDiscoveryQuery } from '@/lib/theme-engine/discovery-route-query';
 import { loadNamedCollectionProductPage } from '@/lib/theme-engine/collection-discovery';
 import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
@@ -20,6 +21,7 @@ export async function generateMetadata(
     },
 ): Promise<Metadata> {
     const { subdomain, slug } = await params;
+    if (slug === 'all') return generateShopMetadata({ params: Promise.resolve({ subdomain }), searchParams });
     const query = await searchParams;
     const previewToken = await resolveThemePreviewToken(subdomain, query?.theme_preview_token);
     const discoveryQuery = discoveryRouteQuery(query);
@@ -46,6 +48,7 @@ export default async function CollectionPage(
     },
 ) {
     const { subdomain, slug } = await params;
+    if (slug === 'all') return ShopPage({ params: Promise.resolve({ subdomain }), searchParams });
     const query = await searchParams;
     const previewToken = await resolveThemePreviewToken(subdomain, query?.theme_preview_token);
     const discoveryQuery = discoveryRouteQuery(query);
