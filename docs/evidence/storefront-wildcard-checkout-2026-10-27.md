@@ -95,3 +95,75 @@ No unrelated financial/message sweepers were manually invoked. The domain cadenc
 `17 */6 * * *`; the minute notification tick does not run this reconciler.
 
 The first real gate was113/114: the required schema-derived registry lacked migration398 provenance. Regeneration adds that one source filename to sites and a generation timestamp; all317 tenant scope entries and columns are unchanged. Full validator rerun follows this correction.
+
+## Production activation and independent acceptance — 27 October, 11:52 IST
+
+Qualified source `b0a050644394c418e30cc236b8f98ce5602e4a0b` has exactly the
+same Git tree as release `604d62d39f850230757d92fd24b51058007244b0`.
+The release was pushed develop → staging → main, with fast-forward promotions
+and no force push. All four production web apps are READY at release604.
+All four production Workers match the qualified module hashes; every provider
+binding and encrypted-secret inventory is preserved, including API's64-variable
+Free limit. Production398 committed through one native TLS-verified backend;
+history326, pre-existing history and merchant/catalog/version row hashes match.
+The prior support-free encrypted PG17 Up/Down/Up rehearsals preserved all522 tables.
+
+- Actual114 governance gate passed on finalb0. Actual SDK production directory,
+  strict query validation,10-theme catalog/Circuit-first, public finder and unknown
+  miss pass. The signed-in staging browser rendered its real1-store/10-theme
+  directory, Circuit empty product list without Page1of0, and full empty cart.
+  Vercel's CLI SSO302 was not treated as an application failure or bypassed.
+- Production `storefront.letbuyy.com` returns200 with real recently launched public
+  stores. A new labelled QA store was created through ordinary browser onboarding:
+  `qa-wildcard-20261027`, Circuit default and14-day trial. Read-only database and
+  provider controls confirm its persisted Circuit bundle and no individual Vercel
+  domain404 while the production wildcard is verified. After the owner's explicit
+  QA publication approval, it serves Circuit over anonymous HTTPS200. Its sole
+  synthetic nonphysical1-INR product is visibly labelled Not for sale/No Fulfilment.
+  No payment, order, delivery or external outreach was submitted.
+- Removed only the explicitly requested `snaz.letbuyy.store` individual Vercel entry
+  after positive wildcard proof. Exact entry now404, wildcard remains verified,
+  and Snaz still returns200 Liquid through the wildcard. Neither zone has an
+  explicit Snaz DNS record. The unknown never-registered preflight host has valid
+  HTTPS and application404, rather than a provider deployment404.
+- Observed the actual production Queue cron `17 */6 * * *` at11:47 IST. The signed
+  domain job completed with HTTP200/success, no deferred/provider-null results,
+  invocation outcome ok. Checked0/changed0 reflects no queued custom domains;
+  this is actual scheduled-call/authorization/reader proof, not a nonempty external
+  custom-domain lifecycle claim. No unrelated job was manually triggered.
+- Actual production buyer cart reached the separate secure checkout origin with
+  the1-INR server cart/summary. Address entry was inspected; payment/confirmation
+  and real-provider settlement are not claimed. The owner then requested verified
+  per-store checkout addresses, approved in the separate bounded host proposal.
+
+## Broader test accounting and observed label refinements
+
+The broader owned run executed249 suites/2050 assertions:2045passed,5failed,
+with no leaked resources. The corrected collection missing-pool control separately
+passed. The two transport/Turnstile-timing browser failures passed in an isolated
+rerun (MFA1 and published-storefront recovery4; zero skips). Lifecycle7 also passes
+in isolation. The historical admitted389-catalog test fails its pinned old catalog
+hash equally on clean584; its frozen admission was not rewritten to force green.
+The old native Core-default canary expects Core although the owner's current new-store
+default is Circuit; live onboarding independently proves Circuit. This is not a
+claim that every broad historical gate is green. Money, tenant red-team, checkout
+and current theme owned controls ran in their canonical owned lanes; raw standalone
+DB tests without their fixture fail by method and were not called product failures.
+
+The final browser sweep found three hardcoded Merchant store-address labels and an
+Identity onboarding hint advertising retired names. The labels now use the existing
+configured-root helper, and onboarding shows the actual Circuit default rather than
+an unused industry recommendation. Merchant272+818+289 and Identity51+6 package
+test groups pass (groups are not a unique platform total); affected typechecks and
+focused lint pass, with existing warnings. Both affected production builds pass.
+These four presentation-only files are retained for qualified integration; the
+hosted604 verification above does not imply those later label bytes are live.
+All34 screenshots rewritten by the broad tests were copied privately and the exact
+tracked historical files restored. No user edit was discarded.
+
+Private receipts: `migration398-production-result.json`,
+`workers-production-b0-deployment.json`, `vercel-production-builds.json`,
+`production-b0-http-acceptance.json`, `production-wildcard-https-v2.json`,
+`production-qa-created.json`, `snaz-individual-domain-removal.json`,
+`production-domain-cron-observation-v6.json`, `browser-retries-final-result.json`,
+and `lifecycle-isolated-final.log` under the private phase evidence directory.

@@ -235,20 +235,17 @@ const ACQUISITION_SITE_TYPES =
         ? [...SITE_TYPES, ...LEGACY_SITE_TYPES]
         : SITE_TYPES
 
-// Phase-2.5 Stream C — industry picker options (UI labels + recommended Experience name for display).
-// The CANONICAL industry→experience mapping + token application lives server-side in
-// @letbuyy/theme-engine (resolveExperienceForIndustry, applied in the gateway POST /stores handler);
-// this client list only drives the selector and the "recommended" hint.
+// Industry guides setup; every new store starts with the canonical Circuit theme.
 const ONBOARDING_INDUSTRIES = [
-    { id: 'electronics', label: 'Electronics & Tech', experience: 'Forge' },
-    { id: 'fashion', label: 'Fashion & Apparel', experience: 'Sense' },
-    { id: 'beauty', label: 'Beauty & Cosmetics', experience: 'Aura' },
-    { id: 'furniture', label: 'Furniture & Home', experience: 'Craft' },
-    { id: 'food', label: 'Food & Grocery', experience: 'Refresh' },
-    { id: 'sports', label: 'Sports & Fitness', experience: 'Ride' },
-    { id: 'books', label: 'Books & Stationery', experience: 'Dawn' },
-    { id: 'pet', label: 'Pet & Animals', experience: 'Bloom' },
-    { id: 'general', label: 'General / Multi-category', experience: 'Summit' },
+    { id: 'electronics', label: 'Electronics & Tech' },
+    { id: 'fashion', label: 'Fashion & Apparel' },
+    { id: 'beauty', label: 'Beauty & Cosmetics' },
+    { id: 'furniture', label: 'Furniture & Home' },
+    { id: 'food', label: 'Food & Grocery' },
+    { id: 'sports', label: 'Sports & Fitness' },
+    { id: 'books', label: 'Books & Stationery' },
+    { id: 'pet', label: 'Pet & Animals' },
+    { id: 'general', label: 'General / Multi-category' },
 ] as const
 
 const ONBOARDING_CHANNELS: { id: SalesChannel; labelKey: keyof typeof translations.en }[] = [
@@ -777,8 +774,8 @@ export default function OnboardingPage() {
                                 />
                             </div>
                             <div className="onboard-review-row">
-                                <span>Recommended experience</span>
-                                <strong>{ONBOARDING_INDUSTRIES.find((o) => o.id === industry)?.experience ?? 'Summit'}</strong>
+                                <span>Default theme</span>
+                                <strong>Circuit</strong>
                             </div>
                         </div>
 
