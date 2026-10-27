@@ -68,3 +68,62 @@ test('store-customer linking accepts the sanitizer-safe intent field used by Liq
     assert.equal(flow?.linkStoreCustomer, true);
     assert.equal(flow?.returnTo, '/store/example/account/settings');
 });
+
+
+test('discovery auth moves to the tenant before minting a PKCE cookie', async () => {
+    const originalFetch = globalThis.fetch;
+    const previousApi = process.env.LETBUYY_API_BASE_URL;
+    const previousSecret = process.env.INTERNAL_API_SECRET;
+    process.env.LETBUYY_API_BASE_URL = 'https://gateway.example.invalid';
+    process.env.INTERNAL_API_SECRET = crypto.randomUUID();
+    let customDomain: string | null = null;
+    globalThis.fetch = (async (input) => {
+        const url = new URL(String(input));
+        assert.equal(url.origin, 'https://gateway.example.invalid');
+        assert.equal(url.searchParams.get('host'), 'synthetic-store.stores.example.test');
+        return Response.json({ data: { site_id: crypto.randomUUID(), subdomain: 'synthetic-store', custom_domain: customDomain, custom_domain_status: customDomain ? 'active' : 'pending', published: true, status: 'published', access_mode: 'public' } });
+    }) as typeof fetch;
+    const previousRoot = process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN;
+    const previousAliases = process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES;
+    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = 'stores.example.test';
+    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES = 'discovery.platform.example.test';
+    try {
+        const first = await GET(new NextRequest('https://discovery.platform.example.test/api/buyer-auth/start?screen=register&return_to=%2Fstore%2Fsynthetic-store%2Faccount%2Fsettings', {
+            headers: { host: 'discovery.platform.example.test' },
+        }));
+        assert.equal(first.status, 303);
+        assert.equal(first.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
+        const destination = new URL(first.headers.get('location') || '');
+        assert.equal(destination.origin, 'https://synthetic-store.stores.example.test');
+        assert.equal(destination.pathname, '/api/buyer-auth/start');
+        assert.equal(destination.searchParams.get('return_to'), '/account/settings');
+        assert.equal(destination.searchParams.get('screen'), 'register');
+        const next = await GET(new NextRequest(destination, { headers: { host: destination.host } }));
+        const authorization = new URL(next.headers.get('location') || '');
+        assert.equal(authorization.searchParams.get('redirect_uri'), 'https://synthetic-store.stores.example.test/api/buyer-auth/callback');
+        const flow = decodeFlow(next.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE)?.value);
+        assert.equal(flow?.returnTo, '/account/settings');
+        assert.ok(flow?.state);
+        assert.ok(flow?.verifier);
+        assert.equal(next.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE)?.domain, undefined);
+        customDomain = 'shop.merchant.example';
+        const custom = await GET(new NextRequest('https://discovery.platform.example.test/api/buyer-auth/start?return_to=%2Fstore%2Fsynthetic-store%2Faccount', { headers: { host: 'discovery.platform.example.test' } }));
+        assert.equal(new URL(custom.headers.get('location') || '').origin, 'https://shop.merchant.example');
+        assert.equal(custom.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
+        globalThis.fetch = (async () => new Response('{}', { status: 503 })) as typeof fetch;
+        const down = await GET(new NextRequest('https://discovery.platform.example.test/api/buyer-auth/start?return_to=%2Fstore%2Fsynthetic-store%2Faccount', { headers: { host: 'discovery.platform.example.test' } }));
+        assert.equal(down.status, 503);
+        assert.equal(down.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
+        for (const path of ['//attacker.invalid/account', '/store/attacker.invalid/account', '/store/checkout/account', '/account']) {
+            const bad = await GET(new NextRequest(`https://discovery.platform.example.test/api/buyer-auth/start?return_to=${encodeURIComponent(path)}`, { headers: { host: 'discovery.platform.example.test' } }));
+            assert.equal(bad.status, 400);
+            assert.equal(bad.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE), undefined);
+        }
+    } finally {
+        globalThis.fetch = originalFetch;
+        if (previousApi === undefined) delete process.env.LETBUYY_API_BASE_URL; else process.env.LETBUYY_API_BASE_URL = previousApi;
+        if (previousSecret === undefined) delete process.env.INTERNAL_API_SECRET; else process.env.INTERNAL_API_SECRET = previousSecret;
+        if (previousRoot === undefined) delete process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN; else process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = previousRoot;
+        if (previousAliases === undefined) delete process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES; else process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES = previousAliases;
+    }
+});

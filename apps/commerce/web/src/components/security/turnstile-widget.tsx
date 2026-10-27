@@ -61,7 +61,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
 
             widgetIdRef.current = window.turnstile.render(containerRef.current, {
                 sitekey: siteKey,
-                size: 'invisible',
+                size: 'flexible',
                 callback: (token: string) => onVerifyRef.current(token),
                 'expired-callback': () => {
                     onVerifyRef.current('');
@@ -123,7 +123,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
             };
         }, [renderWidget]);
 
-        return <div ref={containerRef} className="hidden" />;
+        return <div ref={containerRef} className="w-full" />;
     },
 );
 
