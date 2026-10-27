@@ -50,3 +50,8 @@ test('actual merchant page escapes hostile saved text and keeps malformed legacy
         assert.match(h.document.body.textContent!,/Product details were not recorded with this order/);assert.equal(h.document.querySelector('details'),null);
     }finally{await h.close();}
 });
+
+test('actual Merchant receipt shows saved coupon, savings and final amount without recalculating it',async()=>{
+    const h=await mount({...row(),coupon_code:'SAVE10',discount:19.9,coupon_discount:19.9,subtotal:199,shipping_cost:20,tax:35.82,total:234.92});
+    try{const text=h.document.body.textContent!;assert.match(text,/Coupon \(SAVE10\)/);assert.match(text,/19\.90/);assert.match(text,/234\.92/);}finally{await h.close();}
+});

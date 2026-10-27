@@ -40,6 +40,7 @@ export async function loadCollectionPage(subdomain: string, cursor: StorefrontCo
 export async function loadNamedCollectionProductPage(subdomain: string, identity: string, input: Parameters<typeof discoveryRouteQuery>[0], previewToken?: string) {
     const query = discoveryRouteQuery(input);
     const expectedId = StorefrontDiscoveryQuerySchema.shape.collection_id.safeParse(identity);
+    if (!expectedId.success) return null; // The API names collections by UUID; known Shop-all routing is handled by its adapter.
     const validateIdentity = (id: string | undefined) => {
         if (!id || expectedId.success && expectedId.data !== id
             || query.collection_id !== undefined && query.collection_id !== id) throw new StorefrontDiscoveryQueryError();

@@ -106,6 +106,8 @@ before(async () => {
       INSERT INTO shipping_rates (id,zone_id,site_id,name,type,price,is_active,cod_enabled)
       VALUES ('${codRateId}','${zoneId}','${site.siteId}','COD delivery','flat',20.00,true,true),
              ('${onlineRateId}','${zoneId}','${site.siteId}','Online delivery','flat',12.00,true,false);
+      INSERT INTO coupons (id,store_id,site_id,code,type,value,discount_type,discount_value,is_active)
+      VALUES (gen_random_uuid(),'${site.siteId}','${site.siteId}','SYNTHETIC10','percentage',10,'percentage',10,true);
       INSERT INTO carts (id,store_id,session_id,items,status,channel,expires_at)
       VALUES ('${cartId}','${site.siteId}','${cartToken}',
         '[{"id":"${productId}","product_id":"${productId}","variant_id":null,"title":"Synthetic browser checkout product","sku":"SYN-BROWSER-${productId}","image_url":null,"quantity":1,"unit_price":199,"currency":"INR","properties":{},"line_total":199}]'::jsonb,
@@ -242,6 +244,9 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     const enabledCodRadio = page.getByRole('radio', { name: /Cash on Delivery \(COD\)/ });
     await enabledCodRadio.waitFor({ state: 'visible' });
     assert.equal(await enabledCodRadio.isDisabled(), false, 'COD must be available for the COD-enabled saved rate');
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹19.9 off applied', { exact: true }).waitFor();
     await enabledCodRadio.check();
     assert.equal(await enabledCodRadio.isChecked(), true, 'the buyer explicitly selects COD after changing delivery rates');
     await page.getByRole('button', { name: 'Confirm COD order' }).click();
@@ -256,6 +261,10 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.equal(rows[0].rate_id, codRateId, 'persisted order is bound to the reviewed COD rate');
     assert.equal(Number(rows[0].amount), 20);
     assert.equal(rows[0].payment_method, 'cod');
+    const receipt=JSON.parse(owned.psql(`SELECT json_build_object('coupon',coupon_code,'discount',discount,'coupon_discount',coupon_discount,'subtotal',subtotal,'shipping',shipping_cost,'tax',tax,'total',total) FROM orders WHERE id='${rows[0].order_id}';`));
+    assert.equal(receipt.coupon,'SYNTHETIC10');assert.equal(Number(receipt.discount),19.9);assert.equal(Number(receipt.coupon_discount),19.9);
+    assert.equal(Math.round(Number(receipt.total)*100),Math.round((Number(receipt.subtotal)+Number(receipt.shipping)+Number(receipt.tax)-Number(receipt.discount))*100));
+
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${rows[0].order_id}' AND event_type='order.paid';`), '0', 'an unpaid COD order is not announced as paid');
     assert.equal(notificationJobs.length, 0, 'an unpaid COD order does not queue a paid-order email');
     assert.deepEqual(pageErrors, []);
@@ -346,6 +355,20 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     const recoveredCodRadio = page.getByRole('radio', { name: /Cash on Delivery \(COD\)/ });
     await recoveredCodRadio.waitFor({ state: 'visible' });
     await recoveredCodRadio.check();
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹19.9 off applied', { exact: true }).waitFor();
+    owned.psql(`UPDATE coupons SET value=20,discount_value=20 WHERE store_id='${site.siteId}' AND code='SYNTHETIC10';`);
+    const staleDiscount = page.waitForResponse(response => new URL(response.url()).pathname.endsWith(`/${browserCartId}/delivery`) && response.status() === 409);
+    await page.getByRole('button', { name: 'Confirm COD order' }).click();
+    await staleDiscount;
+    await page.getByRole('alert').getByText('The coupon discount changed. Review it again before paying.').waitFor();
+    assert.equal(paymentIntentRequests,0,'changed coupon stops before any payment intent');
+    assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE site_id='${site.siteId}' AND customer_email='${email}';`),'0');
+    await page.getByRole('button', { name: 'Remove coupon' }).click();
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹39.8 off applied', { exact: true }).waitFor();
     await page.getByRole('button', { name: 'Confirm COD order' }).click();
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
 
@@ -358,6 +381,8 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     assert.equal(orders[0].rate_id, codRateId);
     assert.equal(Number(orders[0].amount), 25);
     assert.equal(orders[0].payment_method, 'cod');
+    assert.equal(owned.psql(`SELECT coupon_code||':'||discount::text FROM orders WHERE id='${orders[0].order_id}';`),'SYNTHETIC10:39.80');
+    owned.psql(`UPDATE coupons SET value=10,discount_value=10 WHERE store_id='${site.siteId}' AND code='SYNTHETIC10';`);
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${orders[0].order_id}' AND event_type='order.paid';`), '0');
     await context.close();
 });
@@ -412,10 +437,10 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     await payButton.waitFor({ state: 'visible' });
     assert.equal(await payButton.isEnabled(), true, 'the online checkout action is enabled after loading the provider script');
     assert.match(await payButton.textContent() || '', /Pay ₹410/);
-    const checkoutColor = await page.locator('.checkout-theme-frame').evaluate(element => getComputedStyle(element).getPropertyValue('--primary').trim());
+    const checkoutColor = await page.locator('.checkout-theme-frame').evaluate(element => (globalThis as unknown as { getComputedStyle(node: typeof element): { getPropertyValue(name: string): string } }).getComputedStyle(element).getPropertyValue('--primary').trim());
     await payButton.click();
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
-    const popup = await page.evaluate(() => (window as unknown as { __syntheticRazorpayAppearance: { color: string; image: string | null; amount: number } }).__syntheticRazorpayAppearance);
+    const popup = await page.evaluate(() => (globalThis as unknown as { __syntheticRazorpayAppearance: { color: string; image: string | null; amount: number } }).__syntheticRazorpayAppearance);
     assert.equal(popup.color, checkoutColor, 'provider popup inherits the same sanitized store primary as checkout');
     assert.equal(popup.image, null, 'a store without a logo never requests the missing generic /logo.png');
     assert.equal(popup.amount, 41000, 'appearance wiring leaves the server-priced payment amount intact');

@@ -212,11 +212,11 @@ type RouteModule = {
     default: (props: {params: Promise<{subdomain:string;slug:string}>;searchParams?: Promise<Record<string,string|string[]|undefined>>}) => Promise<React.ReactNode>;
     generateMetadata: (props: {params: Promise<{subdomain:string;slug:string}>;searchParams?: Promise<Record<string,string|string[]|undefined>>}) => Promise<unknown>;
 };
-function routeHarness(name:string,h:ReturnType<typeof serviceHarness>,options:{token?:string;missingPrivateStore?:boolean}={}) {
+function routeHarness(name:string,h:ReturnType<typeof serviceHarness>,options:{token?:string;missingPrivateStore?:boolean;identity?:string}={}) {
     const f=fixture(),storeReads:string[]=[];
     const Collection=actualModule<typeof import('./collection-discovery')>('./collection-discovery.ts',{'server-only':{},'@/lib/api/client':{createStorefrontApiClient:h.createClient},'@/lib/product-service':{ProductService:h.ProductService,mapStorefrontProduct:h.mapStorefrontProduct}});
     const Composition=()=>null;
-    const loadedModule=actualModule<RouteModule>(name,{
+    const mocks={
         '@/lib/store-service':{StoreService:{getStoreBySubdomain:async()=>{storeReads.push('public');return f.store;},getPreviewStoreBySubdomain:async()=>{storeReads.push('private');return options.missingPrivateStore?null:f.store;}}},
         'next/navigation':{notFound:()=>{throw new Error('NOT_FOUND');}},
         '@/lib/theme-preview-server':{resolveThemePreviewToken:async()=>options.token??''},
@@ -224,8 +224,10 @@ function routeHarness(name:string,h:ReturnType<typeof serviceHarness>,options:{t
         '@/lib/theme-engine/collection-discovery':Collection,
         '@/lib/theme-engine/composition-engine':{__esModule:true,default:Composition},
         '@/lib/seo':{buildStoreMetadata:()=>({title:'Scoped metadata'}),buildStoreJsonLd:()=>({}),buildBreadcrumbJsonLd:()=>({})},
-    });
-    const props={params:Promise.resolve({subdomain:f.store.subdomain,slug:collectionId}),searchParams:Promise.resolve({search:'racket',connector:['usb-c','hdmi'],limit:'1',theme_preview_token:options.token})};
+    };
+    const shop=actualModule<RouteModule>('../../app/store/[subdomain]/shop/page.tsx',mocks);
+    const loadedModule=actualModule<RouteModule>(name,{...mocks,'../../shop/page':shop});
+    const props={params:Promise.resolve({subdomain:f.store.subdomain,slug:options.identity??collectionId}),searchParams:Promise.resolve({search:'racket',connector:['usb-c','hdmi'],limit:'1',theme_preview_token:options.token})};
     const find=(node:React.ReactNode):Record<string,unknown>|undefined=>{
         if(!React.isValidElement<Record<string,unknown>>(node))return undefined;
         if(node.type===Composition)return node.props;
@@ -252,6 +254,30 @@ test('actual signed route bodies and metadata retain private store authority; ab
         for(const call of h.calls){assert.match(call.url.pathname,/theme-preview$/,name);assert.equal(call.url.searchParams.get('token'),'signed-private-capability');assert.equal(call.defaults.cache,'no-store');}
         const unavailable=routeHarness(name,serviceHarness(),{token:'signed-private-capability',missingPrivateStore:true});await assert.rejects(unavailable.module.default(unavailable.props),/NOT_FOUND/,name);assert.deepEqual(unavailable.storeReads,['private'],name);
     }
+});
+
+test('Shop-all alias uses the actual canonical Shop adapter and preserves filters and private preview authority',async()=>{
+    const name='../../app/store/[subdomain]/collections/[slug]/page.tsx';
+    for(const token of [undefined,'signed-private-capability']){
+        const h=serviceHarness(),route=routeHarness(name,h,{identity:'all',token});
+        const props=route.find(await route.module.default(route.props));assert.ok(props);
+        const plan=props.plan as ReturnType<typeof resolveStorefrontTemplate>;assert.equal(plan.route.resourceSlug,'all-products');
+        assert.deepEqual(plan.route.discoveryQuery?.connector,['usb-c','hdmi']);await route.module.generateMetadata(route.props);
+        assert.equal(h.calls.length,1);assert.doesNotMatch(h.calls[0].url.pathname,/collections\/all$/);
+        assert.deepEqual(h.calls[0].url.searchParams.getAll('connector'),['usb-c','hdmi']);
+        if(token){assert.match(h.calls[0].url.pathname,/theme-preview$/);assert.equal(h.calls[0].url.searchParams.get('token'),token);assert.ok(route.storeReads.every(read=>read==='private'));}
+    }
+    const h=serviceHarness(),privateMissing=routeHarness(name,h,{identity:'all',token:'signed-private-capability',missingPrivateStore:true});
+    await assert.rejects(privateMissing.module.default(privateMissing.props),/NOT_FOUND/);assert.deepEqual(privateMissing.storeReads,['private']);assert.equal(h.calls.length,0);
+});
+
+test('malformed named collection addresses become not-found without an API request or all-catalog fallback',async()=>{
+    const h=serviceHarness();
+    const loader=actualModule<typeof import('./collection-discovery')>('./collection-discovery.ts',{'server-only':{},'@/lib/api/client':{createStorefrontApiClient:h.createClient},'@/lib/product-service':{ProductService:h.ProductService,mapStorefrontProduct:h.mapStorefrontProduct}}).loadNamedCollectionProductPage;
+    for(const identity of ['all','missing-collection','not-a-uuid'])assert.equal(await loader('owned',identity,{}),null);
+    assert.equal(h.calls.length,0);
+    const route=routeHarness('../../app/store/[subdomain]/collections/[slug]/page.tsx',h,{identity:'missing-collection'});
+    await assert.rejects(route.module.default(route.props),/NOT_FOUND/);assert.equal(h.calls.length,0);
 });
 
 test('toy individual capabilities require supplied options, never selected query defaults or zero-count synthetic rows',async()=>{

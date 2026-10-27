@@ -20,11 +20,11 @@ test('production only uses the verified cart store keys and never falls back to 
     const env = { ENVIRONMENT: 'production', PAYMENT_CONFIG_ENCRYPTION_KEY: encryptionKey, RAZORPAY_KEY_ID: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'), RAZORPAY_KEY_SECRET: crypto.randomUUID() } as Env;
     assert.deepEqual(await (await app.request('/', {}, env)).json(), { ready: true, usesStoreSecret: true });
     snapshot = { ...snapshot, id: crypto.randomUUID() };
-    assert.equal((await (await app.request('/', {}, env)).json()).ready, false);
+    assert.equal((await (await app.request('/', {}, env)).json() as { ready: boolean }).ready, false);
     snapshot = { ...snapshot, id, online_payment_enabled: false };
-    assert.equal((await (await app.request('/', {}, env)).json()).ready, false);
+    assert.equal((await (await app.request('/', {}, env)).json() as { ready: boolean }).ready, false);
     snapshot = { id, online_payment_enabled: true, payment_settings: null };
-    assert.equal((await (await app.request('/', {}, env)).json()).ready, false);
+    assert.equal((await (await app.request('/', {}, env)).json() as { ready: boolean }).ready, false);
     snapshot = { id, online_payment_enabled: true, payment_settings: { razorpay: { ...settings.razorpay, verified: false } } };
-    assert.equal((await (await app.request('/', {}, env)).json()).ready, false);
+    assert.equal((await (await app.request('/', {}, env)).json() as { ready: boolean }).ready, false);
 });

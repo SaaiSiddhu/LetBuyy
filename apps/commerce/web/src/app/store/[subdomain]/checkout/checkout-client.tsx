@@ -102,6 +102,7 @@ interface CheckoutClientProps {
         cartLines: CheckoutOriginCartLine[];
         cartId: string;
         handoff: Record<string, string>;
+        savedDiscount?: { code: string; amount: number };
     };
 }
 
@@ -219,8 +220,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('standard');
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(initialPaymentMethod);
-    const [couponInput, setCouponInput] = useState('');
-    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+    const [couponInput, setCouponInput] = useState(checkoutOrigin?.savedDiscount?.code || '');
+    const [couponSelectionChanged, setCouponSelectionChanged] = useState(false);
+    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => checkoutOrigin?.savedDiscount ? { code: checkoutOrigin.savedDiscount.code, type: 'fixed', value: checkoutOrigin.savedDiscount.amount, discount: checkoutOrigin.savedDiscount.amount } : null);
     const [couponError, setCouponError] = useState('');
     const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
     const [checkoutError, setCheckoutError] = useState('');
@@ -524,6 +526,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 freeShipping: Boolean(payload.coupon.freeShipping),
             });
             setCouponInput(payload.coupon.code);
+            setCouponSelectionChanged(true);
         } catch {
             setAppliedCoupon(null);
             setCouponError('Unable to validate coupon');
@@ -533,6 +536,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     };
 
     const removeCoupon = () => {
+        setCouponSelectionChanged(true);
         setAppliedCoupon(null);
         setCouponError('');
         setCouponInput('');
@@ -580,6 +584,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
+            ...((couponSelectionChanged || appliedCoupon) ? {
+                discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
+                expected_discount_amount_minor: Math.round((discountAmount + (appliedCoupon?.freeShipping ? deliveryCharges : 0)) * 100),
+            } : {}),
             shipping_method: deliveryOption,
             shipping_address: {
                 line1: formData.address.trim(),
@@ -660,6 +668,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
+            ...((couponSelectionChanged || appliedCoupon) ? {
+                discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
+                expected_discount_amount_minor: Math.round((discountAmount + (appliedCoupon?.freeShipping ? deliveryCharges : 0)) * 100),
+            } : {}),
             shipping_method: deliveryOption,
             shipping_address: {
                 line1: formData.address.trim(),
@@ -1414,7 +1426,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         {/* Payment Button */}
                                         <Button unstyled
                                             onClick={paymentMethod === 'online' ? handlePayment : handleCODOrder}
-                                            disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded) || (paymentMethod === 'cod' && !selectedRate?.cod_available)}
+                                            disabled={!hasPaymentMethods || isProcessing || isCheckingCoupon || (paymentMethod === 'online' && !razorpayLoaded) || (paymentMethod === 'cod' && !selectedRate?.cod_available)}
                                             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
                                             style={{ backgroundColor: paymentMethod === 'cod' ? 'rgb(22 163 74)' : 'rgb(26 26 46)' }}
                                         >
@@ -1489,6 +1501,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <Button unstyled
                                                 type="button"
                                                 onClick={removeCoupon}
+                                                aria-label="Remove coupon"
+                                                disabled={isProcessing}
                                                 className="text-xs font-semibold text-green-700 hover:text-green-900"
                                             >
                                                 Remove
@@ -1510,7 +1524,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 <Button unstyled
                                                     type="button"
                                                     onClick={applyCoupon}
-                                                    disabled={isCheckingCoupon}
+                                                    disabled={isCheckingCoupon || isProcessing}
                                                     className="min-h-11 px-3 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-60"
                                                     style={{ backgroundColor: primaryColor }}
                                                 >

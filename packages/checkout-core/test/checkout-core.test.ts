@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  CheckoutDeliverySchema,
+  planCouponValidation,
   CheckoutConfirmSchema,
   CheckoutPaymentIntentSchema,
   StorefrontCartLineInputSchema,
@@ -326,4 +328,16 @@ test('order risk heuristic requests COD confirmation without fraud ML', () => {
   });
   assert.deepEqual(prepaid.actions, ['allow']);
   assert.equal(prepaid.risk_level, 'low');
+});
+
+test('coupon selections accept one code and a comparison amount, never client-priced discounts', () => {
+  const base={idempotency_key:'synthetic-coupon-selection',shipping_address:{},discount_codes:[' save10 '],expected_discount_amount_minor:20};
+  assert.deepEqual(CheckoutDeliverySchema.parse(base).discount_codes,['SAVE10']);
+  for(const extra of [{discount_codes:['A','B']},{expected_discount_amount_minor:-1},{expected_discount_amount_minor:0.2},{discount_amount:99999}]) assert.equal(CheckoutDeliverySchema.safeParse({...base,...extra}).success,false);
+});
+test('percentage display estimates preserve the percentage divisor and round to paise', () => {
+  for(const [subtotal,percentage,expected] of [[2,10,0.2],[999,10,99.9],[0.29,5,0.01],[2490,15,373.5],[20.10,5,1.01],[100,100,100],[100,0,0]]) {
+    const quote=planCouponValidation({code:'SYNTHETIC',type:'percentage',value:percentage},{subtotal});
+    assert.equal(quote.coupon.discount,expected);
+  }
 });

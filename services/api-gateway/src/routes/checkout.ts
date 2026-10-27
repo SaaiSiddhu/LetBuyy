@@ -1,3 +1,4 @@
+import { verifyHostedDiscountSelection } from '../lib/hosted-checkout-discount';
 import { hostedRazorpayTestCredentials } from '../lib/hosted-razorpay-credentials';
 import { cartLines, signedCartSubtotalMinor, stringValue, checkoutPaymentProvider, checkoutShippingMethod, buildHostedCheckoutOrderCommand, type CartRow, type HostedCheckoutPaymentProvider } from '../lib/hosted-checkout-order-command';
 export { buildHostedCheckoutOrderCommand } from '../lib/hosted-checkout-order-command';
@@ -6,7 +7,7 @@ import { authorizeHostedStorefrontPurchase } from '../lib/storefront-visitor-acc
 import { loadBuyerSessionState } from '../middleware/buyer-session';
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
-import { canRestartUnpaidHostedContact, canPrepareCodIntent, contactRestartPatch, confirmationDecision, confirmationClaimPatch, releaseRejectedCodClaimPatch, sessionMatchesScope, sessionRevision, sessionWriteAllowed, SESSION_REVISION, type HostedCheckoutSession, type ConfirmationClaim } from '../lib/hosted-checkout-session';
+import { sessionPayload, selectedHostedDiscountCodes, canRestartUnpaidHostedContact, canPrepareCodIntent, contactRestartPatch, confirmationDecision, confirmationClaimPatch, releaseRejectedCodClaimPatch, sessionMatchesScope, sessionRevision, sessionWriteAllowed, SESSION_REVISION, type HostedCheckoutSession, type ConfirmationClaim } from '../lib/hosted-checkout-session';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
@@ -99,24 +100,6 @@ function invalidHandoff(c: AppContext, message = 'Checkout handoff is invalid or
     }, 401);
 }
 
-function sessionPayload(row: CheckoutSessionRow) {
-    return {
-        id: row.id,
-        site_id: row.site_id,
-        cart_id: row.cart_id,
-        channel: row.channel || 'web',
-        sales_origin: row.sales_origin || 'storefront',
-        state: row.checkout_state || row.status || 'contact',
-        customer_email: row.customer_email || null,
-        buyer_name: row.buyer_name || null,
-        buyer_phone: row.buyer_phone || null,
-        shipping_address: row.shipping_address || {},
-        delivery_quote: row.delivery_quote || {},
-        payment_intent: row.payment_intent || {},
-        confirmed_at: row.confirmed_at || null,
-        failed_at: row.failed_at || null,
-    };
-}
 
 function paymentIntentId(session: CheckoutSessionRow): string | null {
     const intent = session.payment_intent;
@@ -356,9 +339,9 @@ async function revalidateConfirmInputs(
         if ((data || []).length !== reservationIds.length) return { ok: false, reason: 'inventory_reservation_invalid' };
     }
 
-    const discountCodes = new Set<string>();
-    if (handoff.cart.coupon_code) discountCodes.add(handoff.cart.coupon_code.toUpperCase());
-    for (const code of session.discount_codes || []) discountCodes.add(String(code).toUpperCase());
+    const selectedCodes = selectedHostedDiscountCodes(session, handoff.cart.coupon_code);
+    if (!selectedCodes) return { ok: false, reason: 'discount_invalid' };
+    const discountCodes = new Set(selectedCodes);
     if (discountCodes.size > 0) {
         const { data, error } = await db
             .from('coupons')
@@ -367,7 +350,7 @@ async function revalidateConfirmInputs(
             .in('code', [...discountCodes])
             .eq('is_active', true)
             .is('deleted_at', null);
-        if (!error && (data || []).length < discountCodes.size) return { ok: false, reason: 'discount_invalid' };
+        if (error || (data || []).length < discountCodes.size) return { ok: false, reason: 'discount_invalid' };
     }
 
     return { ok: true };
@@ -458,6 +441,11 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
 
     const lines = cartLines(verified.handoff.cart);
     const presentation = await loadCheckoutStorePresentation(c, verified.handoff.siteId);
+    const checkout = await loadSession(getSupabaseAdmin(c), verified.handoff);
+    const codes = selectedHostedDiscountCodes(checkout, verified.handoff.cart.coupon_code);
+    const savedDiscount = checkout?.metadata?.hosted_discount_selection_v1 === true && codes?.length === 1
+        && Number.isFinite(Number(checkout.discount_total)) && Number(checkout.discount_total) >= 0
+        ? { code: codes[0], amount: Number(checkout.discount_total) } : undefined;
 
     return c.json(success({
         site_id: verified.handoff.siteId,
@@ -467,6 +455,7 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
         coupon_code: typeof verified.handoff.cart.coupon_code === 'string' ? verified.handoff.cart.coupon_code : null,
         subdomain: presentation.subdomain,
         presentation,
+        ...(savedDiscount ? { saved_discount: savedDiscount } : {}),
         lines,
     }));
 });
@@ -553,7 +542,7 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
     const cartId = c.req.param('cartId');
     const verified = await verifyCheckoutHandoff(c, cartId);
     if (!verified.ok) return verified.response;
-    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord };
+    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord; discount_codes?: string[]; expected_discount_amount_minor?: number };
 
     return runIdempotentStep(c, verified.handoff, `checkout.delivery:${cartId}`, body.idempotency_key, body, async () => {
         const observed = await loadSession(getSupabaseAdmin(c), verified.handoff);
@@ -648,6 +637,13 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             };
         }
 
+        const discount = await verifyHostedDiscountSelection(getSupabaseAdmin(c), {
+            siteId: verified.handoff.siteId, cart: verified.handoff.cart, observed,
+            shippingAmount: typeof serverResolvedQuote.amount === 'number' ? serverResolvedQuote.amount : 0,
+            codes: body.discount_codes, expectedAmountMinor: body.expected_discount_amount_minor,
+        });
+        if (!discount.ok) return discount.refusal;
+
         const shippingAddress = { ...body.shipping_address };
         if (!stringValue(shippingAddress.state_code)) {
             const stateCode = gstStateCodeFromName(stringValue(shippingAddress.state));
@@ -658,7 +654,8 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             shipping_method: body.shipping_method,
             shipping_address: shippingAddress,
             delivery_quote: serverResolvedQuote,
-            metadata: { ...(observed?.metadata || {}), hosted_delivery_signature: verified.handoff.signature || null },
+            discount_codes: discount.codes, discount_total: discount.amount,
+            metadata: { ...(observed?.metadata || {}), hosted_discount_selection_v1: true, hosted_delivery_signature: verified.handoff.signature || null },
         }, observed);
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to delivery.' } }, status: 409 };
         return { body: success({ checkout: sessionPayload(session) }), status: 200, resourceId: session.id };

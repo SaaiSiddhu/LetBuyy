@@ -40,3 +40,12 @@ test('the surviving legacy customer receipt shape uses the same money projection
     assert.equal(mapOrderDrop(receipt).total, 14990);
     assert.equal(mapOrderDetailDrop(receipt).line_items[0].line_price, 14990);
 });
+
+test('saved coupon code, exact paise savings and final receipt survive both account drops', () => {
+    const receipt={id:'synthetic-coupon-order',coupon_code:'SAVE10',subtotal:199,discount:19.9,coupon_discount:19.9,tax:35.82,shipping_cost:20,total:234.92,items:[]};
+    const before=structuredClone(receipt);const detail=mapOrderDetailDrop(receipt),summary=mapOrderDrop(receipt);
+    assert.equal(detail.coupon_code,'SAVE10');assert.equal(detail.discount_total,1990);assert.equal(detail.total,23492);
+    assert.equal(summary.coupon_code,detail.coupon_code);assert.equal(summary.discount_total,detail.discount_total);assert.equal(summary.total,detail.total);
+    assert.deepEqual(receipt,before);
+    assert.equal(mapOrderDetailDrop({...receipt,coupon_code:null,discount:0}).coupon_code,null);
+});
