@@ -1,3 +1,5 @@
+import { StorefrontDirectoryQuerySchema, StorefrontDirectoryCursorSchema, StorefrontDirectoryPayloadSchema, type StorefrontDirectoryQuery } from '@letbuyy/shared-types';
+import { AppError } from '../../lib/errors';
 import type { StorefrontDiscoveryQuery, StorefrontDiscoveryMetadata } from '@letbuyy/commerce-core';
 import { parseStorefrontDiscoveryRequest } from '../../lib/storefront-discovery';
 import {authorizeVisitor,authorizeVisitorSite,type VisitorSite} from '../../lib/storefront-visitor-access';
@@ -5,7 +7,7 @@ import { resolveLiquidBundleArtifact } from '../../lib/theme-release-bundle';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
 import { sha256Hex } from '../../lib/crypto';
-import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/supabase';
+import { dbFailureBody, getSupabaseAdmin, paginated, success, decodeListCursor } from '../../lib/supabase';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 import { registerStorefrontBlogRoutes } from './storefront-blog-routes';
 import { readThemePreviewContent, readThemePreviewCollection } from './theme-preview-content';
@@ -203,6 +205,7 @@ type ThemeEditorDraftRow = {
 export type StorefrontThemeReleaseReadOptions = { releaseId?: string | null; releaseVersion?: number | null; projection?: 'render-v1' };
 
 type StorefrontPublicRouteDependencies = StorefrontMarketplaceFeedDependencies & {
+    loadPublicDirectory?: (c: AppContext, input: {p_limit:number;p_after_at:string|null;p_after_id:string|null}) => Promise<{data:unknown;error:unknown}>;
     loadSiteByHandle: (c: AppContext, handle: string, options: { publishedOnly: boolean }) => Promise<StorefrontSiteRecord | null>;
     loadPublishedStore: (c: AppContext, subdomain: string) => Promise<PublishedStoreRecord | null>;
     loadPublishedStoreById: (c: AppContext, storeId: string) => Promise<PublishedStoreRecord | null>;
@@ -319,6 +322,7 @@ export function registerStorefrontPublicRoutes(
     });
 
     router.get('/lookup', async (c) => {
+        c.header('Cache-Control', 'no-store');
         const query = normalizeStorefrontHandle(c.req.query('q') || '');
         if (!query) {
             return c.json({
@@ -331,28 +335,29 @@ export function registerStorefrontPublicRoutes(
         }
 
         const db = getSupabaseAdmin(c);
-        const selectFields = 'store_name,name,status,site_type,subdomain';
+        const selectFields = 'store_name,name,status,site_type,subdomain,published,access_mode';
         // Store finder, not tenant resolution: it returns no site id, and the storefront read that
         // follows resolves its own tenant from sites.subdomain. Matching either handle column stays
         // intentional, but subdomain and store_name are unique only within their own column, so one
         // combined predicate can match two tenants and — with limit(1) and no ordering — return an
         // arbitrary one, letting a store_name capture another tenant's subdomain. Probe the canonical
-        // column first, then store_name; each equality is single-valued, so more than one row (or a
-        // query error) resolves to "store not found".
+        // column first, then store_name only if absent. Query failures remain unavailable.
         const lookupExactSite = async (column: 'subdomain' | 'store_name') => {
-            const { data } = await db
+            const { data, error } = await db
                 .from('sites')
                 .select(selectFields)
                 .eq(column, query)
-                .not('status', 'eq', 'suspended')
                 .is('deleted_at', null)
                 .maybeSingle();
-
+            if (error) throw new AppError('Store lookup is temporarily unavailable.', 503, 'LOOKUP_UNAVAILABLE');
             return data;
         };
 
         const exactSite = (await lookupExactSite('subdomain')) || (await lookupExactSite('store_name'));
-        if (exactSite) {
+        // Resolve canonical ownership before public eligibility. A private
+        // subdomain must not fall through to another store's legacy name alias.
+        if (exactSite && exactSite.site_type === 'store' && exactSite.status === 'published'
+            && exactSite.published === true && (exactSite.access_mode == null || exactSite.access_mode === 'public')) {
             return c.json(success({
                 status: 'found',
                 store: {
@@ -364,96 +369,34 @@ export function registerStorefrontPublicRoutes(
             }));
         }
 
-        const { data: fuzzyMatch } = await db
-            .from('sites')
-            .select(selectFields)
-            .ilike('name', `%${query}%`)
-            .not('status', 'eq', 'suspended')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(1);
-
-        const fuzzySite = fuzzyMatch?.[0];
-        if (fuzzySite) {
-            return c.json(success({
-                status: 'found',
-                store: {
-                    name: fuzzySite.name || fuzzySite.store_name,
-                    subdomain: fuzzySite.subdomain || fuzzySite.store_name,
-                    status: fuzzySite.status,
-                    siteType: fuzzySite.site_type,
-                },
-            }));
-        }
-
+        // A finder accepts exact handles. Never turn a miss into an unscoped
+        // tenant-name scan or describe a private/unpublished draft as online.
         return c.json(success({ status: 'not_found' }));
     });
 
-    // GET /storefront/directory — Public LetBuyy discovery directory and aggregate stats.
-    // SECURITY: owner PII (full_name, email) is never returned to anonymous callers.
-    // SECURITY: published stores ONLY. A `draft` site is a store its merchant has created and not
-    // launched; listing one here, or counting it in `totalStores`, discloses that merchant's
-    // store_name/logo_url/theme_id to any anonymous caller before they have chosen to be public.
-    // Both filters below are `.eq('status', 'published')` for that reason — see F-DIRECTORY-1 and
-    // __tests__/storefront-directory-exposure.test.ts, which fails if either widens again.
-    // NOTE: this route does not currently execute at all. `sites` is a registered tenant table and
-    // `status` is not one of its accepted scope columns, so createTenantGuardedSupabaseClient
-    // rejects both queries before they run. That fail-closed state is deliberate and unchanged
-    // here: making a platform-wide public store directory live is an owner decision (CAP-C60),
-    // and getSupabaseAdminUnguarded is not the instrument for it — see its conditions 1 and 3.
-    //
-    // F1.5 (foundation-phase1-closure, 2026-09-26): the guard's rejection used to propagate
-    // uncaught to the global error handler, so an anonymous caller saw an opaque `500
-    // INTERNAL_ERROR` — indistinguishable from a real crash, and logged as one. The catch below
-    // recognizes only that one documented, expected rejection (by the exact message the guard
-    // throws — pinned by __tests__/storefront-directory-exposure.test.ts) and reports it as the
-    // deliberate, named unavailability it is, at 503, matching this file's own house style
-    // (see METAFIELDS_UNAVAILABLE in ../metafields.ts and TENANT_TX_UNAVAILABLE in ../loyalty.ts).
-    // Anything else — a real bug, a genuine DB outage — still falls through to `throw`, unchanged,
-    // so it is still logged and still a 500. No query predicate below changed.
-    router.get('/directory', async (c) => {
-        try {
-            const db = getSupabaseAdmin(c);
-
-            const { data: storesRaw } = await db
-                .from('sites')
-                .select(`
-                    store_name,
-                    name,
-                    logo_url,
-                    theme_id,
-                    status,
-                    site_type,
-                    created_at
-                `)
-                .eq('status', 'published')
-                .is('deleted_at', null)
-                .order('created_at', { ascending: false })
-                .limit(12);
-
-            const [storesCount, themesCount] = await Promise.all([
-                db.from('sites').select('*', { count: 'exact', head: true }).eq('status', 'published').is('deleted_at', null),
-                db.from('online_store_themes').select('*', { count: 'exact', head: true }),
-            ]);
-
-            return c.json(success({
-                stores: storesRaw || [],
-                stats: {
-                    totalStores: storesCount.count || 0,
-                    totalThemes: themesCount.count || 0,
-                },
-            }));
-        } catch (err) {
-            if (err instanceof Error && /Tenant table sites requires a tenant\/owner predicate/.test(err.message)) {
-                return c.json({
-                    error: {
-                        code: 'DIRECTORY_UNAVAILABLE',
-                        message: 'The public store directory is not available yet.',
-                    },
-                }, 503);
-            }
-            throw err;
+    // Owner decision CAP-C60, 27 October: public launched stores may appear in discovery.
+    // A fixed service-only SQL projection owns eligibility, fields, counts and cursor ordering.
+    // Ordinary tenant-table guards and every private/draft access gate remain unchanged.
+    router.get('/directory', validate('query', StorefrontDirectoryQuerySchema), async (c) => {
+        const query = c.get('validatedQuery') as StorefrontDirectoryQuery;
+        const cursor = query.cursor
+            ? StorefrontDirectoryCursorSchema.safeParse(decodeListCursor(query.cursor))
+            : null;
+        if (cursor && !cursor.success) throw new AppError('Invalid directory cursor', 400, 'VALIDATION_ERROR');
+        c.header('Cache-Control', 'no-store');
+        const loadDirectory = dependencies.loadPublicDirectory ?? (async (context, input) =>
+            await getSupabaseAdmin(context).rpc('public_storefront_directory_v1', input));
+        const { data, error } = await loadDirectory(c, {
+            p_limit: query.limit,
+            p_after_at: cursor?.success ? cursor.data.value : null,
+            p_after_id: cursor?.success ? cursor.data.id : null,
+        });
+        const payload = StorefrontDirectoryPayloadSchema.safeParse(data);
+        if (error || !payload.success || payload.data.stores.length > query.limit
+            || payload.data.pagination.limit !== query.limit) {
+            throw new AppError('The public store directory is temporarily unavailable.', 503, 'DIRECTORY_UNAVAILABLE');
         }
+        return c.json(success(payload.data));
     });
 
     // GET /storefront/store/:storeId — Public published store data by immutable ID.

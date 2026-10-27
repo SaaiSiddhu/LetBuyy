@@ -1,7 +1,7 @@
 import { normalizeStoreRootDomain, resolveStorefrontHost, validateSubdomainFormat } from '@letbuyy/tenant-core';
 import type { Store, StorefrontDomainProvisioning } from '@letbuyy/shared-types';
 import type { Env } from '../index';
-import { ensureVercelProjectDomain } from './vercel-domains';
+import { readVercelDomainStatus } from './vercel-domains';
 import { AppError } from './errors';
 
 type PersistedStoreHost = Pick<Store, 'subdomain'> & { store_name?: string | null };
@@ -27,8 +27,17 @@ export async function provisionFirstPartyStorefrontDomain(
         return { hostname, status: 'pending', reason: 'provider_not_configured' };
     }
     try {
-        const result = await ensureVercelProjectDomain(env, hostname, fetchImpl);
-        return result.status === 'active'
+        // First-party stores share the already verified wildcard. Creating or
+        // publishing a store must never register an individual provider domain.
+        const wildcard = `*.${root}`;
+        const result = await readVercelDomainStatus(env, wildcard, fetchImpl, hostname);
+        const productionWildcard = result.projectDomain?.name === wildcard
+            && result.projectDomain?.projectId === env.VERCEL_STOREFRONT_PROJECT_ID
+            && result.projectDomain?.gitBranch == null
+            && result.projectDomain?.customEnvironmentId == null
+            && result.projectDomain?.redirect == null
+            && modes.includes('production') && !modes.includes('staging');
+        return result.status === 'active' && productionWildcard
             ? { hostname, status: 'ready' }
             : { hostname, status: 'pending', reason: 'provider_pending' };
     } catch {

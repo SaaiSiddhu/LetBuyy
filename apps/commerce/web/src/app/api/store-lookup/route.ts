@@ -20,9 +20,9 @@ export async function GET(req: NextRequest) {
 
     try {
         const data = await createStorefrontApiClient().storefront.lookup({ q: query });
-        return NextResponse.json(data || { status: 'not_found' });
-    } catch (err) {
-        console.error('[store-lookup] Worker proxy error:', err);
-        return NextResponse.json({ status: 'not_found' });
+        return NextResponse.json(data || { status: 'not_found' }, { headers: { 'Cache-Control': 'no-store' } });
+    } catch {
+        console.error(JSON.stringify({ event: 'storefront.lookup_unavailable' }));
+        return NextResponse.json({ status: 'unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
     }
 }

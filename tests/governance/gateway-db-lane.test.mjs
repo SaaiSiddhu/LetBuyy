@@ -133,6 +133,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "product-atomic-edits.postgres.test.ts",
         "product-importer-disclosure.postgres.test.ts",
         "product-price-observations.postgres.test.ts",
+        "public-storefront-directory.postgres.test.ts",
         "real-http-shadow-rehearsal.postgres.test.ts",
         "real-staff-product-journey.postgres.test.ts",
         "return-refund-authority.postgres.test.ts",

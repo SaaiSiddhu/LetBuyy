@@ -84,7 +84,8 @@ test('C: onboarding captures an industry and sends it as survey.industry', () =>
 
 test('C: the gateway store-creation handler auto-applies the recommended experience', () => {
   const stores = read(STORES);
-  assert.match(stores, /import \{ resolveExperienceForIndustry, applyExperienceToTemplateConfig, LETBUYY_CORE_THEME_SLUG \} from '@letbuyy\/theme-engine'/);
+  const bindings = stores.match(/import\s*\{([^}]+)\}\s*from '@letbuyy\/theme-engine'/)?.[1].split(',').map(name => name.trim()) || [];
+  for (const name of ['resolveExperienceForIndustry', 'applyExperienceToTemplateConfig', 'LETBUYY_CORE_THEME_SLUG']) assert.ok(bindings.includes(name), `Missing canonical experience binding: ${name}`);
   assert.match(stores, /resolveExperienceForIndustry\(industryHint \|\| null, experienceOverride\)/);
   assert.match(stores, /applyExperienceToTemplateConfig\(templateConfig, experience\)/);
   // additive: only applies when an industry/override is present (no behaviour change otherwise)
