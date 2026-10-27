@@ -17,7 +17,7 @@ export type CartRow = {
     channel?: string | null;
     sales_origin?: 'storefront' | 'marketplace' | null;
     status?: string | null;
-    checkout_handoff?: { storefront_admission?: unknown; order_id?: string;
+    checkout_handoff?: { storefront_admission?: unknown; order_id?: string; checkout_origin?: string;
         buyer_binding?: { buyer_account_id?: string; session_epoch?: number; digest?: string } | null } | null;
 };
 

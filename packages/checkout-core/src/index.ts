@@ -660,17 +660,28 @@ export function canonicalCheckoutBuyerBinding(input: {
     cart_content_digest: input.cartContentDigest, buyer_account_id: input.buyerAccountId, buyer_session_epoch: input.buyerSessionEpoch });
 }
 
+/** Syntax only. Authority still requires the exact verified site-domain record. */
+export function normalizeCheckoutOrigin(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length > 300) return null;
+  try {
+    const origin = new URL(value);
+    const local = origin.hostname === 'localhost' || origin.hostname.endsWith('.localhost');
+    if (origin.origin !== value || origin.username || origin.password
+        || origin.pathname !== '/' || origin.search || origin.hash
+        || (origin.protocol !== 'https:' && !(local && origin.protocol === 'http:'))) return null;
+    return origin.origin;
+  } catch { return null; }
+}
+
+export const LETBUYY_CHECKOUT_ORIGIN_HEADER = 'X-LetBuyy-Checkout-Origin';
+
 export function canonicalCheckoutHandoffPayload(input: CheckoutCartBindingInput & {
   cartContentDigest: string; buyerBindingDigest?: string; checkoutOrigin?: string;
 }): string {
   // New branded-host handoffs bind their exact origin. Omitted means the unchanged
   // version1 central-origin protocol, retained only for its existing finite drain.
   if (input.checkoutOrigin !== undefined) {
-    const origin = new URL(input.checkoutOrigin);
-    const local = origin.hostname === 'localhost' || origin.hostname.endsWith('.localhost');
-    if (origin.origin !== input.checkoutOrigin || origin.username || origin.password
-        || origin.pathname !== '/' || origin.search || origin.hash
-        || (origin.protocol !== 'https:' && !(local && origin.protocol === 'http:'))) {
+    if (!normalizeCheckoutOrigin(input.checkoutOrigin)) {
       throw new Error('A canonical secure checkout origin is required');
     }
   }

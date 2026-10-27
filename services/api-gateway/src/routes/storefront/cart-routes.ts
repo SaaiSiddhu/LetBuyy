@@ -7,7 +7,8 @@ import { hmacSha256Hex, sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
 import { normalizeStorefrontHandle, type PublishedStoreRecord } from '@letbuyy/tenant-core';
-import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
+import { CommerceChannelSchema, type CommerceChannel } from '@letbuyy/shared-types';
+import { checkoutOriginForStore } from '../../lib/store-checkout-domain';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
 import { acceptCartProductFacts, loadCartFactSources, type CartFactAcceptance } from '../../lib/cart-product-facts';
@@ -392,18 +393,6 @@ function cartLinesToInput(lines: StorefrontServerCartLine[]): StorefrontCartLine
     }));
 }
 
-function checkoutOrigin(c: AppContext): string {
-    const explicit = c.env.CHECKOUT_ORIGIN || c.env.NEXT_PUBLIC_STOREFRONT_URL || c.env.STOREFRONT_BASE_URL;
-    if (explicit) return explicit.trim().replace(/\/+$/, '');
-
-    const rawDomain = c.env.LETBUYY_PLATFORM_DOMAIN
-        || c.env.NEXT_PUBLIC_PLATFORM_DOMAIN
-        || c.env.PLATFORM_ROOT_DOMAIN
-        || DEFAULT_PLATFORM_DOMAIN;
-    const domain = rawDomain.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^\.+|\.+$/g, '');
-    return `https://checkout.${domain || DEFAULT_PLATFORM_DOMAIN}`;
-}
-
 function checkoutSigningSecret(c: AppContext): string | null {
     const configured = c.env.CHECKOUT_SIGNING_SECRET || c.env.STORE_ACCESS_SIGNING_KEY;
     if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
@@ -445,6 +434,7 @@ async function createCheckoutHandoff(
         expiresAt, cartContentDigest, buyerAccountId: mintingBuyer.buyerAccountId,
         buyerSessionEpoch: mintingBuyer.sessionEpoch,
     })) : undefined;
+    const checkoutOrigin = await checkoutOriginForStore(c, store.id);
     const signaturePayload = canonicalCheckoutHandoffPayload({
         siteId: store.id,
         cartId: cart.id,
@@ -453,11 +443,13 @@ async function createCheckoutHandoff(
         expiresAt,
         cartContentDigest,
         buyerBindingDigest,
+        checkoutOrigin,
         couponCodes: cart.coupon_codes,
         lines: cart.lines,
     });
     const signature = await hmacSha256Hex(secret, signaturePayload);
-    const checkoutUrl = new URL('/checkout', checkoutOrigin(c));
+    const checkoutUrl = new URL('/checkout', checkoutOrigin);
+    checkoutUrl.searchParams.set('checkout_origin', checkoutOrigin);
     checkoutUrl.searchParams.set('site_id', store.id);
     checkoutUrl.searchParams.set('cart_id', cart.id);
     checkoutUrl.searchParams.set('cart_token', cart.cart_token);
@@ -501,6 +493,7 @@ async function createCheckoutHandoff(
             checkout_handoff: {
                 storefront_admission: accessAdmission,
                 checkout_url: checkoutUrl.toString(),
+                checkout_origin: checkoutOrigin,
                 expires_at: expiresAt,
                 signed_at: new Date().toISOString(),
                 channel: cart.channel,
