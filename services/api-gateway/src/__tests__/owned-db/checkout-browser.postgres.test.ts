@@ -355,6 +355,20 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     const recoveredCodRadio = page.getByRole('radio', { name: /Cash on Delivery \(COD\)/ });
     await recoveredCodRadio.waitFor({ state: 'visible' });
     await recoveredCodRadio.check();
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹19.9 off applied', { exact: true }).waitFor();
+    owned.psql(`UPDATE coupons SET value=20,discount_value=20 WHERE store_id='${site.siteId}' AND code='SYNTHETIC10';`);
+    const staleDiscount = page.waitForResponse(response => new URL(response.url()).pathname.endsWith(`/${browserCartId}/delivery`) && response.status() === 409);
+    await page.getByRole('button', { name: 'Confirm COD order' }).click();
+    await staleDiscount;
+    await page.getByRole('alert').getByText('The coupon discount changed. Review it again before paying.').waitFor();
+    assert.equal(paymentIntentRequests,0,'changed coupon stops before any payment intent');
+    assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE site_id='${site.siteId}' AND customer_email='${email}';`),'0');
+    await page.getByRole('button', { name: 'Remove coupon' }).click();
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹39.8 off applied', { exact: true }).waitFor();
     await page.getByRole('button', { name: 'Confirm COD order' }).click();
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
 
@@ -367,6 +381,8 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     assert.equal(orders[0].rate_id, codRateId);
     assert.equal(Number(orders[0].amount), 25);
     assert.equal(orders[0].payment_method, 'cod');
+    assert.equal(owned.psql(`SELECT coupon_code||':'||discount::text FROM orders WHERE id='${orders[0].order_id}';`),'SYNTHETIC10:39.80');
+    owned.psql(`UPDATE coupons SET value=10,discount_value=10 WHERE store_id='${site.siteId}' AND code='SYNTHETIC10';`);
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${orders[0].order_id}' AND event_type='order.paid';`), '0');
     await context.close();
 });

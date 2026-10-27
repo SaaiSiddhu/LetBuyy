@@ -1033,8 +1033,8 @@ export function registerStorefrontCustomerEngagementRoutes(
             // payment status for every order (CAP-C51). Adding a read here without adding the column is
             // the failure mode; the test in customer-order-detail-fields.test.ts fails if they drift apart.
             .select(orderItemsRelationalReadsEnabled(c.env)
-                ? 'id, store_id, order_number, status, total, tax, gst_invoice_number, created_at, subtotal, discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency'
-                : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items, subtotal, discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency')
+                ? 'id, store_id, order_number, status, total, tax, gst_invoice_number, created_at, subtotal, discount, coupon_code, coupon_discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency'
+                : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items, subtotal, discount, coupon_code, coupon_discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency')
             .eq('store_id', storeId)
             .eq('customer_email', normalizeEmail(customer.email))
             .order('created_at', { ascending: false })

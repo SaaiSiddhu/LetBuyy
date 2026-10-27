@@ -584,7 +584,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
-            ...(couponSelectionChanged ? {
+            ...((couponSelectionChanged || appliedCoupon) ? {
                 discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
                 expected_discount_amount_minor: Math.round((discountAmount + (appliedCoupon?.freeShipping ? deliveryCharges : 0)) * 100),
             } : {}),
@@ -668,7 +668,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
-            ...(couponSelectionChanged ? {
+            ...((couponSelectionChanged || appliedCoupon) ? {
                 discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
                 expected_discount_amount_minor: Math.round((discountAmount + (appliedCoupon?.freeShipping ? deliveryCharges : 0)) * 100),
             } : {}),
@@ -1426,7 +1426,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         {/* Payment Button */}
                                         <Button unstyled
                                             onClick={paymentMethod === 'online' ? handlePayment : handleCODOrder}
-                                            disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded) || (paymentMethod === 'cod' && !selectedRate?.cod_available)}
+                                            disabled={!hasPaymentMethods || isProcessing || isCheckingCoupon || (paymentMethod === 'online' && !razorpayLoaded) || (paymentMethod === 'cod' && !selectedRate?.cod_available)}
                                             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
                                             style={{ backgroundColor: paymentMethod === 'cod' ? 'rgb(22 163 74)' : 'rgb(26 26 46)' }}
                                         >
@@ -1501,6 +1501,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <Button unstyled
                                                 type="button"
                                                 onClick={removeCoupon}
+                                                aria-label="Remove coupon"
+                                                disabled={isProcessing}
                                                 className="text-xs font-semibold text-green-700 hover:text-green-900"
                                             >
                                                 Remove
@@ -1522,7 +1524,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 <Button unstyled
                                                     type="button"
                                                     onClick={applyCoupon}
-                                                    disabled={isCheckingCoupon}
+                                                    disabled={isCheckingCoupon || isProcessing}
                                                     className="min-h-11 px-3 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-60"
                                                     style={{ backgroundColor: primaryColor }}
                                                 >
