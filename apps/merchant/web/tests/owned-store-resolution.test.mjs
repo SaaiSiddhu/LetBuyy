@@ -11,14 +11,24 @@ function resolver({ failStatus } = {}) {
         if (failStatus) throw new ApiError(failStatus);
         return { id: 'resolved-owned-site' };
     };
+    class MerchantError extends Error {}
     const modules = {
         'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
         '@letbuyy/api-client': { LetbuyyApiError: ApiError },
         '@/lib/api/client': {
+            MerchantApiRequestError: MerchantError,
             createMerchantApiClient: () => ({ stores: { get: get('id'), getByHandle: get('handle') } }),
             merchantApiErrorResponse: () => Response.json({ error: 'Unavailable' }, { status: 503 }),
         },
     };
+    const retrySource = readFileSync(new URL('../src/lib/api/read-retry.ts', import.meta.url), 'utf8');
+    const retryJs = ts.transpileModule(retrySource, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
+    const retryExports = {};
+    new Function('require', 'exports', retryJs)(name => {
+        const dependency = name === './client' ? modules['@/lib/api/client'] : modules[name];
+        assert.ok(dependency, name); return dependency;
+    }, retryExports);
+    modules['@/lib/api/read-retry'] = retryExports;
     const source = readFileSync(new URL('../src/lib/stores/resolve-owned-store.ts', import.meta.url), 'utf8');
     const js = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
     const exports = {};
@@ -45,8 +55,8 @@ test('an ID lookup cannot fall back to a handle or hide a transient failure', as
         const r = resolver({ failStatus: status });
         const result = await r.resolveOwnedStoreId('e001e3e7-e349-4064-ba85-806422b695d6');
         assert.equal(result.error.status, expected);
-        assert.equal(r.calls.length, 1);
-        assert.equal(r.calls[0].kind, 'id');
+        assert.equal(r.calls.length, status === 503 ? 2 : 1, 'only the admitted transient response gets one bounded retry');
+        assert.ok(r.calls.every(call => call.kind === 'id' && call.value === 'e001e3e7-e349-4064-ba85-806422b695d6'), 'no retry can fall back to a handle or change identity');
         assert.equal(result.storeId, undefined);
     }
 });
