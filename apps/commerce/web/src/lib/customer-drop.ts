@@ -34,6 +34,7 @@ export interface LiquidCustomerOrderDetail {
     /** Monetary fields use minor units, as required by Liquid money filters. */
     subtotal: number;
     discount_total: number;
+    coupon_code: string | null;
     shipping_total: number;
     tax_total: number;
     total: number;
@@ -62,6 +63,8 @@ export interface LiquidCustomerOrderDetail {
 }
 
 export interface LiquidCustomerOrder {
+    coupon_code: string | null;
+    discount_total: number | null;
     id: string;
     number: string;
     status: string;
@@ -165,6 +168,8 @@ export function mapOrderDrop(order: Record<string, unknown>): LiquidCustomerOrde
         number: String(order.order_number ?? order.number ?? ''),
         status: typeof order.status === 'string' ? order.status : 'pending',
         total: liquidOrderMoney(order.total),
+        coupon_code: typeof order.coupon_code === 'string' ? order.coupon_code : null,
+        discount_total: order.discount == null ? null : liquidOrderMoney(order.discount),
         currency: typeof order.currency === 'string' ? order.currency : 'INR',
         created_at: typeof order.created_at === 'string' ? order.created_at : null,
     };
@@ -220,6 +225,7 @@ export function mapOrderDetailDrop(row: Record<string, unknown>): LiquidCustomer
         created_at: typeof row.created_at === 'string' ? row.created_at : null,
         subtotal: liquidOrderMoney(row.subtotal),
         discount_total: liquidOrderMoney(row.discount),
+        coupon_code: typeof row.coupon_code === 'string' ? row.coupon_code : null,
         shipping_total: liquidOrderMoney(row.shipping_cost),
         tax_total: liquidOrderMoney(row.tax),
         total: liquidOrderMoney(row.total),

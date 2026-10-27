@@ -31,6 +31,9 @@ export interface BuyerOrderSummaryRow {
     order_number: string | null;
     status: string | null;
     total: number | null;
+    coupon_code?: string | null;
+    discount?: number | null;
+    subtotal?: number | null;
     currency: string | null;
     created_at: string | null;
 }
@@ -65,7 +68,7 @@ export async function loadBuyerOrderDetailFromDatabase(
     }
     // Same view fields used by the existing storefront detail renderer; no
     // payment provider metadata, internal notes or customer-email authorization.
-    const columns = 'id,site_id,store_id,order_number,status,total,tax,gst_invoice_number,created_at,subtotal,discount,shipping_cost,payment_method,payment_status,tracking_number,carrier,shipping_address,currency';
+    const columns = 'id,site_id,store_id,order_number,status,total,tax,gst_invoice_number,created_at,subtotal,discount,coupon_code,coupon_discount,shipping_cost,payment_method,payment_status,tracking_number,carrier,shipping_address,currency';
     return db.from('orders').select(relationalItems ? columns : `${columns},items`)
         .eq('id', orderId).eq('site_id', linkedSiteId).maybeSingle();
 }
@@ -109,7 +112,7 @@ export async function listBuyerOrdersFromDatabase(
     const siteIds = Array.from(new Set(pageLinks.map((link) => link.site_id)));
 
     const [ordersResult, sitesResult] = await Promise.all([
-        db.from('orders').select('id, site_id, order_number, status, total, currency, created_at').in('id', orderIds).in('site_id', siteIds),
+        db.from('orders').select('id, site_id, order_number, status, subtotal, discount, coupon_code, total, currency, created_at').in('id', orderIds).in('site_id', siteIds),
         db.from('sites').select('id, store_name').in('id', siteIds),
     ]);
     if (ordersResult.error) return { data: null, error: ordersResult.error, hasMore: false };
@@ -130,6 +133,9 @@ export async function listBuyerOrdersFromDatabase(
             order_number: (order?.order_number as string | undefined) ?? null,
             status: (order?.status as string | undefined) ?? null,
             total: (order?.total as number | undefined) ?? null,
+            subtotal: (order?.subtotal as number | undefined) ?? null,
+            discount: (order?.discount as number | undefined) ?? null,
+            coupon_code: (order?.coupon_code as string | undefined) ?? null,
             currency: (order?.currency as string | undefined) ?? null,
             created_at: (order?.created_at as string | undefined) ?? null,
         };

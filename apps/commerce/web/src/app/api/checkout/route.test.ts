@@ -289,3 +289,16 @@ test('opaque delegated buyer proof crosses contact and delivery-options boundari
         assert.equal((await call(new NextRequest(badUrl,{method:'POST',headers:bad.headers,body:await bad.text()}),'contact')).status,400);assert.equal(calls.length,2);
     });
 });
+
+
+test('checkout preserves actionable setup failures while hiding unexpected backend details', async () => {
+    for (const [code, expected] of [['PAYMENT_SETUP_REQUIRED', 'PAYMENT_SETUP_REQUIRED'], ['PRIVATE_DATABASE_ERROR', 'CHECKOUT_UNAVAILABLE']]) {
+        await withGateway(() => jsonResponse({ error: { code, message: 'private provider or database detail' } }, { status: 503 }), async () => {
+            const response = await call(request('payment-intent', { idempotency_key: crypto.randomUUID(), provider: 'razorpay', mode: 'sandbox' }), 'payment-intent');
+            assert.equal(response.status, 503);
+            const body = await response.json();
+            assert.equal(body.error.code, expected);
+            assert.ok(!JSON.stringify(body).includes('private provider'));
+        });
+    }
+});

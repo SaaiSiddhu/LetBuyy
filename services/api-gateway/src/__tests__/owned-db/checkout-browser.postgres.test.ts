@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import test, { after, before } from 'node:test';
 import { chromium, type Browser } from '@playwright/test';
 import worker from '../../index';
+import { encryptPaymentSecret } from '../../lib/store-payment-config';
 import { INTERNAL_SECRET, gatewayEnv, newIdentityKeys } from './gateway-harness';
 import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
@@ -19,6 +20,7 @@ const owned = requireOwnedDatabase();
 const site = newSyntheticTenant('browser-checkout');
 const signingSecret = 'synthetic-browser-checkout-signing-secret';
 const razorpayKeySecret = 'synthetic-browser-razorpay-secret';
+const paymentEncryptionKey = crypto.randomUUID();
 const razorpayOrderId = `order_${crypto.randomUUID().replace(/-/g, '')}`;
 const razorpayPaymentId = `pay_${crypto.randomUUID().replace(/-/g, '')}`;
 let razorpayAmountMinor = 0;
@@ -104,12 +106,17 @@ before(async () => {
       INSERT INTO shipping_rates (id,zone_id,site_id,name,type,price,is_active,cod_enabled)
       VALUES ('${codRateId}','${zoneId}','${site.siteId}','COD delivery','flat',20.00,true,true),
              ('${onlineRateId}','${zoneId}','${site.siteId}','Online delivery','flat',12.00,true,false);
+      INSERT INTO coupons (id,store_id,site_id,code,type,value,discount_type,discount_value,is_active)
+      VALUES (gen_random_uuid(),'${site.siteId}','${site.siteId}','SYNTHETIC10','percentage',10,'percentage',10,true);
       INSERT INTO carts (id,store_id,session_id,items,status,channel,expires_at)
       VALUES ('${cartId}','${site.siteId}','${cartToken}',
         '[{"id":"${productId}","product_id":"${productId}","variant_id":null,"title":"Synthetic browser checkout product","sku":"SYN-BROWSER-${productId}","image_url":null,"quantity":1,"unit_price":199,"currency":"INR","properties":{},"line_total":199}]'::jsonb,
         'active','web',now()+interval '1 day');
     `);
 
+    const encrypted = await encryptPaymentSecret(razorpayKeySecret, paymentEncryptionKey);
+    const paymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: { key_id: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'), key_secret_ciphertext: encrypted, test_mode: true, verified: true } };
+    owned.psql(`UPDATE sites SET payment_settings='${JSON.stringify(paymentSettings).replaceAll("'", "''")}'::jsonb WHERE id='${site.siteId}';`);
     const keys = await newIdentityKeys();
     const env = gatewayEnv(owned, keys, {
         CHECKOUT_SIGNING_SECRET: signingSecret,
@@ -117,8 +124,9 @@ before(async () => {
         NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost',
         CUSTOMER_SESSION_SECRET: 'synthetic-browser-customer-session-secret-at-least-32-bytes',
         LETBUYY_RAZORPAY_MODE: 'sandbox',
-        RAZORPAY_KEY_ID: 'rzp_test_browser_synthetic',
-        RAZORPAY_KEY_SECRET: razorpayKeySecret,
+        RAZORPAY_KEY_ID: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'),
+        RAZORPAY_KEY_SECRET: crypto.randomUUID(),
+        PAYMENT_CONFIG_ENCRYPTION_KEY: paymentEncryptionKey,
         QUEUE_TENANT_ENVELOPE_SECRET: 'synthetic-browser-checkout-notification-secret',
         NOTIFICATION_QUEUE: {
             send: async (body: Record<string, unknown>) => { notificationJobs.push(body); },
@@ -236,6 +244,9 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     const enabledCodRadio = page.getByRole('radio', { name: /Cash on Delivery \(COD\)/ });
     await enabledCodRadio.waitFor({ state: 'visible' });
     assert.equal(await enabledCodRadio.isDisabled(), false, 'COD must be available for the COD-enabled saved rate');
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹19.9 off applied', { exact: true }).waitFor();
     await enabledCodRadio.check();
     assert.equal(await enabledCodRadio.isChecked(), true, 'the buyer explicitly selects COD after changing delivery rates');
     await page.getByRole('button', { name: 'Confirm COD order' }).click();
@@ -250,6 +261,10 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.equal(rows[0].rate_id, codRateId, 'persisted order is bound to the reviewed COD rate');
     assert.equal(Number(rows[0].amount), 20);
     assert.equal(rows[0].payment_method, 'cod');
+    const receipt=JSON.parse(owned.psql(`SELECT json_build_object('coupon',coupon_code,'discount',discount,'coupon_discount',coupon_discount,'subtotal',subtotal,'shipping',shipping_cost,'tax',tax,'total',total) FROM orders WHERE id='${rows[0].order_id}';`));
+    assert.equal(receipt.coupon,'SYNTHETIC10');assert.equal(Number(receipt.discount),19.9);assert.equal(Number(receipt.coupon_discount),19.9);
+    assert.equal(Math.round(Number(receipt.total)*100),Math.round((Number(receipt.subtotal)+Number(receipt.shipping)+Number(receipt.tax)-Number(receipt.discount))*100));
+
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${rows[0].order_id}' AND event_type='order.paid';`), '0', 'an unpaid COD order is not announced as paid');
     assert.equal(notificationJobs.length, 0, 'an unpaid COD order does not queue a paid-order email');
     assert.deepEqual(pageErrors, []);
@@ -340,6 +355,20 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     const recoveredCodRadio = page.getByRole('radio', { name: /Cash on Delivery \(COD\)/ });
     await recoveredCodRadio.waitFor({ state: 'visible' });
     await recoveredCodRadio.check();
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹19.9 off applied', { exact: true }).waitFor();
+    owned.psql(`UPDATE coupons SET value=20,discount_value=20 WHERE store_id='${site.siteId}' AND code='SYNTHETIC10';`);
+    const staleDiscount = page.waitForResponse(response => new URL(response.url()).pathname.endsWith(`/${browserCartId}/delivery`) && response.status() === 409);
+    await page.getByRole('button', { name: 'Confirm COD order' }).click();
+    await staleDiscount;
+    await page.getByRole('alert').getByText('The coupon discount changed. Review it again before paying.').waitFor();
+    assert.equal(paymentIntentRequests,0,'changed coupon stops before any payment intent');
+    assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE site_id='${site.siteId}' AND customer_email='${email}';`),'0');
+    await page.getByRole('button', { name: 'Remove coupon' }).click();
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹39.8 off applied', { exact: true }).waitFor();
     await page.getByRole('button', { name: 'Confirm COD order' }).click();
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
 
@@ -352,6 +381,8 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     assert.equal(orders[0].rate_id, codRateId);
     assert.equal(Number(orders[0].amount), 25);
     assert.equal(orders[0].payment_method, 'cod');
+    assert.equal(owned.psql(`SELECT coupon_code||':'||discount::text FROM orders WHERE id='${orders[0].order_id}';`),'SYNTHETIC10:39.80');
+    owned.psql(`UPDATE coupons SET value=10,discount_value=10 WHERE store_id='${site.siteId}' AND code='SYNTHETIC10';`);
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${orders[0].order_id}' AND event_type='order.paid';`), '0');
     await context.close();
 });
@@ -363,7 +394,7 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     owned.psql(`
       INSERT INTO carts (id,store_id,session_id,items,status,channel,expires_at)
       VALUES ('${browserCartId}','${site.siteId}','${browserCartToken}',
-        '[{"id":"${productId}","product_id":"${productId}","variant_id":null,"title":"Synthetic browser checkout product","sku":"SYN-BROWSER-${productId}","image_url":null,"quantity":1,"unit_price":199,"currency":"INR","properties":{},"line_total":199}]'::jsonb,
+        '[{"id":"${productId}","product_id":"${productId}","variant_id":null,"title":"Synthetic browser checkout product","sku":"SYN-BROWSER-${productId}","image_url":null,"quantity":2,"unit_price":199,"currency":"INR","properties":{},"line_total":398}]'::jsonb,
         'active','web',now()+interval '1 day');
     `);
     const context = await browser.newContext();
@@ -373,14 +404,14 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
         (globalThis as any).localStorage.setItem('lb_cart', JSON.stringify(items));
     }, {
         token: browserCartToken,
-        items: [{ id: productId, name: 'Synthetic browser checkout product', price: 199, currency: 'INR', images: [], stock: 25, quantity: 1 }],
+        items: [{ id: productId, name: 'Synthetic browser checkout product', price: 199, currency: 'INR', images: [], stock: 25, quantity: 2 }],
     });
     const page = await context.newPage();
     const pageErrors: string[] = [];
     await page.route('https://checkout.razorpay.com/v1/checkout.js**', route => route.fulfill({
         status: 200,
         contentType: 'application/javascript',
-        body: `window.Razorpay = class { constructor(options) { this.options = options; } on() {} open() { void this.options.handler({ razorpay_order_id: '${razorpayOrderId}', razorpay_payment_id: '${razorpayPaymentId}', razorpay_signature: '${razorpaySignature}' }); } };`,
+        body: `window.Razorpay = class { constructor(options) { this.options = options; window.__syntheticRazorpayAppearance = { color: options.theme.color, image: options.image || null, amount: options.amount }; } on() {} open() { void this.options.handler({ razorpay_order_id: '${razorpayOrderId}', razorpay_payment_id: '${razorpayPaymentId}', razorpay_signature: '${razorpaySignature}' }); } };`,
     }));
     page.on('pageerror', error => pageErrors.push(error.message));
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
@@ -405,8 +436,14 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     const payButton = page.getByRole('button', { name: /Pay ₹/ });
     await payButton.waitFor({ state: 'visible' });
     assert.equal(await payButton.isEnabled(), true, 'the online checkout action is enabled after loading the provider script');
+    assert.match(await payButton.textContent() || '', /Pay ₹410/);
+    const checkoutColor = await page.locator('.checkout-theme-frame').evaluate(element => (globalThis as unknown as { getComputedStyle(node: typeof element): { getPropertyValue(name: string): string } }).getComputedStyle(element).getPropertyValue('--primary').trim());
     await payButton.click();
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
+    const popup = await page.evaluate(() => (globalThis as unknown as { __syntheticRazorpayAppearance: { color: string; image: string | null; amount: number } }).__syntheticRazorpayAppearance);
+    assert.equal(popup.color, checkoutColor, 'provider popup inherits the same sanitized store primary as checkout');
+    assert.equal(popup.image, null, 'a store without a logo never requests the missing generic /logo.png');
+    assert.equal(popup.amount, 41000, 'appearance wiring leaves the server-priced payment amount intact');
 
     const rows = JSON.parse(owned.psql(`
       SELECT COALESCE(json_agg(json_build_object('id',o.id,'status',o.status,'payment_status',o.payment_status,'payment_method',o.payment_method,'email',o.customer_email,
@@ -420,6 +457,7 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     assert.equal(rows[0].payment_method, 'razorpay');
     assert.equal(rows[0].shipping_rate_id, onlineRateId);
     assert.equal(Number(rows[0].shipping_minor), 1200, 'the order uses the buyer-selected online delivery rate');
+    assert.equal(razorpayAmountMinor, 41000, 'two units and the selected delivery rate match the displayed Pay amount');
     assert.equal(razorpayAmountMinor, Number(rows[0].total_minor), 'provider amount matches the full Gateway-priced total');
     assert.equal(owned.psql(`SELECT count(*) FROM payment_transactions WHERE order_id='${rows[0].id}' AND provider_payment_id='${razorpayPaymentId}' AND status='captured';`), '1');
     assert.equal(owned.psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${site.siteId}' AND source_type='payment_capture' AND source_id='razorpay:${razorpayPaymentId}';`), '1');

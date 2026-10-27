@@ -276,6 +276,31 @@ export function sanitizeBranding(
     };
 }
 
+export interface CheckoutPaymentAppearance {
+    color: string;
+    image?: string;
+}
+
+/** Presentation only: reuse the verified checkout branding, never a second payment theme. */
+export function checkoutPaymentAppearance(
+    branding: Pick<SanitizedBranding, 'primaryColor' | 'logoUrl'>,
+    storefrontBaseUrl: string,
+): CheckoutPaymentAppearance {
+    const appearance: CheckoutPaymentAppearance = {
+        color: sanitizeBrandingHexColor(branding.primaryColor, NEUTRAL.primaryColor)!,
+    };
+    const logo = sanitizeBrandingUrl(branding.logoUrl);
+    if (!logo) return appearance;
+    try {
+        // Root-relative assets belong to the verified storefront, not the hosted checkout.
+        const url = new URL(logo, storefrontBaseUrl);
+        if (url.protocol === 'https:' && !url.username && !url.password) appearance.image = url.href;
+    } catch {
+        // Without a safe absolute image the provider displays the store name instead.
+    }
+    return appearance;
+}
+
 // Renders the full derived token set as CSS custom properties via the `style` prop (a plain
 // object React serializes itself — never a raw <style> block, and never string-concatenated
 // into one), so a value that somehow survived sanitization still can't break out of a property

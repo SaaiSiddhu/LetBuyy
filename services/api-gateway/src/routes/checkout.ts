@@ -1,3 +1,5 @@
+import { verifyHostedDiscountSelection } from '../lib/hosted-checkout-discount';
+import { hostedRazorpayTestCredentials } from '../lib/hosted-razorpay-credentials';
 import { cartLines, signedCartSubtotalMinor, stringValue, checkoutPaymentProvider, checkoutShippingMethod, buildHostedCheckoutOrderCommand, type CartRow, type HostedCheckoutPaymentProvider } from '../lib/hosted-checkout-order-command';
 export { buildHostedCheckoutOrderCommand } from '../lib/hosted-checkout-order-command';
 import { loadCheckoutStorePresentation } from '../lib/checkout-store-presentation';
@@ -5,7 +7,7 @@ import { authorizeHostedStorefrontPurchase } from '../lib/storefront-visitor-acc
 import { loadBuyerSessionState } from '../middleware/buyer-session';
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
-import { canRestartUnpaidHostedContact, canPrepareCodIntent, contactRestartPatch, confirmationDecision, confirmationClaimPatch, releaseRejectedCodClaimPatch, sessionMatchesScope, sessionRevision, sessionWriteAllowed, SESSION_REVISION, type HostedCheckoutSession, type ConfirmationClaim } from '../lib/hosted-checkout-session';
+import { sessionPayload, selectedHostedDiscountCodes, canRestartUnpaidHostedContact, canPrepareCodIntent, contactRestartPatch, confirmationDecision, confirmationClaimPatch, releaseRejectedCodClaimPatch, sessionMatchesScope, sessionRevision, sessionWriteAllowed, SESSION_REVISION, type HostedCheckoutSession, type ConfirmationClaim } from '../lib/hosted-checkout-session';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
@@ -98,24 +100,6 @@ function invalidHandoff(c: AppContext, message = 'Checkout handoff is invalid or
     }, 401);
 }
 
-function sessionPayload(row: CheckoutSessionRow) {
-    return {
-        id: row.id,
-        site_id: row.site_id,
-        cart_id: row.cart_id,
-        channel: row.channel || 'web',
-        sales_origin: row.sales_origin || 'storefront',
-        state: row.checkout_state || row.status || 'contact',
-        customer_email: row.customer_email || null,
-        buyer_name: row.buyer_name || null,
-        buyer_phone: row.buyer_phone || null,
-        shipping_address: row.shipping_address || {},
-        delivery_quote: row.delivery_quote || {},
-        payment_intent: row.payment_intent || {},
-        confirmed_at: row.confirmed_at || null,
-        failed_at: row.failed_at || null,
-    };
-}
 
 function paymentIntentId(session: CheckoutSessionRow): string | null {
     const intent = session.payment_intent;
@@ -355,9 +339,9 @@ async function revalidateConfirmInputs(
         if ((data || []).length !== reservationIds.length) return { ok: false, reason: 'inventory_reservation_invalid' };
     }
 
-    const discountCodes = new Set<string>();
-    if (handoff.cart.coupon_code) discountCodes.add(handoff.cart.coupon_code.toUpperCase());
-    for (const code of session.discount_codes || []) discountCodes.add(String(code).toUpperCase());
+    const selectedCodes = selectedHostedDiscountCodes(session, handoff.cart.coupon_code);
+    if (!selectedCodes) return { ok: false, reason: 'discount_invalid' };
+    const discountCodes = new Set(selectedCodes);
     if (discountCodes.size > 0) {
         const { data, error } = await db
             .from('coupons')
@@ -366,7 +350,7 @@ async function revalidateConfirmInputs(
             .in('code', [...discountCodes])
             .eq('is_active', true)
             .is('deleted_at', null);
-        if (!error && (data || []).length < discountCodes.size) return { ok: false, reason: 'discount_invalid' };
+        if (error || (data || []).length < discountCodes.size) return { ok: false, reason: 'discount_invalid' };
     }
 
     return { ok: true };
@@ -457,6 +441,11 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
 
     const lines = cartLines(verified.handoff.cart);
     const presentation = await loadCheckoutStorePresentation(c, verified.handoff.siteId);
+    const checkout = await loadSession(getSupabaseAdmin(c), verified.handoff);
+    const codes = selectedHostedDiscountCodes(checkout, verified.handoff.cart.coupon_code);
+    const savedDiscount = checkout?.metadata?.hosted_discount_selection_v1 === true && codes?.length === 1
+        && Number.isFinite(Number(checkout.discount_total)) && Number(checkout.discount_total) >= 0
+        ? { code: codes[0], amount: Number(checkout.discount_total) } : undefined;
 
     return c.json(success({
         site_id: verified.handoff.siteId,
@@ -466,6 +455,7 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
         coupon_code: typeof verified.handoff.cart.coupon_code === 'string' ? verified.handoff.cart.coupon_code : null,
         subdomain: presentation.subdomain,
         presentation,
+        ...(savedDiscount ? { saved_discount: savedDiscount } : {}),
         lines,
     }));
 });
@@ -552,7 +542,7 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
     const cartId = c.req.param('cartId');
     const verified = await verifyCheckoutHandoff(c, cartId);
     if (!verified.ok) return verified.response;
-    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord };
+    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord; discount_codes?: string[]; expected_discount_amount_minor?: number };
 
     return runIdempotentStep(c, verified.handoff, `checkout.delivery:${cartId}`, body.idempotency_key, body, async () => {
         const observed = await loadSession(getSupabaseAdmin(c), verified.handoff);
@@ -647,6 +637,13 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             };
         }
 
+        const discount = await verifyHostedDiscountSelection(getSupabaseAdmin(c), {
+            siteId: verified.handoff.siteId, cart: verified.handoff.cart, observed,
+            shippingAmount: typeof serverResolvedQuote.amount === 'number' ? serverResolvedQuote.amount : 0,
+            codes: body.discount_codes, expectedAmountMinor: body.expected_discount_amount_minor,
+        });
+        if (!discount.ok) return discount.refusal;
+
         const shippingAddress = { ...body.shipping_address };
         if (!stringValue(shippingAddress.state_code)) {
             const stateCode = gstStateCodeFromName(stringValue(shippingAddress.state));
@@ -657,7 +654,8 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             shipping_method: body.shipping_method,
             shipping_address: shippingAddress,
             delivery_quote: serverResolvedQuote,
-            metadata: { ...(observed?.metadata || {}), hosted_delivery_signature: verified.handoff.signature || null },
+            discount_codes: discount.codes, discount_total: discount.amount,
+            metadata: { ...(observed?.metadata || {}), hosted_discount_selection_v1: true, hosted_delivery_signature: verified.handoff.signature || null },
         }, observed);
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to delivery.' } }, status: 409 };
         return { body: success({ checkout: sessionPayload(session) }), status: 200, resourceId: session.id };
@@ -707,9 +705,14 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
         return c.json({ success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment provider setup is required.' } }, 503);
     }
 
+    const razorpayCredentials = body.provider === 'razorpay' ? await hostedRazorpayTestCredentials(c, verified.handoff.siteId) : null;
     if (body.provider === 'razorpay') {
-        if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
+        if (!razorpayCredentials) {
             return c.json({ success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment provider setup is required.' } }, 503);
+        }
+        const priorKeyId = stringValue(priorSetup?.payment_intent?.key_id);
+        if (priorKeyId && priorKeyId !== razorpayCredentials!.keyId) {
+            return c.json({ success: false, error: { code: 'CHECKOUT_PAYMENT_CONFIGURATION_CHANGED', message: 'Payment settings changed. Contact the store before retrying this payment.' } }, 409);
         }
         if (body.tokenize) {
             return c.json({ success: false, error: { code: 'CHECKOUT_TOKENIZATION_UNAVAILABLE', message: 'Payment tokenization is not available for this checkout.' } }, 400);
@@ -752,7 +755,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                             provider: 'razorpay',
                             status: 'requires_action',
                             mode: 'sandbox',
-                            key_id: c.env.RAZORPAY_KEY_ID,
+                            key_id: razorpayCredentials!.keyId,
                             provider_order_id: stringValue(priorIntent.provider_order_id),
                             amount_minor: priorIntent.amount_minor,
                             currency: priorIntent.currency,
@@ -798,7 +801,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                         providerOrders = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
                             ? await c.env.HOSTED_RAZORPAY_TEST_ADAPTER.fetchOrdersByReceipt(cartId)
                             : await fetchRazorpayOrdersByReceipt(
-                                { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+                                { keyId: razorpayCredentials!.keyId, keySecret: razorpayCredentials!.keySecret },
                                 cartId,
                             );
                     } catch {
@@ -852,7 +855,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                                     provider: 'razorpay',
                                     status: 'requires_action',
                                     mode: 'sandbox',
-                                    key_id: c.env.RAZORPAY_KEY_ID,
+                                    key_id: razorpayCredentials!.keyId,
                                     provider_order_id: providerOrderId,
                                     amount_minor: expectedAmountMinor,
                                     currency: 'INR',
@@ -918,6 +921,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             const paymentIntentId = setupIntentId;
             const creatingIntent = {
                 payment_intent_id: paymentIntentId,
+                key_id: razorpayCredentials!.keyId,
                 provider: 'razorpay',
                 mode: 'sandbox',
                 status: 'creating_provider_order',
@@ -937,7 +941,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             }
 
             const provider = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
-                || createRazorpayPaymentProvider({ keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET });
+                || createRazorpayPaymentProvider({ keyId: razorpayCredentials!.keyId, keySecret: razorpayCredentials!.keySecret });
             let intent: Awaited<ReturnType<typeof provider.createIntent>>;
             try {
                 intent = await provider.createIntent({
@@ -983,7 +987,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                         provider: 'razorpay',
                         status: 'requires_action',
                         mode: 'sandbox',
-                        key_id: c.env.RAZORPAY_KEY_ID,
+                        key_id: razorpayCredentials!.keyId,
                         provider_order_id: providerOrderId,
                         amount_minor: amountMinor,
                         currency: 'INR',
@@ -1113,6 +1117,10 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
         }
         let existingRazorpayOrder: JsonRecord | null = null;
         if (orderPlan.provider === 'razorpay') {
+            const razorpayCredentials = await hostedRazorpayTestCredentials(c, verified.handoff.siteId);
+            if (!razorpayCredentials) return { body: { success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment setup is required for this store.' } }, status: 503, retryable: true };
+            const boundKeyId = stringValue(existing.payment_intent?.key_id);
+            if (boundKeyId && boundKeyId !== razorpayCredentials.keyId) return { body: { success: false, error: { code: 'CHECKOUT_PAYMENT_CONFIGURATION_CHANGED', message: 'Payment settings changed. Contact the store before retrying this payment.' } }, status: 409, retryable: true };
             const providerOrderId = stringValue(body.razorpay_order_id);
             const providerPaymentId = stringValue(body.razorpay_payment_id);
             const signature = stringValue(body.razorpay_signature);
@@ -1130,7 +1138,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
                 };
             }
 
-            const proof = await verifyRazorpayPayment(c.env.RAZORPAY_KEY_SECRET, {
+            const proof = await verifyRazorpayPayment(razorpayCredentials.keySecret, {
                 providerOrderId,
                 providerPaymentId,
                 signature,
@@ -1184,7 +1192,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             try {
                 providerPayment = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
                     ? await c.env.HOSTED_RAZORPAY_TEST_ADAPTER.fetchPayment(providerPaymentId)
-                    : await fetchRazorpayPayment({ keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET }, providerPaymentId);
+                    : await fetchRazorpayPayment({ keyId: razorpayCredentials.keyId, keySecret: razorpayCredentials.keySecret }, providerPaymentId);
             } catch {
                 return { body: { success: false, error: { code: 'CHECKOUT_PROVIDER_STATUS_UNAVAILABLE', message: 'Payment status is temporarily unavailable. Retry confirmation.' } }, status: 503, resourceId: existing.id, retryable: true };
             }

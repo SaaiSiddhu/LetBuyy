@@ -10,6 +10,7 @@ export type HostedCheckoutSession = {
     shipping_address?: SessionRecord | null; shipping_method?: string | null; payment_method?: string | null;
     delivery_quote?: SessionRecord | null; payment_intent?: SessionRecord | null;
     inventory_reservation_ids?: string[] | null; discount_codes?: string[] | null;
+    discount_total?: number | string | null;
     confirmed_at?: string | null; failed_at?: string | null; order_id?: string | null;
     metadata?: SessionRecord | null; buyer_account_id?: string | null; buyer_session_epoch?: number | null;
     updated_at?: string | null;
@@ -129,4 +130,32 @@ export function sessionCasMatches(actual: HostedCheckoutSession, observed: Hoste
         && actual.checkout_state === observed.checkout_state && actual.status === observed.status
         && actual.updated_at === observed.updated_at && sessionRevision(actual) === sessionRevision(observed)
         && actual.buyer_account_id === observed.buyer_account_id && actual.buyer_session_epoch === observed.buyer_session_epoch;
+}
+
+/** A saved checkout selection overrides the cart only after the existing delivery CAS.
+ * Missing selection inherits the signed cart; an explicit empty selection removes it. */
+export function selectedHostedDiscountCodes(row: HostedCheckoutSession | null, cartCode: string | null | undefined): string[] | null {
+    if (row?.metadata?.hosted_discount_selection_v1 !== true) return cartCode ? [cartCode.toUpperCase()] : [];
+    const codes = row.discount_codes;
+    if (!Array.isArray(codes) || codes.length > 1 || codes.some(code => typeof code !== 'string' || !code.trim() || code.length > 50)) return null;
+    return codes.map(code => code.trim().toUpperCase());
+}
+
+export function sessionPayload(row: HostedCheckoutSession) {
+    return {
+        id: row.id,
+        site_id: row.site_id,
+        cart_id: row.cart_id,
+        channel: row.channel || 'web',
+        sales_origin: row.sales_origin || 'storefront',
+        state: row.checkout_state || row.status || 'contact',
+        customer_email: row.customer_email || null,
+        buyer_name: row.buyer_name || null,
+        buyer_phone: row.buyer_phone || null,
+        shipping_address: row.shipping_address || {},
+        delivery_quote: row.delivery_quote || {},
+        payment_intent: row.payment_intent || {},
+        confirmed_at: row.confirmed_at || null,
+        failed_at: row.failed_at || null,
+    };
 }

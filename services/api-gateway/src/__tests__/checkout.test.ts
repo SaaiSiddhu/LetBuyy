@@ -48,7 +48,7 @@ test('Wave 7 checkout confirm creates server order and posts provider capture to
     assert.match(routeSource, /const orderPlan = buildHostedCheckoutOrderCommand\(/);
     assert.match(routeSource, /new OrderExecutionAdapter\(db\)\.createOrder\(orderPlan\.command,\s*tenant\)/);
     assert.match(routeSource, /CHECKOUT_PROVIDER_PAYMENT_REQUIRED/);
-    assert.match(routeSource, /verifyRazorpayPayment\(c\.env\.RAZORPAY_KEY_SECRET/);
+    assert.match(routeSource, /verifyRazorpayPayment\(razorpayCredentials\.keySecret/);
     assert.match(routeSource, /storedProviderOrderId:\s*boundProviderOrderId/);
     assert.match(routeSource, /assertProviderPaymentNotReplayed\(c/);
     assert.match(routeSource, /razorpay_payment_id/);
