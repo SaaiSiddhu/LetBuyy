@@ -34,7 +34,7 @@ before(async()=>{
  });
  priorFetch=globalThis.fetch;globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const u=new URL(input instanceof Request?input.url:String(input));
-  if(['cloudflare-dns.com','dns.google'].includes(u.hostname)){providerCalls++;if(providerFailure==='dns')return new Response(null,{status:503});assert.equal(init?.redirect,'manual');assert.ok(init?.signal);return Response.json({Status:providerFailure==='servfail'?2:0,Answer:[{data:u.searchParams.get('type')==='TXT'?'\"Synthetic-Domain-Proof\"':target+'.'}]});}
+  if(['cloudflare-dns.com','dns.google'].includes(u.hostname)){providerCalls++;if(providerFailure==='dns')return new Response(null,{status:503});assert.equal(init?.redirect,'manual');assert.ok(init?.signal);return Response.json({Status:providerFailure==='servfail'?2:0,Answer:[{data:u.searchParams.get('type')==='TXT'?'\"synthetic-Domain-Proof\"':target+'.'}]});}
   if(u.hostname==='api.vercel.com'){providerCalls++;assert.equal(init?.redirect,'manual');if(providerFailure==='vercel')return new Response(null,{status:503});const parts=u.pathname.split('/');const domainName=decodeURIComponent(parts[parts.indexOf('domains')+1]);return Response.json(u.pathname.endsWith('/config')?{configuredBy:'CNAME',misconfigured:false}:{name:domainName,verified:true});}
   return priorFetch(input,init);
  }) as typeof fetch;
@@ -114,10 +114,10 @@ test('two-store candidates advance and wrap a validated hint; deleted, pending a
  const other=newSyntheticTenant('domain-job-second'),deleted=newSyntheticTenant('domain-job-deleted'),pending=newSyntheticTenant('domain-job-pending'),blank=newSyntheticTenant('domain-job-blank');
  for(const t of [other,deleted,pending,blank])seedSyntheticTenant(owned.psql,t);
  const otherDomain=other.subdomain+'.example.invalid';
- owned.psql(`UPDATE sites SET custom_domain='${otherDomain}',custom_domain_status='verifying',custom_domain_verification_token='Synthetic-Domain-Proof' WHERE id='${other.siteId}';UPDATE sites SET custom_domain='${deleted.subdomain}.example.invalid',custom_domain_status='verifying',deleted_at=now() WHERE id='${deleted.siteId}';UPDATE sites SET custom_domain='${pending.subdomain}.example.invalid',custom_domain_status='pending' WHERE id='${pending.siteId}';UPDATE sites SET custom_domain=NULL,custom_domain_status='verifying' WHERE id='${blank.siteId}';`);
+ owned.psql(`UPDATE sites SET custom_domain='${otherDomain}',custom_domain_status='verifying',custom_domain_verification_token='synthetic-Domain-Proof' WHERE id='${other.siteId}';UPDATE sites SET custom_domain='${deleted.subdomain}.example.invalid',custom_domain_status='verifying',deleted_at=now() WHERE id='${deleted.siteId}';UPDATE sites SET custom_domain='${pending.subdomain}.example.invalid',custom_domain_status='pending' WHERE id='${pending.siteId}';UPDATE sites SET custom_domain=NULL,custom_domain_status='verifying' WHERE id='${blank.siteId}';`);
  cursorCache.clear();const start=tap.calls.length;
  const seen:string[]=[];
- for(let i=0;i<3;i++){const response=await run();assert.equal(response.status,200,response.text);assert.equal(response.json?.data.checked,1);seen.push(response.json?.data.results[0].domain);assert.doesNotMatch(response.text,/verification_token|Synthetic-Domain-Proof/);}
+ for(let i=0;i<3;i++){const response=await run();assert.equal(response.status,200,response.text);assert.equal(response.json?.data.checked,1);seen.push(response.json?.data.results[0].domain);assert.doesNotMatch(response.text,/verification_token|synthetic-Domain-Proof/);}
  assert.notEqual(seen[0],seen[1]);assert.equal(seen[0],seen[2]);assert.deepEqual(new Set(seen),new Set([domain,otherDomain]));
  for(const call of tap.calls.slice(start).filter(c=>c.resource==='sites'&&c.method==='GET')){
   assert.equal(call.search.get('select')?.replace(/\s/g,''),'id,custom_domain,custom_domain_status,custom_domain_verification_token');
@@ -133,8 +133,8 @@ test('two-store candidates advance and wrap a validated hint; deleted, pending a
 });
 
 test('provider outage does not invent drift, and large requested pages stay within a finite per-invocation budget',async()=>{
- const extras=[newSyntheticTenant('domain-budget-a'),newSyntheticTenant('domain-budget-b')];for(const t of extras){seedSyntheticTenant(owned.psql,t);owned.psql(`UPDATE sites SET custom_domain='${t.subdomain}.example.invalid',custom_domain_status='active',custom_domain_verification_token='Synthetic-Domain-Proof' WHERE id='${t.siteId}';`);}
- owned.psql(`UPDATE sites SET custom_domain_status='active',custom_domain_verification_token='Synthetic-Domain-Proof' WHERE custom_domain IS NOT NULL AND deleted_at IS NULL AND custom_domain_status IN('active','verifying','error');`);
+ const extras=[newSyntheticTenant('domain-budget-a'),newSyntheticTenant('domain-budget-b')];for(const t of extras){seedSyntheticTenant(owned.psql,t);owned.psql(`UPDATE sites SET custom_domain='${t.subdomain}.example.invalid',custom_domain_status='active',custom_domain_verification_token='synthetic-Domain-Proof' WHERE id='${t.siteId}';`);}
+ owned.psql(`UPDATE sites SET custom_domain_status='active',custom_domain_verification_token='synthetic-Domain-Proof' WHERE custom_domain IS NOT NULL AND deleted_at IS NULL AND custom_domain_status IN('active','verifying','error');`);
  const before=owned.psql(`SELECT id||':'||custom_domain_status FROM sites WHERE custom_domain IS NOT NULL AND deleted_at IS NULL ORDER BY id;`);
  try{
   for(const failure of ['dns','servfail','vercel'] as const){
