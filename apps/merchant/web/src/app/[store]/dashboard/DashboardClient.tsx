@@ -12,6 +12,7 @@ import type {
 } from './page'
 import { FoundingMerchantCard } from '@/components/founding/FoundingMerchantCard'
 import { resolveDashboardDomain } from './dashboard-setup-status'
+import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { MerchantNavigationLink } from '@/components/MerchantNavigationLink'
 import { Button,
     Badge,
@@ -115,7 +116,7 @@ export default function DashboardClient({ store, storeInfo, setupStatus, homeDat
         subdomain: storeInfo.subdomain,
         customDomain: storeInfo.custom_domain,
         customDomainStatus: storeInfo.custom_domain_status,
-    }).domain ?? `${storeInfo.subdomain}.letbuyy.com`
+    }).domain ?? `${storeInfo.subdomain}.${getStorefrontRootDomain()}`
     const stage = resolveStage(storeInfo.site_type, setupStatus, homeData)
 
     return (

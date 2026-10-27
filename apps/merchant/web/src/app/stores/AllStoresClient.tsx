@@ -17,7 +17,7 @@ import {
     type TabItem,
 } from '@letbuyy/ui'
 import { SITE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { getAccountsUrl } from '@/lib/public-urls'
+import { getAccountsUrl, getStorefrontRootDomain } from '@/lib/public-urls'
 
 interface UserStore {
     id: string
@@ -113,7 +113,7 @@ function StoreListPanel({ stores, emptyTitle, emptyBody, onOpen, onCreate }: Sto
                                 <MaterialIcon name={getSiteTypeIcon(store.site_type)} />
                                 {getSiteTypeLabel(store.site_type)}
                             </span>
-                            <span className="all-stores-card-domain">{store.subdomain}.letbuyy.com</span>
+                            <span className="all-stores-card-domain">{store.subdomain}.{getStorefrontRootDomain()}</span>
                         </div>
                     </div>
                     <div className="all-stores-card-trailing">
