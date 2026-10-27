@@ -1,5 +1,5 @@
 import type { CreateCheckoutOrderCommand } from '@letbuyy/checkout-core';
-import type { HostedCheckoutSession } from './hosted-checkout-session';
+import { selectedHostedDiscountCodes, type HostedCheckoutSession } from './hosted-checkout-session';
 import type { VerifiedHandoff } from '../routes/checkout';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -115,6 +115,9 @@ export function buildHostedCheckoutOrderCommand(
         return { ok: false, code: 'CHECKOUT_BUYER_BINDING_INVALID', message: 'Checkout identity could not be verified.' };
     }
 
+    const discountCodes = selectedHostedDiscountCodes(session, handoff.cart.coupon_code);
+    if (!discountCodes) return { ok: false, code: 'CHECKOUT_DISCOUNT_INVALID', message: 'Checkout coupon selection is unavailable.' };
+
     return {
         ok: true,
         provider,
@@ -130,7 +133,7 @@ export function buildHostedCheckoutOrderCommand(
             shipping_rate_id: stringValue(session.delivery_quote?.shipping_rate_id) || null,
             expected_shipping_amount: typeof session.delivery_quote?.amount === 'number' ? session.delivery_quote.amount : null,
             sales_origin: handoff.cart.sales_origin === 'marketplace' ? 'marketplace' : 'storefront',
-            coupon_code: stringValue(handoff.cart.coupon_code),
+            coupon_code: discountCodes[0] || undefined,
             idempotency_key: `hosted-checkout:${handoff.cartId}:${idempotencyKey}`,
             ...(session.buyer_account_id ? {
                 buyer_account_id: session.buyer_account_id,

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { confirmationDecision, confirmationClaimPatch, type HostedCheckoutSession } from '../lib/hosted-checkout-session';
+import { selectedHostedDiscountCodes, confirmationDecision, confirmationClaimPatch, type HostedCheckoutSession } from '../lib/hosted-checkout-session';
 
 const scope = { siteId: 'synthetic-site', cartId: 'synthetic-cart', cartToken: 'synthetic-token', cartStatus: 'converted' };
 const claim = { id: 'synthetic-claim', requestHash: 'synthetic-request-hash', intentId: 'synthetic-intent' };
@@ -35,4 +35,13 @@ test('converted Razorpay recovery does not reopen COD, incomplete, foreign or cl
     for (const cartStatus of ['abandoned', 'expired', 'cancelled', null]) {
         assert.equal(confirmationDecision(original, { ...scope, cartStatus }, claim), 'deny');
     }
+});
+
+test('only an acknowledged checkout selection overrides the signed cart coupon', () => {
+    assert.deepEqual(selectedHostedDiscountCodes(null, 'CART10'), ['CART10']);
+    assert.deepEqual(selectedHostedDiscountCodes({ ...payment(), discount_codes: ['IGNORED'] }, 'CART10'), ['CART10']);
+    const saved = { ...payment(), metadata: { hosted_discount_selection_v1: true }, discount_codes: ['saved10'] };
+    assert.deepEqual(selectedHostedDiscountCodes(saved, 'CART10'), ['SAVED10']);
+    assert.deepEqual(selectedHostedDiscountCodes({ ...saved, discount_codes: [] }, 'CART10'), []);
+    for (const codes of [null, ['', 'SECOND'], ['A', 'B'], ['']]) assert.equal(selectedHostedDiscountCodes({ ...saved, discount_codes: codes }, 'CART10'), null);
 });

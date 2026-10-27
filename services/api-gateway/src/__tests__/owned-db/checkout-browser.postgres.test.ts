@@ -106,6 +106,8 @@ before(async () => {
       INSERT INTO shipping_rates (id,zone_id,site_id,name,type,price,is_active,cod_enabled)
       VALUES ('${codRateId}','${zoneId}','${site.siteId}','COD delivery','flat',20.00,true,true),
              ('${onlineRateId}','${zoneId}','${site.siteId}','Online delivery','flat',12.00,true,false);
+      INSERT INTO coupons (id,store_id,site_id,code,type,value,discount_type,discount_value,is_active)
+      VALUES (gen_random_uuid(),'${site.siteId}','${site.siteId}','SYNTHETIC10','percentage',10,'percentage',10,true);
       INSERT INTO carts (id,store_id,session_id,items,status,channel,expires_at)
       VALUES ('${cartId}','${site.siteId}','${cartToken}',
         '[{"id":"${productId}","product_id":"${productId}","variant_id":null,"title":"Synthetic browser checkout product","sku":"SYN-BROWSER-${productId}","image_url":null,"quantity":1,"unit_price":199,"currency":"INR","properties":{},"line_total":199}]'::jsonb,
@@ -242,6 +244,9 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     const enabledCodRadio = page.getByRole('radio', { name: /Cash on Delivery \(COD\)/ });
     await enabledCodRadio.waitFor({ state: 'visible' });
     assert.equal(await enabledCodRadio.isDisabled(), false, 'COD must be available for the COD-enabled saved rate');
+    await page.getByPlaceholder('Coupon code').fill('SYNTHETIC10');
+    await page.getByRole('button', { name: 'Apply', exact: true }).click();
+    await page.getByText('₹19.9 off applied', { exact: true }).waitFor();
     await enabledCodRadio.check();
     assert.equal(await enabledCodRadio.isChecked(), true, 'the buyer explicitly selects COD after changing delivery rates');
     await page.getByRole('button', { name: 'Confirm COD order' }).click();
@@ -256,6 +261,10 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.equal(rows[0].rate_id, codRateId, 'persisted order is bound to the reviewed COD rate');
     assert.equal(Number(rows[0].amount), 20);
     assert.equal(rows[0].payment_method, 'cod');
+    const receipt=JSON.parse(owned.psql(`SELECT json_build_object('coupon',coupon_code,'discount',discount,'coupon_discount',coupon_discount,'subtotal',subtotal,'shipping',shipping_cost,'tax',tax,'total',total) FROM orders WHERE id='${rows[0].order_id}';`));
+    assert.equal(receipt.coupon,'SYNTHETIC10');assert.equal(Number(receipt.discount),19.9);assert.equal(Number(receipt.coupon_discount),19.9);
+    assert.equal(Math.round(Number(receipt.total)*100),Math.round((Number(receipt.subtotal)+Number(receipt.shipping)+Number(receipt.tax)-Number(receipt.discount))*100));
+
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${rows[0].order_id}' AND event_type='order.paid';`), '0', 'an unpaid COD order is not announced as paid');
     assert.equal(notificationJobs.length, 0, 'an unpaid COD order does not queue a paid-order email');
     assert.deepEqual(pageErrors, []);

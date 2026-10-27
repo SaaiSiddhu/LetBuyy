@@ -143,6 +143,8 @@ function projectFailure(status: number, payload: unknown) {
         CHECKOUT_PAYMENT_CONFIGURATION_CHANGED: 'Payment settings changed. Contact the store before retrying this payment.',
         CHECKOUT_STATE_CONFLICT: 'Checkout details changed. Refresh checkout and try again.',
         CHECKOUT_PRODUCT_CHANGED: 'Some products changed. Review the current items in your cart before checking out again.',
+        CHECKOUT_DISCOUNT_INVALID: 'This coupon is no longer eligible. Remove it or choose another code.',
+        CHECKOUT_DISCOUNT_CHANGED: 'The coupon discount changed. Review it again before paying.',
         CHECKOUT_SHIPPING_CHANGED: 'The delivery price changed. Review the updated delivery option and try again.',
         CHECKOUT_PROVIDER_PAYMENT_REQUIRED: 'Payment confirmation is required to complete checkout.',
         CHECKOUT_PROVIDER_SIGNATURE_INVALID: 'Payment could not be verified. Please try again or contact support.',

@@ -953,7 +953,7 @@ function OrderDetail({ order }: { order: OrderRow }) {
                 <div className="grid w-full max-w-[var(--lb-size-tooltip-max-width)] gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
                     <OrderAmountLine label="Subtotal" value={currency(order.subtotal || 0)} />
                     <OrderAmountLine label="Shipping" value={currency(order.shipping_cost || 0)} />
-                    <OrderAmountLine label="Discount" value={`-${currency(order.discount || 0)}`} />
+                    <OrderAmountLine label={order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount'} value={`-${currency(order.discount || 0)}`} />
                     <OrderAmountLine label="Tax" value={currency(order.tax || 0)} />
                     <div className="flex justify-between border-t border-[var(--lb-color-border)] pt-[var(--lb-space-2)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
                         <span>Total</span>

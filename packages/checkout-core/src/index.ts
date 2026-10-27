@@ -180,6 +180,9 @@ export const CheckoutDeliverySchema = z.object({
     pincode: z.string().min(3).max(20).optional(),
   }).passthrough(),
   cod_requested: z.boolean().default(false),
+  // Coupon choice is saved at delivery; prices and eligibility remain server-owned.
+  discount_codes: z.array(z.string().trim().min(1).max(50).transform(code => code.toUpperCase())).max(1).optional(),
+  expected_discount_amount_minor: z.number().int().nonnegative().safe().optional(),
   shipping_quote: z.record(z.string(), z.unknown()).default({}),
 }).strict();
 
@@ -1555,7 +1558,7 @@ export function planCouponValidation(
 
   let discount = 0;
   if (!failureCode && type === 'percentage') {
-    discount = Math.round(subtotal * (value / 100));
+    discount = Math.round(subtotal * (value / 100) * 100) / 100;
     if (maximumDiscount !== null && maximumDiscount > 0) discount = Math.min(discount, maximumDiscount);
   } else if (!failureCode && (type === 'fixed' || type === 'fixed_amount')) {
     discount = Math.min(value, subtotal);

@@ -12,6 +12,8 @@ interface OrderSummary {
     order_number: string | null;
     status: string | null;
     total: number | null;
+    coupon_code?: string | null;
+    discount?: number | null;
     currency: string | null;
     created_at: string | null;
 }
@@ -201,6 +203,7 @@ export default function OrdersClient() {
                 <div className="space-y-4">
                     {orders.map((order) => (
                         <Link key={order.id} href={`${basePath}/account/orders/${encodeURIComponent(order.id)}`} className="block rounded-2xl border p-4 transition-shadow hover:shadow-md" style={{ borderColor: 'var(--border)' }}>
+                            {order.coupon_code && <p className="mb-2 text-sm">Coupon {order.coupon_code} · Saved {money(order.discount ?? 0, order.currency)}</p>}
                             <div className="mb-3 flex items-center justify-between gap-3">
                                 <span className="flex items-center gap-2 font-semibold text-sm"><Package size={18} style={{ color: 'var(--primary)' }} />{order.order_number || `#${order.id.slice(0, 8)}`}</span>
                                 <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: 'var(--surface)' }}>{order.status || 'Status unavailable'}</span>

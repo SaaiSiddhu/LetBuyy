@@ -73,7 +73,7 @@ function InvalidHandoffPage({ reason }: { reason: string }) {
 }
 
 async function verifyHandoff(params: CheckoutSearchParams): Promise<
-    | { ok: true; siteId: string; cartId: string; subdomain: string; presentation?: CheckoutStorePresentation; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
+    | { ok: true; siteId: string; cartId: string; subdomain: string; presentation?: CheckoutStorePresentation; savedDiscount?: { code: string; amount: number }; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
     | { ok: false; status: number; reason: string }
 > {
     const cartId = typeof params.cart_id === 'string' ? params.cart_id.trim() : '';
@@ -103,7 +103,7 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         };
     }
 
-    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; presentation?: CheckoutStorePresentation; lines?: VerifiedHandoffLine[] } } | null;
+    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; presentation?: CheckoutStorePresentation; saved_discount?: { code?: unknown; amount?: unknown }; lines?: VerifiedHandoffLine[] } } | null;
     const siteId = body?.data?.site_id;
     const subdomain = body?.data?.subdomain;
     const verifiedCartId = body?.data?.cart_id;
@@ -115,6 +115,7 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         cartId,
         subdomain,
         presentation: body?.data?.presentation?.id === siteId && body.data.presentation.subdomain === subdomain ? body.data.presentation : undefined,
+        savedDiscount: typeof body?.data?.saved_discount?.code === 'string' && typeof body.data.saved_discount.amount === 'number' && Number.isFinite(body.data.saved_discount.amount) && body.data.saved_discount.amount >= 0 ? { code: body.data.saved_discount.code, amount: body.data.saved_discount.amount } : undefined,
         lines: Array.isArray(body?.data?.lines) ? body.data.lines : [],
         handoff: Object.fromEntries(query.entries()),
     };
@@ -205,6 +206,7 @@ export default async function CheckoutOriginPage({
                     cartLines,
                     cartId: verified.cartId,
                     handoff: verified.handoff,
+                    savedDiscount: verified.savedDiscount,
                 }}
             />
         </div>

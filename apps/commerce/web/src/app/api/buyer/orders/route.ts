@@ -9,7 +9,7 @@ import { safeReturnTo } from '@/lib/buyer-auth/flow';
 const NO_STORE = { 'Cache-Control': 'no-store' };
 const ORDER_FIELDS = [
     'id', 'site_id', 'order_number', 'status', 'total', 'tax', 'gst_invoice_number', 'created_at',
-    'subtotal', 'discount', 'shipping_cost', 'payment_method', 'payment_status', 'tracking_number',
+    'subtotal', 'discount', 'coupon_code', 'coupon_discount', 'shipping_cost', 'payment_method', 'payment_status', 'tracking_number',
     'carrier', 'shipping_address', 'currency', 'items',
 ] as const;
 const ITEM_FIELDS = ['id', 'product_id', 'variant_id', 'name', 'title', 'sku', 'quantity', 'price', 'unit_price', 'total', 'variant_title', 'image', 'image_url', 'variant'] as const;
