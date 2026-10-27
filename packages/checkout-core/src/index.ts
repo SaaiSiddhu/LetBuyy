@@ -1565,7 +1565,7 @@ export function planCouponValidation(
     if (!Number.isSafeInteger(subtotalMinor) || !Number.isSafeInteger(basisPoints) || subtotalMinor < 0 || basisPoints < 0) {
       throw new RangeError('Coupon quote amount is unavailable');
     }
-    const minor = Number((BigInt(subtotalMinor) * BigInt(basisPoints) + 5000n) / 10000n);
+    const minor = Number((BigInt(subtotalMinor) * BigInt(basisPoints) + BigInt(5000)) / BigInt(10000));
     if (!Number.isSafeInteger(minor)) throw new RangeError('Coupon quote amount is unavailable');
     discount = minor / 100;
     if (maximumDiscount !== null && maximumDiscount > 0) discount = Math.min(discount, maximumDiscount);
