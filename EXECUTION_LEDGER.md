@@ -582,3 +582,8 @@ repair is local; production sending-key location, lifecycle event/settings work
 and hosted activation remain open. Current tests/builds and the checkout local
 entry regression/retest are recorded in the existing storefront evidence.
 No new hosted schema/runtime, historical money write, payment or fulfilment.
+
+Frozen4b9a3642d: real114/114 after canonical tenant provenance and exact proxy
+registration, Gateway1817, guarded Merchant build/BFF-SDK3/readiness3 and real
+owned domain6 rerun pass. Current Worker dry-run hashes pinned. Local source
+only; owner theme-allowance decision and hosted rehearsal/staging remain open.

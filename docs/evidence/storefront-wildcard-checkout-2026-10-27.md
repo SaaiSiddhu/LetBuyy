@@ -325,3 +325,16 @@ Gateway/PostgreSQL positive setup through the SDK header passes with all6 domain
 lifecycle controls. This corrects a local integration defect before deployment.
 The complete Commerce package passes194/173/1607/184/27, all without skips;
 these groups overlap other checks and are not a unique project test total.
+
+
+Frozen source4b9a3642d passes the repeated real governance gate114/114 in a
+fresh disposable clone with the real develop/staging/main refs. The single
+declared advisory names an unrelated active branch absent from that clone;
+no check is skipped or waived. Gateway1817 rerun, current Merchant production
+build, actual BFF+SDK3, readiness3 and the final owned domain6 rerun pass.
+The governed API/Queue dry-run receipt includes this exact source revision and
+module hashes; Commerce's complete package/build results above retain identical
+Commerce runtime source. Both source checkpoints are local only. Hosted400,
+fresh restore/staging, exact live DNS/TLS and the pending ten-built-in allowance
+decision still gate production; the sending key and full lifecycle/settings
+follow-through remain open. No new production exposure or payment is implied.
