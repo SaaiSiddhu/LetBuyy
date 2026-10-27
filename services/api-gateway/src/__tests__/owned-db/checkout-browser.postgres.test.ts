@@ -113,7 +113,7 @@ before(async () => {
     `);
 
     const encrypted = await encryptPaymentSecret(razorpayKeySecret, paymentEncryptionKey);
-    const paymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: { key_id: 'rzp_test_browser_synthetic', key_secret_ciphertext: encrypted, test_mode: true, verified: true } };
+    const paymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: { key_id: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'), key_secret_ciphertext: encrypted, test_mode: true, verified: true } };
     owned.psql(`UPDATE sites SET payment_settings='${JSON.stringify(paymentSettings).replaceAll("'", "''")}'::jsonb WHERE id='${site.siteId}';`);
     const keys = await newIdentityKeys();
     const env = gatewayEnv(owned, keys, {
@@ -122,7 +122,7 @@ before(async () => {
         NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost',
         CUSTOMER_SESSION_SECRET: 'synthetic-browser-customer-session-secret-at-least-32-bytes',
         LETBUYY_RAZORPAY_MODE: 'sandbox',
-        RAZORPAY_KEY_ID: 'rzp_test_unrelated_synthetic',
+        RAZORPAY_KEY_ID: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'),
         RAZORPAY_KEY_SECRET: crypto.randomUUID(),
         PAYMENT_CONFIG_ENCRYPTION_KEY: paymentEncryptionKey,
         QUEUE_TENANT_ENVELOPE_SECRET: 'synthetic-browser-checkout-notification-secret',

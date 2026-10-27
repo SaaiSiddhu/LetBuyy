@@ -167,3 +167,10 @@ Private receipts: `migration398-production-result.json`,
 `production-qa-created.json`, `snaz-individual-domain-removal.json`,
 `production-domain-cron-observation-v6.json`, `browser-retries-final-result.json`,
 and `lifecycle-isolated-final.log` under the private phase evidence directory.
+
+
+## Payment qualification follow-up
+
+The preserved payment candidate was aligned locally with the released auth baseline at168919126. Razorpay now receives the same sanitized published checkout primary/logo instead of a fixed purple/generic missing image; relative logos resolve only against the verified storefront and unsafe/absent assets are omitted. All ten catalog palettes/explicit overrides are tested. Focused branding16/16, corrected package typecheck, production Commerce build, Gateway1813/1813 and362 contracts passed. Lint has no errors and the touched-file warning count decreases73 to71. Four fresh owned checkout suites pass41/41, covering browser COD/online, canonical capture/ledger idempotency, authenticated/guest cart ownership and contact re-entry, with clean owned cleanup. These are isolated fixtures, not real provider payments or production order submission.
+
+The actual114 gate initially failed two controls: direct sites-root read proof and literal key-shaped synthetic fixtures. No failure was waived. Provider fixture identifiers are now generated ephemerally rather than committed literals; the four targeted credential/CSV tests pass. Automatic approval review refused a static tenancy-gate change until the owner approved the exact private payment-root-site-read-review.json proposal and patch: “Approve the narrow correction and tests”. The checker now recognizes only an exact eq(id) read of the root sites row, matching the existing runtime guard. Unfiltered/IN-list root reads, root primary-id-only writes and child-table primary-id-only reads remain denied. Five scope tests pass, including every denial; runtime guards, RLS and grants are unchanged. The final whole gate and cross-tenant regression remain separate pending checkpoints. No credential has been installed on a production merchant by these tests.
