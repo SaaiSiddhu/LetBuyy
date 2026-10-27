@@ -90,3 +90,5 @@ The corrected read-only cron observer targets the verified deployed Queue name.
 The previous observer incorrectly appended `-production` and returned Worker10007.
 No unrelated financial/message sweepers were manually invoked. The domain cadence is
 `17 */6 * * *`; the minute notification tick does not run this reconciler.
+
+The first real gate was113/114: the required schema-derived registry lacked migration398 provenance. Regeneration adds that one source filename to sites and a generation timestamp; all317 tenant scope entries and columns are unchanged. Full validator rerun follows this correction.
