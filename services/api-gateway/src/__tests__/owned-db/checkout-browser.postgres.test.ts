@@ -437,10 +437,10 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     await payButton.waitFor({ state: 'visible' });
     assert.equal(await payButton.isEnabled(), true, 'the online checkout action is enabled after loading the provider script');
     assert.match(await payButton.textContent() || '', /Pay ₹410/);
-    const checkoutColor = await page.locator('.checkout-theme-frame').evaluate(element => getComputedStyle(element).getPropertyValue('--primary').trim());
+    const checkoutColor = await page.locator('.checkout-theme-frame').evaluate(element => (globalThis as unknown as { getComputedStyle(node: typeof element): { getPropertyValue(name: string): string } }).getComputedStyle(element).getPropertyValue('--primary').trim());
     await payButton.click();
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
-    const popup = await page.evaluate(() => (window as unknown as { __syntheticRazorpayAppearance: { color: string; image: string | null; amount: number } }).__syntheticRazorpayAppearance);
+    const popup = await page.evaluate(() => (globalThis as unknown as { __syntheticRazorpayAppearance: { color: string; image: string | null; amount: number } }).__syntheticRazorpayAppearance);
     assert.equal(popup.color, checkoutColor, 'provider popup inherits the same sanitized store primary as checkout');
     assert.equal(popup.image, null, 'a store without a logo never requests the missing generic /logo.png');
     assert.equal(popup.amount, 41000, 'appearance wiring leaves the server-priced payment amount intact');

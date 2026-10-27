@@ -1,3 +1,4 @@
+import { verifyHostedDiscountSelection } from '../lib/hosted-checkout-discount';
 import { hostedRazorpayTestCredentials } from '../lib/hosted-razorpay-credentials';
 import { cartLines, signedCartSubtotalMinor, stringValue, checkoutPaymentProvider, checkoutShippingMethod, buildHostedCheckoutOrderCommand, type CartRow, type HostedCheckoutPaymentProvider } from '../lib/hosted-checkout-order-command';
 export { buildHostedCheckoutOrderCommand } from '../lib/hosted-checkout-order-command';
@@ -6,7 +7,7 @@ import { authorizeHostedStorefrontPurchase } from '../lib/storefront-visitor-acc
 import { loadBuyerSessionState } from '../middleware/buyer-session';
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
-import { selectedHostedDiscountCodes, canRestartUnpaidHostedContact, canPrepareCodIntent, contactRestartPatch, confirmationDecision, confirmationClaimPatch, releaseRejectedCodClaimPatch, sessionMatchesScope, sessionRevision, sessionWriteAllowed, SESSION_REVISION, type HostedCheckoutSession, type ConfirmationClaim } from '../lib/hosted-checkout-session';
+import { sessionPayload, selectedHostedDiscountCodes, canRestartUnpaidHostedContact, canPrepareCodIntent, contactRestartPatch, confirmationDecision, confirmationClaimPatch, releaseRejectedCodClaimPatch, sessionMatchesScope, sessionRevision, sessionWriteAllowed, SESSION_REVISION, type HostedCheckoutSession, type ConfirmationClaim } from '../lib/hosted-checkout-session';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
@@ -99,24 +100,6 @@ function invalidHandoff(c: AppContext, message = 'Checkout handoff is invalid or
     }, 401);
 }
 
-function sessionPayload(row: CheckoutSessionRow) {
-    return {
-        id: row.id,
-        site_id: row.site_id,
-        cart_id: row.cart_id,
-        channel: row.channel || 'web',
-        sales_origin: row.sales_origin || 'storefront',
-        state: row.checkout_state || row.status || 'contact',
-        customer_email: row.customer_email || null,
-        buyer_name: row.buyer_name || null,
-        buyer_phone: row.buyer_phone || null,
-        shipping_address: row.shipping_address || {},
-        delivery_quote: row.delivery_quote || {},
-        payment_intent: row.payment_intent || {},
-        confirmed_at: row.confirmed_at || null,
-        failed_at: row.failed_at || null,
-    };
-}
 
 function paymentIntentId(session: CheckoutSessionRow): string | null {
     const intent = session.payment_intent;
@@ -654,29 +637,12 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             };
         }
 
-        const discountCodes = body.discount_codes ?? selectedHostedDiscountCodes(observed, verified.handoff.cart.coupon_code);
-        if (!discountCodes) return { body: { success: false, error: { code: 'CHECKOUT_DISCOUNT_INVALID', message: 'Coupon selection is unavailable. Please try again.' } }, status: 409 };
-        let discountAmount = 0;
-        if (discountCodes.length) {
-            const subtotalMinor = signedCartSubtotalMinor(cartLines(verified.handoff.cart));
-            if (subtotalMinor === null) return { body: { success: false, error: { code: 'CHECKOUT_SUBTOTAL_UNAVAILABLE', message: 'Cart pricing could not be verified.' } }, status: 409 };
-            const promotion = await getSupabaseAdmin(c).rpc('evaluate_checkout_promotion', {
-                p_store_id: verified.handoff.siteId, p_code: discountCodes[0], p_subtotal: subtotalMinor / 100,
-                p_shipping_amount: typeof serverResolvedQuote.amount === 'number' ? serverResolvedQuote.amount : 0,
-                p_customer_email: observed?.customer_email || null,
-            });
-            if (promotion.error) return { body: { success: false, error: {
-                code: promotion.error.code === 'P0001' ? 'CHECKOUT_DISCOUNT_INVALID' : 'CHECKOUT_UNAVAILABLE',
-                message: promotion.error.code === 'P0001' ? 'This coupon is no longer eligible. Remove it or choose another code.' : 'Coupon verification is temporarily unavailable.',
-            } }, status: promotion.error.code === 'P0001' ? 409 : 503, retryable: promotion.error.code !== 'P0001' };
-            const quote = promotion.data as { valid?: boolean; discount?: unknown } | null;
-            discountAmount = Number(quote?.discount);
-            if (!quote?.valid || !Number.isFinite(discountAmount) || discountAmount < 0 || !Number.isSafeInteger(Math.round(discountAmount * 100)))
-                return { body: { success: false, error: { code: 'CHECKOUT_UNAVAILABLE', message: 'Coupon verification is temporarily unavailable.' } }, status: 503, retryable: true };
-        }
-        if (body.discount_codes !== undefined && body.expected_discount_amount_minor !== Math.round(discountAmount * 100)) {
-            return { body: { success: false, error: { code: 'CHECKOUT_DISCOUNT_CHANGED', message: 'The coupon discount changed. Review it again before paying.' } }, status: 409 };
-        }
+        const discount = await verifyHostedDiscountSelection(getSupabaseAdmin(c), {
+            siteId: verified.handoff.siteId, cart: verified.handoff.cart, observed,
+            shippingAmount: typeof serverResolvedQuote.amount === 'number' ? serverResolvedQuote.amount : 0,
+            codes: body.discount_codes, expectedAmountMinor: body.expected_discount_amount_minor,
+        });
+        if (!discount.ok) return discount.refusal;
 
         const shippingAddress = { ...body.shipping_address };
         if (!stringValue(shippingAddress.state_code)) {
@@ -688,7 +654,7 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             shipping_method: body.shipping_method,
             shipping_address: shippingAddress,
             delivery_quote: serverResolvedQuote,
-            discount_codes: discountCodes, discount_total: discountAmount,
+            discount_codes: discount.codes, discount_total: discount.amount,
             metadata: { ...(observed?.metadata || {}), hosted_discount_selection_v1: true, hosted_delivery_signature: verified.handoff.signature || null },
         }, observed);
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to delivery.' } }, status: 409 };

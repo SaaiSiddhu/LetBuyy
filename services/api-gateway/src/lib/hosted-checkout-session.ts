@@ -140,3 +140,22 @@ export function selectedHostedDiscountCodes(row: HostedCheckoutSession | null, c
     if (!Array.isArray(codes) || codes.length > 1 || codes.some(code => typeof code !== 'string' || !code.trim() || code.length > 50)) return null;
     return codes.map(code => code.trim().toUpperCase());
 }
+
+export function sessionPayload(row: HostedCheckoutSession) {
+    return {
+        id: row.id,
+        site_id: row.site_id,
+        cart_id: row.cart_id,
+        channel: row.channel || 'web',
+        sales_origin: row.sales_origin || 'storefront',
+        state: row.checkout_state || row.status || 'contact',
+        customer_email: row.customer_email || null,
+        buyer_name: row.buyer_name || null,
+        buyer_phone: row.buyer_phone || null,
+        shipping_address: row.shipping_address || {},
+        delivery_quote: row.delivery_quote || {},
+        payment_intent: row.payment_intent || {},
+        confirmed_at: row.confirmed_at || null,
+        failed_at: row.failed_at || null,
+    };
+}
