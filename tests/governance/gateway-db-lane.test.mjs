@@ -85,6 +85,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-challenge-rollback.postgres.test.ts",
         "merchant-challenge-source-corruption.postgres.test.ts",
         "merchant-factor-rollback.postgres.test.ts",
+        "merchant-library-artwork.postgres.test.ts",
         "merchant-mfa-browser.postgres.test.ts",
         "merchant-mobile-actions.postgres.test.ts",
         "merchant-mobile-screen-reads.postgres.test.ts",

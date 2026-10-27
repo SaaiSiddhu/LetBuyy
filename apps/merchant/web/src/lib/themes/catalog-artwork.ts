@@ -16,7 +16,7 @@ const artwork: Readonly<Record<string, string>> = {
 };
 
 /** Replace only the known first-party placeholder for its exact captured version. */
-export function catalogArtworkUrl(theme: Pick<ThemeCatalogItem, 'slug' | 'version' | 'thumbnail_url'>): string | null | undefined {
+export function catalogArtworkUrl(theme: Pick<ThemeCatalogItem, 'slug' | 'thumbnail_url'> & { version?: ThemeCatalogItem['version'] | null }): string | null | undefined {
     const name = Object.hasOwn(artwork, theme.slug) ? artwork[theme.slug] : undefined;
     const placeholder = `/theme-previews/${theme.slug.replace(/^letbuyy-/, '')}.svg`;
     const original = theme.thumbnail_url;
