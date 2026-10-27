@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { LETBUYY_CHECKOUT_DOMAIN_PROBE_PATH } from '@letbuyy/checkout-core';
 import type { NextRequest } from 'next/server';
 import {
   createStorefrontGateToken,
@@ -383,6 +384,10 @@ async function handlePasswordSubmit(req: NextRequest, site: StorefrontAccessCont
 }
 
 export async function proxy(req: NextRequest) {
+  // Only this handler admits a short-lived, host-bound gateway readiness proof.
+  // Reaching it never grants checkout/storefront access or bypasses the handler MAC.
+  if (req.nextUrl.pathname === LETBUYY_CHECKOUT_DOMAIN_PROBE_PATH) return noIndex(NextResponse.next());
+
   const themePreviewToken = normalizeThemePreviewToken(req.nextUrl.searchParams.get('theme_preview_token'));
 
   if (req.nextUrl.pathname.startsWith('/preview/coming-soon')) return NextResponse.next();

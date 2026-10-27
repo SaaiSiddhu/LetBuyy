@@ -126,6 +126,32 @@ export function buildTenantStorefrontUrl(subdomain: string, options: {
   return `https://${subdomain}.${root}`;
 }
 
+/** Derivation only: callers must separately verify exact ownership, site binding and TLS.
+ * Display names, URLs, ports, IPs, suffix matches and reserved handles are never accepted. */
+export function buildStoreCheckoutHostname(input: {
+  subdomain: string;
+  storeRootDomain: string;
+  connectedHost?: string | null;
+}): string | null {
+  const handle = input.subdomain;
+  if (handle !== handle.trim().toLowerCase() || !validateSubdomainFormat(handle).valid) return null;
+  const base = input.connectedHost ?? input.storeRootDomain;
+  if (base !== base.trim().toLowerCase() || base.length > 253 || /[\s/:@?#\\]/.test(base)) return null;
+  const labels = base.split('.');
+  if (labels.length < 2 || /^\d+$/.test(labels.at(-1) || '')
+      || labels.some(label => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))) return null;
+  const host = `checkout.${handle}.${base}`;
+  return host.length <= 253 ? host : null;
+}
+
+/** Recognizes structure only; this never grants access to a checkout. */
+export function platformCheckoutStoreHandle(hostname: string, storeRootDomain: string): string | null {
+  const suffix = `.${storeRootDomain}`;
+  if (!hostname.startsWith('checkout.') || !hostname.endsWith(suffix)) return null;
+  const handle = hostname.slice('checkout.'.length, -suffix.length);
+  return buildStoreCheckoutHostname({ subdomain: handle, storeRootDomain }) === hostname ? handle : null;
+}
+
 /** Hosted checkout belongs to the platform origin, independently of the tenant root. */
 export function isHostedCheckoutHost(host: string | null | undefined, options: {
   checkoutOrigin?: string | null;

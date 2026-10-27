@@ -542,3 +542,36 @@ Per §14.1, each entry below records a ratified amendment as a dated, self-conta
 **Evidence.** `.claude/skills/letbuyy/references/decisions.md` §2g; `docs/active/BRANCH_DISPOSITIONS.md` rows `letbuyy/appid-*`; `EXECUTION_LEDGER.md` phases `PHASE-APPID-*`.
 
 ---
+
+
+### Amendment 4 — Verified store-branded checkout hosts (2026-10-27)
+
+**Human owner decision.** The owner requested `checkout.<store-handle>.letbuyy.store`
+and, for a verified connected hostname, `checkout.<store-handle>.<connected-host>`.
+After review of ART-14, operating rule AGENT-R15(4), the certificate requirement and
+current provider limits, the owner explicitly approved **“Implement and test verified
+checkout hosts (Recommended)”** against the prepared27October checkout-host proposal.
+This records that human decision; it is not a repository-scan amendment or an agent
+waiver. Hosted activation remains conditional on rehearsal/staging/QA acceptance.
+
+**Amends ART-14's hostname choice only.** The existing Commerce runtime may serve
+exact verified HTTPS checkout hostnames bound to their persisted site and verified
+parent domain. The canonical checkout state machine, server pricing, inventory,
+ledger and payment adapters remain in the same monolith. There is no new runtime,
+parallel checkout, arbitrary-host suffix trust or tenant/RLS exception.
+
+A branded address becomes selectable only after exact ownership, provider-project,
+DNS and certificate readiness checks. New handoffs bind the exact HTTPS origin as
+well as the site/cart contents, expiry and any buyer continuity proof. Wrong-host,
+wrong-site, revoked/unverified-domain, spoofed-host and cross-tenant attempts fail
+closed. Checkout cookies remain host-only. `checkout.letbuyy.com` remains available
+while provisioning is incomplete and for existing unexpired handoffs at their
+originally authorized origin. Provider limits are explicit; no paid upgrade or
+real payment/order/fulfilment is authorized by this decision.
+
+**Evidence.** Direct owner request and explicit proposal approval in the27October
+production-recovery chat; private bounded plan and decision receipts are under
+`/private/tmp/letbuyy-storefront-recovery-20261027/`. No credentials or bearer URLs
+are recorded in this amendment. The earlier tenant-root owner decision keeps
+merchant store addresses under `letbuyy.store`; platform Accounts/Admin/API remain
+on `letbuyy.com`.

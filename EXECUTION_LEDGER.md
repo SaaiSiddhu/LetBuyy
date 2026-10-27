@@ -552,3 +552,16 @@
 | PHASE-DOMAIN-JOB-MERGED-DEVELOP-20261027 | Final signed reader, required CNAME config and correct public overview origin qualified and staged; actual Snaz Circuit publication/Public save complete | Integrated by develop fast-forward from 9ba865f349e4daba67d51082beffcdd77d1f50d2 to 76179f260c0ddd6697e9b55b82fc124d01c06c52; release bookkeeping only | No remaining boundary/publication approval; production activation follows promotion | real114;gov861;Gateway1807;contracts361;CI10;Merchant build/full3 TAP blocks;focusedUI25;newjob/zone16;staging live nonempty reader and exact routing restoration all pass | Original wrong-environment/order/profile/CNAME results retained; every security assertion kept | MERGED_DEVELOP; production domain-job not yet activated; hosted six-hourly cron/native final overview separately pending | 76179f260c0ddd6697e9b55b82fc124d01c06c52 |
 
 | PHASE-STOREFRONT-WILDCARD-CHECKOUT-20261027 | Owner requests true wildcard production tenant routing, storefront.letbuyy.com public discovery, Circuit default repair, empty pagination and new-store/checkout/scheduled job qualification | Existing canonical Commerce/Gateway/domain/theme/queue owners, exact hosting configuration, shared contracts, focused owned regressions and existing evidence/ledgers | No new runtime, general tenant exception, private exposure, fake counts, billing increase or real payment | Baseline584 deployed; discovery503 is falsely rendered as zero; wildcard DNS exists but Vercel wildcard unverified; individual Snaz alias ready | Preserve fail-closed tenant/RLS/private-store controls and scope public fields only | DEPLOYED_VERIFIED:604 web apps and exactb0 four Workers;398 data/history preserved; wildcard QA HTTPS200/Circuit/no individual alias; Snaz individual removed and200Liquid; discovery200 real launches; natural11:47IST domain cron200 checked0. Checkout cart handoff/address only, no order/payment. Four final presentation label corrections locally tested/built, awaiting qualified integration; owner-approved branded-checkout follow-on separate | Base584037b53 → release604d62d39; docs/evidence/storefront-wildcard-checkout-2026-10-27.md |
+
+
+## Verified store-branded checkout hosts — owner-approved27October2026
+
+`PHASE-STORE-BRANDED-CHECKOUT-HOSTS-20261027`, branch
+`codex/store-branded-checkout-hosts`, base`4ba59d697`. Status: IMPLEMENTING,
+not deployed. Owner approved the reviewed exact-host proposal. Record Amendment4,
+reuse canonical site_domains/domain lifecycle and Commerce/monolith checkout,
+bind signatures and browser ingress to verified origin/site/cart, preserve current
+central checkout during provisioning/drain, qualify paired schema/rollback and
+staging before any hosted activation. No new runtime, paid upgrade, real order,
+payment or fulfilment. Single agent; predecessor production release604 is live
+and independently verified, including the natural domain cron and wildcard QA.

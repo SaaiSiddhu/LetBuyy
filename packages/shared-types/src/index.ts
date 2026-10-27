@@ -814,6 +814,21 @@ export const ResumeContentSectionSchema = z.enum([
 /** Default for newly created stores; saved merchant selections are never inferred from this. */
 export const DEFAULT_STOREFRONT_THEME_SLUG = 'letbuyy-forge';
 
+/** Setup/readiness, never a DNS/provider credential or an arbitrary checkout target. */
+export const CheckoutDomainSetupSchema = z.object({
+  site_id: UuidSchema,
+  hostname: z.string().min(3).max(253).nullable(),
+  parent_hostname: z.string().min(3).max(253).nullable(),
+  source: z.enum(['platform','custom']).nullable(),
+  status: z.enum(['pending','verifying','active','error','unavailable']),
+  ssl_status: z.enum(['unknown','pending','active','error','unavailable']),
+  checkout_origin: z.string().url(),
+  fallback_origin: z.string().url(),
+  reason: z.string().max(100).nullable(),
+  dns_records: z.array(z.object({type:z.enum(['CNAME','TXT']),name:z.string().max(300),value:z.string().max(1000)}).strict()).max(4),
+}).strict();
+export type CheckoutDomainSetup = z.infer<typeof CheckoutDomainSetupSchema>;
+
 /** Anonymous discovery contains public launch metadata, never account/contact data. */
 export const StorefrontDirectoryEntrySchema = z.object({
   store_name: z.string().min(1),
