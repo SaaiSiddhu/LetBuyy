@@ -674,6 +674,7 @@ export function normalizeCheckoutOrigin(value: unknown): string | null {
 }
 
 export const LETBUYY_CHECKOUT_ORIGIN_HEADER = 'X-LetBuyy-Checkout-Origin';
+export const LETBUYY_CHECKOUT_ORIGIN_VERSION_HEADER = 'X-LetBuyy-Checkout-Origin-Version';
 
 export function canonicalCheckoutHandoffPayload(input: CheckoutCartBindingInput & {
   cartContentDigest: string; buyerBindingDigest?: string; checkoutOrigin?: string;

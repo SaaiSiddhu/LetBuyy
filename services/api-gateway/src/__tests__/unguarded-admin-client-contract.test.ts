@@ -250,6 +250,7 @@ test('domain maintenance admission and data-only reader have exactly their revie
     for (const [symbol, expected] of [
         ['recordDomainReconcileAdmission', ['lib/domain-reconcile-internal-request.ts']],
         ['readDomainReconcileCandidates', ['routes/internal-custom-domain-reconcile.ts']],
+        ['readCheckoutDomainReconcileCandidates', ['routes/internal-custom-domain-reconcile.ts']],
     ] as const) {
         const callers = files.filter(f => f.rel !== 'lib/supabase.ts' && !f.rel.startsWith('__tests__/'))
             .filter(f => new RegExp(symbol + '\\s*\\(').test(code(f.body))).map(f => f.rel).sort();
@@ -260,6 +261,24 @@ test('domain maintenance admission and data-only reader have exactly their revie
     assert.ok(auth.indexOf('await claimInternalAuthReplayJti(') < auth.indexOf('recordDomainReconcileAdmission(c)'));
     const route = files.find(f => f.rel === 'routes/internal-custom-domain-reconcile.ts')!.body;
     assert.ok(route.indexOf('if (unauthorized) return unauthorized') < route.indexOf('await readDomainReconcileCandidates(c,'));
+});
+
+test('checkout maintenance admits only its signed job and two routing IDs in a bounded managed-domain page', () => {
+    const body = functionBody(files.find(f => f.rel === 'lib/supabase.ts')!.body, 'readCheckoutDomainReconcileCandidates');
+    assert.ok(body.indexOf('domainMaintenanceAdmissions.get(c.req.raw) !== c.env') < body.indexOf('createSupabaseServiceClient(c.env)'));
+    assert.match(body, /c.req.method !== 'POST'/);
+    assert.match(body, /pathname !== '\/v1\/internal\/custom-domain-reconcile\/run'/);
+    assert.match(body, /timingSafeEqualText\(c.req.header\('X-Internal-API-Secret'\), c.env.INTERNAL_API_SECRET\)/);
+    assert.match(body, /input.limit < 1 \|\| input.limit > 100/);
+    assert.match(body, /\.from\('site_domains'\)\.select\('site_id,id,sites!inner\(id\)'\)/);
+    assert.match(body, /\.eq\('purpose', 'checkout'\)/);
+    assert.match(body, /\.eq\('metadata->>managed_by', 'letbuyy-checkout-v1'\)/);
+    assert.match(body, /\.is\('deleted_at', null\)/);
+    assert.match(body, /\.is\('sites.deleted_at', null\)/);
+    assert.match(body, /\.limit\(input.limit\)/);
+    assert.match(body, /query.gt\('site_id', input.afterId\)/);
+    assert.doesNotMatch(body, /\.(insert|update|delete|upsert|rpc)\s*\(/);
+    assert.doesNotMatch(body, /return\s+(?:query|createSupabaseServiceClient)\b/);
 });
 
 test('domain maintenance checks sealed admission and route secret before its fixed four-column bounded read', () => {

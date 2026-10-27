@@ -238,6 +238,7 @@ export async function resolveStorefrontSiteByHost(
             .from('site_domains')
             .select('site_id, role, redirect_to, status')
             .eq('domain', parsed.domain)
+            .eq('purpose', 'storefront')
             .eq('status', 'active')
             .is('deleted_at', null)
             .maybeSingle();

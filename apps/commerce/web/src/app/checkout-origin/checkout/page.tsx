@@ -2,7 +2,9 @@ import { buildGoogleFontsHref } from '@letbuyy/theme-engine';
 import type { CheckoutStorePresentation } from '@letbuyy/tenant-core';
 import { normalizeStoreRootDomain, buildTenantStorefrontUrl } from '@letbuyy/tenant-core';
 import type { Metadata } from 'next';
-import type { StoreBrandingInput } from '@letbuyy/checkout-core';
+import { LETBUYY_CHECKOUT_ORIGIN_HEADER, type StoreBrandingInput } from '@letbuyy/checkout-core';
+import { headers } from 'next/headers';
+import { checkoutRequestBinding } from '@/lib/checkout-host';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { StoreService } from '@/lib/store-service';
 import CheckoutClient, { type CheckoutOriginCartLine } from '../../store/[subdomain]/checkout/checkout-client';
@@ -27,6 +29,7 @@ interface CheckoutSearchParams {
     cart_digest?: string;
     signature?: string;
     buyer_binding?: string;
+    checkout_origin?: string;
 }
 
 interface VerifiedHandoffLine {
@@ -78,6 +81,8 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
 > {
     const cartId = typeof params.cart_id === 'string' ? params.cart_id.trim() : '';
     if (!cartId) return { ok: false, status: 400, reason: 'Missing checkout reference.' };
+    const actualOrigin = checkoutRequestBinding(await headers(), params.checkout_origin);
+    if (!actualOrigin) return { ok: false, status: 401, reason: 'This checkout link belongs to a different address. Start again from the store.' };
 
     const query = new URLSearchParams();
     for (const key of HANDOFF_QUERY_KEYS) {
@@ -86,10 +91,11 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
     }
 
     if (params.buyer_binding !== undefined) query.set('buyer_binding', params.buyer_binding);
+    if (params.checkout_origin !== undefined) query.set('checkout_origin', params.checkout_origin);
 
     let response: Response;
     try {
-        response = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/verify-handoff?${query.toString()}`);
+        response = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/verify-handoff?${query.toString()}`, { headers: { [LETBUYY_CHECKOUT_ORIGIN_HEADER]: actualOrigin } });
     } catch {
         return { ok: false, status: 503, reason: 'Checkout verification is temporarily unavailable.' };
     }

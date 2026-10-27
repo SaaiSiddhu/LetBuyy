@@ -8,7 +8,7 @@ import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
 import { normalizeStorefrontHandle, type PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { CommerceChannelSchema, type CommerceChannel } from '@letbuyy/shared-types';
-import { checkoutOriginForStore } from '../../lib/store-checkout-domain';
+import { centralCheckoutOrigin, checkoutOriginForStore } from '../../lib/store-checkout-domain';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
 import { acceptCartProductFacts, loadCartFactSources, type CartFactAcceptance } from '../../lib/cart-product-facts';
@@ -18,6 +18,7 @@ import {
     canonicalCheckoutCartBinding,
     canonicalCheckoutBuyerBinding,
     canonicalCheckoutHandoffPayload,
+    LETBUYY_CHECKOUT_ORIGIN_VERSION_HEADER,
     StorefrontCartLineInputSchema,
     StorefrontCartRevisionSchema,
     StorefrontConfiguredLineEditRequestSchema,
@@ -434,7 +435,10 @@ async function createCheckoutHandoff(
         expiresAt, cartContentDigest, buyerAccountId: mintingBuyer.buyerAccountId,
         buyerSessionEpoch: mintingBuyer.sessionEpoch,
     })) : undefined;
-    const checkoutOrigin = await checkoutOriginForStore(c, store.id);
+    // Rolling release: old web adapters keep their existing short-lived central
+    // capability. The current Commerce adapter explicitly requests origin v2.
+    const originBound = c.req.header(LETBUYY_CHECKOUT_ORIGIN_VERSION_HEADER) === '2';
+    const checkoutOrigin = originBound ? await checkoutOriginForStore(c, store.id) : centralCheckoutOrigin(c.env);
     const signaturePayload = canonicalCheckoutHandoffPayload({
         siteId: store.id,
         cartId: cart.id,
@@ -443,13 +447,13 @@ async function createCheckoutHandoff(
         expiresAt,
         cartContentDigest,
         buyerBindingDigest,
-        checkoutOrigin,
+        checkoutOrigin: originBound ? checkoutOrigin : undefined,
         couponCodes: cart.coupon_codes,
         lines: cart.lines,
     });
     const signature = await hmacSha256Hex(secret, signaturePayload);
     const checkoutUrl = new URL('/checkout', checkoutOrigin);
-    checkoutUrl.searchParams.set('checkout_origin', checkoutOrigin);
+    if (originBound) checkoutUrl.searchParams.set('checkout_origin', checkoutOrigin);
     checkoutUrl.searchParams.set('site_id', store.id);
     checkoutUrl.searchParams.set('cart_id', cart.id);
     checkoutUrl.searchParams.set('cart_token', cart.cart_token);
@@ -493,7 +497,7 @@ async function createCheckoutHandoff(
             checkout_handoff: {
                 storefront_admission: accessAdmission,
                 checkout_url: checkoutUrl.toString(),
-                checkout_origin: checkoutOrigin,
+                ...(originBound ? { checkout_origin: checkoutOrigin } : {}),
                 expires_at: expiresAt,
                 signed_at: new Date().toISOString(),
                 channel: cart.channel,

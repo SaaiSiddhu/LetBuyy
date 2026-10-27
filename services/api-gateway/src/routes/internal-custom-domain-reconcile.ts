@@ -3,7 +3,8 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custom-domain-config';
 import { resolveDoh } from '../lib/dns';
-import { getSupabaseAdmin, readDomainReconcileCandidates, success, type DomainMaintenanceCandidate } from '../lib/supabase';
+import { getSupabaseAdmin, readDomainReconcileCandidates, readCheckoutDomainReconcileCandidates, success, type DomainMaintenanceCandidate } from '../lib/supabase';
+import { prepareStoreCheckoutDomain } from '../lib/store-checkout-domain';
 import { domainReconcileEnvironment } from '@letbuyy/auth-core';
 import { AppError } from '../lib/errors';
 import { buildDomainEventEnvelope } from '@letbuyy/event-core';
@@ -22,9 +23,9 @@ interface ReconcileResult {
     changed: boolean;
     reason: string;
 }
-// At most3 domains: worst case4 DNS requests +6 Vercel attempts +2 writes each,
-// leaving headroom for admission, replay, candidates, cursor and logging under Free50.
-const MAX_DOMAINS_PER_INVOCATION = 3;
+// At most2 domains in total, including the more expensive checkout HTTPS proof.
+// Shared site-ID pagination prevents either kind from starving on Free50.
+const MAX_DOMAINS_PER_INVOCATION = 2;
 const CURSOR_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 async function readCursor(c: Context<{ Bindings: Env }>, key: string): Promise<string | undefined> {
@@ -146,26 +147,45 @@ router.post('/run', async (c) => {
     const limit = batchLimit(c);
     const cursorKey = `custom-domain-reconcile:v1:${domainReconcileEnvironment(c.env)}`;
     const afterId = await readCursor(c, cursorKey);
-    const rows = await readDomainReconcileCandidates(c, { limit, afterId });
+    let rows = await readDomainReconcileCandidates(c, { limit, afterId, wrap: false });
+    let checkoutRows = await readCheckoutDomainReconcileCandidates(c, { limit, afterId });
+    if (afterId && rows.length === 0 && checkoutRows.length === 0) {
+        rows = await readDomainReconcileCandidates(c, { limit, wrap: false });
+        checkoutRows = await readCheckoutDomainReconcileCandidates(c, { limit });
+    }
     const results: ReconcileResult[] = [];
-    const batch = rows.slice(0, MAX_DOMAINS_PER_INVOCATION);
-    for (const row of batch) {
-        try { results.push(await reconcileDomain(c, row, target)); }
+    const checkoutResults: Array<{ site_id: string; status: string; reason: string | null }> = [];
+    const siteIds = [...new Set([...rows.map(row => row.id), ...checkoutRows.map(row => row.id)])].sort();
+    let checked = 0, cursor = '', processedSites = 0;
+    for (const siteId of siteIds) {
+        const row = rows.find(row => row.id === siteId), checkout = checkoutRows.some(row => row.id === siteId);
+        if (checkout && checkoutResults.length >= 1) break;
+        const cost = Number(!!row) + Number(checkout);
+        if (checked && checked + cost > Math.min(limit, MAX_DOMAINS_PER_INVOCATION)) break;
+        // A site with both kinds is one indivisible scheduling item; it is still
+        // bounded to2 domains even when a caller requests a page of1 site.
+        if (row) try { results.push(await reconcileDomain(c, row, target)); }
         catch (error) {
             if (error instanceof AppError) throw error;
             // Provider absence/outage is not proof of drift. Preserve the known state.
             results.push({ domain: row.custom_domain, previous_status: row.custom_domain_status,
                 status: null, changed: false, reason: 'PROVIDER_UNAVAILABLE' });
         }
+        if (checkout) {
+            const setup = await prepareStoreCheckoutDomain(c, siteId);
+            checkoutResults.push({ site_id: siteId, status: setup.status, reason: setup.reason });
+        }
+        checked += cost; cursor = siteId; processedSites++;
     }
-    await saveCursor(c, cursorKey, batch.at(-1)?.id || '');
+    await saveCursor(c, cursorKey, cursor);
 
     return c.json(success({
-        checked: results.length,
+        checked,
         changed: results.filter((result) => result.changed).length,
         batch_limit: limit,
-        deferred: rows.length > batch.length,
+        deferred: siteIds.length > processedSites || rows.length === limit || checkoutRows.length === limit,
         results,
+        checkout_results: checkoutResults,
     }));
 });
 

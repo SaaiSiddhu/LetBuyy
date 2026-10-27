@@ -569,3 +569,16 @@ central checkout during provisioning/drain, qualify paired schema/rollback and
 staging before any hosted activation. No new runtime, paid upgrade, real order,
 payment or fulfilment. Single agent; predecessor production release604 is live
 and independently verified, including the natural domain cron and wildcard QA.
+
+
+28October follow-through: saved QA10002/owner screenshots verify OFF50,
+subtotal2/discount1/final1 on both Merchant and buyer receipts; older10001 stays2.
+Exact-host source now connects cart origin signatures, signed resolution,
+Merchant readiness, finite reserved drain/provider cleanup and bounded signed
+maintenance; paired400 remains local. Canonical theme entitlement lookup and
+accurate CAS/cap errors are tested; all-ten built-in allowance is a pending
+owner business decision. Queue missing-key retry/idempotency/completion audit
+repair is local; production sending-key location, lifecycle event/settings work
+and hosted activation remain open. Current tests/builds and the checkout local
+entry regression/retest are recorded in the existing storefront evidence.
+No new hosted schema/runtime, historical money write, payment or fulfilment.

@@ -6,9 +6,11 @@ import {
     CheckoutDeliverySchema,
     CheckoutPaymentIntentSchema,
     CheckoutConfirmSchema,
+    LETBUYY_CHECKOUT_ORIGIN_HEADER,
 } from '@letbuyy/checkout-core';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { isSameOriginRequest } from '@/lib/buyer-auth/flow';
+import { checkoutRequestBinding } from '@/lib/checkout-host';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -26,7 +28,10 @@ export async function GET(request: NextRequest, context: { params: Promise<{ car
     const { cartId, step } = await context.params;
     if (!UUID.test(cartId) || step !== 'delivery-options') return jsonError(404, 'CHECKOUT_STEP_NOT_FOUND', 'Checkout step was not found.');
     const query = new URL(request.url).searchParams;
+    const actualOrigin = checkoutRequestBinding(request.headers, query.get('checkout_origin'), request.url);
+    if (!actualOrigin || query.getAll('checkout_origin').length > 1) return jsonError(403, 'ORIGIN_DENIED', 'This checkout link belongs to a different address.');
     const handoff = new URLSearchParams();
+    if (query.has('checkout_origin')) handoff.set('checkout_origin', actualOrigin);
     for (const key of HANDOFF_KEYS) {
         const value = query.get(key);
         if (!value || value.length > 2048) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
@@ -50,7 +55,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ car
     if (stateCode) destination.set('state_code', stateCode);
     let upstream: Response;
     try {
-        upstream = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/delivery-options?${handoff.toString()}&${destination.toString()}`, { cache: 'no-store' });
+        upstream = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/delivery-options?${handoff.toString()}&${destination.toString()}`, { cache: 'no-store', headers: { [LETBUYY_CHECKOUT_ORIGIN_HEADER]: actualOrigin } });
     } catch {
         return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Delivery options are temporarily unavailable. Please retry.');
     }
@@ -167,7 +172,10 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ca
     const step = rawStep as CheckoutStep;
 
     const query = new URL(request.url).searchParams;
+    const actualOrigin = checkoutRequestBinding(request.headers, query.get('checkout_origin'), request.url);
+    if (!actualOrigin || query.getAll('checkout_origin').length > 1) return jsonError(403, 'ORIGIN_DENIED', 'This checkout link belongs to a different address.');
     const handoff = new URLSearchParams();
+    if (query.has('checkout_origin')) handoff.set('checkout_origin', actualOrigin);
     for (const key of HANDOFF_KEYS) {
         const value = query.get(key);
         if (!value || value.length > 2048) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
@@ -190,7 +198,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ca
     try {
         upstream = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/${step}?${handoff.toString()}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', [LETBUYY_CHECKOUT_ORIGIN_HEADER]: actualOrigin },
             body: JSON.stringify(parsed.data),
             cache: 'no-store',
         });

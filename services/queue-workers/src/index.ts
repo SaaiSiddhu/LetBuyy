@@ -5,6 +5,7 @@ import {
   type RuntimeTelemetryDatasetBinding,
 } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
+import { formatEmailSender } from '@letbuyy/notification-core/email';
 import { consumePlatformQueuesForCloudflareQueue, consumeNotificationJobs, consumeLoyaltyRefundJobs } from './platform-queue-consumer';
 import type { PushProviderEnv } from './push-dispatcher';
 import { processComplianceDeliveries, runComplianceAuditExportDryRun } from './compliance';
@@ -485,7 +486,7 @@ function resendConfigured(env: Env): boolean {
   return Boolean(key && !key.toLowerCase().includes('placeholder') && !key.toLowerCase().includes('skip_needs_human'));
 }
 
-async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDelivery[]): Promise<void> {
+export async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDelivery[]): Promise<void> {
   for (const delivery of deliveries) {
     if (delivery.status === 'dead-lettered' || !isTransactionalEmailJob(delivery.input.jobType)) continue;
     const payload = emailPayload(delivery.input.payload);
@@ -503,19 +504,20 @@ async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDeli
         store_id: payload.storeId || delivery.input.siteId,
         request_id: delivery.input.requestId,
       });
-      continue;
+      throw new QueueProcessingError('Transactional email provider is not configured', { deterministic: false });
     }
 
     const result = await sendResendEmail({
       apiKey: env.RESEND_API_KEY!,
-      from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+      from: formatEmailSender(env.RESEND_FROM_EMAIL),
       to: payload.to,
       subject: payload.subject,
       text: payload.text,
       html: payload.html,
+      idempotencyKey: delivery.input.idempotencyKey,
     });
 
-    if (!result.success) {
+    if (!result.success || !result.messageId) {
       throw new QueueProcessingError(result.error || 'Resend order confirmation failed', { deterministic: false });
     }
 
@@ -591,8 +593,6 @@ export default {
     const deliveries = await normalizeDeliveries(env, batch);
 
     try {
-      await persistQueueBatch(env, deliveries);
-      await recordQueueBatchMetric(env, batch, deliveries);
       let platformQueueResult: unknown = [];
 
       try {
@@ -622,6 +622,11 @@ export default {
       const executiveAnalyticsResult = await processExecutiveAnalyticsDeliveries(env, deliveries);
       const incidentCommandResult = await processIncidentCommandDeliveries(env, deliveries);
 
+      // A completed delivery is evidence of a completed effect, not receipt of
+      // its queue envelope. Failed mail must stay retryable without a false
+      // completed audit row. Provider idempotency covers an uncertain audit/ACK.
+      await persistQueueBatch(env, deliveries);
+      await recordQueueBatchMetric(env, batch, deliveries);
       for (const delivery of deliveries) delivery.message.ack();
       writeQueueLog('info', {
         queue_name: batch.queue,
@@ -656,7 +661,13 @@ export default {
     ctx.waitUntil(consumeLoyaltyRefundJobs(env, `scheduled:loyalty-refunds:${cron}:${Date.now()}`)
       .then(result => writeQueueLog('info', { route: 'scheduled.loyalty_refunds', result }))
       .catch(() => writeQueueLog('error', { route: 'scheduled.loyalty_refunds', status: 'unavailable' })));
-    if (cron === '* * * * *') return;
+    if (cron === '* * * * *') {
+      // Reuse the existing minute trigger. At most2 routing domains per5-minute
+      // tick keeps the bounded Hobby rollout within its HTTPS readiness lease.
+      if (Math.floor((controller.scheduledTime || Date.now()) / 60_000) % 5 === 0)
+        ctx.waitUntil(triggerCustomDomainReconciler(env, cron));
+      return;
+    }
     ctx.waitUntil(triggerCustomDomainReconciler(env, cron));
     ctx.waitUntil(
       runInventoryReservationSweeper(env, {

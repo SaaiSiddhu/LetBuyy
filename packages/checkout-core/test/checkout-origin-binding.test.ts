@@ -13,21 +13,21 @@ test('keeps the existing central-origin version1 wire bytes for finite in-flight
 });
 
 test('a branded handoff signature cannot move to another checkout origin or site', () => {
-  const first = canonicalCheckoutHandoffPayload({...input,checkoutOrigin:'https://checkout.snaz.letbuyy.store'});
+  const first = canonicalCheckoutHandoffPayload({...input,checkoutOrigin:'https://checkout.snaz.shops.example.invalid'});
   assert.equal(JSON.parse(first).version,2);
-  assert.equal(JSON.parse(first).checkout_origin,'https://checkout.snaz.letbuyy.store');
-  for (const change of [{checkoutOrigin:'https://checkout.other.letbuyy.store'},
+  assert.equal(JSON.parse(first).checkout_origin,'https://checkout.snaz.shops.example.invalid');
+  for (const change of [{checkoutOrigin:'https://checkout.other.shops.example.invalid'},
     {checkoutOrigin:'https://checkout.snaz.example.com'},
-    {checkoutOrigin:'https://checkout.snaz.letbuyy.store',siteId:'33333333-3333-4333-8333-333333333333'}]) {
+    {checkoutOrigin:'https://checkout.snaz.shops.example.invalid',siteId:'33333333-3333-4333-8333-333333333333'}]) {
     assert.notEqual(signature(canonicalCheckoutHandoffPayload({...input,...change})),signature(first));
   }
   assert.notEqual(signature(canonicalCheckoutHandoffPayload(input)),signature(first),'removing origin cannot downgrade its signature');
 });
 
 test('rejects noncanonical, insecure and credential/path/query checkout origins', () => {
-  for (const checkoutOrigin of ['http://checkout.snaz.letbuyy.store','https://checkout.snaz.letbuyy.store/',
-    'https://checkout.snaz.letbuyy.store/path','https://checkout.snaz.letbuyy.store?x=1',
-    'https://checkout.snaz.letbuyy.store#x','https://user:password@checkout.snaz.letbuyy.store','https://CHECKOUT.snaz.letbuyy.store']) {
+  for (const checkoutOrigin of ['http://checkout.snaz.shops.example.invalid','https://checkout.snaz.shops.example.invalid/',
+    'https://checkout.snaz.shops.example.invalid/path','https://checkout.snaz.shops.example.invalid?x=1',
+    'https://checkout.snaz.shops.example.invalid#x','https://user:password@checkout.snaz.shops.example.invalid','https://CHECKOUT.snaz.shops.example.invalid']) {
     assert.throws(()=>canonicalCheckoutHandoffPayload({...input,checkoutOrigin}),undefined,checkoutOrigin);
   }
   assert.equal(JSON.parse(canonicalCheckoutHandoffPayload({...input,checkoutOrigin:'http://checkout.localhost:4321'})).version,2);

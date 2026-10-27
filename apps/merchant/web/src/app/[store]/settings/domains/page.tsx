@@ -29,6 +29,7 @@ import { normalizeSsl, normalizeStatus, scoreFromRecord, statusLabel } from '@/l
 import { DomainStatusBadge, HealthMeter, SslBadge } from '@/components/domains/parts'
 import { ConnectDomainWizard } from '@/components/domains/ConnectDomainWizard'
 import { DomainDetailView } from '@/components/domains/DomainDetailView'
+import { CheckoutDomainCard } from '@/components/domains/CheckoutDomainCard'
 
 const defaultCnameTarget = process.env.NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET || 'connect.letbuyy.com'
 
@@ -191,6 +192,8 @@ export default function DomainCenterPage() {
             <Banner variant="info" title="Use your own domain">
                 Connect a custom domain to give your store a professional, branded address with automatic HTTPS. Your LetBuyy address remains assigned when you connect a custom domain.
             </Banner>
+
+            <CheckoutDomainCard key={store} store={store} />
 
             {/* Your domains */}
             <Section variant="grouped" title="Your domains" >

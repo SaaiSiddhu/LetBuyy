@@ -1,48 +1,23 @@
 import { AppError } from './errors';
 import type { getSupabaseAdmin } from './supabase';
-import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letbuyy/billing-core';
+import { getStoreBillingTierDefinition } from '@letbuyy/billing-core';
+import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
 interface StoreThemeLimit {
     limit: number | null;
     plan_name: string;
 }
 export async function resolveStoreThemeLimit(db: ReturnType<typeof getSupabaseAdmin>, storeId: string): Promise<StoreThemeLimit> {
-    const { data: site, error: siteError } = await db
-        .from('sites')
-        .select('site_type')
-        .eq('id', storeId)
-        .maybeSingle();
-    if (siteError || !site)
+    // Match every other creation grant: persisted billing authority, including
+    // active trial plans and current per-site overrides. A second subscription
+    // lookup cannot silently ignore the canonical entitlement snapshot.
+    const snapshot = await new SaasExecutionAdapter(db).resolveEntitlements(storeId);
+    const themeLimit = snapshot.limits.themes;
+    if (snapshot.authority !== 'persisted' || themeLimit !== null
+        && (typeof themeLimit !== 'number' || !Number.isSafeInteger(themeLimit) || themeLimit < 0))
         throw new AppError('Theme allowance is temporarily unavailable.', 503, 'THEME_STATE_UNAVAILABLE');
-    const siteType = typeof site?.site_type === 'string' && site.site_type ? site.site_type : 'store';
-    const { data: sub, error: subscriptionError } = await db
-        .from('subscriptions')
-        .select('plan')
-        .eq('store_id', storeId)
-        .in('status', ['active', 'past_due', 'failed'])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-    if (subscriptionError)
-        throw new AppError('Theme allowance is temporarily unavailable.', 503, 'THEME_STATE_UNAVAILABLE');
-    const slug = typeof sub?.plan === 'string' && sub.plan ? sub.plan : 'free';
-    const { data: planRow, error: planError } = await db
-        .from('plans')
-        .select('*')
-        .eq('site_type', siteType)
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .maybeSingle();
-    if (planError)
-        throw new AppError('Theme allowance is temporarily unavailable.', 503, 'THEME_STATE_UNAVAILABLE');
-    const plan = applyStorePlanTierDefaults((planRow as BillingPlanCatalogRecord) ||
-        ({ slug, site_type: siteType, name: slug } as unknown as BillingPlanCatalogRecord));
-    const rawThemeLimit = (plan.limits as Record<string, unknown> | null | undefined)?.themes;
-    const themeLimit = rawThemeLimit === null || rawThemeLimit === undefined
-        ? null
-        : Number(rawThemeLimit);
     return {
-        limit: Number.isFinite(themeLimit) ? themeLimit : null,
-        plan_name: plan.name || slug,
+        limit: themeLimit as number | null,
+        plan_name: getStoreBillingTierDefinition(snapshot.plan)?.name || snapshot.plan,
     };
 }
 export async function countInstalledSiteThemes(db: ReturnType<typeof getSupabaseAdmin>, storeId: string): Promise<number> {

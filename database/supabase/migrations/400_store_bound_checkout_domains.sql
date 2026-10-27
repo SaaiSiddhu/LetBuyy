@@ -1,29 +1,43 @@
 -- Owner-approved ART-14 Amendment4, 27Oct2026. Reuse the existing domain lifecycle.
 -- No existing store/domain is provisioned, promoted, exposed or overwritten by this migration.
+BEGIN;
 ALTER TABLE public.site_domains
   ADD COLUMN purpose text NOT NULL DEFAULT 'storefront',
   ADD COLUMN checkout_parent_domain_id uuid,
+  ADD COLUMN checkout_retired_at timestamptz,
   ADD CONSTRAINT site_domains_purpose_check CHECK (purpose IN ('storefront','checkout')),
   ADD CONSTRAINT site_domains_checkout_shape_check CHECK (
-    (purpose='storefront' AND checkout_parent_domain_id IS NULL)
+    (purpose='storefront' AND checkout_parent_domain_id IS NULL AND checkout_retired_at IS NULL)
     OR (purpose='checkout' AND role='redirect' AND redirect_to IS NULL)),
   ADD CONSTRAINT site_domains_id_site_key UNIQUE (id,site_id),
   ADD CONSTRAINT site_domains_checkout_parent_fkey
     FOREIGN KEY (checkout_parent_domain_id,site_id)
     REFERENCES public.site_domains(id,site_id) ON DELETE RESTRICT;
 CREATE UNIQUE INDEX site_domains_one_checkout_per_site
-  ON public.site_domains(site_id) WHERE purpose='checkout' AND deleted_at IS NULL;
+  ON public.site_domains(site_id) WHERE purpose='checkout' AND checkout_retired_at IS NULL AND deleted_at IS NULL;
 CREATE INDEX site_domains_checkout_maintenance
-  ON public.site_domains(id) WHERE purpose='checkout' AND deleted_at IS NULL;
+  ON public.site_domains(site_id,id) WHERE purpose='checkout' AND deleted_at IS NULL;
 
 CREATE FUNCTION public.guard_checkout_domain_v1() RETURNS trigger
 LANGUAGE plpgsql SET search_path=pg_catalog,public AS $$
 DECLARE parent public.site_domains%ROWTYPE; handle text;
 BEGIN
+  IF TG_OP='DELETE' THEN
+    IF OLD.purpose='checkout' THEN
+      RAISE EXCEPTION 'Checkout domains must be retired through the server lifecycle' USING ERRCODE='42501';
+    END IF;
+    RETURN OLD;
+  END IF;
   IF TG_OP='UPDATE' AND OLD.purpose<>NEW.purpose THEN
     RAISE EXCEPTION 'Domain purpose is immutable' USING ERRCODE='23514';
   END IF;
   IF NEW.purpose<>'checkout' THEN RETURN NEW; END IF;
+  -- Readiness is established only by the canonical server/provider proof.
+  -- A tenant's direct PostgREST privileges must not manufacture active TLS or
+  -- edit retirement metadata that drives a provider-domain removal.
+  IF current_user NOT IN ('postgres','service_role') THEN
+    RAISE EXCEPTION 'Checkout domain state is server managed' USING ERRCODE='42501';
+  END IF;
   IF NEW.role<>'redirect' THEN
     RAISE EXCEPTION 'A checkout host cannot become a storefront primary' USING ERRCODE='23514';
   END IF;
@@ -33,6 +47,16 @@ BEGIN
   IF TG_OP='UPDATE' AND OLD.purpose='checkout' THEN NEW.redirect_to:=NULL; END IF;
   IF NEW.redirect_to IS NOT NULL THEN
     RAISE EXCEPTION 'A checkout host cannot redirect to a storefront' USING ERRCODE='23514';
+  END IF;
+  -- A handle/address change must still be able to retire the old immutable
+  -- hostname. A deleted row grants no new minting/primary/ownership authority.
+  IF TG_OP='UPDATE' AND OLD.checkout_retired_at IS NOT NULL AND NEW.checkout_retired_at IS NULL THEN
+    RAISE EXCEPTION 'Retired checkout addresses cannot be reactivated' USING ERRCODE='23514';
+  END IF;
+  IF TG_OP='UPDATE' AND (NEW.deleted_at IS NOT NULL OR NEW.checkout_retired_at IS NOT NULL)
+     AND NEW.site_id=OLD.site_id AND NEW.domain=OLD.domain
+     AND NEW.checkout_parent_domain_id IS NOT DISTINCT FROM OLD.checkout_parent_domain_id THEN
+    RETURN NEW;
   END IF;
   SELECT subdomain INTO handle FROM public.sites WHERE id=NEW.site_id AND deleted_at IS NULL;
   IF handle IS NULL OR NEW.domain<>lower(NEW.domain)
@@ -56,7 +80,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END $$;
-CREATE TRIGGER site_domains_checkout_guard BEFORE INSERT OR UPDATE ON public.site_domains
+CREATE TRIGGER site_domains_checkout_guard BEFORE INSERT OR UPDATE OR DELETE ON public.site_domains
   FOR EACH ROW EXECUTE FUNCTION public.guard_checkout_domain_v1();
 
 CREATE FUNCTION public.revoke_child_checkout_domain_v1() RETURNS trigger
@@ -75,3 +99,4 @@ CREATE TRIGGER site_domains_checkout_parent_revocation AFTER UPDATE OF status,ss
 REVOKE ALL ON FUNCTION public.guard_checkout_domain_v1() FROM PUBLIC,anon,authenticated;
 REVOKE ALL ON FUNCTION public.revoke_child_checkout_domain_v1() FROM PUBLIC,anon,authenticated;
 NOTIFY pgrst,'reload schema';
+COMMIT;

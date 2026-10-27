@@ -218,6 +218,7 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
         || (globalThis as any).document.body.innerText.includes('temporarily unavailable'), { timeout: coldNavigationTimeout }).catch(() => undefined);
     assert.ok(page.url().includes('checkout.localhost'), `storefront did not hand off to hosted checkout (url=${page.url()}, cart=${await page.evaluate(() => (globalThis as any).localStorage.getItem('lb_cart_token'))}, body=${(await page.locator('body').innerText()).slice(0, 500)}, errors=${pageErrors.join(' | ')}, handoff=${handoffTrace.join(' | ')})`);
     await page.waitForLoadState('networkidle');
+    assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
     await page.getByPlaceholder('John Doe').fill('Synthetic Browser Buyer');
     await page.getByPlaceholder('9876543210').fill('9000000099');
     await page.getByPlaceholder('john@example.com').fill('browser-buyer@example.invalid');
@@ -314,6 +315,7 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/checkout\.localhost/);
     await page.waitForLoadState('networkidle');
+    assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
     await page.getByPlaceholder('John Doe').fill('Synthetic Stale Quote Buyer');
     await page.getByPlaceholder('9876543210').fill('9000000077');
     await page.getByPlaceholder('john@example.com').fill(email);
@@ -417,6 +419,7 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/checkout\.localhost/);
     await page.waitForLoadState('networkidle');
+    assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
     await page.getByPlaceholder('John Doe').fill('Synthetic Online Buyer');
     await page.getByPlaceholder('9876543210').fill('9000000088');
     await page.getByPlaceholder('john@example.com').fill('browser-online@example.invalid');
@@ -520,6 +523,7 @@ test('buyer sees a safe recoverable message when inventory changes before COD co
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/checkout\.localhost/);
     await page.waitForLoadState('networkidle');
+    assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
     await page.getByPlaceholder('John Doe').fill('Synthetic Stale Inventory Buyer');
     await page.getByPlaceholder('9876543210').fill('9000000066');
     await page.getByPlaceholder('john@example.com').fill(email);

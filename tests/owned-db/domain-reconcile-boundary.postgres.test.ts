@@ -6,6 +6,8 @@ import {readFileSync} from 'node:fs';
 import {buildSync} from 'esbuild';
 import {Miniflare,createFetchMock} from 'miniflare';
 import {createBoundDomainReconcileHeaders,createLetbuyyInternalAppHeaders} from '@letbuyy/auth-core';
+import {canonicalCheckoutDomainProbePayload} from '@letbuyy/checkout-core';
+import {hmacSha256Hex} from '../../services/api-gateway/src/lib/crypto';
 import {requireOwnedDatabase} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {Gateway,gatewayEnv,newIdentityKeys,tapRest,restJson,INTERNAL_SECRET,signedIdentityHeaders,type RestTap} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
@@ -37,7 +39,13 @@ before(async()=>{
  priorFetch=globalThis.fetch;globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const u=new URL(input instanceof Request?input.url:String(input));
   if(['cloudflare-dns.com','dns.google'].includes(u.hostname)){providerCalls++;if(providerFailure==='dns')return new Response(null,{status:503});assert.equal(init?.redirect,'manual');assert.ok(init?.signal);return Response.json({Status:providerFailure==='servfail'?2:0,Answer:[{data:u.searchParams.get('type')==='TXT'?'\"example-Domain-Proof\"':dnsCnameTarget+'.'}]});}
-  if(u.hostname==='api.vercel.com'){providerCalls++;assert.equal(init?.redirect,'manual');if(providerFailure==='vercel')return new Response(null,{status:503});const parts=u.pathname.split('/');const domainName=decodeURIComponent(parts[parts.indexOf('domains')+1]);return Response.json(u.pathname.endsWith('/config')?{configuredBy:'CNAME',misconfigured:false}:{name:domainName,verified:true});}
+ if(u.hostname==='api.vercel.com'){providerCalls++;assert.equal(init?.redirect,'manual');if(providerFailure==='vercel')return new Response(null,{status:503});const parts=u.pathname.split('/');const domainName=decodeURIComponent(parts[parts.indexOf('domains')+1]);return Response.json(u.pathname.endsWith('/config')?{configuredBy:'CNAME',misconfigured:false}:{name:domainName,projectId:'synthetic-commerce',verified:true});}
+ if(u.hostname.startsWith('checkout.')&&u.pathname==='/.well-known/letbuyy-checkout-domain'){
+  providerCalls++;assert.equal(init?.redirect,'manual');
+  const {signature,...proof}=JSON.parse(new Headers(init?.headers).get('X-LetBuyy-Checkout-Probe')!);
+  assert.equal(signature,await hmacSha256Hex('synthetic-checkout-application-proof-key',canonicalCheckoutDomainProbePayload('request',proof)));
+  return Response.json({...proof,signature:await hmacSha256Hex('synthetic-checkout-application-proof-key',canonicalCheckoutDomainProbePayload('response',proof))});
+ }
   return priorFetch(input,init);
  }) as typeof fetch;
 });
@@ -154,7 +162,7 @@ test('provider outage does not invent drift, and large requested pages stay with
  try{
   for(const failure of ['dns','servfail','vercel'] as const){
    providerFailure=failure;cursorCache.clear();const calls=providerCalls,start=tap.calls.length;
-   const response=await run(undefined,'/v1/internal/custom-domain-reconcile/run?limit=100');assert.equal(response.status,200,response.text);assert.equal(response.json?.data.checked,3);assert.equal(response.json?.data.changed,0);assert.equal(response.json?.data.deferred,true);assert.ok(response.json?.data.results.every((r:{reason:string;status:unknown})=>r.reason==='PROVIDER_UNAVAILABLE'&&r.status===null));
+   const response=await run(undefined,'/v1/internal/custom-domain-reconcile/run?limit=100');assert.equal(response.status,200,response.text);assert.equal(response.json?.data.checked,2);assert.equal(response.json?.data.changed,0);assert.equal(response.json?.data.deferred,true);assert.ok(response.json?.data.results.every((r:{reason:string;status:unknown})=>r.reason==='PROVIDER_UNAVAILABLE'&&r.status===null));
    assert.ok(providerCalls-calls+tap.calls.length-start<50,'real route provider/replay/metadata calls leave Free-plan headroom');
    assert.equal(owned.psql(`SELECT id||':'||custom_domain_status FROM sites WHERE custom_domain IS NOT NULL AND deleted_at IS NULL ORDER BY id;`),before);
   }
@@ -168,4 +176,31 @@ test('actual native queue request crosses its service binding into the real moun
  let redirectReply=false,serviceCalls=0;
  const mf=new Miniflare({modules:true,script:bundled,compatibilityDate:'2026-05-25',compatibilityFlags:['nodejs_compat'],cf:false,fetchMock,bindings:{ENVIRONMENT:'production',APP_ENV:'production',DEPLOYMENT_ENV:'production',INTERNAL_API_SECRET:INTERNAL_SECRET,DOMAIN_RECONCILE_REQUEST_SECRET:key,CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT:'1'},serviceBindings:{API_GATEWAY_SERVICE:async(request:Request)=>{serviceCalls++;if(redirectReply)return new Response(null,{status:302,headers:{Location:'https://synthetic-do-not-follow.invalid/'}});assert.equal(request.headers.get('X-LetBuyy-Internal-App'),'api-gateway:domain-reconcile');const url=new URL(request.url);const result=await gateway.request(url.pathname+url.search,{method:request.method,headers:Object.fromEntries(request.headers),body:await request.text()});responses.push({status:result.status,checked:result.json?.data.checked});return new Response(result.text,{status:result.status,headers:{'Content-Type':'application/json'}});}}});
  try{const response=await mf.dispatchFetch('https://owned-native.invalid/');assert.equal(response.status,204,await response.text());assert.deepEqual(responses,[{status:200,checked:1}]);assert.equal(dbStatus(),'active');redirectReply=true;const refused=await mf.dispatchFetch('https://owned-native.invalid/');assert.equal(refused.status,204,await refused.text());assert.equal(serviceCalls,2);assert.equal(responses.length,1,'the redirect did not reach a second Gateway or external host');}finally{await mf.dispose();}
+});
+
+test('mixed storefront and checkout candidates advance fairly under the real signed job and Free request budget',async()=>{
+ const platform=newSyntheticTenant('job-platform'),custom=newSyntheticTenant('job-custom'),deleted=newSyntheticTenant('job-deleted');
+ for(const site of [platform,custom,deleted])seedSyntheticTenant(owned.psql,site);
+ const customHost=custom.subdomain+'.example.invalid',parent=randomUUID();
+ owned.psql(`UPDATE sites SET custom_domain='${customHost}',custom_domain_status='active' WHERE id='${custom.siteId}';
+  INSERT INTO site_domains(id,site_id,domain,purpose,role,status,ssl_status) VALUES('${parent}','${custom.siteId}','${customHost}','storefront','primary','active','active');
+  INSERT INTO site_domains(site_id,domain,purpose,role,status,ssl_status,checkout_parent_domain_id,metadata) VALUES
+   ('${platform.siteId}','checkout.${platform.subdomain}.shops.example.invalid','checkout','redirect','pending','pending',NULL,'{"managed_by":"letbuyy-checkout-v1"}'),
+   ('${custom.siteId}','checkout.${custom.subdomain}.${customHost}','checkout','redirect','pending','pending','${parent}','{"managed_by":"letbuyy-checkout-v1"}'),
+   ('${deleted.siteId}','checkout.${deleted.subdomain}.shops.example.invalid','checkout','redirect','pending','pending',NULL,'{"managed_by":"letbuyy-checkout-v1"}');
+  UPDATE sites SET deleted_at=now() WHERE id='${deleted.siteId}';`);
+ const seen=new Set<string>();cursorCache.clear();
+ const configured={...gateway.env,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'shops.example.invalid',STORE_ACCESS_SIGNING_KEY:'synthetic-checkout-application-proof-key'};
+ for(let attempt=0;attempt<16&&seen.size<2;attempt++){
+  const start=tap.calls.length,calls=providerCalls;
+  const response=await run(undefined,path,'{}',configured);assert.equal(response.status,200,response.text);
+  assert.ok(response.json?.data.checked<=2);assert.ok(response.json?.data.checkout_results.length<=1);
+  for(const result of response.json?.data.checkout_results||[]){assert.notEqual(result.site_id,deleted.siteId);assert.equal(result.status,'active',JSON.stringify(result));seen.add(result.site_id);}
+  assert.ok(tap.calls.length-start+providerCalls-calls<50,'all actual PostgREST, durable replay and provider calls leave Free-plan headroom');
+  const candidate=tap.calls.slice(start).find(call=>call.resource==='site_domains'&&call.search.get('select')==='site_id,id,sites!inner(id)');
+  assert.ok(candidate);assert.equal(candidate.search.get('sites.deleted_at'),'is.null');assert.equal(candidate.search.get('limit'),'1');
+ }
+ assert.deepEqual(seen,new Set([platform.siteId,custom.siteId]));
+ for(const site of [platform,custom])assert.equal(owned.psql(`SELECT status||':'||ssl_status FROM site_domains WHERE site_id='${site.siteId}' AND purpose='checkout' AND deleted_at IS NULL;`),'active:active');
+ assert.equal(owned.psql(`SELECT status FROM site_domains WHERE site_id='${deleted.siteId}' AND purpose='checkout';`),'pending');
 });

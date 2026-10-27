@@ -88,7 +88,7 @@ test('operations panels settle independently and page only the requested identit
 type ContentPage = keyof typeof readPages
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
-async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty', transport: Transport) {
+async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain', transport: Transport) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
     const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'MutationObserver', 'HTMLElement', 'Element']
     const previous = Object.fromEntries([...domGlobals, 'fetch'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
@@ -101,7 +101,8 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     const { PathParamsContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js')
     const { ToastProvider } = await import('@letbuyy/ui')
     const { MerchantSecurityContext } = await import('../src/components/security/MerchantSecurityContext')
-    const Component: React.ElementType = kind === 'themeLibrary' ? (await import('../src/components/theme-library/ThemeLibraryWorkspace')).ThemeLibraryWorkspace
+    const Component: React.ElementType = kind === 'checkoutDomain' ? (await import('../src/components/domains/CheckoutDomainCard')).CheckoutDomainCard
+        : kind === 'themeLibrary' ? (await import('../src/components/theme-library/ThemeLibraryWorkspace')).ThemeLibraryWorkspace
         : kind === 'previewUpdate' ? (await import('../src/components/theme-editor/ThemeUpdatePanel')).default
         : kind === 'loyalty' ? (await import('../src/components/settings/LoyaltySettings')).LoyaltySettings
         : kind in readPages ? (await readPages[kind as ContentPage]()).default
@@ -597,5 +598,58 @@ test('CSV import lost acknowledgement reports uncertainty and never automaticall
         assert.match(h.text(), /could not be confirmed[\s\S]*Some products may already exist/)
         assert.equal(commands, 1)
         assert.doesNotMatch(h.text(), /Import complete|Import queued/)
+    } finally { await h.close() }
+})
+
+const checkoutSetup = (store = 'alpha', active = false) => ({
+    site_id: '11111111-1111-4111-8111-111111111111', hostname: `checkout.${store}.shops.example.invalid`, parent_hostname: 'shops.example.invalid',
+    source: 'platform', status: active ? 'active' : 'pending', ssl_status: active ? 'active' : 'pending',
+    checkout_origin: active ? `https://checkout.${store}.shops.example.invalid` : 'https://checkout.letbuyy.com',
+    fallback_origin: 'https://checkout.letbuyy.com', reason: null, dns_records: [],
+})
+
+test('checkout domain readiness is read first and setup is an explicit action with safe fallback while pending', async () => {
+    const methods: string[] = []
+    const h = await mount('checkoutDomain', async (_url, init) => {
+        methods.push(init?.method || 'GET')
+        return json(checkoutSetup('alpha', methods.length > 2), methods.length === 2 ? 202 : 200)
+    })
+    try {
+        assert.deepEqual(methods, ['GET'])
+        assert.match(h.text(), /Setup pending/)
+        assert.match(h.text(), /continue checking out securely/)
+        await h.click('Set up checkout address')
+        assert.deepEqual(methods, ['GET', 'POST'])
+        assert.match(h.text(), /Setup pending/)
+        await h.click('Set up checkout address')
+        assert.match(h.text(), /New checkout links use this verified address/)
+        assert.match(h.text(), /Ready/)
+    } finally { await h.close() }
+})
+
+test('checkout domain read failure offers a read retry without claiming ready or making a provider change', async () => {
+    const methods: string[] = []
+    const h = await mount('checkoutDomain', async (_url, init) => {
+        methods.push(init?.method || 'GET')
+        return methods.length === 1 ? json(null, 503) : json(checkoutSetup())
+    })
+    try {
+        assert.match(h.text(), /Checkout address unavailable/)
+        assert.doesNotMatch(h.text(), /New checkout links use|Ready/)
+        await h.click('Retry')
+        assert.deepEqual(methods, ['GET', 'GET'])
+        assert.match(h.text(), /checkout.alpha.shops.example.invalid/)
+    } finally { await h.close() }
+})
+
+test('checkout domain retires a late response from the previous store even if transport ignores abort', async () => {
+    const previous = deferred<Response>()
+    const h = await mount('checkoutDomain', async url => url.includes('/alpha/') ? previous.promise : json(checkoutSetup('beta', true)))
+    try {
+        await h.render('beta')
+        assert.match(h.text(), /checkout.beta.shops.example.invalid/)
+        await act(async () => previous.resolve(json(checkoutSetup('alpha', true))))
+        assert.doesNotMatch(h.text(), /checkout.alpha.shops.example.invalid/)
+        assert.match(h.text(), /checkout.beta.shops.example.invalid/)
     } finally { await h.close() }
 })

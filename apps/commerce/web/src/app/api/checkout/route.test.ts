@@ -14,7 +14,7 @@ const HANDOFF = new URLSearchParams({
     signature: 'b'.repeat(64),
     channel: 'web',
 });
-const ORIGIN = 'https://checkout.test';
+const ORIGIN = 'https://checkout.letbuyy.com';
 type CheckoutHandler = (request: NextRequest, context: { params: Promise<{ cartId: string; step: string }> }) => Promise<Response>;
 type CheckoutOptionsHandler = (request: NextRequest, context: { params: Promise<{ cartId: string; step: string }> }) => Promise<Response>;
 

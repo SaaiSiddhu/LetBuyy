@@ -12,6 +12,7 @@ import type {
     DomainListResult,
     DomainSetPrimaryResult,
     DomainVerifyResult,
+    CheckoutDomainSetup,
 } from '@letbuyy/api-client'
 
 interface Envelope<T> {
@@ -44,6 +45,10 @@ const enc = encodeURIComponent
 const base = (store: string) => `/api/stores/${enc(store)}/domains`
 
 export const domainsClient = {
+    checkout: (store: string, signal?: AbortSignal) =>
+        call<CheckoutDomainSetup>(`${base(store)}/checkout`, { signal }),
+    prepareCheckout: (store: string, signal?: AbortSignal) =>
+        call<CheckoutDomainSetup>(`${base(store)}/checkout`, { method: 'POST', signal }),
     list: (store: string, signal?: AbortSignal) =>
         call<DomainListResult>(base(store), { signal }),
 

@@ -19,6 +19,7 @@ import {
 import { getThemePreviewCookieName, normalizeThemePreviewToken } from './lib/theme-preview-cookie';
 import { readStorefrontApiBaseUrl } from './lib/api/base-url';
 import { storefrontInternalHeaders, STOREFRONT_INTERNAL_TIMEOUT_MS } from './lib/storefront-internal-headers';
+import { checkoutRequestBinding, resolveCheckoutHost } from './lib/checkout-host';
 
 // Mirrors the sites_access_mode_check CHECK constraint, which is the upstream source of truth.
 const STOREFRONT_ACCESS_MODES = ['public', 'password', 'preview_only', 'offline'] as const;
@@ -424,7 +425,18 @@ export async function proxy(req: NextRequest) {
   // string — this branch never touches `resolveAccess`/the site-access gate below, on purpose:
   // that gate is keyed by Host, and the checkout host maps to no single site.
   if (isCheckoutOriginHost(parsed)) {
+    if (!checkoutRequestBinding(req.headers, req.nextUrl.searchParams.get('checkout_origin'), req.url)) return storeNotFound();
     return rewriteToCheckoutOrigin(req);
+  }
+
+  if (host.startsWith('checkout.')) {
+    if (req.nextUrl.pathname !== '/checkout'
+        || !checkoutRequestBinding(req.headers, req.nextUrl.searchParams.get('checkout_origin'), req.url)) return storeNotFound();
+    try {
+      const site = await resolveCheckoutHost(host);
+      if (!site || site.site_id !== req.nextUrl.searchParams.get('site_id')) return storeNotFound();
+      return rewriteToCheckoutOrigin(req);
+    } catch { return noIndex(new NextResponse('Checkout is temporarily unavailable', { status: 503 })); }
   }
 
   if (isInternalCheckoutOriginPath(req.nextUrl.pathname)) {

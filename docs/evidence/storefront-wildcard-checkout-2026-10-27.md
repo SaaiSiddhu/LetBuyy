@@ -218,3 +218,88 @@ Production API `37e77d49-8220-4bbf-8038-2527ba1f265c` matches the qualified modu
 Native Chrome imported the supplied CSV only in the named QA store through the released Merchant file picker and normal Connect Razorpay API. The saved UI reports Verified, Sandbox, seller account, online enabled, masked ID and cleared secret input. No live/global key was installed. A fresh verified Accounts continuation returned to the buyer account and its one linked existing receipt. The normal saved-cart recovery and supported increase control produced2 units/subtotal₹2; the released hosted checkout shows an explicit simulated-payment banner and validates existing OFF50 for₹1 saving/₹1 quoted total before delivery. The owner has been asked to enter delivery/payment details privately and complete the sandbox step. No payment/order/fulfilment was submitted by the agent, and no new saved coupon receipt is certified yet.
 
 The two existing orders retain their actual saved no-coupon/zero-discount totals. No historical coupon is invented, current rules are not used to rewrite placed totals, and the unlinked older order remains unlinked. The public Liquid header still labels its generic link Log in while the account route proves the valid buyer session; this presentation refinement is recorded separately. Branded checkout-host migration400 and associated unfinished source remain unshipped and outside this release. Worktrees/private local environments remain preserved while acceptance and the independent branded-host phase are in flight. Private sanitized receipts are in `coupon-payment-production-release-result.json`, `coupon-production-native-checkout-acceptance.json`, `coupon-production-qa-test-key-installation.json`, `coupon-production-active-aliases.json` and related API/web/error-scan records.
+
+
+## Owner receipt acceptance and current checkout/theme follow-through (28 October)
+
+The owner's new QA order10002 is the saved-coupon positive control: subtotal INR2,
+OFF50 discount INR1 and final INR1. A read-only query of the exact QA store's saved
+money/provider fields agrees with the owner's Merchant and buyer list/detail
+screenshots. The payment is recorded as paid through Razorpay; delivery was
+changed by the owner. The older10001 has no saved coupon and remains INR2.
+Neither historical order identity nor money was rewritten, and no agent payment,
+order or fulfilment occurred. This closes the new coupon receipt acceptance,
+not the separate lifecycle-mail or branded-host requests.
+
+The theme Add failure is reproduced from persisted billing authority. QA has no
+paid subscription; the canonical resolver returns Free, whose default permits
+one installed theme. Published Circuit fills that slot and cannot be archived.
+The source now uses that canonical resolver (including trials and site-specific
+overrides) instead of a second subscriptions query, refuses malformed/outage
+allowances and distinguishes an exact library-cap failure from other CAS
+conflicts. Unit16 and real owned selected-version/catalog install10 pass.
+The proposed exemption for the ten built-in free themes is a pending owner
+business decision; no plan cap is changed and no live design is replaced.
+
+The approved exact checkout-host implementation now joins the existing handoff,
+internal signed resolver, proxy/page/BFF and domain maintenance paths. Version2
+signatures bind origin/site/cart/buyer, while older adapters retain central-only
+version1 handoffs during rolling deployment. Same-site verified parents, exact
+provider assignment and HTTPS application MAC proof gate readiness. Previous
+addresses stay uniquely reserved for an eleven-minute drain, then an exact
+provider-alias removal must be positively read back before release. Parent
+revocation denies immediately; deleted stores cannot enter the maintenance page.
+Migration400 is paired and transactional; tenant SQL cannot forge readiness,
+retirement or remove the hostname reservation. DOWN preserves ordinary domains
+and archives checkout state without reactivating aliases.
+
+Fresh owned PostgreSQL tests pass6 domain lifecycle/rollback controls and16
+signed-job controls. The actual mounted job advances mixed domain candidates,
+keeps one checkout setup per invocation and counts actual replay, PostgREST and
+provider calls below the Free50-request envelope. Queue scheduling runs the
+existing reconciler on every fifth minute; unrelated sweepers retain their
+cadence. Merchant's actual readiness component passes3 loading/error/store-
+switch controls. All these domain-provider responses are synthetic fixtures,
+not a hosted DNS, certificate or custom-domain acceptance claim.
+
+Queue production configuration has no RESEND_API_KEY, although the API has one.
+Missing configuration used to silently acknowledge email deliveries. The source
+now retries, retains one provider idempotency key and records completion only
+after provider acceptance. The actual queue-handler fault/recovery test and
+focused email/scheduler controls pass7; the complete Queue lane passes83. The
+original sending-key location is requested privately; no new key, customer
+replay, provider delivery or hosted Queue deployment is claimed. Completing
+order-status event production, preferences and full lifecycle rendering remains
+open, separately from this transport repair. Merchant checkout/general settings
+propagation and persisted order-prefix behavior also remain open.
+
+Current broader local results: Gateway1817, contracts362, all four touched
+runtime typechecks, both web production builds and both governed Worker dry-run
+builds pass. Literal production domains in new fixtures were replaced with
+synthetic DNS names rather than weakening the domain-literal policy. The first
+full Gateway attempt hit sandbox socket denial; only its verified owned process
+tree was stopped, then the permitted native unit run passed.
+
+The wider owned checkout run passes39 backend/domain controls but the four
+normal browser journeys initially fail at the checkout address entry. A bounded
+render diagnostic proves the local Next ingress supplies localhost in request.url
+while retaining checkout.localhost in matching Host/forwarded headers. The exact
+nonproduction, same-port local normalization repair passes all four actual browser
+journeys on rerun, including coupon and provider-fixture capture; the same run
+passes6 domain lifecycle and16 signed-job controls, with no resource residue.
+Production public-host equality and all conflicting-forwarding denials remain.
+The failing runs remain recorded. This is not yet a hosted release-qualified
+candidate.
+Migration400 has not been applied to a hosted database; no new source has been
+merged/promoted/deployed. Fresh encrypted restore/staging, exact live host/TLS
+checks, the current governance gate and the owner theme-allowance decision remain
+required. Staging receives no production Commerce credential.
+
+Private run receipts under the existing recovery directory:
+`theme-checkout-current-owned-escalated.json`, `branded-job-security-run2.json`,
+`branded-checkout-owned-regression.json`, `branded-checkout-origin-diagnostic.json`,
+`branded-browser-local-origin-repair.json`, `branded-current-worker-builds.json`,
+`branded-gateway-all-unit-escalated.log`, `branded-all-contracts-run2.log`,
+`branded-queue-all-unit.log`, `mail-queue-full-transport-test.log`,
+`qa10002-receipt-binding-facts.json`, `qa-theme-allowance-settings-facts.json`
+and `order-mail-runtime-config-facts.json`.

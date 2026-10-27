@@ -843,7 +843,7 @@ export class ThemeExecutionAdapter {
         if (selectedBundle.success && selectedBundle.data.package.version !== selected.version) throw versionConflict();
         await this.validateTemplateConfig(templateConfig, theme, runtime);
         const { resolveStoreThemeLimit } = await import('../lib/theme-library-limits');
-        const { limit } = await resolveStoreThemeLimit(this.db, input.store_id);
+        const { limit, plan_name } = await resolveStoreThemeLimit(this.db, input.store_id);
         const { data, error } = await this.db.rpc('install_owned_theme_v1', {
             p_actor: userId, p_site: input.store_id, p_slug: slug,
             p_config: templateConfig, p_runtime: {
@@ -859,7 +859,9 @@ export class ThemeExecutionAdapter {
         if (error?.code === 'PT409' && error.message === 'THEME_INSTANCE_VERSION_CONFLICT') {
             throw new AppError('Your library has a different version of this theme. Review its update in the library before continuing.', 409, 'THEME_INSTANCE_VERSION_CONFLICT');
         }
-        if (error?.code === 'PT409') throw new AppError('Your theme library is full. Archive a theme or upgrade your plan.', 409, 'THEME_LIMIT_REACHED');
+        if (error?.code === 'PT409' && error.message === 'Theme library limit reached')
+            throw new AppError(`The ${plan_name} plan's theme allowance is in use. Your published theme has been preserved.`, 409, 'THEME_LIMIT_REACHED', { limit, plan_name });
+        if (error?.code === 'PT409') throw new AppError('The theme changed while it was being added. Refresh your library and retry.', 409, 'THEME_STATE_CONFLICT');
         if (error?.code === 'PT400') throw new ValidationError('Purchase this theme before adding it.');
         const result = asRecord(data);
         const installedTheme = asRecord(result.theme);

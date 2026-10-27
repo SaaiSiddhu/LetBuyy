@@ -165,6 +165,12 @@ export async function attachVercelProjectDomain(
     }
 }
 
+/** Exact project-domain removal only; never remove an account domain or its
+ * redirects. Callers must prove ownership and drain in-flight capabilities. */
+export async function removeVercelProjectDomain(env: VercelDomainEnv, domain: string, fetchImpl: FetchLike = fetch): Promise<void> {
+    await requestVercelJson(env, `/v9/projects/{projectId}/domains/${encodeURIComponent(domain)}`, { method: 'DELETE' }, fetchImpl, 0);
+}
+
 export async function getVercelDomainConfig(
     env: VercelDomainEnv,
     domain: string,

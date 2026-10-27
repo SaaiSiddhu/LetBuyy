@@ -5,6 +5,7 @@ import { AppError } from '../lib/errors';
 import type { Context } from 'hono';
 import {
     normalizeRequestHost,
+    normalizeStoreRootDomain,
     resolveStorefrontHost,
 } from '@letbuyy/tenant-core';
 import type { Env } from '../index';
@@ -15,6 +16,7 @@ import { resolveStorefrontSiteByHost } from '../middleware/store-context';
 import { verifyStoreAccessPassword } from '../lib/store-access-password';
 import { checkRateLimitKey } from '../middleware/rateLimit';
 import { timingSafeEqualText,sha256Hex } from '../lib/crypto';
+import { resolveCheckoutDomainSite } from '../lib/store-checkout-domain';
 
 const router = new Hono<{ Bindings: Env }>();
 router.use('*', async (c, next) => { c.header('Cache-Control', 'no-store'); await next(); });
@@ -43,12 +45,19 @@ router.get('/resolve', async (c) => {
 
     const host = normalizeRequestHost(c.req.query('host') || c.req.header('Host'));
     if (!host) return c.json({ error: { code: 'HOST_REQUIRED', message: 'host is required' } }, 400);
+    const purpose = z.enum(['storefront', 'checkout']).safeParse(c.req.query('purpose') || 'storefront');
+    if (!purpose.success) return c.json({ error: { code: 'VALIDATION', message: 'Invalid domain purpose' } }, 400);
 
     // Bootstrap lookup: the tenant is not known until the host resolves to one, so a
     // scope predicate cannot be supplied. Matches getSupabaseAdminUnguarded's documented
     // purpose exactly (resolve by a globally-unique key before the tenant is known); the
     // result is public routing metadata only, never trusted as authorization by itself.
     const db = getSupabaseAdminUnguarded(c);
+    if (purpose.data === 'checkout') {
+        const site = await resolveCheckoutDomainSite(db, host, normalizeStoreRootDomain(c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN));
+        if (!site) return c.json({ success: false, error: { code: 'STORE_NOT_FOUND', message: 'Checkout host not found' } }, 404);
+        return c.json(success({ purpose: 'checkout', host, site_id: site.id, subdomain: site.subdomain }));
+    }
     const resolved = await resolveStorefrontSiteByHost(db, host, c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
     if (!resolved) {
         const parsed = resolveStorefrontHost(host, c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);

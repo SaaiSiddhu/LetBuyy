@@ -1,4 +1,5 @@
 import { verifyHostedDiscountSelection } from '../lib/hosted-checkout-discount';
+import { verifyHandoffCheckoutOrigin } from '../lib/checkout-handoff-origin';
 import { hostedRazorpayTestCredentials } from '../lib/hosted-razorpay-credentials';
 import { cartLines, signedCartSubtotalMinor, stringValue, checkoutPaymentProvider, checkoutShippingMethod, buildHostedCheckoutOrderCommand, type CartRow, type HostedCheckoutPaymentProvider } from '../lib/hosted-checkout-order-command';
 export { buildHostedCheckoutOrderCommand } from '../lib/hosted-checkout-order-command';
@@ -150,6 +151,8 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
     }
 
     const cartRow = cart as CartRow;
+    const checkoutOrigin = await verifyHandoffCheckoutOrigin(c,siteId,cartRow.checkout_handoff?.checkout_origin);
+    if (checkoutOrigin === null) return { ok: false, response: invalidHandoff(c) };
     const expectedCartDigest = await sha256Hex(canonicalCheckoutCartBinding({
         siteId,
         cartId,
@@ -188,6 +191,7 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
         expiresAt,
         cartContentDigest: expectedCartDigest,
         buyerBindingDigest,
+        checkoutOrigin,
         couponCodes: cartRow.coupon_code ? [cartRow.coupon_code] : [],
         lines: cartLines(cartRow),
     }));

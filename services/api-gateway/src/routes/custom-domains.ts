@@ -21,6 +21,7 @@ import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
 import { requireOwnedSite } from '../lib/tenant-context';
 import { storefrontHostBelongsToSite } from '../lib/storefront-visitor-access';
 import { AppError } from '../lib/errors';
+import { getStoreCheckoutDomainSetup, prepareStoreCheckoutDomain } from '../lib/store-checkout-domain';
 import { hashStoreAccessPassword } from '../lib/store-access-password';
 import { attachVercelProjectDomain, readVercelDomainStatus, VercelDomainConfigError } from '../lib/vercel-domains';
 import { detectDnsProvider } from '../lib/domain-provider';
@@ -138,6 +139,28 @@ function randomToken(byteCount = 24): string {
     crypto.getRandomValues(bytes);
     return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
+
+customDomainsRouter.get('/checkout-domain', async (c) => {
+    const parsed = z.string().uuid().safeParse(c.req.query('site_id'));
+    if (!parsed.success) return c.json({ error: { code: 'VALIDATION', message: 'A valid site_id is required' } }, 400);
+    const { response } = await requireOwnedSite(c, parsed.data);
+    if (response) return response;
+    c.header('Cache-Control', 'no-store');
+    return c.json(success(await getStoreCheckoutDomainSetup(c, parsed.data)));
+});
+
+customDomainsRouter.post('/checkout-domain', async (c) => {
+    const parsed = z.object({ site_id: z.string().uuid() }).strict().safeParse(await c.req.json().catch(() => null));
+    if (!parsed.success || !z.string().min(8).max(200).safeParse(c.req.header('Idempotency-Key')).success)
+        return c.json({ error: { code: 'VALIDATION', message: 'A valid site_id and idempotency key are required' } }, 400);
+    const { response } = await requireOwnedSite(c, parsed.data.site_id);
+    if (response) return response;
+    c.header('Cache-Control', 'no-store');
+    // Exact derived hostname and DB/provider uniqueness are the operation key:
+    // a retry cannot create another domain or publish a storefront/theme.
+    const setup = await prepareStoreCheckoutDomain(c, parsed.data.site_id, { force: true });
+    return c.json(success(setup), setup.status === 'active' ? 200 : 202);
+});
 
 customDomainsRouter.post('/domains', async (c) => {
     const parsed = DomainRequestSchema.safeParse(await c.req.json().catch(() => null));

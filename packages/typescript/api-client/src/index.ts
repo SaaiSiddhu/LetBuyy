@@ -1,6 +1,8 @@
 import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
 import { StorefrontDirectoryPayloadSchema, type StorefrontDirectoryPayload } from '@letbuyy/shared-types';
 import {CollectionListPageSchema} from '@letbuyy/shared-types';
+import { CheckoutDomainSetupSchema, type CheckoutDomainSetup } from '@letbuyy/shared-types';
+export type { CheckoutDomainSetup } from '@letbuyy/shared-types';
 export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
 import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, type PersonalizationReviewContext, type StorefrontDiscoveryQueryInput, type StorefrontDiscoveryMetadata } from '@letbuyy/shared-types';
 import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
@@ -4136,6 +4138,10 @@ export class LetbuyyApiClient {
 
   // Custom-domain lifecycle (migration 185). Paths target the gateway `/custom` router.
   readonly customDomains = {
+    checkout: async (query: DomainScopedQuery, options?: LetbuyyRequestOptions): Promise<CheckoutDomainSetup> =>
+      CheckoutDomainSetupSchema.parse(await this.requestData<unknown>('/custom/checkout-domain', { ...options, query })),
+    prepareCheckout: async (input: DomainScopedInput, options?: LetbuyyRequestOptions): Promise<CheckoutDomainSetup> =>
+      CheckoutDomainSetupSchema.parse(await this.requestData<unknown>('/custom/checkout-domain', { ...options, method: 'POST', body: input })),
     list: (query: DomainScopedQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<DomainListResult>('/custom/domains', { ...options, query }),
     connect: (input: DomainConnectInput, options?: LetbuyyRequestOptions) =>

@@ -132,7 +132,7 @@ const DOMAIN_MAINTENANCE_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4
  */
 export async function readDomainReconcileCandidates(
     c: Context<{ Bindings: Env }>,
-    input: { limit: number; afterId?: string },
+    input: { limit: number; afterId?: string; wrap?: boolean },
 ): Promise<DomainMaintenanceCandidate[]> {
     if (domainMaintenanceAdmissions.get(c.req.raw) !== c.env
         || c.req.method !== 'POST'
@@ -175,7 +175,37 @@ export async function readDomainReconcileCandidates(
     };
     const rows = await readPage(input.afterId);
     // A cursor is a scheduling hint only. An empty tail wraps to the fixed first page.
-    return input.afterId && rows.length === 0 ? readPage() : rows;
+    return input.wrap !== false && input.afterId && rows.length === 0 ? readPage() : rows;
+}
+
+/** Same owner-approved, signed maintenance entry point as the storefront
+ * reader. Only exact managed-checkout routing IDs leave this bounded reader;
+ * it returns neither a client nor customer, credential or commerce records. */
+export async function readCheckoutDomainReconcileCandidates(
+    c: Context<{ Bindings: Env }>, input: { limit: number; afterId?: string },
+): Promise<Array<{ id: string; domain_id: string }>> {
+    if (domainMaintenanceAdmissions.get(c.req.raw) !== c.env || c.req.method !== 'POST'
+        || new URL(c.req.url).pathname !== '/v1/internal/custom-domain-reconcile/run'
+        || !c.env.INTERNAL_API_SECRET
+        || !timingSafeEqualText(c.req.header('X-Internal-API-Secret'), c.env.INTERNAL_API_SECRET))
+        throw new AppError('Invalid domain maintenance request', 401, 'UNAUTHORIZED');
+    if (!Number.isInteger(input.limit) || input.limit < 1 || input.limit > 100
+        || input.afterId !== undefined && !DOMAIN_MAINTENANCE_UUID.test(input.afterId))
+        throw new AppError('Invalid domain maintenance page', 400, 'VALIDATION_ERROR');
+    let query = createSupabaseServiceClient(c.env).from('site_domains').select('site_id,id,sites!inner(id)')
+        .eq('purpose', 'checkout').eq('metadata->>managed_by', 'letbuyy-checkout-v1')
+        .is('deleted_at', null).is('sites.deleted_at', null)
+        .order('site_id', { ascending: true }).order('id', { ascending: true }).limit(input.limit);
+    if (input.afterId) query = query.gt('site_id', input.afterId);
+    const { data, error } = await query;
+    if (error || !Array.isArray(data) || data.length > input.limit)
+        throw new AppError('Domain maintenance is unavailable', 503, 'DOMAIN_RECONCILE_UNAVAILABLE');
+    return data.map((row: { site_id?: unknown; id?: unknown }) => {
+        if (typeof row.site_id !== 'string' || !DOMAIN_MAINTENANCE_UUID.test(row.site_id)
+            || typeof row.id !== 'string' || !DOMAIN_MAINTENANCE_UUID.test(row.id))
+            throw new AppError('Domain maintenance is unavailable', 503, 'DOMAIN_RECONCILE_UNAVAILABLE');
+        return { id: row.site_id, domain_id: row.id };
+    });
 }
 
 /**
