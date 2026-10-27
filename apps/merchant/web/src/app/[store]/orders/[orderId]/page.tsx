@@ -499,9 +499,9 @@ function PaymentSummaryCard({ order }: { order: OrderDetail }) {
                     <div className="w-full md:max-w-sm flex flex-col gap-[var(--lb-space-2)] text-[var(--lb-font-size-base)]">
                         <AmountLine label="Subtotal" value={formatInrCurrency(order.subtotal) ?? '—'} />
                         <AmountLine label="Shipping" value={formatInrCurrency(order.shipping_cost) ?? '—'} />
-                        {order.discount > 0 && (
+                        {(order.coupon_code || order.discount > 0) && (
                             <AmountLine
-                                label={order.coupon_code ? `Discount (${order.coupon_code})` : 'Discount'}
+                                label={order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount'}
                                 value={`-${formatInrCurrency(order.discount) ?? '—'}`}
                             />
                         )}

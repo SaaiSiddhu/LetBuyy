@@ -184,3 +184,15 @@ test('order detail database failures are sanitized and do not become a misleadin
         } finally { tap.restore(); }
     }
 });
+
+test('saved coupon and exact receipt totals reach only the linked buyer list and detail', async () => {
+    const buyer=seedBuyerAccount(psql,'saved-coupon-reader');const outsider=seedBuyerAccount(psql,'saved-coupon-outsider');
+    const orderId=linked(buyer.id);
+    psql(`UPDATE orders SET coupon_code='SAVED10',coupon_discount=19.9,discount=19.9,subtotal=199,shipping_cost=20,tax=35.82,total=234.92 WHERE id='${orderId}' AND site_id='${site.siteId}';`);
+    const auth=await headers(buyer.id);
+    const detail=await gateway.request(`${base}/storefront-orders/${orderId}?store_id=${site.siteId}`,{headers:auth});assert.equal(detail.status,200);
+    const saved=detail.json?.data.order;assert.equal(saved.coupon_code,'SAVED10');assert.equal(Number(saved.discount),19.9);assert.equal(Number(saved.coupon_discount),19.9);assert.equal(Number(saved.total),234.92);
+    const list=await gateway.request(path(),{headers:auth});assert.equal(list.status,200);const summary=list.json?.data.orders.find((row:{id:string})=>row.id===orderId);
+    assert.equal(summary.coupon_code,'SAVED10');assert.equal(Number(summary.discount),19.9);assert.equal(Number(summary.total),234.92);
+    const denied=await gateway.request(`${base}/storefront-orders/${orderId}?store_id=${site.siteId}`,{headers:await headers(outsider.id)});assert.equal(denied.status,404);assert.doesNotMatch(JSON.stringify(denied.json),/SAVED10|234.92/);
+});

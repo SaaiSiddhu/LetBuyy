@@ -100,6 +100,7 @@ interface CheckoutClientProps {
         cartLines: CheckoutOriginCartLine[];
         cartId: string;
         handoff: Record<string, string>;
+        savedDiscount?: { code: string; amount: number };
     };
 }
 
@@ -218,8 +219,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('standard');
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(initialPaymentMethod);
-    const [couponInput, setCouponInput] = useState('');
-    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+    const [couponInput, setCouponInput] = useState(checkoutOrigin?.savedDiscount?.code || '');
+    const [couponSelectionChanged, setCouponSelectionChanged] = useState(false);
+    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => checkoutOrigin?.savedDiscount ? { code: checkoutOrigin.savedDiscount.code, type: 'fixed', value: checkoutOrigin.savedDiscount.amount, discount: checkoutOrigin.savedDiscount.amount } : null);
     const [couponError, setCouponError] = useState('');
     const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
     const [checkoutError, setCheckoutError] = useState('');
@@ -523,6 +525,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 freeShipping: Boolean(payload.coupon.freeShipping),
             });
             setCouponInput(payload.coupon.code);
+            setCouponSelectionChanged(true);
         } catch {
             setAppliedCoupon(null);
             setCouponError('Unable to validate coupon');
@@ -532,6 +535,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     };
 
     const removeCoupon = () => {
+        setCouponSelectionChanged(true);
         setAppliedCoupon(null);
         setCouponError('');
         setCouponInput('');
@@ -579,6 +583,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
+            ...(couponSelectionChanged ? {
+                discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
+                expected_discount_amount_minor: Math.round((discountAmount + (appliedCoupon?.freeShipping ? deliveryCharges : 0)) * 100),
+            } : {}),
             shipping_method: deliveryOption,
             shipping_address: {
                 line1: formData.address.trim(),
@@ -659,6 +667,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
+            ...(couponSelectionChanged ? {
+                discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
+                expected_discount_amount_minor: Math.round((discountAmount + (appliedCoupon?.freeShipping ? deliveryCharges : 0)) * 100),
+            } : {}),
             shipping_method: deliveryOption,
             shipping_address: {
                 line1: formData.address.trim(),

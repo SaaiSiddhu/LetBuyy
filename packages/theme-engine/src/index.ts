@@ -17,6 +17,7 @@ export * from './execution-runtime';
 export * from './theme-governance';
 export * from './theme-bundle';
 export * from './theme-renderer';
+export * from './order-receipt-view';
 export * from './portable-to-liquid';
 export * from './theme-presets';
 export * from './industry-experience-map';

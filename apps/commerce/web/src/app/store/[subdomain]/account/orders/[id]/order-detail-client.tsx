@@ -14,6 +14,7 @@ interface OrderDetail {
     subtotal?: number | null;
     tax?: number | null;
     discount?: number | null;
+    coupon_code?: string | null;
     shipping_cost?: number | null;
     currency?: string | null;
     created_at?: string | null;
@@ -108,10 +109,10 @@ export default function OrderDetailClient({ subdomain, id }: { subdomain: string
                 }) : <p className="text-sm">Item details are not available for this order yet.</p>}
                 <dl className="space-y-2 border-t pt-3 text-sm">
                     {order.subtotal != null && <div className="flex justify-between"><dt>Subtotal</dt><dd>{formatMoney(order.subtotal, order.currency)}</dd></div>}
-                    {order.discount != null && Number(order.discount) !== 0 && <div className="flex justify-between"><dt>Discount</dt><dd>−{formatMoney(order.discount, order.currency)}</dd></div>}
+                    {(order.coupon_code || Number(order.discount) > 0) && <div className="flex justify-between"><dt>{order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount'}</dt><dd>−{formatMoney(order.discount, order.currency)}</dd></div>}
                     {order.shipping_cost != null && <div className="flex justify-between"><dt>Shipping</dt><dd>{formatMoney(order.shipping_cost, order.currency)}</dd></div>}
                     {order.tax != null && <div className="flex justify-between"><dt>Tax</dt><dd>{formatMoney(order.tax, order.currency)}</dd></div>}
-                    <div className="flex justify-between border-t pt-2 text-base font-bold"><dt>Total</dt><dd>{formatMoney(order.total, order.currency)}</dd></div>
+                    <div className="flex justify-between border-t pt-2 text-base font-bold"><dt>Final total</dt><dd>{formatMoney(order.total, order.currency)}</dd></div>
                 </dl>
             </section>
             {(address || order.tracking_number || order.payment_method || order.payment_status) && <section className="space-y-3 rounded-2xl border p-5"><h2 className="text-lg font-semibold">Delivery and payment</h2>{address && <p><strong>Ship to:</strong> {address}</p>}{order.carrier && <p><strong>Carrier:</strong> {order.carrier}</p>}{order.tracking_number && <p><strong>Tracking:</strong> {order.tracking_number}</p>}{order.payment_method && <p><strong>Payment:</strong> {order.payment_method}{order.payment_status ? ` · ${order.payment_status}` : ''}</p>}</section>}

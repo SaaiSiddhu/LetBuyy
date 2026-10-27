@@ -32,3 +32,10 @@ test('missing session, host/site mismatch and denied order cannot reveal saved f
     }
     const denied=await run(buyerCookieHeader(),{error:{message:'PRIVATE'}},404);assert.equal(denied.response.status,404);assert.doesNotMatch(JSON.stringify(denied.body),/PRIVATE|PC02|Asha/);
 });
+
+test('private buyer receipt includes only saved coupon and amount fields without leaking payment internals',async()=>{
+    const receipt={id:'saved-order',coupon_code:'SAVE10',coupon_discount:19.9,discount:19.9,subtotal:199,shipping_cost:20,tax:35.82,total:234.92,currency:'INR',payment_metadata:{private:'PRIVATE-KEY'},internal_notes:'PRIVATE-NOTES'};
+    const result=await run(buyerCookieHeader(),{data:{order:receipt}});assert.equal(result.response.status,200);
+    for(const key of ['coupon_code','coupon_discount','discount','subtotal','shipping_cost','tax','total']) assert.equal(result.body.order[key],receipt[key as keyof typeof receipt]);
+    assert.doesNotMatch(JSON.stringify(result.body),/PRIVATE|payment_metadata|internal_notes/);
+});

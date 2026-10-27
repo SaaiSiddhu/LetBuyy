@@ -167,3 +167,12 @@ Private receipts: `migration398-production-result.json`,
 `production-qa-created.json`, `snaz-individual-domain-removal.json`,
 `production-domain-cron-observation-v6.json`, `browser-retries-final-result.json`,
 and `lifecycle-isolated-final.log` under the private phase evidence directory.
+
+
+## Coupon receipt follow-up (27 October, implementation in qualification)
+
+The owner reports two coupon orders without code/saving/final receipt details. A read-only query of only the exact QA store's money/coupon fields proves both orders were stored without a coupon and with zero discount. Customer/contact/order identifiers were not recorded. The hosted Apply UI only changed browser state; neither hosted payment delivery request submitted the selected code, and the order command only read the original signed cart code. Historical receipts are preserved; no coupon/discount or charge is invented for past orders.
+
+The repair completes the already-existing checkout_sessions.discount_codes field through the same signed handoff, idempotent delivery operation and compare-and-swap. The backend's existing promotion RPC validates the selected code against the signed subtotal, verified shipping and saved contact; a reviewed-savings mismatch stops before payment/order effects. An explicit empty selection removes a coupon, while untouched older clients retain the signed cart choice. The canonical order writer remains the price, eligibility, redemption and ledger authority. Percentage quote rounding retains the explicit /100 divisor and rounds to paise; six arithmetic cases and core21 checks pass. The first ambiguous patch was stopped by automatic review with no changes; the clearer formula and backend validation were then applied after those controls passed.
+
+Read-only buyer list/detail/BFF and Merchant receipts now carry saved coupon and money fields. A pure rendering projection updates only exact shipped account source definitions across all ten first-party Liquid themes; frozen factories, persisted releases/identity/checksum/settings and customized templates remain unchanged. All ten actual Liquid renders, inert hostile coupon text and source preservation pass16 tests; buyer money5/BFF4, Merchant mounted receipt4 and Gateway focused17 pass, with Gateway/Commerce type checks clean. Owned browser persistence, final broader gates, staging and production remain pending.
