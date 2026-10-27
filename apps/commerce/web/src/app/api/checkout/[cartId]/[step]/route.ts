@@ -132,7 +132,6 @@ function projectSuccess(step: CheckoutStep, payload: unknown): unknown | null {
 }
 
 function projectFailure(status: number, payload: unknown) {
-    if (status >= 500) return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Checkout is temporarily unavailable. Please try again.');
     const error = payload && typeof payload === 'object' ? (payload as { error?: unknown }).error : null;
     const detail = error && typeof error === 'object' ? error as { code?: unknown; message?: unknown } : null;
     const code = typeof detail?.code === 'string' && /^[A-Z0-9_]{1,64}$/.test(detail.code) ? detail.code : 'CHECKOUT_REQUEST_FAILED';
@@ -141,6 +140,7 @@ function projectFailure(status: number, payload: unknown) {
         CHECKOUT_SETUP_REQUIRED: 'Secure checkout is not available in this environment.',
         INSUFFICIENT_INVENTORY: 'Some items are no longer available in that quantity. Review your cart and try again.',
         PAYMENT_SETUP_REQUIRED: 'Payment setup is required for this store.',
+        CHECKOUT_PAYMENT_CONFIGURATION_CHANGED: 'Payment settings changed. Contact the store before retrying this payment.',
         CHECKOUT_STATE_CONFLICT: 'Checkout details changed. Refresh checkout and try again.',
         CHECKOUT_PRODUCT_CHANGED: 'Some products changed. Review the current items in your cart before checking out again.',
         CHECKOUT_SHIPPING_CHANGED: 'The delivery price changed. Review the updated delivery option and try again.',
@@ -148,6 +148,7 @@ function projectFailure(status: number, payload: unknown) {
         CHECKOUT_PROVIDER_SIGNATURE_INVALID: 'Payment could not be verified. Please try again or contact support.',
         CHECKOUT_PROVIDER_PAYMENT_REPLAYED: 'This payment cannot be used for this checkout.',
     };
+    if (status >= 500 && (status !== 503 || code !== 'PAYMENT_SETUP_REQUIRED')) return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Checkout is temporarily unavailable. Please try again.');
     const message = safeMessages[code] || 'Checkout could not continue.';
     return jsonError(status, code, message);
 }

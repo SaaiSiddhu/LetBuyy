@@ -123,7 +123,6 @@ type DeliveryOption = 'standard' | 'express';
 // V1 ships Razorpay+COD; Stripe and PayPal deferred (LB-2)
 type PaymentMethod = 'online' | 'cod';
 type ProviderOrderMethod = 'razorpay' | 'cod';
-const productImageFallback = '/images/banners/new-arrivals-1.png';
 const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
 
 interface StoreShippingRate {
@@ -1325,15 +1324,21 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <div className="space-y-2 max-h-40 overflow-y-auto">
                                                 {items.map(item => (
                                                     <div key={item.id} className="flex items-center gap-3 p-2 card-theme-secondary rounded-lg">
-                                                        <Image
-                                                            loader={passthroughImageLoader}
-                                                            unoptimized
-                                                            src={item.images[0] || productImageFallback}
-                                                            alt={item.name}
-                                                            width={48}
-                                                            height={48}
-                                                            className="w-12 h-12 rounded-lg object-cover"
-                                                        />
+                                                        {item.images[0] ? (
+                                                            <Image
+                                                                loader={passthroughImageLoader}
+                                                                unoptimized
+                                                                src={item.images[0]}
+                                                                alt={item.name}
+                                                                width={48}
+                                                                height={48}
+                                                                className="w-12 h-12 rounded-lg object-cover"
+                                                            />
+                                                        ) : (
+                                                            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface" aria-label="No product image">
+                                                                <Package aria-hidden="true" size={24} />
+                                                            </span>
+                                                        )}
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium truncate">{item.name}</p>
                                                             <p className="text-xs text-theme-secondary">Qty: {item.quantity}</p>
