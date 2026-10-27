@@ -6,8 +6,10 @@ import type { StoreBrandingInput } from '@letbuyy/checkout-core';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { StoreService } from '@/lib/store-service';
 import CheckoutClient, { type CheckoutOriginCartLine } from '../../store/[subdomain]/checkout/checkout-client';
-import { sanitizeBranding, brandingCssVariables } from '../branding';
+import { sanitizeBranding, brandingCssVariables, checkoutPaymentAppearance } from '../branding';
 import CheckoutLogo from '../checkout-logo';
+import { checkoutThemeStyle } from '../checkout-theme';
+import '../checkout-themes.css';
 
 export const metadata: Metadata = {
     title: 'Secure Checkout',
@@ -166,10 +168,11 @@ export default async function CheckoutOriginPage({
     // checkout inherits the merchant's real theme without a second configuration step. The
     // store_branding row (brandingInput) layers a checkout-specific override on top where set.
     const branding = sanitizeBranding(brandingInput, verified.presentation?.themeSettings || legacyStore?.templateConfig.themeSettings);
+    const themeStyle = checkoutThemeStyle(verified.presentation?.themeId || legacyStore?.templateConfig.themeId);
     const cartLines = verified.lines.map(toCartLine).filter((line): line is CheckoutOriginCartLine => line !== null);
 
     return (
-        <div style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
+        <div className="checkout-theme-frame" data-store-theme={themeStyle.slug} data-checkout-style={themeStyle.style} style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
             {buildGoogleFontsHref([branding.bodyFontFamily, branding.headingFontFamily]) ? <link rel="stylesheet" href={buildGoogleFontsHref([branding.bodyFontFamily, branding.headingFontFamily])!} /> : null}
             <header className="border-b border-line px-4 py-3">
                 <div className="mx-auto flex max-w-5xl items-center justify-between">
@@ -188,6 +191,7 @@ export default async function CheckoutOriginPage({
                     </span>
                 </div>
             </header>
+            {verified.presentation?.paymentMode === 'sandbox' ? <p role="status" className="mx-auto max-w-5xl px-4 py-3 text-sm text-theme-secondary">Razorpay test mode — payments are simulated. No real money will be charged.</p> : null}
             <CheckoutClient
                 storeId={store.id}
                 sellerId={store.sellerId}
@@ -195,6 +199,7 @@ export default async function CheckoutOriginPage({
                 storeName={store.name}
                 codEnabled={store.codEnabled !== false}
                 onlinePaymentEnabled={store.onlinePaymentEnabled !== false}
+                paymentAppearance={checkoutPaymentAppearance(branding, resolveStorefrontOriginUrl(store.subdomain))}
                 checkoutOrigin={{
                     storefrontBaseUrl: resolveStorefrontOriginUrl(store.subdomain),
                     cartLines,

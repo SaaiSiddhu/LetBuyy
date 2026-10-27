@@ -1,5 +1,6 @@
 'use client';
 
+import type { CheckoutPaymentAppearance } from '@/app/checkout-origin/branding';
 import { prepareHostedStepRequest } from '@/lib/checkout/step-idempotency';
 
 import { CartContext } from '@/context/cart-context';
@@ -41,7 +42,7 @@ interface RazorpayOptions {
     currency: string;
     name: string;
     description: string;
-    image: string;
+    image?: string;
     order_id: string;
     handler: (response: RazorpaySuccessResponse) => void | Promise<void>;
     prefill: {
@@ -91,6 +92,7 @@ interface CheckoutClientProps {
     storeName: string;
     codEnabled: boolean;
     onlinePaymentEnabled: boolean;
+    paymentAppearance: CheckoutPaymentAppearance;
     // When set, this render is on the checkout-origin tree: cart lines come from this prop
     // (server-verified handoff data) instead of useCart(), and basePath points at the real
     // storefront origin (an absolute URL) instead of a same-origin /store/<subdomain> path,
@@ -123,7 +125,6 @@ type DeliveryOption = 'standard' | 'express';
 // V1 ships Razorpay+COD; Stripe and PayPal deferred (LB-2)
 type PaymentMethod = 'online' | 'cod';
 type ProviderOrderMethod = 'razorpay' | 'cod';
-const productImageFallback = '/images/banners/new-arrivals-1.png';
 const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
 
 interface StoreShippingRate {
@@ -174,7 +175,7 @@ function scrollToCheckoutTop() {
     });
 }
 
-export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, checkoutOrigin }: CheckoutClientProps) {
+export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, paymentAppearance, checkoutOrigin }: CheckoutClientProps) {
     // useContext (not useCart()) never throws when there is no CartProvider ancestor — true on
     // the checkout-origin tree, which mounts no CartProvider at all (it belongs to
     // app/store/[subdomain]/layout.tsx only). checkoutOrigin's own cart lines take priority when
@@ -780,7 +781,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     currency: intent.currency,
                     name: storeName,
                     description: 'Secure LetBuyy checkout',
-                    image: '/logo.png',
+                    ...(paymentAppearance.image ? { image: paymentAppearance.image } : {}),
                     order_id: intent.provider_order_id,
                     handler: async (response) => {
                         try {
@@ -801,7 +802,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                         contact: formData.phone,
                     },
                     notes: { checkout_id: checkoutOrigin.cartId, store_id: storeId, subdomain },
-                    theme: { color: 'rgb(99 102 241)' },
+                    theme: { color: paymentAppearance.color },
                     modal: { ondismiss: () => setIsProcessing(false) },
                 };
                 const rzp = new window.Razorpay(options);
@@ -846,7 +847,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 currency: paymentData.currency || 'INR',
                 name: storeName,
                 description: `Order ${orderResult.order.orderNumber}`,
-                image: '/logo.png',
+                ...(paymentAppearance.image ? { image: paymentAppearance.image } : {}),
                 order_id: razorpayOrderId,
                 handler: async (response) => {
                     try {
@@ -887,7 +888,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     subdomain,
                 },
                 theme: {
-                    color: 'rgb(99 102 241)',
+                    color: paymentAppearance.color,
                 },
                 modal: {
                     ondismiss: function () {
@@ -1325,15 +1326,21 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <div className="space-y-2 max-h-40 overflow-y-auto">
                                                 {items.map(item => (
                                                     <div key={item.id} className="flex items-center gap-3 p-2 card-theme-secondary rounded-lg">
-                                                        <Image
-                                                            loader={passthroughImageLoader}
-                                                            unoptimized
-                                                            src={item.images[0] || productImageFallback}
-                                                            alt={item.name}
-                                                            width={48}
-                                                            height={48}
-                                                            className="w-12 h-12 rounded-lg object-cover"
-                                                        />
+                                                        {item.images[0] ? (
+                                                            <Image
+                                                                loader={passthroughImageLoader}
+                                                                unoptimized
+                                                                src={item.images[0]}
+                                                                alt={item.name}
+                                                                width={48}
+                                                                height={48}
+                                                                className="w-12 h-12 rounded-lg object-cover"
+                                                            />
+                                                        ) : (
+                                                            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface" aria-label="No product image">
+                                                                <Package aria-hidden="true" size={24} />
+                                                            </span>
+                                                        )}
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium truncate">{item.name}</p>
                                                             <p className="text-xs text-theme-secondary">Qty: {item.quantity}</p>

@@ -1,3 +1,4 @@
+import { startMerchantBuyerConnection,confirmMerchantBuyerConnection,cancelMerchantBuyerConnection } from '@/lib/auth/merchant-buyer-http'
 import { NextRequest, NextResponse } from 'next/server'
 import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
@@ -15,6 +16,11 @@ import { getAdminDashboardUrl } from '@/lib/config/urls'
  * Protected by: Rate Limit + Turnstile
  */
 export async function POST(request: NextRequest) {
+    const connectionIntent=request.headers.get('X-LetBuyy-Account-Intent')
+    if(connectionIntent==='connect-buyer-start')return startMerchantBuyerConnection(request)
+    if(connectionIntent==='connect-buyer-confirm')return confirmMerchantBuyerConnection(request)
+    if(connectionIntent==='connect-buyer-cancel')return cancelMerchantBuyerConnection(request)
+    if(connectionIntent)return NextResponse.json({error:'Invalid account action.'},{status:400})
     try {
         const ip = request.headers.get('x-forwarded-for') || 'unknown'
 

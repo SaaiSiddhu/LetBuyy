@@ -1,6 +1,7 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { readRazorpayTestKeyCsv } from '@/lib/payments/razorpay-csv'
 
 import { type FormEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -400,6 +401,31 @@ export default function PaymentsSettingsPage() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="grid gap-[var(--lb-space-4)]">
+                        <Input
+                            label="Import Razorpay test keys CSV"
+                            type="file"
+                            accept=".csv,text/csv"
+                            disabled={loading || saveState === 'saving'}
+                            onChange={async event => {
+                                const input = event.currentTarget
+                                const file = input.files?.[0]
+                                if (!file) return
+                                try {
+                                    if (file.size > 4096) throw new Error('Choose a Razorpay test-key CSV smaller than 4 KB.')
+                                    const keys = readRazorpayTestKeyCsv(await file.text())
+                                    setKeyId(keys.key_id)
+                                    setKeySecret(keys.key_secret)
+                                    setTestMode(true)
+                                    setFormError(null)
+                                    notify({ title: 'Test keys imported', description: 'Review the test-mode setting, then save payments to connect this store.', variant: 'info' })
+                                } catch {
+                                    setFormError('Import a one-row Razorpay test-key CSV. Live keys are not accepted by this import.')
+                                } finally {
+                                    input.value = ''
+                                }
+                            }}
+                        />
+
                         <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                             <Input
                                 label="Razorpay key ID"

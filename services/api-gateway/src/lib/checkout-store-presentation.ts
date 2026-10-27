@@ -1,3 +1,5 @@
+import { hostedRazorpayTestCredentials } from './hosted-razorpay-credentials';
+import type { PaymentSettings } from './store-payment-config';
 import type { Context } from 'hono';
 import { mapPublicStoreRenderPayload, type CheckoutStorePresentation, type StorefrontSiteRecord, type StorefrontThemeReleaseRecord } from '@letbuyy/tenant-core';
 import { resolveStorefrontThemePresentation } from '@letbuyy/theme-engine';
@@ -13,11 +15,11 @@ const unavailable=()=>new AppError('Checkout presentation is temporarily unavail
 export async function loadCheckoutStorePresentation(c:Context<{Bindings:Env}>,siteId:string):Promise<CheckoutStorePresentation>{
  const db=getSupabaseAdmin(c);
  const {data,error}=await db.from('sites')
-  .select('id,name,store_name,subdomain,user_id,custom_user_id,cod_enabled,online_payment_enabled,theme_id,locale,template_config,site_settings,current_theme_release_id')
+  .select('id,name,store_name,subdomain,user_id,custom_user_id,cod_enabled,online_payment_enabled,payment_settings,theme_id,locale,template_config,site_settings,current_theme_release_id')
   .eq('id',siteId).eq('status','published').not('published','is',false).is('deleted_at',null).maybeSingle();
  if(error)throw unavailable();
  if(!data)throw new AppError('Store not found',404,'NOT_FOUND');
- const row=data as unknown as StorefrontSiteRecord&{user_id?:string|null;custom_user_id?:string|null;cod_enabled?:boolean;online_payment_enabled?:boolean;site_settings?:Record<string,unknown>|null};
+ const row=data as unknown as StorefrontSiteRecord&{user_id?:string|null;custom_user_id?:string|null;cod_enabled?:boolean;online_payment_enabled?:boolean;payment_settings?:PaymentSettings|null;site_settings?:Record<string,unknown>|null};
  let release:StorefrontThemeReleaseRecord|null=null;
  let query=db.from('theme_releases').select('id,theme_id,release_version,template_snapshot,release_manifest,published_at')
   .eq('store_id',siteId).is('deleted_at',null);
@@ -37,6 +39,7 @@ export async function loadCheckoutStorePresentation(c:Context<{Bindings:Env}>,si
  const config=projected.template_config&&typeof projected.template_config==='object'?projected.template_config as Record<string,unknown>:{};
  const appearance=row.site_settings&&typeof row.site_settings==='object'?row.site_settings as Record<string,unknown>:{};
  const {themeSettings:t}=resolveStorefrontThemePresentation(config,appearance,release?.theme_id||row.theme_id||String(config.themeId||'urban-kicks'),row.locale||'en-IN');
- return{id:siteId,sellerId:row.user_id||row.custom_user_id||'',name:row.name||row.store_name||'Store',subdomain:row.subdomain||row.store_name||'',codEnabled:row.cod_enabled!==false,onlinePaymentEnabled:row.online_payment_enabled!==false,
+ const paymentReady=row.online_payment_enabled!==false&&Boolean(await hostedRazorpayTestCredentials(c,siteId,row));
+ return{themeId:release?.theme_id||row.theme_id||String(config.themeId||''),paymentMode:paymentReady?'sandbox':'unavailable',id:siteId,sellerId:row.user_id||row.custom_user_id||'',name:row.name||row.store_name||'Store',subdomain:row.subdomain||row.store_name||'',codEnabled:row.cod_enabled!==false,onlinePaymentEnabled:paymentReady,
   themeSettings:{primaryColor:t.primaryColor,secondaryColor:t.secondaryColor,accentColor:t.accentColor,backgroundColor:t.backgroundColor,textColor:t.textColor,surfaceColor:t.surfaceColor,fontFamily:t.fontFamily,headingFontFamily:t.headingFontFamily,borderRadius:t.borderRadius,enableAnimations:t.enableAnimations,enableShadows:t.enableShadows,isDark:t.isDark}};
 }

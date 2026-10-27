@@ -88,6 +88,7 @@ function RecoverForm() {
     return (
         <main className="auth-container">
             <div className="auth-card">
+                <p className="auth-subtitle">This recovers your shopping profile. If you use LetBuyy for work, <a href="/forgot-password">recover that account</a>, then return and choose Use an existing LetBuyy account.</p>
                 <div className="auth-logo">
                     <BrandLogo />
                 </div>

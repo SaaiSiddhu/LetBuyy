@@ -1,4 +1,4 @@
-import { verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
+import { type RazorpayCredentials, verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
 
 export type PaymentSettings = {
     mode?: 'shared' | 'ownAccount';
@@ -31,7 +31,7 @@ function maskKeyId(keyId?: string): string | null {
 
 async function importPaymentEncryptionKey(secret: string): Promise<CryptoKey> {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret));
-    return crypto.subtle.importKey('raw', digest, 'AES-GCM', false, ['encrypt']);
+    return crypto.subtle.importKey('raw', digest, 'AES-GCM', false, ['encrypt', 'decrypt']);
 }
 
 export async function encryptPaymentSecret(secret: string, encryptionKey: string): Promise<string> {
@@ -96,4 +96,25 @@ export function defaultPaymentConfig(storeId: string) {
         payment_settings: sanitizePaymentSettings(null),
         schema_ready: false,
     };
+}
+
+/** Reads the existing Merchant-owned encrypted settings; hosted live payments remain gated. */
+export async function readStoreRazorpayTestCredentials(settings: PaymentSettings | null | undefined, encryptionKey: string | undefined): Promise<RazorpayCredentials | null> {
+    const configured = settings?.razorpay;
+    if (!configured?.verified || configured.test_mode !== true || !configured.key_id?.startsWith('rzp_test_')
+        || !configured.key_secret_ciphertext || !encryptionKey || encryptionKey.length < 16) return null;
+    try {
+        const parts = configured.key_secret_ciphertext.split(':');
+        if (parts.length !== 2 || parts[1].length > 4096) return null;
+        const decode = (value: string) => Uint8Array.from(atob(value), character => character.charCodeAt(0));
+        const iv = decode(parts[0]);
+        if (iv.length !== 12) return null;
+        const key = await importPaymentEncryptionKey(encryptionKey);
+        const bytes = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, decode(parts[1]));
+        const keySecret = new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(bytes);
+        if (keySecret.length < 16 || keySecret.length > 256 || /[\s\u0000-\u001f]/.test(keySecret)) return null;
+        return { keyId: configured.key_id, keySecret };
+    } catch {
+        return null;
+    }
 }

@@ -7,7 +7,7 @@
 //
 // The customers/login Liquid template (E8) now includes a hidden <input name="storeId"> so the
 // no-JS form POST to /api/customer/login carries the storeId, mirroring the D10 register pattern.
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { StoreService } from '@/lib/store-service';
 import { buildStoreMetadata } from '@/lib/seo';
@@ -49,6 +49,9 @@ export default async function CustomerLoginPage({ params, searchParams }: Props)
     const query = flattenSearchParams(await searchParams);
     const store = await StoreService.getStoreBySubdomain(subdomain);
     if (!store) return notFound();
+
+    // Canonical Identity owns normal sign-in. Per-store passwords survive only as an explicit migration bridge.
+    if (query.legacy !== '1') redirect(`/api/buyer-auth/start?${new URLSearchParams({return_to:`/store/${subdomain}/account`})}`);
 
     const renderPlan = resolveStorefrontTemplate(store, {
         type: 'customer_account',
