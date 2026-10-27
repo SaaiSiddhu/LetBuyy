@@ -1,5 +1,6 @@
 'use client';
 
+import type { CheckoutPaymentAppearance } from '@/app/checkout-origin/branding';
 import { prepareHostedStepRequest } from '@/lib/checkout/step-idempotency';
 
 import { CartContext } from '@/context/cart-context';
@@ -41,7 +42,7 @@ interface RazorpayOptions {
     currency: string;
     name: string;
     description: string;
-    image: string;
+    image?: string;
     order_id: string;
     handler: (response: RazorpaySuccessResponse) => void | Promise<void>;
     prefill: {
@@ -91,6 +92,7 @@ interface CheckoutClientProps {
     storeName: string;
     codEnabled: boolean;
     onlinePaymentEnabled: boolean;
+    paymentAppearance: CheckoutPaymentAppearance;
     // When set, this render is on the checkout-origin tree: cart lines come from this prop
     // (server-verified handoff data) instead of useCart(), and basePath points at the real
     // storefront origin (an absolute URL) instead of a same-origin /store/<subdomain> path,
@@ -173,7 +175,7 @@ function scrollToCheckoutTop() {
     });
 }
 
-export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, checkoutOrigin }: CheckoutClientProps) {
+export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, paymentAppearance, checkoutOrigin }: CheckoutClientProps) {
     // useContext (not useCart()) never throws when there is no CartProvider ancestor — true on
     // the checkout-origin tree, which mounts no CartProvider at all (it belongs to
     // app/store/[subdomain]/layout.tsx only). checkoutOrigin's own cart lines take priority when
@@ -779,7 +781,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     currency: intent.currency,
                     name: storeName,
                     description: 'Secure LetBuyy checkout',
-                    image: '/logo.png',
+                    ...(paymentAppearance.image ? { image: paymentAppearance.image } : {}),
                     order_id: intent.provider_order_id,
                     handler: async (response) => {
                         try {
@@ -800,7 +802,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                         contact: formData.phone,
                     },
                     notes: { checkout_id: checkoutOrigin.cartId, store_id: storeId, subdomain },
-                    theme: { color: 'rgb(99 102 241)' },
+                    theme: { color: paymentAppearance.color },
                     modal: { ondismiss: () => setIsProcessing(false) },
                 };
                 const rzp = new window.Razorpay(options);
@@ -845,7 +847,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 currency: paymentData.currency || 'INR',
                 name: storeName,
                 description: `Order ${orderResult.order.orderNumber}`,
-                image: '/logo.png',
+                ...(paymentAppearance.image ? { image: paymentAppearance.image } : {}),
                 order_id: razorpayOrderId,
                 handler: async (response) => {
                     try {
@@ -886,7 +888,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     subdomain,
                 },
                 theme: {
-                    color: 'rgb(99 102 241)',
+                    color: paymentAppearance.color,
                 },
                 modal: {
                     ondismiss: function () {

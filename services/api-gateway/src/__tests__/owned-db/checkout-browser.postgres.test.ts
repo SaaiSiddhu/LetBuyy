@@ -386,7 +386,7 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     await page.route('https://checkout.razorpay.com/v1/checkout.js**', route => route.fulfill({
         status: 200,
         contentType: 'application/javascript',
-        body: `window.Razorpay = class { constructor(options) { this.options = options; } on() {} open() { void this.options.handler({ razorpay_order_id: '${razorpayOrderId}', razorpay_payment_id: '${razorpayPaymentId}', razorpay_signature: '${razorpaySignature}' }); } };`,
+        body: `window.Razorpay = class { constructor(options) { this.options = options; window.__syntheticRazorpayAppearance = { color: options.theme.color, image: options.image || null, amount: options.amount }; } on() {} open() { void this.options.handler({ razorpay_order_id: '${razorpayOrderId}', razorpay_payment_id: '${razorpayPaymentId}', razorpay_signature: '${razorpaySignature}' }); } };`,
     }));
     page.on('pageerror', error => pageErrors.push(error.message));
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
@@ -412,8 +412,13 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     await payButton.waitFor({ state: 'visible' });
     assert.equal(await payButton.isEnabled(), true, 'the online checkout action is enabled after loading the provider script');
     assert.match(await payButton.textContent() || '', /Pay ₹410/);
+    const checkoutColor = await page.locator('.checkout-theme-frame').evaluate(element => getComputedStyle(element).getPropertyValue('--primary').trim());
     await payButton.click();
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
+    const popup = await page.evaluate(() => (window as unknown as { __syntheticRazorpayAppearance: { color: string; image: string | null; amount: number } }).__syntheticRazorpayAppearance);
+    assert.equal(popup.color, checkoutColor, 'provider popup inherits the same sanitized store primary as checkout');
+    assert.equal(popup.image, null, 'a store without a logo never requests the missing generic /logo.png');
+    assert.equal(popup.amount, 41000, 'appearance wiring leaves the server-priced payment amount intact');
 
     const rows = JSON.parse(owned.psql(`
       SELECT COALESCE(json_agg(json_build_object('id',o.id,'status',o.status,'payment_status',o.payment_status,'payment_method',o.payment_method,'email',o.customer_email,

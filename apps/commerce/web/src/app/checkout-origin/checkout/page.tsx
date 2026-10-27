@@ -6,7 +6,7 @@ import type { StoreBrandingInput } from '@letbuyy/checkout-core';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { StoreService } from '@/lib/store-service';
 import CheckoutClient, { type CheckoutOriginCartLine } from '../../store/[subdomain]/checkout/checkout-client';
-import { sanitizeBranding, brandingCssVariables } from '../branding';
+import { sanitizeBranding, brandingCssVariables, checkoutPaymentAppearance } from '../branding';
 import CheckoutLogo from '../checkout-logo';
 import { checkoutThemeStyle } from '../checkout-theme';
 import '../checkout-themes.css';
@@ -199,6 +199,7 @@ export default async function CheckoutOriginPage({
                 storeName={store.name}
                 codEnabled={store.codEnabled !== false}
                 onlinePaymentEnabled={store.onlinePaymentEnabled !== false}
+                paymentAppearance={checkoutPaymentAppearance(branding, resolveStorefrontOriginUrl(store.subdomain))}
                 checkoutOrigin={{
                     storefrontBaseUrl: resolveStorefrontOriginUrl(store.subdomain),
                     cartLines,
