@@ -34,12 +34,12 @@ test('normal web support boundaries preserve one action across committed loss, r
   await new Promise<void>(r=>adapter!.listen(0,'127.0.0.1',r));const api=`http://127.0.0.1:${(adapter.address() as {port:number}).port}/v1`;
   identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,env:{LETBUYY_API_URL:api,INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_IDENTITY_ISSUER:identityOrigin,LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
   await ready(identityOrigin,'/api/buyer/login',identity);
-  commerce=startOwnedClientRuntime(owned,'commerce-next',{port:commercePort,env:{LETBUYY_API_BASE_URL:api,NEXT_PUBLIC_API_URL:api,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,INTERNAL_API_SECRET:INTERNAL_SECRET}});
+  commerce=startOwnedClientRuntime(owned,'commerce-next',{port:commercePort,env:{LETBUYY_API_BASE_URL:api,NEXT_PUBLIC_API_URL:api,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost'}});
   await ready(`http://localhost:${commercePort}`,'/api/buyer-auth/session',commerce);
   browser=await chromium.launch({headless:true,args:['--host-resolver-rules=MAP *.localhost 127.0.0.1']});
   let context=await browser.newContext();let page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(90_000);
   async function register(p:Page,switchAccount=false){
-   await p.goto(origin+'/customers/login');await p.getByRole('link',{name:'Continue with LetBuyy',exact:true}).click();
+   await p.goto(`http://localhost:${commercePort}/store/${store.subdomain}/customers/login`);await p.waitForURL(u=>u.origin===origin&&u.pathname==='/customers/login');await p.getByRole('link',{name:'Continue with LetBuyy',exact:true}).click();
    if(switchAccount){stage='identity-b-switch';await p.waitForLoadState('networkidle');const [logout]=await Promise.all([p.waitForResponse(r=>r.url().endsWith('/api/buyer/logout')&&r.request().method()==='POST'),p.getByRole('button',{name:'Use a different account',exact:true}).click()]);assert.equal(logout.status(),200);}
    stage=switchAccount?'identity-b-signin':'identity-a-signin';await expect(p.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible();await p.getByRole('link',{name:'Create an account',exact:true}).click();
    stage=switchAccount?'identity-b-register':'identity-a-register';await expect(p.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:90_000});

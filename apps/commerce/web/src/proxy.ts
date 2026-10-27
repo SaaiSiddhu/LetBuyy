@@ -11,6 +11,7 @@ import {
   verifyStorefrontPreviewToken,
 } from '@letbuyy/auth-core';
 import {
+  buildTenantStorefrontUrl,
   normalizeRequestHost,
   isHostedCheckoutHost,
   resolveStorefrontHost,
@@ -516,6 +517,24 @@ export async function proxy(req: NextRequest) {
 
   if (site.access_mode === 'password' && !preview.valid && !(await validGateCookie(req, site, accessHost))) {
     return holdingPage(req, 401, 'password-required', site);
+  }
+
+  // Buyer cookies and authorization callbacks belong to the verified store host, never the
+  // discovery site's /store/<handle> path. Leave previews on their existing gated address.
+  if (parsed.kind === 'root' && !preview.valid && site.access_mode === 'public' && req.method === 'GET') {
+    const prefix = `/store/${site.subdomain}`;
+    const path = req.nextUrl.pathname.slice(prefix.length);
+    if (req.nextUrl.pathname.startsWith(`${prefix}/`) && /^\/(?:customers(?:\/|$)|account(?:\/|$))/.test(path)) {
+      const target = new URL(buildTenantStorefrontUrl(site.subdomain, { rootDomain: parsed.rootDomain }));
+      if (parsed.rootDomain === 'localhost' || parsed.rootDomain?.endsWith('.localhost')) {
+        target.protocol = 'http:';
+        target.port = req.nextUrl.port;
+      }
+      if (site.custom_domain_status === 'active' && site.custom_domain) target.hostname = site.custom_domain;
+      target.pathname = path;
+      target.search = req.nextUrl.search;
+      return NextResponse.redirect(target, { status: 303, headers: { 'Cache-Control': 'no-store' } });
+    }
   }
 
   if (req.nextUrl.pathname === '/contact' && req.method === 'POST') {
