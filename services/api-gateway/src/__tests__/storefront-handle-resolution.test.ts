@@ -313,6 +313,7 @@ test('public finder excludes private/draft stores and an unknown name returns a 
     const rows: Row[] = [
         {...SITE_A, subdomain:'private-fixture',store_name:'private-fixture',access_mode:'password'},
         {...SITE_B, subdomain:'draft-fixture',store_name:'draft-fixture',status:'draft',published:false},
+        {...SITE_B,subdomain:'public-namesake',store_name:'private-fixture'},
     ];
     const postgrest=installFakePostgrest({sites:rows}); t.after(()=>postgrest.restore());
     for(const handle of ['private-fixture','draft-fixture','no-such-finder']){

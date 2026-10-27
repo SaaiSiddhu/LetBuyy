@@ -22,6 +22,9 @@ access, signing/replay protection and the Workers Free plan. Single agent.
   precedence, returns an ordinary miss for unknown handles and avoids the rejected
   unscoped fuzzy scan. Query changes retire pending results and redirect timers;
   an outage is shown as unavailable. Real mounted UI and Gateway/PG controls cover it.
+  A further negative control reproduced a private canonical handle falling through
+  to another public store's legacy name. Resolution now decides canonical ownership
+  before checking public eligibility, so private handles cannot be captured this way.
 - Creation/publication checks the verified wildcard on the configured Commerce
   project, without adding individual Vercel domains. Wrong project, preview branch,
   environment, redirect, unverified ownership, DNS failure and missing credentials

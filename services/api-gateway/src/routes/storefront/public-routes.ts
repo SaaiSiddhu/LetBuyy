@@ -335,23 +335,18 @@ export function registerStorefrontPublicRoutes(
         }
 
         const db = getSupabaseAdmin(c);
-        const selectFields = 'store_name,name,status,site_type,subdomain';
+        const selectFields = 'store_name,name,status,site_type,subdomain,published,access_mode';
         // Store finder, not tenant resolution: it returns no site id, and the storefront read that
         // follows resolves its own tenant from sites.subdomain. Matching either handle column stays
         // intentional, but subdomain and store_name are unique only within their own column, so one
         // combined predicate can match two tenants and — with limit(1) and no ordering — return an
         // arbitrary one, letting a store_name capture another tenant's subdomain. Probe the canonical
-        // column first, then store_name; each equality is single-valued, so more than one row (or a
-        // query error) resolves to "store not found".
+        // column first, then store_name only if absent. Query failures remain unavailable.
         const lookupExactSite = async (column: 'subdomain' | 'store_name') => {
             const { data, error } = await db
                 .from('sites')
                 .select(selectFields)
                 .eq(column, query)
-                .eq('site_type', 'store')
-                .eq('status', 'published')
-                .eq('published', true)
-                .or('access_mode.eq.public,access_mode.is.null')
                 .is('deleted_at', null)
                 .maybeSingle();
             if (error) throw new AppError('Store lookup is temporarily unavailable.', 503, 'LOOKUP_UNAVAILABLE');
@@ -359,7 +354,10 @@ export function registerStorefrontPublicRoutes(
         };
 
         const exactSite = (await lookupExactSite('subdomain')) || (await lookupExactSite('store_name'));
-        if (exactSite) {
+        // Resolve canonical ownership before public eligibility. A private
+        // subdomain must not fall through to another store's legacy name alias.
+        if (exactSite && exactSite.site_type === 'store' && exactSite.status === 'published'
+            && exactSite.published === true && (exactSite.access_mode == null || exactSite.access_mode === 'public')) {
             return c.json(success({
                 status: 'found',
                 store: {

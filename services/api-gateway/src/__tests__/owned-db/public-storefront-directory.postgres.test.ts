@@ -20,7 +20,7 @@ before(async () => {
         UPDATE sites SET custom_user_id='${owner}',template_config='{"private_note":"synthetic-private-directory-note"}'
             WHERE id='${first.siteId}';
         UPDATE sites SET published_at='2026-10-27T00:00:00Z' WHERE id='${first.siteId}';
-        UPDATE sites SET published_at='2026-10-26T00:00:00Z' WHERE id='${second.siteId}';
+        UPDATE sites SET published_at='2026-10-26T00:00:00Z',store_name='${hidden[1].subdomain}' WHERE id='${second.siteId}';
         UPDATE sites SET status='draft' WHERE id='${hidden[0].siteId}';
         UPDATE sites SET access_mode='password' WHERE id='${hidden[1].siteId}';
         UPDATE sites SET access_mode='preview_only' WHERE id='${hidden[2].siteId}';
