@@ -4,10 +4,11 @@ import { randomUUID, createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createSupabaseServiceClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { renderOrderLifecycleEmail } from '@letbuyy/notification-core';
-import { requireOwnedDatabase } from './owned-db-support';
-import { newSyntheticTenant, seedSyntheticTenant, seedSyntheticOrder } from './synthetic-tenant';
-import { OutboxExecutionAdapter } from '../../execution/outbox-execution.adapter';
-import { sendOrderLifecycleEmail } from '../../../../queue-workers/src/order-lifecycle-email';
+import { requireOwnedDatabase } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { newSyntheticTenant, seedSyntheticTenant, seedSyntheticOrder } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import { OutboxExecutionAdapter } from '../../services/api-gateway/src/execution/outbox-execution.adapter';
+import { sendOrderLifecycleEmail } from '../../services/queue-workers/src/order-lifecycle-email';
+import { consumeNotificationJobs } from '../../services/queue-workers/src/platform-queue-consumer';
 
 const owned = requireOwnedDatabase();
 const db = createSupabaseServiceClient(owned.restEnv());
@@ -128,4 +129,25 @@ test('concurrent exact-order dispatches create one notification job; partial/ref
     assert.equal(snapshot.kind,kind);assert.equal(snapshot.order.payment_status,'pending');
     assert.equal(snapshot.order.total,199);assert.doesNotMatch(renderOrderLifecycleEmail(snapshot).text,/refund of INR/);
   }
+});
+
+test('the real scheduled notification consumer retries provider failure and completes only after its saved acceptance receipt',async()=>{
+  const f=fixture();await new OutboxExecutionAdapter(db).dispatchOrderEmails(f.tenant.siteId,f.orderId);
+  const id=owned.psql(`SELECT j.id FROM platform_queue_jobs j JOIN outbox_events e ON e.id=j.outbox_event_id WHERE e.aggregate_id='${f.orderId}' AND j.job_type='order.lifecycle_email_queued';`);
+  const subjectOrder=owned.psql(`SELECT order_number FROM orders WHERE id='${f.orderId}';`),requests: Array<{key:string|null;body:{subject:string}}>=[];
+  let accepted=false;
+  await provider(async request=>{
+    requests.push({key:request.headers.get('idempotency-key'),body:await request.json()});
+    return accepted?Response.json({id:'synthetic-scheduled-accepted'}):Response.json({message:'Synthetic outage'},{status:503});
+  },async()=>{
+    await consumeNotificationJobs({...owned.restEnv(),...env},'synthetic-real-email-worker');
+    assert.equal(owned.psql(`SELECT status FROM platform_queue_jobs WHERE id='${id}';`),'failed');
+    assert.equal(logs(f.orderId)[0].status,'pending');
+    owned.script(`UPDATE platform_queue_jobs SET available_at=now() WHERE id='${id}';`);accepted=true;
+    await consumeNotificationJobs({...owned.restEnv(),...env},'synthetic-real-email-worker-retry');
+    assert.equal(owned.psql(`SELECT status FROM platform_queue_jobs WHERE id='${id}';`),'succeeded');
+    assert.equal(logs(f.orderId)[0].provider_message_id,'synthetic-scheduled-accepted');
+    await consumeNotificationJobs({...owned.restEnv(),...env},'synthetic-real-email-worker-replay');
+  });
+  const own=requests.filter(r=>r.body.subject.includes(subjectOrder));assert.equal(own.length,2);assert.equal(own[0].key,own[1].key);
 });
