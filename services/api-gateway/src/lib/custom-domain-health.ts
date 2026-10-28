@@ -177,14 +177,6 @@ export async function readCustomDomainHealth(
             actual: cnameAnswers,
             message: cnameVerified ? 'Storefront traffic points to LetBuyy.' : 'Point this hostname to the LetBuyy connect target.',
         },
-        {
-            type: 'ALIAS',
-            host: apex,
-            value: cnameTarget,
-            status: 'unknown',
-            actual: apexSnapshot.ns,
-            message: 'Use ALIAS/ANAME only when connecting the apex domain.',
-        },
     ];
 
     return {
