@@ -98,8 +98,8 @@
     {
       "id": "B08",
       "work": "Preserve historical connection drain",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Current checkout rejects key changes; historical credential drain remains."
+      "status": "PARTIAL",
+      "evidence_or_next": "406 binds new hosted checkout attempts to immutable same-store sandbox credential versions. Real Commerce browser proves a Settings key change/online disable during provider order creation still confirms once with the original key. Legacy pointerless drain, revocation policy, canonical payment/refund convergence and provider acceptance remain."
     },
     {
       "id": "B09",
@@ -176,14 +176,14 @@
     {
       "id": "D01",
       "work": "Resolve account from verified cart snapshot",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "New attempt credential comes only from verified cart site + selected current canonical pointer; database admission serializes against Settings. Foreign key/site/environment/key snapshot mutations are denied. Live account identity remains unverified."
     },
     {
       "id": "D02",
       "work": "Create durable account-bound payment attempt",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "406 persists exact credential version in the existing checkout session before the provider call and freezes order/amount/provider references as they become available. Canonical payments/payment_attempts convergence remains open; this is not a second payment owner."
     },
     {
       "id": "D03",
@@ -194,8 +194,8 @@
     {
       "id": "D04",
       "work": "Verify payment/order/account/amount binding",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "Hosted sandbox browser preserves existing provider order/HMAC/amount checks while draining its saved credential after a Settings switch; one capture journal, payment transaction and paid event. Account-scoped webhook and full financial evidence remain."
     },
     {
       "id": "D05",
@@ -327,7 +327,7 @@
       "id": "F06",
       "work": "Transactional notifications and delivery tracing",
       "status": "PARTIAL",
-      "evidence_or_next": "Canonical402 durable lifecycle snapshots and403 notification-only API transport locally qualified. Current provider inbox/hosted activation, payment-specific notifications and full checkout acceptance remain."
+      "evidence_or_next": "Real Commerce checkout now verifies one saved placed + one paid-confirmation snapshot, exact item/quantity/totals and one-to-one canonical outbox/job linkage. Separate lifecycle8 and signed no-DB Queue transport4 tests pass using intercepted synthetic provider. No real inbox/provider claim."
     },
     {
       "id": "F07",
@@ -368,8 +368,8 @@
     {
       "id": "G03",
       "work": "Fresh backup restore + migration rehearsal",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "No new schema yet; no fresh hosted export/restore authorized under this programme."
+      "status": "PARTIAL",
+      "evidence_or_next": "404\u2013406 have owned expand/DOWN/up conservation controls and refusal once new immutable history exists; disposable resources cleaned. Fresh hosted export/restore remains unauthorized and unobserved."
     },
     {
       "id": "G04",

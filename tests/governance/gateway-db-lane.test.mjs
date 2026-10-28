@@ -44,6 +44,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "buyer-support-readback.postgres.test.ts",
         "cart-order-fact-snapshots.postgres.test.ts",
         "checkout-browser.postgres.test.ts",
+        "checkout-credential-binding.postgres.test.ts",
         "circuit-portfolio-order.postgres.test.ts",
         "cod-collection.postgres.test.ts",
         "collection-list-read.postgres.test.ts",
