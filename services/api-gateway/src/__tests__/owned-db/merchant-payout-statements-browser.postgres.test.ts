@@ -19,6 +19,13 @@ import { requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime
 import { newSyntheticTenant, seedSyntheticTenant, seedSyntheticOrder, type SyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
+type LayoutElement = {
+    scrollWidth:number;clientWidth:number;
+    children:Iterable<LayoutElement>;
+    querySelectorAll(selector:string):Iterable<LayoutElement>;
+    getBoundingClientRect():{left:number;right:number;top:number;bottom:number};
+};
+type BrowserLayoutGlobals = {document:{documentElement:{scrollWidth:number;style:{zoom:string}}};innerWidth:number};
 const expect = playwrightExpect.configure({ timeout: 45000 });
 const quote = (value: string) => "'" + value.replaceAll("'", "''") + "'";
 async function portFree(port: number) {
@@ -308,19 +315,19 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
         await page.screenshot({ path: evidence + '/statement-release-recorded.png', fullPage: true }); stage('synthetic_transfer_lost_reply_retry_and_canonical_readback');
         const originalViewport=page.viewportSize()!;
         await page.setViewportSize({width:390,height:844});
-        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'mobile document has no horizontal overflow');
+        assert.equal(await page.evaluate(()=>{const view=globalThis as unknown as BrowserLayoutGlobals;return view.document.documentElement.scrollWidth<=view.innerWidth+1;}),true,'mobile document has no horizontal overflow');
         await expect(page.getByRole('heading',{name:'Statement overview',exact:true})).toBeVisible();
         await page.screenshot({path:evidence+'/statement-overview-mobile.png',fullPage:true});
         await page.setViewportSize(originalViewport);
-        await page.evaluate(()=>{document.documentElement.style.zoom='2';});
-        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'200% zoom has no horizontal document overflow');
-        assert.equal(await page.locator('dl').evaluate(element=>Array.from(element.querySelectorAll('dt,dd')).every(node=>node.scrollWidth<=node.clientWidth+1)),true,'summary labels and financial totals stay inside their own cards');
+        await page.evaluate(()=>{(globalThis as unknown as BrowserLayoutGlobals).document.documentElement.style.zoom='2';});
+        assert.equal(await page.evaluate(()=>{const view=globalThis as unknown as BrowserLayoutGlobals;return view.document.documentElement.scrollWidth<=view.innerWidth+1;}),true,'200% zoom has no horizontal document overflow');
+        assert.equal(await page.locator('dl').evaluate(element=>Array.from((element as unknown as LayoutElement).querySelectorAll('dt,dd')).every(node=>node.scrollWidth<=node.clientWidth+1)),true,'summary labels and financial totals stay inside their own cards');
         assert.equal(await card.evaluate(element=>{
-            const boxes=Array.from(element.children).map(node=>node.getBoundingClientRect());
+            const boxes=Array.from((element as unknown as LayoutElement).children).map(node=>node.getBoundingClientRect());
             return boxes.every((a,index)=>boxes.slice(index+1).every(b=>Math.min(a.right,b.right)-Math.max(a.left,b.left)<=1 || Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)<=1));
         }),true,'statement identity, total, status and release action do not overlap at200%');
         await page.screenshot({path:evidence+'/statement-overview-200pct.png',fullPage:true});
-        await page.evaluate(()=>{document.documentElement.style.zoom='';});
+        await page.evaluate(()=>{(globalThis as unknown as BrowserLayoutGlobals).document.documentElement.style.zoom='';});
         stage('statement_mobile_and_200pct_layout');
         const pendingCard = page.getByText(pending.number, { exact: true }).locator('..').locator('..');
         await pendingCard.getByRole('button', { name: 'Release', exact: true }).click();
