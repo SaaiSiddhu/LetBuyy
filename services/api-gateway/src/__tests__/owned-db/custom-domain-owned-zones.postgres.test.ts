@@ -35,3 +35,49 @@ test('a real owner may stage an external domain but cannot claim either platform
         assert.equal(owned.psql(`SELECT custom_domain FROM sites WHERE id='${site.siteId}';`),external,'denials cannot overwrite the legitimate staged claim');
     } finally { await gateway.settle(); }
 });
+
+test('mounted domain health returns the owner TXT and CNAME without unrelated apex advice', async () => {
+    const site = newSyntheticTenant('domain-records'), foreign = newSyntheticTenant('domain-private'), actor = crypto.randomUUID();
+    const email = `syn-domain-${actor}@example.invalid`, domain = 'store.synthetic.example.in', token = 'synthetic-domain-ownership';
+    for (const tenant of [site, foreign]) seedSyntheticTenant(owned.psql, tenant);
+    owned.script(`INSERT INTO users_custom(id,email,email_verified) VALUES('${actor}','${email}',true);
+        UPDATE sites SET custom_user_id='${actor}',custom_domain='${domain}',custom_domain_status='active',custom_domain_verification_token='${token}' WHERE id='${site.siteId}';
+        INSERT INTO site_domains(site_id,domain,role,status,ssl_status,verification_token) VALUES('${site.siteId}','${domain}','redirect','active','active','${token}');`);
+    const gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
+        CUSTOM_DOMAIN_CNAME_TARGET: 'connect.synthetic.invalid',
+        VERCEL_API_TOKEN: 'synthetic-unit-only', VERCEL_STOREFRONT_PROJECT_ID: 'synthetic-commerce',
+    }));
+    const original = globalThis.fetch, providerMethods: string[] = [];
+    globalThis.fetch = async (input, init) => {
+        const url = new URL(input instanceof Request ? input.url : String(input));
+        if (['cloudflare-dns.com', 'dns.google'].includes(url.hostname)) {
+            const name = url.searchParams.get('name'), type = url.searchParams.get('type');
+            const answer = type === 'TXT' && name === `_letbuyy-challenge.${domain}` ? token
+                : type === 'CNAME' && name === domain ? 'connect.synthetic.invalid' : '';
+            return Response.json({ Status: 0, Answer: answer ? [{ data: `"${answer}"` }] : [] });
+        }
+        if (url.hostname === 'api.vercel.com') {
+            providerMethods.push(init?.method ?? 'GET');
+            return Response.json(url.pathname.endsWith('/config') ? { configuredBy: 'CNAME', misconfigured: false }
+                : { name: domain, verified: true });
+        }
+        return original(input, init);
+    };
+    try {
+        const headers = await signedIdentityHeaders(actor, email, site.siteId);
+        const health = await gateway.request(`/v1/custom/domains/${domain}/status?site_id=${site.siteId}`, { headers });
+        assert.equal(health.status, 200, health.text);
+        assert.equal(health.json?.data.ssl_active, true);
+        assert.equal(health.json?.data.status, 'active');
+        assert.deepEqual(health.json?.data.records.map((record: { type: string; host: string }) => [record.type, record.host]), [
+            ['TXT', `_letbuyy-challenge.${domain}`], ['CNAME', domain],
+        ]);
+        const calls = providerMethods.length;
+        const denied = await gateway.request(`/v1/custom/domains/${domain}/status?site_id=${foreign.siteId}`, { headers });
+        assert.equal(denied.status, 404);
+        assert.ok(!denied.text.includes(token));
+        assert.equal((await gateway.request(`/v1/custom/domains/${domain}/status?site_id=${site.siteId}`)).status, 401);
+        assert.equal(providerMethods.length, calls, 'unauthorized reads must not reach the provider');
+        assert.ok(calls > 0 && providerMethods.every(method => method === 'GET'));
+    } finally { globalThis.fetch = original; await gateway.settle(); }
+});
