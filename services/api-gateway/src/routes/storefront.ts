@@ -24,7 +24,6 @@ import { registerStorefrontPublicRoutes, type StorefrontThemeReleaseReadOptions 
 import { AppError } from '../lib/errors';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
-import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
 import { signQueueTenantEnvelope } from '../lib/queue-tenant-envelope';
 import {
     getCustomerSession,
@@ -329,23 +328,8 @@ async function emitStorefrontOrderPaidEvent(
         actorId: null,
     });
 
-    if (input.env) {
-        await enqueueOrderConfirmationEmail(input.env, db, {
-            orderId: order.id || input.orderId,
-            storeId,
-            requestId: input.requestId,
-            idempotencyKey: input.idempotencyKey,
-        }).catch((error) => {
-            console.error(JSON.stringify({
-                level: 'error',
-                event: 'storefront_order_confirmation_email_dispatch_failed',
-                order_id: order.id || input.orderId,
-                store_id: storeId,
-                request_id: input.requestId,
-                error: error instanceof Error ? error.message : 'unknown error',
-            }));
-        });
-    }
+    // Migration402 captures the email intent in the payment transaction.
+
 }
 
 const STOREFRONT_SITE_SELECT: string =

@@ -10,6 +10,7 @@ import {
 } from '@letbuyy/shared-types';
 import { AppError, NotFoundError, ForbiddenError, ValidationError, ConflictError } from '../lib/errors';
 import type { TenantContext } from '../lib/tenant-context';
+import { OutboxExecutionAdapter } from './outbox-execution.adapter';
 import { SaasExecutionAdapter, assertResolvedCreationEntitlements } from './saas-execution.adapter';
 import {
     planOrderStatusTransition,
@@ -187,6 +188,11 @@ export class OrderExecutionAdapter {
             throw new Error(`Order creation failed: ${message}`);
         }
 
+        const committedOrder = data && typeof data === 'object' && 'id' in data ? String(data.id) : null;
+        if (committedOrder) {
+            try { await new OutboxExecutionAdapter(this.db).dispatchOrderEmails(tenant.siteId, committedOrder); }
+            catch { console.warn(JSON.stringify({ level: 'warn', event: 'order_email_outbox_wakeup_deferred', site_id: tenant.siteId })); }
+        }
         if (options.deferPostCommit) return data;
         return this.completeOrderPostCommitWork(input, tenant, data);
     }

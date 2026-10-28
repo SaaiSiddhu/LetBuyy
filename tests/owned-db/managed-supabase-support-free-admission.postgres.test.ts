@@ -221,5 +221,17 @@ test('support-free admission works as managed postgres without a provider helper
             assert.equal(psql('SELECT count(*) FROM included_theme_packages_v1();'),'10'); assert.equal(library(),before);
             for(const role of ['anon','authenticated','app_tenant']) denied(`SET ROLE ${role};SELECT included_theme_packages_v1();`,/permission denied/);
         });
+        await t.test('managed cli migrator installs402 private invoker delivery functions and reverses without historical backfill',()=>{
+            const before=psql("SELECT (SELECT count(*) FROM email_logs)::text||':'||(SELECT count(*) FROM outbox_events)::text;");
+            fixture.migrator(batch(402,402).sql);
+            assert.equal(psql("SELECT (SELECT count(*) FROM email_logs)::text||':'||(SELECT count(*) FROM outbox_events)::text;"),before);
+            assert.equal(psql("SELECT tgdeferrable AND tginitdeferred FROM pg_trigger WHERE tgrelid='public.orders'::regclass AND tgname='order_lifecycle_email_v1';"),'t');
+            for(const role of ['anon','authenticated','app_tenant']) denied(`SET ROLE ${role};SELECT order_lifecycle_email_delivery_v1(NULL,NULL);`,/permission denied/);
+            const downName='402_atomic_order_lifecycle_email.rollback.sql';
+            fixture.migrator(compileManagedMigrationBatch([{name:downName,source:readFileSync('database/supabase/rollback/'+downName,'utf8')}],randomUUID()).sql);
+            assert.equal(psql("SELECT to_regprocedure('public.order_lifecycle_email_delivery_v1(uuid,text)') IS NULL;"),'t');
+            assert.equal(psql("SELECT (SELECT count(*) FROM email_logs)::text||':'||(SELECT count(*) FROM outbox_events)::text;"),before);
+            fixture.migrator(batch(402,402).sql);
+        });
     } finally {await fixture.close();}
 });

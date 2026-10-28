@@ -1,7 +1,6 @@
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
-import { enqueueOrderConfirmationEmail } from './order-confirmation-email';
 import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
 import { verifySiteOwnership } from './auth-user';
 import { AppError, ConflictError, ForbiddenError, HumanRequiredError, NotFoundError } from './errors';
@@ -349,21 +348,8 @@ export async function emitOrderPaidEvent(
         actorId: input.actorId || null,
     });
 
-    await enqueueOrderConfirmationEmail(env, db, {
-        orderId,
-        storeId: siteId,
-        requestId: input.requestId,
-        idempotencyKey: input.idempotencyKey,
-    }).catch((error) => {
-        console.error(JSON.stringify({
-            level: 'error',
-            event: 'order_confirmation_email_dispatch_failed',
-            order_id: orderId,
-            store_id: siteId,
-            request_id: input.requestId,
-            error: error instanceof Error ? error.message : 'unknown error',
-        }));
-    });
+    // Migration402 owns the same-transaction email intent.
+
 }
 
 export async function loadPayableOrder(

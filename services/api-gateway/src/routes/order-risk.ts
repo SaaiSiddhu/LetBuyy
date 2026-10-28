@@ -10,7 +10,6 @@ import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin, success } from '../lib/supabase';
-import { enqueueOrderLifecycleEmail } from '../lib/order-confirmation-email';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
@@ -383,25 +382,6 @@ orderCodRouter.post('/:id/cod/confirm', validate('json', CodConfirmationSchema),
 
         // LB-10 — a rejected COD confirmation cancels the order; notify the customer (best-effort).
         if (!confirmed) {
-            try {
-                await enqueueOrderLifecycleEmail(c.env, db, {
-                    orderId,
-                    storeId: tenant.siteId,
-                    requestId: tenant.requestId,
-                    kind: 'cancelled',
-                });
-            } catch (emailError) {
-                console.warn(JSON.stringify({
-                    level: 'warn',
-                    event: 'order_lifecycle_email_enqueue_failed',
-                    kind: 'cancelled',
-                    order_id: orderId,
-                    error: String(emailError),
-                }));
-            }
-        }
-
-        if (!confirmed) {
             await releaseCancelledCodOrderResources(db, orderId, tenant);
         }
 
@@ -478,24 +458,7 @@ orderCodRouter.post('/:id/cod/timeout', validate('json', CodTimeoutSchema), asyn
             requestId: tenant.requestId,
         });
 
-        // LB-10 — a COD timeout cancels the order; notify the customer (best-effort).
-        try {
-            await enqueueOrderLifecycleEmail(c.env, db, {
-                orderId,
-                storeId: tenant.siteId,
-                requestId: tenant.requestId,
-                kind: 'cancelled',
-            });
-        } catch (emailError) {
-            console.warn(JSON.stringify({
-                level: 'warn',
-                event: 'order_lifecycle_email_enqueue_failed',
-                kind: 'cancelled',
-                order_id: orderId,
-                error: String(emailError),
-            }));
-        }
-
+        // The cancellation and its email intent commit together in migration402.
         await releaseCancelledCodOrderResources(db, orderId, tenant);
 
         const responseBody = success({ order: normalizeOrderRecord(data as unknown as OrderSourceRow), reason: body.reason });

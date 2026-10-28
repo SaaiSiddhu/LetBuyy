@@ -55,6 +55,7 @@ interface DispatchOptions {
     dispatcherId: string;
     outboxLimit?: number;
     webhookLimit?: number;
+    orderEmail?: { siteId: string; orderId: string };
 }
 
 export class OutboxExecutionAdapter {
@@ -69,6 +70,10 @@ export class OutboxExecutionAdapter {
     });
 
     constructor(private db: SupabaseClient) {}
+
+    dispatchOrderEmails(siteId: string, orderId: string) {
+        return this.dispatchBatch({ dispatcherId: 'order-email:'+crypto.randomUUID(), orderEmail: { siteId, orderId }, outboxLimit: 5 });
+    }
 
     async dispatchBatch(options: DispatchOptions): Promise<DispatchBatchResult> {
         const dispatcherId = options.dispatcherId;
@@ -86,7 +91,9 @@ export class OutboxExecutionAdapter {
             webhook_failed: 0,
         };
 
-        const events = await this.claimOutboxEvents(dispatcherId, outboxLimit);
+        const events = options.orderEmail
+            ? await this.claimOrderEmailEvents(dispatcherId, options.orderEmail)
+            : await this.claimOutboxEvents(dispatcherId, outboxLimit);
         result.claimed = events.length;
 
         for (const event of events) {
@@ -103,6 +110,14 @@ export class OutboxExecutionAdapter {
         }
 
         return result;
+    }
+
+    private async claimOrderEmailEvents(dispatcherId: string, order: { siteId: string; orderId: string }): Promise<OutboxEventClaim[]> {
+        const { data, error } = await this.db.rpc('claim_order_email_outbox_v1', {
+            p_site_id: order.siteId, p_order_id: order.orderId, p_dispatcher_id: dispatcherId,
+        });
+        if (error) throw new Error('Order email dispatch state is unavailable');
+        return Array.isArray(data) ? data as OutboxEventClaim[] : [];
     }
 
     private async claimOutboxEvents(dispatcherId: string, limit: number): Promise<OutboxEventClaim[]> {
@@ -160,7 +175,8 @@ export class OutboxExecutionAdapter {
 
     private async createWebhookDeliveries(event: OutboxEventClaim, envelope: JsonObject): Promise<number> {
         // Private review metadata has no external consumer or delivery authority.
-        if (event.event_type === 'reel.review.changed' || event.event_type === 'reel.upload.changed') return 0;
+        if (event.event_type === 'reel.review.changed' || event.event_type === 'reel.upload.changed'
+            || event.event_type === 'order.lifecycle_email_queued') return 0;
         if (!event.site_id) return 0;
 
         const { data, error } = await this.db

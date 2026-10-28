@@ -30,7 +30,6 @@ import {
     type OrderItemRelationRow,
     type ProductSnapshotRow,
 } from '../lib/order-read-compat';
-import { enqueueOrderLifecycleEmail } from '../lib/order-confirmation-email';
 import {
     CreateOrderSchema,
     UpdateOrderStatusSchema,
@@ -1064,24 +1063,8 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
                 requestId: tenant.requestId,
             });
         }
-        // LB-10 — dispatch the cancelled/refunded customer email (best-effort; never blocks the status change).
+        // Transactional email intent is captured by migration402.
         if (body.status === 'cancelled') {
-            try {
-                await enqueueOrderLifecycleEmail(c.env, db, {
-                    orderId,
-                    storeId: tenant.siteId,
-                    requestId: tenant.requestId,
-                    kind: body.status,
-                });
-            } catch (emailError) {
-                console.warn(JSON.stringify({
-                    level: 'warn',
-                    event: 'order_lifecycle_email_enqueue_failed',
-                    kind: body.status,
-                    order_id: orderId,
-                    error: String(emailError),
-                }));
-            }
             // LB-11 — restore any gift-card balance redeemed on this order (the whole order is
             // being reversed). Idempotent + best-effort; never blocks the status change.
             try {
@@ -1247,12 +1230,7 @@ router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), asyn
     if (!replayed && recordValue(data.order).status === 'refunded') {
         await emitOrderEvent(db, { eventType: 'order.refunded', order: data.order,
             fallbackOrderId: orderId, siteId: tenant.siteId, actorId: tenant.userId, requestId: tenant.requestId });
-        try {
-            await enqueueOrderLifecycleEmail(c.env, db, { orderId, storeId: tenant.siteId,
-                requestId: tenant.requestId, kind: 'refunded' });
-        } catch {
-            console.warn(JSON.stringify({level:'warn',event:'order_lifecycle_email_enqueue_failed',order_id:orderId,kind:'refunded'}));
-        }
+
     }
     await tryRestoreGiftCardForReversedOrder(db,{...tenant,orderId},data.order);
     await tryRestoreRedeemedLoyalty(db, {...tenant,orderId});

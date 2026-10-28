@@ -86,6 +86,7 @@ export const DOMAIN_EVENT_TYPES = [
   'checkout.completed',
   'checkout.failed',
   'order.created',
+  'order.lifecycle_email_queued',
   'order.paid',
   'order.confirmed_cod',
   'order.fulfilled',
@@ -507,6 +508,11 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'order',
     payloadSchema: OrderPayloadSchema,
   },
+  'order.lifecycle_email_queued': {
+    eventType: 'order.lifecycle_email_queued', schemaVersion: 1, producer: 'api-gateway',
+    consumers: ['notifications'], aggregateType: 'order',
+    payloadSchema: z.object({ site_id: UuidSchema, order_id: UuidSchema, email_log_id: UuidSchema }).strict(),
+  },
   'order.paid': {
     eventType: 'order.paid',
     schemaVersion: 1,
@@ -848,6 +854,8 @@ export function eventMatchesSubscription(eventType: string, eventTypes: string[]
 }
 
 export function queueNamesForEvent(eventType: string): RuntimeQueueName[] {
+  // Private delivery intent, never an analytics/search/webhook event.
+  if (eventType === 'order.lifecycle_email_queued') return ['notification-jobs'];
   const queues = new Set<RuntimeQueueName>();
   const contract = getDomainEventContract(eventType);
 

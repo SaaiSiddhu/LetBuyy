@@ -1,4 +1,5 @@
 import {sendOperatorMfaResetEmail,type OperatorMfaResetEmailEnv,type OperatorMfaResetDelivery} from './operator-mfa-reset-email';
+import { sendOrderLifecycleEmail } from './order-lifecycle-email';
 import { sendStaffInvitationEmail, type StaffInvitationDelivery, type StaffInvitationEmailEnv } from './staff-invitation-email';
 import {
   eventRetryDelaySeconds,
@@ -466,6 +467,8 @@ class PlatformQueueConsumer {
       if (error) throw new Error('Staff invitation lease recovery is unavailable');
       const {error:securityError}=await this.db.rpc('recover_expired_console_security_email_jobs_v1',{p_limit:limit});
       if(securityError)throw new Error('Operator notification lease recovery is unavailable');
+      const {error:orderError}=await this.db.rpc('recover_expired_order_email_jobs_v1',{p_limit:limit});
+      if(orderError)throw new Error('Order email lease recovery is unavailable');
     }
     const jobs = await this.claimJobs(workerId, queueName, limit);
     const result: PlatformQueueConsumeResult = {
@@ -523,6 +526,7 @@ class PlatformQueueConsumer {
   }
 
   private async processNotificationJob(workerId:string,job:PlatformQueueJob):Promise<JsonObject>{
+    if(job.job_type==='order.lifecycle_email_queued')return sendOrderLifecycleEmail(this.db,this.env,job,workerId);
     if(job.job_type==='email.employee_invite')return this.processStaffInvitationJob(job);
     if(job.job_type!=='email.operator_mfa_reset'||job.site_id!==null||typeof job.payload.approval_id!=='string')
       throw deterministicQueueJobError('Unsupported notification source');

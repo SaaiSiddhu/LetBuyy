@@ -1,6 +1,8 @@
 import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, safeSubject } from './email';
 import { z } from 'zod';
 import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
+export { OrderEmailSnapshotSchema, OrderEmailDeliverySchema, OrderEmailDeliveryReceiptSchema, OrderEmailMessageSchema,
+  renderOrderLifecycleEmail, type OrderEmailSnapshot } from './order-email';
 
 export type NotificationChannel = 'whatsapp' | 'sms' | 'email' | 'push' | 'in_app';
 export type NotificationAudience = 'shopper' | 'customer' | 'merchant' | 'platform-employee' | 'platform-operator';
