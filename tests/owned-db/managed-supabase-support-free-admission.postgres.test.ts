@@ -209,5 +209,17 @@ test('support-free admission works as managed postgres without a provider helper
             psql(compileManagedJournalBatch([entry],randomUUID(),{expectedHistorySha256:old}).sql);
             assert.equal(psql("SELECT count(*) FROM supabase_migrations.schema_migrations;"),'2');
         });
+        await t.test('managed cli migrator applies397–401 and reverses included-theme policy without support or data loss',()=>{
+            const library=()=>psql("SELECT md5(jsonb_build_object('instances',(SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM theme_instances i),'drafts',(SELECT jsonb_agg(to_jsonb(d) ORDER BY id) FROM theme_editor_drafts d),'releases',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM theme_releases r))::text);");
+            const before=library();
+            fixture.migrator(batch(397,401).sql);
+            assert.equal(absent(),'t'); assert.equal(psql('SELECT count(*) FROM included_theme_packages_v1();'),'10'); assert.equal(library(),before);
+            const downName='401_included_theme_library_allowance.rollback.sql';
+            fixture.migrator(compileManagedMigrationBatch([{name:downName,source:readFileSync('database/supabase/rollback/'+downName,'utf8')}],randomUUID()).sql);
+            assert.equal(psql("SELECT to_regprocedure('public.included_theme_packages_v1()') IS NULL;"),'t'); assert.equal(library(),before);
+            fixture.migrator(batch(401,401).sql);
+            assert.equal(psql('SELECT count(*) FROM included_theme_packages_v1();'),'10'); assert.equal(library(),before);
+            for(const role of ['anon','authenticated','app_tenant']) denied(`SET ROLE ${role};SELECT included_theme_packages_v1();`,/permission denied/);
+        });
     } finally {await fixture.close();}
 });
