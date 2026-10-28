@@ -73,7 +73,9 @@ test('mounted domain health returns the owner TXT and CNAME without unrelated ap
             ['TXT', `_letbuyy-challenge.${domain}`], ['CNAME', domain],
         ]);
         const calls = providerMethods.length;
-        const denied = await gateway.request(`/v1/custom/domains/${domain}/status?site_id=${foreign.siteId}`, { headers });
+        const denied = await gateway.request(`/v1/custom/domains/${domain}/status?site_id=${foreign.siteId}`, {
+            headers: await signedIdentityHeaders(actor, email, site.siteId),
+        });
         assert.equal(denied.status, 404);
         assert.ok(!denied.text.includes(token));
         assert.equal((await gateway.request(`/v1/custom/domains/${domain}/status?site_id=${site.siteId}`)).status, 401);
