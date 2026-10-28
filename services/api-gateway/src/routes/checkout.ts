@@ -43,6 +43,7 @@ import { validate } from '../middleware/validation';
 import { AppError, ConflictError } from '../lib/errors';
 import { checkoutDeliveryOptions } from '../lib/checkout-delivery-options';
 import { listStorefrontShippingRates } from '../lib/storefront-shipping';
+import { toInrMinorUnits } from '@letbuyy/payments';
 
 type AppContext = Context<{ Bindings: Env }>;
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -794,11 +795,8 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                     let expectedOrderAmountMinor: number | null = null;
                     try {
                         const payable = await paymentAdapter.loadStorefrontPayableOrder(orderId, verified.handoff.siteId);
-                        const total = Number(payable.total);
-                        const amountMinor = Math.round(total * 100);
-                        if ((payable.currency || 'INR').toUpperCase() === 'INR'
-                            && Number.isSafeInteger(amountMinor)
-                            && Math.abs(total * 100 - amountMinor) <= 0.000001) {
+                        const amountMinor = toInrMinorUnits(payable.total);
+                        if ((payable.currency || 'INR').toUpperCase() === 'INR') {
                             expectedOrderAmountMinor = amountMinor;
                         }
                     } catch {
@@ -922,10 +920,8 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
 
             const paymentAdapter = new PaymentExecutionAdapter(db);
             const payable = await paymentAdapter.loadStorefrontPayableOrder(orderId, verified.handoff.siteId);
-            const total = Number(payable.total);
-            const amountMinor = Math.round(total * 100);
-            if ((payable.currency || 'INR').toUpperCase() !== 'INR' || !Number.isSafeInteger(amountMinor)
-                || amountMinor <= 0 || Math.abs(total * 100 - amountMinor) > 0.000001) {
+            const amountMinor = toInrMinorUnits(payable.total);
+            if ((payable.currency || 'INR').toUpperCase() !== 'INR' || amountMinor <= 0) {
                 return { body: { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only exact INR checkout amounts are supported.' } }, status: 400, resourceId: orderId };
             }
 
@@ -1189,7 +1185,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             } catch {
                 return { body: { success: false, error: { code: 'CHECKOUT_ORDER_UNAVAILABLE', message: 'Checkout could not be confirmed.' } }, status: 409, resourceId: existing.id };
             }
-            const orderAmountMinor = Math.round(Number(payable.total) * 100);
+            const orderAmountMinor = toInrMinorUnits(payable.total);
             // The verified webhook may commit this same capture before the
             // browser callback arrives. The canonical writer then replaces the
             // order reference with its payment ID. Both still identify this

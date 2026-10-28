@@ -242,8 +242,8 @@
     {
       "id": "E02",
       "work": "Remove float/int32 in touched money paths",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "Hosted new/recovery/confirm amounts now use canonical toInrMinorUnits, preserving stored decimal values.106 actual PostgreSQL amount cases, every cent and int32 boundary pass without money writes.16 focused,1827 Gateway,12 late-capture DB and4 normal browser tests pass. Broader payout/refund/import float/int32 paths remain."
     },
     {
       "id": "E03",
