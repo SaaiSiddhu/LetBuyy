@@ -46,6 +46,7 @@ import type {
     ReorderThemeDraftInput,
     ValidateThemeDocumentInput,
 } from '../schemas/theme.schema';
+import { readStoreThemeAllowance, resolveStoreThemeLimit } from '../lib/theme-library-limits';
 import { EventExecutionAdapter } from './event-execution.adapter';
 import {
     SchemaRegistryExecutionAdapter,
@@ -860,7 +861,7 @@ export class ThemeExecutionAdapter {
             throw new AppError('Your library has a different version of this theme. Review its update in the library before continuing.', 409, 'THEME_INSTANCE_VERSION_CONFLICT');
         }
         if (error?.code === 'PT409' && error.message === 'Theme library limit reached')
-            throw new AppError(`The ${plan_name} plan's theme allowance is in use. Your published theme has been preserved.`, 409, 'THEME_LIMIT_REACHED', { limit, plan_name });
+            throw new AppError(`The ${plan_name} custom-theme allowance is in use. Included themes do not use these slots. Your published theme has been preserved.`, 409, 'THEME_LIMIT_REACHED', { limit, plan_name });
         if (error?.code === 'PT409') throw new AppError('The theme changed while it was being added. Refresh your library and retry.', 409, 'THEME_STATE_CONFLICT');
         if (error?.code === 'PT400') throw new ValidationError('Purchase this theme before adding it.');
         const result = asRecord(data);
@@ -1404,7 +1405,8 @@ export class ThemeExecutionAdapter {
             };
         }));
 
-        return { themes };
+        const allowance = await readStoreThemeAllowance(this.db, storeId, userId, this.boundSiteId);
+        return { themes, allowance };
     }
 
     private privateThemeDefinition(source: ThemeRecord, config: DbRecord): DbRecord {
@@ -1455,6 +1457,24 @@ export class ThemeExecutionAdapter {
             schema_version: runtime.schemaManifestVersion,
             renderer_version: runtime.rendererVersion,
         }, config);
+    }
+
+    private async installPrivateThemeInstance(theme: DbRecord, config: DbRecord, runtime: ThemePackageRuntime, storeId: string, userId: string, requestId?: string | null): Promise<string> {
+        const { limit, plan_name } = await resolveStoreThemeLimit(this.db, storeId);
+        const { data, error } = await this.db.rpc('install_owned_theme_v1', {
+            p_actor: userId, p_site: storeId, p_slug: String(theme.slug), p_config: config,
+            p_runtime: { theme_package_id: runtime.themePackageId, theme_package_version_id: runtime.themePackageVersionId,
+                catalog_version: theme.version, expected_package_id: runtime.themePackageId, expected_package_version_id: runtime.themePackageVersionId },
+            p_bound_site: this.boundSiteId || null, p_limit: limit, p_request: requestId || null,
+        });
+        if (error?.code === 'PT409' && error.message === 'Theme library limit reached')
+            throw new AppError(`Your ${plan_name} custom-theme allowance is in use. Archive a custom theme or upgrade to add another.`, 409, 'THEME_LIMIT_REACHED', { limit, plan_name });
+        if (error?.code === '42501') throw new ForbiddenError('This theme is not available for this store.');
+        const receipt = asRecord(data);
+        if (error || !UuidSchema.safeParse(receipt.theme_instance_id).success || receipt.theme_package_id !== runtime.themePackageId
+            || receipt.theme_package_version_id !== runtime.themePackageVersionId || receipt.installed_version !== theme.version)
+            throw new AppError('The custom theme installation was not confirmed. Retry adding it.', 503, 'THEME_INSTALL_UNCONFIRMED');
+        return String(receipt.theme_instance_id);
     }
 
     async createSiteTheme(
@@ -1509,27 +1529,7 @@ export class ThemeExecutionAdapter {
             // site theme needs its own package registry rows before the instance can be inserted.
             packageRuntime = await this.provisionSiteThemePackage(themeRecord as ThemeRegistryThemeInput);
 
-            // Insert theme_instance scoped to this store
-            const { data: instanceRow, error: instanceError } = await this.db
-                .from('theme_instances')
-                .insert({
-                    store_id: storeId,
-                    theme_package_id: packageRuntime.themePackageId,
-                    theme_package_version_id: packageRuntime.themePackageVersionId,
-                    theme_slug: newSlug,
-                    instance_status: 'installed',
-                    installed_config: blankConfig,
-                    created_by: userId,
-                    updated_by: userId,
-                    created_at: now,
-                    updated_at: now,
-                })
-                .select('id, theme_slug, instance_status, created_at')
-                .single();
-
-            if (instanceError || !instanceRow) {
-                throw new Error(`Theme instance create failed: ${instanceError?.message || 'Unknown error'}`);
-            }
+            const instanceId = await this.installPrivateThemeInstance(themeRecord, blankConfig, packageRuntime, storeId, userId, requestId);
 
             const events = new EventExecutionAdapter(this.db);
             await events.emitAuditEvent({
@@ -1537,7 +1537,7 @@ export class ThemeExecutionAdapter {
                 actorId: userId,
                 action: 'theme.create',
                 resourceType: 'theme_instance',
-                resourceId: String((instanceRow as DbRecord).id || ''),
+                resourceId: instanceId,
                 requestId,
                 afterState: {
                     theme_slug: newSlug,
@@ -1549,7 +1549,7 @@ export class ThemeExecutionAdapter {
             return {
                 slug: String(themeRecord.slug),
                 name: String(themeRecord.name),
-                instance_id: String((instanceRow as DbRecord).id || ''),
+                instance_id: instanceId,
                 instance_status: 'installed',
                 created_at: now,
             };
@@ -1621,29 +1621,7 @@ export class ThemeExecutionAdapter {
             // Same NOT NULL package columns as createSiteTheme — the copy needs its own registry rows.
             packageRuntime = await this.provisionSiteThemePackage(newThemeRecord as ThemeRegistryThemeInput);
 
-            // Insert new theme_instance for this store.
-            // installed_config is NOT NULL DEFAULT '{}' — send {} rather than null when there is
-            // no release to clone from.
-            const { data: instanceRow, error: instanceError } = await this.db
-                .from('theme_instances')
-                .insert({
-                    store_id: storeId,
-                    theme_package_id: packageRuntime.themePackageId,
-                    theme_package_version_id: packageRuntime.themePackageVersionId,
-                    theme_slug: newSlug,
-                    instance_status: 'installed',
-                    installed_config: cloneConfig,
-                    created_by: userId,
-                    updated_by: userId,
-                    created_at: now,
-                    updated_at: now,
-                })
-                .select('id, theme_slug, instance_status, created_at')
-                .single();
-
-            if (instanceError || !instanceRow) {
-                throw new Error(`Theme duplicate (instance) failed: ${instanceError?.message || 'Unknown error'}`);
-            }
+            const instanceId = await this.installPrivateThemeInstance(newThemeRecord, cloneConfig, packageRuntime, storeId, userId, requestId);
 
             const events = new EventExecutionAdapter(this.db);
             await events.emitAuditEvent({
@@ -1651,7 +1629,7 @@ export class ThemeExecutionAdapter {
                 actorId: userId,
                 action: 'theme.duplicate',
                 resourceType: 'theme_instance',
-                resourceId: String((instanceRow as DbRecord).id || ''),
+                resourceId: instanceId,
                 requestId,
                 afterState: {
                     source_slug: slug,
@@ -1664,7 +1642,7 @@ export class ThemeExecutionAdapter {
                 slug: newSlug,
                 name: newName,
                 source_slug: slug,
-                instance_id: String((instanceRow as DbRecord).id || ''),
+                instance_id: instanceId,
                 instance_status: 'installed',
                 created_at: now,
             };

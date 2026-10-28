@@ -68,3 +68,12 @@ export const SiteThemeLibraryItemSchema = z.object({
   theme_package_version_id: z.string().nullable(),
 });
 export type SiteThemeLibraryItem = z.infer<typeof SiteThemeLibraryItemSchema>;
+
+/** Database-proven first-party inclusion and canonical custom-design allowance. */
+export const ThemeLibraryAllowanceSchema = z.object({
+  included_themes: z.array(z.string().min(1)).max(10),
+  custom_used: z.number().int().nonnegative(),
+  custom_limit: z.number().int().nonnegative().nullable(),
+  plan_name: z.string().min(1),
+});
+export type ThemeLibraryAllowance = z.infer<typeof ThemeLibraryAllowanceSchema>;

@@ -96,12 +96,12 @@ export function mountThemeLibraryRoutes(router: Hono<{ Bindings: Env }>) {
         // Runs after ownership is confirmed so billing info is only visible to the owner.
         const { limit, plan_name } = await resolveStoreThemeLimit(db, body.store_id);
         if (limit !== null) {
-            const used = await countInstalledSiteThemes(db, body.store_id);
+            const used = await countInstalledSiteThemes(db, body.store_id, customUser.id);
             if (used >= limit) {
                 return c.json({
                     error: {
                         code: 'THEME_LIMIT_REACHED',
-                        message: `Your ${plan_name} plan allows up to ${limit} theme(s). Upgrade to add more.`,
+                        message: `Your ${plan_name} plan allows up to ${limit} custom theme(s). The ten included themes do not use these slots. Archive a custom theme or upgrade to add more.`,
                         details: { limit, used, plan_name },
                     },
                 }, 409);
@@ -143,12 +143,12 @@ export function mountThemeLibraryRoutes(router: Hono<{ Bindings: Env }>) {
 
         const { limit, plan_name } = await resolveStoreThemeLimit(db, body.store_id);
         if (limit !== null) {
-            const used = await countInstalledSiteThemes(db, body.store_id);
+            const used = await countInstalledSiteThemes(db, body.store_id, customUser.id);
             if (used >= limit) {
                 return c.json({
                     error: {
                         code: 'THEME_LIMIT_REACHED',
-                        message: `Your ${plan_name} plan allows up to ${limit} theme(s). Upgrade to add more.`,
+                        message: `Your ${plan_name} plan allows up to ${limit} custom theme(s). The ten included themes do not use these slots. Archive a custom theme or upgrade to add more.`,
                         details: { limit, used, plan_name },
                     },
                 }, 409);

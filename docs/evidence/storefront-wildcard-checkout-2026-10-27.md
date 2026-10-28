@@ -338,3 +338,16 @@ Commerce runtime source. Both source checkpoints are local only. Hosted400,
 fresh restore/staging, exact live DNS/TLS and the pending ten-built-in allowance
 decision still gate production; the sending key and full lifecycle/settings
 follow-through remain open. No new production exposure or payment is implied.
+
+
+## 28 October: included theme library policy (source qualified, not live)
+
+The owner approved `theme-library-free-catalog-policy-proposal.json`: all ten canonical free first-party designs are included on every plan; custom uploads, blank designs and copies retain the canonical plan allowance. Adding/restoring a design must never publish it. Production remains on schema399 until the reviewed release is activated.
+
+Migration401 adds one SQL eligibility owner, matching the ten fixed theme IDs and slugs, public/unowned/active/free zero-price catalog records and their exact package linkage. The existing row-locked selected-version installer uses that owner both to exempt included designs and to count custom slots. Blank/create and copy now call the same installer rather than inserting instances outside its lock. No catalog releases, saved designs, subscriptions, site visibility or live theme pointers are backfilled. The paired DOWN verifies the exact installer and reader profiles before reverting the allowance and retains all data. It uses the already approved managed maintenance admission when compiled for hosted deployment; it does not require the retired support helper.
+
+The owned Free fixture publishes Circuit, adds all ten, proves the live snapshot remains identical, races two copies against one custom slot, verifies losing scaffolds are removed, rejects a further blank, restores a customized archived included theme at the custom cap, rejects altered catalog eligibility/foreign ownership/stale versions, explicitly switches to Threadline and back, restores a historical release through the canonical rollback route, and conserves every instance/draft/release across401 DOWN/UP. The two historical installer suites peel back dependent401 before their original387 replay/profile tests and restore401 afterward; their refusal assertions remain intact.
+
+Evidence in `/private/tmp/letbuyy-storefront-recovery-20261027/`: `theme401-final-owned.json` (7/7), `theme401-historical.json` (10/10), `theme401-api-unit-final.log` (1818/1818), `theme401-merchant-ui.log` (18/18), `theme401-allowance-unit-final.log` (3/3). API and Merchant typechecks pass. Full release/governance/build and hosted rehearsal/activation still follow this source checkpoint.
+
+Resend: the owner confirms the only original key is saved as a Cloudflare secret. It cannot be revealed. The existing API secret remains untouched; Queue has no sending key. Native Chrome reached the provider login page, and private LetBuyy provider sign-in is pending. No secret-extraction code, impersonated relay, new credential or historical customer-email replay was used.

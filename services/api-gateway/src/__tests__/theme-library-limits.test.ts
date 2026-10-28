@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { resolveStoreThemeLimit } from '../lib/theme-library-limits';
+import { readStoreThemeAllowance, resolveStoreThemeLimit } from '../lib/theme-library-limits';
 import { AppError } from '../lib/errors';
 const site='11111111-1111-4111-8111-111111111111';
 type Db=Parameters<typeof resolveStoreThemeLimit>[0];
@@ -18,4 +18,16 @@ test('theme allowance uses the canonical persisted plan and preserves current si
 test('malformed, foreign and unavailable allowances never become an unlimited installation grant',async()=>{
   for(const db of [fixture({themes:-1}),fixture({themes:1.5}),fixture({themes:'3'}),fixture({themes:false}),fixture({themes:3},{foreign:true}),fixture({themes:3},{unavailable:true})])
     await assert.rejects(resolveStoreThemeLimit(db,site),(error:unknown)=>error instanceof AppError&&error.code==='THEME_STATE_UNAVAILABLE'&&error.statusCode===503);
+});
+
+test('allowance projection takes included identities and custom count only from the owned database reader', async () => {
+  const db = fixture({themes:1});
+  const billingRpc = db.rpc.bind(db);
+  const actor='22222222-2222-4222-8222-222222222222';
+  db.rpc = (async (name:string,args:unknown) => {
+    if(name==='resolve_site_entitlements') return billingRpc(name,args);
+    assert.equal(name,'read_owned_theme_library_allowance_v1'); assert.deepEqual(args,{p_actor:actor,p_site:site,p_bound_site:null});
+    return {data:{included_themes:['letbuyy-forge','letbuyy-sense'],custom_used:1},error:null};
+  }) as unknown as Db['rpc'];
+  assert.deepEqual(await readStoreThemeAllowance(db,site,actor),{included_themes:['letbuyy-forge','letbuyy-sense'],custom_used:1,custom_limit:1,plan_name:'Free'});
 });

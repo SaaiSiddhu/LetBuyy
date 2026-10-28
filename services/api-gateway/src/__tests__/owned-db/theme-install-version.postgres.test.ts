@@ -80,6 +80,8 @@ test('selected-version install is atomic, exact on retry, tenant-bound, conflict
         const paidSlug=`private-${a.siteId}-paid`,paid=await upload(paidSlug,'1.0.0',1,true),paidBefore=state(a.siteId,paidSlug);const denied=await request(`/v1/themes/${paidSlug}/install`,selection(paid));assert.equal(denied.status,400,denied.text);assert.equal(state(a.siteId,paidSlug),paidBefore);
     });
     await t.test('migration forward/down replay conserves data and rejects changed cost, owner, search_path or ACL',()=>{
+        // Replay historical387 against its own baseline, then restore the current policy.
+        owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/401_included_theme_library_allowance.rollback.sql',import.meta.url),'utf8'));
         const up=readFileSync(new URL('../../../../../database/supabase/migrations/387_theme_install_version_precondition.sql',import.meta.url),'utf8');
         const down=readFileSync(new URL('../../../../../database/supabase/rollback/387_theme_install_version_precondition.rollback.sql',import.meta.url),'utf8');
         const profile=()=>owned.psql(`SELECT md5(prosrc)||'|'||proowner::regrole::text||'|'||proconfig::text||'|'||proacl::text FROM pg_proc WHERE oid='${signature}'::regprocedure;`);
@@ -89,6 +91,7 @@ test('selected-version install is atomic, exact on retry, tenant-bound, conflict
             owned.script(change);try{assert.match(owned.psqlScriptExpectError(up),/Migration387 refuses changed installer/);assert.match(owned.psqlScriptExpectError(down),/Migration387 refuses changed installer/);}finally{owned.script(restore);}
         }
         assert.equal(profile(),original);assert.equal(state(a.siteId,slug),before);
+        owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/401_included_theme_library_allowance.sql',import.meta.url),'utf8'));
         for(const role of ['anon','authenticated','app_tenant'])assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT ${signature.split('(')[0]}(NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);`),/permission denied/);
     });
 });

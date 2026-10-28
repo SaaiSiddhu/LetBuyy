@@ -189,3 +189,14 @@ test('a public overview frame uses the allowed Commerce platform origin while Vi
   }finally{await h.close();}
  }finally{for(const name of names){if(prior[name]===undefined)delete process.env[name];else process.env[name]=prior[name];}}
 });
+
+test('library distinguishes the included catalog from a full custom allowance and never publishes on load',async()=>{
+ let mutations=0;
+ const h=await mount('/sample-store/online-store/themes',async(url,init)=>{
+  if(init?.method&&init.method!=='GET')mutations++;
+  if(url.includes('/access'))return Response.json({data:{published:true,status:'published',access_mode:'public',access_message:null,has_password:false}});
+  if(url.includes('/library'))return Response.json({data:{themes:[],allowance:{included_themes:Array.from({length:10},(_,i)=>`included-${i}`),custom_used:1,custom_limit:1,plan_name:'Free'}}});
+  return Response.json({themes:[theme],currentTheme:theme,storeId:site,storeStatus:'published'});
+ },true);
+ try{assert.match(h.text(),/10 built-in themes included on every plan/);assert.match(h.text(),/Custom designs: 1 \/ 1 \(Free\)/);assert.match(h.text(),/until you publish/);assert.equal(mutations,0);}finally{await h.close();}
+});

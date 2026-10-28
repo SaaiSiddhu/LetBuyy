@@ -174,6 +174,8 @@ test('ten catalog themes install independently, atomically and without publishin
     assert.equal(publishPrivate.status,200,publishPrivate.text);
     assert.equal(owned.psql(`SELECT count(*) FROM theme_instances WHERE store_id='${a.siteId}' AND instance_status='active' AND deleted_at IS NULL;`),'1','publishing another theme retires the previous active instance atomically');
     assert.equal(owned.psql(`SELECT theme_slug FROM theme_instances WHERE store_id='${a.siteId}' AND instance_status='active' AND deleted_at IS NULL;`),privateSlug);
+    // Peel back dependent401 before testing the historical387 guard and restore afterward.
+    owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/401_included_theme_library_allowance.rollback.sql',import.meta.url),'utf8'));
     const migration377=readFileSync(new URL('../../../../../database/supabase/migrations/377_theme_install_event_contract.sql',import.meta.url),'utf8');
     const migration378=readFileSync(new URL('../../../../../database/supabase/migrations/378_storefront_metadata_role_closure.sql',import.meta.url),'utf8');
     const down377=readFileSync(new URL('../../../../../database/supabase/rollback/377_theme_install_event_contract.rollback.sql',import.meta.url),'utf8');
@@ -195,6 +197,7 @@ test('ten catalog themes install independently, atomically and without publishin
     try { assert.match(owned.psqlScriptExpectError(migration387),/Migration387 refuses changed installer/); }
     finally { owned.script(`ALTER FUNCTION ${signature} COST 100;`); }
     assert.equal(installedState(),conserved,'unknown function profile refusal is atomic');
+    owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/401_included_theme_library_allowance.sql',import.meta.url),'utf8'));
     for(const role of ['anon','authenticated','app_tenant','service_role'])
         assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.read_published_storefront_site_v1('${a.subdomain}',true);`),/permission denied/);
     assert.equal(owned.psql(`SET ROLE authenticator;SELECT public.read_published_storefront_site_v1('${a.subdomain}',true)->>'id';`).split('\n').at(-1),a.siteId,'the dedicated backend reader retains its exact capability');

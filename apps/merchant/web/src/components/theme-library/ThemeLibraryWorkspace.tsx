@@ -1,5 +1,6 @@
 'use client'
 
+import { ThemeLibraryAllowanceSchema, type ThemeLibraryAllowance } from '@letbuyy/theme-engine'
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -25,7 +26,7 @@ interface ThemeLibraryWorkspaceProps {
 }
 
 interface LibraryApiResponse {
-    data?: SiteThemeRecord[] | { themes?: SiteThemeRecord[] }
+    data?: SiteThemeRecord[] | { themes?: SiteThemeRecord[]; allowance?: ThemeLibraryAllowance }
     themes?: SiteThemeRecord[]
     success?: boolean
 }
@@ -89,7 +90,7 @@ function friendlyGatewayError(payload: unknown, fallback: string): string {
             const limit = typeof errObj?.limit === 'number' ? errObj.limit : null
             return limit !== null
                 ? `Your plan allows up to ${limit} theme${limit === 1 ? '' : 's'}. Upgrade or archive an existing theme to add more.`
-                : 'Theme limit reached on your current plan.'
+                : 'Custom-theme limit reached. Included built-in themes do not use custom slots.'
         }
         if (msg) return msg
     }
@@ -122,6 +123,7 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
     const [publishError, setPublishError] = useState<string | null>(null)
     const publishIntent = useRef<{ slug: string; body: Record<string, unknown> } | null>(null)
     const [loading, setLoading] = useState(false)
+    const [allowance, setAllowance] = useState<ThemeLibraryAllowance | null>(null)
     const [themes, setThemes] = useState<SiteThemeRecord[]>([])
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [busySlug, setBusySlug] = useState<string | null>(null)
@@ -147,6 +149,7 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
         if (!store) return
         const request = beginRead()
         setLoading(true)
+        setAllowance(null)
         setFetchError(null)
         try {
             const res = await fetch(`/api/themes/library?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: request.signal })
@@ -157,6 +160,9 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
                 setFetchError(msg)
                 return
             }
+            const rawAllowance = payload.data && !Array.isArray(payload.data) ? payload.data.allowance : undefined
+            const confirmed = ThemeLibraryAllowanceSchema.safeParse(rawAllowance)
+            setAllowance(confirmed.success ? confirmed.data : null)
             setThemes(sortThemes(readThemeList(payload)))
         } catch {
             if (!request.isCurrent()) return
@@ -397,6 +403,10 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
                     </Button>
                 </div>
             </div>
+
+            {allowance && <p className="m-0 text-[color:var(--lb-color-text-secondary)]" role="status">
+                {allowance.included_themes.length} built-in themes included on every plan. Custom designs: {allowance.custom_used} / {allowance.custom_limit ?? 'unlimited'} ({allowance.plan_name}). Adding a theme keeps your live design unchanged until you publish.
+            </p>}
 
             {/* Error banner */}
             {fetchError && !loading && (
