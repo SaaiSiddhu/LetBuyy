@@ -124,7 +124,7 @@ class StoreModel {
     this.isFrozen = false,
     this.frozenAt,
     this.freezeReason,
-    this.paymentMode = PaymentMode.shared,
+    this.paymentMode = PaymentMode.notConnected,
     this.teamMemberCount = 0,
     this.seoTitle,
     this.seoDescription,
@@ -142,7 +142,7 @@ class StoreModel {
     this.accessMessage,
     this.published = false,
     this.codEnabled = true,
-    this.onlinePaymentEnabled = true,
+    this.onlinePaymentEnabled = false,
     this.taxInclusive = false,
     this.legalName,
     this.gstin,
@@ -257,7 +257,7 @@ class StoreModel {
       onlinePaymentEnabled:
           data['onlinePaymentEnabled'] ??
           data['online_payment_enabled'] ??
-          true,
+          false,
       taxInclusive: data['taxInclusive'] ?? data['tax_inclusive'] ?? false,
       legalName: data['legalName'] ?? data['legal_name'],
       gstin: data['gstin'],
@@ -630,8 +630,10 @@ class StoreModel {
       case 'ownaccount':
       case 'own_account':
         return PaymentMode.ownAccount;
-      default:
+      case 'shared':
         return PaymentMode.shared;
+      default:
+        return PaymentMode.notConnected;
     }
   }
 

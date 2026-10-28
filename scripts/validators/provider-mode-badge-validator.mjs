@@ -13,9 +13,9 @@ for (const required of [
   "services/api-gateway/src/routes/kyc.ts",
   "services/api-gateway/src/routes/whatsapp.ts",
   "services/api-gateway/src/routes/shipping-labels.ts",
-  "services/api-gateway/src/routes/stores.ts",
+  "services/api-gateway/src/lib/store-payment-config.ts",
   "services/mobile-bff/src/index.ts",
-  "apps/merchant/web/src/app/[store]/settings/payments/page.tsx",
+  "apps/merchant/web/src/app/[store]/settings/payments/payment-setup-overview.tsx",
   "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
   "apps/merchant/web/src/app/[store]/settings/shipping/page.tsx",
   "apps/merchant/web/src/app/[store]/orders/page.tsx",
@@ -23,7 +23,8 @@ for (const required of [
   "apps/merchant/mobile/lib/screens/orders/order_detail_screen.dart",
   "apps/merchant/mobile/lib/screens/dashboard/home_screen.dart",
 ]) {
-  reporter.assert(readFile(required).includes("provider_mode"), `${required} must expose provider_mode honesty evidence`);
+  const source = readFile(required);
+  reporter.assert(source.includes("provider_mode") || (required.endsWith("payment-setup-overview.tsx") && source.includes("setup.environment")), `${required} must expose confirmed provider mode honesty evidence`);
 }
 const mobileBilling = readFile("apps/merchant/mobile/lib/screens/settings/billing_screen.dart");
 for (const evidence of ["ProviderMode.parse(_subscription?.providerMode)", "ProviderModeBadge(mode: providerMode", "Provider status unavailable"]) {
@@ -45,7 +46,7 @@ reporter.assert(
   "packages/typescript/ui/src/index.ts must export ProviderModeBadge from the canonical package",
 );
 for (const consumer of [
-  "apps/merchant/web/src/app/[store]/settings/payments/page.tsx",
+  "apps/merchant/web/src/app/[store]/settings/payments/payment-setup-overview.tsx",
   "apps/merchant/web/src/app/[store]/settings/shipping/page.tsx",
   "apps/merchant/web/src/app/[store]/orders/page.tsx",
   "apps/merchant/web/src/components/billing/BillingPaymentMethods.tsx",
@@ -146,9 +147,13 @@ reporter.assert(themesRoute.includes("isProductionLikeRuntime"), "theme marketpl
 reporter.assert(themesRoute.includes("THEME_MARKETPLACE_GSTIN_REQUIRED"), "theme marketplace receipts must fail closed without production GSTIN");
 reporter.assert(!themesRoute.includes("dev_placeholder"), "theme marketplace receipts must not label dev GSTIN as a placeholder provider fact");
 reporter.assert(!storePaymentConfig.includes("provider_mode: 'mock'"), "store payment config fallback must not expose mock provider_mode");
-reporter.assert(storePaymentConfig.includes("provider_mode: 'sandbox'"), "store payment config fallback must expose sandbox provider_mode");
+reporter.assert(storePaymentConfig.includes("provider_mode: null"), "unconfigured store payments must expose unknown provider mode");
+reporter.assert(!/provider_mode:\s*['"]sandbox['"]/.test(storePaymentConfig), "missing configuration cannot manufacture a sandbox environment");
 reporter.assert(!merchantPaymentsPage.includes("|| 'mock'"), "merchant payments page must not fall back to mock provider mode");
-reporter.assert(merchantPaymentsPage.includes("|| 'sandbox'"), "merchant payments page must fall back to sandbox provider mode");
+reporter.assert(!merchantPaymentsPage.includes("|| 'sandbox'"), "merchant payments must not infer sandbox from missing configuration");
+reporter.assert(merchantPaymentsPage.includes("<PaymentSetupOverview config={current}"), "payment settings must render the confirmed canonical setup overview");
+const paymentSetupOverview = readFile("apps/merchant/web/src/app/[store]/settings/payments/payment-setup-overview.tsx");
+reporter.assert(paymentSetupOverview.includes('setup.environment ? <ProviderModeBadge mode={setup.environment} /> : <Badge label="Not configured"'), "payment overview must distinguish confirmed environment from unavailable configuration");
 for (const fragment of [
   "mock_resend",
   "mock_ses",
@@ -242,7 +247,8 @@ reporter.assert(!mobileRazorpayConnectScreen.includes("'Test Mode'"), "mobile Ra
 reporter.assert(!mobileRazorpayConnectScreen.includes("Test Mode Active"), "mobile Razorpay connect screen must use sandbox active-state copy");
 reporter.assert(!mobileRazorpayConnectScreen.includes("Use test credentials for development"), "mobile Razorpay connect screen must not use test-credentials copy");
 reporter.assert(mobileRazorpayConnectScreen.includes("'Sandbox Mode'"), "mobile Razorpay connect screen must expose sandbox mode copy");
-reporter.assert(mobileRazorpayConnectScreen.includes("Sandbox Mode Active"), "mobile Razorpay connect screen must expose sandbox active-state copy");
+reporter.assert(!mobileRazorpayConnectScreen.includes("Live Mode Active"), "mobile credentials alone cannot imply active live payments");
+reporter.assert(mobileRazorpayConnectScreen.includes("_paymentConfig?.statusText ?? 'Payment readiness not confirmed'"), "mobile connection must render server-derived readiness or an honest unknown state");
 for (const fragment of [
   "PaymentProviderMode = 'mock'",
   "buildMockPaymentSessionPlan",
@@ -296,7 +302,7 @@ for (const fragment of [
 reporter.assert(registrarSource.includes("SandboxRegistrarProvider"), "registrar seam must expose SandboxRegistrarProvider");
 reporter.assert(registrarSource.includes("REGISTRAR_SANDBOX_ENABLED"), "registrar sandbox provider must be explicitly gated");
 reporter.assert(sharedTypes.includes("DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'sandbox'])"), "shared domain registrar schema must use sandbox, not mock");
-reporter.assert(sharedTypes.includes("provider_mode: z.enum(['sandbox', 'live']).default('sandbox')"), "store payment config schema must use sandbox/live provider modes");
+reporter.assert(sharedTypes.includes("provider_mode: z.enum(['sandbox', 'live']).nullable().default(null)"), "store payment config schema must use sandbox/live provider modes");
 reporter.assert(!bff.includes("type ProviderMode = 'mock'"), "mobile BFF provider mode union must not accept mock");
 reporter.assert(!bff.includes("value !== 'mock'"), "mobile BFF provider mode parser must not accept mock");
 reporter.assert(bff.includes("type ProviderMode = 'sandbox' | 'live'"), "mobile BFF provider mode union must be sandbox/live only");

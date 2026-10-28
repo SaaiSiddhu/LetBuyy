@@ -23,8 +23,9 @@ DateTime? _parseTimestamp(dynamic value) {
 
 /// Payment mode for store payments
 enum PaymentMode {
-  shared, // Uses Letbuyy's shared Razorpay account
-  ownAccount, // Uses seller's own Razorpay account (Professional only)
+  shared, // Legacy unresolved setting; never grants payment readiness.
+  notConnected,
+  ownAccount, // Merchant-owned account; capabilities remain server-authoritative.
 }
 
 /// Model for store payment configuration
@@ -45,6 +46,12 @@ class PaymentConfigModel {
 
   // Sandbox flag; API compatibility keeps the persisted field named test_mode.
   final bool testMode;
+  final String? providerEnvironment;
+  final String? revision;
+  final bool canEnableOnline;
+  final bool onlineCheckoutAvailable;
+  final bool onlineRequested;
+  final bool codEnabled;
 
   // Webhook configuration
   final String? webhookSecret;
@@ -58,13 +65,19 @@ class PaymentConfigModel {
 
   const PaymentConfigModel({
     required this.storeId,
-    this.mode = PaymentMode.shared,
+    this.mode = PaymentMode.notConnected,
     this.razorpayKeyId,
     this.razorpayKeySecret,
     this.verified = false,
     this.verifiedAt,
     this.verificationError,
     this.testMode = false,
+    this.providerEnvironment,
+    this.revision,
+    this.canEnableOnline = false,
+    this.onlineCheckoutAvailable = false,
+    this.onlineRequested = false,
+    this.codEnabled = false,
     this.webhookSecret,
     this.webhookConfigured = false,
     this.connectedAt,
@@ -86,19 +99,42 @@ class PaymentConfigModel {
         ? Map<String, dynamic>.from(razorpayValue)
         : <String, dynamic>{};
 
+    final setup = map['setup'] is Map
+        ? Map<String, dynamic>.from(map['setup'])
+        : <String, dynamic>{};
+    final environment = setup['environment'];
+    final validTestSetup =
+        settings['mode'] == 'ownAccount' &&
+        setup['connection'] == 'own_account' &&
+        environment == 'sandbox' &&
+        map['schema_ready'] == true &&
+        razorpay['verified'] == true &&
+        razorpay['test_mode'] == true &&
+        setup['can_enable_online'] == true;
     return PaymentConfigModel(
       storeId: storeId,
+      providerEnvironment: environment == 'sandbox' || environment == 'live'
+          ? environment as String
+          : null,
+      revision: map['revision'] is String ? map['revision'] as String : null,
+      canEnableOnline: validTestSetup,
+      onlineCheckoutAvailable:
+          validTestSetup &&
+          setup['online_checkout_available'] == true &&
+          map['online_payment_enabled'] == true,
+      onlineRequested: map['online_payment_enabled'] == true,
+      codEnabled: map['cod_enabled'] == true,
       mode: _parseMode(settings['mode'] as String?),
       razorpayKeyId:
           razorpay['key_id'] as String? ?? map['razorpayKeyId'] as String?,
-      razorpayKeySecret: map['razorpayKeySecret'] as String?,
+      // Never deserialize credentials from a public configuration response.
       verified:
           razorpay['verified'] as bool? ?? map['verified'] as bool? ?? false,
       verifiedAt: _parseTimestamp(razorpay['verified_at'] ?? map['verifiedAt']),
       verificationError: map['verificationError'] as String?,
       testMode:
           razorpay['test_mode'] as bool? ?? map['testMode'] as bool? ?? false,
-      webhookSecret: map['webhookSecret'] as String?,
+
       webhookConfigured: map['webhookConfigured'] as bool? ?? false,
       connectedAt: _parseTimestamp(
         razorpay['connected_at'] ?? map['connectedAt'],
@@ -116,12 +152,16 @@ class PaymentConfigModel {
     return {
       'mode': mode.name,
       'razorpayKeyId': razorpayKeyId,
-      'razorpayKeySecret': razorpayKeySecret,
       'verified': verified,
       'verifiedAt': verifiedAt?.toIso8601String(),
       'verificationError': verificationError,
       'testMode': testMode,
-      'webhookSecret': webhookSecret,
+      'providerEnvironment': providerEnvironment,
+      'revision': revision,
+      'canEnableOnline': canEnableOnline,
+      'onlineCheckoutAvailable': onlineCheckoutAvailable,
+      'onlineRequested': onlineRequested,
+      'codEnabled': codEnabled,
       'webhookConfigured': webhookConfigured,
       'connectedAt': connectedAt?.toIso8601String(),
       'lastUsedAt': lastUsedAt?.toIso8601String(),
@@ -139,17 +179,25 @@ class PaymentConfigModel {
 
   /// Check if payment config is ready to use
   bool get isReady =>
-      mode == PaymentMode.shared ||
-      (mode == PaymentMode.ownAccount && verified);
+      mode == PaymentMode.ownAccount &&
+      verified &&
+      testMode &&
+      providerEnvironment == 'sandbox' &&
+      onlineRequested &&
+      onlineCheckoutAvailable;
 
   /// Get status display text
   String get statusText {
     if (mode == PaymentMode.shared) {
-      return 'Using Letbuyy Payment Gateway';
+      return 'Payment connection needs review';
     }
-    if (verified) {
-      return 'Connected to ${businessName ?? 'Your Razorpay Account'}';
-    }
+    if (canEnableOnline)
+      return onlineCheckoutAvailable
+          ? 'Test checkout enabled'
+          : 'Test credentials saved; online checkout off';
+    if (providerEnvironment == 'live')
+      return 'Live payments require provider qualification';
+    if (verified) return 'Credentials saved; readiness not confirmed';
     if (verificationError != null) {
       return 'Connection Failed: $verificationError';
     }
@@ -158,13 +206,7 @@ class PaymentConfigModel {
 
   /// Get commission message
   String getCommissionMessage(double commissionPercent) {
-    if (mode == PaymentMode.ownAccount && verified) {
-      return '0% platform fee - All payments go directly to your Razorpay account';
-    }
-    if (commissionPercent == 0) {
-      return '0% platform fee - Letbuyy does not charge a transaction fee';
-    }
-    return '${commissionPercent.toStringAsFixed(0)}% platform fee on each transaction';
+    return '0% LetBuyy transaction fee. Contracted provider fees may apply.';
   }
 
   // ============================================================
@@ -176,8 +218,10 @@ class PaymentConfigModel {
       case 'ownaccount':
       case 'own_account':
         return PaymentMode.ownAccount;
-      default:
+      case 'shared':
         return PaymentMode.shared;
+      default:
+        return PaymentMode.notConnected;
     }
   }
 
@@ -203,6 +247,12 @@ class PaymentConfigModel {
     return PaymentConfigModel(
       storeId: storeId,
       mode: mode ?? this.mode,
+      providerEnvironment: providerEnvironment,
+      revision: revision,
+      canEnableOnline: canEnableOnline,
+      onlineCheckoutAvailable: onlineCheckoutAvailable,
+      onlineRequested: onlineRequested,
+      codEnabled: codEnabled,
       razorpayKeyId: razorpayKeyId ?? this.razorpayKeyId,
       razorpayKeySecret: razorpayKeySecret ?? this.razorpayKeySecret,
       verified: verified ?? this.verified,
@@ -222,11 +272,11 @@ class PaymentConfigModel {
   // FACTORY: Default Shared Config
   // ============================================================
 
-  factory PaymentConfigModel.defaultShared(String storeId) {
+  factory PaymentConfigModel.unavailable(String storeId) {
     return PaymentConfigModel(
       storeId: storeId,
-      mode: PaymentMode.shared,
-      verified: true, // Shared is always verified
+      mode: PaymentMode.notConnected,
+      verified: false,
     );
   }
 

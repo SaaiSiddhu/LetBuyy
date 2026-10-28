@@ -1,0 +1,417 @@
+{
+  "programme": "LetBuyy Payments",
+  "date": "2026-10-28",
+  "base_sha": "219654a2cb971f38788cf1f32812eaff23a25729",
+  "production_ready": false,
+  "provider_approval": "Not approved yet / unsure \u2014 current direct owner reply",
+  "items": [
+    {
+      "id": "A01",
+      "work": "Confirm merchant-of-record and no-custody model",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Merchant-of-record/no-custody preserved; managed contract absent."
+    },
+    {
+      "id": "A02",
+      "work": "Confirm Technology Partner/OAuth and Route eligibility",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Owner confirmed provider approval not yet obtained or unsure on 28 October."
+    },
+    {
+      "id": "A03",
+      "work": "Resolve managed vs merchant account UI labels",
+      "status": "IMPLEMENTED_LOCAL",
+      "evidence_or_next": "Two choices; managed unavailable without provider approval; no PA ownership claim."
+    },
+    {
+      "id": "A04",
+      "work": "Inventory all payment/settlement writers and adapters",
+      "status": "IN_PROGRESS",
+      "evidence_or_next": "Current writer map below; deeper historical capture/refund/account audit remains."
+    },
+    {
+      "id": "A05",
+      "work": "Inventory schema and actual deployed versions",
+      "status": "IN_PROGRESS",
+      "evidence_or_next": "Source baseline219654a2c, pending403 retained; no hosted schema query performed."
+    },
+    {
+      "id": "A06",
+      "work": "Trace Snaz payment/statement emptiness read-only",
+      "status": "NOT_OBSERVED",
+      "evidence_or_next": "Supplied sandbox screenshot is not provider or hosted finance acceptance."
+    },
+    {
+      "id": "A07",
+      "work": "Record permissions, fees and legal obligations",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Zero rake preserved; actual contracted PSP fees/terms need provider evidence."
+    },
+    {
+      "id": "A08",
+      "work": "Reproduce F01-F15 at owned test boundaries",
+      "status": "IN_PROGRESS",
+      "evidence_or_next": "F03/F04/F13/F15 tests added; remaining defects need individual owned reproductions."
+    },
+    {
+      "id": "B01",
+      "work": "Publish canonical payment setup DTO/Zod schemas",
+      "status": "PARTIAL",
+      "evidence_or_next": "Canonical setup/save/method/readiness schemas; full connection/settlement contracts pending."
+    },
+    {
+      "id": "B02",
+      "work": "Model connection and site activation revision",
+      "status": "PARTIAL",
+      "evidence_or_next": "Current site row CAS; connection history/transactional activation owner not implemented."
+    },
+    {
+      "id": "B03",
+      "work": "Implement approved OAuth authorization",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Approved partner protocol/client permissions unavailable; no OAuth simulation."
+    },
+    {
+      "id": "B04",
+      "work": "Secure token/secret versioning and rotation",
+      "status": "PARTIAL",
+      "evidence_or_next": "New V2 envelope authenticates site, key ID, provider, environment and encryption-key version; cross-site/key/version tampering denied. Legacy read-only drain and immutable key-history rotation remain."
+    },
+    {
+      "id": "B05",
+      "work": "Verify returned provider account identity",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Payment-list credential check is not provider account identity proof."
+    },
+    {
+      "id": "B06",
+      "work": "Derive truthful readiness reasons",
+      "status": "PARTIAL",
+      "evidence_or_next": "Truthful sandbox/readiness matrix implemented; live provider observations pending."
+    },
+    {
+      "id": "B07",
+      "work": "Implement revisioned activation/switch",
+      "status": "PARTIAL",
+      "evidence_or_next": "Revisioned explicit sandbox method update; full switching/step-up/atomic receipt still open."
+    },
+    {
+      "id": "B08",
+      "work": "Preserve historical connection drain",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Current checkout rejects key changes; historical credential drain remains."
+    },
+    {
+      "id": "B09",
+      "work": "Handle revoke/disconnect with consequences",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "B10",
+      "work": "Retire ambiguous shared/default grants",
+      "status": "PARTIAL",
+      "evidence_or_next": "Backend, web and shared mobile readiness reject implicit shared/sandbox grants; new stores request online=false. Broader financial route migration remains."
+    },
+    {
+      "id": "C01",
+      "work": "Create canonical settings overview and choices",
+      "status": "PARTIAL",
+      "evidence_or_next": "Canonical settings choices/independent methods; managed connection gated."
+    },
+    {
+      "id": "C02",
+      "work": "Account summary and readiness checklist",
+      "status": "PARTIAL",
+      "evidence_or_next": "Readiness + masked key; provider account/business/bank observations still unconfirmed."
+    },
+    {
+      "id": "C03",
+      "work": "Separate sandbox tools and manual-key fallback",
+      "status": "IMPLEMENTED_LOCAL",
+      "evidence_or_next": "Sandbox-only secondary key/CSV tools, save disables online, client clears secret after confirmation."
+    },
+    {
+      "id": "C04",
+      "work": "Implement provider-hosted managed onboarding",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Provider programme not approved; no onboarding endpoint activated."
+    },
+    {
+      "id": "C05",
+      "work": "Map business details and entity requirements",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Entity-specific requirements depend on approved provider product."
+    },
+    {
+      "id": "C06",
+      "work": "Needs-information/rejection recovery",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "C07",
+      "work": "Protect required document exchange",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Provider-hosted preferred; document retention not authorized or justified yet."
+    },
+    {
+      "id": "C08",
+      "work": "Implement bank summary and provider validation",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "No approved merchant/bank provider references; not fabricated from keys."
+    },
+    {
+      "id": "C09",
+      "work": "Version and secure bank destination changes",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Bank-change authority/terms require accepted provider model."
+    },
+    {
+      "id": "C10",
+      "work": "Accessibility/mobile/responsive QA",
+      "status": "PARTIAL",
+      "evidence_or_next": "Production-built normal-login browser passes actual canonical light/dark switching, keyboard activation, narrow layout and200% zoom. Hosted/accessibility certification remains."
+    },
+    {
+      "id": "D01",
+      "work": "Resolve account from verified cart snapshot",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D02",
+      "work": "Create durable account-bound payment attempt",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D03",
+      "work": "Implement qualified live-account provider execution",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Live collection remains unavailable; existing sandbox path preserved."
+    },
+    {
+      "id": "D04",
+      "work": "Verify payment/order/account/amount binding",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D05",
+      "work": "Unify browser/webhook capture effect",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D06",
+      "work": "Account-scope webhook verification and dedup",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D07",
+      "work": "Normalize Route transfer vs settlement states",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D08",
+      "work": "Handle revoked authorization/capability changes",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D09",
+      "work": "Implement bounded report polling/checkpoints",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "D10",
+      "work": "Regress ten themes, coupon, stock and domains",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Current slice does not qualify all ten themes or hosted branded checkout."
+    },
+    {
+      "id": "E01",
+      "work": "Approve posting map for each account model",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Posting map for approved account model requires finance/provider acceptance."
+    },
+    {
+      "id": "E02",
+      "work": "Remove float/int32 in touched money paths",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "E03",
+      "work": "Enforce zero transaction-rake ratchet",
+      "status": "PARTIAL",
+      "evidence_or_next": "No nonzero fee introduced; Dart display always0%; exhaustive zero-rake ratchet remains."
+    },
+    {
+      "id": "E04",
+      "work": "Import provider settlement/fee/refund evidence",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "E05",
+      "work": "Bind approved transfers to merchant/source",
+      "status": "DECISION_GATED",
+      "evidence_or_next": "Managed Route/destination authorization absent; no global account activated."
+    },
+    {
+      "id": "E06",
+      "work": "Integrate canonical reconciliation and suspense",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "E07",
+      "work": "Build full-population aggregates and cursors",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "E08",
+      "work": "Implement Payouts overview and statement detail",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "E09",
+      "work": "Implement finance export with audit",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "E10",
+      "work": "Add COD remittance distinction",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F01",
+      "work": "Account-bound full/partial refund execution",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F02",
+      "work": "Refund after settlement and transfer reversal",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F03",
+      "work": "Late capture/unknown outcome recovery",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F04",
+      "work": "Dispute and evidence-deadline workflow",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F05",
+      "work": "Money/verification ops exception views",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F06",
+      "work": "Transactional notifications and delivery tracing",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F07",
+      "work": "Integrate independent notification403 prerequisite",
+      "status": "SEPARATE_PREREQUISITE",
+      "evidence_or_next": "Pending notification403 is not silently included or qualified."
+    },
+    {
+      "id": "F08",
+      "work": "Flutter contract and presentation parity",
+      "status": "PARTIAL",
+      "evidence_or_next": "Shared Dart model +16 mobile transport/session checks passed. Method nesting corrected, server readiness used, late account responses fenced, original retry key/revision forwarded. Physical-device acceptance remains."
+    },
+    {
+      "id": "F09",
+      "work": "Production incident and provider escalation runbook",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "F10",
+      "work": "Merchant-facing support/recovery copy",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "G01",
+      "work": "Full integration/property/concurrency suites",
+      "status": "PARTIAL",
+      "evidence_or_next": "Gateway1824/1824, domain readiness6/6, shared Dart7/7, mobile16/16, Merchant66/66, real Worker/database9/9 and production-built browser1/1 passed. Financial/reconciliation programme gates remain."
+    },
+    {
+      "id": "G02",
+      "work": "Full tenant/auth/security suites",
+      "status": "PARTIAL",
+      "evidence_or_next": "Owner revocation, forged context and encrypted context tampering tests pass. All114 structural validators and17 Phase-B mutant tests pass. Full RT1..9/account/webhook gates remain."
+    },
+    {
+      "id": "G03",
+      "work": "Fresh backup restore + migration rehearsal",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "No new schema yet; no fresh hosted export/restore authorized under this programme."
+    },
+    {
+      "id": "G04",
+      "work": "Hosted staging browser/provider journey",
+      "status": "NOT_OBSERVED",
+      "evidence_or_next": "No hosted staging or real provider acceptance under this programme."
+    },
+    {
+      "id": "G05",
+      "work": "CPU/query/provider-rate and UI budgets",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+    },
+    {
+      "id": "G06",
+      "work": "Review exact branch/deployment scope",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "Isolated local branch; no merge/push/deploy authorization or execution."
+    },
+    {
+      "id": "G07",
+      "work": "Authorized live payment and bank settlement",
+      "status": "AUTHORIZATION_GATED",
+      "evidence_or_next": "Live payment/bank transaction not authorized; provider setup absent."
+    },
+    {
+      "id": "G08",
+      "work": "Authorized live refund and receipt verification",
+      "status": "AUTHORIZATION_GATED",
+      "evidence_or_next": "No live refund authorized or executed."
+    },
+    {
+      "id": "G09",
+      "work": "Canary sign-off and cohort expansion",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "No production canary qualified."
+    },
+    {
+      "id": "G10",
+      "work": "Gated removal of obsolete bridges",
+      "status": "NOT_STARTED",
+      "evidence_or_next": "No obsolete financial path removed."
+    }
+  ]
+}

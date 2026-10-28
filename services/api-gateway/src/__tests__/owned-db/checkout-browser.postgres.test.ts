@@ -114,8 +114,9 @@ before(async () => {
         'active','web',now()+interval '1 day');
     `);
 
-    const encrypted = await encryptPaymentSecret(razorpayKeySecret, paymentEncryptionKey);
-    const paymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: { key_id: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'), key_secret_ciphertext: encrypted, test_mode: true, verified: true } };
+    const keyId = ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_');
+    const encrypted = await encryptPaymentSecret(razorpayKeySecret, paymentEncryptionKey, { siteId: site.siteId, keyId, environment: 'sandbox' });
+    const paymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: { key_id: keyId, key_secret_ciphertext: encrypted, test_mode: true, verified: true } };
     owned.psql(`UPDATE sites SET payment_settings='${JSON.stringify(paymentSettings).replaceAll("'", "''")}'::jsonb WHERE id='${site.siteId}';`);
     const keys = await newIdentityKeys();
     const env = gatewayEnv(owned, keys, {

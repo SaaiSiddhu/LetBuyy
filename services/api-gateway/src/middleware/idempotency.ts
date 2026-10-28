@@ -244,7 +244,11 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // Settings/cancellation receipts contain tenant configuration and billing
     // state. Re-verify the live owner before begin() can return an old response,
     // including revocation and signed-store/selection mismatches.
-    if (orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
+    const storeSettingsReceipt = /^\/stores\/[^/]+(?:\/payment-config)?$/.test(orderPath);
+    if (storeSettingsReceipt && siteIdFromStorePath(c.req.path) !== siteId) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+    if (storeSettingsReceipt || orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
         const auth = c.get('auth');
         const db = getSupabaseAdmin(c);
         const customUser = auth?.user ? await resolveCustomUser(db, auth.user) : null;

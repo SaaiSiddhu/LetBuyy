@@ -10,6 +10,7 @@ import {
   SeoSchema,
   StoreAccessModeSchema,
   UuidSchema,
+  SaveStorePaymentConfigSchema,
 } from '@letbuyy/shared-types';
 import type { StoreTemplateConfig } from '@letbuyy/theme-engine';
 
@@ -342,15 +343,7 @@ export const UpdateStoreSchema = z.object({
   online_payment_enabled: z.boolean().optional(),
 });
 
-export const PaymentConfigSchema = z.object({
-  key_id: z
-    .string()
-    .min(8)
-    .max(128)
-    .regex(/^rzp_(test|live)_/, 'Razorpay key id must start with rzp_test_ or rzp_live_'),
-  key_secret: z.string().min(10).max(256),
-  test_mode: z.boolean().default(false),
-});
+export const PaymentConfigSchema = SaveStorePaymentConfigSchema;
 
 export const StartOnboardingSchema = z.object({
   site_type: SiteTypeSchema,

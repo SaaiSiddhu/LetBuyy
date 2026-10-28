@@ -289,7 +289,11 @@ class StoreService extends ChangeNotifier {
 
   /// Update store fields.
   Future<StoreModel> updateStore(String id, Map<String, dynamic> fields) async {
+    final epoch = _sessionEpoch;
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
     final store = StoreModel.fromJson(await _api.stores.update(id, fields));
+    _checkSessionEpoch(epoch);
     final idx = _stores.indexWhere((s) => s.id == id);
     if (idx != -1) _stores[idx] = store;
     if (_currentStore?.id == id) _currentStore = store;
@@ -379,7 +383,13 @@ class StoreService extends ChangeNotifier {
     String id,
     Map<String, dynamic> paymentSettings,
   ) async {
-    return updateStore(id, {'payment_settings': paymentSettings});
+    if (paymentSettings.isEmpty || paymentSettings.entries.any((entry) =>
+        !const {'cod_enabled', 'online_payment_enabled'}.contains(entry.key) || entry.value is! bool)) {
+      throw const FormatException('Choose an online or COD setting to update.');
+    }
+    // These are canonical site method fields. Nesting them inside payment_settings
+    // was ignored by the versioned store update contract and never saved the toggle.
+    return updateStore(id, paymentSettings);
   }
 }
 

@@ -1,4 +1,6 @@
 import { type RazorpayCredentials, verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
+import { deriveStorePaymentSetup } from '@letbuyy/payments';
+import type { StorePaymentConfig, StorePaymentSettings } from '@letbuyy/shared-types';
 
 export type PaymentSettings = {
     mode?: 'shared' | 'ownAccount';
@@ -13,7 +15,7 @@ export type PaymentSettings = {
     };
 };
 
-export type ProviderMode = 'sandbox' | 'live';
+export type ProviderMode = 'sandbox' | 'live' | null;
 
 function base64EncodeBytes(bytes: Uint8Array): string {
     let binary = '';
@@ -34,28 +36,47 @@ async function importPaymentEncryptionKey(secret: string): Promise<CryptoKey> {
     return crypto.subtle.importKey('raw', digest, 'AES-GCM', false, ['encrypt', 'decrypt']);
 }
 
-export async function encryptPaymentSecret(secret: string, encryptionKey: string): Promise<string> {
+export type PaymentSecretContext = { siteId: string; keyId: string; environment: 'sandbox' | 'live' };
+
+function paymentSecretContext(context: PaymentSecretContext, keyVersion: string): Uint8Array {
+    if (!/^[0-9a-f-]{36}$/i.test(context.siteId) || !/^rzp_(test|live)_[A-Za-z0-9]+$/.test(context.keyId)
+        || context.keyId.startsWith('rzp_test_') !== (context.environment === 'sandbox')) {
+        throw new Error('Invalid payment credential context');
+    }
+    return new TextEncoder().encode(JSON.stringify(['letbuyy:store-payment-secret', 2, keyVersion,
+        context.siteId.toLowerCase(), 'razorpay', 'ownAccount', context.keyId, context.environment]));
+}
+
+async function paymentKeyVersion(secret: string): Promise<string> {
+    const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret)));
+    return Array.from(digest.slice(0, 8), byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+/** V2 binds new credentials to their exact tenant, provider key, environment and encryption-key version. */
+export async function encryptPaymentSecret(secret: string, encryptionKey: string, context: PaymentSecretContext): Promise<string> {
+    if (encryptionKey.length < 16) throw new Error('Payment encryption key is unavailable');
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await importPaymentEncryptionKey(encryptionKey);
+    const version = await paymentKeyVersion(encryptionKey);
     const ciphertext = await crypto.subtle.encrypt(
-        { name: 'AES-GCM', iv },
+        { name: 'AES-GCM', iv, additionalData: paymentSecretContext(context, version) },
         key,
         new TextEncoder().encode(secret)
     );
 
-    return `${base64EncodeBytes(iv)}:${base64EncodeBytes(new Uint8Array(ciphertext))}`;
+    return `v2:${version}:${base64EncodeBytes(iv)}:${base64EncodeBytes(new Uint8Array(ciphertext))}`;
 }
 
 export async function verifyRazorpayCredentials(keyId: string, keySecret: string): Promise<boolean> {
     return verifyRazorpayCredentialsWithAdapter({ keyId, keySecret });
 }
 
-export function sanitizePaymentSettings(settings: PaymentSettings | null | undefined) {
+export function sanitizePaymentSettings(settings: PaymentSettings | null | undefined): StorePaymentSettings {
     const razorpay = settings?.razorpay;
 
     return {
-        mode: settings?.mode || 'shared',
-        gateways: settings?.gateways || ['razorpay'],
+        mode: settings?.mode || 'unconfigured',
+        gateways: settings?.gateways || [],
         razorpay: razorpay
             ? {
                 key_id: maskKeyId(razorpay.key_id),
@@ -74,8 +95,10 @@ export function paymentConfigProviderMode(input: {
     settings?: PaymentSettings | null;
 }): ProviderMode {
     const razorpay = input.settings?.razorpay;
-    if (input.onlinePaymentEnabled === false || !razorpay?.key_secret_ciphertext) return 'sandbox';
-    return razorpay.test_mode === false ? 'live' : 'sandbox';
+    if (!razorpay?.key_secret_ciphertext || !razorpay.key_id) return null;
+    if (razorpay.test_mode === true && razorpay.key_id.startsWith('rzp_test_')) return 'sandbox';
+    if (razorpay.test_mode === false && razorpay.key_id.startsWith('rzp_live_')) return 'live';
+    return null;
 }
 
 export function isMissingSitesPaymentColumnError(error: { message?: string } | null | undefined): boolean {
@@ -90,27 +113,62 @@ export function isMissingSitesPaymentColumnError(error: { message?: string } | n
 export function defaultPaymentConfig(storeId: string) {
     return {
         store_id: storeId,
-        online_payment_enabled: true,
-        cod_enabled: true,
-        provider_mode: 'sandbox' as ProviderMode,
+        online_payment_enabled: false,
+        cod_enabled: false,
+        provider_mode: null,
         payment_settings: sanitizePaymentSettings(null),
         schema_ready: false,
+        revision: null,
+        setup: deriveStorePaymentSetup({ schemaReady: false, onlineRequested: false, hasCredentials: false,
+            credentialVerified: false, credentialsUsable: false, environment: null }),
+    };
+}
+
+export type StorePaymentRow = {
+    id: string;
+    payment_settings?: PaymentSettings | null;
+    online_payment_enabled?: boolean | null;
+    cod_enabled?: boolean | null;
+    updated_at?: string | null;
+};
+
+/** Public projection shares the actual hosted test-credential gate; never returns encrypted material. */
+export async function projectStorePaymentConfig(row: StorePaymentRow, encryptionKey?: string): Promise<StorePaymentConfig> {
+    const settings = row.payment_settings;
+    const environment = paymentConfigProviderMode({ settings });
+    const credentialsUsable = Boolean(await readStoreRazorpayTestCredentials(settings, encryptionKey, row.id));
+    return {
+        store_id: row.id,
+        online_payment_enabled: row.online_payment_enabled === true,
+        cod_enabled: row.cod_enabled === true,
+        provider_mode: environment,
+        payment_settings: sanitizePaymentSettings(settings),
+        revision: row.updated_at || null,
+        schema_ready: true,
+        setup: deriveStorePaymentSetup({ schemaReady: true, onlineRequested: row.online_payment_enabled === true,
+            accountMode: settings?.mode, hasCredentials: Boolean(settings?.razorpay?.key_secret_ciphertext),
+            credentialVerified: settings?.razorpay?.verified === true, credentialsUsable, environment }),
     };
 }
 
 /** Reads the existing Merchant-owned encrypted settings; hosted live payments remain gated. */
-export async function readStoreRazorpayTestCredentials(settings: PaymentSettings | null | undefined, encryptionKey: string | undefined): Promise<RazorpayCredentials | null> {
+export async function readStoreRazorpayTestCredentials(settings: PaymentSettings | null | undefined, encryptionKey: string | undefined, siteId: string): Promise<RazorpayCredentials | null> {
     const configured = settings?.razorpay;
-    if (!configured?.verified || configured.test_mode !== true || !configured.key_id?.startsWith('rzp_test_')
+    if (settings?.mode !== 'ownAccount' || !configured?.verified || configured.test_mode !== true || !configured.key_id?.startsWith('rzp_test_')
         || !configured.key_secret_ciphertext || !encryptionKey || encryptionKey.length < 16) return null;
     try {
         const parts = configured.key_secret_ciphertext.split(':');
-        if (parts.length !== 2 || parts[1].length > 4096) return null;
+        const v2 = parts[0] === 'v2';
+        if (!(v2 ? parts.length === 4 : parts.length === 2) || configured.key_secret_ciphertext.length > 4096) return null;
+        if (v2 && parts[1] !== await paymentKeyVersion(encryptionKey)) return null;
         const decode = (value: string) => Uint8Array.from(atob(value), character => character.charCodeAt(0));
-        const iv = decode(parts[0]);
+        const iv = decode(parts[v2 ? 2 : 0]);
         if (iv.length !== 12) return null;
         const key = await importPaymentEncryptionKey(encryptionKey);
-        const bytes = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, decode(parts[1]));
+        // Legacy IV:ciphertext remains read-only for an explicit migration/drain.
+        // It has no authenticated tenant context; do not use this bridge as evidence that B04 is complete.
+        const additionalData = v2 ? paymentSecretContext({ siteId, keyId: configured.key_id, environment: 'sandbox' }, parts[1]) : undefined;
+        const bytes = await crypto.subtle.decrypt({ name: 'AES-GCM', iv, additionalData }, key, decode(parts[v2 ? 3 : 1]));
         const keySecret = new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(bytes);
         if (keySecret.length < 16 || keySecret.length > 256 || /[\s\u0000-\u001f]/.test(keySecret)) return null;
         return { keyId: configured.key_id, keySecret };

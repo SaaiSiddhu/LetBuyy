@@ -10,8 +10,8 @@ type StorePaymentRow = { id: string; payment_settings?: PaymentSettings | null; 
 export async function hostedRazorpayTestCredentials(c: Context<{ Bindings: Env }>, siteId: string, snapshot?: StorePaymentRow): Promise<RazorpayCredentials | null> {
     const { data, error } = snapshot ? { data: snapshot, error: null } : await getSupabaseAdmin(c).from('sites').select('id,payment_settings,online_payment_enabled')
         .eq('id', siteId).is('deleted_at', null).maybeSingle();
-    if (error || !data || data.id !== siteId || data.online_payment_enabled === false) return null;
-    const configured = await readStoreRazorpayTestCredentials(data.payment_settings as PaymentSettings | null, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
+    if (error || !data || data.id !== siteId || data.online_payment_enabled !== true) return null;
+    const configured = await readStoreRazorpayTestCredentials(data.payment_settings as PaymentSettings | null, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, siteId);
     if (configured) return configured;
     // Existing disposable provider fixtures use process-local keys. Production never shares those
     // keys between merchants, or falls back when a merchant's encrypted configuration is invalid.

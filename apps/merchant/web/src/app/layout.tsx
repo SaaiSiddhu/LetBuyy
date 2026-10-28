@@ -40,10 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables} data-theme="light" suppressHydrationWarning>
       <head>
-        <ThemeScript forcedTheme="light" />
+        <ThemeScript defaultTheme="light" />
       </head>
       <body className="antialiased">
-        <LetbuyyThemeProvider surface="admin" forcedTheme="light">
+        <LetbuyyThemeProvider surface="admin" defaultTheme="light">
           {children}
         </LetbuyyThemeProvider>
       </body>

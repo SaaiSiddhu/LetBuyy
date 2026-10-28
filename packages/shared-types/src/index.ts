@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { StorePaymentSetupSchema } from './payment-setup';
 
 export * from './brand';
 export * from './console-overview';
@@ -2147,9 +2148,12 @@ export const SubscriptionVerificationResultSchema = z.object({
   message: z.string().max(500).optional(),
 }).passthrough();
 
+export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema,
+  type StorePaymentSetup, type SaveStorePaymentConfigInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
+
 export const StorePaymentSettingsSchema = z.object({
-  mode: z.enum(['shared', 'ownAccount']).default('shared'),
-  gateways: z.array(z.string().min(1).max(80)).default(['razorpay']),
+  mode: z.enum(['unconfigured', 'shared', 'ownAccount']).default('unconfigured'),
+  gateways: z.array(z.string().min(1).max(80)).default([]),
   razorpay: z.object({
     key_id: z.string().max(120).optional().nullable(),
     test_mode: z.boolean().default(true),
@@ -2162,11 +2166,13 @@ export const StorePaymentSettingsSchema = z.object({
 
 export const StorePaymentConfigSchema = z.object({
   store_id: UuidSchema,
-  online_payment_enabled: z.boolean().default(true),
-  cod_enabled: z.boolean().default(true),
-  provider_mode: z.enum(['sandbox', 'live']).default('sandbox'),
+  online_payment_enabled: z.boolean().default(false),
+  cod_enabled: z.boolean().default(false),
+  provider_mode: z.enum(['sandbox', 'live']).nullable().default(null),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
+  setup: StorePaymentSetupSchema.optional(),
+  revision: z.string().nullable().optional(),
 }).passthrough();
 
 export const EmployeeStatusSchema = z.enum(['invited', 'active', 'inactive', 'removed', 'suspended']);
