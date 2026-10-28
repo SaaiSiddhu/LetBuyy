@@ -298,6 +298,8 @@ owner's first push of `develop`/`staging`/`main` is a fast-forward on every ref.
 
 | Date | Source SHA | Target | Pushed | Owner's word (quoted) | CI run |
 |---|---|---|---|---|---|
+| 2026-10-28 | `736b54ceeccdf58bbe98592ea8c16ee5c5f1fe0d` | `staging` (fast-forward; API-only display hotfix) | yes; GitHub head verified | "Approve this API-only production hotfix (Recommended)"; accepted TEST-R8 hosted staging Merchant sign-in limitation | Integrated governance114; exact staged API bundle eba16267; six hosted staging checks pass. No schema403 or other runtime activation. |
+| 2026-10-28 | `736b54ceeccdf58bbe98592ea8c16ee5c5f1fe0d` | `main` (fast-forward; API-only display hotfix) | yes; GitHub head verified | Same exact API-only production approval | API631da094 exact qualified bytes,64 variables and all bindings/secrets preserved; live signed-in Snaz Domains TXT/CNAME correct, ALIAS absent, SSL active; seven production HTTP checks pass. Final receipt commit is documentation only. |
 | 2026-09-04 | `a751a2ff` | `staging` (created) | no | "Level all three to a751a2ff" (D-BRANCH) | not readable from this machine |
 | 2026-09-04 | `a751a2ff` | `main` (fast-forward from `5c984eaa`) | no | "Level all three to a751a2ff" (D-BRANCH) | not readable from this machine |
 | 2026-10-25 | `b92296e40a3a42e03707ce26bc36b490cd2f00ec` | `staging` (fast-forward; includes final report bookkeeping) | yes; verified on GitHub | "merge every bit of work into develop and verify nothing is lost"; "push all the 3 branches main, staging, and develop to github accordingly" | Account billing blocked jobs before start; current runs 40188003801 / 40188003816 |
