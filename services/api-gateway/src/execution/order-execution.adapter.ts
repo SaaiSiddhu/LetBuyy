@@ -305,6 +305,9 @@ export class OrderExecutionAdapter {
         newStatus: string,
         metadata?: Record<string, unknown>
     ) {
+        if (newStatus === 'refunded') {
+            throw new ValidationError('Complete refunds through the verified refund workflow. Updating fulfilment cannot confirm a refund.');
+        }
         const { data: order } = await this.db
             .from('orders')
             .select('id, store_id, status')

@@ -305,7 +305,7 @@ export const StorefrontRazorpayVerifySchema = z.object({
 export const UpdateOrderStatusSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   status: z.enum([
-    'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded',
+    'confirmed', 'processing', 'shipped', 'delivered', 'cancelled',
   ]),
   tracking_number: z.string().max(100).optional(),
   carrier: z.string().max(100).optional(),
@@ -1656,7 +1656,8 @@ export const VALID_TRANSITIONS: Record<string, string[]> = {
   confirmed: ['processing', 'cancelled'],
   processing: ['shipped', 'cancelled'],
   shipped: ['delivered', 'cancelled'],
-  delivered: ['refunded'],
+  // Refund completion is a verified money workflow, never a fulfilment edit.
+  delivered: [],
   cancelled: [],
   refunded: [],
 };
@@ -1676,14 +1677,10 @@ export function planOrderStatusTransition(
 ): OrderStatusTransitionPlan {
   const allowedTransitions = VALID_TRANSITIONS[currentStatus] || [];
   const allowed = allowedTransitions.includes(newStatus);
+  // Only the canonical verified PSP/COD/refund path may change payment_status.
   const updates: Record<string, unknown> = allowed ? { status: newStatus } : {};
 
-  if (allowed && newStatus === 'delivered') {
-    updates.payment_status = 'paid';
-  }
-
   if (allowed && newStatus === 'cancelled') {
-    updates.payment_status = 'refunded';
     updates.notes = metadata.cancellation_reason || 'Order cancelled';
   }
 

@@ -141,7 +141,7 @@ const DEFAULT_EMAIL_TEMPLATES: Record<string, { subject: string; body: string }>
   },
   order_cancelled: {
     subject: 'Order {{ order_number }} cancelled',
-    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello {{ customer.name }}, your order {{ order_number }} has been cancelled. If you were charged, your refund is being processed.</mj-text></mj-column></mj-section></mj-body></mjml>',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello {{ customer.name }}, your order {{ order_number }} has been cancelled. Payment and refund updates, when applicable, are sent separately.</mj-text></mj-column></mj-section></mj-body></mjml>',
   },
   order_refunded: {
     subject: 'Refund issued for order {{ order_number }}',

@@ -171,10 +171,10 @@ function buildOrderLifecycleEmail(order: OrderRow, kind: OrderLifecycleEmailKind
         return {
             to: recipient,
             subject: safeSubject(`Order ${orderLabel} cancelled`),
-            text: `Hi ${greetingName},\n\nYour LetBuyy order ${orderLabel} has been cancelled. If you were charged, your refund is being processed.`,
+            text: `Hi ${greetingName},\n\nYour LetBuyy order ${orderLabel} has been cancelled. Payment and refund updates, when applicable, are sent separately.`,
             html: renderEmailShell(DEFAULT_EMAIL_BRAND, heading('Your order update') + [
                 `<p>Hi ${escapeHtml(greetingName)},</p>`,
-                `<p>Your LetBuyy order <strong>${escapeHtml(orderLabel)}</strong> has been cancelled. If you were charged, your refund is being processed.</p>`,
+                `<p>Your LetBuyy order <strong>${escapeHtml(orderLabel)}</strong> has been cancelled. Payment and refund updates, when applicable, are sent separately.</p>`,
             ].join(''), {preheader:'An update about your LetBuyy order.',reason:'You received this message about an order placed through LetBuyy.',category:'transactional'}),
             order_id: order.id,
             store_id: order.store_id,

@@ -592,3 +592,8 @@ only; owner theme-allowance decision and hosted rehearsal/staging remain open.
 ### 2026-10-28 — Approved included-theme allowance
 
 Owner approved all ten canonical free built-in designs on every plan, retaining noncatalog custom limits. Paired401 + the existing atomic installer, private create/copy paths and owned allowance UI are implemented on `codex/store-branded-checkout-hosts`; the production design/visibility remains unchanged. Owned7 + historical10 + gateway1818 + Merchant UI18 checks pass; current source qualification/release evidence is in `docs/evidence/storefront-wildcard-checkout-2026-10-27.md`. Hosted schema is399, not401. Original Resend key is sealed in Cloudflare; Queue sending credential requires the owner's private Resend sign-in, not extraction.
+
+
+### 2026-10-28 — Staging401 and payment-truth hold
+
+Schema400–401 and API/Queue4eedf67dd are verified in staging. Both fresh encrypted523-table restores and rollback,114 gates,90 money/tenancy/identity/checkout/domain integration checks and11 staging HTTPS checks passed. Production remains schema399. A subsequent synthetic Gateway repro discovered pre-existing unsupported paid/refunded writes from ordinary fulfilment status edits; the proposed4eed production release is held/withdrawn. Single-agent continuation on `codex/order-lifecycle-settings-repair` removes those writes/false paid events, refuses manual refund completion and corrects cancellation email claims. New4 + canonical refund25 owned checks,1818 Gateway units and14 checkout-core checks pass. Preserve attached branded worktree4eed; no production/historical order has been edited. Full email/settings completion and provider sign-in remain open.

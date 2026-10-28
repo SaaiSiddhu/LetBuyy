@@ -290,10 +290,9 @@ async function emitOrderEvent(
 }
 
 function orderEventsForStatus(status: UpdateOrderStatusInput['status']): OrderEventType[] {
-    if (status === 'delivered') return ['order.delivered', 'order.paid'];
+    if (status === 'delivered') return ['order.delivered'];
     if (status === 'shipped') return ['order.fulfilled'];
     if (status === 'cancelled') return ['order.cancelled'];
-    if (status === 'refunded') return ['order.returned', 'order.refunded'];
     return [];
 }
 
@@ -1066,7 +1065,7 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
             });
         }
         // LB-10 — dispatch the cancelled/refunded customer email (best-effort; never blocks the status change).
-        if (body.status === 'cancelled' || body.status === 'refunded') {
+        if (body.status === 'cancelled') {
             try {
                 await enqueueOrderLifecycleEmail(c.env, db, {
                     orderId,

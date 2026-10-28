@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   CheckoutDeliverySchema,
+  planOrderStatusTransition,
+  UpdateOrderStatusSchema,
   planCouponValidation,
   CheckoutConfirmSchema,
   CheckoutPaymentIntentSchema,
@@ -340,4 +342,13 @@ test('percentage display estimates preserve the percentage divisor and round to 
     const quote=planCouponValidation({code:'SYNTHETIC',type:'percentage',value:percentage},{subtotal});
     assert.equal(quote.coupon.discount,expected);
   }
+});
+
+test('fulfilment edits cannot claim capture, COD collection or refund completion',()=>{
+  for(const target of ['delivered','cancelled']){
+    const plan=planOrderStatusTransition('shipped',target,{payment_status:'paid',refund_status:'refunded'});
+    assert.equal(plan.allowed,true);assert.equal('payment_status' in plan.updates,false);assert.equal('refund_status' in plan.updates,false);
+  }
+  assert.equal(planOrderStatusTransition('delivered','refunded').allowed,false);
+  assert.equal(UpdateOrderStatusSchema.safeParse({status:'refunded',idempotency_key:'forged-refund-status'}).success,false);
 });
