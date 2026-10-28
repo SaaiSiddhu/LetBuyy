@@ -1841,3 +1841,46 @@ export async function verifyBoundDomainReconcileSignature(input: { secret: strin
 }
 
 export * from './merchant-buyer-connection';
+
+export const NOTIFICATION_REQUEST_PATH = '/v1/internal/notification-jobs/execute';
+export const NOTIFICATION_REQUEST_MAX_BYTES = 512_000;
+export const NOTIFICATION_REQUEST_MAX_AGE_MS = 120_000;
+export const NOTIFICATION_INTERNAL_CALLER = 'queue-workers-notifications';
+const VERSION = 'notification-job-request-v1';
+type NotificationRequestEnvironment = 'development' | 'staging' | 'production';
+type NotificationRequestInput = { secret: string | undefined; environment: NotificationRequestEnvironment; method: string; url: string; body: Uint8Array };
+const validNotificationRequestSecret = (secret: string | undefined): secret is string => !!secret && secret.trim().length >= 32 && !/placeholder|replace-with|skip_needs_human/i.test(secret);
+export function isNotificationRequestTarget(method: string, url: string): boolean {
+  try { const u = new URL(url); return method === 'POST' && u.pathname === NOTIFICATION_REQUEST_PATH && !u.search && !u.hash && !u.username && !u.password; }
+  catch { return false; }
+}
+async function notificationRequestSignature(input: NotificationRequestInput, timestamp: string, jti: string) {
+  if (!validNotificationRequestSecret(input.secret) || !isNotificationRequestTarget(input.method, input.url)
+    || !['development', 'staging', 'production'].includes(input.environment) || input.body.byteLength > NOTIFICATION_REQUEST_MAX_BYTES) return null;
+  // Domain separation grants no Identity, app-session or other internal signature.
+  const key = await hmacSha256Hex(input.secret, 'letbuyy:queue-notification-transport:v1');
+  const digest = bytesToHex(await crypto.subtle.digest('SHA-256', new Uint8Array(input.body).buffer));
+  return hmacSha256Hex(key, JSON.stringify([VERSION, NOTIFICATION_INTERNAL_CALLER, 'api-gateway:notification-jobs',
+    input.environment, input.method, NOTIFICATION_REQUEST_PATH, digest, timestamp, jti]));
+}
+export async function createNotificationRequestHeaders(input: NotificationRequestInput & { nowMs?: number; jti?: string }) {
+  const timestamp = String(input.nowMs ?? Date.now()), jti = input.jti ?? crypto.randomUUID();
+  if (!/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)) throw new Error('Invalid notification request metadata');
+  const signed = await notificationRequestSignature(input, timestamp, jti);
+  if (!signed) throw new Error('Notification transport is not configured');
+  return { 'Content-Type': 'application/json', 'X-LetBuyy-Notification-Version': VERSION,
+    'X-LetBuyy-Notification-Environment': input.environment, 'X-LetBuyy-Notification-Timestamp': timestamp,
+    'X-LetBuyy-Notification-JTI': jti, 'X-LetBuyy-Notification-Signature': signed };
+}
+export async function verifyNotificationRequest(input: NotificationRequestInput & { headers: Headers; nowMs?: number }):
+  Promise<{ status: 'accepted'; jti: string } | { status: 'denied' | 'unavailable' }> {
+  if (!validNotificationRequestSecret(input.secret)) return { status: 'unavailable' };
+  const timestamp = input.headers.get('X-LetBuyy-Notification-Timestamp'), jti = input.headers.get('X-LetBuyy-Notification-JTI');
+  if (input.headers.get('X-LetBuyy-Notification-Version') !== VERSION
+    || input.headers.get('X-LetBuyy-Notification-Environment') !== input.environment
+    || !timestamp || !/^\d{13}$/.test(timestamp) || !isSafeLetbuyyInternalJti(jti)
+    || !isFreshLetbuyyInternalTimestamp(timestamp, input.nowMs, NOTIFICATION_REQUEST_MAX_AGE_MS)) return { status: 'denied' };
+  const actual = input.headers.get('X-LetBuyy-Notification-Signature'), expected = await notificationRequestSignature(input, timestamp, jti);
+  return actual && /^[a-f0-9]{64}$/.test(actual) && expected && timingSafeEqualHex(expected, actual)
+    ? { status: 'accepted', jti } : { status: 'denied' };
+}

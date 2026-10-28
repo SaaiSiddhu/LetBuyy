@@ -326,14 +326,14 @@
     {
       "id": "F06",
       "work": "Transactional notifications and delivery tracing",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "Canonical402 durable lifecycle snapshots and403 notification-only API transport locally qualified. Current provider inbox/hosted activation, payment-specific notifications and full checkout acceptance remain."
     },
     {
       "id": "F07",
       "work": "Integrate independent notification403 prerequisite",
-      "status": "SEPARATE_PREREQUISITE",
-      "evidence_or_next": "Pending notification403 is not silently included or qualified."
+      "status": "IMPLEMENTED_LOCAL_PREREQUISITE",
+      "evidence_or_next": "Reviewed403 subset recovered from retained f6d snapshot and qualified afresh:4 real Worker/database source/lease/replay/retry/rollback controls,2 signature tests,83 Queue units,14 lane checks and114 gates. Missing be83 object not claimed recovered. Hosted403 remains a separately named release prerequisite with no current activation approval."
     },
     {
       "id": "F08",
