@@ -1015,16 +1015,27 @@ export const CodReconciliationEntrySchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 }).passthrough();
 
-export const MerchantPayoutListSchema = z.object({
-  payouts: z.array(MerchantPayoutStatementSchema).default([]),
-  summary: z.object({
+export const MerchantPayoutSummarySchema = z.object({
     site_id: UuidSchema,
     currency: CurrencySchema,
-    pending_minor: z.number().int().nonnegative(),
-    processing_minor: z.number().int().nonnegative(),
-    released_minor: z.number().int().nonnegative(),
-    failed_minor: z.number().int().nonnegative(),
+    provider_mode: MerchantPayoutModeSchema,
+    scope: z.literal('all_statements_in_environment'),
+    statement_count: z.number().int().safe().nonnegative(),
+    pending_minor: z.number().int().safe().nonnegative(),
+    processing_minor: z.number().int().safe().nonnegative(),
+    released_minor: z.number().int().safe().nonnegative(),
+    failed_minor: z.number().int().safe().nonnegative(),
+    bank_settlement: z.literal('not_observed'),
     next_payout: MerchantPayoutStatementSchema.optional().nullable(),
+});
+export const MerchantPayoutListSchema = z.object({
+  payouts: z.array(MerchantPayoutStatementSchema),
+  summary: MerchantPayoutSummarySchema,
+  pagination: z.object({
+    limit: z.number().int().min(1).max(50),
+    matching_count: z.number().int().safe().nonnegative(),
+    has_more: z.boolean(),
+    next_cursor: z.string().max(1024).nullable(),
   }),
 });
 

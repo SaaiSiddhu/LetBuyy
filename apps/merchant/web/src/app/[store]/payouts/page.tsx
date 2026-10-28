@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import { MERCHANT_PAYOUT_STATUS_PRESENTATION, MerchantPayoutStatementSchema, presentStatus, type MerchantPayoutStatement } from '@letbuyy/shared-types'
+import { MERCHANT_PAYOUT_STATUS_PRESENTATION, MerchantPayoutListSchema, MerchantPayoutStatementSchema, presentStatus, type MerchantPayoutList, type MerchantPayoutStatement } from '@letbuyy/shared-types'
 import { Banner, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, ProviderModeBadge, Section, Skeleton, StatusPresentationBadge, useToast } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { StepUpDialog, type StepUpResult } from '@/components/security/StepUpDialog'
@@ -44,6 +44,10 @@ export default function PayoutsPage() {
 function PayoutStatements({ store, actorId }: { store: string; actorId: string }) {
     const { notify } = useToast()
     const [payouts, setPayouts] = useState<MerchantPayoutStatement[]>([])
+    const [overview, setOverview] = useState<MerchantPayoutList | null>(null)
+    const [requestedMode, setRequestedMode] = useState<'sandbox' | 'live' | null>(null)
+    const [pageCursors, setPageCursors] = useState<Array<string | null>>([null])
+    const [pageIndex, setPageIndex] = useState(0)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [releasingId, setReleasingId] = useState<string | null>(null)
@@ -66,37 +70,47 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
     const [stepUpOpen, setStepUpOpen] = useState(false)
     const [actionError, setActionError] = useState<string | null>(null)
 
-    const loadPayouts = useCallback(async () => {
+    const loadPayouts = useCallback(async (cursor: string | null = null, targetPage = 0) => {
         const version = ++loadVersion.current
         const current = () => active.current && loadVersion.current === version
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payouts`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
-            const payload = await response.json().catch(() => null) as {
-                data?: { payouts?: unknown }
-                payouts?: unknown
-            } | null
+            const query = new URLSearchParams()
+            if (requestedMode) query.set('mode', requestedMode)
+            if (cursor) query.set('cursor', cursor)
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payouts${query.size ? '?' + query : ''}`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
+            const payload: unknown = await response.json().catch(() => null)
             if (!current()) return
             if (!response.ok) {
                 currentPayouts.current = []
                 setPayouts([])
+                setOverview(null)
                 setError(getErrorMsg(payload, 'Unable to load payouts'))
                 return
             }
-            const parsed = MerchantPayoutStatementSchema.array().safeParse(payload?.data?.payouts ?? payload?.payouts)
-            if (!parsed.success) throw new PayoutReadbackError('Payout statements returned incomplete data. Refresh and retry.')
-            currentPayouts.current = parsed.data
-            setPayouts(parsed.data)
+            const source = payload && typeof payload === 'object' ? payload as { data?: unknown } : null
+            const parsed = MerchantPayoutListSchema.safeParse(source?.data ?? payload)
+            if (!parsed.success || parsed.data.payouts.some(row => row.site_id !== parsed.data.summary.site_id || row.provider_mode !== parsed.data.summary.provider_mode)
+                || (requestedMode && parsed.data.summary.provider_mode !== requestedMode)
+                || parsed.data.pagination.has_more !== Boolean(parsed.data.pagination.next_cursor)) {
+                throw new PayoutReadbackError('Payout statements returned incomplete data. Refresh and retry.')
+            }
+            currentPayouts.current = parsed.data.payouts
+            setPayouts(parsed.data.payouts)
+            setOverview(parsed.data)
+            setPageCursors(previous => targetPage === 0 ? [null] : [...previous.slice(0, targetPage), cursor])
+            setPageIndex(targetPage)
         } catch (cause) {
             if (!current()) return
             currentPayouts.current = []
             setPayouts([])
+            setOverview(null)
             setError(cause instanceof PayoutReadbackError ? cause.message : 'Unable to load payouts')
         } finally {
             if (current()) setLoading(false)
         }
-    }, [store])
+    }, [store, requestedMode])
 
     useEffect(() => {
         active.current = true
@@ -205,9 +219,9 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
         <EmptyState
             icon={<MaterialIcon name={error ? 'error' : 'account_balance'} />}
             title={error ? 'Unable to load payouts' : 'No payout statements yet'}
-            body={error || 'Payout statements will appear here once orders have been paid and processed.'}
+            body={error || 'There are no payout statements in this environment. Review your payment connection and verification status in Payments.'}
             primaryAction={error ? (
-                <Button onClick={loadPayouts}>
+                <Button onClick={() => void loadPayouts()}>
                     <MaterialIcon name="refresh" />
                     Retry
                 </Button>
@@ -221,17 +235,60 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                 recipe="index"
                 eyebrow="Finance"
                 title="Payouts"
-                description="View pending and released payout statements. Release pending payouts after 2FA verification."
+                description="Review payout statements by environment, track release requests and check records that need attention."
                 breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Payouts' }]}
-                secondaryActions={[{ label: 'Orders', href: `/${store}/orders` }]}
+                secondaryActions={[{ label: 'Payment settings', href: `/${store}/settings/payments` }, { label: 'Orders', href: `/${store}/orders` }]}
             />
+
+            <Card>
+                <Section title="Statement overview" description="Totals cover every statement in the selected environment. Bank settlement requires separate provider evidence.">
+                    <div className="mb-[var(--lb-space-4)] flex flex-wrap gap-[var(--lb-space-2)]" role="group" aria-label="Statement environment">
+                        {(['sandbox', 'live'] as const).map(mode => (
+                            <Button key={mode} variant={(requestedMode ?? overview?.summary.provider_mode) === mode ? 'primary' : 'secondary'} disabled={loading || settlingId !== null || requestedMode === mode}
+                                aria-pressed={(requestedMode ?? overview?.summary.provider_mode) === mode}
+                                onClick={() => {
+                                    loadVersion.current += 1
+                                    currentPayouts.current = []
+                                    releaseTarget.current = null
+                                    setStepUpOpen(false)
+                                    setReleasingId(null)
+                                    setPayouts([])
+                                    setOverview(null)
+                                    setLoading(true)
+                                    setRequestedMode(mode)
+                                }}>
+                                {mode === 'sandbox' ? 'Test statements' : 'Live statements'}
+                            </Button>
+                        ))}
+                    </div>
+                    {loading ? <Skeleton variant="table" lines={2} /> : overview ? (
+                        <>
+                            <p className="text-[var(--lb-color-text-subdued)]">{overview.summary.statement_count} statements · <ProviderModeBadge mode={overview.summary.provider_mode} /></p>
+                            <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-[var(--lb-space-4)]">
+                                {([
+                                    ['Pending statements', overview.summary.pending_minor],
+                                    ['Processing statements', overview.summary.processing_minor],
+                                    ['Released statements', overview.summary.released_minor],
+                                    ['Failed statements', overview.summary.failed_minor],
+                                ] as const).map(([label, amount]) => (
+                                    <div key={label} className="lb-rounded-lg border border-[var(--lb-color-border)] p-[var(--lb-space-4)]">
+                                        <dt className="text-[var(--lb-color-text-subdued)]">{label}</dt>
+                                        <dd className="m-0 mt-[var(--lb-space-2)] break-words text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">{currency(amount)}</dd>
+                                    </div>
+                                ))}
+                            </dl>
+                            <p className="mb-0 text-[var(--lb-color-text-subdued)]">Bank settlement: not confirmed. Test statements use synthetic money.</p>
+                        </>
+                    ) : <p role="status">Statement totals are unavailable. Retry loading to confirm the current records.</p>}
+                </Section>
+            </Card>
 
             <Card>
                 <Section
                     title="Payout statements"
                     description={`${payouts.length} statement${payouts.length === 1 ? '' : 's'} in the current view.`}
                     action={(
-                        <Button variant="secondary" onClick={loadPayouts}>
+                        <Button variant="secondary" onClick={() => void loadPayouts()}>
                             <MaterialIcon name="sync" />
                             Refresh
                         </Button>
@@ -252,9 +309,9 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                             {payouts.map((payout) => (
                                 <div
                                     key={payout.id}
-                                    className="grid gap-[var(--lb-space-3)] lb-rounded-lg border border-[var(--lb-color-border)] p-[var(--lb-space-4)] md:grid-cols-[minmax(0,1fr)_auto_auto_auto]  md:items-center"
+                                    className="flex flex-wrap items-center gap-[var(--lb-space-3)] lb-rounded-lg border border-[var(--lb-color-border)] p-[var(--lb-space-4)]"
                                 >
-                                    <div className="grid gap-[var(--lb-space-1)]">
+                                    <div className="grid min-w-0 flex-[1_1_16rem] gap-[var(--lb-space-1)] break-words">
                                         <p className="m-0 font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
                                             {payout.statement_number}
                                         </p>
@@ -275,7 +332,7 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                                         )}
                                     </div>
 
-                                    <div className="text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                    <div className="shrink-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
                                         Net {currency(payout.net_amount_minor)}
                                     </div>
 
@@ -308,6 +365,17 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                         </div>
                     )}
                 </Section>
+                {overview && (
+                    <div className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)] border-t border-[var(--lb-color-border)] p-[var(--lb-space-4)]">
+                        <p className="m-0 text-[var(--lb-color-text-subdued)]">{overview.pagination.matching_count} matching statements · Page {pageIndex + 1} of {Math.max(1, Math.ceil(overview.pagination.matching_count / overview.pagination.limit))}</p>
+                        <div className="flex gap-[var(--lb-space-2)]">
+                            <Button variant="secondary" disabled={loading || settlingId !== null || pageIndex === 0}
+                                onClick={() => void loadPayouts(pageCursors[pageIndex - 1] ?? null, pageIndex - 1)}>Previous</Button>
+                            <Button variant="secondary" disabled={loading || settlingId !== null || !overview.pagination.has_more}
+                                onClick={() => void loadPayouts(overview.pagination.next_cursor, pageIndex + 1)}>Next</Button>
+                        </div>
+                    </div>
+                )}
             </Card>
 
             <StepUpDialog

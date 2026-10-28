@@ -15,6 +15,7 @@ import {
     type PayoutTransferMode,
 } from '@letbuyy/infrastructure/payout-transfer-adapter';
 import { isLivePASplitProviderReady, requireZeroPlatformTransactionFee } from '@letbuyy/payments';
+import { MerchantPayoutListSchema, MerchantPayoutStatementSchema, MerchantPayoutSummarySchema } from '@letbuyy/shared-types';
 import {
     type SettlementLedgerLine,
 } from '@letbuyy/billing-core';
@@ -27,8 +28,13 @@ const StoreQuerySchema = z.object({
 
 const ListPayoutsQuerySchema = StoreQuerySchema.extend({
     status: z.enum(['pending', 'processing', 'released', 'failed']).optional(),
+    mode: z.enum(['sandbox','live']).optional(),
     limit: z.coerce.number().int().min(1).max(50).default(25),
+    cursor: z.string().min(1).max(1024).optional(),
 });
+const PayoutSummaryQuerySchema = StoreQuerySchema.extend({mode:z.enum(['sandbox','live']).optional()});
+const PayoutCursorSchema = z.object({site_id:z.string().uuid(),mode:z.enum(['sandbox','live']),
+    status:z.enum(['pending','processing','released','failed']).nullable(),created_at:z.string().datetime({offset:true}),id:z.string().uuid()}).strict();
 
 const CreatePayoutStatementSchema = StoreQuerySchema.extend({
     idempotency_key: z.string().min(8).max(160),
@@ -451,48 +457,42 @@ async function ensurePayoutStatementEffects(
     return canonicalLedgerTransactionId;
 }
 
-function summarize(siteId: string, rows: PayoutStatementRow[], providerMode: PayoutTransferMode) {
-    const totals = rows.reduce((acc, row) => {
-        const key = `${row.status}_minor` as keyof typeof acc;
-        acc[key] += Number(row.net_amount_minor || 0);
-        return acc;
-    }, {
-        pending_minor: 0,
-        processing_minor: 0,
-        released_minor: 0,
-        failed_minor: 0,
-    });
-    const next = rows
-        .filter((row) => row.status === 'pending' || row.status === 'processing')
-        .sort((a, b) => String(a.available_on || a.created_at || '').localeCompare(String(b.available_on || b.created_at || '')))[0] || null;
-
-    return {
-        site_id: siteId,
-        currency: 'INR',
-        provider_mode: providerMode,
-        ...totals,
-        next_payout: next ? serializePayout(next) : null,
-    };
-}
-
-async function loadPayoutRows(
+async function readPayoutPage(
     db: ReturnType<typeof getSupabaseAdmin>,
     siteId: string,
-    status?: string,
-    limit = 25,
-): Promise<PayoutStatementRow[]> {
-    let query = db
-        .from('payout_statements')
-        .select('*')
-        .eq('site_id', siteId)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-    if (status) query = query.eq('status', status);
-    const { data, error } = await query;
-    if (error) throw new Error(`Payout statement lookup failed: ${error.message}`);
-    return (data || []) as unknown as PayoutStatementRow[];
+    mode: PayoutTransferMode,
+    query: {status?:ListPayoutsQuery['status'];limit:number;cursor?:string},
+) {
+    let cursor:z.infer<typeof PayoutCursorSchema>|undefined;
+    if(query.cursor) {
+        try {
+            cursor=PayoutCursorSchema.parse(JSON.parse(atob(query.cursor.replaceAll('-','+').replaceAll('_','/'))));
+            if(cursor.site_id!==siteId || cursor.mode!==mode || cursor.status!==(query.status??null)) throw new Error('scope');
+        } catch { throw new AppError('Reload the statement list before continuing.',400,'PAYOUT_CURSOR_INVALID'); }
+    }
+    const {data,error}=await db.rpc('read_payout_statement_page_v1',{
+        p_site_id:siteId,p_mode:mode,p_limit:query.limit,p_status:query.status??null,
+        p_before_created_at:cursor?.created_at??null,p_before_id:cursor?.id??null,
+    });
+    const read=z.object({payouts:MerchantPayoutStatementSchema.array(),summary:MerchantPayoutSummarySchema,
+        pagination:z.object({limit:z.number().int(),matching_count:z.number().int().safe().nonnegative(),has_more:z.boolean()}),
+        next_position:z.object({created_at:z.string().datetime({offset:true}),id:z.string().uuid()}).nullable(),
+    }).safeParse(data);
+    if(error || !read.success || read.data.summary.site_id!==siteId || read.data.summary.provider_mode!==mode
+        || read.data.payouts.some(row=>row.site_id!==siteId || row.provider_mode!==mode || row.currency!=='INR' || (query.status && row.status!==query.status))
+        || (read.data.summary.next_payout && (read.data.summary.next_payout.site_id!==siteId || read.data.summary.next_payout.provider_mode!==mode))
+        || read.data.pagination.limit!==query.limit || read.data.payouts.length>query.limit
+        || read.data.pagination.has_more!==Boolean(read.data.next_position)) {
+        throw new AppError('Payout statements are temporarily unavailable. Retry loading.',503,'PAYOUT_READ_UNAVAILABLE');
+    }
+    const next=read.data.next_position;
+    const nextCursor=next?btoa(JSON.stringify({site_id:siteId,mode,status:query.status??null,...next})).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,''):null;
+    return MerchantPayoutListSchema.parse({
+        payouts:read.data.payouts.map(row=>serializePayout(row as unknown as PayoutStatementRow)),
+        summary:{...read.data.summary,next_payout:read.data.summary.next_payout
+            ?serializePayout(read.data.summary.next_payout as unknown as PayoutStatementRow):null},
+        pagination:{...read.data.pagination,next_cursor:nextCursor},
+    });
 }
 
 async function loadExistingSourceOrderIds(db: ReturnType<typeof getSupabaseAdmin>, siteId: string): Promise<Set<string>> {
@@ -560,21 +560,18 @@ router.get('/', validate('query', ListPayoutsQuerySchema), async (c) => {
     const query = c.get('validatedQuery') as ListPayoutsQuery;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
-    const rows = await loadPayoutRows(db, tenant.siteId, query.status, query.limit);
-
-    return c.json(success({
-        payouts: rows.map(serializePayout),
-        summary: summarize(tenant.siteId, rows, payoutMode(c.env)),
-    }));
+    const page=await readPayoutPage(db,tenant.siteId,query.mode??payoutMode(c.env),query);
+    c.header('Cache-Control','no-store');
+    return c.json(success(page));
 });
 
-router.get('/summary', validate('query', StoreQuerySchema), async (c) => {
-    const query = c.get('validatedQuery') as z.infer<typeof StoreQuerySchema>;
+router.get('/summary', validate('query', PayoutSummaryQuerySchema), async (c) => {
+    const query = c.get('validatedQuery') as z.infer<typeof PayoutSummaryQuerySchema>;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
-    const rows = await loadPayoutRows(db, tenant.siteId, undefined, 100);
-
-    return c.json(success(summarize(tenant.siteId, rows, payoutMode(c.env))));
+    const page=await readPayoutPage(db,tenant.siteId,query.mode??payoutMode(c.env),{limit:1});
+    c.header('Cache-Control','no-store');
+    return c.json(success(page.summary));
 });
 
 router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {

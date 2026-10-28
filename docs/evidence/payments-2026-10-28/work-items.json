@@ -272,14 +272,14 @@
     {
       "id": "E07",
       "work": "Build full-population aggregates and cursors",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "407 reads existing statement pages and full-population aggregates in one database snapshot, scoped to site/environment with tied-date keyset pagination.125 records traverse8 pages without loss; environment/filter/role/GUC/cursor/rollback/currency controls pass. Normal signed-in Merchant/API/database page, complete summary and Test/Live reset pass. Wider capture/settlement/reconciliation population imports remain."
     },
     {
       "id": "E08",
       "work": "Implement Payouts overview and statement detail",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "Existing Payouts page now consumes canonical full totals, shows Pending/Processing/Released/Failed statement totals, environment controls, Previous/Next, setup link and explicit unconfirmed bank settlement.23 release/MFA/retry/actor/status component tests,59 read-lifecycle tests and normal built browser pass. Visual200% overlap was fixed with content wrapping and stronger internal overlap checks. Full provider/bank evidence and statement transaction-detail work remain."
     },
     {
       "id": "E09",
@@ -357,7 +357,7 @@
       "id": "G01",
       "work": "Full integration/property/concurrency suites",
       "status": "PARTIAL",
-      "evidence_or_next": "Gateway1824/1824, domain readiness6/6, shared Dart7/7, mobile16/16, Merchant66/66, real Worker/database9/9 and production-built browser1/1 passed. Financial/reconciliation programme gates remain. E03 domain ratchet and4 owned database cases pass. Broader checkout baseline and candidate both3pass/1fail on missing email queue assertion; full checkout is not green. 405 Gateway1825, owned13 and normal Merchant browser1 pass; guarded DOWN/up and final114 structural validators pass. Full checkout/financial/provider acceptance remains open."
+      "evidence_or_next": "Current Gateway1827 units,16 focused money cases,106 actual DB amounts,12 late-capture DB,4 Commerce browser,3 complete payout read DB,23 payout component and59 read-lifecycle controls pass. Normal production-built Merchant payout browser including retained MFA/recovery controls passes. Full financial/reconciliation/provider/hosted programme gates remain."
     },
     {
       "id": "G02",
@@ -380,8 +380,8 @@
     {
       "id": "G05",
       "work": "CPU/query/provider-rate and UI budgets",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "Payout list/summary use one bounded page/full-aggregate database snapshot and explicit page limit1..50, indexed site/environment keyset.125 synthetic statements prove formerly capped populations are complete. Narrow desktop/mobile390px and200% layout checked; no hosted CPU/provider-rate/load acceptance yet."
     },
     {
       "id": "G06",

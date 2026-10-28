@@ -27,6 +27,21 @@ function statement(status = 'pending', providerMode = 'sandbox') {
             ? { release_idempotency_key: fixtureClaimKey, release_claimed_by: actorId } : {},
     }
 }
+// Explicit current list fixtures: these cases model a complete one-page read.
+// Global aggregate/pagination behavior has separate cases below and owned SQL controls.
+function payoutPage(payouts: ReturnType<typeof statement>[]) {
+    const totals = { pending_minor: 0, processing_minor: 0, released_minor: 0, failed_minor: 0 }
+    for (const row of payouts) {
+        if (row.status in { pending: 1, processing: 1, released: 1, failed: 1 }) {
+            totals[(row.status + '_minor') as keyof typeof totals] += row.net_amount_minor
+        }
+    }
+    return { data: { payouts, summary: { site_id: payouts[0]?.site_id ?? siteId, currency: 'INR',
+        provider_mode: payouts[0]?.provider_mode ?? 'sandbox', scope: 'all_statements_in_environment',
+        statement_count: payouts.length, bank_settlement: 'not_observed', next_payout: null, ...totals },
+        pagination: { limit: 25, matching_count: payouts.length, has_more: false, next_cursor: null } } }
+}
+
 function deferred<T>() {
     let resolve!: (value: T) => void
     const promise = new Promise<T>(done => { resolve = done })
@@ -106,17 +121,73 @@ function securityResponse(url: string, init?: RequestInit) {
 
 test('mounted statement page recognizes each statement state and provider mode, with protected pending controls', async () => {
     const states = ['pending', 'processing', 'released', 'failed']
-    const fixture = await mount(async (url, init) => securityResponse(url, init) ?? Response.json({ data: { payouts: states.map((status, i) => ({ ...statement(status, i % 2 ? 'live' : 'sandbox'), id: `${i+1}1111111-1111-4111-8111-111111111111`, statement_number: `PYT-${status}` })) } }))
+    const fixture = await mount(async (url, init) => securityResponse(url, init) ?? Response.json(payoutPage(states.map((status, i) => ({ ...statement(status, url.includes('mode=live') ? 'live' : 'sandbox'), id: `${i+1}1111111-1111-4111-8111-111111111111`, statement_number: `PYT-${status}` })))))
     try {
         assert.doesNotMatch(fixture.container.textContent!, /Unknown:/)
         assert.match(fixture.container.textContent!, /Pending/)
         assert.match(fixture.container.textContent!, /Released/)
         assert.equal(fixture.buttons().filter(item => item.textContent?.trim() === 'Release').length, 1)
-        assert.equal(fixture.container.querySelectorAll('[data-provider-mode="sandbox"]').length, 2)
-        assert.equal(fixture.container.querySelectorAll('[data-provider-mode="live"]').length, 2)
+        assert.equal(fixture.container.querySelectorAll('[data-provider-mode="sandbox"]').length, 5)
+        assert.equal(fixture.container.querySelectorAll('[data-provider-mode="live"]').length, 0)
+        await fixture.click('Live statements')
+        assert.equal(fixture.container.querySelectorAll('[data-provider-mode="live"]').length, 5)
+        assert.equal(fixture.container.querySelectorAll('[data-provider-mode="sandbox"]').length, 0)
         await fixture.click('Release')
         assert.ok(fixture.container.querySelector('[role="dialog"]'), 'release opens existing verification dialog')
         assert.ok(fixture.container.querySelector('input[autocomplete="one-time-code"]'))
+    } finally { await fixture.close() }
+})
+
+test('overview uses the complete server population, pages both ways, and resets safely when selecting live statements', async () => {
+    const queries: string[] = []
+    const fixture = await mount(async (url, init) => {
+        const security = securityResponse(url, init)
+        if (security) return security
+        queries.push(url)
+        const query = new URL(url, 'https://merchant.example.test').searchParams
+        if (query.get('mode') === 'live') return Response.json({ data: { ...payoutPage([]).data,
+            summary: { ...payoutPage([]).data.summary, provider_mode: 'live' } } })
+        const second = query.has('cursor')
+        const row = { ...statement(), statement_number: second ? 'PYT-PAGE-2' : 'PYT-PAGE-1' }
+        const packet = payoutPage([row])
+        return Response.json({ data: { ...packet.data,
+            summary: { ...packet.data.summary, statement_count: 125, pending_minor: 3100000000 },
+            pagination: { limit: 25, matching_count: 125, has_more: !second, next_cursor: second ? null : 'synthetic-page-two' } } })
+    })
+    try {
+        assert.match(fixture.container.textContent!, /125 statements/)
+        const pending = [...fixture.container.querySelectorAll('dl > div')].find(row => row.querySelector('dt')?.textContent === 'Pending statements')
+        assert.equal(pending?.querySelector('dd')?.textContent, '₹3,10,00,000.00', 'the first displayed row cannot become the global total')
+        assert.match(fixture.container.textContent!, /Bank settlement: not confirmed/)
+        assert.match(fixture.container.textContent!, /Page 1 of 5/)
+        await fixture.click('Next')
+        assert.match(queries.at(-1)!, /cursor=synthetic-page-two/)
+        assert.match(fixture.container.textContent!, /PYT-PAGE-2/)
+        assert.match(fixture.container.textContent!, /Page 2 of 5/)
+        await fixture.click('Previous')
+        assert.doesNotMatch(queries.at(-1)!, /cursor=/)
+        assert.match(fixture.container.textContent!, /PYT-PAGE-1/)
+        await fixture.click('Live statements')
+        assert.match(queries.at(-1)!, /mode=live/)
+        assert.doesNotMatch(queries.at(-1)!, /cursor=/)
+        assert.match(fixture.container.textContent!, /Page 1 of 1/)
+        assert.doesNotMatch(fixture.container.textContent!, /Page 1 of 0|PYT-PAGE|3,10,00,000/)
+        assert.equal(fixture.buttons().some(button => button.textContent?.trim() === 'Release'), false)
+    } finally { await fixture.close() }
+})
+
+test('incomplete or failed totals clear old financial facts instead of displaying fabricated zero balances', async () => {
+    let reads = 0
+    const fixture = await mount(async (url, init) => securityResponse(url, init) ?? (++reads === 1
+        ? Response.json(payoutPage([statement()]))
+        : Response.json({ data: { payouts: [] } })))
+    try {
+        assert.equal(fixture.container.querySelectorAll('dl > div').length, 4)
+        await fixture.click('Refresh')
+        assert.equal(fixture.container.querySelectorAll('dl > div').length, 0)
+        assert.match(fixture.container.textContent!, /Statement totals are unavailable/)
+        assert.match(fixture.container.textContent!, /incomplete data/)
+        assert.equal(fixture.buttons().some(button => button.textContent?.trim() === 'Release'), false)
     } finally { await fixture.close() }
 })
 
@@ -133,7 +204,7 @@ test('processing is truthful and a response-loss retry preserves the same intent
             current = statement(attempts === 2 ? 'processing' : 'released')
             return Response.json({ data: current })
         }
-        return Response.json({ data: { payouts: [current] } })
+        return Response.json(payoutPage([current]))
     })
     try {
         for (let i = 0; i < 3; i++) {
@@ -160,7 +231,7 @@ test('processing is truthful and a response-loss retry preserves the same intent
 
 test('an HTTP success containing failed or foreign statement data never announces release', async () => {
     for (const response of [{ ...statement('failed'), failure_reason: 'Synthetic provider denial' }, { ...statement('released'), id: '99999999-9999-4999-8999-999999999999' }]) {
-        const fixture = await mount(async (url, init) => securityResponse(url, init) ?? (init?.method === 'POST' ? Response.json({ data: response }) : Response.json({ data: { payouts: [statement('processing')] } })))
+        const fixture = await mount(async (url, init) => securityResponse(url, init) ?? (init?.method === 'POST' ? Response.json({ data: response }) : Response.json(payoutPage([statement('processing')]))))
         try {
             await fixture.release(); await fixture.approve()
             assert.doesNotMatch(fixture.container.textContent!, /Payout released|Release recorded/)
@@ -178,9 +249,9 @@ test('store/account switch fences delayed settle completion and clears the old d
         if (init?.method === 'POST') return settle.promise
         if (url.includes('/alpha/')) {
             alphaCalls += 1
-            return Response.json({ data: { payouts: [statement('processing')] } })
+            return Response.json(payoutPage([statement('processing')]))
         }
-        return Response.json({ data: { payouts: [{ ...statement('released'), statement_number: 'PYT-BETA' }] } })
+        return Response.json(payoutPage([{ ...statement('released'), statement_number: 'PYT-BETA' }]))
     })
     try {
         await fixture.release(); await fixture.approve()
@@ -200,12 +271,12 @@ test('late list readback cannot cross a store switch or a same-store actor switc
         let reads = 0
         const fixture = await mount(async () => {
             reads += 1
-            return reads === 1 ? old.promise : Response.json({ data: { payouts: [{ ...statement('released'), statement_number: 'PYT-CURRENT-ACTOR' }] } })
+            return reads === 1 ? old.promise : Response.json(payoutPage([{ ...statement('released'), statement_number: 'PYT-CURRENT-ACTOR' }]))
         })
         try {
             await fixture.render(store, '44444444-4444-4444-8444-444444444444')
             assert.match(fixture.container.textContent!, /PYT-CURRENT-ACTOR/)
-            await act(async () => old.resolve(Response.json({ data: { payouts: [statement()] } })))
+            await act(async () => old.resolve(Response.json(payoutPage([statement()]))))
             assert.match(fixture.container.textContent!, /PYT-CURRENT-ACTOR/)
             assert.doesNotMatch(fixture.container.textContent!, /PYT-ALPHA/)
         } finally { await fixture.close() }
@@ -227,7 +298,7 @@ test('denied approval retries with fresh proof and the same action key; an in-fl
             requests.push(init)
             return requests.length === 1 ? Response.json({ error: { message: 'Fresh verification required.' } }, { status: 428 }) : completion.promise
         }
-        return Response.json({ data: { payouts: [statement('processing')] } })
+        return Response.json(payoutPage([statement('processing')]))
     })
     try {
         await fixture.release(); await fixture.approve()
@@ -270,11 +341,11 @@ test('manual and provider-classified statements describe recorded outcomes witho
                     current = { ...current, status: outcome }
                     return Response.json({ data: current })
                 }
-                return Response.json({ data: { payouts: [current] } })
+                return Response.json(payoutPage([current]))
             })
             try {
                 await fixture.release(); await fixture.approve()
-                assert.equal(fixture.container.querySelectorAll('[data-provider-mode="sandbox"]').length, 1)
+                assert.equal(fixture.container.querySelectorAll('[data-provider-mode="sandbox"]').length, 2, 'statement and complete overview both label their environment')
                 assert.doesNotMatch(fixture.container.textContent!, /provider reports|provider has not confirmed|provider reported|settled to.*bank/i)
                 if (outcome === 'released') {
                     assert.match(fixture.container.textContent!, /The statement records this payout as released\./)
@@ -307,7 +378,7 @@ for (const initialOutcome of ['processing-response', 'committed-response-loss'] 
                     return Response.json({ data: { step_up_token: `synthetic-recovery-proof-${proofs}`, verified_at: '2026-10-16T10:00:00.000Z' } })
                 }
                 if (security) return security
-                if (init?.method !== 'POST') return Response.json({ data: { payouts: [current] } })
+                if (init?.method !== 'POST') return Response.json(payoutPage([current]))
                 requests.push(init)
                 const body = JSON.parse(String(init.body))
                 assert.equal(new Headers(init.headers).get('X-Idempotency-Key'), body.idempotency_key)
@@ -369,7 +440,7 @@ test('processing claims with missing, malformed or foreign evidence never submit
             const security = securityResponse(url, init)
             if (security) return security
             if (init?.method === 'POST') { commands += 1; throw new Error('unresolved claim must not submit') }
-            return Response.json({ data: { payouts: [{ ...statement('processing'), metadata }] } })
+            return Response.json(payoutPage([{ ...statement('processing'), metadata }]))
         })
         try {
             await fixture.release(); await fixture.approve()
@@ -386,7 +457,7 @@ test('processing recovery accepts both existing route key-length boundaries with
         const keys: string[] = []
         const fixture = await mount(async (url, init) => securityResponse(url, init) ?? (init?.method === 'POST'
             ? (keys.push(JSON.parse(String(init.body)).idempotency_key), Response.json({ data: current }))
-            : Response.json({ data: { payouts: [current] } })))
+            : Response.json(payoutPage([current]))))
         try {
             await fixture.release(); await fixture.approve()
             assert.deepEqual(keys, [key])
@@ -403,7 +474,7 @@ test('missing canonical processing evidence refuses even when an old component c
             commands += 1; current = { ...statement('processing'), metadata: {} }
             throw new Error('Synthetic reply lost; canonical claim readback incomplete')
         }
-        return Response.json({ data: { payouts: [current] } })
+        return Response.json(payoutPage([current]))
     })
     try {
         await fixture.release(); await fixture.approve(); await fixture.click('Refresh')
@@ -424,7 +495,7 @@ test('current canonical processing claim wins over a conflicting earlier in-memo
             current = { ...statement('processing'), metadata: { release_idempotency_key: canonicalKey, release_claimed_by: actorId } }
             return keys.length === 1 ? Response.json({ error: { message: 'Another tab claimed this statement. Refresh it.' } }, { status: 409 }) : Response.json({ data: current })
         }
-        return Response.json({ data: { payouts: [current] } })
+        return Response.json(payoutPage([current]))
     })
     try {
         await fixture.release(); await fixture.approve(); await fixture.click('Refresh')
@@ -446,7 +517,7 @@ test('a current readback target change while MFA is pending cannot redirect the 
             if (security) return security
             if (init?.method === 'POST') { commands += 1; throw new Error('changed target must not submit') }
             reads += 1
-            return Response.json({ data: { payouts: reads === 1 ? [statement('processing')] : replacement } })
+            return Response.json(payoutPage(reads === 1 ? [statement('processing')] : replacement))
         })
         try {
             await fixture.release(); await fixture.approve(); await fixture.click('Refresh')
@@ -467,11 +538,11 @@ test('an out-of-order list completion cannot replace the latest canonical proces
         const security = securityResponse(url, init); if (security) return security
         if (init?.method === 'POST') { keys.push(JSON.parse(String(init.body)).idempotency_key); return Response.json({ data: current }) }
         reads += 1
-        return reads === 1 ? old.promise : Response.json({ data: { payouts: [current] } })
+        return reads === 1 ? old.promise : Response.json(payoutPage([current]))
     })
     try {
         await fixture.click('Refresh')
-        await act(async () => old.resolve(Response.json({ data: { payouts: [statement('processing')] } })))
+        await act(async () => old.resolve(Response.json(payoutPage([statement('processing')]))))
         await fixture.release(); await fixture.approve()
         assert.deepEqual(keys, [canonicalKey])
         assert.match(fixture.container.textContent!, /Payout processing/)
@@ -497,7 +568,7 @@ test('released acknowledgements must match actor, site, statement and command be
                 if (keys.length === 1) return Response.json({ data: alter(released) })
                 current = released; return Response.json({ data: released })
             }
-            return Response.json({ data: { payouts: [current] } })
+            return Response.json(payoutPage([current]))
         })
         try {
             await fixture.release(); await fixture.approve()
@@ -517,7 +588,7 @@ test('late release acknowledgement cannot cross a newer site or command readback
             const security = securityResponse(url, init); if (security) return security
             if (init?.method === 'POST') return completion.promise
             reads += 1
-            return Response.json({ data: { payouts: reads === 1 ? [statement('processing')] : [changed] } })
+            return Response.json(payoutPage(reads === 1 ? [statement('processing')] : [changed]))
         })
         try {
             await fixture.release(); await fixture.approve(); await fixture.click('Refresh')
@@ -540,8 +611,8 @@ test('actor and store A-to-B-to-A keeps a fresh component claim isolated from th
             requests.push(JSON.parse(String(init.body)).idempotency_key)
             return requests.length === 1 ? old.promise : Response.json({ data: returned })
         }
-        if (url.includes('/alpha/')) { alphaReads += 1; return Response.json({ data: { payouts: alphaReads === 1 ? [statement('processing')] : [returned] } }) }
-        return Response.json({ data: { payouts: [] } })
+        if (url.includes('/alpha/')) { alphaReads += 1; return Response.json(payoutPage(alphaReads === 1 ? [statement('processing')] : [returned])) }
+        return Response.json(payoutPage([]))
     })
     try {
         await fixture.release(); await fixture.approve()

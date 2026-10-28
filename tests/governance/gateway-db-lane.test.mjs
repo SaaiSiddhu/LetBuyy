@@ -119,6 +119,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "pantry-variant-facts.postgres.test.ts",
         "payment-credential-history.postgres.test.ts",
         "payment-order-amounts.postgres.test.ts",
+        "payout-complete-read.postgres.test.ts",
         "platform-approval-browser.postgres.test.ts",
         "platform-approval-roles.postgres.test.ts",
         "platform-approval-workflow.postgres.test.ts",
