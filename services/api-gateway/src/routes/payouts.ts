@@ -14,7 +14,7 @@ import {
     type MerchantPayoutRail,
     type PayoutTransferMode,
 } from '@letbuyy/infrastructure/payout-transfer-adapter';
-import { isLivePASplitProviderReady } from '@letbuyy/payments';
+import { isLivePASplitProviderReady, requireZeroPlatformTransactionFee } from '@letbuyy/payments';
 import {
     type SettlementLedgerLine,
 } from '@letbuyy/billing-core';
@@ -549,7 +549,11 @@ async function loadCommissionBps(db: ReturnType<typeof getSupabaseAdmin>, siteId
         .maybeSingle();
 
     if (error) throw new Error(`Commission schedule lookup failed: ${error.message}`);
-    return Number((data as { commission_bps?: number } | null)?.commission_bps ?? 0);
+    try {
+        return requireZeroPlatformTransactionFee((data as { commission_bps?: number } | null)?.commission_bps ?? 0);
+    } catch {
+        throw new AppError('The saved transaction-fee schedule needs review before a new statement can be created. No statement was created.', 409, 'TRANSACTION_FEE_POLICY_CONFLICT');
+    }
 }
 
 router.get('/', validate('query', ListPayoutsQuerySchema), async (c) => {
@@ -627,8 +631,8 @@ router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {
     }
 
     const commissionBps = await loadCommissionBps(db, tenant.siteId);
-    const platformFeeMinor = Math.round(grossAmountMinor * commissionBps / 10000);
-    const taxMinor = Math.round(platformFeeMinor * 1800 / 10000);
+    const platformFeeMinor = 0;
+    const taxMinor = 0;
     const netAmountMinor = Math.max(0, grossAmountMinor - platformFeeMinor - taxMinor);
     const now = new Date();
     const mode = payoutMode(c.env);

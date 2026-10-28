@@ -1,4 +1,6 @@
 import { Hono } from 'hono';
+import { requireZeroPlatformTransactionFee } from '@letbuyy/payments';
+import { AppError } from '../lib/errors';
 import { z } from 'zod';
 import type { Env } from '../index';
 import { planSettlementLedgerPosting, type SettlementLedgerLine } from '@letbuyy/billing-core';
@@ -262,6 +264,9 @@ router.post('/reconcile', validate('json', ReconcileCommissionSchema), async (c)
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
     const schedule = await ensureSchedule(db, tenant.siteId, tenant.userId);
+    let commissionBps: 0;
+    try { commissionBps = requireZeroPlatformTransactionFee(schedule.commission_bps); }
+    catch { throw new AppError('The saved transaction-fee schedule needs review before reconciliation. No deductions were created.', 409, 'TRANSACTION_FEE_POLICY_CONFLICT'); }
     const { data: existingRows, error: existingError } = await db
         .from('commission_reconciliation_entries')
         .select('order_id')
@@ -289,8 +294,8 @@ router.post('/reconcile', validate('json', ReconcileCommissionSchema), async (c)
         .filter((order) => !existingOrderIds.has(order.id))
         .map((order) => {
             const grossAmountMinor = minorFromMajor(order.total);
-            const commissionAmountMinor = Math.round(grossAmountMinor * Number(schedule.commission_bps || 0) / 10000);
-            const gstAmountMinor = Math.round(commissionAmountMinor * Number(schedule.gst_bps || 0) / 10000);
+            const commissionAmountMinor = 0;
+            const gstAmountMinor = 0;
             return {
                 site_id: tenant.siteId,
                 order_id: order.id,
@@ -298,7 +303,7 @@ router.post('/reconcile', validate('json', ReconcileCommissionSchema), async (c)
                 status: 'pending',
                 currency: 'INR',
                 gross_amount_minor: grossAmountMinor,
-                commission_bps: schedule.commission_bps,
+                commission_bps: commissionBps,
                 commission_amount_minor: commissionAmountMinor,
                 gst_bps: schedule.gst_bps,
                 gst_amount_minor: gstAmountMinor,
@@ -319,6 +324,9 @@ router.post('/reconcile', validate('json', ReconcileCommissionSchema), async (c)
         if (error) throw new Error(`Commission reconciliation create failed: ${error.message}`);
 
         for (const entry of (insertedRows || []) as unknown as CommissionEntryRow[]) {
+            // A zero-fee observation has no financial effect. Posting the gross
+            // again would manufacture another merchant payable after capture.
+            if (Number(entry.commission_amount_minor) === 0 && Number(entry.gst_amount_minor) === 0) continue;
             const plan = planSettlementLedgerPosting({
                 store_id: tenant.siteId,
                 settlement_reference: `commission:${entry.id}`,

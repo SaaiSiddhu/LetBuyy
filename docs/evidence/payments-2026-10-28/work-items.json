@@ -63,7 +63,7 @@
       "id": "B02",
       "work": "Model connection and site activation revision",
       "status": "PARTIAL",
-      "evidence_or_next": "Current site row CAS; connection history/transactional activation owner not implemented."
+      "evidence_or_next": "Owner accepted one store/environment per connection. Existing payment_credentials is canonical; current site CAS implemented, immutable versions/transactional activation remain."
     },
     {
       "id": "B03",
@@ -249,7 +249,7 @@
       "id": "E03",
       "work": "Enforce zero transaction-rake ratchet",
       "status": "PARTIAL",
-      "evidence_or_next": "No nonzero fee introduced; Dart display always0%; exhaustive zero-rake ratchet remains."
+      "evidence_or_next": "Permanent0% policy rejects nonzero schedules before payout/commission effects; exhaustive1..10000 basis-point ratchet and4 real Worker/database cases passed. Zero-fee observations no longer manufacture a second merchant payable. Historical deduction remediation and full financial cutover remain separate."
     },
     {
       "id": "E04",
@@ -357,7 +357,7 @@
       "id": "G01",
       "work": "Full integration/property/concurrency suites",
       "status": "PARTIAL",
-      "evidence_or_next": "Gateway1824/1824, domain readiness6/6, shared Dart7/7, mobile16/16, Merchant66/66, real Worker/database9/9 and production-built browser1/1 passed. Financial/reconciliation programme gates remain."
+      "evidence_or_next": "Gateway1824/1824, domain readiness6/6, shared Dart7/7, mobile16/16, Merchant66/66, real Worker/database9/9 and production-built browser1/1 passed. Financial/reconciliation programme gates remain. E03 domain ratchet and4 owned database cases pass. Broader checkout baseline and candidate both3pass/1fail on missing email queue assertion; full checkout is not green."
     },
     {
       "id": "G02",

@@ -1,6 +1,6 @@
 {
   "decision": "D2 - payment account and legal-entity ownership",
-  "status": "proposed, awaiting owner choice",
+  "status": "accepted by owner in current conversation",
   "recommended": {
     "connection_scope": "one store and one environment",
     "provider_account_reuse": "not enabled across stores in the first release",
@@ -12,5 +12,8 @@
   },
   "alternative": "Permit account reuse only across stores with the same provider-verified legal entity after a separate ownership/consent design; never across unrelated merchants.",
   "consequence": "Determines connection uniqueness, tenant grants, account-scoped webhook dispatch and financial-history relationships. Existing sandbox setup corrections do not depend on this decision.",
-  "hosted_actions": "none authorized or performed by this proposal"
+  "hosted_actions": "none authorized or performed by this proposal",
+  "owner_choice": "One store per connection (Recommended)",
+  "accepted_date": "2026-10-28",
+  "cross_store_reuse": "unavailable for first release"
 }

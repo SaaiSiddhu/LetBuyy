@@ -36,7 +36,7 @@ Disposable source candidate excludes every app .env file. The first browser star
 
 ## Decisions / release
 
-D1 provider account model unresolved: owner Not approved yet / unsure. D2 multi-site legal ownership not yet approved. D3 zero rake fixed by Constitution; contracted PSP fees unknown. D4 provider-hosted/minimal KYC preferred, collection not authorized. D5 first live launch requires both collection and settlement qualification. D6 guarded test keys retained; production manual/OAuth policy depends on provider acceptance. D7 bank/release authority pending provider/finance terms. D8 no current release approval. D9 terms/retention pending provider/legal acceptance. D10 Free-plan measurement remains before any upgrade proposal.
+D1 provider account model unresolved: owner Not approved yet / unsure. D2 accepted by the owner: one store and one environment per connection; cross-store account reuse is unavailable in the first release. Provider verification of the legal merchant-of-record remains required. D3 zero rake fixed by Constitution; contracted PSP fees unknown. D4 provider-hosted/minimal KYC preferred, collection not authorized. D5 first live launch requires both collection and settlement qualification. D6 guarded test keys retained; production manual/OAuth policy depends on provider acceptance. D7 bank/release authority pending provider/finance terms. D8 no current release approval. D9 terms/retention pending provider/legal acceptance. D10 Free-plan measurement remains before any upgrade proposal.
 
 No merge, push, migration deployment, web/Worker deploy, provider account/key creation, KYC submission, bank change, external email or real transaction occurred in this programme.
 
@@ -56,4 +56,12 @@ Safe success captures: letbuyy-payments-browser-307efe0a94f2/light-mobile.png an
 
 ## Broader checkout prerequisite
 
-The owned Commerce checkout browser regression reached verified Razorpay capture, one order, one canonical capture journal and one order.paid event, but its direct confirmation-queue assertion observed0 jobs (expected1). The assertion is preserved. COD/coupon and stock-recovery cases pass. An unchanged-baseline comparison is running; no green email/inbox or full checkout-suite claim is made. Notification403 remains a separate release prerequisite.
+The owned Commerce checkout browser regression reached verified Razorpay capture, one order, one canonical capture journal and one order.paid event, but its direct confirmation-queue assertion observed0 jobs (expected1). The assertion is preserved. COD/coupon and stock-recovery cases pass. The unchanged219 baseline reproduced the same3pass/1fail result at the same0-versus1 email-queue assertion; no green email/inbox or full checkout-suite claim is made. Notification403 remains a separate release prerequisite.
+
+## Zero transaction rake — independent local correction
+
+Continued on29 October. Both existing statement and commission writers now reject nonzero saved schedules before new effects. A zero-fee reconciliation observation does not post the gross amount again: capture already credited the canonical merchant payable. Historical deductions and journals are preserved. This is a bounded E03 correction, not provider-charge accounting or settlement acceptance.
+
+The new policy unit checks every nonzero integer basis-point value1..10000 (number and string), plus malformed inputs. Owned Worker/PostgreSQL controls passed4/4: nonzero schedule refusal leaves no statement/commission effect; zero schedule records a zero-fee observation; retry creates no duplicate; payout gross equals net with no extra financial journal. The full Gateway unit lane again passed1824/1824. All payment-domain test files passed12/12; touched Gateway TypeScript passed. Logs: zero-rake-owned.json, zero-rake-owned.log, payments-domain-all.log, gateway-unit-zero-rake.log, zero-rake-types.log under the retained task temporary directory.
+
+Canonical schema inventory found existing payment_credentials, payments.credential_id and payment_attempts. The connection work will extend those owners rather than add a parallel connection table. Immutable history/activation and refund binding remain pending. Migration403 is an explicit independent notification prerequisite; retained candidate source must be reviewed and qualified against this integration before a later404 can be numbered. No hosted schema or provider operation is authorized by this local checkpoint.
