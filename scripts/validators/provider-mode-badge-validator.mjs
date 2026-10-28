@@ -9,7 +9,6 @@ const reporter = createReporter("Provider mode badge validator");
 
 for (const required of [
   "services/api-gateway/src/routes/payouts.ts",
-  "services/api-gateway/src/routes/payments.ts",
   "services/api-gateway/src/routes/kyc.ts",
   "services/api-gateway/src/routes/whatsapp.ts",
   "services/api-gateway/src/routes/shipping-labels.ts",
@@ -25,6 +24,17 @@ for (const required of [
 ]) {
   const source = readFile(required);
   reporter.assert(source.includes("provider_mode") || (required.endsWith("payment-setup-overview.tsx") && source.includes("setup.environment")), `${required} must expose confirmed provider mode honesty evidence`);
+}
+// Capture now returns its canonical payment row from the atomic SQL owner.
+// Check the real response/provenance path; a route-local metadata literal is no
+// longer evidence of its mode, and must not force a second capture emitter.
+const paymentModeRoute = readFile("services/api-gateway/src/routes/payments.ts");
+const paymentCaptureWriter = readFile("database/supabase/migrations/408_atomic_canonical_payment_capture.sql");
+for (const fragment of ["mode: plan.mode", "const proof=await verifyCanonicalRazorpayCapture", "commitCanonicalPaymentCapture(db,"]) {
+  reporter.assert(paymentModeRoute.includes(fragment), `Payments must retain provider mode on the canonical session/capture path: ${fragment}`);
+}
+for (const fragment of ["pay.mode IS DISTINCT FROM 'sandbox'", "'provider_mode',pay.mode", "'payment',to_jsonb(pay)"]) {
+  reporter.assert(paymentCaptureWriter.includes(fragment), `Atomic capture must preserve confirmed provider mode provenance: ${fragment}`);
 }
 const mobileBilling = readFile("apps/merchant/mobile/lib/screens/settings/billing_screen.dart");
 for (const evidence of ["ProviderMode.parse(_subscription?.providerMode)", "ProviderModeBadge(mode: providerMode", "Provider status unavailable"]) {

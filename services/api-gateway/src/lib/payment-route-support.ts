@@ -47,6 +47,7 @@ export type PaymentSessionRow = {
     provider_payment_id?: string | null;
     provider_session_id?: string | null;
     idempotency_key: string;
+    credential_id?: string | null;
     client_action?: string | null;
     capture_ledger_transaction_id?: string | null;
     refund_ledger_transaction_id?: string | null;

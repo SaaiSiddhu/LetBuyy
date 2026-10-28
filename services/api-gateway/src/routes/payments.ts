@@ -1,4 +1,6 @@
 import {publicSubscriptionBillingRecord} from '../lib/subscription-checkout-source';
+import {verifyCanonicalRazorpayCapture} from '../lib/payment-capture-proof';
+import {commitCanonicalPaymentCapture} from '../execution/payment-capture-execution.adapter';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -52,7 +54,6 @@ import {
     type PaymentVoidInput,
 } from '../schemas/payment.schema';
 import {
-    buildPaymentCaptureLedgerPosting,
     buildSandboxPaymentSessionPlan,
     inrMoney,
     normalizeV1PaymentSessionProvider,
@@ -68,7 +69,6 @@ import {
     loadPayableOrder,
     paymentProviderMode,
     paymentSetupRequiredResponse,
-    postPaymentLedger,
     requestedAmountMinorUnits,
     requireLivePaymentCredential,
     stringOrNull,
@@ -285,11 +285,11 @@ router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async
     }
 
     const captureScope = ['payment.capture', payment.id].join(':');
-    const captureLedgerKey = ['payment.capture', payment.id, body.idempotency_key].join(':');
     const providerPaymentId = body.provider_payment_id || payment.provider_payment_id || null;
     if (!providerPaymentId) {
         throw new ConflictError('Provider payment id is required before capture can be recorded');
     }
+    const proof=await verifyCanonicalRazorpayCapture(c,payment,providerPaymentId);
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: payment.site_id,
@@ -304,97 +304,12 @@ router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async
     }
 
     try {
-        const ledgerTransactionId = await postPaymentLedger(
-            db,
-            buildPaymentCaptureLedgerPosting({
-                siteId: payment.site_id,
-                orderId: payment.order_id,
-                providerPaymentId,
-                grossAmountMinor: payment.amount_minor,
-                platformFeeMinor: 0,
-                gstMinor: 0,
-                idempotencyKey: captureLedgerKey,
-            }),
-            {
-                payment_id: payment.id,
-                provider: payment.provider,
-                provider_mode: payment.mode,
-                provider_order_id: payment.provider_order_id || null,
-                provider_payment_id: providerPaymentId,
-                fee_assessment: 'deferred_to_payout_statement',
-            },
-            requestId,
-        );
-
-        const { data: updated, error } = await db
-            .from('payments')
-            .update({
-                status: 'captured',
-                provider_payment_id: providerPaymentId,
-                captured_at: new Date().toISOString(),
-                capture_ledger_transaction_id: ledgerTransactionId,
-                metadata: { ...(payment.metadata || {}), ...(body.metadata || {}) },
-                request_id: requestId,
-                updated_by: customUser.id,
-            })
-            .eq('id', payment.id)
-            .select('*')
-            .single();
-
-        if (error || !updated) {
-            await idempotency.fail(claim.id);
-            return c.json(dbErrorBody('Failed to capture payment'), 500);
-        }
-
-        await db.from('payment_attempts').insert({
-            site_id: payment.site_id,
-            order_id: payment.order_id,
-            payment_id: payment.id,
-            provider: payment.provider,
-            attempt_type: 'capture',
-            status: 'succeeded',
-            amount: payment.amount_minor / 100,
-            currency: payment.currency,
-            provider_order_id: payment.provider_order_id,
-            provider_payment_id: providerPaymentId,
-            provider_session_id: payment.provider_session_id,
-            idempotency_key: body.idempotency_key,
-            request_id: requestId,
-            metadata: body.metadata,
-            created_by: customUser.id,
-            updated_by: customUser.id,
+        const responseBody=await commitCanonicalPaymentCapture(db,{
+            proof,actorId:customUser.id,claimId:claim.id,requestHash:claim.requestHash,
+            requestId,metadata:body.metadata,
         });
 
-        await emitPaymentEvent(db, {
-            siteId: payment.site_id,
-            paymentId: payment.id,
-            orderId: payment.order_id,
-            eventType: 'payment.captured',
-            payload: {
-                provider: payment.provider,
-                provider_event_id: providerPaymentId,
-                payment_status: 'paid',
-                mode: payment.mode,
-                provider_payment_id: providerPaymentId,
-                amount_minor: payment.amount_minor,
-                currency: payment.currency,
-                ledger_transaction_id: ledgerTransactionId,
-            },
-            actorId: customUser.id,
-            requestId,
-            idempotencyKey: captureLedgerKey,
-        });
-
-        const responseBody = { data: { captured: true, payment: updated } };
-        await idempotency.complete({
-            id: claim.id,
-            responseBody,
-            statusCode: 200,
-            resourceType: 'payment',
-            resourceId: payment.id,
-        });
-
-        return c.json(responseBody);
+        return c.json(responseBody as never);
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;

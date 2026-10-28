@@ -195,13 +195,13 @@
       "id": "D04",
       "work": "Verify payment/order/account/amount binding",
       "status": "PARTIAL",
-      "evidence_or_next": "Hosted sandbox browser preserves existing provider order/HMAC/amount checks while draining its saved credential after a Settings switch; one capture journal, payment transaction and paid event. Account-scoped webhook and full financial evidence remain."
+      "evidence_or_next": "Hosted sandbox drain plus canonical capture now fetches provider status against the exact immutable credential before any money write. Captured flag/status, saved order/payment IDs, paise and INR must match; unavailable/mismatched/disabled credentials create no capture.13 owned controls include exact keyring drain and no global fallback. Full provider account identity and account-scoped webhook acceptance remain."
     },
     {
       "id": "D05",
       "work": "Unify browser/webhook capture effect",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "408 makes the existing canonical payment capture, attempt, ledger, typed outbox and command acknowledgement atomic. Real concurrent commands, four statement faults, lost reply and32 exact randomized/edge amounts pass. Browser/webhook/legacy252 convergence, order lifecycle and full reconciliation/drain are still unfinished; not a production release candidate."
     },
     {
       "id": "D06",
