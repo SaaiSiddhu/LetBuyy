@@ -75,7 +75,7 @@
       "id": "B04",
       "work": "Secure token/secret versioning and rotation",
       "status": "PARTIAL",
-      "evidence_or_next": "V3 additionally authenticates exact immutable credential-version UUID; cross-version/site/key tampering denied. New secrets only in canonical version rows. Encryption-key ring rotation, old-key drain/revocation and legacy backfill remain."
+      "evidence_or_next": "V3 binds exact immutable version UUID/site/provider/key/environment. Existing private encryption binding supports an explicit bounded current/decryption-only keyring; new saves use current key, historical V2/V3 reads choose exact recorded key fingerprint. Unbound legacy has one explicitly named reader.4 crypto controls,5 real Worker/database rotation cases,13 atomic setup cases and5 normal browser cases pass; hosted secret rotation, retirement inventory, legacy backfill and full provider token lifecycle remain."
     },
     {
       "id": "B05",
@@ -99,7 +99,7 @@
       "id": "B08",
       "work": "Preserve historical connection drain",
       "status": "PARTIAL",
-      "evidence_or_next": "406 binds new hosted checkout attempts to immutable same-store sandbox credential versions. Real Commerce browser proves a Settings key change/online disable during provider order creation still confirms once with the original key. Legacy pointerless drain, revocation policy, canonical payment/refund convergence and provider acceptance remain."
+      "evidence_or_next": "406 binds new hosted checkout attempts to immutable same-store sandbox credential versions. Real Commerce browser proves a Settings key change/online disable during provider order creation still confirms once with the original key. Legacy pointerless drain, revocation policy, canonical payment/refund convergence and provider acceptance remain. The actual Commerce browser also passes when the encryption wrapping key rotates during the admitted provider attempt; no old encrypted bytes are rewritten."
     },
     {
       "id": "B09",
@@ -357,7 +357,7 @@
       "id": "G01",
       "work": "Full integration/property/concurrency suites",
       "status": "PARTIAL",
-      "evidence_or_next": "Current Gateway1827 units,16 focused money cases,106 actual DB amounts,12 late-capture DB,4 Commerce browser,3 complete payout read DB,23 payout component and59 read-lifecycle controls pass. Normal production-built Merchant payout browser including retained MFA/recovery controls passes. Full financial/reconciliation/provider/hosted programme gates remain."
+      "evidence_or_next": "Current Gateway1827 units,16 focused money cases,106 actual DB amounts,12 late-capture DB,4 Commerce browser,3 complete payout read DB,23 payout component and59 read-lifecycle controls pass. Normal production-built Merchant payout browser including retained MFA/recovery controls passes. Full financial/reconciliation/provider/hosted programme gates remain. Latest wrapping-key slice:1831 Gateway units,18 owned configuration cases and5 normal Merchant/Commerce browser cases pass; completed Gateway typecheck exits0."
     },
     {
       "id": "G02",

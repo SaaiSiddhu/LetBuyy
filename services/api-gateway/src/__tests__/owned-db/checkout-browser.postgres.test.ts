@@ -11,6 +11,7 @@ import test, { after, before } from 'node:test';
 import { chromium, type Browser } from '@playwright/test';
 import worker from '../../index';
 import { encryptPaymentSecret } from '../../lib/store-payment-config';
+import { PAYMENT_KEYRING_PREFIX } from '../../lib/payment-encryption-keyring';
 import { INTERNAL_SECRET, gatewayEnv, newIdentityKeys } from './gateway-harness';
 import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
@@ -21,6 +22,8 @@ const site = newSyntheticTenant('browser-checkout');
 const signingSecret = 'synthetic-browser-checkout-signing-secret';
 const razorpayKeySecret = 'synthetic-browser-razorpay-secret';
 const paymentEncryptionKey = crypto.randomUUID();
+const replacementEncryptionKey = crypto.randomUUID();
+let rotateEncryptionKey: (()=>void) | undefined;
 const originalCredentialId = crypto.randomUUID(), replacementCredentialId = crypto.randomUUID();
 const originalKeyId = ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_');
 const replacementKeyId = ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_');
@@ -39,6 +42,7 @@ const hostedRazorpayTestAdapter = {
             payment_settings='${JSON.stringify({mode:'ownAccount',gateways:['razorpay'],razorpay:{credential_id:replacementCredentialId,key_id:replacementKeyId,test_mode:true,verified:true}})}'
             WHERE id='${site.siteId}';
             UPDATE payment_credentials SET selected_for_checkout=false WHERE id='${originalCredentialId}';COMMIT;`);
+        assert.ok(rotateEncryptionKey);rotateEncryptionKey();
         return {
             provider: 'razorpay',
             status: 'requires_action',
@@ -151,6 +155,7 @@ before(async () => {
         },
         HOSTED_RAZORPAY_TEST_ADAPTER: hostedRazorpayTestAdapter,
     });
+    rotateEncryptionKey=()=>{env.PAYMENT_CONFIG_ENCRYPTION_KEY=PAYMENT_KEYRING_PREFIX+JSON.stringify({active:replacementEncryptionKey,previous:[paymentEncryptionKey]});};
     server = createServer(async (req, res) => {
         try {
             const body = await readBody(req);

@@ -150,6 +150,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "store-branded-checkout-domains.postgres.test.ts",
         "store-creation-idempotency.postgres.test.ts",
         "store-password-admission.postgres.test.ts",
+        "store-payment-keyring.postgres.test.ts",
         "store-payment-setup.postgres.test.ts",
         "storefront-access-boundary.postgres.test.ts",
         "storefront-bootstrap-projection.postgres.test.ts",

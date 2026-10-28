@@ -1,6 +1,7 @@
 import { type RazorpayCredentials, verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
 import { deriveStorePaymentSetup } from '@letbuyy/payments';
 import type { StorePaymentConfig, StorePaymentSettings } from '@letbuyy/shared-types';
+import { paymentEncryptionKeyring } from './payment-encryption-keyring';
 
 export type PaymentSettings = {
     mode?: 'shared' | 'ownAccount';
@@ -51,17 +52,12 @@ function paymentSecretContext(context: PaymentSecretContext, keyVersion: string)
     return new TextEncoder().encode(JSON.stringify(fields));
 }
 
-async function paymentKeyVersion(secret: string): Promise<string> {
-    const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret)));
-    return Array.from(digest.slice(0, 8), byte => byte.toString(16).padStart(2, '0')).join('');
-}
-
 /** V3 binds new saves to their immutable version; omitting its ID retains the explicit V2 fixture/migration format. */
 export async function encryptPaymentSecret(secret: string, encryptionKey: string, context: PaymentSecretContext): Promise<string> {
-    if (encryptionKey.length < 16) throw new Error('Payment encryption key is unavailable');
+    const selected = (await paymentEncryptionKeyring(encryptionKey)).active;
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const key = await importPaymentEncryptionKey(encryptionKey);
-    const version = await paymentKeyVersion(encryptionKey);
+    const key = await importPaymentEncryptionKey(selected.secret);
+    const version = selected.version;
     const ciphertext = await crypto.subtle.encrypt(
         { name: 'AES-GCM', iv, additionalData: paymentSecretContext(context, version) },
         key,
@@ -165,12 +161,14 @@ export async function readStoreRazorpayTestCredentials(settings: PaymentSettings
         const parts = configured.key_secret_ciphertext.split(':');
         const v3 = parts[0] === 'v3', bound = v3 || parts[0] === 'v2';
         if (!(v3 ? parts.length === 5 : bound ? parts.length === 4 : parts.length === 2) || configured.key_secret_ciphertext.length > 4096) return null;
-        if (bound && parts[1] !== await paymentKeyVersion(encryptionKey)) return null;
+        const keyring = await paymentEncryptionKeyring(encryptionKey);
+        const selected = keyring.byVersion.get(bound ? parts[1] : keyring.legacyVersion ?? '');
+        if (!selected) return null;
         if (v3 && (!configured.credential_id || parts[2] !== configured.credential_id.toLowerCase())) return null;
         const decode = (value: string) => Uint8Array.from(atob(value), character => character.charCodeAt(0));
         const iv = decode(parts[v3 ? 3 : bound ? 2 : 0]);
         if (iv.length !== 12) return null;
-        const key = await importPaymentEncryptionKey(encryptionKey);
+        const key = await importPaymentEncryptionKey(selected.secret);
         // Legacy IV:ciphertext remains read-only for an explicit migration/drain.
         // It has no authenticated tenant context; do not use this bridge as evidence that B04 is complete.
         const additionalData = bound ? paymentSecretContext({ siteId, keyId: configured.key_id, environment: 'sandbox',

@@ -469,6 +469,15 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     if (!body.test_mode) {
         throw new AppError('Live checkout requires qualified provider onboarding and settlement readiness. Keep this connection in test mode.', 409, 'PAYMENT_LIVE_NOT_READY');
     }
+    const credentialId = crypto.randomUUID();
+    let keySecretCiphertext: string;
+    try {
+        keySecretCiphertext = await encryptPaymentSecret(body.key_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
+            siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
+        });
+    } catch {
+        throw new AppError('Payment credential encryption is temporarily unavailable. Your saved connection is unchanged.',503,'PAYMENT_CONFIG_UNAVAILABLE');
+    }
     let verified: boolean;
     try {
         verified = await verifyRazorpayCredentials(body.key_id, body.key_secret);
@@ -478,10 +487,6 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     if (!verified) {
         throw new AppError('Razorpay did not verify these credentials. Your saved connection is unchanged.', 400, 'PAYMENT_CREDENTIALS_INVALID');
     }
-    const credentialId = crypto.randomUUID();
-    const keySecretCiphertext = await encryptPaymentSecret(body.key_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
-        siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
-    });
     const now = new Date().toISOString();
     const paymentSettings: PaymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: {
         credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
