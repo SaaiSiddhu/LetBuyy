@@ -14,6 +14,7 @@ import { requireOwnedDatabase } from '../../services/api-gateway/src/__tests__/o
 import { newSyntheticTenant, seedSyntheticOrder, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 import { signSensitiveActionStepUp } from '../../services/api-gateway/src/lib/security-controls';
 import {merchantApprovalHeaders,TOTP_SECRET}from '../../services/api-gateway/src/__tests__/owned-db/merchant-stepup-fixture';
+import {bindSyntheticRefundCredential}from '../../services/api-gateway/src/__tests__/owned-db/refund-credential-fixture';
 
 const owned = requireOwnedDatabase();
 const tenant = newSyntheticTenant('refund-event');
@@ -520,6 +521,7 @@ test('authenticated merchant refund initiation reserves once, survives request r
     `);
 
     const gateway = await gatewayPromise;
+    const originalCredential=await bindSyntheticRefundCredential(owned,gateway,tenant.siteId,[merchantPaymentId]);
     const approvalHeaders = await merchantApprovalHeaders(gateway,merchantId,merchantEmail,tenant.siteId);
     const request = async () => gateway.request(`/v1/payments/${merchantPaymentId}/refund`, {
         method: 'POST',
@@ -537,6 +539,7 @@ test('authenticated merchant refund initiation reserves once, survives request r
         const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
         if (url.origin === 'https://api.razorpay.com' && url.pathname === `/v1/payments/${merchantProviderPaymentId}/refund`) {
             providerCalls += 1;
+            assert.equal(new Headers(init?.headers).get('Authorization'),originalCredential.authorization);
             assert.equal((init?.method || 'GET').toUpperCase(), 'POST');
             const requestBody = JSON.parse(String(init?.body || '{}')) as Record<string, unknown>;
             assert.equal(requestBody.amount, 5000);
@@ -707,6 +710,7 @@ test('same-key concurrent requests reserve once and different-key concurrent ref
     `);
 
     const gateway = await gatewayPromise;
+    await bindSyntheticRefundCredential(owned,gateway,concurrentTenant.siteId,[sameKeyPaymentId,differentKeyPaymentId]);
     const originalFetch = globalThis.fetch;
     const callCounts = new Map<string, number>();
     let providerEnteredResolve!: () => void;

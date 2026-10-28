@@ -99,7 +99,7 @@
       "id": "B08",
       "work": "Preserve historical connection drain",
       "status": "PARTIAL",
-      "evidence_or_next": "406 binds new hosted checkout attempts to immutable same-store sandbox credential versions. Real Commerce browser proves a Settings key change/online disable during provider order creation still confirms once with the original key. Legacy pointerless drain, revocation policy, canonical payment/refund convergence and provider acceptance remain. The actual Commerce browser also passes when the encryption wrapping key rotates during the admitted provider attempt; no old encrypted bytes are rewritten."
+      "evidence_or_next": "406 binds new hosted checkout attempts to immutable same-store sandbox credential versions. Real Commerce browser proves a Settings key change/online disable during provider order creation still confirms once with the original key. Legacy pointerless drain, revocation policy, canonical payment/refund convergence and provider acceptance remain. The actual Commerce browser also passes when the encryption wrapping key rotates during the admitted provider attempt; no old encrypted bytes are rewritten. Canonical refund reservations also retain the exact immutable credential; old-key/selected-key/wrapping-key drain is tested locally. Unbound historical payments cannot initiate a new Razorpay refund without reconciliation."
     },
     {
       "id": "B09",
@@ -296,8 +296,8 @@
     {
       "id": "F01",
       "work": "Account-bound full/partial refund execution",
-      "status": "NOT_STARTED",
-      "evidence_or_next": "Independent implementation remains; not labelled provider-blocked."
+      "status": "PARTIAL",
+      "evidence_or_next": "Razorpay refund creation now uses the immutable capturing credential; manual/processed refunds require same-account provider GET proof of refund/payment/amount/INR/status before a reversal.409 atomically binds each existing refund reservation to its payment credential.40 owned authorization/reconciliation controls plus5 credential-history compatibility checks,10 adapter units,1831 Gateway units and normal Merchant MFA/refund browser pass. Full original-account webhook/reconciliation, live approval/provider and bank-outcome qualification remain."
     },
     {
       "id": "F02",
