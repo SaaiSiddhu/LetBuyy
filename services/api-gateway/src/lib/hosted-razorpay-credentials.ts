@@ -2,6 +2,7 @@ import type { Context } from 'hono';
 import type { RazorpayCredentials } from '@letbuyy/infrastructure/razorpay-adapter';
 import type { Env } from '../index';
 import { getSupabaseAdmin } from './supabase';
+import { hydratePaymentCredential } from './payment-credential-history';
 import { readStoreRazorpayTestCredentials, type PaymentSettings } from './store-payment-config';
 
 type StorePaymentRow = { id: string; payment_settings?: PaymentSettings | null; online_payment_enabled?: boolean | null };
@@ -11,7 +12,9 @@ export async function hostedRazorpayTestCredentials(c: Context<{ Bindings: Env }
     const { data, error } = snapshot ? { data: snapshot, error: null } : await getSupabaseAdmin(c).from('sites').select('id,payment_settings,online_payment_enabled')
         .eq('id', siteId).is('deleted_at', null).maybeSingle();
     if (error || !data || data.id !== siteId || data.online_payment_enabled !== true) return null;
-    const configured = await readStoreRazorpayTestCredentials(data.payment_settings as PaymentSettings | null, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, siteId);
+    const hydrated = data.payment_settings?.razorpay?.credential_id
+        ? await hydratePaymentCredential(getSupabaseAdmin(c), data, { requireSelected: true }) : data;
+    const configured = await readStoreRazorpayTestCredentials(hydrated.payment_settings, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, siteId);
     if (configured) return configured;
     // Existing disposable provider fixtures use process-local keys. Production never shares those
     // keys between merchants, or falls back when a merchant's encrypted configuration is invalid.

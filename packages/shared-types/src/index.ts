@@ -2158,8 +2158,8 @@ export const StorePaymentSettingsSchema = z.object({
     key_id: z.string().max(120).optional().nullable(),
     test_mode: z.boolean().default(true),
     verified: z.boolean().default(false),
-    connected_at: z.string().datetime().optional().nullable(),
-    updated_at: z.string().datetime().optional().nullable(),
+    connected_at: z.string().datetime({ offset: true }).optional().nullable(),
+    updated_at: z.string().datetime({ offset: true }).optional().nullable(),
     secret_configured: z.boolean().default(false),
   }).nullable().default(null),
 }).passthrough();

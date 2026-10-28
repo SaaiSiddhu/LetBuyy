@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:letbuyy_models/letbuyy_models.dart' show PaymentConfigModel;
 
 import '../models/store_model.dart';
 import 'api_client.dart';
@@ -379,17 +380,34 @@ class StoreService extends ChangeNotifier {
   }
 
   /// Update payment settings for the store.
-  Future<StoreModel> updatePaymentSettings(
+  Future<PaymentConfigModel> updatePaymentSettings(
     String id,
-    Map<String, dynamic> paymentSettings,
-  ) async {
-    if (paymentSettings.isEmpty || paymentSettings.entries.any((entry) =>
-        !const {'cod_enabled', 'online_payment_enabled'}.contains(entry.key) || entry.value is! bool)) {
+    Map<String, dynamic> paymentSettings, {
+    String? expectedRevision,
+    String? idempotencyKey,
+  }) async {
+    if (paymentSettings.isEmpty ||
+        paymentSettings.entries.any(
+          (entry) =>
+              !const {
+                'cod_enabled',
+                'online_payment_enabled',
+              }.contains(entry.key) ||
+              entry.value is! bool,
+        )) {
       throw const FormatException('Choose an online or COD setting to update.');
     }
-    // These are canonical site method fields. Nesting them inside payment_settings
-    // was ignored by the versioned store update contract and never saved the toggle.
-    return updateStore(id, paymentSettings);
+    final epoch = _sessionEpoch;
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
+    final response = await _api.stores.paymentConfig.updateMethods(id, {
+      ...paymentSettings,
+      if (expectedRevision != null) 'expected_revision': expectedRevision,
+    }, options: ApiRequestOptions(idempotencyKey: idempotencyKey));
+    _checkSessionEpoch(epoch);
+    // This command returns the canonical payment configuration, not a partial
+    // StoreModel that could overwrite unrelated cached store fields.
+    return PaymentConfigModel.fromMap(response, id);
   }
 }
 

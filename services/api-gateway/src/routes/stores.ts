@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { assertReadyFirstPartyStorefrontDomain, provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
+import { hydratePaymentCredential, commitPaymentConfiguration } from '../lib/payment-credential-history';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
@@ -198,7 +199,7 @@ router.get('/:id/payment-config', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
 
-    return c.json(success(await projectStorePaymentConfig(data, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)));
+    return c.json(success(await projectStorePaymentConfig(await hydratePaymentCredential(db, data), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)));
 });
 
 // GET /stores/:id/health — Mobile Store Health score from real operational signals
@@ -477,68 +478,20 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     if (!verified) {
         throw new AppError('Razorpay did not verify these credentials. Your saved connection is unchanged.', 400, 'PAYMENT_CREDENTIALS_INVALID');
     }
+    const credentialId = crypto.randomUUID();
     const keySecretCiphertext = await encryptPaymentSecret(body.key_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
-        siteId: storeId, keyId: body.key_id, environment: 'sandbox',
+        siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
     });
-
     const now = new Date().toISOString();
-    const existingSettings = (store.payment_settings || {}) as PaymentSettings;
-    const paymentSettings: PaymentSettings = {
-        ...existingSettings,
-        mode: 'ownAccount',
-        gateways: Array.from(new Set([...(existingSettings.gateways || []), 'razorpay'])),
-        razorpay: {
-            key_id: body.key_id,
-            key_secret_ciphertext: keySecretCiphertext,
-            test_mode: body.test_mode,
-            verified,
-            connected_at: existingSettings.razorpay?.connected_at || now,
-            updated_at: now,
-        },
-    };
-
-    const updatePaymentSettings = (includeDeletedAtFilter: boolean) => {
-        const query = db
-            .from('sites')
-            .update({
-                payment_settings: paymentSettings,
-                online_payment_enabled: false,
-                updated_at: now,
-            })
-            .eq('id', storeId)
-            .or(ownedByCustomUserFilter(customUser.id));
-        const current = store.updated_at ? query.eq('updated_at', store.updated_at) : query.is('updated_at', null);
-        return includeDeletedAtFilter ? current.is('deleted_at', null) : current;
-    };
-
-    let { data, error } = await updatePaymentSettings(true)
-        .select('id, payment_settings, online_payment_enabled, cod_enabled, updated_at')
-        .maybeSingle();
-
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error } = await updatePaymentSettings(false)
-            .select('id, payment_settings, online_payment_enabled, cod_enabled, updated_at')
-            .maybeSingle());
-    }
-
-    if (isMissingSitesPaymentColumnError(error)) {
-        return c.json(
-            {
-                error: {
-                    code: 'PAYMENT_SCHEMA_MISSING',
-                    message: 'Payment settings require the latest sites payment columns before credentials can be saved',
-                },
-            },
-            503
-        );
-    }
-
-    if (error) throw new AppError('Payment settings could not be saved. Reload to confirm the current connection.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
-    if (!data) {
-        throw new AppError('Payment settings could not be saved. Reload to confirm the current connection.', 409, 'PAYMENT_CONFIG_CONFLICT');
-    }
-
-    return c.json(success(await projectStorePaymentConfig(data, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)));
+    const paymentSettings: PaymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: {
+        credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
+        test_mode: true, verified: true, connected_at: now, updated_at: now,
+    } };
+    return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: store,
+        proposed: { ...store, payment_settings: paymentSettings, online_payment_enabled: false },
+        operation: 'save', payload: { credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext },
+        credentialsUsable: true,
+    }));
 });
 
 // PATCH /stores/:id/payment-config — explicit method intent; effective eligibility is server-owned.
@@ -556,20 +509,19 @@ router.patch('/:id/payment-config', validate('json', UpdateStorePaymentMethodsSc
     if (body.expected_revision && body.expected_revision !== row.updated_at) {
         throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
     }
-    const before = await projectStorePaymentConfig(row, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
+    const before = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
     if (body.online_payment_enabled === true && !before.setup?.can_enable_online) {
         throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
     }
-    const updates: { online_payment_enabled?: boolean; cod_enabled?: boolean; updated_at: string } = { updated_at: new Date().toISOString() };
-    if (body.online_payment_enabled !== undefined) updates.online_payment_enabled = body.online_payment_enabled;
-    if (body.cod_enabled !== undefined) updates.cod_enabled = body.cod_enabled;
-    const query = db.from('sites').update(updates).eq('id', storeId)
-        .or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null);
-    const current = row.updated_at ? query.eq('updated_at', row.updated_at) : query.is('updated_at', null);
-    const { data, error } = await current.select('id,payment_settings,online_payment_enabled,cod_enabled,updated_at').maybeSingle();
-    if (error) throw new AppError('Payment settings could not be updated.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
-    if (!data) throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
-    return c.json(success(await projectStorePaymentConfig(data, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)));
+    const methods = {
+        ...(body.online_payment_enabled !== undefined ? { online_payment_enabled: body.online_payment_enabled } : {}),
+        ...(body.cod_enabled !== undefined ? { cod_enabled: body.cod_enabled } : {}),
+    };
+    const hydrated = await hydratePaymentCredential(db, row);
+    return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: row,
+        proposed: { ...hydrated, ...methods }, operation: 'methods', payload: methods,
+        credentialsUsable: before.setup?.can_enable_online === true,
+    }));
 });
 
 // GET /stores — List all stores for the authenticated user
@@ -999,9 +951,12 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
             .eq('id', storeId).or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null).maybeSingle();
         if (error) throw new AppError('Payment settings are temporarily unavailable.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
         if (!row) throw new AppError('Store not found.', 404, 'NOT_FOUND');
-        const current = await projectStorePaymentConfig(row, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
+        const current = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
         if (body.online_payment_enabled === true && !current.setup?.can_enable_online) {
             throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
+        }
+        if (row.payment_settings?.razorpay?.credential_id) {
+            throw new AppError('Use the payment method settings to change online checkout or COD.', 409, 'PAYMENT_METHODS_ENDPOINT_REQUIRED');
         }
         paymentRevision = row.updated_at || null;
         updates.updated_at = new Date().toISOString();

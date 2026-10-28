@@ -10,9 +10,12 @@ class PaymentTransport extends ApiClient {
   bool fail = false;
   Completer<void>? hold;
   String? requestKey;
+  String? capturedPath;
+  HttpMethod? capturedMethod;
   @override
   Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
     expect(path, startsWith('/stores/synthetic-store'));
+    capturedPath = path; capturedMethod = options?.method;
     captured = Map<String, dynamic>.from(options!.body as Map);
     requestKey = options.idempotencyKey;
     await hold?.future;
@@ -26,9 +29,21 @@ void main() {
     final api = PaymentTransport(); addTearDown(api.close);
     final service = StoreService(api: api);
     final saved = await service.updatePaymentSettings('synthetic-store', {'online_payment_enabled': false, 'cod_enabled': true});
+    expect(api.capturedPath, '/stores/synthetic-store/payment-config');
+    expect(api.capturedMethod, HttpMethod.patch);
     expect(api.captured, {'online_payment_enabled': false, 'cod_enabled': true});
     expect(api.captured!.containsKey('payment_settings'), false);
-    expect(saved.onlinePaymentEnabled, false); expect(saved.codEnabled, true);
+    expect(saved.onlineRequested, false); expect(saved.codEnabled, true);
+  });
+  test('method retry forwards the same key and exact revision to the canonical configuration command', () async {
+    final api = PaymentTransport(); addTearDown(api.close);
+    final service = StoreService(api: api);
+    const revision = '2026-10-29T00:00:00Z';
+    await service.updatePaymentSettings('synthetic-store', {'cod_enabled': true},
+      expectedRevision: revision, idempotencyKey: 'synthetic-same-method-operation');
+    expect(api.captured, {'cod_enabled': true, 'expected_revision': revision});
+    expect(api.requestKey, 'synthetic-same-method-operation');
+    expect(service.currentStore, isNull, reason: 'a partial payment config must not replace cached StoreModel');
   });
   test('unsupported or non-boolean payment data never reaches transport', () async {
     final api = PaymentTransport(); addTearDown(api.close);

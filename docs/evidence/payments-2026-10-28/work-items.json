@@ -63,7 +63,7 @@
       "id": "B02",
       "work": "Model connection and site activation revision",
       "status": "PARTIAL",
-      "evidence_or_next": "Owner accepted one store/environment per connection. Existing payment_credentials is canonical; current site CAS implemented, immutable versions/transactional activation remain."
+      "evidence_or_next": "404 expands existing payment_credentials into store/environment-bound immutable versions;405 connects pointer-only saves and exclusive selection to the existing atomic HTTP receipt. Five schema and13 real Worker cases plus normal browser pass. Pending attempt/refund binding, legacy backfill and live provider qualification remain."
     },
     {
       "id": "B03",
@@ -75,7 +75,7 @@
       "id": "B04",
       "work": "Secure token/secret versioning and rotation",
       "status": "PARTIAL",
-      "evidence_or_next": "New V2 envelope authenticates site, key ID, provider, environment and encryption-key version; cross-site/key/version tampering denied. Legacy read-only drain and immutable key-history rotation remain."
+      "evidence_or_next": "V3 additionally authenticates exact immutable credential-version UUID; cross-version/site/key tampering denied. New secrets only in canonical version rows. Encryption-key ring rotation, old-key drain/revocation and legacy backfill remain."
     },
     {
       "id": "B05",
@@ -93,7 +93,7 @@
       "id": "B07",
       "work": "Implement revisioned activation/switch",
       "status": "PARTIAL",
-      "evidence_or_next": "Revisioned explicit sandbox method update; full switching/step-up/atomic receipt still open."
+      "evidence_or_next": "Explicit sandbox save/activation uses transactional site lock, expected revision and atomic completed receipt. Lost-reply recovery and receipt-write rollback pass real Worker controls. Full cryptographic account-switch and bank/live authority remain open."
     },
     {
       "id": "B08",
@@ -339,7 +339,7 @@
       "id": "F08",
       "work": "Flutter contract and presentation parity",
       "status": "PARTIAL",
-      "evidence_or_next": "Shared Dart model +16 mobile transport/session checks passed. Method nesting corrected, server readiness used, late account responses fenced, original retry key/revision forwarded. Physical-device acceptance remains."
+      "evidence_or_next": "Canonical Dart updateMethods transport, revision/stable-key forwarding, parsed PaymentConfigModel and session-lifetime controls pass17 tests; normal web browser passes. Physical-device and full money/settlement parity remain."
     },
     {
       "id": "F09",
@@ -357,7 +357,7 @@
       "id": "G01",
       "work": "Full integration/property/concurrency suites",
       "status": "PARTIAL",
-      "evidence_or_next": "Gateway1824/1824, domain readiness6/6, shared Dart7/7, mobile16/16, Merchant66/66, real Worker/database9/9 and production-built browser1/1 passed. Financial/reconciliation programme gates remain. E03 domain ratchet and4 owned database cases pass. Broader checkout baseline and candidate both3pass/1fail on missing email queue assertion; full checkout is not green."
+      "evidence_or_next": "Gateway1824/1824, domain readiness6/6, shared Dart7/7, mobile16/16, Merchant66/66, real Worker/database9/9 and production-built browser1/1 passed. Financial/reconciliation programme gates remain. E03 domain ratchet and4 owned database cases pass. Broader checkout baseline and candidate both3pass/1fail on missing email queue assertion; full checkout is not green. 405 Gateway1825, owned13 and normal Merchant browser1 pass; guarded DOWN/up and final114 structural validators pass. Full checkout/financial/provider acceptance remains open."
     },
     {
       "id": "G02",

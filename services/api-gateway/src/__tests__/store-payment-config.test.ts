@@ -2,6 +2,20 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { defaultPaymentConfig, encryptPaymentSecret, projectStorePaymentConfig, readStoreRazorpayTestCredentials, type PaymentSettings } from '../lib/store-payment-config';
 
+test('V3 envelope authenticates the exact immutable credential version as well as site, key and environment', async () => {
+    const encryptionKey=crypto.randomUUID(),siteId=crypto.randomUUID(),credentialId=crypto.randomUUID(),otherId=crypto.randomUUID();
+    const keyId=['rzp','test',crypto.randomUUID().replaceAll('-','')].join('_'),secret=crypto.randomUUID().replaceAll('-','');
+    const ciphertext=await encryptPaymentSecret(secret,encryptionKey,{siteId,keyId,environment:'sandbox',credentialId});
+    const razorpay={credential_id:credentialId,key_id:keyId,key_secret_ciphertext:ciphertext,test_mode:true,verified:true};
+    assert.match(ciphertext,/^v3:/);
+    assert.deepEqual(await readStoreRazorpayTestCredentials({mode:'ownAccount',razorpay},encryptionKey,siteId),{keyId,keySecret:secret});
+    for(const patch of [{credential_id:otherId},{credential_id:undefined},
+        {credential_id:otherId,key_secret_ciphertext:ciphertext.replace(credentialId,otherId)}]) {
+        assert.equal(await readStoreRazorpayTestCredentials({mode:'ownAccount',razorpay:{...razorpay,...patch}},encryptionKey,siteId),null);
+    }
+    assert.equal(await readStoreRazorpayTestCredentials({mode:'ownAccount',razorpay},encryptionKey,crypto.randomUUID()),null);
+});
+
 test('Merchant encrypted test keys round-trip without exposing the secret in saved settings', async () => {
     const encryptionKey = crypto.randomUUID();
     const keyId = ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_');

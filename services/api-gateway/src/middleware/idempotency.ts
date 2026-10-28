@@ -10,6 +10,13 @@ import { assertStaffPermission } from './staff-permission';
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type GatewayContext = Context<{ Bindings: Env }>;
 
+declare module 'hono' {
+    interface ContextVariableMap {
+        paymentConfigurationClaim: { id: string; siteId: string; requestHash: string } | undefined;
+        atomicIdempotencyCommitted: boolean | undefined;
+    }
+}
+
 const MUTATION_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export const IDEMPOTENT_PROTECTED_PREFIXES = [
@@ -284,12 +291,18 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         });
     }
 
+    if (/^\/stores\/[^/]+\/payment-config$/.test(orderPath)) c.set('paymentConfigurationClaim', {
+        id: claim.id, siteId: claim.siteId, requestHash: claim.requestHash,
+    });
+
     try {
         await next();
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;
     }
+
+    if (c.get('atomicIdempotencyCommitted')) return;
 
     if (c.res.status < 200 || c.res.status >= 300) {
         await idempotency.fail(claim.id);

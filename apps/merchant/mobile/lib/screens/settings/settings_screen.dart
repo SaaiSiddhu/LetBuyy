@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+import '../../services/api_client.dart';
 
 import '../../app/store_context.dart';
 
@@ -34,6 +36,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   MerchantBillingState? _billing;
   PaymentConfigModel? _paymentConfig;
   bool _updatingPaymentMethods = false;
+  String? _paymentMethodIntent;
+  String? _paymentMethodRetryKey;
   bool _isLoading = true;
   int _loadVersion = 0;
   int? _loadedEpoch;
@@ -102,20 +106,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _loadedEpoch != epoch)
       return;
     setState(() => _updatingPaymentMethods = true);
+    final intent =
+        '$epoch:${store.id}:${_paymentConfig!.revision}:$field:$enabled';
+    if (_paymentMethodIntent != intent) {
+      _paymentMethodIntent = intent;
+      _paymentMethodRetryKey = const Uuid().v4();
+    }
     try {
-      await context.read<StoreService>().updatePaymentSettings(store.id, {
-        field: enabled,
-      });
+      await context.read<StoreService>().updatePaymentSettings(
+        store.id,
+        {field: enabled},
+        expectedRevision: _paymentConfig!.revision,
+        idempotencyKey: _paymentMethodRetryKey,
+      );
       if (!mounted ||
           storeContext.requestContextVersion != epoch ||
           storeContext.selectedStoreId != store.id)
         return;
+      _paymentMethodIntent = null;
+      _paymentMethodRetryKey = null;
       await _loadStore();
       HapticFeedback.lightImpact();
-    } catch (_) {
+    } catch (error) {
       if (mounted &&
           storeContext.requestContextVersion == epoch &&
           storeContext.selectedStoreId == store.id) {
+        if (error is ApiException && error.statusCode == 409) {
+          _paymentMethodIntent = null;
+          _paymentMethodRetryKey = null;
+          await _loadStore();
+          if (!mounted ||
+              storeContext.requestContextVersion != epoch ||
+              storeContext.selectedStoreId != store.id)
+            return;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(

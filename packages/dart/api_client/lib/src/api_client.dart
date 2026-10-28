@@ -747,6 +747,15 @@ class StorePaymentConfigApi {
     '/stores/${_encodePathSegment(id)}/payment-config',
     options: _mergeOptions(options, method: HttpMethod.post, body: input),
   );
+
+  Future<JsonMap> updateMethods(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/stores/${_encodePathSegment(id)}/payment-config',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
 }
 
 class CustomDomainsApi {
