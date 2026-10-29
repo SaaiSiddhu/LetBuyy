@@ -29,7 +29,7 @@ test('public signup creates its account and first store through production apps'
  assert.equal(owned.psql(`SELECT count(*) FROM users_custom WHERE email='${email}';`),'0');
  const identityPort=await freePort(),merchantPort=await freePort(),identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`;
  const keys=await newIdentityKeys(),gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'test',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',RESEND_API_KEY:'synthetic-owned-resend-capture'}));
- const mail:{to:string[];subject:string;html:string}[]=[],originalFetch=globalThis.fetch;let failFirstMail=true;
+ const mail:{to:string[];subject:string;html:string;text:string}[]=[],originalFetch=globalThis.fetch;let failFirstMail=true;
  globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const url=new URL(typeof input==='string'?input:input instanceof URL?input.toString():input.url);
   if(url.origin!=='https://api.resend.com')return originalFetch(input,init);
@@ -67,7 +67,9 @@ test('public signup creates its account and first store through production apps'
   const [registered]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/signup'&&r.request().method()==='POST'),page.getByRole('button',{name:'Continue',exact:true}).click()]);
   assert.equal(registered.status(),200);const payload=await registered.json();assert.equal(payload.devOtp,undefined);assert.equal(payload.needsVerification,true);
   assert.equal(mail.length,2,'failed delivery then retry must use the actual provider adapter');assert.deepEqual([mail[1].to].flat(),[email]);
-  const otp=mail[1].subject.match(/^(\d{6}) is your LetBuyy verification code$/)?.[1];assert.ok(otp,'OTP must come from the captured email');
+  assert.equal(mail[1].subject,'Your LetBuyy verification code');
+  const otp=mail[1].text.match(/Your verification code is (\d{6})\./)?.[1];assert.ok(otp,'OTP must come from the captured email body');
+  assert.match(mail[1].html,new RegExp('>'+otp+'</p>'),'the branded HTML carries the same delivered code');
   assert.equal(owned.psql(`SELECT email_verified FROM users_custom WHERE email='${email}';`),'f');
   async function authPost(path:string,body:Record<string,string>){return page!.evaluate(async({path,body})=>{
    const token=document.cookie.split('; ').find(v=>v.startsWith('letbuyy_csrf=')||v.startsWith('lb_csrf='))?.split('=').slice(1).join('=')||'';

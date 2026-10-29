@@ -30,8 +30,8 @@
     {
       "path": "pnpm-lock.yaml",
       "accepted_sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
-      "current_sha256": "befd63ad036cf5a796f039b1b2418488ab25c2cec68230a78f3af404e4cf763d",
-      "reason": "Removes the api-client commerce-core workspace dependency after its wire contracts moved to shared-types; frozen install verified."
+      "current_sha256": "47cc93af8d798aa78db3fbaae618752aecff9191777330b2c51a30abcd9fea4f",
+      "reason": "Removes the api-client commerce-core workspace dependency after its wire contracts moved to shared-types. Accepted identity/email release 22ffc66a8 adds the Gateway notification-core workspace link and sorts the unchanged esbuild entry. No theme dependency version changes; original admitted package bytes and frozen-install assertions remain required."
     }
   ]
 }

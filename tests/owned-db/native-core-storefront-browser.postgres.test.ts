@@ -38,7 +38,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
  const identityPort=await freePort(),merchantPort=await freePort(),commercePort=await freePort();
  const identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`,commerceHttpOrigin=`http://localhost:${commercePort}`;
  const keys=await newIdentityKeys(),pooled=await startOwnedPooledSqlProxy(owned),visitorSigningKey=crypto.randomUUID()+crypto.randomUUID();
- const mail:{to:string[];subject:string;html:string}[]=[];let failFirstMail=true;
+ const mail:{to:string[];subject:string;html:string;text:string}[]=[];let failFirstMail=true;
  const capture=async(request:Request)=>{assert.equal(new URL(request.url).pathname,'/emails');assert.equal(request.method,'POST');mail.push(await request.json() as typeof mail[number]);
   if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
   return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});};
@@ -100,7 +100,9 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [registered]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/signup'&&r.request().method()==='POST'),page.getByRole('button',{name:'Continue',exact:true}).click()]);
   assert.equal(registered.status(),200);const payload=await registered.json();assert.equal(Object.hasOwn(payload,'devOtp'),false);assert.equal(payload.needsVerification,true);
   assert.equal(mail.length,2,'failed delivery then retry must use the actual provider adapter');assert.deepEqual([mail[1].to].flat(),[email]);
-  const otp=mail[1].subject.match(/^(\d{6}) is your LetBuyy verification code$/)?.[1];assert.ok(otp,'OTP must come from the captured email');
+  assert.equal(mail[1].subject,'Your LetBuyy verification code');
+  const otp=mail[1].text.match(/Your verification code is (\d{6})\./)?.[1];assert.ok(otp,'OTP must come from the captured email body');
+  assert.match(mail[1].html,new RegExp('>'+otp+'</p>'),'the branded HTML carries the same delivered code');
   assert.equal(owned.psql(`SELECT email_verified FROM users_custom WHERE email='${email}';`),'f');
   async function authPost(path:string,body:Record<string,string>){return page!.evaluate(async({path,body})=>{
    const token=document.cookie.split('; ').find(v=>v.startsWith('letbuyy_csrf=')||v.startsWith('lb_csrf='))?.split('=').slice(1).join('=')||'';

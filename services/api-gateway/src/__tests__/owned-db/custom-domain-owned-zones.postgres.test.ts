@@ -5,7 +5,7 @@ import { DEFAULT_PLATFORM_DOMAIN, DEFAULT_STOREFRONT_DOMAIN } from '@letbuyy/sha
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from './gateway-harness';
 import { requireOwnedDatabase } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
-import { Miniflare, createFetchMock } from 'miniflare';
+import { Miniflare } from 'miniflare';
 import { buildSync } from 'esbuild';
 const owned = requireOwnedDatabase();
 test('a real owner may stage an external domain but cannot claim either platform zone when env is omitted', async () => {
@@ -51,19 +51,22 @@ test('real owner verification provisions one serialized widget through the nativ
     const config = { accountId: 'a'.repeat(32), siteKey: 'synthetic-owned-widget', apiToken: 'synthetic-owned-management-token', configurationId: crypto.randomUUID() };
     let widget = { sitekey: config.siteKey, name: 'Synthetic native widget', mode: 'managed', clearance_level: 'no_clearance', domains: ['accounts.example.in'], secret: 'synthetic-never-return-provider-secret' };
     const providerWrites: string[][] = [];
-    const network = createFetchMock(); network.disableNetConnect();
     const providerPath = `/client/v4/accounts/${config.accountId}/challenges/widgets/${config.siteKey}`;
-    network.get('https://api.cloudflare.com').intercept({ path: providerPath, method: 'GET' }).reply(() => ({ statusCode: 200, data: JSON.stringify({ success: true, result: widget }) })).persist();
-    network.get('https://api.cloudflare.com').intercept({ path: providerPath, method: 'PUT' }).reply(options => {
-        const update = JSON.parse(String(options.body));
-        assert.equal(update.mode, 'managed'); assert.equal(update.clearance_level, 'no_clearance');
-        assert.deepEqual(widget.domains.filter(domain => !update.domains.includes(domain)), []);
-        providerWrites.push(update.domains); widget = { ...widget, ...update };
-        return { statusCode: 200, data: JSON.stringify({ success: true, result: widget }) };
-    }).persist();
+    const provider = async (request: Request) => {
+        const url = new URL(request.url);
+        assert.equal(url.origin, 'https://api.cloudflare.com'); assert.equal(url.pathname, providerPath);
+        assert.ok(['GET', 'PUT'].includes(request.method), 'only this synthetic widget is reachable');
+        if (request.method === 'PUT') {
+            const update = await request.json() as typeof widget;
+            assert.equal(update.mode, 'managed'); assert.equal(update.clearance_level, 'no_clearance');
+            assert.deepEqual(widget.domains.filter(domain => !update.domains.includes(domain)), []);
+            providerWrites.push(update.domains); widget = { ...widget, ...update };
+        }
+        return Response.json({ success: true, result: widget }) as never;
+    };
     const entry = new URL('../../durable/runtime-coordinator.ts', import.meta.url).pathname;
     const bundle = buildSync({ stdin: { contents: `export {LetbuyyRuntimeDurableObject} from ${JSON.stringify(entry)};export default {fetch(){return new Response('synthetic native coordinator')}};`, resolveDir: process.cwd(), sourcefile: 'owned-turnstile-coordinator.ts' }, bundle: true, write: false, platform: 'browser', format: 'esm', target: 'es2022', conditions: ['workerd', 'browser'], external: ['node:*'], logLevel: 'silent' }).outputFiles[0].text;
-    const native = new Miniflare({ modules: true, script: bundle, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false, fetchMock: network, durableObjects: { RUNTIME_COORDINATOR: 'LetbuyyRuntimeDurableObject' }, durableObjectsPersist: false, bindings: { ENVIRONMENT: 'production', TURNSTILE_DOMAIN_MANAGEMENT: JSON.stringify(config) } });
+    const native = new Miniflare({ modules: true, script: bundle, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false, outboundService: provider, durableObjects: { RUNTIME_COORDINATOR: 'LetbuyyRuntimeDurableObject' }, durableObjectsPersist: false, bindings: { ENVIRONMENT: 'production', TURNSTILE_DOMAIN_MANAGEMENT: JSON.stringify(config) } });
     const admission = await native.getDurableObjectNamespace('RUNTIME_COORDINATOR');
     const gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { TURNSTILE_DOMAIN_MANAGEMENT: JSON.stringify(config), RUNTIME_COORDINATOR: admission, CUSTOM_DOMAIN_CNAME_TARGET: target, VERCEL_API_TOKEN: 'synthetic-unit-only', VERCEL_STOREFRONT_PROJECT_ID: 'synthetic-commerce' }));
     const original = globalThis.fetch; let txtVisible = false;

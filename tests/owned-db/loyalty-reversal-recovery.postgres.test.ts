@@ -135,7 +135,10 @@ test('cached order receipts never bypass live ownership and mismatched request b
  const a=await fixture(),b=await fixture(),key=crypto.randomUUID();
  const call=async(subject:typeof a,status='cancelled')=>a.gateway.request('/v1/orders/'+a.spend.orderId,{method:'PATCH',headers:await signedIdentityHeaders(subject.owner,subject.email,a.siteId),body:JSON.stringify({status,idempotency_key:key})});
  assert.equal((await call(a)).status,200);const foreign=await call(b);assert.equal(foreign.status,403,foreign.text);
- const conflict=await call(a,'refunded');assert.equal(conflict.status,409,conflict.text);
+ // A distinct schema-valid body reaches the idempotency conflict gate. Refunds
+ // use their dedicated operation and are intentionally invalid status patches.
+ const conflict=await call(a,'confirmed');assert.equal(conflict.status,409,conflict.text);
+ assert.equal((await call(a,'refunded')).status,400,'a refund cannot bypass its dedicated command');
  owned.psql(`UPDATE sites SET custom_user_id='${b.owner}'WHERE id='${a.siteId}';`);
  const revoked=await call(a);assert.equal(revoked.status,403,revoked.text);assert.equal(a.credits(),'1');
 });
