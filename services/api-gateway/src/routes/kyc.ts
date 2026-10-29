@@ -3,6 +3,7 @@ import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import type { Env } from '../index';
 import { AppError } from '../lib/errors';
+import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
@@ -282,53 +283,82 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
     if (lookupError) throw new Error('KYC document lookup failed');
     const prior = existing as KycDocumentRow | null;
     const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    // The current document row alone cannot remember a key after replacement.
+    // Claim it in the canonical site-scoped receipt store before the R2 write.
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: tenant.siteId,
+        key: idempotencyKey,
+        scope: `kyc:document-upload:${input.data.document_type}`,
+        requestBody: { document_type: input.data.document_type, document_number_last4: input.data.document_number_last4, sha256: digest },
+        requestId: c.req.header('X-Request-ID') || null,
+        expiresInSeconds: 30 * 24 * 60 * 60,
+    });
+    if (claim.kind === 'claimed' && claim.id === 'dev-idempotency-id') {
+        throw new AppError('Private document upload receipts are unavailable. Please retry later.', 503, 'KYC_RECEIPT_UNAVAILABLE');
+    }
     if (prior?.metadata?.idempotency_key === idempotencyKey) {
         if (prior.metadata.sha256 !== digest || prior.document_number_last4 !== input.data.document_number_last4) {
+            if (claim.kind === 'claimed') await idempotency.fail(claim.id);
             return c.json({ error: { code: 'IDEMPOTENCY_CONFLICT', message: 'This upload key was already used for a different document.' } }, 409);
         }
         const rows = await loadDocuments(db, tenant.siteId);
+        if (claim.kind === 'claimed') await idempotency.complete({ id: claim.id,
+            responseBody: { success: true, data: { document_id: prior.id } }, statusCode: 201,
+            resourceType: 'merchant_kyc_document', resourceId: prior.id });
         return c.json(success({ document: serializeDocument(prior), overview: buildOverview(tenant.siteId, rows, providerMode(c.env)) }), 200);
     }
+    if (claim.kind === 'replay') {
+        return c.json({ error: { code: 'KYC_UPLOAD_SUPERSEDED', message: 'This upload was replaced by a newer document. Reload its status.' } }, 409);
+    }
     const key = `kyc/${tenant.siteId}/${input.data.document_type}/${crypto.randomUUID()}`;
-    await bucket.put(key, bytes, { httpMetadata: { contentType, contentDisposition: 'attachment' } });
-    const now = new Date().toISOString();
-    const values = {
-        site_id: tenant.siteId,
-        document_type: input.data.document_type,
-        document_number_last4: input.data.document_number_last4,
-        status: 'submitted',
-        provider: providerName(c.env),
-        provider_mode: providerMode(c.env),
-        provider_reference: null,
-        file_url: null,
-        file_name: null,
-        rejection_reason: null,
-        metadata: { private_object_key: key, sha256: digest, content_type: contentType, byte_size: bytes.length, provider_review_required: true, idempotency_key: idempotencyKey },
-        submitted_by: tenant.userId,
-        submitted_at: now,
-        verified_at: null,
-        rejected_at: null,
-        updated_by: tenant.userId,
-    };
-    let document: KycDocumentRow;
     try {
-        const result = prior
-            ? await db.from('merchant_kyc_documents').update(values)
-                .eq('id', prior.id).eq('site_id', tenant.siteId).eq('updated_at', prior.updated_at)
-                .is('deleted_at', null).select('*').maybeSingle()
-            : await db.from('merchant_kyc_documents').insert({ id: crypto.randomUUID(), ...values, created_by: tenant.userId }).select('*').maybeSingle();
-        if (result.error?.code === '23505' || (!result.error && !result.data))
-            throw new AppError('This document changed while you were uploading. Reload and try again.', 409, 'KYC_CONFLICT');
-        if (result.error || !result.data) throw new Error('KYC document save failed');
-        document = result.data as KycDocumentRow;
+        await bucket.put(key, bytes, { httpMetadata: { contentType, contentDisposition: 'attachment' } });
+        const now = new Date().toISOString();
+        const values = {
+            site_id: tenant.siteId,
+            document_type: input.data.document_type,
+            document_number_last4: input.data.document_number_last4,
+            status: 'submitted',
+            provider: providerName(c.env),
+            provider_mode: providerMode(c.env),
+            provider_reference: null,
+            file_url: null,
+            file_name: null,
+            rejection_reason: null,
+            metadata: { private_object_key: key, sha256: digest, content_type: contentType, byte_size: bytes.length, provider_review_required: true, idempotency_key: idempotencyKey },
+            submitted_by: tenant.userId,
+            submitted_at: now,
+            verified_at: null,
+            rejected_at: null,
+            updated_by: tenant.userId,
+        };
+        let document: KycDocumentRow;
+        try {
+            const result = prior
+                ? await db.from('merchant_kyc_documents').update(values)
+                    .eq('id', prior.id).eq('site_id', tenant.siteId).eq('updated_at', prior.updated_at)
+                    .is('deleted_at', null).select('*').maybeSingle()
+                : await db.from('merchant_kyc_documents').insert({ id: crypto.randomUUID(), ...values, created_by: tenant.userId }).select('*').maybeSingle();
+            if (result.error?.code === '23505' || (!result.error && !result.data))
+                throw new AppError('This document changed while you were uploading. Reload and try again.', 409, 'KYC_CONFLICT');
+            if (result.error || !result.data) throw new Error('KYC document save failed');
+            document = result.data as KycDocumentRow;
+        } catch (error) {
+            await bucket.delete(key);
+            throw error;
+        }
+        const oldKey = prior?.metadata?.private_object_key;
+        if (typeof oldKey === 'string' && oldKey.startsWith(`kyc/${tenant.siteId}/`)) await bucket.delete(oldKey);
+        const rows = await loadDocuments(db, tenant.siteId);
+        await idempotency.complete({ id: claim.id,
+            responseBody: { success: true, data: { document_id: document.id } }, statusCode: 201,
+            resourceType: 'merchant_kyc_document', resourceId: document.id });
+        return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows, providerMode(c.env)) }), 201);
     } catch (error) {
-        await bucket.delete(key);
+        await idempotency.fail(claim.id);
         throw error;
     }
-    const oldKey = prior?.metadata?.private_object_key;
-    if (typeof oldKey === 'string' && oldKey.startsWith(`kyc/${tenant.siteId}/`)) await bucket.delete(oldKey);
-    const rows = await loadDocuments(db, tenant.siteId);
-    return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows, providerMode(c.env)) }), 201);
 });
 
 router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async (c) => {

@@ -55,6 +55,8 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(first.json?.data.document.status, 'submitted');
     assert.equal(first.json?.data.document.has_private_upload, true);
     assert.equal(first.json?.data.overview.overall_status, 'in_progress');
+    assert.equal(owned.psql(`SELECT status FROM idempotency_keys WHERE site_id='${tenant.siteId}'
+        AND scope='kyc:document-upload:business_pan' AND key='${firstKey}';`), 'completed');
     assert.ok(!first.text.includes('private_object_key'));
     assert.ok(!first.text.includes('kyc/'));
     assert.equal(objects.size, 1);
@@ -88,6 +90,33 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(replaced.status, 201, replaced.text);
     assert.equal(objects.size, 1);
     assert.equal(objects.has(priorKey), false);
+    const oldKeyReplay = await upload(tenant.siteId, pdf(), firstKey);
+    assert.equal(oldKeyReplay.status, 409, 'a completed upload key must remain consumed after a newer document replaces it');
+    assert.equal(oldKeyReplay.json?.error?.code, 'KYC_UPLOAD_SUPERSEDED');
+    assert.equal(objects.size, 1);
+    const concurrentKey = randomUUID();
+    let releaseClaimedUpload!: () => void;
+    let claimedUploadArrived!: () => void;
+    const claimedUploadHeld = new Promise<void>((resolve) => { releaseClaimedUpload = resolve; });
+    const claimedUploadWaiting = new Promise<void>((resolve) => { claimedUploadArrived = resolve; });
+    pauseUploads = async () => { claimedUploadArrived(); await claimedUploadHeld; };
+    let claimedUpload: Awaited<ReturnType<Gateway['request']>> | undefined;
+    try {
+        const firstClaim = upload(tenant.siteId, pdf(), concurrentKey);
+        await Promise.race([
+            claimedUploadWaiting,
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('claimed upload did not reach private storage')), 15_000)),
+        ]);
+        const competingClaim = await upload(tenant.siteId, pdf(), concurrentKey);
+        assert.equal(competingClaim.status, 409, 'a concurrent retry cannot start a second private upload');
+        releaseClaimedUpload();
+        claimedUpload = await firstClaim;
+    } finally {
+        releaseClaimedUpload();
+        pauseUploads = null;
+    }
+    assert.equal(claimedUpload?.status, 201, claimedUpload?.text);
+    assert.equal(objects.size, 1);
     let arrived = 0;
     let releaseUploads!: () => void;
     let bothArrived!: () => void;

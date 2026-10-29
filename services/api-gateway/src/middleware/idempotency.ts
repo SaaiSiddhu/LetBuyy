@@ -205,7 +205,8 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
     // Multipart KYC evidence cannot pass through the JSON-body receipt layer.
-    // Its tenant-bound metadata/key/digest receipt is enforced by the route.
+    // The route hashes its verified file bytes and claims the canonical
+    // site-scoped receipt before writing to the private object bucket.
     const routeOwnedKycUpload = method === 'POST' && orderPath === '/kyc/documents/upload';
     if (routeOwnedKycUpload || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
