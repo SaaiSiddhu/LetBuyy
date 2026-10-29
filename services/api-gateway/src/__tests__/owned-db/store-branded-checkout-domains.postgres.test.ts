@@ -137,7 +137,7 @@ test('new custom derivation conserves old verified capabilities through a finite
 
 test('owned custom-domain setup returns both records before any provider claim and starts checkout only after the parent is verified',async()=>{
   const custom='shop.'+b.subdomain+'.example.invalid';
-  owned.psql(`UPDATE sites SET custom_user_id='${actor}' WHERE id='${b.siteId}';`);
+  owned.psql(`UPDATE sites SET custom_user_id='${actor}',published=false,status='draft' WHERE id='${b.siteId}';`);
   const body=JSON.stringify({site_id:b.siteId,domain:custom});
   // Drive the real route with a new signed owner context on each request.
   const connect=await gateway.request('/v1/custom/domains',{method:'POST',headers:{...await signedIdentityHeaders(actor,email,b.siteId),'X-Idempotency-Key':crypto.randomUUID()},body});

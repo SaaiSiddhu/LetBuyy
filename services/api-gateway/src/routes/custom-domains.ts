@@ -341,14 +341,17 @@ customDomainsRouter.post('/domains/verify', async (c) => {
     }
 
     const vercel = await readVercelDomainStatus(c.env, domain);
-    const status = vercel.status === 'pending' ? 'verifying' : vercel.status;
+    const binding = vercel.projectDomain;
+    const exactBinding = binding?.name === domain && binding.projectId === c.env.VERCEL_STOREFRONT_PROJECT_ID
+        && binding.gitBranch == null && binding.customEnvironmentId == null && binding.redirect == null;
+    const status = !exactBinding || vercel.status === 'pending' ? 'verifying' : vercel.status;
     await updateStatus(status);
 
     const verifiedRow = await findSiteDomain(db, parsed.data.site_id, domain).catch(() => null);
     const verifyProvider = await detectLiveProvider(domain).catch(() => null);
     await patchSiteDomainStatus(db, parsed.data.site_id, domain, {
         status: status as SiteDomainStatus,
-        ssl_status: vercel.status === 'active' ? 'active' : vercel.misconfigured ? 'error' : 'pending',
+        ssl_status: status === 'active' ? 'active' : vercel.misconfigured ? 'error' : 'pending',
         provider: verifyProvider,
     });
     await recordDomainVerification(db, {
@@ -359,7 +362,7 @@ customDomainsRouter.post('/domains/verify', async (c) => {
         status,
         txtVerified: true,
         cnameVerified: cnameActive,
-        sslActive: vercel.status === 'active',
+        sslActive: status === 'active',
         result: { vercel: { status: vercel.status, misconfigured: vercel.misconfigured } },
     });
 

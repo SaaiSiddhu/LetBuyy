@@ -230,7 +230,7 @@ export async function prepareStoreCheckoutDomain(c:AppContext,siteId:string,opti
       const status=await readVercelDomainStatus(c.env,address.host,fetchImpl);
       verification=vercelOwnershipRecords(status.projectDomain).map(record=>({type:record.type,domain:record.name,value:record.value}));
       if(!status.verified)reason='PROVIDER_OWNERSHIP_PENDING';
-      if(status.status==='active'&&status.verified&&!status.misconfigured)active=await verifyHttpsApplication(c.env,siteId,address.host,fetchImpl);
+      if(exactProviderDomain(c.env,status.projectDomain,address.host)&&status.status==='active'&&status.verified&&!status.misconfigured)active=await verifyHttpsApplication(c.env,siteId,address.host,fetchImpl);
     }
   }catch{reason='PROVIDER_UNAVAILABLE';}
   const patch={status:active?'active':'verifying',ssl_status:active?'active':'pending',last_checked_at:new Date().toISOString(),
