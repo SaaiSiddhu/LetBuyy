@@ -88,7 +88,7 @@ test('operations panels settle independently and page only the requested identit
 type ContentPage = keyof typeof readPages
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
 
-async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain', transport: Transport) {
+async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 'search' | 'notifications' | 'purchasing' | 'transfers' | 'assistant' | 'themeLibrary' | 'previewUpdate' | 'loyalty' | 'checkoutDomain' | 'connectDomain', transport: Transport) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost/alpha/orders' })
     const domGlobals = ['window', 'document', 'navigator', 'self', 'localStorage', 'MutationObserver', 'HTMLElement', 'Element']
     const previous = Object.fromEntries([...domGlobals, 'fetch'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
@@ -101,7 +101,8 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     const { PathParamsContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js')
     const { ToastProvider } = await import('@letbuyy/ui')
     const { MerchantSecurityContext } = await import('../src/components/security/MerchantSecurityContext')
-    const Component: React.ElementType = kind === 'checkoutDomain' ? (await import('../src/components/domains/CheckoutDomainCard')).CheckoutDomainCard
+    const Component: React.ElementType = kind === 'connectDomain' ? (await import('../src/components/domains/ConnectDomainWizard')).ConnectDomainWizard
+        : kind === 'checkoutDomain' ? (await import('../src/components/domains/CheckoutDomainCard')).CheckoutDomainCard
         : kind === 'themeLibrary' ? (await import('../src/components/theme-library/ThemeLibraryWorkspace')).ThemeLibraryWorkspace
         : kind === 'previewUpdate' ? (await import('../src/components/theme-editor/ThemeUpdatePanel')).default
         : kind === 'loyalty' ? (await import('../src/components/settings/LoyaltySettings')).LoyaltySettings
@@ -114,13 +115,14 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         : kind === 'transfers' ? (await import('../src/app/[store]/products/transfers/page')).default
         : kind === 'assistant' ? (await import('../src/components/AISidebar')).default
         : (await import('../src/components/NotificationsPanel')).default
+    let completions = 0
     const root = createRoot(dom.window.document.getElementById('root')!)
     const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
     const render = async (store = 'alpha', actorId = 'actor-a') => {
         await act(async () => root.render(
             <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}>
                 <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store }}>
-                    <Component actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} />
+                    <Component initialDomain="shop.example.invalid" onConnected={() => completions++} actorId={actorId} currentVersionId="current-version" availableVersionId="next-version" themeSlug="synthetic-theme" storeId={kind === 'previewUpdate' ? store : kind === 'themeLibrary' ? null : 'site-a'} store={store} storeName="Synthetic Store" siteType="store" onClose={() => {}} storeData={{ id: 'site-a', name: 'Synthetic Store', store_name: 'Synthetic Store', subdomain: store, site_type: 'store', status: 'draft', trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null }} />
                 </MerchantSecurityContext.Provider></ToastProvider>
             </PathParamsContext.Provider></AppRouterContext.Provider>,
         ))
@@ -128,6 +130,7 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
     await render()
     return {
         render,
+        completions: () => completions,
         text: () => dom.window.document.body.textContent || '',
         controls: () => [...dom.window.document.querySelectorAll('input,textarea,select,[role="switch"]')].map((node: Element) => ({ value: (node as HTMLInputElement).value, checked: (node as HTMLInputElement).checked, ariaChecked: node.getAttribute('aria-checked') })),
         async type(value: string) {
@@ -608,7 +611,7 @@ const checkoutSetup = (store = 'alpha', active = false) => ({
     fallback_origin: 'https://checkout.letbuyy.com', reason: null, dns_records: [],
 })
 
-test('checkout domain readiness is read first and setup is an explicit action with safe fallback while pending', async () => {
+test('checkout readiness is read first; platform provisioning is automatic and a manual recheck preserves fallback', async () => {
     const methods: string[] = []
     const h = await mount('checkoutDomain', async (_url, init) => {
         methods.push(init?.method || 'GET')
@@ -616,14 +619,14 @@ test('checkout domain readiness is read first and setup is an explicit action wi
     })
     try {
         assert.deepEqual(methods, ['GET'])
-        assert.match(h.text(), /Setup pending/)
-        assert.match(h.text(), /continue checking out securely/)
-        await h.click('Set up checkout address')
+        assert.match(h.text(), /Preparing/)
+        assert.match(h.text(), /provisions this address automatically/)
+        await h.click('Check status')
         assert.deepEqual(methods, ['GET', 'POST'])
-        assert.match(h.text(), /Setup pending/)
-        await h.click('Set up checkout address')
-        assert.match(h.text(), /New checkout links use this verified address/)
-        assert.match(h.text(), /Ready/)
+        assert.match(h.text(), /Preparing/)
+        await h.click('Check status')
+        assert.match(h.text(), /Checkout links use this verified address/)
+        assert.match(h.text(), /HTTPS ready/)
     } finally { await h.close() }
 })
 
@@ -635,7 +638,7 @@ test('checkout domain read failure offers a read retry without claiming ready or
     })
     try {
         assert.match(h.text(), /Checkout address unavailable/)
-        assert.doesNotMatch(h.text(), /New checkout links use|Ready/)
+        assert.doesNotMatch(h.text(), /Checkout links use|HTTPS ready/)
         await h.click('Retry')
         assert.deepEqual(methods, ['GET', 'GET'])
         assert.match(h.text(), /checkout.alpha.shops.example.invalid/)
@@ -651,5 +654,45 @@ test('checkout domain retires a late response from the previous store even if tr
         await act(async () => previous.resolve(json(checkoutSetup('alpha', true))))
         assert.doesNotMatch(h.text(), /checkout.alpha.shops.example.invalid/)
         assert.match(h.text(), /checkout.beta.shops.example.invalid/)
+    } finally { await h.close() }
+})
+
+const customCheckout = (active = false) => ({ ...checkoutSetup('alpha', active), source: 'custom', parent_hostname: 'shop.example.invalid', hostname: 'checkout.shop.example.invalid', checkout_origin: active ? 'https://checkout.shop.example.invalid' : 'https://checkout.letbuyy.com', dns_records: [{ type: 'CNAME', name: 'checkout.shop.example.invalid', value: 'exact-provider.example.invalid' }] })
+const connectedDomain = () => ({ domain: 'shop.example.invalid', status: 'pending', role: 'primary', provider: 'Cloudflare', checkout: customCheckout(), records: { txt: { name: '_letbuyy-challenge.shop.example.invalid', value: 'synthetic-public-claim' }, cname: { name: 'shop.example.invalid', value: 'exact-provider.example.invalid' } } })
+
+test('domain wizard supplies both DNS addresses and cannot complete on storefront readiness alone', async () => {
+    let checks = 0
+    const h = await mount('connectDomain', async (url, init) => {
+        assert.equal(init?.method, 'POST')
+        if (url.endsWith('/domains')) return json(connectedDomain(), 201)
+        if (url.endsWith('/verify')) return json({ domain: 'shop.example.invalid', status: 'active', txt_verified: true, cname_verified: true, checkout: customCheckout() })
+        assert.ok(url.endsWith('/checkout'))
+        return json(customCheckout(++checks > 1), checks > 1 ? 200 : 202)
+    })
+    try {
+        await h.click('Continue')
+        assert.match(h.text(), /checkout.shop.example.invalid/)
+        assert.match(h.text(), /exact-provider.example.invalid/)
+        assert.doesNotMatch(h.text(), /ALIAS.*Unknown|checkout.alpha.shop/)
+        await h.click('Check DNS and HTTPS')
+        assert.equal(h.completions(), 0)
+        assert.match(h.text(), /Storefront ready · checkout pending/)
+        await h.click('Check DNS and HTTPS')
+        assert.equal(h.completions(), 1)
+        assert.match(h.text(), /Storefront and checkout are ready/)
+    } finally { await h.close() }
+})
+
+test('domain wizard retains DNS instructions after an uncertain provider response and retires old-store completions', async () => {
+    const old = deferred<Response>()
+    const h = await mount('connectDomain', async (url) => {
+        if (url.endsWith('/domains')) return json(connectedDomain(), 201)
+        return old.promise
+    })
+    try {
+        await h.click('Continue'); await h.click('Check DNS and HTTPS')
+        await h.render('beta')
+        await act(async () => old.resolve(json({ domain: 'shop.example.invalid', status: 'active', checkout: customCheckout(true) })))
+        assert.equal(h.completions(), 0)
     } finally { await h.close() }
 })

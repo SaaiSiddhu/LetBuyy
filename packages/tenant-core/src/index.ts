@@ -141,7 +141,9 @@ export function buildStoreCheckoutHostname(input: {
   const labels = base.split('.');
   if (labels.length < 2 || /^\d+$/.test(labels.at(-1) || '')
       || labels.some(label => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))) return null;
-  const host = `checkout.${handle}.${base}`;
+  // Owner revision 29Oct2026: a connected hostname already identifies its
+  // storefront. Only platform addresses include the store handle separately.
+  const host = input.connectedHost ? `checkout.${base}` : `checkout.${handle}.${base}`;
   return host.length <= 253 ? host : null;
 }
 

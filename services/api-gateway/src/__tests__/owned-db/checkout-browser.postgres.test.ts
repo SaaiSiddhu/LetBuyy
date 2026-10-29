@@ -223,9 +223,10 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     await context.addInitScript(({ token, items, origin }) => {
         // A cart on another origin must remain empty. Seeding every origin
         // would hide the production Back to Cart storage-loss regression.
-        if (globalThis.location.origin !== origin) return;
-        globalThis.localStorage.setItem('lb_cart_token', token);
-        globalThis.localStorage.setItem('lb_cart', JSON.stringify(items));
+        const browserWindow = globalThis as unknown as { location: { origin: string }; localStorage: { setItem(key: string, value: string): void } };
+        if (browserWindow.location.origin !== origin) return;
+        browserWindow.localStorage.setItem('lb_cart_token', token);
+        browserWindow.localStorage.setItem('lb_cart', JSON.stringify(items));
     }, {
         token: cartToken,
         origin: storefrontOrigin,
@@ -251,7 +252,7 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     await page.getByRole('link', { name: 'Back to Cart', exact: true }).click();
     await page.waitForLoadState('networkidle');
     assert.equal(new URL(page.url()).origin, storefrontOrigin);
-    assert.equal(await page.evaluate(() => globalThis.localStorage.getItem('lb_cart_token')), cartToken);
+    assert.equal(await page.evaluate(() => (globalThis as unknown as { localStorage: { getItem(key: string): string | null } }).localStorage.getItem('lb_cart_token')), cartToken);
     assert.ok((await page.locator('body').innerText()).includes('Synthetic browser checkout product'), 'the returned cart retains its actual product');
     await page.goto(`${storefrontOrigin}/checkout`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(url => url.hostname === 'checkout.localhost', { timeout: coldNavigationTimeout });

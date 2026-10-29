@@ -33,7 +33,7 @@ import { CheckoutDomainCard } from '@/components/domains/CheckoutDomainCard'
 
 const defaultCnameTarget = process.env.NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET || 'connect.letbuyy.com'
 
-type View = { kind: 'overview' } | { kind: 'connect' } | { kind: 'detail'; domain: string; role: 'primary' | 'redirect'; redirectTo: string | null; provider: string | null }
+type View = { kind: 'overview' } | { kind: 'connect'; domain?: string } | { kind: 'detail'; domain: string; role: 'primary' | 'redirect'; redirectTo: string | null; provider: string | null }
 
 interface StoreInfo {
     id: string
@@ -126,9 +126,10 @@ export default function DomainCenterPage() {
     // ── Connect view ──
     if (view.kind === 'connect') {
         return (
-            <SettingsPane navigationKey="domains" title="Connect a domain" description="Use your own brand address for your storefront." store={store}>
+            <SettingsPane navigationKey="domains" title="Connect a domain" description="Connect your storefront and secure checkout in one setup." store={store}>
                 <ConnectDomainWizard
                     store={store}
+                    initialDomain={view.domain}
                     onClose={() => { setView({ kind: 'overview' }); void loadData({ quiet: true }) }}
                     onConnected={() => void loadData({ quiet: true })}
                 />
@@ -193,7 +194,7 @@ export default function DomainCenterPage() {
                 Connect a custom domain to give your store a professional, branded address with automatic HTTPS. Your LetBuyy address remains assigned when you connect a custom domain.
             </Banner>
 
-            <CheckoutDomainCard key={store} store={store} />
+            <CheckoutDomainCard key={store} store={store} onResume={domain => setView({ kind: 'connect', domain })} />
 
             {/* Your domains */}
             <Section variant="grouped" title="Your domains" >

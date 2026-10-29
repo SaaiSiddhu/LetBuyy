@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { prepareStoreCheckoutDomain } from '../lib/store-checkout-domain';
 import { assertReadyFirstPartyStorefrontDomain, provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
@@ -789,8 +790,10 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             requestId: getRequestId(c),
         });
         const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, store as { subdomain: string; store_name?: string });
+        const checkoutDomain = await prepareStoreCheckoutDomain(c, String(store.id), { reserveOnly: true });
+        c.executionCtx.waitUntil(prepareStoreCheckoutDomain(c, String(store.id)).catch(() => undefined));
         c.header('X-Idempotent-Replay', 'true');
-        return c.json(success(store, { meta: { storefront_domain: storefrontDomain } }), 201);
+        return c.json(success(store, { meta: { storefront_domain: storefrontDomain, checkout_domain: checkoutDomain } }), 201);
     };
 
     if (idempotencyKey) {
@@ -910,7 +913,12 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
     });
 
     const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, data);
-    return c.json(success(data, { meta: { storefront_domain: storefrontDomain } }), 201);
+    // Persist the exact address before returning: the existing scheduled reader
+    // can retry DNS/TLS even if this request lifetime ends or Vercel is unavailable.
+    // Provisioning a certificate never publishes this newly created private store.
+    const checkoutDomain = await prepareStoreCheckoutDomain(c, String(data.id), { reserveOnly: true });
+    c.executionCtx.waitUntil(prepareStoreCheckoutDomain(c, String(data.id)).catch(() => undefined));
+    return c.json(success(data, { meta: { storefront_domain: storefrontDomain, checkout_domain: checkoutDomain } }), 201);
 });
 
 // PATCH /stores/:id — Update a store

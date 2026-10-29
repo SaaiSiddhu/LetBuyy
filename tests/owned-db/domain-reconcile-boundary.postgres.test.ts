@@ -186,7 +186,7 @@ test('mixed storefront and checkout candidates advance fairly under the real sig
   INSERT INTO site_domains(id,site_id,domain,purpose,role,status,ssl_status) VALUES('${parent}','${custom.siteId}','${customHost}','storefront','primary','active','active');
   INSERT INTO site_domains(site_id,domain,purpose,role,status,ssl_status,checkout_parent_domain_id,metadata) VALUES
    ('${platform.siteId}','checkout.${platform.subdomain}.shops.example.invalid','checkout','redirect','pending','pending',NULL,'{"managed_by":"letbuyy-checkout-v1"}'),
-   ('${custom.siteId}','checkout.${custom.subdomain}.${customHost}','checkout','redirect','pending','pending','${parent}','{"managed_by":"letbuyy-checkout-v1"}'),
+   ('${custom.siteId}','checkout.${customHost}','checkout','redirect','pending','pending','${parent}','{"managed_by":"letbuyy-checkout-v1"}'),
    ('${deleted.siteId}','checkout.${deleted.subdomain}.shops.example.invalid','checkout','redirect','pending','pending',NULL,'{"managed_by":"letbuyy-checkout-v1"}');
   UPDATE sites SET deleted_at=now() WHERE id='${deleted.siteId}';`);
  const seen=new Set<string>();cursorCache.clear();

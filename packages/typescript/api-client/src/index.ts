@@ -540,6 +540,8 @@ export interface DomainConnectResult {
   domain: string;
   status: string;
   provider?: string | null;
+  role?: SiteDomainRole;
+  checkout?: CheckoutDomainSetup;
   records: {
     txt?: DomainDnsRecordHint;
     cname?: DomainDnsRecordHint;
@@ -556,6 +558,8 @@ export interface DomainVerifyResult {
   cname_target?: string;
   vercel?: JsonRecord;
   reason?: string;
+  checkout?: CheckoutDomainSetup;
+  provider_dns_records?: Array<{ type: 'TXT'; name: string; value: string }>;
 }
 export interface DomainVerificationEvent {
   id: string;

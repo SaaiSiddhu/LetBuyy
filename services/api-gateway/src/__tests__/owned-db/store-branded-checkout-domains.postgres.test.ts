@@ -21,6 +21,8 @@ const root='shops.example.invalid',project='synthetic-commerce-project',host=`ch
 let env:Env,gateway:Gateway,originalFetch:typeof fetch;
 let wrongApplication=false,redirectApplication=false,providerUnavailable=false;
 let foreignDomain:string|null=null,lostDeleteAcknowledgement=false;
+const dns = new Map<string, string[]>();
+let providerNeedsOwnership = false;
 const domains=new Set<string>(),providerCalls:Array<{url:string;method:string}>=[];
 const c=()=>({env,executionCtx:{waitUntil:()=>undefined}} as unknown as Context<{Bindings:Env}>);
 const sqlQuote=(value:string)=>"'"+value.replaceAll("'","''")+"'";
@@ -36,14 +38,20 @@ before(async()=>{
   originalFetch=globalThis.fetch;
   globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
     const url=new URL(input instanceof Request?input.url:String(input)),method=init?.method||(input instanceof Request?input.method:'GET');
+    if(['cloudflare-dns.com','dns.google'].includes(url.hostname)){
+      const name=url.searchParams.get('name')!,type=url.searchParams.get('type')!;
+      const values=type==='NS'?['synthetic.ns.cloudflare.com']:dns.get(type+':'+name)||[];
+      return Response.json({Status:0,Answer:values.map(data=>({data}))});
+    }
     if(url.hostname==='api.vercel.com'){
       providerCalls.push({url:url.toString(),method});assert.equal(init?.redirect,'manual');
       if(providerUnavailable)return Response.json({error:{code:'unavailable',message:'Synthetic provider outage'}},{status:503});
+      if(url.pathname.endsWith('/verify'))return providerNeedsOwnership?Response.json({error:{code:'verification_failed'}},{status:400}):Response.json({verified:true});
       if(method==='POST'){const body=JSON.parse(String(init?.body));domains.add(body.name);return Response.json({name:body.name,projectId:project,verified:true});}
       if(url.pathname.endsWith('/config'))return Response.json({configuredBy:'CNAME',misconfigured:false});
       const name=decodeURIComponent(url.pathname.split('/').at(-1)!);
       if(method==='DELETE'){domains.delete(name);return lostDeleteAcknowledgement?Response.json({error:{code:'synthetic_lost_delete_ack'}},{status:503}):Response.json({});}
-      return domains.has(name)?Response.json({name,projectId:name===foreignDomain?'synthetic-foreign-project':project,verified:true}):Response.json({error:{code:'not_found'}},{status:404});
+      return domains.has(name)?Response.json({name,projectId:name===foreignDomain?'synthetic-foreign-project':project,verified:!providerNeedsOwnership,verification:providerNeedsOwnership?[{type:'TXT',domain:'_vercel.example.invalid',value:'synthetic-exact-provider-claim'}]:[]}):Response.json({error:{code:'not_found'}},{status:404});
     }
     if(url.hostname.startsWith('checkout.')&&url.pathname==='/.well-known/letbuyy-checkout-domain'){
       providerCalls.push({url:url.toString(),method});assert.equal(init?.redirect,'manual');
@@ -106,10 +114,59 @@ test('real cart mint/verification binds origin and refuses host, site and downgr
   assert.equal((await gateway.request(`/v1/checkout/${id}/verify-handoff?${old.searchParams}`)).status,200,'previous central adapters remain compatible during the rolling deployment');
 });
 
+test('new custom derivation conserves old verified capabilities through a finite drain and forbids new old-style rows',async()=>{
+  const tenant=newSyntheticTenant('legacy-drain');seedSyntheticTenant(owned.psql,tenant);
+  const parent=crypto.randomUUID(),custom='store.'+tenant.subdomain+'.example.invalid',oldHost=`checkout.${tenant.subdomain}.${custom}`;
+  const down=readFileSync(new URL('../../../../../database/supabase/rollback/410_checkout_custom_host_derivation.rollback.sql',import.meta.url),'utf8');
+  const up=readFileSync(new URL('../../../../../database/supabase/migrations/410_checkout_custom_host_derivation.sql',import.meta.url),'utf8');
+  owned.script(down);
+  owned.psql(`INSERT INTO site_domains(id,site_id,domain,purpose,role,status,ssl_status) VALUES('${parent}','${tenant.siteId}','${custom}','storefront','primary','active','active');UPDATE sites SET custom_domain='${custom}',custom_domain_status='active' WHERE id='${tenant.siteId}';INSERT INTO site_domains(site_id,domain,purpose,role,status,ssl_status,checkout_parent_domain_id,last_checked_at,metadata) VALUES('${tenant.siteId}','${oldHost}','checkout','redirect','active','active','${parent}',now(),jsonb_build_object('managed_by','letbuyy-checkout-v1','checkout_store_handle','${tenant.subdomain}','checkout_base_host','${custom}'));`);
+  domains.add(oldHost);
+  const before=owned.psql(`SELECT to_jsonb(d)::text FROM site_domains d WHERE site_id='${tenant.siteId}' AND purpose='checkout';`);
+  owned.script(up);
+  assert.equal(owned.psql(`SELECT to_jsonb(d)::text FROM site_domains d WHERE site_id='${tenant.siteId}' AND purpose='checkout';`),before,'UP does not rewrite domains or their history');
+  const db=getSupabaseAdminFromEnv(env);
+  assert.ok(await resolveCheckoutDomainSite(db,oldHost,root,tenant.siteId),'a previously issued, still-leased capability can finish');
+  const next=await prepareStoreCheckoutDomain(c(),tenant.siteId,{force:true});assert.equal(next.hostname,`checkout.${custom}`);assert.equal(next.status,'active');
+  assert.ok(await resolveCheckoutDomainSite(db,oldHost,root,tenant.siteId));
+  assert.match(owned.psqlExpectError(down),/history must be retained/,'DOWN refuses to erase new custom checkout history');
+  assert.match(owned.psqlExpectError(`INSERT INTO site_domains(site_id,domain,purpose,role,status,ssl_status,checkout_parent_domain_id) VALUES('${tenant.siteId}','checkout.${tenant.subdomain}.other.example.invalid','checkout','redirect','pending','pending','${parent}');`),/does not match/);
+  owned.psql(`UPDATE site_domains SET metadata=metadata||jsonb_build_object('checkout_retire_after',now()-interval '1 second') WHERE site_id='${tenant.siteId}' AND domain='${oldHost}';`);
+  assert.equal(await resolveCheckoutDomainSite(db,oldHost,root,tenant.siteId),null,'expired drain never becomes another checkout origin');
+});
+
+test('owned custom-domain setup returns both records before any provider claim and starts checkout only after the parent is verified',async()=>{
+  const custom='shop.'+b.subdomain+'.example.invalid';
+  owned.psql(`UPDATE sites SET custom_user_id='${actor}' WHERE id='${b.siteId}';`);
+  const body=JSON.stringify({site_id:b.siteId,domain:custom});
+  // Drive the real route with a new signed owner context on each request.
+  const connect=await gateway.request('/v1/custom/domains',{method:'POST',headers:await signedIdentityHeaders(actor,email,b.siteId),body});
+  assert.equal(connect.status,201,connect.text);
+  assert.equal(connect.json!.data.checkout.hostname,`checkout.${custom}`);
+  assert.equal(connect.json!.data.checkout.reason,'PARENT_NOT_VERIFIED');
+  assert.equal(connect.json!.data.checkout.dns_records[0].value,env.CUSTOM_DOMAIN_CNAME_TARGET);
+  assert.equal(domains.has(custom),false);assert.equal(domains.has(`checkout.${custom}`),false);
+  const token=connect.json!.data.records.txt.value;
+  dns.set('TXT:_letbuyy-challenge.'+custom,[token]);dns.set('CNAME:'+custom,[String(env.CUSTOM_DOMAIN_CNAME_TARGET)]);
+  const verified=await gateway.request('/v1/custom/domains/verify',{method:'POST',headers:await signedIdentityHeaders(actor,email,b.siteId),body});
+  assert.equal(verified.status,200,verified.text);assert.equal(verified.json!.data.status,'active');
+  // Provider side effects finish asynchronously; the durable row exists now.
+  await gateway.settle();
+  assert.equal(owned.psql(`SELECT domain FROM site_domains WHERE site_id='${b.siteId}' AND purpose='checkout' AND checkout_retired_at IS NULL AND deleted_at IS NULL;`),`checkout.${custom}`);
+  assert.equal(owned.psql(`SELECT published::text FROM sites WHERE id='${b.siteId}';`),'false','certificate setup does not publish a private store');
+  providerNeedsOwnership=true;
+  const pending=await prepareStoreCheckoutDomain(c(),b.siteId,{force:true});
+  assert.equal(pending.status,'verifying');assert.equal(pending.reason,'PROVIDER_OWNERSHIP_PENDING');
+  assert.ok(pending.dns_records.some(record=>record.type==='TXT'&&record.value==='synthetic-exact-provider-claim'));
+  assert.equal(pending.checkout_origin,'https://checkout.letbuyy.com');
+  providerNeedsOwnership=false;
+  assert.equal((await prepareStoreCheckoutDomain(c(),b.siteId,{force:true})).status,'active');
+});
+
 test('domain change reserves the old address through its finite drain and never trusts a historical reassignment',async()=>{
   const parent=crypto.randomUUID(),custom=`syn-${crypto.randomUUID().slice(0,8)}.example.invalid`;
   owned.psql(`INSERT INTO site_domains(id,site_id,domain,purpose,role,status,ssl_status) VALUES('${parent}','${a.siteId}','${custom}','storefront','primary','active','active');UPDATE sites SET custom_domain='${custom}',custom_domain_status='active' WHERE id='${a.siteId}';`);
-  const setup=await prepareStoreCheckoutDomain(c(),a.siteId,{force:true});assert.equal(setup.status,'active');assert.equal(setup.hostname,`checkout.${a.subdomain}.${custom}`);
+  const setup=await prepareStoreCheckoutDomain(c(),a.siteId,{force:true});assert.equal(setup.status,'active');assert.equal(setup.hostname,`checkout.${custom}`);
   const db=getSupabaseAdminFromEnv(env);assert.ok(await resolveCheckoutDomainSite(db,host,root,a.siteId));
   assert.match(owned.psqlExpectError(`INSERT INTO site_domains(site_id,domain,purpose,role,status,ssl_status) VALUES('${b.siteId}','${host}','storefront','redirect','active','active');`),/duplicate|unique/i);
   assert.match(owned.psqlExpectError(`UPDATE site_domains SET checkout_retired_at=NULL WHERE site_id='${a.siteId}' AND domain='${host}';`),/cannot be reactivated/);

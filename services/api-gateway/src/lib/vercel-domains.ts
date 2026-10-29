@@ -190,6 +190,20 @@ export async function getVercelDomainConfig(
     }
 }
 
+/** Recheck only an already attached project domain's provider challenge. */
+export async function verifyVercelProjectDomain(env: VercelDomainEnv, domain: string, fetchImpl: FetchLike = fetch): Promise<Record<string, unknown>> {
+    return requestVercelJson(env, `/v9/projects/{projectId}/domains/${encodeURIComponent(domain)}/verify`, { method: 'POST' }, fetchImpl, 0);
+}
+
+/** Public DNS instructions returned by this exact project's provider response. */
+export function vercelOwnershipRecords(domain: Record<string, unknown> | null): Array<{ type: 'TXT'; name: string; value: string }> {
+    if (!Array.isArray(domain?.verification)) return [];
+    return domain.verification.filter(isRecord).filter(record => record.type === 'TXT'
+        && typeof record.domain === 'string' && record.domain.length <= 253 && /^_vercel\.[a-z0-9.-]+$/.test(record.domain)
+        && typeof record.value === 'string' && record.value.length > 0 && record.value.length <= 1000)
+        .slice(0, 3).map(record => ({ type: 'TXT', name: String(record.domain), value: String(record.value) }));
+}
+
 export async function readVercelDomainStatus(
     env: VercelDomainEnv,
     domain: string,

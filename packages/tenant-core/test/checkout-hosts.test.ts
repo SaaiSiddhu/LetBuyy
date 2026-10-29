@@ -4,8 +4,8 @@ import { buildStoreCheckoutHostname, platformCheckoutStoreHandle } from '../src/
 
 test('derives the requested checkout host from the persisted store handle and exact base', () => {
   assert.equal(buildStoreCheckoutHostname({ subdomain: 'snaz', storeRootDomain: 'shops.example.invalid' }), 'checkout.snaz.shops.example.invalid');
-  assert.equal(buildStoreCheckoutHostname({ subdomain: 'snaz', storeRootDomain: 'shops.example.invalid', connectedHost: 'example.com' }), 'checkout.snaz.example.com');
-  assert.equal(buildStoreCheckoutHostname({ subdomain: 'snaz', storeRootDomain: 'shops.example.invalid', connectedHost: 'shop.example.co.in' }), 'checkout.snaz.shop.example.co.in');
+  assert.equal(buildStoreCheckoutHostname({ subdomain: 'snaz', storeRootDomain: 'shops.example.invalid', connectedHost: 'example.com' }), 'checkout.example.com');
+  assert.equal(buildStoreCheckoutHostname({ subdomain: 'snaz', storeRootDomain: 'shops.example.invalid', connectedHost: 'shop.example.co.in' }), 'checkout.shop.example.co.in');
   assert.equal(platformCheckoutStoreHandle('checkout.snaz.shops.example.invalid', 'shops.example.invalid'), 'snaz');
 });
 
