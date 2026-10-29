@@ -1,4 +1,5 @@
 'use client';
+import { mountTurnstile, type TurnstileController, type TurnstileStatus } from '@letbuyy/ui/turnstile-client';
 import { parsePickerVariants, type PickerVariant } from './variant-options-carrier';
 import { VariantFactsController } from './variant-facts-controller';
 import { buyerVariantUrl, buyerUrlWithVariant, uniquePickerVariant, variantFromBuyerUrl, type PickerOptionGroups } from './variant-selection-url';
@@ -1423,18 +1424,6 @@ class LbProductGalleryElement extends LiquidIslandBase {
     }
 }
 
-const REVIEW_TURNSTILE_CALLBACK = 'onLbReviewTurnstileLoad';
-
-type ReviewTurnstileApi = {
-    render: (container: string | HTMLElement, options: Record<string, unknown>) => string;
-    reset: (widgetId: string) => void;
-    remove: (widgetId: string) => void;
-};
-
-function getReviewTurnstile(): ReviewTurnstileApi | undefined {
-    return (window as unknown as { turnstile?: ReviewTurnstileApi }).turnstile;
-}
-
 function canUseReviewDevBypass(): boolean {
     return process.env.NODE_ENV === 'development'
         && process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
@@ -1466,31 +1455,27 @@ function reviewStarsMarkup(): string {
 // Review submission island. Reuses the existing /api/reviews POST route (which wraps the canonical
 // storefront.submitProductReview gateway call + customer session + Turnstile). No new backend.
 // Turnstile is mandatory server-side (verifyTurnstileToken rejects a missing token), so this mirrors
-// the React TurnstileWidget: dev-bypass token in local dev, invisible widget when a site key is set.
+// the shared widget lifecycle, with interactive challenges visible only when required.
 class LbReviewFormElement extends LiquidIslandBase {
     private turnstileToken: string | null = null;
-    private turnstileWidgetId: string | null = null;
+    private turnstileController: TurnstileController | null = null;
     private submitting = false;
 
     connectedCallback() {
         if (!this.dataset.productId || !this.dataset.storeId) return;
         this.renderForm();
-        this.setupTurnstile();
+        this.addEventListener('focusin', this.activateTurnstile);
         this.addEventListener('submit', this.handleSubmit);
         this.addEventListener('click', this.handleStarClick);
     }
 
     disconnectedCallback() {
+        this.removeEventListener('focusin', this.activateTurnstile);
         this.removeEventListener('submit', this.handleSubmit);
         this.removeEventListener('click', this.handleStarClick);
-        const turnstile = getReviewTurnstile();
-        if (this.turnstileWidgetId && turnstile) {
-            try {
-                turnstile.remove(this.turnstileWidgetId);
-            } catch {
-                // Ignore stale widget handles after navigation.
-            }
-        }
+        this.turnstileController?.destroy();
+        this.turnstileController = null;
+        this.turnstileToken = null;
     }
 
     private renderForm() {
@@ -1569,6 +1554,12 @@ class LbReviewFormElement extends LiquidIslandBase {
             return;
         }
 
+        this.activateTurnstile();
+        if (!this.turnstileToken) {
+            this.setStatus('Complete the security check before submitting your review.', 'error');
+            return;
+        }
+
         const productId = this.dataset.productId || '';
         const storeId = this.dataset.storeId || '';
         const title = this.querySelector<HTMLInputElement>('input[name="review_title"]')?.value.trim() || undefined;
@@ -1610,10 +1601,15 @@ class LbReviewFormElement extends LiquidIslandBase {
             this.resetTurnstile();
         } catch {
             this.setStatus('Unable to submit your review. Please try again.', 'error');
+            this.resetTurnstile();
         } finally {
             this.submitting = false;
             this.setSubmitDisabled(false);
         }
+    };
+
+    private readonly activateTurnstile = () => {
+        if (!this.turnstileController && !this.turnstileToken) this.setupTurnstile();
     };
 
     private setupTurnstile() {
@@ -1621,74 +1617,22 @@ class LbReviewFormElement extends LiquidIslandBase {
             this.turnstileToken = 'dev-bypass-token';
             return;
         }
-
-        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-        if (!siteKey) {
-            this.turnstileToken = null;
-            return;
-        }
-
-        const render = () => this.renderTurnstile(siteKey);
-        if (getReviewTurnstile()) {
-            render();
-            return;
-        }
-
-        if (!document.querySelector('script[src*="turnstile"]')) {
-            (window as unknown as Record<string, unknown>)[REVIEW_TURNSTILE_CALLBACK] = render;
-            const script = document.createElement('script');
-            script.src = `https://challenges.cloudflare.com/turnstile/v0/api.js?onload=${REVIEW_TURNSTILE_CALLBACK}`;
-            script.async = true;
-            document.head.appendChild(script);
-            return;
-        }
-
-        let attempts = 0;
-        const timer = window.setInterval(() => {
-            attempts += 1;
-            if (getReviewTurnstile()) {
-                window.clearInterval(timer);
-                render();
-            } else if (attempts > 50) {
-                window.clearInterval(timer);
-            }
-        }, 200);
-    }
-
-    private renderTurnstile(siteKey: string) {
-        const turnstile = getReviewTurnstile();
         const container = this.querySelector<HTMLElement>('[data-lb-review-turnstile]');
-        if (!turnstile || !container) return;
-
-        if (this.turnstileWidgetId) {
-            try {
-                turnstile.remove(this.turnstileWidgetId);
-            } catch {
-                // Ignore stale widget handles after navigation.
-            }
-            this.turnstileWidgetId = null;
-        }
-
-        this.turnstileWidgetId = turnstile.render(container, {
-            sitekey: siteKey,
-            size: 'flexible',
-            callback: (token: string) => { this.turnstileToken = token; },
-            'expired-callback': () => { this.turnstileToken = null; },
-            'error-callback': () => { this.turnstileToken = null; },
+        if (!container) return;
+        const status = createLiquidVerificationStatus(container, () => this.resetTurnstile());
+        this.turnstileController = mountTurnstile(container, {
+            siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+            action: 'product_review',
+            onToken: (token) => { this.turnstileToken = token || null; },
+            onStatus: status,
         });
     }
 
     private resetTurnstile() {
         this.turnstileToken = canUseReviewDevBypass() ? 'dev-bypass-token' : null;
-        const turnstile = getReviewTurnstile();
-        if (this.turnstileWidgetId && turnstile) {
-            try {
-                turnstile.reset(this.turnstileWidgetId);
-            } catch {
-                // Ignore reset races during navigation.
-            }
-        }
+        this.turnstileController?.reset();
     }
+
 }
 
 const WISHLIST_STORAGE_KEY = 'lb_wishlist';
@@ -2647,16 +2591,27 @@ class LbLogoutElement extends LiquidIslandBase {
     }
 }
 
-const FORM_TURNSTILE_CALLBACK = 'onLbFormTurnstileLoad';
-
-type FormTurnstileApi = {
-    render: (container: string | HTMLElement, options: Record<string, unknown>) => string;
-    reset: (widgetId: string) => void;
-    remove: (widgetId: string) => void;
-};
-
-function getFormTurnstile(): FormTurnstileApi | undefined {
-    return (window as unknown as { turnstile?: FormTurnstileApi }).turnstile;
+// Native Liquid forms use the same SDK/token lifecycle as React without changing renderer.
+function createLiquidVerificationStatus(container: HTMLElement, retry: () => void) {
+    const status = document.createElement('div');
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    container.after(status);
+    return (value: TurnstileStatus) => {
+        status.replaceChildren();
+        if (value === 'verified') return;
+        status.textContent = value === 'checking' ? 'Checking security…'
+            : value === 'interactive' ? 'Complete the security check to continue.'
+            : value === 'unavailable' ? 'Security verification is temporarily unavailable. Please try again later.'
+            : 'Security verification could not finish. Check your connection and try again. ';
+        if (value === 'retry') {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = 'Retry verification';
+            button.addEventListener('click', retry);
+            status.append(button);
+        }
+    };
 }
 
 function canUseFormTurnstileDevBypass(): boolean {
@@ -2664,93 +2619,28 @@ function canUseFormTurnstileDevBypass(): boolean {
         && process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
 }
 
-// T1/W2 — generic Turnstile-for-a-plain-<form> island for the transitional customer login form.
-// It is a no-JS-first <form method="post"> submission that POSTs directly to /api/customer/login;
-// there is no client-side submit handler to attach a token to. This island fills the same role
-// TurnstileWidget.tsx plays for React forms: render a visible responsive
-// challenge and, on solve, write the token straight into the sibling hidden
-// <input name="turnstileToken"> that the Liquid section already renders — so the native form
-// submission (JS or no-JS) carries a real token with zero extra wiring in the section markup.
-// If the challenge hasn't solved yet when the shopper submits, the hidden input stays empty and
-// the server-side verifyTurnstileToken correctly rejects with TURNSTILE_REQUIRED — this is a
-// race, never a bypass; the check itself is untouched.
 class LbTurnstileElement extends LiquidIslandBase {
-    private widgetId: string | null = null;
-    private readyTimer: number | null = null;
+    private controller: TurnstileController | null = null;
 
     connectedCallback() {
         if (canUseFormTurnstileDevBypass()) {
             this.writeToken('dev-bypass-token');
             return;
         }
-
-        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-        if (!siteKey) return;
-
-        const render = () => { if(this.isConnected) this.renderWidget(siteKey); };
-        if (getFormTurnstile()) {
-            render();
-            return;
-        }
-
-        if (!document.querySelector('script[src*="turnstile"]')) {
-            (window as unknown as Record<string, unknown>)[FORM_TURNSTILE_CALLBACK] = render;
-            const script = document.createElement('script');
-            script.src = `https://challenges.cloudflare.com/turnstile/v0/api.js?onload=${FORM_TURNSTILE_CALLBACK}`;
-            script.async = true;
-            document.head.appendChild(script);
-            return;
-        }
-
-        let attempts = 0;
-        this.readyTimer = window.setInterval(() => {
-            attempts += 1;
-            if (getFormTurnstile()) {
-                if(this.readyTimer !== null) window.clearInterval(this.readyTimer);
-                this.readyTimer = null;
-                render();
-            } else if (attempts > 50) {
-                if(this.readyTimer !== null) window.clearInterval(this.readyTimer);
-                this.readyTimer = null;
-            }
-        }, 200);
+        const container = document.createElement('div');
+        this.replaceChildren(container);
+        this.controller = mountTurnstile(container, {
+            siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+            action: 'customer_login',
+            onToken: (token) => this.writeToken(token),
+            onStatus: createLiquidVerificationStatus(container, () => this.controller?.reset()),
+        });
     }
 
     disconnectedCallback() {
-        if(this.readyTimer !== null) window.clearInterval(this.readyTimer);
-        this.readyTimer = null;
+        this.controller?.destroy();
+        this.controller = null;
         this.writeToken('');
-        const turnstile = getFormTurnstile();
-        if (this.widgetId && turnstile) {
-            try {
-                turnstile.remove(this.widgetId);
-            } catch {
-                // Ignore stale widget handles after navigation.
-            }
-        }
-        this.widgetId = null;
-    }
-
-    private renderWidget(siteKey: string) {
-        const turnstile = getFormTurnstile();
-        if (!turnstile) return;
-
-        if (this.widgetId) {
-            try {
-                turnstile.remove(this.widgetId);
-            } catch {
-                // Ignore stale widget handles.
-            }
-            this.widgetId = null;
-        }
-
-        this.widgetId = turnstile.render(this, {
-            sitekey: siteKey,
-            size: 'flexible',
-            callback: (token: string) => this.writeToken(token),
-            'expired-callback': () => this.writeToken(''),
-            'error-callback': () => this.writeToken(''),
-        });
     }
 
     private writeToken(token: string) {

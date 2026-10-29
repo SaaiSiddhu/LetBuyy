@@ -47,14 +47,13 @@ function RecoverForm() {
             })
             if (!res.ok) {
                 setError(await errorFrom(res, GENERIC))
-                turnstileRef.current?.reset()
-                setTurnstileToken(null)
                 return
             }
             setStep('code')
         } catch {
             setError(GENERIC)
         } finally {
+            turnstileRef.current?.reset()
             setLoading(false)
         }
     }

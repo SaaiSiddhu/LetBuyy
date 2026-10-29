@@ -38,6 +38,7 @@ test('Liquid native login carries only a current solved challenge and removes it
     const input = form.querySelector<HTMLInputElement>('input')!;
     try {
         assert.equal(input.value, '');
+        await Promise.resolve();
         assert.ok(form.querySelector('iframe'));
         (callbacks.callback as (token: string) => void)('solved-challenge-fixture');
         assert.equal(new browser.FormData(form).get('turnstileToken'), 'solved-challenge-fixture');

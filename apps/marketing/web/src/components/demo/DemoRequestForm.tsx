@@ -107,7 +107,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
     const [submitted, setSubmitted] = useState<{ id: string } | null>(null)
     const [submitError, setSubmitError] = useState<string | null>(null)
     const headingRef = useRef<HTMLHeadingElement>(null)
-    /* Held in state, not read from the DOM at submit time: the invisible widget
+    /* Held in state, not read from the DOM at submit time: the managed widget
        delivers its token by callback, so there is no input to read until it
        fires. */
     const [turnstileToken, setTurnstileToken] = useState('')
@@ -467,7 +467,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                     </div>
                 )}
 
-                <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
+                {step === 3 && <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />}
 
                 {submitError && (
                     <p className="drf-error" role="alert">
@@ -499,7 +499,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                             type="button"
                             className="drf-next"
                             onClick={submit}
-                            disabled={submitting}
+                            disabled={submitting || !turnstileToken}
                         >
                             {submitting ? (
                                 <>

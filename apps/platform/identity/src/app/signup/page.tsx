@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
 import { useSearchParams } from 'next/navigation'
-import TurnstileWidget from '@/components/TurnstileWidget'
+import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
@@ -179,6 +179,8 @@ function SignupContent() {
     const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
         || process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
 
+    const turnstileRef = useRef<TurnstileHandle>(null)
+
     // OTP state
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
     const [resendTimer, setResendTimer] = useState(60)
@@ -298,6 +300,7 @@ function SignupContent() {
         } catch {
             setError('Something went wrong. Please try again.')
         } finally {
+            turnstileRef.current?.reset()
             setLoading(false)
         }
     }
@@ -422,7 +425,9 @@ function SignupContent() {
                 }, 300)
             }
         } catch {
-            // silent
+            setError('Unable to resend verification code. Please try again.')
+        } finally {
+            turnstileRef.current?.reset()
         }
     }
 
@@ -553,7 +558,7 @@ function SignupContent() {
                             {t.terms} <a href="#">{t.termsLink}</a> {t.and} <a href="#">{t.privacyLink}</a>
                         </p>
 
-                        <TurnstileWidget onVerify={handleTurnstileVerify} />
+                        <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
                     </div>
                 )}
 
@@ -601,11 +606,12 @@ function SignupContent() {
                             {loading ? '...' : t.otpVerify}
                         </Button>
 
+                        {canResend && <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />}
                         <div className="auth-otp-actions">
                             <Button unstyled
                                 className="auth-btn-text"
                                 onClick={handleResendOtp}
-                                disabled={!canResend}
+                                disabled={!canResend || (turnstileEnabled && !turnstileToken)}
                             >
                                 {canResend
                                     ? t.otpResend

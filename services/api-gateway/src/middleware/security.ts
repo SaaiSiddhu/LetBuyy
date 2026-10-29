@@ -1,3 +1,4 @@
+import { verifyCloudflareTurnstile } from '@letbuyy/auth-core/turnstile';
 // ============================================================
 // SECURITY MIDDLEWARE — Headers, input sanitization, CSRF protection
 // ============================================================
@@ -206,10 +207,6 @@ function parseCookie(header: string | undefined, name: string): string | null {
 
 type TurnstileEnv = Pick<Env, 'TURNSTILE_SECRET_KEY' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;
 
-type TurnstileVerificationResponse = {
-    success?: boolean;
-};
-
 function isLocalTurnstileRuntime(env: TurnstileEnv): boolean {
     const values = [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV]
         .filter((value): value is string => typeof value === 'string')
@@ -241,25 +238,8 @@ export async function verifyTurnstileToken(env: TurnstileEnv, token: string | nu
         return false;
     }
 
-    try {
-        const body = new URLSearchParams({
-            secret: env.TURNSTILE_SECRET_KEY,
-            response: token,
-        });
-        if (ip) body.set('remoteip', ip);
-
-        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-            method: 'POST',
-            body,
-        });
-
-        if (!response.ok) return false;
-
-        const data = await response.json() as TurnstileVerificationResponse;
-        return data.success === true;
-    } catch {
-        return false;
-    }
+    const result = await verifyCloudflareTurnstile({ secret: env.TURNSTILE_SECRET_KEY, token, remoteIp: ip });
+    return result.success;
 }
 
 export const csrfProtection = createMiddleware<{ Bindings: Env }>(

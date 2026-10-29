@@ -224,7 +224,7 @@ function CheckEmailContent() {
                         label={canResend ? t.resendReady : t.resendWait}
                     />
 
-                    <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+                    {canResend && <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />}
 
                     {error && <Banner variant="critical">{error}</Banner>}
 

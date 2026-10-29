@@ -9717,7 +9717,7 @@ html.lenis body {
 .ctc-check-text a { color: var(--lb-color-primary-text); text-decoration: underline; }
 .ctc-consent.is-bad .ctc-check-text { color: var(--text-primary); }
 
-.ctc-turnstile { display: none; }
+
 
 .ctc-alert {
   margin: 0 0 var(--lb-space-4); padding: var(--lb-space-3) calc(var(--lb-space-1) * 3.5); border-radius: calc(var(--lb-radius-sm) * 2.75);

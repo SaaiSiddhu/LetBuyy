@@ -112,8 +112,6 @@ export function BuyerAuthorize({
                 } else {
                     setError(await errorFrom(res, mode === 'sign-in' ? 'Invalid email or password.' : 'Could not create the account.'))
                 }
-                turnstileRef.current?.reset()
-                setTurnstileToken(null)
                 return
             }
             setPassword('')
@@ -121,6 +119,7 @@ export function BuyerAuthorize({
         } catch {
             setError(GENERIC)
         } finally {
+            turnstileRef.current?.reset()
             setLoading(false)
         }
     }

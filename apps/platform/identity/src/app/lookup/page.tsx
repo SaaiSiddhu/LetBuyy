@@ -641,8 +641,7 @@ function LookupContent() {
                     </>
                 )}
 
-                {/* Visible Turnstile widget */}
-                <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+                {viewState === 'password' && <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />}
             </div>
         </main>
     )

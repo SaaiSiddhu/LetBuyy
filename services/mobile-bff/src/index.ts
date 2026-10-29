@@ -1,3 +1,4 @@
+import { verifyCloudflareTurnstile } from '@letbuyy/auth-core/turnstile';
 import { createLetbuyyInternalSessionHeaders, hmacSha256Hex, sha256Hex } from '@letbuyy/auth-core';
 import { Hono } from 'hono';
 
@@ -21,7 +22,6 @@ const app = new Hono<{ Bindings: Env }>();
 const VERSIONED_PREFIX = '/v1';
 const SESSION_COOKIE_NAME = 'lb_session';
 const PLACEHOLDER_PREFIX = 'SKIP_NEEDS_HUMAN_';
-const TURNSTILE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const MOBILE_TURNSTILE_PROOF_PREFIX = 'lb-mobile-turnstile-v1';
 const MOBILE_TURNSTILE_PROOF_TTL_SECONDS = 2 * 60;
 const ALLOWED_PREFIXES = [
@@ -169,24 +169,13 @@ export async function verifyMobileTurnstileToken(input: {
     return { ok: false, status: 'unavailable', code: 'TURNSTILE_NOT_CONFIGURED' };
   }
 
-  const body = new URLSearchParams({
-    secret: secret!.trim(),
-    response: token,
+  const verification = await verifyCloudflareTurnstile({
+    secret, token, remoteIp: input.remoteIp || undefined, fetcher: input.fetcher,
   });
-  if (input.remoteIp) body.set('remoteip', input.remoteIp);
-
-  const response = await (input.fetcher || fetch)(TURNSTILE_SITEVERIFY_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  });
-
-  if (!response.ok) {
+  if (!verification.success && verification.reason === 'unavailable') {
     return { ok: false, status: 'unavailable', code: 'TURNSTILE_PROVIDER_UNAVAILABLE' };
   }
-
-  const payload = await response.json().catch(() => null) as { success?: boolean; 'error-codes'?: string[] } | null;
-  if (payload?.success === true) {
+  if (verification.success) {
     const internalSecret = input.env.INTERNAL_API_SECRET;
     if (!isConfiguredSecret(internalSecret)) {
       return { ok: false, status: 'unavailable', code: 'TURNSTILE_PROOF_SECRET_NOT_CONFIGURED' };
@@ -206,7 +195,7 @@ export async function verifyMobileTurnstileToken(input: {
   return {
     ok: false,
     status: 'invalid',
-    code: payload?.['error-codes']?.[0] || 'TURNSTILE_INVALID',
+    code: 'TURNSTILE_INVALID',
   };
 }
 

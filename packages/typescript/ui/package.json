@@ -10,7 +10,9 @@
     "./logging": "./src/logging.ts",
     "./marketplace": "./src/marketplace.tsx",
     "./preview": "./src/preview.tsx",
-    "./tokens": "./src/tokens.ts"
+    "./tokens": "./src/tokens.ts",
+    "./turnstile": "./src/turnstile.tsx",
+    "./turnstile-client": "./src/turnstile-client.ts"
   },
   "files": [
     "dist",
@@ -29,7 +31,9 @@
       "./logging": { "types": "./dist/logging.d.ts", "default": "./dist/logging.js" },
       "./marketplace": { "types": "./dist/marketplace.d.ts", "default": "./dist/marketplace.js" },
       "./preview": { "types": "./dist/preview.d.ts", "default": "./dist/preview.js" },
-      "./tokens": { "types": "./dist/tokens.d.ts", "default": "./dist/tokens.js" }
+      "./tokens": { "types": "./dist/tokens.d.ts", "default": "./dist/tokens.js" },
+      "./turnstile": { "types": "./dist/turnstile.d.ts", "default": "./dist/turnstile.js" },
+      "./turnstile-client": { "types": "./dist/turnstile-client.d.ts", "default": "./dist/turnstile-client.js" }
     }
   },
   "scripts": {

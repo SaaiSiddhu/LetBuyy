@@ -115,6 +115,7 @@
     "graph:reports": "node tools/graph-server/gen-reports.mjs",
     "test": "node scripts/governance/test-behavioral.mjs --with-contracts",
     "test:executable": "node scripts/governance/run-executable-suites.mjs",
+    "test:turnstile": "node --import tsx --test tests/security/turnstile-forms.browser.test.ts",
     "test:executable:json": "node scripts/governance/run-executable-suites.mjs --json",
     "test:foundation:wave0": "node --test tests/governance/foundation-wave0.test.mjs && node scripts/governance/foundation-ephemeral-postgres.mjs start && node --test tests/executable/money-ledger-postgres.test.mjs",
     "test:foundation:wave1": "tsx --test packages/payments/test/payments.test.ts packages/billing-core/test/billing-core.test.ts services/api-gateway/src/__tests__/money.test.ts && node scripts/governance/foundation-ephemeral-postgres.mjs start && node --test tests/executable/foundation-wave1-money-postgres.test.mjs",
