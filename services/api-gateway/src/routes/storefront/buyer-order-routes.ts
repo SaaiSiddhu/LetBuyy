@@ -1,3 +1,4 @@
+import { CheckoutTotalsQuoteSchema } from '@letbuyy/shared-types';
 // SUSTAINED-D3 — a marketplace buyer's orders, spanning every store they hold a verified link to.
 //
 // THE AUTHORIZATION CHAIN — the same shape buyer-return-routes.ts already established:
@@ -68,9 +69,13 @@ export async function loadBuyerOrderDetailFromDatabase(
     }
     // Same view fields used by the existing storefront detail renderer; no
     // payment provider metadata, internal notes or customer-email authorization.
-    const columns = 'id,site_id,store_id,order_number,status,total,tax,gst_invoice_number,created_at,subtotal,discount,coupon_code,coupon_discount,shipping_cost,payment_method,payment_status,tracking_number,carrier,shipping_address,currency';
-    return db.from('orders').select(relationalItems ? columns : `${columns},items`)
+    const columns = 'id,site_id,store_id,order_number,status,total,tax,tax_snapshot,gst_invoice_number,created_at,subtotal,discount,coupon_code,coupon_discount,shipping_cost,payment_method,payment_status,tracking_number,carrier,shipping_address,currency';
+    const result = await db.from('orders').select(relationalItems ? columns : `${columns},items`)
         .eq('id', orderId).eq('site_id', linkedSiteId).maybeSingle();
+    if (!result.data) return { data: null, error: result.error };
+    const { tax_snapshot, ...approved } = result.data as unknown as Record<string, unknown>;
+    const quote = CheckoutTotalsQuoteSchema.safeParse(tax_snapshot);
+    return { data: { ...approved, ...(quote.success ? { totals_quote: quote.data } : {}) }, error: result.error };
 }
 
 /// The actual query, shared by production wiring (buyer-realm-wiring.ts, given the request's real

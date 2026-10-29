@@ -29,17 +29,18 @@ test('migration 213 threads place_of_supply_state and order_tax_lines through cr
     assert.match(migration213Source, /INSERT INTO order_tax_lines/);
 });
 
-test('checkout-payment-routes reads the supplier GST state from sites, not the unwired tax_registrations table', () => {
-    assert.match(checkoutRouteSource, /\.from\('sites'\)\s*\n\s*\.select\('gstin, gst_state_code'\)/);
-    assert.doesNotMatch(checkoutRouteSource, /\.from\('tax_registrations'\)/);
+const authoritativeMigration = readFileSync(join(repoRoot, 'database/supabase/migrations/411_authoritative_checkout_gst.sql'), 'utf8');
+
+test('both checkout review and order use the canonical SQL GST authority; the old route calculator is removed', () => {
+    assert.match(checkoutRouteSource, /quoteCheckoutTotals/);
+    assert.doesNotMatch(checkoutRouteSource, /computedTaxAmount|rateByHsn|gst_computation_failed/);
+    assert.match(authoritativeMigration, /public.resolve_checkout_gst_v1/);
+    assert.match(authoritativeMigration, /v_authoritative_quote := public.quote_storefront_checkout_totals/);
 });
 
-test('checkout-payment-routes honours products.charge_tax and resolves HSN-specific rates before the store default', () => {
-    assert.match(checkoutRouteSource, /product\?\.charge_tax === false/);
-    assert.match(checkoutRouteSource, /rateByHsn\.has\(hsn\)/);
-});
-
-test('a GST computation failure is logged, never silent, and the order still completes (fail-open)', () => {
-    assert.doesNotMatch(checkoutRouteSource, /catch\s*\{\s*computedTaxAmount = null;\s*\}/);
-    assert.match(checkoutRouteSource, /event: 'gst_computation_failed'/);
+test('GST configuration failures refuse payment instead of silently becoming zero tax', () => {
+    const helper = readFileSync(join(repoRoot, 'services/api-gateway/src/lib/checkout-tax-quote.ts'), 'utf8');
+    assert.match(helper, /CHECKOUT_TAX_SETUP_REQUIRED/);
+    assert.match(authoritativeMigration, /GST_RATE_REQUIRED/);
+    assert.match(authoritativeMigration, /GST_REGISTRATION_REQUIRED/);
 });

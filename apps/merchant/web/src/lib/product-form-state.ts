@@ -46,6 +46,7 @@ export interface ProductFormSnapshot {
     isPhysical: boolean
     weight: string
     weightUnit: string
+    shippingProfileId?: string
     countryOfOrigin: string
     importerDetails: string
     hsCode: string
@@ -311,6 +312,7 @@ export function isProductSnapshot(value: unknown): value is ProductFormSnapshot 
             && (row.stockNeedsReview === undefined || typeof row.stockNeedsReview === 'boolean'))
         && (draft.quantityBaseline === undefined || typeof draft.quantityBaseline === 'string')
         && (draft.quantityNeedsReview === undefined || typeof draft.quantityNeedsReview === 'boolean')
+        && (draft.shippingProfileId === undefined || typeof draft.shippingProfileId === 'string')
         && ['active', 'draft', 'archived'].includes(draft.status)
 }
 
@@ -504,6 +506,7 @@ export function normalizeProductSnapshot(product: Record<string, unknown>): Prod
         isPhysical: product.is_physical !== false,
         weight: normalizeNumberInput(product.weight),
         weightUnit: normalizeString(product.weight_unit) || 'kg',
+        shippingProfileId: normalizeString(product.shipping_profile_id),
         countryOfOrigin: normalizeString(product.country_of_origin),
         importerDetails: normalizeString(product.importer_details),
         hsCode: normalizeString(product.hs_code),
@@ -549,6 +552,7 @@ export function buildProductFormFields(snapshot: ProductFormSnapshot, metadata: 
         is_physical: isPhysical,
         weight: parseFloat(weight) || null,
         weight_unit: weightUnit,
+        ...(snapshot.shippingProfileId !== undefined ? { shipping_profile_id: snapshot.shippingProfileId || null } : {}),
         country_of_origin: countryOfOrigin.trim() || null,
         importer_details: importerDetails.trim() || null,
         hs_code: hsCode || null,

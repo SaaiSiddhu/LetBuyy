@@ -40,7 +40,8 @@ test('shipping estimates fail closed when coverage or merchant rates are absent 
     assert.doesNotMatch(routeSource, /function defaultRules/);
     assert.doesNotMatch(routeSource, /sandbox-standard/);
     assert.match(routeSource, /if \(!rules\) return c\.json\([\s\S]*SHIPPING_CONFIGURATION_UNAVAILABLE[\s\S]*503\)/);
-    assert.match(routeSource, /if \(error\) return c\.json\([\s\S]*SHIPPING_CONFIGURATION_UNAVAILABLE[\s\S]*503\)/);
+    assert.match(routeSource, /listStorefrontShippingRates/);
+    assert.match(routeSource, /StorefrontDeliveryOptionsSchema/);
     assert.match(routeSource, /rates,\s*\}\)\);/);
 });
 
@@ -64,7 +65,8 @@ test('Task 009 checkout-core exposes serviceability schema and planner', () => {
 
 test('checkout shipping rates are tenant-bound in the merchant write path', () => {
     assert.match(checkoutCoreSource, /zoneInsert:\s*\{\s*store_id: input\.store_id,\s*site_id: input\.store_id/);
-    assert.match(shippingTaxRouteSource, /insert\(\{ \.\.\.plan\.rateInsert, site_id: storeId, cod_enabled: true \}\)/);
+    assert.match(shippingTaxRouteSource, /insert\(\{ \.\.\.plan\.rateInsert, site_id: storeId \}\)/);
+    assert.match(checkoutCoreSource, /cod_enabled: input\.cod_enabled \?\? true/);
 });
 
 test('marketplace order RPC locks and checks the reviewed seller rate atomically', () => {

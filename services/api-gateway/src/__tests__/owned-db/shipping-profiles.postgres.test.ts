@@ -1,0 +1,50 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import test from 'node:test';
+import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders} from './gateway-harness';
+import {requireOwnedDatabase} from './owned-db-support';
+import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
+const owned=requireOwnedDatabase();
+
+test('profile commands preserve tenant isolation, committed create recovery, default inheritance and stale-edit refusal',async t=>{
+ const site=newSyntheticTenant('profile-own'),other=newSyntheticTenant('profile-alt'),actor=randomUUID(),foreignActor=randomUUID();
+ for(const [tenant,owner] of [[site,actor],[other,foreignActor]] as const){seedSyntheticTenant(owned.psql,tenant);owned.psql(`INSERT INTO users_custom(id,email,email_verified)VALUES('${owner}','syn-${owner}@example.invalid',true);UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';`);}
+ const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));t.after(()=>gateway.settle());
+ const request=async(path:string,method='GET',body?:unknown,foreign=false)=>gateway.request('/v1/shipping-tax'+path,{method,headers:{...await signedIdentityHeaders(foreign?foreignActor:actor,`syn-${foreign?foreignActor:actor}@example.invalid`,foreign?other.siteId:site.siteId),'Idempotency-Key':randomUUID()},...(body?{body:JSON.stringify(body)}:{})});
+ const id=randomUUID(),command={store_id:site.siteId,id,name:'Synthetic general profile',handling_fee_minor:1500,cod_enabled:true};
+ const first=await request('/shipping/profiles','POST',command);assert.equal(first.status,201,first.text);assert.equal(first.json!.data.is_default,true);
+ const replay=await request('/shipping/profiles','POST',command);assert.equal(replay.status,201,replay.text);assert.equal(replay.json!.data.id,id);
+ assert.equal(owned.psql(`SELECT count(*) FROM shipping_profiles WHERE site_id='${site.siteId}';`),'1');
+ assert.equal((await request('/shipping/profiles?store_id='+site.siteId,'GET',undefined,true)).status,403);
+ assert.equal((await request('/shipping/profiles/'+id,'PATCH',{expected_revision:first.json!.data.updated_at,name:'Forbidden change'},true)).status,403);
+ const next=await request('/shipping/profiles/'+id,'PATCH',{expected_revision:first.json!.data.updated_at,handling_fee_minor:2500});assert.equal(next.status,200,next.text);
+ const stale=await request('/shipping/profiles/'+id,'PATCH',{expected_revision:first.json!.data.updated_at,handling_fee_minor:1});assert.equal(stale.status,409,stale.text);
+ const zone=randomUUID(),rate=randomUUID(),product=randomUUID();
+ owned.psql(`INSERT INTO shipping_zones(id,store_id,site_id,name,countries,cod_enabled)VALUES('${zone}','${site.siteId}','${site.siteId}','Synthetic inherited zone',ARRAY['IN'],true);
+  INSERT INTO shipping_rates(id,zone_id,site_id,name,type,price,is_active,cod_enabled)VALUES('${rate}','${zone}','${site.siteId}','Synthetic rate','flat',10,true,true);
+  INSERT INTO products(id,store_id,site_id,name,sku,price,is_active)VALUES('${product}','${site.siteId}','${site.siteId}','Synthetic inherited product','SYN-${product}',100,true);`);
+ const items=JSON.stringify([{product_id:product,quantity:1}]),address=JSON.stringify({country:'IN',state_code:'29',state:'Karnataka',zip:'560001'});
+ const quote=()=>JSON.parse(owned.psql(`SELECT resolve_storefront_shipping_v1('${site.siteId}','${items}','${address}','${rate}',true);`));
+ assert.equal(quote().amount_minor,3500,'default handling charge is added once, never per quantity');
+ const headers=()=>signedIdentityHeaders(actor,`syn-${actor}@example.invalid`,site.siteId);
+ const alternate=await gateway.request('/v1/shipping/rates',{method:'POST',headers:{...await headers(),'Idempotency-Key':randomUUID()},body:JSON.stringify({store_id:site.siteId,items:JSON.parse(items),shipping_address:JSON.parse(address)})});
+ assert.equal(alternate.status,200,alternate.text);assert.equal(alternate.json!.data.rates[0].amount_minor,3500);
+ assert.equal(alternate.json!.data.serviceability.carrier_confirmed,false);
+ const missingProducts=await gateway.request('/v1/shipping/rates',{method:'POST',headers:{...await headers(),'Idempotency-Key':randomUUID()},body:JSON.stringify({store_id:site.siteId,pincode:'560001',subtotal_minor:1})});
+ assert.equal(missingProducts.status,400,missingProducts.text);
+ const capabilities=await gateway.request('/v1/shipping/labels/provider-mode?store_id='+site.siteId,{headers:await headers()});
+ assert.equal(capabilities.status,200,capabilities.text);
+ assert.deepEqual(capabilities.json!.data.capabilities,{provider_mode:'unavailable',manual:true,letbuyy_shipping:'integration_pending',own_shiprocket_app:'integration_pending',carrier_booking_available:false});
+
+ const second=await request('/shipping/profiles','POST',{...command,id:randomUUID(),name:'Synthetic secondary',handling_fee_minor:0,cod_enabled:false});assert.equal(second.status,201,second.text);assert.equal(second.json!.data.is_default,false);
+ const chosen=await request('/shipping/profiles/'+second.json!.data.id,'PATCH',{expected_revision:second.json!.data.updated_at,is_default:true});assert.equal(chosen.status,200,chosen.text);
+ assert.equal(owned.psql(`SELECT count(*) FROM shipping_profiles WHERE site_id='${site.siteId}' AND is_default;`),'1');
+ assert.match(owned.psqlExpectError(`SELECT resolve_storefront_shipping_v1('${site.siteId}','${items}','${address}','${rate}',true);`),/CHECKOUT_COD_UNAVAILABLE/);
+ assert.equal((await request('/shipping/zones','POST',{store_id:other.siteId,name:'Foreign-profile zone',countries:['IN'],profile_id:id},true)).status,403);
+ for(const role of ['anon','authenticated','app_tenant'])assert.equal(owned.psql(`SELECT has_function_privilege('${role}','save_shipping_profile_v1(uuid,uuid,uuid,timestamptz,jsonb)','EXECUTE');`),'f');
+ const before=owned.psql(`SELECT jsonb_agg(to_jsonb(p) ORDER BY p.id)::text FROM shipping_profiles p;`);
+ owned.script(readFileSync('database/supabase/rollback/413_shipping_profile_commands.rollback.sql','utf8'));
+ owned.script(readFileSync('database/supabase/migrations/413_shipping_profile_commands.sql','utf8'));
+ assert.equal(owned.psql(`SELECT jsonb_agg(to_jsonb(p) ORDER BY p.id)::text FROM shipping_profiles p;`),before);
+});

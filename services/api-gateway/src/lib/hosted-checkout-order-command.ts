@@ -68,7 +68,7 @@ export function checkoutShippingMethod(session: CheckoutSessionRow): 'standard' 
     return method === 'express' ? 'express' : 'standard';
 }
 
-function checkoutOrderItems(cart: CartRow): CreateCheckoutOrderCommand['items'] {
+export function checkoutOrderItems(cart: CartRow): CreateCheckoutOrderCommand['items'] {
     return cartLines(cart).map((line) => ({
         product_id: stringValue(line.product_id) || stringValue(line.productId) || '',
         variant_id: stringValue(line.variant_id) || stringValue(line.variantId) || null,
@@ -87,7 +87,7 @@ export function buildHostedCheckoutOrderCommand(
     handoff: Pick<VerifiedHandoff, 'siteId' | 'cartId' | 'cart'>,
     session: CheckoutSessionRow,
     idempotencyKey: string,
-): { ok: true; provider: HostedCheckoutPaymentProvider; command: CreateCheckoutOrderCommand & { shipping_rate_id?: string | null; expected_shipping_amount?: number | null; buyer_account_id?: string; buyer_session_epoch?: number } } | { ok: false; code: string; message: string } {
+): { ok: true; provider: HostedCheckoutPaymentProvider; command: CreateCheckoutOrderCommand & { shipping_rate_id?: string | null; expected_shipping_amount?: number | null; expected_quote_fingerprint?: string; buyer_account_id?: string; buyer_session_epoch?: number } } | { ok: false; code: string; message: string } {
     const provider = checkoutPaymentProvider(session);
     if (!provider) {
         return {
@@ -132,6 +132,8 @@ export function buildHostedCheckoutOrderCommand(
             shipping_method: checkoutShippingMethod(session),
             shipping_rate_id: stringValue(session.delivery_quote?.shipping_rate_id) || null,
             expected_shipping_amount: typeof session.delivery_quote?.amount === 'number' ? session.delivery_quote.amount : null,
+            ...(typeof session.delivery_quote?.tax_quote_fingerprint === 'string'
+                ? { expected_quote_fingerprint: session.delivery_quote.tax_quote_fingerprint } : {}),
             sales_origin: handoff.cart.sales_origin === 'marketplace' ? 'marketplace' : 'storefront',
             coupon_code: discountCodes[0] || undefined,
             idempotency_key: `hosted-checkout:${handoff.cartId}:${idempotencyKey}`,
