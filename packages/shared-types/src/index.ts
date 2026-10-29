@@ -133,7 +133,8 @@ export const BusinessProfileSchema = z.object({
   pan_last4: z.string().trim().toUpperCase().regex(/^[A-Z0-9]{4}$/).optional(),
   email: EmailSchema.optional(),
   phone: z.string().max(30).optional(),
-  website: UrlSchema.optional(),
+  website: UrlSchema.refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP or HTTPS website URL.').optional(),
+  public_contact_enabled: z.boolean().optional(),
 }).passthrough();
 
 export const InvoiceAddressSchema = AddressSchema.partial().passthrough();
@@ -1175,7 +1176,6 @@ export const StoreSchema = AuditedEntitySchema.extend({
   business_profile: BusinessProfileSchema.optional().nullable(),
   invoice_address: InvoiceAddressSchema.optional().nullable(),
   invoice_footer: z.string().max(1000).optional().nullable(),
-  invoice_number_next: z.number().int().positive().optional().nullable(),
   theme_config: MetadataSchema.default({}),
   settings: MetadataSchema.default({}),
   navigation: MetadataSchema.default({}),

@@ -333,11 +333,11 @@ async function emitStorefrontOrderPaidEvent(
 }
 
 const STOREFRONT_SITE_SELECT: string =
-    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,site_settings,settings,status,published_at,created_at,updated_at,meta_title,meta_description';
+    'id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,site_settings,status,published_at,created_at,updated_at,meta_title,meta_description,business_profile';
 const STOREFRONT_SITE_RELEASE_SELECT: string =
     `${STOREFRONT_SITE_SELECT},current_theme_release_id,storefront_release_version`;
 const STOREFRONT_SITE_COMPAT_SELECT: string =
-    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,site_settings,settings,status,published_at,created_at,updated_at';
+    'id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,site_settings,status,published_at,created_at,updated_at,business_profile';
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
@@ -888,7 +888,30 @@ async function loadSiteByHandle(
     }
 
     if (error) throw new AppError('Storefront is unavailable', 503, 'STOREFRONT_UNAVAILABLE');
-    return (data as StorefrontSiteRecord | null) || null;
+    if (!data) return null;
+    // The private business profile is fetched only to derive a deliberately
+    // opted-in contact card. Never pass its legal, tax or identity fields into
+    // the public mapper, which otherwise spreads the selected site record.
+    const { business_profile: privateValue, site_settings: privateSettings, ...publicSite } = data as unknown as Record<string, unknown>;
+    const privateProfile = privateValue && typeof privateValue === 'object' && !Array.isArray(privateValue)
+        ? privateValue as Record<string, unknown> : null;
+    const publicContact: NonNullable<StorefrontSiteRecord['public_contact']> = {};
+    if (privateProfile?.public_contact_enabled === true) {
+        if (typeof privateProfile.email === 'string') publicContact.email = privateProfile.email;
+        if (typeof privateProfile.phone === 'string') publicContact.phone = privateProfile.phone;
+        if (typeof privateProfile.website === 'string' && /^https?:\/\//i.test(privateProfile.website))
+            publicContact.website = privateProfile.website;
+    }
+    const appearance = privateSettings && typeof privateSettings === 'object' && !Array.isArray(privateSettings)
+        ? privateSettings as Record<string, unknown> : {};
+    // The site-settings JSON also holds private checkout/operator configuration.
+    // Only the keys consumed by the buyer's appearance renderer may cross here.
+    const publicAppearance = Object.fromEntries(
+        ['primary_color', 'font_family', 'border_radius', 'logo_url', 'custom_css']
+            .filter((key) => Object.hasOwn(appearance, key))
+            .map((key) => [key, appearance[key]]),
+    );
+    return { ...publicSite, site_settings: publicAppearance, public_contact: Object.keys(publicContact).length ? publicContact : null } as unknown as StorefrontSiteRecord;
 }
 
 async function loadCurrentThemeRelease(c: AppContext, storeId: string, options: StorefrontThemeReleaseReadOptions = {}): Promise<StorefrontThemeReleaseRecord | null> {

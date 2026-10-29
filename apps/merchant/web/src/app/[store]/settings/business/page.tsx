@@ -44,6 +44,7 @@ interface KycDocument {
     document_type: KycDocumentType
     status: KycDocumentStatus
     document_number_last4: string | null
+    has_private_upload?: boolean
     rejection_reason: string | null
     submitted_at: string | null
     verified_at: string | null
@@ -161,7 +162,7 @@ const OVERALL_META: Record<KycOverallStatus, { title: string; variant: 'info' | 
     in_progress: { title: 'Verification in progress', variant: 'info' },
     needs_review: { title: 'A document needs review', variant: 'warning' },
     rejected: { title: 'A document was rejected', variant: 'critical' },
-    not_started: { title: 'Verify your business to receive payouts', variant: 'info' },
+    not_started: { title: 'Business verification has not started', variant: 'info' },
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -199,6 +200,7 @@ export default function BusinessSettingsPage() {
     const [data, setData] = useState<BusinessForm>(EMPTY_BUSINESS)
     const [initialData, setInitialData] = useState<BusinessForm | null>(null)
     const [rawBP, setRawBP] = useState<Record<string, unknown>>({})
+    const [version, setVersion] = useState<number | null>(null)
 
     const [kyc, setKyc] = useState<KycOverview | null>(null)
     const [commission, setCommission] = useState<CommissionOverview | null>(null)
@@ -206,7 +208,8 @@ export default function BusinessSettingsPage() {
     const [optionalError, setOptionalError] = useState<string | null>(null)
 
     // Per-document evidence inputs + in-flight flags
-    const [docInputs, setDocInputs] = useState<Record<string, { last4: string; file_url: string }>>({})
+    const [docInputs, setDocInputs] = useState<Record<string, { last4: string }>>({})
+    const [docFiles, setDocFiles] = useState<Record<string, File | null>>({})
     const [docBusy, setDocBusy] = useState<Record<string, boolean>>({})
 
     const gstStates = useMemo(() => gstStateOptions(), [])
@@ -261,6 +264,8 @@ export default function BusinessSettingsPage() {
             if (!storeRes.ok) throw new Error(getPayloadError(storePayload, 'Unable to load business details'))
             const d = isRecord(storePayload?.data) ? storePayload.data : null
             if (!d) throw new Error('Business details were not returned')
+            if (typeof d.version !== 'number') throw new Error('Store revision was not returned')
+            setVersion(d.version)
 
             const bp = isRecord(d.business_profile) ? d.business_profile : {}
             setRawBP(bp)
@@ -310,17 +315,25 @@ export default function BusinessSettingsPage() {
 
     const handleSave = useCallback(async () => {
         if (!hasUnsavedChanges || saveState === 'saving') return
+        if (version === null) {
+            notify({ title: 'Reload required', description: 'Store revision is unavailable. Reload before saving.', variant: 'warning' })
+            return
+        }
         setSaveState('saving')
         try {
             const business_profile: Record<string, unknown> = { ...rawBP }
-            business_profile.trade_name = data.trade_name || undefined
-            business_profile.entity_type = data.entity_type || undefined
-            business_profile.pan_last4 = data.pan_last4.length === 4 ? data.pan_last4 : undefined
+            if (data.trade_name.trim()) business_profile.trade_name = data.trade_name.trim()
+            else delete business_profile.trade_name
+            if (data.entity_type) business_profile.entity_type = data.entity_type
+            else delete business_profile.entity_type
+            if (data.pan_last4.length === 4) business_profile.pan_last4 = data.pan_last4
+            else delete business_profile.pan_last4
 
             const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    version,
                     legal_name: data.legal_name || null,
                     gstin: data.gstin || null,
                     gst_state_code: data.gst_state_code || null,
@@ -330,7 +343,10 @@ export default function BusinessSettingsPage() {
             })
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to save business details'))
+            const saved = isRecord(payload?.data) ? payload.data : null
+            if (typeof saved?.version !== 'number') throw new Error('Save completed but revision readback is unavailable. Reload to confirm current settings.')
 
+            setVersion(saved.version)
             setInitialData(data)
             setSaveState('saved')
             notify({ title: 'Business details saved', description: 'Legal identity and GST details updated.', variant: 'success' })
@@ -339,7 +355,7 @@ export default function BusinessSettingsPage() {
             setSaveState('unsaved')
             notify({ title: 'Could not save business details', description: msg, variant: 'critical' })
         }
-    }, [data, hasUnsavedChanges, notify, rawBP, saveState, store])
+    }, [data, hasUnsavedChanges, notify, rawBP, saveState, store, version])
 
     const handleDiscard = useCallback(() => {
         if (!initialData) return
@@ -349,42 +365,47 @@ export default function BusinessSettingsPage() {
 
     // ── KYC submit / refresh ──────────────────────────────────────────────────
 
-    const docInput = useCallback((type: KycDocumentType) => docInputs[type] || { last4: '', file_url: '' }, [docInputs])
-    const setDocInput = useCallback((type: KycDocumentType, patch: Partial<{ last4: string; file_url: string }>) => {
-        setDocInputs((cur) => ({ ...cur, [type]: { ...(cur[type] || { last4: '', file_url: '' }), ...patch } }))
+    const docInput = useCallback((type: KycDocumentType) => docInputs[type] || { last4: '' }, [docInputs])
+    const setDocInput = useCallback((type: KycDocumentType, patch: Partial<{ last4: string }>) => {
+        setDocInputs((cur) => ({ ...cur, [type]: { ...(cur[type] || { last4: '' }), ...patch } }))
     }, [])
 
     const submitDocument = useCallback(async (type: KycDocumentType) => {
-        const input = docInputs[type] || { last4: '', file_url: '' }
-        if (!input.last4.trim() && !input.file_url.trim()) {
-            notify({ title: 'Add a reference', description: 'Enter the last 4 digits or a secure document link.', variant: 'warning' })
+        const input = docInputs[type] || { last4: '' }
+        const file = docFiles[type]
+        if (!input.last4.trim()) {
+            notify({ title: 'Add a reference', description: 'Enter the last four characters.', variant: 'warning' })
+            return
+        }
+        if (!file) {
+            notify({ title: 'Choose a document', description: 'Upload a PDF, JPEG, or PNG proof under 5 MB.', variant: 'warning' })
             return
         }
         setDocBusy((cur) => ({ ...cur, [type]: true }))
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc`, {
+            const form = new FormData()
+            form.set('document_type', type)
+            form.set('document_number_last4', input.last4.trim())
+            form.set('file', file)
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/kyc/upload`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    document_type: type,
-                    document_number_last4: input.last4.trim() || undefined,
-                    file_url: input.file_url.trim() || undefined,
-                }),
+                body: form,
             })
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to submit document'))
             if (isRecord(payload?.data) && isRecord((payload.data as Record<string, unknown>).overview)) {
                 setKyc((payload.data as { overview: KycOverview }).overview)
             }
-            setDocInputs((cur) => ({ ...cur, [type]: { last4: '', file_url: '' } }))
-            notify({ title: 'Document submitted', description: `${DOC_META[type].title} sent for verification.`, variant: 'success' })
+            setDocInputs((cur) => ({ ...cur, [type]: { last4: '' } }))
+            setDocFiles((cur) => ({ ...cur, [type]: null }))
+            notify({ title: 'Document received', description: `${DOC_META[type].title} is pending provider review. This does not authorize payouts.`, variant: 'success' })
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to submit document'
             notify({ title: 'Submission failed', description: msg, variant: 'critical' })
         } finally {
             setDocBusy((cur) => ({ ...cur, [type]: false }))
         }
-    }, [docInputs, notify, store])
+    }, [docFiles, docInputs, notify, store])
 
     const refreshDocument = useCallback(async (doc: KycDocument) => {
         setDocBusy((cur) => ({ ...cur, [doc.document_type]: true }))
@@ -463,11 +484,11 @@ export default function BusinessSettingsPage() {
 
             {/* ── Verification status ───────────────────────────────────────── */}
             {kyc && overall && (
-                <Banner variant={overall.variant} title={overall.title}>
-                    {kyc.next_action || 'Complete the required documents below to verify your business.'}
-                    {kyc.provider_mode === 'sandbox' && (
-                        <span className="settings-business-sandbox-note"> Verification is running in sandbox mode.</span>
-                    )}
+                <Banner variant={kyc.provider_mode === 'sandbox' ? 'info' : overall.variant}
+                    title={kyc.provider_mode === 'sandbox' ? 'Sandbox verification' : overall.title}>
+                    {kyc.provider_mode === 'sandbox'
+                        ? 'Uploaded documents and reference digits remain pending provider review. Sandbox results cannot enable live payouts.'
+                        : kyc.next_action || 'Complete the required documents below to verify your business.'}
                 </Banner>
             )}
 
@@ -476,7 +497,7 @@ export default function BusinessSettingsPage() {
                 <Section variant="grouped" title="Business identity" >
 
                         <div className="settings-general-hint">
-                            Used on GST invoices and shared with payment partners for settlements. Keep this exactly as on your registration documents.
+                            Used for applicable GST invoices and payment-provider onboarding. Keep this exactly as on your registration documents.
                         </div>
                         <Input
                             label="Legal business name"
@@ -539,7 +560,7 @@ export default function BusinessSettingsPage() {
                             onChange={(e) => set('invoice_prefix', e.target.value.slice(0, 20))}
                             placeholder="LBY"
                             maxLength={20}
-                            helperText="Appears before invoice numbers, e.g. LBY-0001."
+                            helperText={`Appears before GST invoice numbers, e.g. ${data.invoice_prefix || 'LBY'}-000001. The next number is assigned when the invoice is issued.`}
                         />
 
                 </Section>
@@ -549,7 +570,7 @@ export default function BusinessSettingsPage() {
             <Section variant="grouped" title="Verification &amp; KYC" >
 
                     <div className="settings-general-hint">
-                        Verified businesses can receive payouts. We store only the last 4 digits of each document number. Add a secure link only if your document is hosted privately (for example DigiLocker).
+                        Upload PDF, JPEG, or PNG evidence privately (up to 5 MB). Provider review is required before live verification or payouts.
                     </div>
 
                     <div className="settings-business-kyc-list">
@@ -558,11 +579,13 @@ export default function BusinessSettingsPage() {
                             const DocIcon = meta.Icon
                             const existing = docByType.get(req.document_type)
                             const status: KycDocumentStatus = existing?.status || 'draft'
-                            const sMeta = STATUS_META[status]
+                            const sMeta = kyc?.provider_mode === 'sandbox' && status === 'verified'
+                                ? { label: 'Sandbox reference', Icon: Info, tone: 'submitted' }
+                                : STATUS_META[status]
                             const SIcon = sMeta.Icon
                             const input = docInput(req.document_type)
                             const busy = !!docBusy[req.document_type]
-                            const isVerified = status === 'verified'
+                            const isVerified = kyc?.provider_mode === 'live' && status === 'verified'
 
                             return (
                                 <div key={req.document_type} className="settings-business-kyc-item">
@@ -600,16 +623,16 @@ export default function BusinessSettingsPage() {
                                                 maxLength={8}
                                                 helperText={meta.last4Hint}
                                             />
-                                            <Input
-                                                label="Secure document link (optional)"
-                                                value={input.file_url}
-                                                onChange={(e) => setDocInput(req.document_type, { file_url: e.target.value })}
-                                                placeholder="https://…"
-                                                type="url"
-                                            />
+                                            <label className="settings-business-kyc-upload">
+                                                <span>Document file</span>
+                                                <input key={`${req.document_type}-${existing?.updated_at || 'new'}`} type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                                                    disabled={busy}
+                                                    onChange={(event) => setDocFiles((cur) => ({ ...cur, [req.document_type]: event.target.files?.[0] || null }))}
+                                                    aria-label={`Upload ${meta.title}`} />
+                                            </label>
                                             <div className="settings-business-kyc-actions">
                                                 <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy}>
-                                                    {existing ? 'Resubmit' : 'Submit for verification'}
+                                                    {existing ? 'Resubmit document' : 'Upload document'}
                                                 </Button>
                                             </div>
                                         </div>
@@ -624,6 +647,7 @@ export default function BusinessSettingsPage() {
                                             {existing.document_number_last4 && (
                                                 <span className="settings-business-kyc-stored">Stored: ••••{existing.document_number_last4}</span>
                                             )}
+                                            {existing.has_private_upload && <span className="settings-business-kyc-stored">Private file received</span>}
                                         </div>
                                     )}
 
@@ -647,7 +671,7 @@ export default function BusinessSettingsPage() {
                             <span className="settings-business-fee-icon"><IndianRupee className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
                                 <span className="settings-business-fee-label">LetBuyy platform commission</span>
-                                <span className="settings-business-fee-desc">We charge no commission on your sales — you keep 100% of your order value.</span>
+                                <span className="settings-business-fee-desc">LetBuyy charges no transaction commission on your sales.</span>
                             </div>
                             <span className="settings-business-fee-value settings-business-fee-value--zero">
                                 {(commissionBps / 100).toFixed(0)}%
@@ -679,9 +703,9 @@ export default function BusinessSettingsPage() {
                             <span className="settings-business-fee-icon"><CheckCircle2 className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="settings-business-fee-body">
                                 <span className="settings-business-fee-label">You receive</span>
-                                <span className="settings-business-fee-desc">Order value minus only your payment provider&apos;s fees. Settlements reach your verified bank account.</span>
+                                <span className="settings-business-fee-desc">Your provider determines actual settlement after its fees, taxes, refunds, and any holds. Check its verified bank destination and payout statement.</span>
                             </div>
-                            <span className="settings-business-fee-value settings-business-fee-value--net">100%</span>
+                            <span className="settings-business-fee-value settings-business-fee-value--net">Provider statement</span>
                         </div>
                     </div>
 
@@ -706,7 +730,7 @@ export default function BusinessSettingsPage() {
                         <Lock className="letbuyy-icon" aria-hidden="true" />
                         <span>
                             Track every payout under{' '}
-                            <Link href={`/${store}/settings/billing`} className="settings-business-link">Billing</Link>.
+                            <Link href={`/${store}/payouts`} className="settings-business-link">Payouts</Link>.
                             LetBuyy&apos;s 0% commission is permanent.
                         </span>
                     </div>
@@ -719,7 +743,7 @@ export default function BusinessSettingsPage() {
                     <div className="settings-business-privacy">
                         <Info className="letbuyy-icon" aria-hidden="true" />
                         <span>
-                            We follow data minimisation: only the last 4 digits of PAN, bank, and ID numbers are stored. Full documents are verified by our KYC partner and never kept in your store&apos;s media library.
+                            Reference digits do not establish identity or bank ownership. Never upload identity or bank documents to the public media library.
                         </span>
                     </div>
 

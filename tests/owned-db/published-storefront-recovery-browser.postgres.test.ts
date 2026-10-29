@@ -76,7 +76,10 @@ before(async () => {
     const checkoutSpki = checkoutCertificate.spki;
     checkoutTls = createHttpsServer({ key: checkoutCertificate.key, cert: checkoutCertificate.cert }, (req, res) => {
         const checkoutHost = req.headers.host || '';
-        if (!/^[a-z0-9-]+\.localhost:\d+$/.test(checkoutHost) || !checkoutHost.endsWith(':'+checkoutTlsPort)) { res.writeHead(421); res.end(); return; }
+        if (!/^(?:[a-z0-9-]+\.localhost|shop\.merchant\.test):\d+$/.test(checkoutHost)
+            || !checkoutHost.endsWith(':'+checkoutTlsPort)) {
+            res.writeHead(421); res.end(); return;
+        }
         const upstream = forwardHttpRequest({ hostname: '127.0.0.1', port: commercePort, path: req.url, method: req.method,
             headers: { ...req.headers, host: checkoutHost, 'x-forwarded-host': checkoutHost, 'x-forwarded-proto': 'https' } }, response => {
             response.on('error', () => res.destroy());
@@ -146,7 +149,7 @@ before(async () => {
     // each public store document is still required to return 200 below.
     await Promise.all([ready(identityOrigin + '/login', clients[0]), ready(merchantOrigin, clients[1]),
         ready(commerceOrigin + '/api/buyer-auth/session', clients[2])]);
-    browser = await chromium.launch({ headless: true, args: ['--host-resolver-rules=MAP *.localhost 127.0.0.1',
+    browser = await chromium.launch({ headless: true, args: ['--no-proxy-server', '--host-resolver-rules=MAP *.localhost 127.0.0.1, MAP shop.merchant.test 127.0.0.1',
         `--ignore-certificate-errors-spki-list=${checkoutSpki}`] });
 }, { timeout: 400_000 });
 after(async () => {
@@ -280,7 +283,29 @@ async function publish(page: Page) {
 
 test('normal Merchant publication renders the saved Liquid heading on the real public Commerce origin and buys through canonical cart/handoff', { timeout: 400_000 }, async t => {
     const f = await fixture('published-liquid'); t.after(() => f.context.close());
-    await signIn(f.page, f.email); await openEditor(f);
+    await signIn(f.page, f.email);
+    const profileName = `Synthetic merchant ${f.tenant.subdomain}`;
+    const profileTitle = `Synthetic SEO ${f.tenant.subdomain}`;
+    const profileDescription = `Public storefront description for ${f.tenant.subdomain}.`;
+    const contactEmail = `contact-${f.tenant.subdomain}@example.invalid`;
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await expect(f.page.getByLabel('Store name', { exact: true })).toBeVisible();
+    await f.page.getByLabel('Store name', { exact: true }).fill(profileName);
+    await f.page.getByLabel('SEO title', { exact: true }).fill(profileTitle);
+    await f.page.getByLabel('SEO description', { exact: true }).fill(profileDescription);
+    await f.page.getByLabel('Contact email', { exact: true }).fill(contactEmail);
+    await f.page.getByRole('switch', { name: 'Show these contact details on my storefront' }).click();
+    const [profileSave] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(profileSave.status(), 200, 'normal General settings save reaches the canonical site API');
+    assert.equal(owned.psql(`SELECT name||'|'||meta_title||'|'||meta_description||'|'||(business_profile->>'email')
+        FROM sites WHERE id='${f.tenant.siteId}';`), `${profileName}|${profileTitle}|${profileDescription}|${contactEmail}`,
+        'General settings save is visible in the owned canonical sites row');
+    await openEditor(f);
+    await expect(f.page.frameLocator('iframe.te-preview-iframe').locator('body')).toContainText(profileName);
     await publish(f.page);
     const firstRelease = f.currentRelease(); assert.ok(firstRelease);
     const buyer = await f.context.newPage();
@@ -297,6 +322,12 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     const initial = await buyer.goto(f.publicUrl); assert.equal(initial?.status(), 200);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]').first()).toBeVisible();
     await buyer.waitForLoadState('networkidle');
+    await expect(buyer).toHaveTitle(profileTitle);
+    assert.equal(await buyer.locator('meta[name="description"]').getAttribute('content'), profileDescription);
+    await expect(buyer.getByRole('link', { name: contactEmail }).first()).toBeVisible();
+    assert.ok((await buyer.locator('link[rel="canonical"]').getAttribute('href'))?.includes(f.tenant.subdomain),
+        'published metadata resolves to this tenant storefront');
+    assert.doesNotMatch(await buyer.locator('body').innerText(), /Private Legal Name|pan_last4|never-public/);
     const initialHeading = await buyer.getByRole('heading', { level: 1 }).first().textContent();
     const marker = `Synthetic saved release ${crypto.randomUUID()}`;
     await editHeading(f.page, marker);
@@ -348,6 +379,60 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     assert.equal(new URL(buyer.url()).port, String(checkoutTlsPort));
     assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id='${f.tenant.siteId}';`), '1');
     assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${f.tenant.siteId}';`), '0', 'handoff proof stops before any order or payment');
+
+    // This owned fixture marks one local test hostname active to exercise the
+    // Commerce host rewrite and metadata. Real DNS/TLS/provider verification is
+    // a separate hosted acceptance gate and is not simulated by this DB row.
+    owned.psql(`UPDATE sites SET custom_domain='shop.merchant.test', custom_domain_status='active'
+        WHERE id='${f.tenant.siteId}';`);
+    const customBuyer = await f.context.newPage();
+    const customResponse = await customBuyer.goto(`https://shop.merchant.test:${checkoutTlsPort}`);
+    if (customResponse?.status() !== 200) console.info('N4_CUSTOM_HOST_DIAGNOSTIC', JSON.stringify({
+        status: customResponse?.status(), host: customResponse ? new URL(customResponse.url()).host : null,
+        server: customResponse?.headers()['server'] || null,
+        bodyHash: customResponse ? createHash('sha256').update(await customResponse.text()).digest('hex') : null,
+    }));
+    assert.equal(customResponse?.status(), 200, 'verified-host-shaped request reaches the same published store');
+    await expect(customBuyer).toHaveTitle(profileTitle);
+    assert.equal(await customBuyer.locator('meta[name="description"]').getAttribute('content'), profileDescription);
+    assert.equal(new URL((await customBuyer.locator('link[rel="canonical"]').getAttribute('href')) || '').origin,
+        'https://shop.merchant.test', 'custom-domain canonical metadata uses the store host');
+    await expect(customBuyer.getByRole('link', { name: contactEmail }).first()).toBeVisible();
+});
+
+test('two Merchant settings tabs report stale saves and preserve a cleared contact field', { timeout: 180_000 }, async t => {
+    const f = await fixture('profile-two-tabs'); t.after(() => f.context.close());
+    owned.psql(`UPDATE sites SET business_profile='{"email":"before-clear@example.invalid"}'::jsonb
+        WHERE id='${f.tenant.siteId}';`);
+    await signIn(f.page, f.email);
+    const address = `${merchantOrigin}/${f.tenant.subdomain}/settings/general`;
+    const staleTab = await f.context.newPage();
+    await Promise.all([f.page.goto(address), staleTab.goto(address)]);
+    await Promise.all([
+        expect(f.page.getByLabel('Contact email', { exact: true })).toHaveValue('before-clear@example.invalid'),
+        expect(staleTab.getByLabel('Contact email', { exact: true })).toHaveValue('before-clear@example.invalid'),
+    ]);
+    await f.page.getByLabel('Contact email', { exact: true }).fill('');
+    const [clearResponse] = await Promise.all([
+        f.page.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(clearResponse.status(), 200);
+    assert.equal(owned.psql(`SELECT business_profile ? 'email' FROM sites WHERE id='${f.tenant.siteId}';`), 'f');
+    await staleTab.getByLabel('Store name', { exact: true }).fill('Stale tab attempted rename');
+    const [staleResponse] = await Promise.all([
+        staleTab.waitForResponse(response => new URL(response.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && response.request().method() === 'PATCH'),
+        staleTab.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(staleResponse.status(), 409);
+    await expect(staleTab.getByText('Store settings changed. Reload before saving.')).toBeVisible();
+    assert.equal(owned.psql(`SELECT business_profile ? 'email' FROM sites WHERE id='${f.tenant.siteId}';`), 'f',
+        'the stale tab never restores a cleared contact');
+    assert.notEqual(owned.psql(`SELECT name FROM sites WHERE id='${f.tenant.siteId}';`), 'Stale tab attempted rename');
+    await staleTab.reload();
+    await expect(staleTab.getByLabel('Contact email', { exact: true })).toHaveValue('');
 });
 
 for (const operation of ['save', 'publish'] as const) {

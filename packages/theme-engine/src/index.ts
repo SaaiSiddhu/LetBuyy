@@ -919,6 +919,7 @@ export interface FooterSettings {
   telegramUrl?: string;
   youtubeUrl?: string;
   contactEmail?: string;
+  contactPhone?: string;
 }
 
 export interface TestimonialsSettings {

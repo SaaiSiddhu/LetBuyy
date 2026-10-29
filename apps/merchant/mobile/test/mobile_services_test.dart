@@ -2964,10 +2964,6 @@ void main() {
 
       await enterField(const ValueKey('store-details-name-field'), 'A');
       await enterField(const ValueKey('store-details-gstin-field'), 'bad');
-      await enterField(
-        const ValueKey('store-details-invoice-number-field'),
-        '0',
-      );
       await tester.tap(find.widgetWithText(TextButton, 'Save'));
       await tester.pump();
 
@@ -2987,10 +2983,6 @@ void main() {
       await enterField(
         const ValueKey('store-details-invoice-prefix-field'),
         'lby-26',
-      );
-      await enterField(
-        const ValueKey('store-details-invoice-number-field'),
-        '12',
       );
       await enterField(const ValueKey('store-details-pin-field'), '560001');
       await enterField(const ValueKey('store-details-country-field'), 'IN');
@@ -3020,7 +3012,7 @@ void main() {
       expect(body['name'], 'Demo Store Plus');
       expect(body['gstin'], '27ABCDE1234F1Z5');
       expect(body['invoice_prefix'], 'LBY-26');
-      expect(body['invoice_number_next'], 12);
+      expect(body.containsKey('invoice_number_next'), isFalse);
       expect(businessProfile['gst_state_code'], '27');
       expect(invoiceAddress['zip'], '560001');
       expect(invoiceAddress['phone'], '+919876543210');

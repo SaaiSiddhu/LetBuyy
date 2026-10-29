@@ -4,6 +4,7 @@ import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../services/store_service.dart';
+import '../../services/api_client.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
@@ -66,6 +67,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     setState(() => _isSaving = true);
     try {
       final updated = await context.read<StoreService>().updateStore(store.id, {
+        'version': store.version,
         'seo_title': _nullableTrim(_titleController.text),
         'seo_description': _nullableTrim(_descriptionController.text),
       });
@@ -76,6 +78,10 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
         });
         _showSnack('SEO settings saved.');
       }
+    } on ApiException catch (error) {
+      _showSnack(error.statusCode == 409
+          ? 'Store SEO changed elsewhere. Reload before saving again.'
+          : 'Could not save SEO settings: ${error.message}');
     } catch (error) {
       _showSnack('Could not save SEO settings: $error');
     } finally {

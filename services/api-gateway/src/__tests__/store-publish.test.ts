@@ -73,7 +73,6 @@ test('store PATCH accepts business profile and invoice address fields', () => {
         'business_profile',
         'invoice_address',
         'invoice_footer',
-        'invoice_number_next',
     ]) {
         assert.match(routeSource, new RegExp(`'${field}'`));
     }
@@ -81,7 +80,7 @@ test('store PATCH accepts business profile and invoice address fields', () => {
     assert.match(routeSource, /\.or\(ownedByCustomUserFilter\(customUser\.id\)\)/);
     assertOwnershipFilterIsEscaped(routeSource);
     assert.match(tenantCoreSource, /business_profile:\s*BusinessProfileSchema\.optional\(\)\.nullable\(\)/);
-    assert.match(tenantCoreSource, /invoice_address:\s*AddressSchema\.partial\(\)\.passthrough\(\)\.optional\(\)\.nullable\(\)/);
+    assert.match(tenantCoreSource, /invoice_address:\s*AddressSchema\.partial\(\)\.passthrough\(\)\.refine\(/);
     assert.match(sharedTypesSource, /export const BusinessProfileSchema/);
     assert.match(sharedTypesSource, /business_profile:\s*BusinessProfileSchema\.optional\(\)\.nullable\(\)/);
     assert.match(migrationSource, /ALTER TABLE public\.sites[\s\S]*ADD COLUMN IF NOT EXISTS business_profile jsonb/);

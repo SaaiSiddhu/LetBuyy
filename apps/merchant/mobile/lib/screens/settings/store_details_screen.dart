@@ -6,6 +6,7 @@ import '../../app/store_context.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../services/store_service.dart';
+import '../../services/api_client.dart';
 import '../../widgets/shared/image_source_sheet.dart';
 import '../../widgets/shared/merchant_media_picker.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
@@ -28,7 +29,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     r'^(0[1-9]|[12][0-9]|3[0-8]|97)$',
   );
   static final RegExp _invoicePrefixPattern = RegExp(r'^[A-Z0-9-]{1,20}$');
-  static final RegExp _countryPattern = RegExp(r'^[A-Z]{2}$');
   static final RegExp _indianPinPattern = RegExp(r'^[1-9][0-9]{5}$');
   static final RegExp _phonePattern = RegExp(r'^\+?[0-9][0-9\s-]{6,18}$');
 
@@ -45,7 +45,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   final _gstinController = TextEditingController();
   final _gstStateCodeController = TextEditingController();
   final _invoicePrefixController = TextEditingController();
-  final _invoiceNumberController = TextEditingController();
   final _invoiceFooterController = TextEditingController();
   final _invoiceLine1Controller = TextEditingController();
   final _invoiceLine2Controller = TextEditingController();
@@ -108,6 +107,13 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
           context,
         ).showSnackBar(const SnackBar(content: Text('Store details saved.')));
       }
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.statusCode == 409
+            ? 'Store details changed elsewhere. Reload before saving again.'
+            : 'Could not save store details: ${e.message}'),
+      ));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +132,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     _gstinController.dispose();
     _gstStateCodeController.dispose();
     _invoicePrefixController.dispose();
-    _invoiceNumberController.dispose();
     _invoiceFooterController.dispose();
     _invoiceLine1Controller.dispose();
     _invoiceLine2Controller.dispose();
@@ -241,16 +246,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
               fieldKey: const ValueKey('store-details-invoice-prefix-field'),
               textCapitalization: TextCapitalization.characters,
               validator: _validateInvoicePrefix,
-            ),
-            const SizedBox(height: 16),
-            _buildField(
-              label: 'Next Invoice Number',
-              hint: '1',
-              controller: _invoiceNumberController,
-              icon: Icons.format_list_numbered_rounded,
-              fieldKey: const ValueKey('store-details-invoice-number-field'),
-              keyboardType: TextInputType.number,
-              validator: _validateInvoiceNumber,
             ),
             const SizedBox(height: 16),
             _buildField(
@@ -560,9 +555,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     _gstStateCodeController.text =
         store?.gstStateCode ?? _stringValue(businessProfile['gst_state_code']);
     _invoicePrefixController.text = store?.invoicePrefix ?? '';
-    _invoiceNumberController.text = store == null
-        ? ''
-        : store.invoiceNumberNext.toString();
     _invoiceFooterController.text = store?.invoiceFooter ?? '';
     _invoiceLine1Controller.text = _stringValue(invoiceAddress['line1']);
     _invoiceLine2Controller.text = _stringValue(invoiceAddress['line2']);
@@ -583,8 +575,8 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     final invoicePrefix = _nullableText(
       _invoicePrefixController,
     )?.toUpperCase();
-    final invoiceNumber = int.tryParse(_invoiceNumberController.text.trim());
     final invoiceAddress = <String, dynamic>{
+      ..._store!.invoiceAddress,
       if (_nullableText(_invoiceLine1Controller) != null)
         'line1': _nullableText(_invoiceLine1Controller),
       if (_nullableText(_invoiceLine2Controller) != null)
@@ -602,19 +594,35 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
         'phone': _normalizedPhone(_invoicePhoneController),
     };
     final businessProfile = <String, dynamic>{
+      ..._store!.businessProfile,
       if (legalName != null) 'legal_name': legalName,
       if (gstin != null) 'gstin': gstin,
       if (gstStateCode != null) 'gst_state_code': gstStateCode,
     };
+    if (legalName == null) businessProfile.remove('legal_name');
+    if (gstin == null) businessProfile.remove('gstin');
+    if (gstStateCode == null) businessProfile.remove('gst_state_code');
+    if (_nullableText(_invoiceLine1Controller) == null)
+      invoiceAddress.remove('line1');
+    if (_nullableText(_invoiceLine2Controller) == null)
+      invoiceAddress.remove('line2');
+    if (_nullableText(_invoiceCityController) == null)
+      invoiceAddress.remove('city');
+    if (_nullableText(_invoiceStateController) == null)
+      invoiceAddress.remove('state');
+    if (_nullableText(_invoiceZipController) == null)
+      invoiceAddress.remove('zip');
+    if (_nullableText(_invoicePhoneController) == null)
+      invoiceAddress.remove('phone');
 
     return {
+      'version': _store!.version,
       'name': _nameController.text.trim(),
       'tagline': _taglineController.text.trim(),
       'legal_name': legalName,
       'gstin': gstin,
       'gst_state_code': gstStateCode,
       'invoice_prefix': invoicePrefix,
-      'invoice_number_next': invoiceNumber ?? 1,
       'invoice_footer': _nullableText(_invoiceFooterController),
       'business_profile': businessProfile,
       'invoice_address': invoiceAddress,
@@ -688,17 +696,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     return null;
   }
 
-  String? _validateInvoiceNumber(String? value) {
-    final text = value?.trim() ?? '';
-    if (text.isEmpty) return 'Enter the next invoice number.';
-    final number = int.tryParse(text);
-    if (number == null || number <= 0) {
-      return 'Enter a positive invoice number.';
-    }
-    if (number > 999999999) return 'Invoice number is too large.';
-    return null;
-  }
-
   String? _validatePostalCode(String? value) {
     final zip = value?.trim() ?? '';
     if (zip.isEmpty) return null;
@@ -713,10 +710,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
 
   String? _validateCountry(String? value) {
     final country = value?.trim().toUpperCase() ?? '';
-    if (country.isEmpty) return 'Enter a country code.';
-    if (!_countryPattern.hasMatch(country)) {
-      return 'Use a 2-letter country code.';
-    }
+    if (country != 'IN') return 'LetBuyy stores must be based in India.';
     return null;
   }
 

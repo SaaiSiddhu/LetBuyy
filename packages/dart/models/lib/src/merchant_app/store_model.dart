@@ -92,6 +92,8 @@ class StoreModel {
   final Map<String, dynamic> invoiceAddress;
   final String? invoiceFooter;
   final int invoiceNumberNext;
+  /// Monotonic sites revision used by conditional profile updates.
+  final int version;
 
   // Timestamps
   final DateTime createdAt;
@@ -152,6 +154,7 @@ class StoreModel {
     this.invoiceAddress = const {},
     this.invoiceFooter,
     this.invoiceNumberNext = 1,
+    this.version = 1,
     required this.createdAt,
     required this.updatedAt,
     this.publishedAt,
@@ -272,6 +275,7 @@ class StoreModel {
       invoiceFooter: data['invoiceFooter'] ?? data['invoice_footer'],
       invoiceNumberNext:
           data['invoiceNumberNext'] ?? data['invoice_number_next'] ?? 1,
+      version: data['version'] ?? 1,
       createdAt:
           _parseTimestamp(data['createdAt'] ?? data['created_at']) ??
           DateTime.now(),
@@ -343,6 +347,7 @@ class StoreModel {
       'invoice_address': invoiceAddress,
       'invoice_footer': invoiceFooter,
       'invoice_number_next': invoiceNumberNext,
+      'version': version,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'published_at': publishedAt?.toIso8601String(),
@@ -403,6 +408,7 @@ class StoreModel {
     Map<String, dynamic>? invoiceAddress,
     String? invoiceFooter,
     int? invoiceNumberNext,
+    int? version,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? publishedAt,
@@ -460,6 +466,7 @@ class StoreModel {
       invoiceAddress: invoiceAddress ?? this.invoiceAddress,
       invoiceFooter: invoiceFooter ?? this.invoiceFooter,
       invoiceNumberNext: invoiceNumberNext ?? this.invoiceNumberNext,
+      version: version ?? this.version,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       publishedAt: publishedAt ?? this.publishedAt,

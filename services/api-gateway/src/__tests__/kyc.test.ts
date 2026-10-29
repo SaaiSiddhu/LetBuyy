@@ -5,6 +5,7 @@ import {
     createKycVerificationAdapter,
     KycProviderUnavailableError,
 } from '@letbuyy/infrastructure/kyc-verification-adapter';
+import { deriveKycOverallStatus } from '../routes/kyc';
 
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const kycSource = readFileSync(new URL('../routes/kyc.ts', import.meta.url), 'utf8');
@@ -18,12 +19,14 @@ test('merchant KYC route is mounted and mobile allowlisted', () => {
     assert.match(bffSource, /'\/v1\/kyc'/);
 });
 
-test('KYC route is tenant-scoped and stores provider status', () => {
+test('KYC route requires private evidence, scopes it to a tenant, and stores provider status', () => {
     assert.match(kycSource, /router\.get\('\/'/);
     assert.match(kycSource, /router\.post\('\/documents'/);
+    assert.match(kycSource, /KYC_PRIVATE_UPLOAD_REQUIRED/);
+    assert.match(kycSource, /router\.post\('\/documents\/upload'/);
     assert.match(kycSource, /router\.post\('\/documents\/:id\/refresh'/);
     assert.match(kycSource, /resolveTenantContextForOwnedSite\(c,\s*query\.store_id\)/);
-    assert.match(kycSource, /resolveTenantContextForOwnedSite\(c,\s*body\.store_id\)/);
+    assert.match(kycSource, /resolveTenantContextForOwnedSite\(c,\s*input\.data\.store_id\)/);
     assert.match(kycSource, /\.from\('merchant_kyc_documents'\)[\s\S]*\.insert/);
     assert.match(kycSource, /\.from\('merchant_kyc_documents'\)[\s\S]*\.update/);
     assert.match(kycSource, /createKycVerificationAdapter/);
@@ -46,7 +49,7 @@ test('KYC adapter is sandbox-first, manual-review aware, and fail-closed for aut
     assert.match(adapterSource, /automated live KYC provider integration is unavailable/);
     assert.match(adapterSource, /KYC_LIVE_PROVIDER_UNAVAILABLE/);
     assert.doesNotMatch(adapterSource, /live_provider_stub/);
-    assert.match(adapterSource, /status: hasEvidence \? 'verified' : 'needs_review'/);
+    assert.match(adapterSource, /status: hasEvidence \? 'submitted' : 'needs_review'/);
     assert.match(adapterSource, /manual_review_required: true/);
 
     const manual = createKycVerificationAdapter({ provider: 'manual', mode: 'live' });
@@ -62,8 +65,39 @@ test('KYC adapter is sandbox-first, manual-review aware, and fail-closed for aut
     assert.equal(result.metadata.manual_review_required, true);
     assert.match(result.providerReference, /^kyc_manual_review_/);
 
+    const sandbox = createKycVerificationAdapter({ provider: 'letbuyy_sandbox_kyc', mode: 'sandbox' });
+    const sandboxResult = await sandbox.verifyDocument({
+        siteId: '11111111-1111-4111-8111-111111111111',
+        documentId: '22222222-2222-4222-8222-222222222222',
+        documentType: 'bank_proof',
+        documentNumberLast4: '1234',
+    });
+    assert.equal(sandboxResult.status, 'submitted');
+    assert.equal(sandboxResult.providerMode, 'sandbox');
+
     assert.throws(
         () => createKycVerificationAdapter({ provider: 'signzy', mode: 'live', apiKey: 'provider-key' }),
         KycProviderUnavailableError,
     );
+});
+
+test('sandbox and provider-unavailable records never complete business verification', () => {
+    const documents = ['business_pan', 'bank_proof', 'address_proof'].map((document_type) => ({
+        document_type,
+        status: 'verified',
+        provider_mode: 'sandbox',
+        provider: 'letbuyy_sandbox_kyc',
+        provider_reference: `sandbox-${document_type}`,
+        metadata: { sandbox: true } as Record<string, unknown>,
+    }));
+    const status = () => deriveKycOverallStatus(documents as unknown as Parameters<typeof deriveKycOverallStatus>[0]);
+    assert.notEqual(status(), 'verified');
+    documents.forEach((row) => { row.provider_mode = 'live'; row.provider = 'signzy'; row.metadata = { provider_unavailable: true }; });
+    assert.notEqual(status(), 'verified');
+    documents.forEach((row) => { row.metadata = { sandbox: false }; row.provider_reference = ''; });
+    assert.notEqual(status(), 'verified');
+    documents.forEach((row) => { row.provider_reference = `provider-${row.document_type}`; });
+    assert.notEqual(status(), 'verified');
+    documents.forEach((row) => { row.metadata = { provider_verified: true }; });
+    assert.equal(status(), 'verified');
 });

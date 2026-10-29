@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import type { Env } from '../index';
+import { AppError } from '../lib/errors';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
@@ -29,16 +31,16 @@ const StoreQuerySchema = z.object({
 const SubmitKycDocumentSchema = StoreQuerySchema.extend({
     document_type: DocumentTypeSchema,
     document_number_last4: z.string().trim().min(2).max(8).regex(/^[A-Za-z0-9]+$/).optional(),
-    file_url: z.string().url().optional(),
-    file_name: z.string().trim().min(1).max(255).optional(),
+    // Identity and bank documents must use the private upload flow, never a URL.
+    file_url: z.never().optional(),
+    file_name: z.never().optional(),
     idempotency_key: z.string().min(8).max(160).optional(),
-}).refine((value) => Boolean(value.document_number_last4 || value.file_url), {
-    message: 'Document evidence is required',
-    path: ['file_url'],
+}).refine((value) => Boolean(value.document_number_last4), {
+    message: 'Enter a reference; private document upload is a separate step',
+    path: ['document_number_last4'],
 });
 
 type StoreQuery = z.infer<typeof StoreQuerySchema>;
-type SubmitKycDocumentInput = z.infer<typeof SubmitKycDocumentSchema>;
 
 interface KycDocumentRow extends Record<string, unknown> {
     id: string;
@@ -75,7 +77,15 @@ function providerMode(env: Env): MerchantKycProviderMode {
 function providerName(env: Env): MerchantKycProvider {
     if (providerMode(env) === 'sandbox') return 'letbuyy_sandbox_kyc';
     const value = env.KYC_PROVIDER;
-    return value === 'hyperverge' || value === 'manual' || value === 'signzy' ? value : 'signzy';
+    return value === 'hyperverge' || value === 'manual' || value === 'signzy' ? value : 'manual';
+}
+
+function hasLiveProviderEvidence(row: KycDocumentRow): boolean {
+    return row.status === 'verified' && row.provider_mode === 'live'
+        && (row.provider === 'signzy' || row.provider === 'hyperverge')
+        && Boolean(row.provider_reference) && row.metadata?.provider_verified === true
+        && !row.metadata?.provider_unavailable
+        && !row.metadata?.sandbox;
 }
 
 function serializeDocument(row: KycDocumentRow) {
@@ -83,15 +93,15 @@ function serializeDocument(row: KycDocumentRow) {
         id: row.id,
         site_id: row.site_id,
         document_type: row.document_type,
-        status: row.status,
+        status: row.status === 'verified' && !hasLiveProviderEvidence(row) ? 'needs_review' : row.status,
         provider: row.provider,
         provider_mode: row.provider_mode,
         provider_reference: row.provider_reference || null,
         document_number_last4: row.document_number_last4 || null,
-        file_url: row.file_url || null,
-        file_name: row.file_name || null,
+        // Existing historical URL values are not exposed as document download links.
         rejection_reason: row.rejection_reason || null,
-        metadata: row.metadata || {},
+        // Private object keys, provider payloads, and upload hashes are server-only.
+        has_private_upload: Boolean(row.metadata?.private_object_key),
         submitted_at: row.submitted_at || null,
         verified_at: row.verified_at || null,
         rejected_at: row.rejected_at || null,
@@ -101,19 +111,24 @@ function serializeDocument(row: KycDocumentRow) {
     };
 }
 
-function overallStatus(rows: KycDocumentRow[]) {
+export function deriveKycOverallStatus(rows: KycDocumentRow[]) {
     if (rows.some((row) => row.status === 'rejected')) return 'rejected';
     const byType = new Map(rows.map((row) => [row.document_type, row]));
     const required = REQUIRED_DOCUMENTS.filter((item) => item.required);
-    if (required.every((item) => byType.get(item.document_type)?.status === 'verified')) return 'verified';
+    if (required.every((item) => {
+        const row = byType.get(item.document_type);
+        return Boolean(row && hasLiveProviderEvidence(row));
+    })) return 'verified';
     if (rows.some((row) => row.status === 'needs_review')) return 'needs_review';
     if (rows.some((row) => row.status === 'submitted' || row.status === 'verified')) return 'in_progress';
     return 'not_started';
 }
 
-function nextAction(status: string): string {
+function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode): string {
     if (status === 'verified') return 'Business verification is complete.';
     if (status === 'rejected') return 'Review the rejected document and submit an updated proof.';
+    if (mode === 'sandbox' && rows.length > 0) return 'Sandbox submissions do not authorize live payouts.';
+    if (rows.some((row) => row.metadata?.provider_unavailable)) return 'Verification provider is unavailable. Your submission remains pending; retry later.';
     if (status === 'needs_review') return 'A submitted document needs review.';
     if (status === 'in_progress') return 'Submit the remaining required documents.';
     return 'Submit business PAN, bank proof, and address proof.';
@@ -121,17 +136,19 @@ function nextAction(status: string): string {
 
 function buildOverview(siteId: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode) {
     const byType = new Map(rows.map((row) => [row.document_type, row]));
-    const status = overallStatus(rows);
+    const derived = deriveKycOverallStatus(rows);
+    const status = mode === 'sandbox' && derived === 'verified' ? 'in_progress' : derived;
     return {
         site_id: siteId,
         overall_status: status,
         provider_mode: mode,
         required_documents: REQUIRED_DOCUMENTS.map((item) => ({
             ...item,
-            status: byType.get(item.document_type)?.status || null,
+            status: byType.get(item.document_type)
+                ? serializeDocument(byType.get(item.document_type)!).status : null,
         })),
         documents: rows.map(serializeDocument),
-        next_action: nextAction(status),
+        next_action: nextAction(status, rows, mode),
     };
 }
 
@@ -147,11 +164,12 @@ async function loadDocuments(db: ReturnType<typeof getSupabaseAdmin>, siteId: st
     return (data || []) as unknown as KycDocumentRow[];
 }
 
-async function loadDocument(db: ReturnType<typeof getSupabaseAdmin>, id: string): Promise<KycDocumentRow | null> {
+async function loadDocument(db: ReturnType<typeof getSupabaseAdmin>, id: string, siteId: string): Promise<KycDocumentRow | null> {
     const { data, error } = await db
         .from('merchant_kyc_documents')
         .select('*')
         .eq('id', id)
+        .eq('site_id', siteId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -207,74 +225,6 @@ async function verifyWithProvider(
     }
 }
 
-async function saveDocument(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    env: Env,
-    tenant: { siteId: string; userId: string | null },
-    body: SubmitKycDocumentInput,
-): Promise<KycDocumentRow> {
-    const { data: existing, error: existingError } = await db
-        .from('merchant_kyc_documents')
-        .select('*')
-        .eq('site_id', tenant.siteId)
-        .eq('document_type', body.document_type)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (existingError) throw new Error(`KYC document lookup failed: ${existingError.message}`);
-
-    const documentId = (existing as { id?: string } | null)?.id || crypto.randomUUID();
-    const now = new Date().toISOString();
-    const verification = await verifyWithProvider(env, {
-        siteId: tenant.siteId,
-        documentId,
-        documentType: body.document_type,
-        documentNumberLast4: body.document_number_last4 || null,
-        fileUrl: body.file_url || null,
-    });
-    const status = verification.status;
-    const values = {
-        site_id: tenant.siteId,
-        document_type: body.document_type,
-        status,
-        provider: verification.provider,
-        provider_mode: verification.providerMode,
-        provider_reference: verification.providerReference,
-        document_number_last4: body.document_number_last4 || null,
-        file_url: body.file_url || null,
-        file_name: body.file_name || null,
-        rejection_reason: verification.rejectionReason || null,
-        metadata: {
-            ...verification.metadata,
-            idempotency_key: body.idempotency_key || null,
-        },
-        submitted_by: tenant.userId,
-        submitted_at: now,
-        verified_at: status === 'verified' ? now : null,
-        rejected_at: status === 'rejected' ? now : null,
-        updated_by: tenant.userId,
-    };
-
-    if (existing) {
-        const { data, error } = await db
-            .from('merchant_kyc_documents')
-            .update(values)
-            .eq('id', documentId)
-            .select('*')
-            .single();
-        if (error) throw new Error(`KYC document update failed: ${error.message}`);
-        return data as unknown as KycDocumentRow;
-    }
-
-    const { data, error } = await db
-        .from('merchant_kyc_documents')
-        .insert({ id: documentId, ...values, created_by: tenant.userId })
-        .select('*')
-        .single();
-    if (error) throw new Error(`KYC document insert failed: ${error.message}`);
-    return data as unknown as KycDocumentRow;
-}
-
 router.get('/', validate('query', StoreQuerySchema), async (c) => {
     const query = c.get('validatedQuery') as StoreQuery;
     const db = getSupabaseAdmin(c);
@@ -284,24 +234,106 @@ router.get('/', validate('query', StoreQuerySchema), async (c) => {
 });
 
 router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) => {
-    const body = c.get('validatedBody') as SubmitKycDocumentInput;
-    const db = getSupabaseAdmin(c);
-    const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const document = await saveDocument(db, c.env, tenant, body);
-    const rows = await loadDocuments(db, tenant.siteId);
-    return c.json(success({
-        document: serializeDocument(document),
-        overview: buildOverview(tenant.siteId, rows, providerMode(c.env)),
-    }), 201);
+    // The JSON endpoint predates private evidence upload. A last-four reference
+    // cannot represent a submitted document or authorize provider review.
+    return c.json({ error: { code: 'KYC_PRIVATE_UPLOAD_REQUIRED',
+        message: 'Upload the document privately to submit it for verification.' } }, 410);
 });
 
-router.post('/documents/:id/refresh', async (c) => {
+// Evidence stays in a dedicated private R2 bucket. No public URL or object key
+// is returned to the merchant, storefront, or provider adapter.
+router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async (c) => {
+    const idempotencyKey = c.req.header('X-Idempotency-Key');
+    if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 160) {
+        return c.json({ error: { code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'A valid idempotency key is required.' } }, 400);
+    }
+    const bucket = c.env.KYC_PRIVATE_BUCKET;
+    if (!bucket) return c.json({ error: { code: 'KYC_UPLOAD_UNAVAILABLE', message: 'Private document upload is not configured. Please retry later.' } }, 503);
+    const declaredLength = Number(c.req.header('content-length') || 0);
+    if (declaredLength > 6 * 1024 * 1024) return c.json({ error: { code: 'KYC_FILE_TOO_LARGE', message: 'Choose a document under 5 MB.' } }, 413);
+    let form: FormData;
+    try { form = await c.req.formData(); }
+    catch { return c.json({ error: { code: 'KYC_INVALID_UPLOAD', message: 'Upload a valid document.' } }, 400); }
+    const input = StoreQuerySchema.extend({ document_type: DocumentTypeSchema, document_number_last4: z.string().trim().min(2).max(8).regex(/^[A-Za-z0-9]+$/) }).safeParse({
+        store_id: form.get('store_id'),
+        document_type: form.get('document_type'),
+        document_number_last4: form.get('document_number_last4'),
+    });
+    if (!input.success) return c.json({ error: { code: 'KYC_INVALID_UPLOAD', message: 'Choose a document type and enter its final reference characters.' } }, 400);
+    const file = form.get('file') as File | string | null;
+    if (!(file instanceof File) || file.size === 0 || file.size > 5 * 1024 * 1024) {
+        return c.json({ error: { code: 'KYC_INVALID_FILE', message: 'Choose a PDF, JPEG, or PNG under 5 MB.' } }, 400);
+    }
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const pdf = bytes.length >= 5 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46 && bytes[4] === 0x2d;
+    const jpeg = bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+    const png = bytes.length >= 8 && [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a].every((byte, index) => bytes[index] === byte);
+    const contentType = pdf ? 'application/pdf' : jpeg ? 'image/jpeg' : png ? 'image/png' : null;
+    if (!contentType || (file.type !== contentType && file.type !== 'application/octet-stream')) return c.json({ error: { code: 'KYC_UNSUPPORTED_FILE', message: 'Only PDF, JPEG, and PNG documents are accepted.' } }, 415);
+
     const db = getSupabaseAdmin(c);
-    const document = await loadDocument(db, c.req.param('id'));
+    const tenant = await resolveTenantContextForOwnedSite(c, input.data.store_id);
+    const { data: existing, error: lookupError } = await db.from('merchant_kyc_documents').select('*')
+        .eq('site_id', tenant.siteId).eq('document_type', input.data.document_type).is('deleted_at', null).maybeSingle();
+    if (lookupError) throw new Error('KYC document lookup failed');
+    const prior = existing as KycDocumentRow | null;
+    const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    if (prior?.metadata?.idempotency_key === idempotencyKey) {
+        if (prior.metadata.sha256 !== digest || prior.document_number_last4 !== input.data.document_number_last4) {
+            return c.json({ error: { code: 'IDEMPOTENCY_CONFLICT', message: 'This upload key was already used for a different document.' } }, 409);
+        }
+        const rows = await loadDocuments(db, tenant.siteId);
+        return c.json(success({ document: serializeDocument(prior), overview: buildOverview(tenant.siteId, rows, providerMode(c.env)) }), 200);
+    }
+    const key = `kyc/${tenant.siteId}/${input.data.document_type}/${crypto.randomUUID()}`;
+    await bucket.put(key, bytes, { httpMetadata: { contentType, contentDisposition: 'attachment' } });
+    const now = new Date().toISOString();
+    const values = {
+        site_id: tenant.siteId,
+        document_type: input.data.document_type,
+        document_number_last4: input.data.document_number_last4,
+        status: 'submitted',
+        provider: providerName(c.env),
+        provider_mode: providerMode(c.env),
+        provider_reference: null,
+        file_url: null,
+        file_name: null,
+        rejection_reason: null,
+        metadata: { private_object_key: key, sha256: digest, content_type: contentType, byte_size: bytes.length, provider_review_required: true, idempotency_key: idempotencyKey },
+        submitted_by: tenant.userId,
+        submitted_at: now,
+        verified_at: null,
+        rejected_at: null,
+        updated_by: tenant.userId,
+    };
+    let document: KycDocumentRow;
+    try {
+        const result = prior
+            ? await db.from('merchant_kyc_documents').update(values)
+                .eq('id', prior.id).eq('site_id', tenant.siteId).eq('updated_at', prior.updated_at)
+                .is('deleted_at', null).select('*').maybeSingle()
+            : await db.from('merchant_kyc_documents').insert({ id: crypto.randomUUID(), ...values, created_by: tenant.userId }).select('*').maybeSingle();
+        if (result.error?.code === '23505' || (!result.error && !result.data))
+            throw new AppError('This document changed while you were uploading. Reload and try again.', 409, 'KYC_CONFLICT');
+        if (result.error || !result.data) throw new Error('KYC document save failed');
+        document = result.data as KycDocumentRow;
+    } catch (error) {
+        await bucket.delete(key);
+        throw error;
+    }
+    const oldKey = prior?.metadata?.private_object_key;
+    if (typeof oldKey === 'string' && oldKey.startsWith(`kyc/${tenant.siteId}/`)) await bucket.delete(oldKey);
+    const rows = await loadDocuments(db, tenant.siteId);
+    return c.json(success({ document: serializeDocument(document), overview: buildOverview(tenant.siteId, rows, providerMode(c.env)) }), 201);
+});
+
+router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async (c) => {
+    const db = getSupabaseAdmin(c);
+    const tenant = await resolveTenantContextForOwnedSite(c, (c.get('validatedQuery') as StoreQuery).store_id);
+    const document = await loadDocument(db, c.req.param('id'), tenant.siteId);
     if (!document) {
         return c.json({ error: { code: 'KYC_DOCUMENT_NOT_FOUND', message: 'KYC document not found' } }, 404);
     }
-    const tenant = await resolveTenantContextForOwnedSite(c, document.site_id);
     const verification = await verifyWithProvider(c.env, {
         siteId: tenant.siteId,
         documentId: document.id,
@@ -319,12 +351,21 @@ router.post('/documents/:id/refresh', async (c) => {
             provider_mode: verification.providerMode,
             provider_reference: verification.providerReference,
             rejection_reason: verification.rejectionReason || null,
-            metadata: verification.metadata,
+            metadata: {
+                ...(document.metadata || {}),
+                ...verification.metadata,
+                // Refresh must retain the private object pointer for review,
+                // while a pending/outage result revokes the prior approval.
+                provider_verified: status === 'verified'
+                    && verification.providerMode === 'live'
+                    && verification.metadata.provider_verified === true,
+            },
             verified_at: status === 'verified' ? now : null,
             rejected_at: status === 'rejected' ? now : null,
             updated_by: tenant.userId,
         })
         .eq('id', document.id)
+        .eq('site_id', tenant.siteId)
         .select('*')
         .single();
 

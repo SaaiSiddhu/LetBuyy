@@ -1282,10 +1282,31 @@ class KycApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
-  Future<JsonMap> refreshDocument(String id, {ApiRequestOptions? options}) =>
+  Future<JsonMap> uploadDocument({
+    required String storeId,
+    required String documentType,
+    required String documentNumberLast4,
+    required File file,
+    ApiRequestOptions? options,
+  }) async {
+    if (await file.length() > 5 * 1024 * 1024) {
+      throw const ApiException(message: 'Choose a document under 5 MB.', statusCode: 413, code: 'KYC_FILE_TOO_LARGE');
+    }
+    final name = file.path.split(Platform.pathSeparator).last;
+    final form = FormData.fromMap({
+      'store_id': storeId,
+      'document_type': documentType,
+      'document_number_last4': documentNumberLast4,
+      'file': await MultipartFile.fromFile(file.path, filename: name),
+    });
+    return _client.requestJson('/kyc/documents/upload',
+      options: _mergeOptions(options, method: HttpMethod.post, body: form));
+  }
+
+  Future<JsonMap> refreshDocument(String id, String storeId, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/kyc/documents/${_encodePathSegment(id)}/refresh',
-        options: _mergeOptions(options, method: HttpMethod.post),
+        options: _mergeOptions(options, method: HttpMethod.post, query: {'store_id': storeId}),
       );
 }
 

@@ -942,9 +942,22 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
         'seo_title', 'seo_description',
         'tax_inclusive',
         'legal_name', 'gstin', 'gst_state_code', 'invoice_prefix',
-        'business_profile', 'invoice_address', 'invoice_footer', 'invoice_number_next',
+        'business_profile', 'invoice_address', 'invoice_footer',
         'cod_enabled', 'online_payment_enabled',
     ];
+    // Profile edits from web and mobile must be conditional on the version that
+    // was read. The sites trigger increments this version on every UPDATE, so a
+    // second tab cannot silently replace a newer business_profile or address.
+    const versionedProfileFields = [
+        'name', 'description', 'tagline', 'currency', 'locale', 'timezone',
+        'seo_title', 'seo_description', 'legal_name', 'gstin', 'gst_state_code',
+        'invoice_prefix', 'business_profile', 'invoice_address', 'invoice_footer',
+    ];
+    const editsProfile = versionedProfileFields.some((key) => body[key] !== undefined);
+    const expectedVersion = typeof body.version === 'number' ? body.version : null;
+    if (editsProfile && expectedVersion === null) {
+        throw new AppError('Reload store details before saving.', 409, 'STORE_VERSION_REQUIRED');
+    }
     // The published API keeps its SEO field names; sites stores these facts in
     // meta_title/meta_description. Do not create a second metadata authority.
     const columnForField: Record<string, string> = { seo_title: 'meta_title', seo_description: 'meta_description' };
@@ -998,8 +1011,9 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
             .eq('id', storeId)
             .or(ownedByCustomUserFilter(customUser.id));
 
-        const current = paymentRevision === undefined ? query : paymentRevision
-            ? query.eq('updated_at', paymentRevision) : query.is('updated_at', null);
+        const versioned = expectedVersion === null ? query : query.eq('version', expectedVersion);
+        const current = paymentRevision === undefined ? versioned : paymentRevision
+            ? versioned.eq('updated_at', paymentRevision) : versioned.is('updated_at', null);
         return includeDeletedAtFilter ? current.is('deleted_at', null) : current;
     };
 

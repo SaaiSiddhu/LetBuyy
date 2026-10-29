@@ -586,6 +586,7 @@ function mapSupabaseToStore(
     const themeId = release?.theme_id || (data.theme_id as string) || (rawTemplateConfig.themeId as string) || 'urban-kicks';
     const storeLocale = (data.locale as string) || 'en-IN';
     const appearanceSettings = asRecord(data.site_settings);
+    const publicContact = asRecord(data.public_contact);
     const { templateConfig, themeSettings } = resolveStorefrontThemePresentation(rawTemplateConfig, appearanceSettings, themeId, storeLocale);
     const customCss = typeof appearanceSettings.custom_css === 'string' && appearanceSettings.custom_css
         ? appearanceSettings.custom_css : undefined;
@@ -682,6 +683,11 @@ function mapSupabaseToStore(
         sellerId: (data.user_id as string) || (data.custom_user_id as string) || '',
         name: (data.name as string) || (data.store_name as string) || 'Untitled Store',
         tagline: (data.tagline as string) || '',
+        publicContact: {
+            email: typeof publicContact.email === 'string' ? publicContact.email : undefined,
+            phone: typeof publicContact.phone === 'string' ? publicContact.phone : undefined,
+            website: typeof publicContact.website === 'string' ? publicContact.website : undefined,
+        },
         subdomain: (data.subdomain as string) || (data.store_name as string) || '',
         storeUrl: data.custom_domain as string,
         // LB-9 — the Appearance-page logo (site_settings.logo_url) overrides the base site logo.

@@ -48,6 +48,44 @@ test('L4: renderer emits Liquid footer chrome', async () => {
   assert.match(footer, /class="lb-footer"/);
 });
 
+test('L4: a legacy platform email never masks opted-in merchant contact', async () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  bundle.templates.footer.sections['footer-default'].settings.contactEmail = 'help@letbuyy.com';
+  const result = await new LiquidRenderer().render({
+    context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/', previewMode: true, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index', layoutKey: 'theme', sections: [] },
+    liquidContext: { shop: { name: 'Local Kicks', contact_email: 'merchant@example.invalid' } },
+    liquidBundle: bundle,
+  });
+  const footer = result.liquid?.footer ?? '';
+  assert.match(footer, /mailto:merchant@example\.invalid/);
+  assert.doesNotMatch(footer, /help@letbuyy\.com/);
+});
+
+test('L4: a persisted older Liquid footer binds opted-in contact without overriding an explicit merchant address', async () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const schema = bundle.sections.footer.source.slice(bundle.sections.footer.source.indexOf('{% schema %}'));
+  bundle.sections.footer.source = `<footer class="lb-footer">
+    {% if section.settings.contactEmail != blank %}<a href="mailto:{{ section.settings.contactEmail }}">{{ section.settings.contactEmail }}</a>{% endif %}
+    {% if section.settings.contactPhone != blank %}<a href="tel:{{ section.settings.contactPhone }}">{{ section.settings.contactPhone }}</a>{% endif %}
+  </footer>\n${schema}`;
+  bundle.templates.footer.sections['footer-default'].settings = {};
+  const renderFooter = async (shop: Record<string, unknown>) => (await new LiquidRenderer().render({
+    context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/', previewMode: true, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index', layoutKey: 'theme', sections: [] },
+    liquidContext: { shop }, liquidBundle: bundle,
+  })).liquid?.footer ?? '';
+  assert.match(await renderFooter({ name: 'Local Kicks', contact_email: 'merchant@example.invalid', contact_phone: '+919876543210' }),
+    /mailto:merchant@example\.invalid/);
+  assert.doesNotMatch(await renderFooter({ name: 'Local Kicks' }), /mailto:|tel:/);
+  bundle.templates.footer.sections['footer-default'].settings.contactEmail = 'custom@example.invalid';
+  const overridden = await renderFooter({ name: 'Local Kicks', contact_email: 'merchant@example.invalid' });
+  assert.match(overridden, /mailto:custom@example\.invalid/);
+  assert.doesNotMatch(overridden, /merchant@example\.invalid/);
+});
+
 test('L4: chrome is sanitized (no active content leaks through header/footer)', async () => {
   const result = await render();
   const chrome = `${result.liquid?.header ?? ''}${result.liquid?.footer ?? ''}`;

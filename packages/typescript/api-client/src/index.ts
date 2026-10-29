@@ -5174,8 +5174,8 @@ export class LetbuyyApiClient {
       this.requestData<MerchantKycOverview>('/kyc', { ...options, query }),
     submitDocument: (input: SubmitKycDocumentInput, options?: LetbuyyRequestOptions) =>
       this.requestData<{ document: MerchantKycDocument; overview: MerchantKycOverview }>('/kyc/documents', { ...options, method: 'POST', body: input }),
-    refreshDocument: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ document: MerchantKycDocument; overview: MerchantKycOverview }>(`/kyc/documents/${encodePathSegment(id)}/refresh`, { ...options, method: 'POST' }),
+    refreshDocument: (id: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ document: MerchantKycDocument; overview: MerchantKycOverview }>(`/kyc/documents/${encodePathSegment(id)}/refresh`, { ...options, method: 'POST', query: { store_id: storeId } }),
   };
 
   readonly twoFactor = {

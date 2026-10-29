@@ -54,7 +54,9 @@ function sandboxResult(
 ): VerifyKycDocumentResult {
   const hasEvidence = Boolean(input.fileUrl || input.documentNumberLast4);
   return {
-    status: hasEvidence ? 'verified' : 'needs_review',
+    // Sandbox evidence proves only that an input was supplied. It cannot verify
+    // identity, bank ownership, or eligibility for real settlement.
+    status: hasEvidence ? 'submitted' : 'needs_review',
     provider: credentials.provider,
     providerMode: credentials.mode,
     providerReference: sandboxReference(input),

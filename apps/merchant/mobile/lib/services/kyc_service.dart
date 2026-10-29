@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
@@ -194,6 +195,29 @@ class KycService extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> uploadDocument({
+    required String storeId,
+    required String documentType,
+    required String documentNumberLast4,
+    required File file,
+    ApiRequestOptions? options,
+  }) async {
+    final operation = _begin(storeId, options);
+    try {
+      final response = await _api.kyc.uploadDocument(
+        storeId: storeId,
+        documentType: documentType,
+        documentNumberLast4: documentNumberLast4,
+        file: file,
+        options: operation.options,
+      );
+      await _acceptMutation(response, operation);
+      return response;
+    } finally {
+      _finish(operation);
+    }
+  }
+
   Future<Map<String, dynamic>> refreshDocument(
     String documentId,
     String storeId, {
@@ -203,6 +227,7 @@ class KycService extends ChangeNotifier {
     try {
       final response = await _api.kyc.refreshDocument(
         documentId,
+        storeId,
         options: operation.options,
       );
       await _acceptMutation(response, operation);

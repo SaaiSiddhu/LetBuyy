@@ -322,9 +322,9 @@ export const UpdateStoreSchema = z.object({
   access_mode: StoreAccessModeSchema.optional(),
   access_message: z.string().max(1000).optional().nullable(),
   published: z.boolean().optional(),
-  currency: z.string().length(3).optional(),
+  currency: z.literal('INR').optional(),
   locale: z.string().min(2).max(16).optional(),
-  timezone: z.string().min(1).max(80).optional(),
+  timezone: z.literal('Asia/Kolkata').optional(),
   refund_policy: z.string().max(20000).optional(),
   privacy_policy: z.string().max(20000).optional(),
   terms_of_service: z.string().max(20000).optional(),
@@ -337,12 +337,26 @@ export const UpdateStoreSchema = z.object({
   gst_state_code: IndianStateCodeSchema.optional().nullable(),
   invoice_prefix: z.string().min(1).max(20).optional().nullable(),
   business_profile: BusinessProfileSchema.optional().nullable(),
-  invoice_address: AddressSchema.partial().passthrough().optional().nullable(),
+  invoice_address: AddressSchema.partial().passthrough().refine(
+    address => (!address.country || address.country === 'IN')
+      && (!address.zip || /^[1-9][0-9]{5}$/.test(address.zip)),
+    'Store address must be in India with a valid six-digit PIN',
+  ).optional().nullable(),
   invoice_footer: z.string().max(1000).optional().nullable(),
-  invoice_number_next: z.number().int().positive().optional().nullable(),
   version: z.number().int().positive('Version is required for concurrent safety').optional(),
   cod_enabled: z.boolean().optional(),
   online_payment_enabled: z.boolean().optional(),
+}).superRefine((value, context) => {
+  if (value.gstin !== undefined || value.gst_state_code !== undefined) {
+    const gstin = value.gstin ?? null;
+    const state = value.gst_state_code ?? null;
+    if (gstin && (!state || gstin.slice(0, 2) !== state)) {
+      context.addIssue({ code: 'custom', path: ['gst_state_code'], message: 'GST state must match the GSTIN prefix' });
+    }
+    if (state && !gstin) {
+      context.addIssue({ code: 'custom', path: ['gstin'], message: 'GSTIN is required when GST state is set' });
+    }
+  }
 });
 
 export const PaymentConfigSchema = SaveStorePaymentConfigSchema;
@@ -470,6 +484,7 @@ export interface StoreModel {
   sellerId: string;
   name: string;
   tagline?: string;
+  publicContact?: { email?: string; phone?: string; website?: string };
   subdomain: string;
   storeUrl?: string;
   logoUrl?: string;
@@ -512,6 +527,7 @@ export interface StorefrontSiteRecord {
   subdomain?: string | null;
   site_type?: string | null;
   tagline?: string | null;
+  public_contact?: { email?: string; phone?: string; website?: string } | null;
   logo_url?: string | null;
   brand_color?: string | null;
   custom_domain?: string | null;
