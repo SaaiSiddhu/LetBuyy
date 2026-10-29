@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-30",
+  "source_commit": "75984e1efe15b476ea5d6d587b6da7103ce34699",
+  "branch": "codex/merchant-mobile-parity",
+  "scope": "source checkpoint; full 122-item acceptance remains in progress",
+  "flutter": {
+    "analysis": "pass",
+    "tests": 411,
+    "pass": 411,
+    "fail": 0
+  },
+  "shared_dart_transport_context_tests": {
+    "pass": 12,
+    "fail": 0
+  },
+  "storefront_domain_policy_tests": {
+    "pass": 12,
+    "fail": 0
+  },
+  "governance": {
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "ok": true,
+    "exitCode": 0
+  },
+  "owned_database_runs": [
+    {
+      "run_id": "4500cb6bbc09",
+      "tests": 24,
+      "pass": 24,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-money-approval.postgres.test.ts",
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/payout-complete-read.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "explicit synthetic provider fixtures; not real provider acceptance"
+    },
+    {
+      "run_id": "18910d8675cc",
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/custom-domain-owned-zones.postgres.test.ts",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/store-branded-checkout-domains.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "explicit synthetic provider fixtures; not real provider acceptance"
+    }
+  ],
+  "ios_simulator_build": {
+    "bundle_manifest_sha256": "0dc24f727644142a9788b6ef3541ca77a12e759937b882490487f2f1f0c33997",
+    "file_count": 301,
+    "total_bytes": 159669411,
+    "dart_payloads": [
+      {
+        "path": "Frameworks/App.framework/flutter_assets/kernel_blob.bin",
+        "bytes": 93529008,
+        "sha256": "95e376babe12a54574f21430162427e9d94217fbf5fbcd935db558e0f70a9834"
+      }
+    ],
+    "artifact_kind": "ios-simulator-debug-no-production-signing"
+  },
+  "android_signing": {
+    "key_properties_present": false,
+    "complete_release_environment_present": false,
+    "signed_release": "unavailable"
+  },
+  "authenticated_native_journeys": "unverified: Simulator absent from CUA inventory; name/bundle/path selection unavailable; adb has no attached device",
+  "production_account_used": false,
+  "deployment_performed": false,
+  "full_122_acceptance": "in_progress"
+}
