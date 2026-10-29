@@ -130,7 +130,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const store=JSON.parse(owned.psql(`SELECT jsonb_build_object('count',count(*),'trial_days',max(EXTRACT(EPOCH FROM (trial_ends_at-trial_started_at))/86400),'theme',max(theme_id),'status',max(status))::text FROM sites WHERE custom_user_id=(SELECT id FROM users_custom WHERE email='${email}') AND subdomain='${subdomain}';`));assert.equal(store.count,1);assert.equal(store.trial_days,14,'existing persisted trial policy is preserved');assert.equal(store.status,'draft');
   await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:'Where do you want to start?',exact:true})).toBeVisible();
   const siteId=owned.psql(`SELECT id FROM sites WHERE subdomain='${subdomain}';`),productName='Synthetic Native Variant Product';
-  assert.equal(store.theme,'letbuyy-core');assert.equal(owned.psql(`SELECT template_config->'liquidBundle'->'package'->>'slug' FROM sites WHERE id='${siteId}';`),'letbuyy-core-liquid');
+  assert.equal(store.theme,'letbuyy-forge','Circuit remains the approved new-store default');
+  assert.equal(owned.psql(`SELECT template_config->'liquidBundle'->'package'->>'slug' FROM sites WHERE id='${siteId}';`),'letbuyy-forge');
   await expect(page.locator('body')).toContainText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);
   stage='product-create';console.info('OWNED_NATIVE_STAGE product-create');await page.goto(`${merchantOrigin}/${subdomain}/products/new`);
   await page.getByLabel('Title',{exact:true}).fill(productName);await page.getByLabel('Price',{exact:true}).fill('199');await page.getByLabel('Product status',{exact:true}).selectOption('active');
@@ -173,8 +174,16 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   stage='merged-theme-workspace';console.info('OWNED_NATIVE_STAGE merged-theme-workspace');await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes`);
   await expect(page.getByRole('region',{name:'Discover themes',exact:true})).toBeVisible();
   await expect(page.locator('article[aria-label$="catalog theme"]')).toHaveCount(10);
-  await page.getByRole('link',{name:'Edit theme',exact:true}).click();
-  await page.waitForURL(u=>u.pathname===`/${subdomain}/online-store/themes/letbuyy-core/editor`);
+  // This journey qualifies the retained Core compatibility package, not the
+  // new-store default. Grant only a labelled synthetic upload entitlement and
+  // install the real bundle through the normal file input; no store/theme SQL seed.
+  owned.psql(`INSERT INTO subscriptions(user_id,store_id,plan,status) VALUES((SELECT id FROM users_custom WHERE email='${email}'),'${siteId}','enterprise','active');`);
+  const coreBundle=new URL('../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url).pathname;
+  const [coreImport]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/install'&&r.request().method()==='POST'),page.locator('input[type="file"][accept*="json"]').setInputFiles(coreBundle)]);
+  assert.equal(coreImport.status(),200);const coreSlug=(await coreImport.json()).uploaded.theme.slug as string;
+  assert.ok(coreSlug.startsWith('private-'+siteId+'-'));
+  assert.equal(owned.psql(`SELECT theme_id FROM sites WHERE id='${siteId}';`),'letbuyy-forge','import cannot replace the live design');
+  await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes/${coreSlug}/editor`);
   stage='core-editor-publish';console.info('OWNED_NATIVE_STAGE core-editor-publish');await expect(page.getByRole('tree',{name:'Theme sections',exact:true})).toBeVisible();
   await page.getByRole('tree',{name:'Theme sections',exact:true}).getByRole('treeitem').filter({hasText:/Hero/}).first().click();const marker='Synthetic Native Core Ready';
   const draftReply=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'&&Boolean(r.request().postData()?.includes(marker)));await page.getByLabel('Heading',{exact:true}).fill(marker);assert.equal((await draftReply).status(),200);
@@ -206,7 +215,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const previewPrimary=await previewFrame.locator('html').evaluate(el=>getComputedStyle(el).getPropertyValue('--primary').trim());
   console.info('OWNED_CORE_PREVIEW_VIEWPORTS '+JSON.stringify({actualLiquid:true,singleHeaderFooter:true,editorViewportMeasurements}));
   const screenshot=`${tmpdir()}/letbuyy-native-core-${owned.runId}.png`;await page.screenshot({path:screenshot,fullPage:true});
-  await expect(page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled();const [published]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/letbuyy-core/editor'&&r.request().method()==='PUT'),page.getByRole('button',{name:'Publish',exact:true}).click()]);assert.equal(published.status(),200);
+  await expect(page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled();const [published]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===`/api/themes/${coreSlug}/editor`&&r.request().method()==='PUT'),page.getByRole('button',{name:'Publish',exact:true}).click()]);assert.equal(published.status(),200);
   assert.equal(owned.psql(`SELECT status FROM sites WHERE id='${siteId}';`),'published');
   stage='public-tenant-storefront';console.info('OWNED_NATIVE_STAGE public-tenant-storefront');const buyerContext=await browser.newContext(),buyer=await buyerContext.newPage();buyerDiagnostic=buyer;buyer.setDefaultTimeout(30_000);buyer.setDefaultNavigationTimeout(60_000);
   const tenantOrigin=`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`;const home=await buyer.goto(tenantOrigin);assert.equal(home?.status(),200);await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();await expect(buyer.getByRole('heading',{level:1}).first()).toHaveText(marker);await expect(buyer.getByText('Discover our latest products.',{exact:true})).toBeVisible();await expect(buyer.getByText('Free shipping on fresh drops this week.',{exact:true})).toHaveCount(0);
@@ -415,7 +424,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
     const [savedPreset]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'),apply.click()]);assert.equal(savedPreset.status(),200);await expect(page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled();
    }
    await page.reload({waitUntil:'domcontentloaded'});await page.getByRole('button',{name:'Theme styles',exact:true}).click();await expect(page.getByRole('button',{name:'Applied style',exact:true})).toHaveCount(1);
-   const [presetPublish]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/letbuyy-core/editor'&&r.request().method()==='PUT'),page.getByRole('button',{name:'Publish',exact:true}).click()]);assert.equal(presetPublish.status(),200);
+   const [presetPublish]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===`/api/themes/${coreSlug}/editor`&&r.request().method()==='PUT'),page.getByRole('button',{name:'Publish',exact:true}).click()]);assert.equal(presetPublish.status(),200);
    const reference=JSON.parse(owned.psql(`SELECT default_template->'liquidBundle'->'config'->'settings_data'->'presets'->'${name}' FROM themes WHERE slug='letbuyy-core';`));
    const release=JSON.parse(owned.psql(`SELECT r.template_snapshot->'themeSettings' FROM theme_releases r JOIN sites s ON s.current_theme_release_id=r.id WHERE s.id='${siteId}';`));
    for(const[key,value]of Object.entries(reference))assert.deepEqual(release[key],value,'published preset '+name+'/'+key);

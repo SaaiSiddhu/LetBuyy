@@ -13,7 +13,10 @@ function provider(initial: Record<string, unknown> = base()) {
     let row = structuredClone(initial);
     const writes: Record<string, unknown>[] = [];
     const fetcher = (async (url, init) => {
-        assert.equal(String(url), `https://api.cloudflare.com/client/v4/accounts/${config.accountId}/challenges/widgets/${config.siteKey}`);
+        const destination = new URL(String(url));
+        assert.equal(destination.protocol, 'https:'); assert.equal(destination.host, 'api.cloudflare.com');
+        assert.equal(destination.pathname, `/client/v4/accounts/${config.accountId}/challenges/widgets/${config.siteKey}`);
+        assert.equal(destination.search, ''); assert.equal(destination.username + destination.password + destination.hash, '');
         assert.equal(init?.redirect, 'manual'); assert.ok(init?.signal);
         if (init?.method === 'PUT') {
             const update = JSON.parse(String(init.body)); writes.push(update);

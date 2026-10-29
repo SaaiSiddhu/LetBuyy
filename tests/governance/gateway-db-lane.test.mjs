@@ -247,6 +247,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "storefront-access-worker.postgres.test.ts",
         "storefront-buyer-support-recovery-browser.postgres.test.ts",
         "subscription-tax-gross-conservation.postgres.test.ts",
+        "turnstile-domain-provisioning.postgres.test.ts",
         "worker-sql-invocation.postgres.test.ts"
 ], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);

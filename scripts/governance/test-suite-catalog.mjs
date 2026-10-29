@@ -93,6 +93,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/storefront-access-worker.postgres.test.ts',
     'tests/owned-db/storefront-buyer-support-recovery-browser.postgres.test.ts',
     'tests/owned-db/subscription-tax-gross-conservation.postgres.test.ts',
+    'tests/owned-db/turnstile-domain-provisioning.postgres.test.ts',
     'tests/owned-db/worker-sql-invocation.postgres.test.ts',
 ];
 export const isGatewayDatabaseSuite = (suite) =>
