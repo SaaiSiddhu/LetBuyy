@@ -13,6 +13,9 @@ export function isOwnedNextIngress(headers, { port, checkoutOrigin, rootDomain }
         const canonical = rootDomain && rootDomain !== 'localhost'
             && (incoming.hostname === rootDomain || incoming.hostname.endsWith('.' + rootDomain));
         if (!local && !canonical) return false;
-        return protocol === 'https' ? incoming.port === checkout.port : local && Number(incoming.port) === port;
+        // Production buyer callbacks canonicalize non-local hosts to HTTPS443.
+        // The owned TLS proxy's exact-host allowlist and Chromium resolver map
+        // that public address to its ephemeral port without changing Host.
+        return protocol === 'https' ? incoming.port === checkout.port || Boolean(canonical && incoming.port === '') : local && Number(incoming.port) === port;
     } catch { return false; }
 }
