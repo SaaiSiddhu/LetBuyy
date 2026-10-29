@@ -262,7 +262,11 @@ void main() {
               ),
             ),
             ChangeNotifierProvider<InventoryService>(
-              create: (_) => InventoryService(api: apiClient),
+              create: (_) => InventoryService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<CouponService>(
               create: (_) => CouponService(api: apiClient),

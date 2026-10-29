@@ -1,3 +1,5 @@
+import '../../services/api_client.dart' show ApiException;
+import '../../widgets/shared/merchant_store_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -24,12 +26,27 @@ class _InventoryScreenState extends State<InventoryScreen> {
   String _query = '';
   String? _storeId;
   String? _error;
+  Object? _viewKey;
+  int _readGeneration = 0, _page = 1;
+  bool _hasMore = false, _isAdjusting = false;
+  bool _hasPendingAdjustment = false, _pendingUnavailable = true;
+  bool get _commandsBlocked =>
+      _isAdjusting ||
+      _hasPendingAdjustment ||
+      _pendingUnavailable ||
+      _isLoading ||
+      _error != null;
+  MerchantStoreView? get _view =>
+      _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
+  bool _matches(MerchantStoreView? view) =>
+      merchantStoreViewCurrent(context, view);
 
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
+    _viewKey = context.read<StoreContext>().requestContextKey;
     _loadInventory();
   }
 
@@ -40,42 +57,74 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _loadInventory() async {
+    if (!mounted) return;
+    final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
+      _levels = [];
+      _hasMore = false;
+      _pendingUnavailable = true;
     });
-
+    final stores = context.read<StoreContext>();
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
-        if (mounted) {
-          setState(() {
-            _levels = [];
-            _isLoading = false;
-          });
-        }
+      await stores.ensureSelectedStore();
+      if (!mounted || generation != _readGeneration) return;
+      _viewKey = stores.requestContextKey;
+      _storeId = stores.selectedStoreId;
+      final view = _view;
+      if (view == null) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Select a store to view inventory.';
+        });
         return;
       }
-
-      final levels = await context.read<InventoryService>().fetchLevels(
-        _storeId!,
+      final service = context.read<InventoryService>();
+      final levels = await service.fetchLevels(
+        view.storeId,
         lowStockOnly: _lowStockOnly,
+        page: _page,
       );
-      if (mounted) {
-        setState(() {
-          _levels = levels;
-          _isLoading = false;
-        });
+      if (!_matches(view) || generation != _readGeneration) return;
+      var pending = false, pendingUnavailable = false;
+      try {
+        pending = await service.pendingAdjustment(view.storeId) != null;
+      } catch (_) {
+        pendingUnavailable = true;
       }
+      if (!_matches(view) || generation != _readGeneration) return;
+      setState(() {
+        _levels = levels;
+        _hasMore = service.levelsHasMore;
+        _hasPendingAdjustment = pending;
+        _pendingUnavailable = pendingUnavailable;
+        _isLoading = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!mounted || generation != _readGeneration) return;
+      if (_viewKey != stores.requestContextKey &&
+          stores.selectedStoreId != null)
+        return;
+      if (_viewKey != stores.requestContextKey &&
+          error is ApiException &&
+          error.code == 'SESSION_CONTEXT_CHANGED')
+        return;
+      setState(() {
+        _viewKey = stores.requestContextKey;
+        _storeId = stores.selectedStoreId;
+        _levels = [];
+        _error = 'Check your connection and current store access, then retry.';
+        _isLoading = false;
+      });
     }
+  }
+
+  void _changePage(int delta) {
+    if (_isLoading || (delta < 0 && _page == 1) || (delta > 0 && !_hasMore))
+      return;
+    setState(() => _page += delta);
+    _loadInventory();
   }
 
   List<InventoryLevel> get _filteredLevels {
@@ -88,6 +137,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
         .where(
           (level) =>
               level.productName.toLowerCase().contains(query) ||
+              level.variantTitle.toLowerCase().contains(query) ||
+              level.locationName.toLowerCase().contains(query) ||
               level.sku.toLowerCase().contains(query) ||
               level.locationId.toLowerCase().contains(query),
         )
@@ -95,14 +146,34 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   int get _availableUnits =>
-      _levels.fold(0, (sum, level) => sum + level.available);
-  int get _lowStockCount => _levels.where((level) => level.isLowStock).length;
+      _filteredLevels.fold(0, (sum, level) => sum + level.available);
+  int get _lowStockCount =>
+      _filteredLevels.where((level) => level.isLowStock).length;
   int get _outOfStockCount =>
-      _levels.where((level) => level.isOutOfStock).length;
+      _filteredLevels.where((level) => level.isOutOfStock).length;
 
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    final stores = context.watch<StoreContext>();
+    if (_viewKey != stores.requestContextKey) {
+      _viewKey = stores.requestContextKey;
+      ++_readGeneration;
+      _storeId = null;
+      _levels = [];
+      _hasMore = false;
+      _query = '';
+      _searchController.clear();
+      _page = 1;
+      _error = null;
+      _isLoading = true;
+      _isAdjusting = false;
+      _hasPendingAdjustment = false;
+      _pendingUnavailable = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _loadInventory();
+      });
+    }
 
     return Scaffold(
       backgroundColor: colors.bgStart,
@@ -114,8 +185,45 @@ class _InventoryScreenState extends State<InventoryScreen> {
               _header(),
               _searchAndFilter(),
               _wmsShortcuts(),
-              _stats(),
+              if (!_isLoading && _error == null) _stats(),
+              if (!_isLoading && _hasPendingAdjustment)
+                ListTile(
+                  title: const Text('A stock change needs confirmation'),
+                  subtitle: const Text(
+                    'Retry the original saved change before starting another adjustment.',
+                  ),
+                  trailing: TextButton(
+                    onPressed: _isAdjusting ? null : _retryPendingAdjustment,
+                    child: const Text('Retry original'),
+                  ),
+                ),
+              if (!_isLoading && _pendingUnavailable && _error == null)
+                const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    'Saved stock changes could not be checked. Refresh before adjusting inventory.',
+                  ),
+                ),
               Expanded(child: _isLoading ? _loading() : _body()),
+              if (_page > 1 || _hasMore)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: _page > 1 && !_isLoading
+                          ? () => _changePage(-1)
+                          : null,
+                      child: const Text('Previous'),
+                    ),
+                    Text('Page $_page'),
+                    TextButton(
+                      onPressed: _hasMore && !_isLoading
+                          ? () => _changePage(1)
+                          : null,
+                      child: const Text('Next'),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
@@ -176,7 +284,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               onChanged: (value) => setState(() => _query = value),
               style: TextStyle(color: colors.textPrimary),
               decoration: InputDecoration(
-                hintText: 'Search SKU, product, location',
+                hintText: 'Filter this page by product, SKU or location',
                 hintStyle: TextStyle(color: colors.textTertiary),
                 prefixIcon: Icon(
                   Icons.search_rounded,
@@ -202,7 +310,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
               selectedColor: colors.warning.withValues(alpha: 0.16),
               checkmarkColor: colors.warning,
               onSelected: (selected) {
-                setState(() => _lowStockOnly = selected);
+                setState(() {
+                  _lowStockOnly = selected;
+                  _page = 1;
+                });
                 _loadInventory();
               },
             ),
@@ -275,7 +386,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
         children: [
           Expanded(
             child: _metric(
-              'Available',
+              'Available shown',
               _availableUnits.toString(),
               Icons.inventory_2_outlined,
             ),
@@ -283,7 +394,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: _metric(
-              'Low',
+              'Low shown',
               _lowStockCount.toString(),
               Icons.warning_amber_rounded,
             ),
@@ -291,7 +402,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: _metric(
-              'Out',
+              'Out shown',
               _outOfStockCount.toString(),
               Icons.remove_shopping_cart_outlined,
             ),
@@ -407,7 +518,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             children: [
               Expanded(
                 child: Text(
-                  level.productName,
+                  level.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -428,15 +539,29 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 Icons.qr_code_2_rounded,
                 level.sku.ifEmpty ?? 'No SKU',
               ),
-              _miniMetric(Icons.place_outlined, level.locationId),
+              _miniMetric(
+                Icons.place_outlined,
+                level.locationName.isNotEmpty
+                    ? level.locationName
+                    : level.locationId.isNotEmpty
+                    ? level.locationId
+                    : 'Choose a location',
+              ),
               _miniMetric(
                 Icons.lock_outline_rounded,
                 '${level.reserved} reserved',
               ),
               _miniMetric(
-                Icons.shopping_cart_checkout_rounded,
-                '${level.committed} committed',
+                Icons.inventory_2_outlined,
+                '${level.onHand} on hand',
               ),
+              if (level.incoming != null)
+                _miniMetric(
+                  Icons.local_shipping_outlined,
+                  '${level.incoming} incoming',
+                ),
+              if (level.trackInventory == false)
+                _miniMetric(Icons.visibility_off_outlined, 'Tracking off'),
             ],
           ),
           const SizedBox(height: 12),
@@ -453,7 +578,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               ),
               const SizedBox(width: 12),
               OutlinedButton.icon(
-                onPressed: () => _adjust(level),
+                onPressed: _commandsBlocked ? null : () => _adjust(level),
                 icon: const Icon(Icons.add_task_rounded, size: 18),
                 label: const Text('Adjust'),
                 style: OutlinedButton.styleFrom(
@@ -548,227 +673,185 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  Future<void> _adjust(InventoryLevel level) async {
-    final request = await _adjustmentDialog(level);
-    if (request == null || _storeId == null) return;
-
-    try {
-      await context.read<InventoryService>().adjustStock(
-        storeId: _storeId!,
-        level: level,
-        delta: request.delta,
-        reason: request.reason,
-        note: request.note,
-      );
-      if (mounted) {
-        _showSnackBar('Stock adjusted by ${request.delta}');
-        _loadInventory();
-      }
-    } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
-    }
-  }
-
-  Future<void> _scanAndAdjust() async {
-    if (_storeId == null) {
-      _showSnackBar('Select a store before scanning inventory.', isError: true);
-      return;
-    }
-    final barcode = await showBarcodeScannerSheet(
-      context,
-      title: 'Scan inventory barcode',
+  Future<String?> _chooseLocation(MerchantStoreView view) async {
+    final locations = await context.read<InventoryService>().fetchLocations(
+      view.storeId,
     );
-    if (!mounted || barcode == null || barcode.trim().isEmpty) return;
-
-    try {
-      final service = context.read<InventoryService>();
-      final lookup = await service.lookupBarcode(
-        storeId: _storeId!,
-        barcode: barcode,
+    if (!_matches(view)) return null;
+    if (locations.isEmpty) {
+      _showSnackBar(
+        'Create an inventory location before adjusting stock.',
+        isError: true,
       );
-      if (!mounted) return;
-      if (lookup == null) {
-        _showSnackBar('No product found for that barcode.', isError: true);
-        return;
-      }
-      final request = await _scanAdjustmentDialog(lookup);
-      if (request == null) return;
-      await service.adjustScannedStock(
-        storeId: _storeId!,
-        lookup: lookup,
-        delta: request.delta,
-        reason: request.reason,
-        locationId: request.locationId,
-        note: request.note,
-      );
-      if (mounted) {
-        _showSnackBar('Stock adjusted for ${lookup.label}');
-        _loadInventory();
-      }
-    } catch (error) {
-      if (mounted) {
-        _showSnackBar('Barcode inventory update failed.', isError: true);
-      }
+      return null;
     }
-  }
-
-  Future<_InventoryAdjustment?> _adjustmentDialog(InventoryLevel level) {
-    final deltaController = TextEditingController();
-    final noteController = TextEditingController();
-    var reason = 'adjustment';
-
-    return showDialog<_InventoryAdjustment>(
+    return showDialog<String>(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: colors.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            'Adjust ${level.productName}',
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: deltaController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  signed: true,
-                ),
-                style: TextStyle(color: colors.textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Change quantity',
-                  hintText: '+5 or -2',
-                  labelStyle: TextStyle(color: colors.textSecondary),
-                ),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: reason,
-                dropdownColor: colors.card,
-                style: TextStyle(color: colors.textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Reason',
-                  labelStyle: TextStyle(color: colors.textSecondary),
-                ),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'adjustment',
-                    child: Text('Adjustment'),
-                  ),
-                  DropdownMenuItem(value: 'recount', child: Text('Recount')),
-                  DropdownMenuItem(value: 'received', child: Text('Received')),
-                  DropdownMenuItem(value: 'damaged', child: Text('Damaged')),
-                  DropdownMenuItem(value: 'return', child: Text('Return')),
-                  DropdownMenuItem(
-                    value: 'correction',
-                    child: Text('Correction'),
-                  ),
-                ],
-                onChanged: (value) {
-                  if (value != null) setDialogState(() => reason = value);
+      builder: (context) => guardMerchantStoreView(
+        view,
+        SimpleDialog(
+          title: const Text('Choose stock location'),
+          children: [
+            for (final location in locations)
+              SimpleDialogOption(
+                onPressed: () {
+                  if (_matches(view)) Navigator.pop(context, location.id);
                 },
+                child: Text(location.name),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: noteController,
-                minLines: 2,
-                maxLines: 3,
-                style: TextStyle(color: colors.textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Note',
-                  labelStyle: TextStyle(color: colors.textSecondary),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                final delta = int.tryParse(
-                  deltaController.text.trim().replaceFirst('+', ''),
-                );
-                if (delta == null || delta == 0) {
-                  _showSnackBar('Enter a non-zero adjustment', isError: true);
-                  return;
-                }
-                Navigator.pop(
-                  context,
-                  _InventoryAdjustment(
-                    delta: delta,
-                    reason: reason,
-                    note: noteController.text.trim(),
-                  ),
-                );
-              },
-              child: Text(
-                'Apply',
-                style: TextStyle(
-                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Future<_ScannedInventoryAdjustment?> _scanAdjustmentDialog(
-    InventoryBarcodeLookup lookup,
+  Future<void> _retryPendingAdjustment() async {
+    final view = _view;
+    if (!_matches(view) || _isAdjusting || !_hasPendingAdjustment) return;
+    setState(() => _isAdjusting = true);
+    var confirmed = false;
+    try {
+      await context.read<InventoryService>().retryPendingAdjustment(
+        view!.storeId,
+      );
+      confirmed = true;
+    } catch (_) {
+      // A missing acknowledgement keeps the original encrypted request.
+    }
+    if (!_matches(view)) return;
+    await _loadInventory();
+    if (!_matches(view)) return;
+    setState(() => _isAdjusting = false);
+    _showSnackBar(
+      confirmed
+          ? (_error == null
+                ? 'Original stock change confirmed and inventory refreshed.'
+                : 'Original stock change confirmed. Refresh inventory to read the latest quantities.')
+          : 'The original stock change is still unconfirmed. Retry after checking your connection and permissions.',
+      isError: !confirmed,
+    );
+  }
+
+  Future<void> _adjust(InventoryLevel level) async {
+    final view = _view;
+    if (!_matches(view) || level.storeId != view!.storeId || _commandsBlocked)
+      return;
+    setState(() => _isAdjusting = true);
+    try {
+      final location = level.locationId.isNotEmpty
+          ? level.locationId
+          : await _chooseLocation(view);
+      if (!_matches(view) || location == null) return;
+      final request = await _adjustmentDialog(level, view);
+      if (request == null || !_matches(view)) return;
+      await context.read<InventoryService>().submitAdjustment(
+        storeId: view.storeId,
+        productId: level.productId,
+        variantId: level.variantId,
+        locationId: location,
+        delta: request.delta,
+        reason: request.reason,
+        note: request.note,
+      );
+      if (!_matches(view)) return;
+      await _loadInventory();
+      if (_matches(view))
+        _showSnackBar(
+          _error == null
+              ? 'Stock change confirmed and inventory refreshed.'
+              : 'Stock change confirmed. Refreshed quantities are unavailable; retry refresh.',
+        );
+    } catch (_) {
+      if (_matches(view)) await _loadInventory();
+      if (_matches(view))
+        _showSnackBar(
+          'The stock change could not be confirmed. Use Retry original if a change is saved.',
+          isError: true,
+        );
+    } finally {
+      if (_matches(view)) setState(() => _isAdjusting = false);
+    }
+  }
+
+  Future<void> _scanAndAdjust() async {
+    final view = _view;
+    if (!_matches(view) || _commandsBlocked) return;
+    setState(() => _isAdjusting = true);
+    try {
+      final barcode = await showBarcodeScannerSheet(
+        context,
+        title: 'Scan inventory barcode',
+      );
+      if (!_matches(view) || barcode == null || barcode.trim().isEmpty) return;
+      final service = context.read<InventoryService>();
+      final lookup = await service.lookupBarcode(
+        storeId: view!.storeId,
+        barcode: barcode,
+      );
+      if (!_matches(view)) return;
+      if (lookup == null) {
+        _showSnackBar('No product found for that barcode.', isError: true);
+        return;
+      }
+      if (lookup.storeId != view.storeId) return;
+      final location = await _chooseLocation(view);
+      if (!_matches(view) || location == null) return;
+      final request = await _scanAdjustmentDialog(lookup, view, location);
+      if (!_matches(view) || request == null) return;
+      await service.submitAdjustment(
+        storeId: view.storeId,
+        productId: lookup.productId,
+        variantId: lookup.variantId,
+        delta: request.delta,
+        reason: request.reason,
+        locationId: request.locationId,
+        note: request.note,
+      );
+      if (!_matches(view)) return;
+      await _loadInventory();
+      if (_matches(view))
+        _showSnackBar(
+          _error == null
+              ? 'Stock change confirmed and inventory refreshed.'
+              : 'Stock change confirmed. Refreshed quantities are unavailable; retry refresh.',
+        );
+    } catch (_) {
+      if (_matches(view)) await _loadInventory();
+      if (_matches(view))
+        _showSnackBar(
+          'The barcode stock change could not be confirmed. Use Retry original if a change is saved.',
+          isError: true,
+        );
+    } finally {
+      if (_matches(view)) setState(() => _isAdjusting = false);
+    }
+  }
+
+  Future<_InventoryAdjustment?> _adjustmentDialog(
+    InventoryLevel level,
+    MerchantStoreView view,
   ) {
     final deltaController = TextEditingController();
-    final locationController = TextEditingController();
     final noteController = TextEditingController();
-    var reason = 'recount';
+    var reason = 'adjustment';
 
-    InventoryLevel? matchingLevel;
-    for (final level in _levels) {
-      final sameProduct = level.productId == lookup.productId;
-      final sameVariant =
-          lookup.variantId.isEmpty || level.variantId == lookup.variantId;
-      if (sameProduct && sameVariant) {
-        matchingLevel = level;
-        break;
-      }
-    }
-    if (matchingLevel != null && matchingLevel.locationId.isNotEmpty) {
-      locationController.text = matchingLevel.locationId;
-    }
-
-    return showDialog<_ScannedInventoryAdjustment>(
+    return showDialog<_InventoryAdjustment>(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: colors.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            'Adjust ${lookup.label}',
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
+      builder: (context) => guardMerchantStoreView(
+        view,
+        StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: colors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              'Adjust ${level.label}',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Scanned ${lookup.barcode}',
-                    style: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 12),
                 TextField(
                   controller: deltaController,
                   keyboardType: const TextInputType.numberWithOptions(
@@ -782,15 +865,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: locationController,
-                  style: TextStyle(color: colors.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Location ID',
-                    labelStyle: TextStyle(color: colors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   value: reason,
                   dropdownColor: colors.card,
@@ -800,12 +874,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     labelStyle: TextStyle(color: colors.textSecondary),
                   ),
                   items: const [
+                    DropdownMenuItem(
+                      value: 'adjustment',
+                      child: Text('Adjustment'),
+                    ),
                     DropdownMenuItem(value: 'recount', child: Text('Recount')),
                     DropdownMenuItem(
                       value: 'received',
                       child: Text('Received'),
                     ),
                     DropdownMenuItem(value: 'damaged', child: Text('Damaged')),
+                    DropdownMenuItem(value: 'return', child: Text('Return')),
                     DropdownMenuItem(
                       value: 'correction',
                       child: Text('Correction'),
@@ -828,42 +907,177 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
               ],
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                final delta = int.tryParse(
-                  deltaController.text.trim().replaceFirst('+', ''),
-                );
-                if (delta == null || delta == 0) {
-                  _showSnackBar('Enter a non-zero adjustment', isError: true);
-                  return;
-                }
-                Navigator.pop(
-                  context,
-                  _ScannedInventoryAdjustment(
-                    delta: delta,
-                    reason: reason,
-                    note: noteController.text.trim(),
-                    locationId: locationController.text.trim(),
-                  ),
-                );
-              },
-              child: Text(
-                'Apply',
-                style: TextStyle(
-                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: colors.textSecondary),
                 ),
               ),
+              TextButton(
+                onPressed: () {
+                  if (!_matches(view)) return;
+                  final delta = int.tryParse(
+                    deltaController.text.trim().replaceFirst('+', ''),
+                  );
+                  if (delta == null || delta == 0) {
+                    _showSnackBar('Enter a non-zero adjustment', isError: true);
+                    return;
+                  }
+                  Navigator.pop(
+                    context,
+                    _InventoryAdjustment(
+                      delta: delta,
+                      reason: reason,
+                      note: noteController.text.trim(),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Apply',
+                  style: TextStyle(
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<_ScannedInventoryAdjustment?> _scanAdjustmentDialog(
+    InventoryBarcodeLookup lookup,
+    MerchantStoreView view,
+    String location,
+  ) {
+    final deltaController = TextEditingController();
+    final noteController = TextEditingController();
+    var reason = 'recount';
+
+    return showDialog<_ScannedInventoryAdjustment>(
+      context: context,
+      builder: (context) => guardMerchantStoreView(
+        view,
+        StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: colors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
+            title: Text(
+              'Adjust ${lookup.label}',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Scanned ${lookup.barcode}',
+                      style: TextStyle(color: colors.textSecondary),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: deltaController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      signed: true,
+                    ),
+                    style: TextStyle(color: colors.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: 'Change quantity',
+                      hintText: '+5 or -2',
+                      labelStyle: TextStyle(color: colors.textSecondary),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: reason,
+                    dropdownColor: colors.card,
+                    style: TextStyle(color: colors.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: 'Reason',
+                      labelStyle: TextStyle(color: colors.textSecondary),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'recount',
+                        child: Text('Recount'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'received',
+                        child: Text('Received'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'damaged',
+                        child: Text('Damaged'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'correction',
+                        child: Text('Correction'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setDialogState(() => reason = value);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: noteController,
+                    minLines: 2,
+                    maxLines: 3,
+                    style: TextStyle(color: colors.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: 'Note',
+                      labelStyle: TextStyle(color: colors.textSecondary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: colors.textSecondary),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (!_matches(view)) return;
+                  final delta = int.tryParse(
+                    deltaController.text.trim().replaceFirst('+', ''),
+                  );
+                  if (delta == null || delta == 0) {
+                    _showSnackBar('Enter a non-zero adjustment', isError: true);
+                    return;
+                  }
+                  Navigator.pop(
+                    context,
+                    _ScannedInventoryAdjustment(
+                      delta: delta,
+                      reason: reason,
+                      note: noteController.text.trim(),
+                      locationId: location,
+                    ),
+                  );
+                },
+                child: Text(
+                  'Apply',
+                  style: TextStyle(
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

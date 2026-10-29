@@ -64,7 +64,7 @@ function normalizeInventoryItem(row: Record<string, unknown>): InventoryItem {
         reserved: Number(row.reserved || 0),
         incoming: Number(row.incoming || 0),
         on_hand: Number(row.on_hand || 0),
-        sellable: Number(row.sellable || row.available || 0),
+        sellable: Number(row.sellable ?? row.available ?? 0),
         track_inventory: row.track_inventory !== false,
         updated_at: typeof row.updated_at === 'string' ? row.updated_at : null,
     }

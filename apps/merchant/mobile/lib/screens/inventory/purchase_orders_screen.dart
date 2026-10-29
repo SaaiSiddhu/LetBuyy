@@ -1,3 +1,5 @@
+import '../../services/api_client.dart' show ApiException;
+import '../../widgets/shared/merchant_store_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -19,57 +21,93 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
   bool _isLoading = true;
   String? _storeId;
   String? _error;
+  Object? _viewKey;
+  int _readGeneration = 0;
+  MerchantStoreView? get _view =>
+      _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
+  bool _matches(MerchantStoreView? view) =>
+      merchantStoreViewCurrent(context, view);
 
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
+    _viewKey = context.read<StoreContext>().requestContextKey;
     _load();
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
+    final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
+      _orders = [];
     });
-
+    final stores = context.read<StoreContext>();
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
+      await stores.ensureSelectedStore();
+      if (!mounted || generation != _readGeneration) return;
+      _viewKey = stores.requestContextKey;
+      _storeId = stores.selectedStoreId;
+      final view = _view;
+      if (view == null) {
         setState(() {
-          _orders = const [];
           _isLoading = false;
+          _error = 'Select a store to continue.';
         });
         return;
       }
       final rows = await context.read<InventoryService>().fetchPurchaseOrders(
-        _storeId!,
+        view.storeId,
       );
-      if (mounted) {
-        setState(() {
-          _orders = rows;
-          _isLoading = false;
-        });
-      }
+      if (!_matches(view) || generation != _readGeneration) return;
+      setState(() {
+        _orders = rows;
+        _isLoading = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!mounted || generation != _readGeneration) return;
+      if (_viewKey != stores.requestContextKey &&
+          stores.selectedStoreId != null)
+        return;
+      if (_viewKey != stores.requestContextKey &&
+          error is ApiException &&
+          error.code == 'SESSION_CONTEXT_CHANGED')
+        return;
+      setState(() {
+        _viewKey = stores.requestContextKey;
+        _storeId = stores.selectedStoreId;
+        _orders = [];
+        _error =
+            'Check your connection and current store permissions, then refresh.';
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    final stores = context.watch<StoreContext>();
+    if (_viewKey != stores.requestContextKey) {
+      _viewKey = stores.requestContextKey;
+      ++_readGeneration;
+      _storeId = null;
+      _orders = [];
+      _error = null;
+      _isLoading = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _load();
+      });
+    }
     return Scaffold(
       backgroundColor: colors.bgStart,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null ? null : _createPurchaseOrder,
+        onPressed: _storeId == null || _isLoading || _error != null
+            ? null
+            : _createPurchaseOrder,
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_box_outlined),
@@ -251,6 +289,8 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
   }
 
   Future<void> _createPurchaseOrder() async {
+    final view = _view;
+    if (!_matches(view)) return;
     final service = context.read<InventoryService>();
     final input = await showModalBottomSheet<PurchaseOrderInput>(
       context: context,
@@ -259,38 +299,52 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (_) => _PurchaseOrderForm(
-        storeId: _storeId!,
-        colors: colors,
-        service: service,
+      builder: (_) => guardMerchantStoreView(
+        view,
+        _PurchaseOrderForm(
+          storeId: view!.storeId,
+          colors: colors,
+          service: service,
+        ),
       ),
     );
-    if (input == null) return;
+    if (input == null || !_matches(view) || input.storeId != view!.storeId)
+      return;
 
     try {
       await service.createPurchaseOrder(input);
-      if (mounted) {
+      if (_matches(view)) {
         _showSnackBar('Purchase order created');
         _load();
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_matches(view))
+        _showSnackBar(
+          'The inventory change could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     }
   }
 
   Future<void> _receive(PurchaseOrderContract order) async {
+    final view = _view;
+    if (!_matches(view) || order.storeId != view!.storeId) return;
     try {
       final service = context.read<InventoryService>();
       await service.receivePurchaseOrder(
         order,
         idempotencyKey: service.makeIdempotencyKey('po-receive'),
       );
-      if (mounted) {
+      if (_matches(view)) {
         _showSnackBar('Purchase order received');
         _load();
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_matches(view))
+        _showSnackBar(
+          'The inventory change could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     }
   }
 

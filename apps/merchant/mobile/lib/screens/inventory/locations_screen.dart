@@ -1,3 +1,5 @@
+import '../../services/api_client.dart' show ApiException;
+import '../../widgets/shared/merchant_store_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -19,58 +21,94 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
   bool _isLoading = true;
   String? _storeId;
   String? _error;
+  Object? _viewKey;
+  int _readGeneration = 0;
+  MerchantStoreView? get _view =>
+      _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
+  bool _matches(MerchantStoreView? view) =>
+      merchantStoreViewCurrent(context, view);
 
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
+    _viewKey = context.read<StoreContext>().requestContextKey;
     _load();
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
+    final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
+      _locations = [];
     });
-
+    final stores = context.read<StoreContext>();
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
+      await stores.ensureSelectedStore();
+      if (!mounted || generation != _readGeneration) return;
+      _viewKey = stores.requestContextKey;
+      _storeId = stores.selectedStoreId;
+      final view = _view;
+      if (view == null) {
         setState(() {
-          _locations = const [];
           _isLoading = false;
+          _error = 'Select a store to continue.';
         });
         return;
       }
       final rows = await context.read<InventoryService>().fetchLocations(
-        _storeId!,
+        view.storeId,
       );
-      if (mounted) {
-        setState(() {
-          _locations = rows;
-          _isLoading = false;
-        });
-      }
+      if (!_matches(view) || generation != _readGeneration) return;
+      setState(() {
+        _locations = rows;
+        _isLoading = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!mounted || generation != _readGeneration) return;
+      if (_viewKey != stores.requestContextKey &&
+          stores.selectedStoreId != null)
+        return;
+      if (_viewKey != stores.requestContextKey &&
+          error is ApiException &&
+          error.code == 'SESSION_CONTEXT_CHANGED')
+        return;
+      setState(() {
+        _viewKey = stores.requestContextKey;
+        _storeId = stores.selectedStoreId;
+        _locations = [];
+        _error =
+            'Check your connection and current store permissions, then refresh.';
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    final stores = context.watch<StoreContext>();
+    if (_viewKey != stores.requestContextKey) {
+      _viewKey = stores.requestContextKey;
+      ++_readGeneration;
+      _storeId = null;
+      _locations = [];
+      _error = null;
+      _isLoading = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _load();
+      });
+    }
 
     return Scaffold(
       backgroundColor: colors.bgStart,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null ? null : _createLocation,
+        onPressed: _storeId == null || _isLoading || _error != null
+            ? null
+            : _createLocation,
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_location_alt_outlined),
@@ -230,6 +268,8 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
   }
 
   Future<void> _createLocation() async {
+    final view = _view;
+    if (!_matches(view)) return;
     final input = await showModalBottomSheet<InventoryLocationInput>(
       context: context,
       isScrollControlled: true,
@@ -237,18 +277,26 @@ class _InventoryLocationsScreenState extends State<InventoryLocationsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (_) => _LocationForm(storeId: _storeId!, colors: colors),
+      builder: (_) => guardMerchantStoreView(
+        view,
+        _LocationForm(storeId: view!.storeId, colors: colors),
+      ),
     );
-    if (input == null) return;
+    if (input == null || !_matches(view) || input.storeId != view!.storeId)
+      return;
 
     try {
       await context.read<InventoryService>().createLocation(input);
-      if (mounted) {
+      if (_matches(view)) {
         _showSnackBar('Location created');
         _load();
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_matches(view))
+        _showSnackBar(
+          'The inventory change could not be confirmed. Refresh before retrying.',
+          isError: true,
+        );
     }
   }
 
