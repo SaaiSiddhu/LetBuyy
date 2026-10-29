@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { assertReadyFirstPartyStorefrontDomain, provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
+import { hydratePaymentCredential, commitPaymentConfiguration } from '../lib/payment-credential-history';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
@@ -15,13 +16,12 @@ import {
     defaultPaymentConfig,
     encryptPaymentSecret,
     isMissingSitesPaymentColumnError,
-    paymentConfigProviderMode,
-    sanitizePaymentSettings,
+    projectStorePaymentConfig,
     verifyRazorpayCredentials,
     type PaymentSettings,
 } from '../lib/store-payment-config';
 import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
-import type { CustomDomainHealth } from '@letbuyy/shared-types';
+import { UpdateStorePaymentMethodsSchema, type CustomDomainHealth } from '@letbuyy/shared-types';
 import { registerStoreLocalizationRoutes } from './stores-localization';
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { z } from 'zod';
@@ -159,7 +159,7 @@ router.get('/:id/payment-config', async (c) => {
     const buildPaymentQuery = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
-            .select('id, payment_settings, online_payment_enabled, cod_enabled')
+            .select('id, payment_settings, online_payment_enabled, cod_enabled, updated_at')
             .eq('id', storeId)
             .or(ownedByCustomUserFilter(customUser.id));
 
@@ -199,16 +199,7 @@ router.get('/:id/payment-config', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
 
-    return c.json(success({
-        store_id: data.id,
-        online_payment_enabled: data.online_payment_enabled !== false,
-        cod_enabled: data.cod_enabled !== false,
-        provider_mode: paymentConfigProviderMode({
-            onlinePaymentEnabled: data.online_payment_enabled !== false,
-            settings: data.payment_settings as PaymentSettings | null,
-        }),
-        payment_settings: sanitizePaymentSettings(data.payment_settings as PaymentSettings | null),
-    }));
+    return c.json(success(await projectStorePaymentConfig(await hydratePaymentCredential(db, data), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)));
 });
 
 // GET /stores/:id/health — Mobile Store Health score from real operational signals
@@ -419,6 +410,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         key_id: string;
         key_secret: string;
         test_mode: boolean;
+        expected_revision?: string;
     };
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -427,7 +419,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    if (!c.env.PAYMENT_CONFIG_ENCRYPTION_KEY) {
+    if (!c.env.PAYMENT_CONFIG_ENCRYPTION_KEY || c.env.PAYMENT_CONFIG_ENCRYPTION_KEY.length < 16) {
         return c.json(
             {
                 error: {
@@ -442,7 +434,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     const buildPaymentQuery = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
-            .select('id, payment_settings, cod_enabled')
+            .select('id, payment_settings, online_payment_enabled, cod_enabled, updated_at')
             .eq('id', storeId)
             .or(ownedByCustomUserFilter(customUser.id));
 
@@ -471,84 +463,69 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
 
-    const keySecretCiphertext = await encryptPaymentSecret(
-        body.key_secret,
-        c.env.PAYMENT_CONFIG_ENCRYPTION_KEY
-    );
-
-    let verified = false;
+    if (body.expected_revision && body.expected_revision !== store.updated_at) {
+        throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
+    }
+    if (!body.test_mode) {
+        throw new AppError('Live checkout requires qualified provider onboarding and settlement readiness. Keep this connection in test mode.', 409, 'PAYMENT_LIVE_NOT_READY');
+    }
+    const credentialId = crypto.randomUUID();
+    let keySecretCiphertext: string;
+    try {
+        keySecretCiphertext = await encryptPaymentSecret(body.key_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
+            siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
+        });
+    } catch {
+        throw new AppError('Payment credential encryption is temporarily unavailable. Your saved connection is unchanged.',503,'PAYMENT_CONFIG_UNAVAILABLE');
+    }
+    let verified: boolean;
     try {
         verified = await verifyRazorpayCredentials(body.key_id, body.key_secret);
     } catch {
-        verified = false;
+        throw new AppError('Razorpay could not be reached to verify these credentials. Your saved connection is unchanged.', 503, 'PAYMENT_VERIFICATION_UNAVAILABLE');
     }
-
+    if (!verified) {
+        throw new AppError('Razorpay did not verify these credentials. Your saved connection is unchanged.', 400, 'PAYMENT_CREDENTIALS_INVALID');
+    }
     const now = new Date().toISOString();
-    const existingSettings = (store.payment_settings || {}) as PaymentSettings;
-    const paymentSettings: PaymentSettings = {
-        ...existingSettings,
-        mode: 'ownAccount',
-        gateways: Array.from(new Set([...(existingSettings.gateways || []), 'razorpay'])),
-        razorpay: {
-            key_id: body.key_id,
-            key_secret_ciphertext: keySecretCiphertext,
-            test_mode: body.test_mode,
-            verified,
-            connected_at: existingSettings.razorpay?.connected_at || now,
-            updated_at: now,
-        },
+    const paymentSettings: PaymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: {
+        credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
+        test_mode: true, verified: true, connected_at: now, updated_at: now,
+    } };
+    return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: store,
+        proposed: { ...store, payment_settings: paymentSettings, online_payment_enabled: false },
+        operation: 'save', payload: { credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext },
+        credentialsUsable: true,
+    }));
+});
+
+// PATCH /stores/:id/payment-config — explicit method intent; effective eligibility is server-owned.
+router.patch('/:id/payment-config', validate('json', UpdateStorePaymentMethodsSchema), async (c) => {
+    const storeId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, c.get('auth').user);
+    if (!customUser) throw new AppError('Not authorized.', 403, 'FORBIDDEN');
+    const body = c.get('validatedBody') as import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput;
+    const { data: row, error: readError } = await db.from('sites')
+        .select('id,payment_settings,online_payment_enabled,cod_enabled,updated_at')
+        .eq('id', storeId).or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null).maybeSingle();
+    if (readError) throw new AppError('Payment settings are temporarily unavailable.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
+    if (!row) throw new AppError('Store not found.', 404, 'NOT_FOUND');
+    if (body.expected_revision && body.expected_revision !== row.updated_at) {
+        throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
+    }
+    const before = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
+    if (body.online_payment_enabled === true && !before.setup?.can_enable_online) {
+        throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
+    }
+    const methods = {
+        ...(body.online_payment_enabled !== undefined ? { online_payment_enabled: body.online_payment_enabled } : {}),
+        ...(body.cod_enabled !== undefined ? { cod_enabled: body.cod_enabled } : {}),
     };
-
-    const updatePaymentSettings = (includeDeletedAtFilter: boolean) => {
-        const query = db
-            .from('sites')
-            .update({
-                payment_settings: paymentSettings,
-                online_payment_enabled: true,
-                cod_enabled: store.cod_enabled !== false,
-                updated_at: now,
-            })
-            .eq('id', storeId)
-            .or(ownedByCustomUserFilter(customUser.id));
-
-        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
-    };
-
-    let { data, error } = await updatePaymentSettings(true)
-        .select('id, payment_settings, online_payment_enabled, cod_enabled')
-        .single();
-
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error } = await updatePaymentSettings(false)
-            .select('id, payment_settings, online_payment_enabled, cod_enabled')
-            .single());
-    }
-
-    if (isMissingSitesPaymentColumnError(error)) {
-        return c.json(
-            {
-                error: {
-                    code: 'PAYMENT_SCHEMA_MISSING',
-                    message: 'Payment settings require the latest sites payment columns before credentials can be saved',
-                },
-            },
-            503
-        );
-    }
-
-    if (error || !data) {
-        return c.json({ error: { code: 'DB_ERROR', message: error?.message || 'Unable to save payment config' } }, 500);
-    }
-
-    return c.json(success({
-        store_id: data.id,
-        online_payment_enabled: data.online_payment_enabled !== false,
-        cod_enabled: data.cod_enabled !== false,
-        provider_mode: paymentConfigProviderMode({
-            onlinePaymentEnabled: data.online_payment_enabled !== false,
-            settings: data.payment_settings as PaymentSettings | null,
-        }),
-        payment_settings: sanitizePaymentSettings(data.payment_settings as PaymentSettings | null),
+    const hydrated = await hydratePaymentCredential(db, row);
+    return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: row,
+        proposed: { ...hydrated, ...methods }, operation: 'methods', payload: methods,
+        credentialsUsable: before.setup?.can_enable_online === true,
     }));
 });
 
@@ -891,6 +868,7 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             subdomain: body.subdomain.toLowerCase().replace(/[^a-z0-9-]/g, ''),
             site_type: body.site_type,
             status: 'draft',
+            online_payment_enabled: false,
             tagline: body.tagline || null,
             locale: body.locale || 'en-IN',
             theme_id: body.theme_id,
@@ -970,6 +948,25 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'No valid fields to update' } }, 400);
     }
 
+    // General store updates cannot bypass payment-method eligibility or race a credential replacement.
+    let paymentRevision: string | null | undefined;
+    if (body.online_payment_enabled !== undefined || body.cod_enabled !== undefined) {
+        const { data: row, error } = await db.from('sites')
+            .select('id,payment_settings,online_payment_enabled,cod_enabled,updated_at')
+            .eq('id', storeId).or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null).maybeSingle();
+        if (error) throw new AppError('Payment settings are temporarily unavailable.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
+        if (!row) throw new AppError('Store not found.', 404, 'NOT_FOUND');
+        const current = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
+        if (body.online_payment_enabled === true && !current.setup?.can_enable_online) {
+            throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
+        }
+        if (row.payment_settings?.razorpay?.credential_id) {
+            throw new AppError('Use the payment method settings to change online checkout or COD.', 409, 'PAYMENT_METHODS_ENDPOINT_REQUIRED');
+        }
+        paymentRevision = row.updated_at || null;
+        updates.updated_at = new Date().toISOString();
+    }
+
     // Publish timestamp
     if (updates.status === 'published') {
         await ownedStorefrontDomainAdmission(db, c.env, storeId, customUser.id);
@@ -993,22 +990,25 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
             .eq('id', storeId)
             .or(ownedByCustomUserFilter(customUser.id));
 
-        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
+        const current = paymentRevision === undefined ? query : paymentRevision
+            ? query.eq('updated_at', paymentRevision) : query.is('updated_at', null);
+        return includeDeletedAtFilter ? current.is('deleted_at', null) : current;
     };
 
     let { data, error } = await updateStore(true)
         .select()
-        .single();
+        .maybeSingle();
 
     if (isMissingDeletedAtError(error)) {
         ({ data, error } = await updateStore(false)
             .select()
-            .single());
+            .maybeSingle());
     }
 
     if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+        throw new AppError('Store settings could not be updated. Reload to confirm current settings.', 503, 'STORE_UPDATE_UNAVAILABLE');
     }
+    if (!data) throw new AppError('Store settings changed. Reload before saving.', 409, 'STORE_UPDATE_CONFLICT');
 
     return c.json(success(data));
 });

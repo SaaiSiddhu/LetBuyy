@@ -43,6 +43,7 @@ import { validate } from '../middleware/validation';
 import { AppError, ConflictError } from '../lib/errors';
 import { checkoutDeliveryOptions } from '../lib/checkout-delivery-options';
 import { listStorefrontShippingRates } from '../lib/storefront-shipping';
+import { toInrMinorUnits } from '@letbuyy/payments';
 
 type AppContext = Context<{ Bindings: Env }>;
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -709,7 +710,9 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
         return c.json({ success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment provider setup is required.' } }, 503);
     }
 
-    const razorpayCredentials = body.provider === 'razorpay' ? await hostedRazorpayTestCredentials(c, verified.handoff.siteId) : null;
+    const priorCredentialId = stringValue(priorSetup?.payment_intent?.credential_id);
+    const razorpayCredentials = body.provider === 'razorpay' ? await hostedRazorpayTestCredentials(c, verified.handoff.siteId, undefined,
+        recoveringProviderAttempt && priorCredentialId ? { credentialId: priorCredentialId } : undefined) : null;
     if (body.provider === 'razorpay') {
         if (!razorpayCredentials) {
             return c.json({ success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment provider setup is required.' } }, 503);
@@ -732,6 +735,9 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                 return { body: { success: false, error: { code: 'CHECKOUT_DETAILS_REQUIRED', message: 'Complete checkout contact and delivery details first.' } }, status: 409 };
             }
             const priorIntent = existing.payment_intent || {};
+            if (stringValue(priorIntent.credential_id) && priorIntent.credential_id !== razorpayCredentials?.credentialId) {
+                return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'This payment belongs to its original connection. Reload checkout.' } }, status: 409 };
+            }
             if (priorIntent.status === 'creating_local_order' && !stringValue(priorIntent.order_id)) {
                 return { body: { success: false, error: { code: 'CHECKOUT_PROVIDER_ORDER_RECONCILIATION_REQUIRED', message: 'Online payment setup needs support review before retrying.' } }, status: 503, resourceId: existing.id };
             }
@@ -789,11 +795,8 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                     let expectedOrderAmountMinor: number | null = null;
                     try {
                         const payable = await paymentAdapter.loadStorefrontPayableOrder(orderId, verified.handoff.siteId);
-                        const total = Number(payable.total);
-                        const amountMinor = Math.round(total * 100);
-                        if ((payable.currency || 'INR').toUpperCase() === 'INR'
-                            && Number.isSafeInteger(amountMinor)
-                            && Math.abs(total * 100 - amountMinor) <= 0.000001) {
+                        const amountMinor = toInrMinorUnits(payable.total);
+                        if ((payable.currency || 'INR').toUpperCase() === 'INR') {
                             expectedOrderAmountMinor = amountMinor;
                         }
                     } catch {
@@ -899,7 +902,9 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             const setupIntentId = crypto.randomUUID();
             const setupSession = await persistCheckoutStep(c, verified.handoff, 'payment_intent', {
                 payment_method: 'razorpay',
-                payment_intent: { provider: 'razorpay', status: 'creating_local_order', payment_intent_id: setupIntentId, setup_claim_id: claimId },
+                payment_intent: { provider: 'razorpay', mode: 'sandbox', key_id: razorpayCredentials!.keyId,
+                    ...(razorpayCredentials!.credentialId ? { credential_id: razorpayCredentials!.credentialId } : {}),
+                    status: 'creating_local_order', payment_intent_id: setupIntentId, setup_claim_id: claimId },
             }, existing);
             if (!setupSession) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout changed before payment setup.' } }, status: 409, retryable: true };
 
@@ -915,10 +920,8 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
 
             const paymentAdapter = new PaymentExecutionAdapter(db);
             const payable = await paymentAdapter.loadStorefrontPayableOrder(orderId, verified.handoff.siteId);
-            const total = Number(payable.total);
-            const amountMinor = Math.round(total * 100);
-            if ((payable.currency || 'INR').toUpperCase() !== 'INR' || !Number.isSafeInteger(amountMinor)
-                || amountMinor <= 0 || Math.abs(total * 100 - amountMinor) > 0.000001) {
+            const amountMinor = toInrMinorUnits(payable.total);
+            if ((payable.currency || 'INR').toUpperCase() !== 'INR' || amountMinor <= 0) {
                 return { body: { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only exact INR checkout amounts are supported.' } }, status: 400, resourceId: orderId };
             }
 
@@ -926,6 +929,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             const creatingIntent = {
                 payment_intent_id: paymentIntentId,
                 key_id: razorpayCredentials!.keyId,
+                ...(razorpayCredentials!.credentialId ? { credential_id: razorpayCredentials!.credentialId } : {}),
                 provider: 'razorpay',
                 mode: 'sandbox',
                 status: 'creating_provider_order',
@@ -1121,7 +1125,9 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
         }
         let existingRazorpayOrder: JsonRecord | null = null;
         if (orderPlan.provider === 'razorpay') {
-            const razorpayCredentials = await hostedRazorpayTestCredentials(c, verified.handoff.siteId);
+            const originalCredentialId = stringValue(existing.payment_intent?.credential_id);
+            const razorpayCredentials = await hostedRazorpayTestCredentials(c, verified.handoff.siteId, undefined,
+                originalCredentialId ? { credentialId: originalCredentialId } : undefined);
             if (!razorpayCredentials) return { body: { success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment setup is required for this store.' } }, status: 503, retryable: true };
             const boundKeyId = stringValue(existing.payment_intent?.key_id);
             if (boundKeyId && boundKeyId !== razorpayCredentials.keyId) return { body: { success: false, error: { code: 'CHECKOUT_PAYMENT_CONFIGURATION_CHANGED', message: 'Payment settings changed. Contact the store before retrying this payment.' } }, status: 409, retryable: true };
@@ -1179,7 +1185,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             } catch {
                 return { body: { success: false, error: { code: 'CHECKOUT_ORDER_UNAVAILABLE', message: 'Checkout could not be confirmed.' } }, status: 409, resourceId: existing.id };
             }
-            const orderAmountMinor = Math.round(Number(payable.total) * 100);
+            const orderAmountMinor = toInrMinorUnits(payable.total);
             // The verified webhook may commit this same capture before the
             // browser callback arrives. The canonical writer then replaces the
             // order reference with its payment ID. Both still identify this

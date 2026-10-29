@@ -1,7 +1,8 @@
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { isBoundStorefrontRequestTarget, isBoundDomainReconcileTarget } from '@letbuyy/auth-core';
+import { isBoundStorefrontRequestTarget, isBoundDomainReconcileTarget, isNotificationRequestTarget } from '@letbuyy/auth-core';
+import { authenticateNotificationRequest } from '../lib/notification-internal-request';
 import { authenticateDomainReconcileRequest } from '../lib/domain-reconcile-internal-request';
 import { authenticateBoundStorefrontRequest } from '../lib/storefront-internal-request';
 
@@ -82,6 +83,15 @@ function hasInternalCredential(c: GatewayContext): boolean {
 }
 
 export const internalPerimeter = createMiddleware<{ Bindings: Env }>(async (c, next) => {
+    // Owner-approved fixed notification transport; no general RPC/IP exemption.
+    if (isNotificationRequestTarget(c.req.method, c.req.url)) {
+        const result = await authenticateNotificationRequest(c);
+        if (result !== 'accepted') return c.json({ success: false, error: {
+            code: result === 'unavailable' ? 'NOTIFICATION_JOB_UNAVAILABLE' : 'UNAUTHORIZED',
+            message: result === 'unavailable' ? 'Notification processing is unavailable.' : 'Invalid notification request',
+        } }, result === 'unavailable' ? 503 : 401);
+        await next(); return;
+    }
     // Owner-approved workload boundary for these two fixed Commerce operations.
     // Every other internal path still takes the IP perimeter below.
     const storefrontPolicy = c.env.STOREFRONT_INTERNAL_PERIMETER?.trim();

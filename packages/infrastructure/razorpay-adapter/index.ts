@@ -97,12 +97,26 @@ interface RazorpayCaptureResult {
   error?: { code?: string; description?: string };
 }
 
-interface RazorpayRefundResult {
+export interface RazorpayRefundResult {
   id?: string;
   payment_id?: string;
   amount?: number;
+  currency?: string;
   status?: string;
   error?: { code?: string; description?: string };
+}
+
+/** Read refund status with the capturing account; never infer completion from
+ * a merchant-supplied refund reference or a successful create HTTP response. */
+export async function fetchRazorpayRefund(credentials:RazorpayCredentials,refundId:string,
+  options:{fetch?:RazorpayFetch}={}):Promise<RazorpayRefundResult>{
+  const response=await (options.fetch??fetch)(`https://api.razorpay.com/v1/refunds/${encodeURIComponent(refundId)}`,{
+    method:'GET',headers:{Authorization:basicAuth(credentials)},
+  });
+  const raw:unknown=await response.json().catch(()=>null);
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return {error:{description:'Razorpay refund status is unavailable'}};
+  const data=raw as RazorpayRefundResult;
+  return response.ok?data:{...data,error:data.error||{description:'Razorpay refund status is unavailable'}};
 }
 
 type RazorpayFetch = typeof fetch;

@@ -209,7 +209,7 @@ export class IdempotencyExecutionAdapter {
                 status: 'failed',
                 locked_until: null,
             })
-            .eq('id', id);
+            .eq('id', id).eq('status', 'processing');
         const { error } = await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
         if (error && !isMissingSchemaError(error)) {
             throw new Error(`Idempotency failure update failed: ${error.message}`);

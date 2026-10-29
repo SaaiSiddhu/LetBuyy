@@ -4,7 +4,7 @@ import { renderOrderLifecycleEmail, OrderEmailDeliverySchema, OrderEmailDelivery
 import { formatEmailSender } from '@letbuyy/notification-core/email';
 
 /** Only an active, exact-site job lease can disclose its private delivery snapshot. */
-export async function sendOrderLifecycleEmail(db: SupabaseClient,
+export async function sendOrderLifecycleEmail(db: Pick<SupabaseClient, 'rpc'>,
   env: { RESEND_API_KEY?: string; RESEND_FROM_EMAIL?: string },
   job: { id: string; site_id: string | null }, workerId: string) {
   if (!env.RESEND_API_KEY || /placeholder|replace-with|skip_needs_human/i.test(env.RESEND_API_KEY))

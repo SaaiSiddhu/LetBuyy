@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { CHECKOUT_APPLICATION_WORKFLOWS, CHECKOUT_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/shared-types';
 import { AppError, ConflictError, NotFoundError } from '../lib/errors';
 import { FIXED_PUBLIC_ERROR_MESSAGES } from '../lib/public-errors';
+import { toInrMinorUnits } from '@letbuyy/payments';
 
 type PayableOrder = {
     id: string;
@@ -99,14 +100,15 @@ export class PaymentExecutionAdapter {
             throw new AppError(FIXED_PUBLIC_ERROR_MESSAGES.ORDER_RESERVATION_EXPIRED, 409, 'ORDER_RESERVATION_EXPIRED');
         }
 
-        const total = Number(payableOrder.total);
-        if (!Number.isFinite(total) || total <= 0) {
+        let amountMinor: number;
+        try { amountMinor = toInrMinorUnits(payableOrder.total); }
+        catch { throw new ConflictError('Order does not have an exact payable total'); }
+        if (amountMinor <= 0) {
             throw new ConflictError('Order does not have a payable total');
         }
 
         return {
             ...payableOrder,
-            total,
             currency: payableOrder.currency || 'INR',
         };
     }
@@ -134,14 +136,15 @@ export class PaymentExecutionAdapter {
         }
 
         const captureOrder = order as PayableOrder;
-        const total = Number(captureOrder.total);
-        if (!Number.isFinite(total) || total <= 0) {
+        let amountMinor: number;
+        try { amountMinor = toInrMinorUnits(captureOrder.total); }
+        catch { throw new ConflictError('Order does not have an exact payable total'); }
+        if (amountMinor <= 0) {
             throw new ConflictError('Order does not have a payable total');
         }
 
         return {
             ...captureOrder,
-            total,
             currency: captureOrder.currency || 'INR',
         };
     }

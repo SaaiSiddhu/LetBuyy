@@ -408,14 +408,17 @@ class SubscriptionService {
     required String storeId,
     required String keyId,
     required String keySecret,
-    bool testMode = false,
+    bool testMode = true,
+    String? idempotencyKey,
+    String? expectedRevision,
   }) async {
     try {
       final res = await _api.stores.paymentConfig.save(storeId, {
         'key_id': keyId,
         'key_secret': keySecret,
         'test_mode': testMode,
-      });
+        if (expectedRevision != null) 'expected_revision': expectedRevision,
+      }, options: ApiRequestOptions(idempotencyKey: idempotencyKey));
       return Map<String, dynamic>.from(res['data'] ?? res);
     } catch (e) {
       debugPrint('Error connecting Razorpay: $e');
@@ -446,7 +449,7 @@ class SubscriptionService {
     try {
       final data = await _api.stores.paymentConfig.get(storeId);
       if (data.isEmpty) {
-        return PaymentConfigModel.defaultShared(storeId);
+        return PaymentConfigModel.unavailable(storeId);
       }
       return PaymentConfigModel.fromMap(data, storeId);
     } catch (e) {

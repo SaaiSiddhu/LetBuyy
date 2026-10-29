@@ -4,11 +4,15 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
+import { createRequire } from 'node:module';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
+const authCoreRequire = createRequire(new URL('../../packages/auth-core/package.json', import.meta.url));
+const realZod = authCoreRequire('zod');
 
-function loadAuthCore() {
-  const source = readFileSync(AUTH_CORE_SOURCE, 'utf8');
+function loadAuthCore(sourcePath = AUTH_CORE_SOURCE, moduleCache = new Map()) {
+  if (moduleCache.has(sourcePath)) return moduleCache.get(sourcePath).exports;
+  const source = readFileSync(sourcePath, 'utf8');
   const transpiled = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -18,18 +22,16 @@ function loadAuthCore() {
   }).outputText;
 
   const module = { exports: {} };
-  const zChain = new Proxy(function zChain() {}, {
-    get: () => zChain,
-    apply: () => zChain,
-  });
+  moduleCache.set(sourcePath, module);
   const sandbox = {
     module,
     exports: module.exports,
     require(specifier) {
-      if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
-      if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
-      if (specifier === './customer-session') return {};
-      if (specifier === './storefront-access') return {};
+      if (specifier === 'zod') return realZod;
+      if (specifier === '@letbuyy/shared-types') return { EmailSchema: realZod.z.string().email() };
+      if (['./customer-session', './storefront-access', './merchant-buyer-connection'].includes(specifier)) {
+        return loadAuthCore(`packages/auth-core/src/${specifier.slice(2)}.ts`, moduleCache);
+      }
       throw new Error(`Unexpected test require: ${specifier}`);
     },
     TextEncoder,
@@ -50,7 +52,7 @@ function loadAuthCore() {
     Map,
   };
 
-  vm.runInNewContext(transpiled, sandbox, { filename: AUTH_CORE_SOURCE });
+  vm.runInNewContext(transpiled, sandbox, { filename: sourcePath });
   return module.exports;
 }
 

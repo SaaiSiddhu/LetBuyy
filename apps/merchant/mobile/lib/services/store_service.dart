@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:letbuyy_models/letbuyy_models.dart' show PaymentConfigModel;
 
 import '../models/store_model.dart';
 import 'api_client.dart';
@@ -289,7 +290,11 @@ class StoreService extends ChangeNotifier {
 
   /// Update store fields.
   Future<StoreModel> updateStore(String id, Map<String, dynamic> fields) async {
+    final epoch = _sessionEpoch;
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
     final store = StoreModel.fromJson(await _api.stores.update(id, fields));
+    _checkSessionEpoch(epoch);
     final idx = _stores.indexWhere((s) => s.id == id);
     if (idx != -1) _stores[idx] = store;
     if (_currentStore?.id == id) _currentStore = store;
@@ -375,11 +380,34 @@ class StoreService extends ChangeNotifier {
   }
 
   /// Update payment settings for the store.
-  Future<StoreModel> updatePaymentSettings(
+  Future<PaymentConfigModel> updatePaymentSettings(
     String id,
-    Map<String, dynamic> paymentSettings,
-  ) async {
-    return updateStore(id, {'payment_settings': paymentSettings});
+    Map<String, dynamic> paymentSettings, {
+    String? expectedRevision,
+    String? idempotencyKey,
+  }) async {
+    if (paymentSettings.isEmpty ||
+        paymentSettings.entries.any(
+          (entry) =>
+              !const {
+                'cod_enabled',
+                'online_payment_enabled',
+              }.contains(entry.key) ||
+              entry.value is! bool,
+        )) {
+      throw const FormatException('Choose an online or COD setting to update.');
+    }
+    final epoch = _sessionEpoch;
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
+    final response = await _api.stores.paymentConfig.updateMethods(id, {
+      ...paymentSettings,
+      if (expectedRevision != null) 'expected_revision': expectedRevision,
+    }, options: ApiRequestOptions(idempotencyKey: idempotencyKey));
+    _checkSessionEpoch(epoch);
+    // This command returns the canonical payment configuration, not a partial
+    // StoreModel that could overwrite unrelated cached store fields.
+    return PaymentConfigModel.fromMap(response, id);
   }
 }
 

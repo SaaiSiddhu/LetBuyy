@@ -3176,12 +3176,9 @@ export type StorefrontProductReviewResult = {
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
-export type UpdateStoreInput = Partial<NewRecord<Store>> & { status?: StoreStatus };
-export type SaveStorePaymentConfigInput = {
-  key_id: string;
-  key_secret: string;
-  test_mode?: boolean;
-};
+export type UpdateStoreInput = Partial<NewRecord<Store>> & { status?: StoreStatus }
+  & import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput;
+export type SaveStorePaymentConfigInput = import('@letbuyy/shared-types').SaveStorePaymentConfigInput;
 
 export type UpdateStoreLocalizationInput = {
   default_locale?: string;
@@ -4003,6 +4000,8 @@ export class LetbuyyApiClient {
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, options),
       save: (id: string, input: SaveStorePaymentConfigInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
+      updateMethods: (id: string, input: import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'PATCH', body: input }),
     },
     localization: {
       get: (id: string, options?: LetbuyyRequestOptions) =>

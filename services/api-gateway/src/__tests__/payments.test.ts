@@ -285,7 +285,14 @@ test('Task 004 generic payment sessions are persisted, tenant-scoped, sandbox-fi
     assert.match(paymentsSource, /buildSandboxPaymentSessionPlan/);
     assert.match(paymentsSource, /new IdempotencyExecutionAdapter\(db\)/);
     assert.match(paymentsSource, /emitPaymentEvent/);
-    assert.match(paymentsSource, /eventType:\s*'payment\.captured'/);
+    // Capture's typed outbox and acknowledgement now commit with its money
+    // writes; retaining a separate route emitter would reintroduce a split write.
+    assert.match(paymentsSource, /const proof=await verifyCanonicalRazorpayCapture/);
+    assert.match(paymentsSource, /commitCanonicalPaymentCapture\(db,/);
+    const captureWriter = repositorySource('database/supabase/migrations/408_atomic_canonical_payment_capture.sql');
+    assert.match(captureWriter, /post_settlement_ledger_transaction/);
+    assert.match(captureWriter, /INSERT INTO public\.outbox_events[\s\S]*'payment\.captured'/);
+    assert.match(captureWriter, /UPDATE public\.idempotency_keys SET status='completed'/);
     assert.match(paymentsSource, /eventType:\s*'payment\.refunded'/);
 
     assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.payment_credentials/);

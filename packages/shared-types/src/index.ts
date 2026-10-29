@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { StorePaymentSetupSchema } from './payment-setup';
 
 export * from './brand';
 export * from './console-overview';
@@ -1014,16 +1015,27 @@ export const CodReconciliationEntrySchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 }).passthrough();
 
-export const MerchantPayoutListSchema = z.object({
-  payouts: z.array(MerchantPayoutStatementSchema).default([]),
-  summary: z.object({
+export const MerchantPayoutSummarySchema = z.object({
     site_id: UuidSchema,
     currency: CurrencySchema,
-    pending_minor: z.number().int().nonnegative(),
-    processing_minor: z.number().int().nonnegative(),
-    released_minor: z.number().int().nonnegative(),
-    failed_minor: z.number().int().nonnegative(),
+    provider_mode: MerchantPayoutModeSchema,
+    scope: z.literal('all_statements_in_environment'),
+    statement_count: z.number().int().safe().nonnegative(),
+    pending_minor: z.number().int().safe().nonnegative(),
+    processing_minor: z.number().int().safe().nonnegative(),
+    released_minor: z.number().int().safe().nonnegative(),
+    failed_minor: z.number().int().safe().nonnegative(),
+    bank_settlement: z.literal('not_observed'),
     next_payout: MerchantPayoutStatementSchema.optional().nullable(),
+});
+export const MerchantPayoutListSchema = z.object({
+  payouts: z.array(MerchantPayoutStatementSchema),
+  summary: MerchantPayoutSummarySchema,
+  pagination: z.object({
+    limit: z.number().int().min(1).max(50),
+    matching_count: z.number().int().safe().nonnegative(),
+    has_more: z.boolean(),
+    next_cursor: z.string().max(1024).nullable(),
   }),
 });
 
@@ -2147,26 +2159,31 @@ export const SubscriptionVerificationResultSchema = z.object({
   message: z.string().max(500).optional(),
 }).passthrough();
 
+export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema,
+  type StorePaymentSetup, type SaveStorePaymentConfigInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
+
 export const StorePaymentSettingsSchema = z.object({
-  mode: z.enum(['shared', 'ownAccount']).default('shared'),
-  gateways: z.array(z.string().min(1).max(80)).default(['razorpay']),
+  mode: z.enum(['unconfigured', 'shared', 'ownAccount']).default('unconfigured'),
+  gateways: z.array(z.string().min(1).max(80)).default([]),
   razorpay: z.object({
     key_id: z.string().max(120).optional().nullable(),
     test_mode: z.boolean().default(true),
     verified: z.boolean().default(false),
-    connected_at: z.string().datetime().optional().nullable(),
-    updated_at: z.string().datetime().optional().nullable(),
+    connected_at: z.string().datetime({ offset: true }).optional().nullable(),
+    updated_at: z.string().datetime({ offset: true }).optional().nullable(),
     secret_configured: z.boolean().default(false),
   }).nullable().default(null),
 }).passthrough();
 
 export const StorePaymentConfigSchema = z.object({
   store_id: UuidSchema,
-  online_payment_enabled: z.boolean().default(true),
-  cod_enabled: z.boolean().default(true),
-  provider_mode: z.enum(['sandbox', 'live']).default('sandbox'),
+  online_payment_enabled: z.boolean().default(false),
+  cod_enabled: z.boolean().default(false),
+  provider_mode: z.enum(['sandbox', 'live']).nullable().default(null),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
+  setup: StorePaymentSetupSchema.optional(),
+  revision: z.string().nullable().optional(),
 }).passthrough();
 
 export const EmployeeStatusSchema = z.enum(['invited', 'active', 'inactive', 'removed', 'suspended']);

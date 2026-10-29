@@ -1,4 +1,7 @@
 import {publicSubscriptionBillingRecord} from '../lib/subscription-checkout-source';
+import {verifyCanonicalRazorpayCapture} from '../lib/payment-capture-proof';
+import {commitCanonicalPaymentCapture} from '../execution/payment-capture-execution.adapter';
+import {originalRefundCredentials,verifyRazorpayRefundProof} from '../lib/payment-refund-proof';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -52,9 +55,9 @@ import {
     type PaymentVoidInput,
 } from '../schemas/payment.schema';
 import {
-    buildPaymentCaptureLedgerPosting,
     buildSandboxPaymentSessionPlan,
     inrMoney,
+    toInrMinorUnits,
     normalizeV1PaymentSessionProvider,
 } from '@letbuyy/payments';
 import {
@@ -68,7 +71,6 @@ import {
     loadPayableOrder,
     paymentProviderMode,
     paymentSetupRequiredResponse,
-    postPaymentLedger,
     requestedAmountMinorUnits,
     requireLivePaymentCredential,
     stringOrNull,
@@ -285,11 +287,11 @@ router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async
     }
 
     const captureScope = ['payment.capture', payment.id].join(':');
-    const captureLedgerKey = ['payment.capture', payment.id, body.idempotency_key].join(':');
     const providerPaymentId = body.provider_payment_id || payment.provider_payment_id || null;
     if (!providerPaymentId) {
         throw new ConflictError('Provider payment id is required before capture can be recorded');
     }
+    const proof=await verifyCanonicalRazorpayCapture(c,payment,providerPaymentId);
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: payment.site_id,
@@ -304,97 +306,12 @@ router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async
     }
 
     try {
-        const ledgerTransactionId = await postPaymentLedger(
-            db,
-            buildPaymentCaptureLedgerPosting({
-                siteId: payment.site_id,
-                orderId: payment.order_id,
-                providerPaymentId,
-                grossAmountMinor: payment.amount_minor,
-                platformFeeMinor: 0,
-                gstMinor: 0,
-                idempotencyKey: captureLedgerKey,
-            }),
-            {
-                payment_id: payment.id,
-                provider: payment.provider,
-                provider_mode: payment.mode,
-                provider_order_id: payment.provider_order_id || null,
-                provider_payment_id: providerPaymentId,
-                fee_assessment: 'deferred_to_payout_statement',
-            },
-            requestId,
-        );
-
-        const { data: updated, error } = await db
-            .from('payments')
-            .update({
-                status: 'captured',
-                provider_payment_id: providerPaymentId,
-                captured_at: new Date().toISOString(),
-                capture_ledger_transaction_id: ledgerTransactionId,
-                metadata: { ...(payment.metadata || {}), ...(body.metadata || {}) },
-                request_id: requestId,
-                updated_by: customUser.id,
-            })
-            .eq('id', payment.id)
-            .select('*')
-            .single();
-
-        if (error || !updated) {
-            await idempotency.fail(claim.id);
-            return c.json(dbErrorBody('Failed to capture payment'), 500);
-        }
-
-        await db.from('payment_attempts').insert({
-            site_id: payment.site_id,
-            order_id: payment.order_id,
-            payment_id: payment.id,
-            provider: payment.provider,
-            attempt_type: 'capture',
-            status: 'succeeded',
-            amount: payment.amount_minor / 100,
-            currency: payment.currency,
-            provider_order_id: payment.provider_order_id,
-            provider_payment_id: providerPaymentId,
-            provider_session_id: payment.provider_session_id,
-            idempotency_key: body.idempotency_key,
-            request_id: requestId,
-            metadata: body.metadata,
-            created_by: customUser.id,
-            updated_by: customUser.id,
+        const responseBody=await commitCanonicalPaymentCapture(db,{
+            proof,actorId:customUser.id,claimId:claim.id,requestHash:claim.requestHash,
+            requestId,metadata:body.metadata,
         });
 
-        await emitPaymentEvent(db, {
-            siteId: payment.site_id,
-            paymentId: payment.id,
-            orderId: payment.order_id,
-            eventType: 'payment.captured',
-            payload: {
-                provider: payment.provider,
-                provider_event_id: providerPaymentId,
-                payment_status: 'paid',
-                mode: payment.mode,
-                provider_payment_id: providerPaymentId,
-                amount_minor: payment.amount_minor,
-                currency: payment.currency,
-                ledger_transaction_id: ledgerTransactionId,
-            },
-            actorId: customUser.id,
-            requestId,
-            idempotencyKey: captureLedgerKey,
-        });
-
-        const responseBody = { data: { captured: true, payment: updated } };
-        await idempotency.complete({
-            id: claim.id,
-            responseBody,
-            statusCode: 200,
-            resourceType: 'payment',
-            resourceId: payment.id,
-        });
-
-        return c.json(responseBody);
+        return c.json(responseBody as never);
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;
@@ -501,6 +418,20 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
         return c.json(stepUpErrorBody(stepUp), 428);
     }
 
+    // Existing final receipts remain readable through the live owner/MFA and
+    // canonical reservation checks below. Every new provider action or manual
+    // reference must instead use the exact original payment connection.
+    const {data:existingRefund,error:existingRefundError}=await db.from('payment_attempts')
+        .select('status,amount').eq('site_id',payment.site_id).eq('payment_id',payment.id)
+        .eq('attempt_type','refund').eq('idempotency_key',body.idempotency_key).is('deleted_at',null).maybeSingle();
+    if(existingRefundError)throw new AppError('Refund history is temporarily unavailable.',503,'REFUND_UNAVAILABLE');
+    const refundCredentials=payment.provider==='razorpay'&&existingRefund?.status!=='succeeded'
+        ?await originalRefundCredentials(c,payment):null;
+    let manualRefundStatus:'processed'|'created'|'failed'|null=null;
+    if(manualProviderRefundId&&refundCredentials){
+        const expected=body.amount_minor??(existingRefund?toInrMinorUnits(existingRefund.amount):payment.amount_minor-(payment.refunded_amount_minor||0));
+        manualRefundStatus=await verifyRazorpayRefundProof(refundCredentials,payment,manualProviderRefundId,expected);
+    }
     const idempotency = new IdempotencyExecutionAdapter(db);
     // Approval credentials are transient; a fresh valid proof does not change
     // the financial command's identity. Preserve every other metadata field.
@@ -559,6 +490,14 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
         await idempotency.fail(claim.id);
         return c.json(dbErrorBody('Refund reservation could not be read'), 500);
     }
+    if(payment.credential_id){
+        const {data:boundAttempt,error:bindingError}=await db.from('payment_attempts')
+            .select('credential_id,credential_mode').eq('site_id',payment.site_id).eq('payment_id',payment.id).eq('id',refundAttemptId).single();
+        if(bindingError||boundAttempt?.credential_id!==payment.credential_id||boundAttempt.credential_mode!==payment.mode){
+            await idempotency.fail(claim.id);
+            throw new AppError('The refund connection history needs review before provider contact.',409,'REFUND_CONNECTION_REVIEW');
+        }
+    }
     if (reservation.created !== true) {
         const providerRefundId = stringOrNull(reservation.provider_refund_id);
         if (manualProviderRefundId && providerRefundId && providerRefundId !== manualProviderRefundId) {
@@ -600,10 +539,8 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
             await db.from('payment_attempts').update({ status: 'failed', failure_reason: 'Provider payment reference is missing' }).eq('site_id', payment.site_id).eq('id', refundAttemptId);
             return c.json({ error: { code: 'REFUND_PROVIDER_PAYMENT_ID_MISSING', message: 'Cannot initiate refund: provider payment id is not recorded for this payment.' } }, 409);
         }
-        const razorpayProvider = createRazorpayPaymentProvider({
-            keyId: c.env.RAZORPAY_KEY_ID,
-            keySecret: c.env.RAZORPAY_KEY_SECRET,
-        });
+        if(!refundCredentials)throw new AppError('The original refund connection is unavailable.',503,'REFUND_CONNECTION_UNAVAILABLE');
+        const razorpayProvider = createRazorpayPaymentProvider(refundCredentials);
         const razorpayRefundKey = [
             'payment_refund',
             payment.id,
@@ -702,6 +639,27 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
     }
 
     if (payment.provider === 'razorpay') {
+        // Even a provider create returning processed is read back against its
+        // original account before granting a financial reversal.
+        if(!refundCredentials)throw new AppError('The original refund connection is unavailable.',503,'REFUND_CONNECTION_UNAVAILABLE');
+        const verifiedRefundStatus=manualRefundStatus??await verifyRazorpayRefundProof(refundCredentials,payment,providerRefundId,refundAmountMinor);
+        if(verifiedRefundStatus!=='processed'){
+            const {error:pendingError}=await db.from('payment_attempts').update({
+                status:verifiedRefundStatus==='failed'?'failed':'pending',
+                metadata:{...(body.reason?{refund_reason:body.reason}:{}),...stepUp.metadata,
+                    provider_refund_id:providerRefundId,refund_amount_minor:refundAmountMinor},
+            }).eq('site_id',payment.site_id).eq('id',refundAttemptId);
+            if(pendingError)throw new AppError('Refund acknowledgement needs review. Retry the same request.',503,'REFUND_UNAVAILABLE');
+            if(verifiedRefundStatus==='failed'){
+                await idempotency.fail(claim.id);
+                throw new AppError('The provider reports this refund failed. No reversal was recorded.',409,'REFUND_PROVIDER_FAILED');
+            }
+            const responseBody={data:{pending:true,provider_refund_id:providerRefundId,
+                refund_amount_minor:refundAmountMinor,payment_id:payment.id,
+                reconciliation:'provider_webhook_required'}};
+            await idempotency.complete({id:claim.id,responseBody,statusCode:202,resourceType:'payment',resourceId:payment.id});
+            return c.json(responseBody,202);
+        }
         const providerEventId = `refund.processed:${providerRefundId}`;
         try {
             const { data: reconciliation, error } = await db.rpc('reconcile_payment_refund_attempt', {

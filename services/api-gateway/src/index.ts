@@ -95,6 +95,7 @@ import internalEventsRouter from './routes/internal-events';
 import domainsRouter from './routes/domains';
 import customDomainsRouter, { storeAccessRouter } from './routes/custom-domains';
 import internalCustomDomainReconcileRouter from './routes/internal-custom-domain-reconcile';
+import internalNotificationJobsRouter from './routes/internal-notification-jobs';
 import internalStoreAccessRouter from './routes/internal-store-access';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
@@ -807,6 +808,7 @@ api.route('/internal/founding', internalFoundingRouter);
 api.route('/internal/events', internalEventsRouter);
 api.route('/internal/store-access', internalStoreAccessRouter);
 api.route('/internal/custom-domain-reconcile', internalCustomDomainReconcileRouter);
+api.route('/internal/notification-jobs', internalNotificationJobsRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);

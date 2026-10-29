@@ -10,6 +10,13 @@ import { assertStaffPermission } from './staff-permission';
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type GatewayContext = Context<{ Bindings: Env }>;
 
+declare module 'hono' {
+    interface ContextVariableMap {
+        paymentConfigurationClaim: { id: string; siteId: string; requestHash: string } | undefined;
+        atomicIdempotencyCommitted: boolean | undefined;
+    }
+}
+
 const MUTATION_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export const IDEMPOTENT_PROTECTED_PREFIXES = [
@@ -244,7 +251,11 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // Settings/cancellation receipts contain tenant configuration and billing
     // state. Re-verify the live owner before begin() can return an old response,
     // including revocation and signed-store/selection mismatches.
-    if (orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
+    const storeSettingsReceipt = /^\/stores\/[^/]+(?:\/payment-config)?$/.test(orderPath);
+    if (storeSettingsReceipt && siteIdFromStorePath(c.req.path) !== siteId) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+    if (storeSettingsReceipt || orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
         const auth = c.get('auth');
         const db = getSupabaseAdmin(c);
         const customUser = auth?.user ? await resolveCustomUser(db, auth.user) : null;
@@ -280,12 +291,18 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         });
     }
 
+    if (/^\/stores\/[^/]+\/payment-config$/.test(orderPath)) c.set('paymentConfigurationClaim', {
+        id: claim.id, siteId: claim.siteId, requestHash: claim.requestHash,
+    });
+
     try {
         await next();
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;
     }
+
+    if (c.get('atomicIdempotencyCommitted')) return;
 
     if (c.res.status < 200 || c.res.status >= 300) {
         await idempotency.fail(claim.id);

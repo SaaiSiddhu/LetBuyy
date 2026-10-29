@@ -1,3 +1,4 @@
+import {bindSyntheticRefundCredential}from './refund-credential-fixture';
 // Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
 // and public challenge test fixtures. Never use these values for a real account or live provider.
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
@@ -106,6 +107,7 @@ test('normal merchant recovers MFA setup and approval replies without leaking st
   const noKey=await context.request.post(endpoint+'/two-factor/enroll',{headers:{Origin:merchantOrigin,'X-LetBuyy-Merchant-Context':owner},data:{}});assert.equal(noKey.status(),400);
   const order=seedSyntheticOrder(owned.psql,site),payment=crypto.randomUUID();
   owned.psql(`UPDATE orders SET payment_status='paid'WHERE id='${order.orderId}';INSERT INTO payments(id,site_id,order_id,provider,mode,status,amount_minor,currency,provider_payment_id,idempotency_key)VALUES('${payment}','${site.siteId}','${order.orderId}','razorpay','sandbox','captured',10000,'INR','syn-pay-${payment}','syn-payment-${payment}');`);
+  await bindSyntheticRefundCredential(owned,gateway,site.siteId,[payment]);
   await page.goto(`${merchantOrigin}/${site.subdomain}/orders`);await page.getByRole('button',{name:'Refund',exact:true}).first().click();await page.getByRole('spinbutton',{name:'Refund amount',exact:true}).fill('1');await page.getByRole('button',{name:'Verify and refund',exact:true}).click();
   const dialog=page.getByRole('dialog',{name:'Verify identity',exact:true});await expect(dialog.getByLabel('Authenticator code',{exact:true})).toBeVisible();
   await dialog.getByLabel('Authenticator code',{exact:true}).fill(otp(secret));

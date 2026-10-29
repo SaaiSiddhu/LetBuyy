@@ -11,6 +11,7 @@ import test, { after, before } from 'node:test';
 import { chromium, type Browser } from '@playwright/test';
 import worker from '../../index';
 import { encryptPaymentSecret } from '../../lib/store-payment-config';
+import { PAYMENT_KEYRING_PREFIX } from '../../lib/payment-encryption-keyring';
 import { INTERNAL_SECRET, gatewayEnv, newIdentityKeys } from './gateway-harness';
 import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
@@ -21,6 +22,11 @@ const site = newSyntheticTenant('browser-checkout');
 const signingSecret = 'synthetic-browser-checkout-signing-secret';
 const razorpayKeySecret = 'synthetic-browser-razorpay-secret';
 const paymentEncryptionKey = crypto.randomUUID();
+const replacementEncryptionKey = crypto.randomUUID();
+let rotateEncryptionKey: (()=>void) | undefined;
+const originalCredentialId = crypto.randomUUID(), replacementCredentialId = crypto.randomUUID();
+const originalKeyId = ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_');
+const replacementKeyId = ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_');
 const razorpayOrderId = `order_${crypto.randomUUID().replace(/-/g, '')}`;
 const razorpayPaymentId = `pay_${crypto.randomUUID().replace(/-/g, '')}`;
 let razorpayAmountMinor = 0;
@@ -28,6 +34,15 @@ const razorpaySignature = createHmac('sha256', razorpayKeySecret).update(`${razo
 const hostedRazorpayTestAdapter = {
     async createIntent(input: PaymentCreateIntentInput): Promise<PaymentIntentResult> {
         razorpayAmountMinor = input.amount.amountMinor;
+        // Settings changes after the durable attempt was admitted, but before
+        // the provider reply arrives. The popup and confirm must use the old
+        // exact version, never the newly saved key or current online flag.
+        assert.equal(owned.psql(`SELECT payment_credential_id FROM checkout_sessions WHERE id='${input.metadata?.checkout_id}';`), originalCredentialId);
+        owned.script(`BEGIN;UPDATE sites SET online_payment_enabled=false,
+            payment_settings='${JSON.stringify({mode:'ownAccount',gateways:['razorpay'],razorpay:{credential_id:replacementCredentialId,key_id:replacementKeyId,test_mode:true,verified:true}})}'
+            WHERE id='${site.siteId}';
+            UPDATE payment_credentials SET selected_for_checkout=false WHERE id='${originalCredentialId}';COMMIT;`);
+        assert.ok(rotateEncryptionKey);rotateEncryptionKey();
         return {
             provider: 'razorpay',
             status: 'requires_action',
@@ -114,9 +129,16 @@ before(async () => {
         'active','web',now()+interval '1 day');
     `);
 
-    const encrypted = await encryptPaymentSecret(razorpayKeySecret, paymentEncryptionKey);
-    const paymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: { key_id: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'), key_secret_ciphertext: encrypted, test_mode: true, verified: true } };
-    owned.psql(`UPDATE sites SET payment_settings='${JSON.stringify(paymentSettings).replaceAll("'", "''")}'::jsonb WHERE id='${site.siteId}';`);
+    for (const [id,keyId,secret] of [[originalCredentialId,originalKeyId,razorpayKeySecret],
+        [replacementCredentialId,replacementKeyId,'synthetic-unused-replacement-secret']]) {
+        const encrypted = await encryptPaymentSecret(secret, paymentEncryptionKey, {siteId:site.siteId,keyId,environment:'sandbox',credentialId:id});
+        owned.psql(`INSERT INTO payment_credentials(id,site_id,provider,mode,status,provider_key_id,last_verified_at,encrypted_credentials)
+            VALUES('${id}','${site.siteId}','razorpay','sandbox','active','${keyId}',now(),
+            '${JSON.stringify({key_secret_ciphertext:encrypted})}'::jsonb);`);
+    }
+    const paymentSettings = {mode:'ownAccount',gateways:['razorpay'],razorpay:{credential_id:originalCredentialId,key_id:originalKeyId,test_mode:true,verified:true}};
+    owned.psql(`UPDATE payment_credentials SET selected_for_checkout=true WHERE id='${originalCredentialId}';
+        UPDATE sites SET online_payment_enabled=true,payment_settings='${JSON.stringify(paymentSettings)}'::jsonb WHERE id='${site.siteId}';`);
     const keys = await newIdentityKeys();
     const env = gatewayEnv(owned, keys, {
         CHECKOUT_SIGNING_SECRET: signingSecret,
@@ -133,6 +155,7 @@ before(async () => {
         },
         HOSTED_RAZORPAY_TEST_ADAPTER: hostedRazorpayTestAdapter,
     });
+    rotateEncryptionKey=()=>{env.PAYMENT_CONFIG_ENCRYPTION_KEY=PAYMENT_KEYRING_PREFIX+JSON.stringify({active:replacementEncryptionKey,previous:[paymentEncryptionKey]});};
     server = createServer(async (req, res) => {
         try {
             const body = await readBody(req);
@@ -389,7 +412,7 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     await context.close();
 });
 
-test('buyer completes hosted Razorpay through the signed checkout API and canonical capture path', async () => {
+test('buyer completes hosted Razorpay with the original credential after Settings changes, with canonical capture and lifecycle email intent', async () => {
     assert.ok(browser);
     const browserCartId = crypto.randomUUID();
     const browserCartToken = `ct_${crypto.randomUUID().replace(/-/g, '')}`;
@@ -465,12 +488,29 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
     assert.equal(owned.psql(`SELECT count(*) FROM payment_transactions WHERE order_id='${rows[0].id}' AND provider_payment_id='${razorpayPaymentId}' AND status='captured';`), '1');
     assert.equal(owned.psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${site.siteId}' AND source_type='payment_capture' AND source_id='razorpay:${razorpayPaymentId}';`), '1');
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${rows[0].id}' AND event_type='order.paid';`), '1');
-    assert.equal(notificationJobs.length, 1, 'a captured order queues exactly one confirmation email');
-    assert.equal(notificationJobs[0].jobType, 'email.order_confirmation');
-    assert.equal(notificationJobs[0].siteId, site.siteId);
-    assert.equal(notificationJobs[0].idempotencyKey, `email.order_confirmation:${site.siteId}:${rows[0].id}`);
-    assert.equal((notificationJobs[0].tenantEnvelope as { siteId?: string } | undefined)?.siteId, site.siteId);
-    assert.match(JSON.stringify(notificationJobs[0].payload), /Synthetic browser checkout product/);
+    assert.equal(owned.psql(`SELECT payment_credential_id FROM checkout_sessions WHERE cart_id='${browserCartId}' AND site_id='${site.siteId}';`), originalCredentialId);
+    assert.equal(owned.psql(`SELECT payment_settings->'razorpay'->>'credential_id' FROM sites WHERE id='${site.siteId}';`), replacementCredentialId);
+    assert.equal(owned.psql(`SELECT online_payment_enabled FROM sites WHERE id='${site.siteId}';`), 'f');
+    assert.equal(owned.psql(`SELECT selected_for_checkout FROM payment_credentials WHERE id='${originalCredentialId}';`), 'f');
+    // Migration402 is the canonical atomic lifecycle owner. A legacy direct
+    // native-queue payload would bypass its durable private saved receipt.
+    const emails = JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(l.metadata->'snapshot'),'[]') FROM email_logs l
+        WHERE l.site_id='${site.siteId}' AND l.metadata->>'order_id'='${rows[0].id}' AND l.template_key='order_lifecycle_v1';`)) as Array<{
+        kind:string; order:{payment_status:string;total:number;shipping_amount:number;line_items:Array<{name:string;quantity:number;total:number}>};
+    }>;
+    assert.equal(emails.filter(mail=>mail.kind==='placed').length,1,'one saved placed intent from the order transaction');
+    const confirmed = emails.filter(mail=>mail.kind==='confirmed');
+    assert.equal(confirmed.length,1,'one canonical confirmation intent for the capture');
+    assert.equal(confirmed[0].order.payment_status,'paid');
+    assert.equal(confirmed[0].order.total,410); assert.equal(confirmed[0].order.shipping_amount,12);
+    assert.deepEqual(confirmed[0].order.line_items,[{name:'Synthetic browser checkout product',quantity:2,total:398}]);
+    const dispatch = JSON.parse(owned.psql(`SELECT jsonb_build_object('logs',count(DISTINCT l.id),'events',count(DISTINCT e.id),'jobs',count(DISTINCT j.id))
+        FROM email_logs l JOIN outbox_events e ON e.payload->>'email_log_id'=l.id::text AND e.store_id=l.site_id
+            AND e.aggregate_id='${rows[0].id}' AND e.event_type='order.lifecycle_email_queued'
+        JOIN platform_queue_jobs j ON j.outbox_event_id=e.id AND j.site_id=l.site_id AND j.job_type='order.lifecycle_email_queued'
+        WHERE l.site_id='${site.siteId}' AND l.metadata->>'order_id'='${rows[0].id}' AND l.template_key='order_lifecycle_v1';`)) as {logs:number;events:number;jobs:number};
+    assert.deepEqual(dispatch,{logs:2,events:2,jobs:2},'each private saved receipt maps to exactly one canonical outbox and queue job');
+    assert.equal(notificationJobs.filter(job=>job.jobType==='email.order_confirmation').length,0,'no second legacy confirmation writer');
     assert.deepEqual(pageErrors, []);
     await context.close();
 });

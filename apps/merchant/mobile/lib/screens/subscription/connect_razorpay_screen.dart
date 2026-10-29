@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import '../../app/store_context.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../services/subscription_service.dart';
@@ -23,7 +24,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
   final _keyIdController = TextEditingController();
   final _keySecretController = TextEditingController();
 
-  bool _testMode = true;
+  final bool _testMode = true;
   bool _isLoading = false;
   bool _isConnecting = false;
   bool _isConnected = false;
@@ -32,6 +33,9 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
 
   StoreModel? _store;
   PaymentConfigModel? _paymentConfig;
+  int _loadVersion = 0;
+  String? _saveKey;
+  String? _saveFingerprint;
 
   @override
   void initState() {
@@ -47,15 +51,19 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
   }
 
   Future<void> _loadData() async {
+    final version = ++_loadVersion;
+    final stores = context.read<StoreContext>();
+    final epoch = stores.requestContextVersion;
     setState(() => _isLoading = true);
     try {
       final subscriptionService = context.read<SubscriptionService>();
 
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final store = await stores.ensureSelectedStore();
       if (store != null) {
         final config = await subscriptionService.getPaymentConfigModel(
           store.id,
         );
+        if (!mounted || version != _loadVersion || stores.requestContextVersion != epoch || stores.selectedStoreId != store.id) return;
         setState(() {
           _store = store;
           _paymentConfig = config;
@@ -65,35 +73,44 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
         });
       }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted && version == _loadVersion) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _connectRazorpay() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_store == null) return;
+    if (_isConnecting || !_formKey.currentState!.validate()) return;
+    final store = _store;
+    final stores = context.read<StoreContext>();
+    final epoch = stores.requestContextVersion;
+    if (store == null || stores.selectedStoreId != store.id) return;
 
     setState(() => _isConnecting = true);
     HapticFeedback.mediumImpact();
 
     try {
       final subscriptionService = context.read<SubscriptionService>();
+      final fingerprint = '$epoch:${store.id}:${_keyIdController.text}:${_keySecretController.text}:${_paymentConfig?.revision}';
+      if (_saveFingerprint != fingerprint) { _saveFingerprint = fingerprint; _saveKey = const Uuid().v4(); }
       final response = await subscriptionService.connectOwnRazorpay(
-        storeId: _store!.id,
+        storeId: store.id,
         keyId: _keyIdController.text.trim(),
         keySecret: _keySecretController.text.trim(),
         testMode: _testMode,
+        idempotencyKey: _saveKey,
+        expectedRevision: _paymentConfig?.revision,
       );
-      final config = PaymentConfigModel.fromMap(response, _store!.id);
+      if (!mounted || stores.requestContextVersion != epoch || stores.selectedStoreId != store.id) return;
+      final config = PaymentConfigModel.fromMap(response, store.id);
 
       setState(() {
         _paymentConfig = config;
         _isConnected = config.mode == PaymentMode.ownAccount && config.verified;
       });
 
-      if (config.verified) {
+      if (config.canEnableOnline) {
         _keyIdController.clear();
         _keySecretController.clear();
+        _saveKey = null; _saveFingerprint = null;
         _showSuccessDialog();
       } else {
         _showError(
@@ -101,9 +118,12 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
         );
       }
     } catch (e) {
-      _showError(e.toString());
+      if (mounted)
+        _showError(
+          'Payment settings could not be confirmed. Reload and check the saved connection before retrying.',
+        );
     } finally {
-      setState(() => _isConnecting = false);
+      if (mounted) setState(() => _isConnecting = false);
     }
   }
 
@@ -125,7 +145,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              'Connected!',
+              'Test credentials saved',
               style: TextStyle(
                 color: colors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -134,7 +154,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           ],
         ),
         content: Text(
-          'Your Razorpay account is now connected. All payments will go directly to your account with 0% commission.',
+          'Your test credentials were verified and saved. Online checkout remains off until explicitly enabled. Test payments do not settle to a bank account; business and bank approval are not confirmed.',
           style: TextStyle(color: colors.textSecondary),
         ),
         actions: [
@@ -267,7 +287,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'With your own Razorpay, you pay 0% commission to Letbuyy. Payments go directly to your bank.',
+                  'LetBuyy charges a 0% transaction fee. Test credentials do not confirm KYC, bank approval or live checkout readiness.',
                   style: TextStyle(fontSize: 12, color: colors.textSecondary),
                 ),
               ],
@@ -307,9 +327,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _paymentConfig?.testMode == true
-                ? 'Sandbox Mode Active'
-                : 'Live Mode Active',
+            _paymentConfig?.statusText ?? 'Payment readiness not confirmed',
             style: TextStyle(color: colors.textSecondary),
           ),
           const SizedBox(height: 16),
@@ -319,7 +337,11 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                 child: _buildStatusItem('Commission', '0%', Colors.green),
               ),
               Expanded(
-                child: _buildStatusItem('Status', 'Verified', Colors.green),
+                child: _buildStatusItem(
+                  'Bank',
+                  'Not confirmed',
+                  colors.textSecondary,
+                ),
               ),
             ],
           ),
@@ -378,7 +400,8 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
               final expectedPrefix =
                   'rzp'
                   '_';
-              if (!v.startsWith(expectedPrefix)) return 'Invalid Key ID format';
+              if (!v.startsWith('${expectedPrefix}test_'))
+                return 'Enter a Razorpay test key';
               return null;
             },
           ),
@@ -399,7 +422,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
             ),
             validator: (v) {
               if (v == null || v.isEmpty) return 'Key Secret is required';
-              if (v.length < 10) return 'Invalid Key Secret';
+              if (v.length < 16) return 'Invalid Key Secret';
               return null;
             },
           ),
@@ -426,7 +449,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                         ),
                       ),
                       Text(
-                        'Use sandbox credentials for development',
+                        'Only sandbox credentials are supported until live onboarding is qualified',
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textSecondary,
@@ -437,7 +460,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                 ),
                 Switch(
                   value: _testMode,
-                  onChanged: (v) => setState(() => _testMode = v),
+                  onChanged: null,
                   activeColor: const Color(0xFF2563EB),
                 ),
               ],
