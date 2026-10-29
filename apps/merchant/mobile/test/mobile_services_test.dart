@@ -8234,7 +8234,7 @@ void main() {
   testWidgets('ProductFormScreen exposes variant matrix controls', (
     tester,
   ) async {
-    await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+    await tester.pumpWidget(_productFormPreview());
 
     expect(find.text('Add Product'), findsOneWidget);
     await tester.tap(find.text('Continue').first, warnIfMissed: false);
@@ -8273,7 +8273,7 @@ void main() {
   ) async {
     final semantics = tester.ensureSemantics();
     try {
-      await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+      await tester.pumpWidget(_productFormPreview());
       await tester.tap(find.text('Continue').first, warnIfMissed: false);
       await tester.pumpAndSettle();
 
@@ -8334,7 +8334,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+      await tester.pumpWidget(_productFormPreview());
       final detailsStep = find.text('Details');
       final stepperScroll = find.byType(Scrollable).first;
       await tester.scrollUntilVisible(
@@ -8384,7 +8384,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+      await tester.pumpWidget(_productFormPreview());
 
       final stepperScroll = find.byType(Scrollable).first;
       final variantsStep = find.text('Variants').first;
@@ -11563,3 +11563,15 @@ Map<String,dynamic> _merchantCatalogPlan(String slug,String name,int amount)=>{
  'billing_amount_monthly_minor':amount,'billing_amount_yearly_minor':amount*12,
  'limits':{'products':slug=='growth'?null:100},'entitlements':{'custom_domain':true},
 };
+
+
+class _ProductFormPreviewStores extends StoreContext {
+  _ProductFormPreviewStores(ApiClient api) : super(storeService:StoreService(api:api));
+  @override String get selectedStoreId => 'store_1';
+  @override StoreModel get selectedStore => StoreModel.fromJson(_storeJson());
+}
+Widget _productFormPreview() {
+  final api = _FakeApiClient(); addTearDown(api.close);
+  return ChangeNotifierProvider<StoreContext>(create: (_) => _ProductFormPreviewStores(api),
+    child: const MaterialApp(home:ProductFormScreen()));
+}

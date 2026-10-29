@@ -451,8 +451,22 @@ class ProductService extends ChangeNotifier {
   // ── Image upload ─────────────────────────────────────────
 
   /// Upload a product image and return the CDN URL.
-  Future<String> uploadProductImage(File file) async {
-    return _api.uploadFile(file, folder: 'products');
+  Future<String> uploadProductImage(
+    File file, {
+    required String storeId,
+  }) async {
+    final captured = _api.captureRequestContext();
+    final url = await _api.uploadFile(
+      file,
+      folder: 'products',
+      storeId: storeId,
+      options: ApiRequestOptions(
+        storeId: storeId,
+        expectedContextVersion: captured,
+      ),
+    );
+    _checkContext(captured);
+    return url;
   }
 
   Future<Map<String, dynamic>> exportProducts(String storeId) {

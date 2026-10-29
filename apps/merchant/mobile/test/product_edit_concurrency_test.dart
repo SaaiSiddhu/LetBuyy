@@ -1,3 +1,4 @@
+import 'dart:async';
 // Mounted actual form + ProductService + shared ProductsApi. Synthetic transport
 // outcomes are separate from the real Gateway/app_tenant effects in the owned suite.
 import 'dart:convert';
@@ -58,9 +59,19 @@ class ProductTransport extends ApiClient {
   JsonMap? receipt;
   String? receiptKey;
   bool readFails = false;
+  Completer<JsonMap>? heldSave, heldRead;
+  int readStatus = 200, detailReads = 0;
   @override
   Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
     if (options?.method != HttpMethod.patch) {
+      detailReads++;
+      if (readStatus != 200)
+        throw ApiException(
+          message: 'Synthetic access denial',
+          statusCode: readStatus,
+          code: 'FORBIDDEN',
+        );
+      if (heldRead != null) return heldRead!.future;
       if (readFails)
         throw const ApiException(
           message: 'Synthetic read outage',
@@ -70,6 +81,12 @@ class ProductTransport extends ApiClient {
       return jsonDecode(jsonEncode(current)) as JsonMap;
     }
     calls.add(options!);
+    if (mode == 'denied')
+      throw const ApiException(
+        message: 'Synthetic current permission denied',
+        statusCode: 403,
+        code: 'FORBIDDEN',
+      );
     final body = options.body as Map<String, dynamic>;
     if (calls.length == 1 && mode == 'conflict') {
       current = {...initial(), 'name': 'Server winner', 'version': 23};
@@ -99,14 +116,29 @@ class ProductTransport extends ApiClient {
         code: 'UNAVAILABLE',
       );
     }
-    return receipt!;
+    return heldSave != null ? heldSave!.future : receipt!;
   }
 }
 
 class SelectedStore extends StoreContext {
   SelectedStore(ProductTransport api)
     : super(storeService: StoreService(api: api));
-  String selection = site;
+  String _selection = site;
+  int _generation = 0;
+  String get selection => _selection;
+  set selection(String value) {
+    _selection = value;
+    _generation++;
+    notifyListeners();
+  }
+
+  @override
+  Object get requestContextKey => (_selection, _generation);
+  @override
+  String get selectedStoreId => _selection;
+  @override
+  StoreModel get selectedStore =>
+      StoreModel.fromJson({'id': _selection, 'name': 'Synthetic store'});
   @override
   Future<StoreModel?> ensureSelectedStore({bool force = false}) async =>
       StoreModel.fromJson({'id': selection, 'name': 'Synthetic store'});
@@ -114,8 +146,9 @@ class SelectedStore extends StoreContext {
 
 Future<({ProductService service, SelectedStore stores})> mount(
   WidgetTester tester,
-  ProductTransport api,
-) async {
+  ProductTransport api, {
+  bool settle = true,
+}) async {
   final service = ProductService(api: api), stores = SelectedStore(api);
   await tester.pumpWidget(
     MultiProvider(
@@ -142,7 +175,13 @@ Future<({ProductService service, SelectedStore stores})> mount(
     ),
   );
   await tester.tap(find.text('Open product'));
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump();
+  }
   return (service: service, stores: stores);
 }
 
@@ -306,12 +345,10 @@ void main() {
     final api = ProductTransport('success');
     final harness = await mount(tester, api);
     harness.stores.selection = '44444444-4444-4444-8444-444444444444';
-    await tester.enterText(nameField(), 'Kept in original store');
-    await tester.tap(find.widgetWithText(TextButton, 'Update'));
     await tester.pumpAndSettle();
     expect(api.calls, isEmpty);
-    expect(nameText(tester), 'Kept in original store');
-    expect(find.textContaining('Select this product’s store'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNothing);
+    expect(find.text('Store access changed'), findsOneWidget);
   });
 
   testWidgets(
@@ -319,17 +356,102 @@ void main() {
     (tester) async {
       final api = ProductTransport('success')..readFails = true;
       await mount(tester, api);
-      expect(
-        find.textContaining('latest product could not be checked'),
-        findsOneWidget,
-      );
+      expect(find.text('Retry product'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.widgetWithText(TextButton, 'Update'), findsNothing);
+      expect(api.calls, isEmpty);
+      api.readFails = false;
+      await tester.tap(find.text('Retry product'));
+      await tester.pumpAndSettle();
+      expect(nameText(tester), 'Original product');
       expect(
         tester
             .widget<TextButton>(find.widgetWithText(TextButton, 'Update'))
             .onPressed,
-        isNull,
+        isNotNull,
       );
+    },
+  );
+  testWidgets('A-B-A cannot revive an old pushed product form', (tester) async {
+    final api = ProductTransport('success');
+    final h = await mount(tester, api);
+    h.stores.selection = 'other';
+    h.stores.selection = site;
+    await tester.pumpAndSettle();
+    expect(find.text('Store access changed'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNothing);
+    expect(api.calls, isEmpty);
+  });
+  testWidgets(
+    'save completion after a store change cannot reveal old fields or announce success',
+    (tester) async {
+      final api = ProductTransport('success');
+      final h = await mount(tester, api);
+      api.heldSave = Completer<JsonMap>();
+      await tester.enterText(nameField(), 'Old private draft');
+      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.pump();
+      expect(api.calls, hasLength(1));
+      h.stores.selection = 'other';
+      await tester.pump();
+      api.heldSave!.complete(api.receipt!);
+      await tester.pumpAndSettle();
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.text('Product updated!'), findsNothing);
+    },
+  );
+  testWidgets(
+    'initial read denial cannot reveal the supplied private product snapshot',
+    (tester) async {
+      final api = ProductTransport('success')..readStatus = 403;
+      await mount(tester, api);
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.text('Original product'), findsNothing);
       expect(api.calls, isEmpty);
+    },
+  );
+  testWidgets(
+    'private product fields appear only after the fresh read succeeds',
+    (tester) async {
+      final api = ProductTransport('success')..heldRead = Completer<JsonMap>();
+      await mount(tester, api, settle: false);
+      expect(api.detailReads, 1);
+      expect(find.text('Load product'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      api.heldRead!.complete(initial());
+      await tester.pumpAndSettle();
+      expect(nameText(tester), 'Original product');
+    },
+  );
+  testWidgets(
+    'retired initial read cannot disclose the old product in the next store',
+    (tester) async {
+      final api = ProductTransport('success')..heldRead = Completer<JsonMap>();
+      final h = await mount(tester, api, settle: false);
+      expect(api.detailReads, 1);
+      h.stores.selection = 'other';
+      await tester.pump();
+      api.heldRead!.complete(initial());
+      await tester.pumpAndSettle();
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(api.calls, isEmpty);
+    },
+  );
+  testWidgets(
+    'a current write denial retires the private editor instead of retaining old authority',
+    (tester) async {
+      final api = ProductTransport('denied');
+      await mount(tester, api);
+      expect(nameText(tester), 'Original product');
+      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.pumpAndSettle();
+      expect(api.calls, hasLength(1));
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.text('Product updated!'), findsNothing);
     },
   );
 }
