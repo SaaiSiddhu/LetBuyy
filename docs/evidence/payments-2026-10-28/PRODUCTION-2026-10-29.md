@@ -133,17 +133,43 @@ artifact `dpl_ERmxiYVJBW3TmV6tH71qi8xoc5ZW` passed eight bounded controls,
 including actual Circuit rendering with the resolved store context and preserved
 internal-route/buyer-session refusals.
 
-Production-configured artifact `dpl_GXMYgDQibiBcisQCaqUwkS5Yw8Wt` is READY but
-unpromoted. Main and the actual production Commerce alias remain on the approved
-domain release. The new candidate's CI jobs again stopped before all steps because
-of billing; full hosted staging custom-domain/cart sign-in remains unconfigured.
-The exact Commerce-only TEST-R8 gap acceptance is pending. Production activation
-and repeated Snaz checkout → bare custom-host cart acceptance are not yet passed.
+The owner explicitly approved this exact Commerce-only candidate and its TEST-R8
+limitations. Artifact `dpl_GXMYgDQibiBcisQCaqUwkS5Yw8Wt` was promoted without
+rebuilding and its actual production alias was independently verified. Remote
+develop, staging and main all reached `9dc428b8fb9f4f0350ff60c74aea53135b29b64e`,
+with branch lag zero. Four redundant automatic main builds for that exact SHA
+were canceled before changing the reviewed custom aliases; no project build
+policy changed. Merchant, Accounts and Marketing custom aliases were unchanged.
+No Worker, migration, credential, payment rule or DNS record changed in this
+cart-only activation. The prior Commerce artifact remains the recovery target.
+
+Production browser acceptance now passes:
+
+- Snaz's existing Check/Blue/M cart loads on `https://store.pixlnova.com/cart`.
+  Two fresh trips to `checkout.store.pixlnova.com` and Back to Cart retained
+  quantity one, saved options and the ₹3 subtotal/final total. A subsequent page
+  reload preserved the same state. The unconfirmed-update banner is absent and
+  Proceed to checkout remains available.
+- The existing QA wildcard store was reloaded on the new release, reached
+  `checkout.qa-wildcard-20261027.letbuyy.store`, and returned to its original
+  `/cart` with quantity one, ₹1 total and its checkout control intact.
+- Actual provider alias readback confirms the custom storefront, custom checkout,
+  public discovery and platform wildcard all serve the approved Commerce artifact.
+  The bounded final 15-minute function error-log query returned zero entries and
+  no further page. This is separate from the observed browser acceptance.
+
+No payment details were entered and no order or payment was submitted. Signed
+handoff URLs and cart capabilities were excluded from retained proof. Browser,
+promotion, source/alias and error-scan receipts plus cart screenshots are under
+`/private/tmp/letbuyy-payment-system-plan-20261028/custom-cart-*`. The qualified
+domain/cart scope is complete; the specific accepted CI/staging limitations remain
+limitations, not retroactively passed tests.
 
 ## Remaining boundaries
 
-Hosted staging sign-in remains unconfigured; the owner accepted that exact
-limitation for `4c3843b81`. GitHub CI remains billing-blocked. The complete real
+Hosted staging sign-in remains unconfigured; the owner accepted the specific
+limitations for the scoped activations, including cart candidate `9dc428b8f`.
+GitHub CI remains billing-blocked. The complete real
 Razorpay sandbox capture/refund canary has not yet been observed for this release.
 Managed/live collection remains disabled. Partner/Route approval, bank/KYC
 qualification, account-scoped webhook convergence, provider-report reconciliation,
