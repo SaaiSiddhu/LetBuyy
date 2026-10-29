@@ -13,7 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GATEWAY_DB_SUITE_DIR, ROOT_GATEWAY_DB_SUITE_DIR, EXPLICIT_RUNTIME_SUITES, discoverSuites, isGatewayDatabaseSuite } from '../../scripts/governance/test-suite-catalog.mjs';
+import { GATEWAY_DB_SUITE_DIR, ROOT_GATEWAY_DB_SUITE_DIR, EXPLICIT_RUNTIME_SUITES, HISTORICAL_GATEWAY_MIGRATION_CEILINGS, discoverSuites, isGatewayDatabaseSuite } from '../../scripts/governance/test-suite-catalog.mjs';
 import { pullsAllowed, requireImagePresent } from '../../scripts/governance/executable-pg-fixture.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -28,6 +28,15 @@ const ownedFiles = () => readdirSync(ownedDir).filter((name) => name.endsWith('.
 const rootOwnedSuites = () => readdirSync(join(repoRoot, ROOT_GATEWAY_DB_SUITE_DIR)).filter(name => name.endsWith('.test.ts')).sort();
 const allOwnedSuites = () => [...ownedSuites().map(name => `${GATEWAY_DB_SUITE_DIR}/${name}`), ...rootOwnedSuites().map(name => `${ROOT_GATEWAY_DB_SUITE_DIR}/${name}`)].sort();
 const unitTests = () => readdirSync(testsDir, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith('.test.ts')).map((entry) => entry.name).sort();
+
+test('profile-pinned console rollback controls use their source schema and current browser journeys keep the full chain', () => {
+    for (const [stem, ceiling] of [['console-oncall-schedules', 362], ['console-runtime-command-history', 363]]) {
+        assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[`${GATEWAY_DB_SUITE_DIR}/${stem}.postgres.test.ts`], ceiling);
+        const browser = `${ROOT_GATEWAY_DB_SUITE_DIR}/${stem}-browser.postgres.test.ts`;
+        assert.equal(isGatewayDatabaseSuite(browser), true);
+        assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[browser], undefined);
+    }
+});
 
 test('the reviewed lane inventory holds the gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
     assert.deepEqual(

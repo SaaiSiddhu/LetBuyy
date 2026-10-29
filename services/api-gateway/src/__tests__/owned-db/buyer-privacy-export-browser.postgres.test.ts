@@ -16,6 +16,7 @@ import {chromium,expect,type Page} from '@playwright/test';
 import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,seedBuyerAccount} from './gateway-harness';
 import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,type OwnedClientProcess} from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant,seedSyntheticOrder} from './synthetic-tenant';
+import {expectBuyerHandoff} from './buyer-handoff-browser';
 const owned=requireOwnedDatabase();
 async function port(){const s=createServer();await new Promise<void>(r=>s.listen(0,'127.0.0.1',r));const p=(s.address() as {port:number}).port;await new Promise<void>(r=>s.close(()=>r()));return p;}
 async function ready(origin:string,path:string,app:OwnedClientProcess){const until=Date.now()+300000;while(Date.now()<until){if(app.exitCode!==null||app.signalCode!==null)throw new Error('Owned browser runtime stopped before readiness');try{if((await fetch(origin+path,{signal:AbortSignal.timeout(2500)})).status<500)return;}catch{}await new Promise(r=>setTimeout(r,100));}throw new Error('Owned browser runtime readiness timed out');}
@@ -48,7 +49,10 @@ test('normal storefront privacy entry verifies password, recovers lost prepare/r
   commerce=startOwnedClientRuntime(owned,'commerce-next-production',{port:commercePort,env:{LETBUYY_API_BASE_URL:api,NEXT_PUBLIC_API_URL:api,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,INTERNAL_API_SECRET:INTERNAL_SECRET}});trace(commerce);await ready('http://localhost:'+commercePort,'/api/buyer-auth/session',commerce);
   browser=await chromium.launch({headless:true,args:['--host-resolver-rules=MAP *.localhost 127.0.0.1']});let context=await browser.newContext({acceptDownloads:true});
   async function track(){page=await context.newPage();page.setDefaultTimeout(30000);page.setDefaultNavigationTimeout(60000);page.on('pageerror',error=>errors.push(error.message));return page;}
-  await track();await page!.goto(storeOrigin+'/customers/login');await page!.getByRole('link',{name:'Continue with LetBuyy',exact:true}).click();
+  // The canonical storefront entry redirects directly to Accounts. Verify the
+  // real PKCE handoff rather than waiting for the retired intermediate link.
+  await track();await page!.goto(storeOrigin+'/customers/login');
+  await expectBuyerHandoff(page!,identityOrigin,storeOrigin);
   await expect(page!.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30000});await page!.getByLabel('Email',{exact:true}).fill(a.email);await page!.getByLabel('Password',{exact:true}).fill(password);await page!.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page!.getByText(a.email,{exact:true})).toBeVisible();await page!.getByRole('button',{name:'Continue to Synthetic '+site.tag,exact:true}).click();await page!.waitForURL(url=>url.origin===storeOrigin&&url.pathname.endsWith('/account/orders'));
   await page!.locator('aside').getByRole('link',{name:'Settings',exact:true}).click();await expect(page!.getByLabel('Full name',{exact:true})).toHaveValue('Synthetic Tamil தமிழ் Buyer A');

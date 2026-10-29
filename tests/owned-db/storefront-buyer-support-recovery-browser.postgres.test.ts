@@ -13,6 +13,7 @@ import {chromium,expect,type Page} from '@playwright/test';
 import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,tapRest,restJson} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import {expectBuyerHandoff} from '../../services/api-gateway/src/__tests__/owned-db/buyer-handoff-browser';
 
 const owned=requireOwnedDatabase();
 async function port(){const server=createServer();await new Promise<void>(r=>server.listen(0,'127.0.0.1',r));const p=(server.address() as {port:number}).port;await new Promise<void>(r=>server.close(()=>r()));return p;}
@@ -39,7 +40,7 @@ test('normal web support boundaries preserve one action across committed loss, r
   browser=await chromium.launch({headless:true,args:['--host-resolver-rules=MAP *.localhost 127.0.0.1']});
   let context=await browser.newContext();let page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(90_000);
   async function register(p:Page,switchAccount=false){
-   await p.goto(`http://localhost:${commercePort}/store/${store.subdomain}/customers/login`);await p.waitForURL(u=>u.origin===origin&&u.pathname==='/customers/login');await p.getByRole('link',{name:'Continue with LetBuyy',exact:true}).click();
+   await p.goto(`http://localhost:${commercePort}/store/${store.subdomain}/customers/login`);await expectBuyerHandoff(p,identityOrigin,origin);
    if(switchAccount){stage='identity-b-switch';await p.waitForLoadState('networkidle');const [logout]=await Promise.all([p.waitForResponse(r=>r.url().endsWith('/api/buyer/logout')&&r.request().method()==='POST'),p.getByRole('button',{name:'Use a different account',exact:true}).click()]);assert.equal(logout.status(),200);}
    stage=switchAccount?'identity-b-signin':'identity-a-signin';await expect(p.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible();await p.getByRole('link',{name:'Create an account',exact:true}).click();
    stage=switchAccount?'identity-b-register':'identity-a-register';await expect(p.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:90_000});
