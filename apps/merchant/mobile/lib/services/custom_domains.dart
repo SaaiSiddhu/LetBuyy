@@ -1,4 +1,18 @@
 import 'package:flutter/foundation.dart';
+import 'package:letbuyy_models/merchant_contracts.dart'
+    show
+        CheckoutDomainSetup,
+        SiteDomainRecord,
+        DomainConnectionResult,
+        DomainCustomerVerification,
+        DomainVerificationEvent;
+export 'package:letbuyy_models/merchant_contracts.dart'
+    show
+        CheckoutDomainSetup,
+        SiteDomainRecord,
+        DomainConnectionResult,
+        DomainCustomerVerification,
+        DomainVerificationEvent;
 
 import '../models/store_model.dart';
 import 'api_client.dart';
@@ -19,16 +33,39 @@ class DomainService extends ChangeNotifier {
     return DomainSettingsSnapshot.fromStore(store);
   }
 
+  Future<CheckoutDomainSetup> checkoutSetup(
+    String siteId, {
+    bool prepare = false,
+  }) async {
+    final requestContext = _api.captureRequestContext();
+    final options = ApiRequestOptions(
+      storeId: siteId,
+      expectedContextVersion: requestContext,
+      idempotencyKey: prepare ? 'checkout-domain:$siteId' : null,
+    );
+    final payload = prepare
+        ? await _api.customDomains.prepareCheckout(siteId, options: options)
+        : await _api.customDomains.checkout(siteId, options: options);
+    final result = CheckoutDomainSetup.fromJson(
+      _asMap(payload['data'] ?? payload),
+    );
+    if (result.siteId != siteId)
+      throw const FormatException('Checkout address belongs to another store');
+    return result;
+  }
+
   Future<StoreModel> saveCustomDomain(StoreModel store, String? domain) async {
     final normalized = normalizeDomain(domain);
     if (normalized == null) return clearCustomDomain(store);
     final payload = _asMap(
-      await _api.post(
-        '/custom/domains',
-        body: {'site_id': store.id, 'domain': normalized},
-      ),
+      await _api.customDomains.connect({
+        'site_id': store.id,
+        'domain': normalized,
+      }),
     );
-    final data = _asMap(payload['data']);
+    final data = _asMap(payload['data'] ?? payload);
+    // Connecting an alias never promotes it. The Gateway owns the primary role.
+    if (data['role'] != 'primary') return store;
     final updated = store.copyWith(
       customDomain: normalized,
       customDomainStatus: '${data['status'] ?? 'pending'}',
@@ -40,6 +77,126 @@ class DomainService extends ChangeNotifier {
     _latestStore = updated;
     notifyListeners();
     return updated;
+  }
+
+  ApiRequestOptions _domainOptions(String siteId) => ApiRequestOptions(
+    storeId: siteId,
+    expectedContextVersion: _api.captureRequestContext(),
+  );
+
+  Future<List<DomainVerificationEvent>> domainHistory(
+    String siteId,
+    String domain,
+  ) async {
+    final payload = await _api.customDomains.history(
+      domain,
+      siteId,
+      options: _domainOptions(siteId),
+    );
+    final data = _asMap(payload['data'] ?? payload), events = data['events'];
+    if (data['domain'] != domain ||
+        data['connected'] != true ||
+        events is! List) {
+      throw const FormatException('Domain history is unavailable');
+    }
+    return events
+        .map((value) {
+          if (value is! Map)
+            throw const FormatException('Invalid domain history');
+          return DomainVerificationEvent.fromJson(
+            Map<String, dynamic>.from(value),
+          );
+        })
+        .toList(growable: false);
+  }
+
+  Future<void> setDomainRedirect(
+    String siteId,
+    String domain,
+    String? target,
+  ) async {
+    await _api.customDomains.setRedirect(domain, {
+      'site_id': siteId,
+      'role': 'redirect',
+      'redirect_to': target,
+    }, options: _domainOptions(siteId));
+  }
+
+  Future<List<SiteDomainRecord>> connectedDomains(String siteId) async {
+    final payload = await _api.customDomains.list(
+      siteId,
+      options: _domainOptions(siteId),
+    );
+    final data = _asMap(payload['data'] ?? payload), rows = data['domains'];
+    if (rows is! List)
+      throw const FormatException('Connected domains are unavailable');
+    return rows
+        .map((row) {
+          if (row is! Map)
+            throw const FormatException('Invalid connected domain');
+          final domain = SiteDomainRecord.fromJson(
+            Map<String, dynamic>.from(row),
+          );
+          if (domain.siteId != siteId)
+            throw const FormatException('Domain belongs to another store');
+          return domain;
+        })
+        .toList(growable: false);
+  }
+
+  Future<DomainConnectionResult> domainInstructions(
+    String siteId,
+    String domain,
+  ) async {
+    final payload = await _api.customDomains.connect({
+      'site_id': siteId,
+      'domain': domain,
+    }, options: _domainOptions(siteId));
+    final result = DomainConnectionResult.fromJson(
+      _asMap(payload['data'] ?? payload),
+    );
+    if (result.domain != domain ||
+        (result.checkout != null && result.checkout!.siteId != siteId)) {
+      throw const FormatException(
+        'Domain instructions do not match this store',
+      );
+    }
+    return result;
+  }
+
+  Future<String> verifyConnectedDomain(String siteId, String domain) async {
+    final payload = await _api.customDomains.verify({
+      'site_id': siteId,
+      'domain': domain,
+    }, options: _domainOptions(siteId));
+    final result = _asMap(payload['data'] ?? payload);
+    if (result['domain'] != domain ||
+        !{
+          'pending',
+          'review',
+          'verifying',
+          'active',
+          'error',
+        }.contains(result['status'])) {
+      throw const FormatException('Domain verification is unavailable');
+    }
+    return result['status'] as String;
+  }
+
+  Future<void> makePrimaryDomain(String siteId, String domain) async {
+    await _api.customDomains.setPrimary(
+      domain,
+      siteId,
+      options: _domainOptions(siteId),
+    );
+  }
+
+  Future<void> removeConnectedDomain(String siteId, String domain) async {
+    await _api.customDomains.remove(
+      domain,
+      siteId,
+      options: _domainOptions(siteId),
+    );
   }
 
   Future<StoreModel> clearCustomDomain(StoreModel store) async {
@@ -89,9 +246,12 @@ class DomainService extends ChangeNotifier {
     String? paymentReference,
     int years = 1,
   }) async {
-    final checkoutMode = quote.provider == 'sandbox'
-        ? 'sandbox'
-        : 'external_reference';
+    if (quote.provider != 'sandbox') {
+      throw StateError(
+        'Domain purchase is unavailable until LetBuyy verifies payment.',
+      );
+    }
+    const checkoutMode = 'sandbox';
     final reference = paymentReference?.trim().isNotEmpty == true
         ? paymentReference!.trim()
         : '$checkoutMode:domain_checkout:${store.id}:${quote.domain}';
@@ -270,7 +430,9 @@ class DomainSettingsSnapshot {
     return DomainSettingsSnapshot(
       storeId: store.id,
       subdomain: store.subdomain,
-      defaultDomain: '${store.subdomain}.letbuyy.com',
+      defaultDomain: Uri.parse(
+        StoreModel.generateStoreUrl(store.subdomain),
+      ).host,
       customDomain: customDomain,
       customDomainStatus: store.customDomainStatus ?? 'none',
       accessMode: store.accessMode,
@@ -448,6 +610,7 @@ class DomainHealthSnapshot {
     required this.renewalDate,
     required this.checkedAt,
     required this.records,
+    this.customerVerification,
   });
 
   factory DomainHealthSnapshot.fromMap(
@@ -480,6 +643,11 @@ class DomainHealthSnapshot {
       renewalStatus: '${data['renewal_status'] ?? 'unknown'}',
       renewalDate: _parseDate(data['renewal_date']),
       checkedAt: _parseDate(data['checked_at']),
+      customerVerification: data['customer_verification'] is Map
+          ? DomainCustomerVerification.fromJson(
+              Map<String, dynamic>.from(data['customer_verification'] as Map),
+            )
+          : null,
       records: records.isEmpty
           ? DomainDnsRecord.fromDnsConfig(
               const {},
@@ -537,6 +705,7 @@ class DomainHealthSnapshot {
   final DateTime? renewalDate;
   final DateTime? checkedAt;
   final List<DomainDnsRecord> records;
+  final DomainCustomerVerification? customerVerification;
 
   bool get dnsVerified => txtVerified && cnameVerified;
   bool get providerUnavailable => providerStatus == 'unavailable';
@@ -577,6 +746,8 @@ class DomainHealthSnapshot {
     'txt_verified': txtVerified,
     'cname_verified': cnameVerified,
     'ssl_active': sslActive,
+    if (customerVerification != null)
+      'customer_verification': {'status': customerVerification!.status},
     'provider_status': providerStatus,
     'misconfigured': misconfigured,
     'apex_mx_warning': apexMxWarning,

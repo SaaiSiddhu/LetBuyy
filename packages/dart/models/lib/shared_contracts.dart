@@ -2,3 +2,5 @@
 library;
 
 export 'src/shared_contracts.dart';
+export 'src/checkout_domain_model.dart';
+export 'src/domain_registry_model.dart';

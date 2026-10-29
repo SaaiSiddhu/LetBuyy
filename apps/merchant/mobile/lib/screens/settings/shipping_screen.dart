@@ -52,7 +52,8 @@ class _ShippingScreenState extends State<ShippingScreen> {
       final summary = await context.read<ShippingTaxService>().fetchShipping(
         store.id,
       );
-      if (!mounted) return;
+      if (!mounted || context.read<StoreContext>().selectedStoreId != store.id)
+        return;
       setState(() {
         _store = store;
         _zones = summary.zones;
@@ -479,7 +480,10 @@ class _ShippingScreenState extends State<ShippingScreen> {
   }
 
   Future<void> _runAction(Future<void> Function() action) async {
-    if (_isBusy) return;
+    if (_isBusy ||
+        _store == null ||
+        context.read<StoreContext>().selectedStoreId != _store!.id)
+      return;
     setState(() => _isBusy = true);
     try {
       await action();
@@ -493,9 +497,11 @@ class _ShippingScreenState extends State<ShippingScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final selectedStoreId = context.watch<StoreContext>().selectedStoreId;
+    final storeChanged = _store != null && selectedStoreId != _store!.id;
     return Scaffold(
       backgroundColor: colors.bgStart,
-      floatingActionButton: _store == null
+      floatingActionButton: _store == null || storeChanged
           ? null
           : FloatingActionButton.extended(
               onPressed: _isBusy
@@ -602,6 +608,14 @@ class _ShippingScreenState extends State<ShippingScreen> {
   }
 
   Widget _buildBody(AppThemeColors colors) {
+    if (_store != null &&
+        context.read<StoreContext>().selectedStoreId != _store!.id) {
+      return _buildMessage(
+        colors,
+        'The selected store changed. Refresh shipping before editing.',
+        Icons.sync_problem_outlined,
+      );
+    }
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(

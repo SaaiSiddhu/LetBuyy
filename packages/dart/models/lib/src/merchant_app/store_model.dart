@@ -1,4 +1,5 @@
 import 'package:letbuyy_models/letbuyy_models.dart';
+import '../storefront_config.dart' as storefront;
 
 /// Store status enum
 enum StoreStatus { draft, published, suspended }
@@ -157,9 +158,12 @@ class StoreModel {
     this.publishedAt,
   });
 
-  /// Generate store URL from subdomain (new format: subdomain.letbuyy.com)
+  /// Merchant display/link projection of the governed storefront root.
+  /// Host ownership, publication and checkout authority remain server-owned.
+  static const storefrontRootDomain = storefront.storefrontRootDomain;
+
   static String generateStoreUrl(String subdomain) {
-    return 'https://$subdomain.letbuyy.com';
+    return 'https://$subdomain.$storefrontRootDomain';
   }
 
   /// Generate the public storefront URL.
@@ -483,15 +487,17 @@ class StoreModel {
   /// Get the public URL for the store
   String get publicUrl {
     // Priority: custom domain > subdomain
-    if (customDomain != null && customDomainStatus == 'active') {
+    if (customDomain != null &&
+        customDomain!.isNotEmpty &&
+        customDomainStatus == 'active' &&
+        sslActive) {
       return 'https://$customDomain';
     }
-    // With Load Balancer + wildcard SSL, subdomain always works instantly!
-    return 'https://$subdomain.letbuyy.com';
+    return generateStoreUrl(subdomain);
   }
 
-  /// Get the preview URL (same as public URL with Load Balancer)
-  String get previewUrl => 'https://$subdomain.letbuyy.com';
+  /// The platform preview address does not publish a private store.
+  String get previewUrl => generateStoreUrl(subdomain);
 
   /// Get the number of products (from selectedProductIds)
   int get productCount => selectedProductIds.length;
@@ -513,18 +519,9 @@ class StoreModel {
     return PlanConfig.productLimits[plan] ?? productLimit;
   }
 
-  /// Get effective commission based on subscription plan and Razorpay connection
-  /// Professional: 0% if own Razorpay connected, 2% if using shared
-  double get effectiveCommission {
-    final plan = subscriptionPlan ?? SubscriptionPlan.trial;
-
-    // Professional plan special case
-    if (plan == SubscriptionPlan.professional) {
-      return isUsingOwnRazorpay ? 0.0 : 2.0;
-    }
-
-    return PlanConfig.commissionPercents[plan] ?? commissionPercent;
-  }
+  /// LetBuyy transaction fees are permanently zero across plans and rails.
+  /// The server-owned ledger remains the authority for actual amounts.
+  double get effectiveCommission => 0.0;
 
   /// Check if using own Razorpay account
   bool get isUsingOwnRazorpay => paymentMode == PaymentMode.ownAccount;

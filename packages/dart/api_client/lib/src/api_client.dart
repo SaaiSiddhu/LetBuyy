@@ -242,6 +242,7 @@ class ApiClient {
           : null,
     );
   }
+
   /// Sorted origin choices from currently visible marketplace listings.
   Future<List<String>> marketplaceOrigins({ApiRequestOptions? options}) async {
     final body = await get('/storefront/marketplace/origins', options: options);
@@ -762,6 +763,86 @@ class CustomDomainsApi {
   const CustomDomainsApi(this._client);
 
   final ApiClient _client;
+
+  Future<JsonMap> history(
+    String domain,
+    String siteId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}/history',
+    options: _mergeOptions(options, query: {'site_id': siteId}),
+  );
+
+  Future<JsonMap> setRedirect(
+    String domain,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> checkout(String siteId, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/checkout-domain',
+        options: _mergeOptions(options, query: {'site_id': siteId}),
+      );
+
+  Future<JsonMap> prepareCheckout(
+    String siteId, {
+    required ApiRequestOptions options,
+  }) => _client.requestJson(
+    '/custom/checkout-domain',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: {'site_id': siteId},
+    ),
+  );
+
+  Future<JsonMap> list(String siteId, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/domains',
+        options: _mergeOptions(options, query: {'site_id': siteId}),
+      );
+
+  Future<JsonMap> connect(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/domains',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> verify(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/custom/domains/verify',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> setPrimary(
+    String domain,
+    String siteId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}/primary',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: {'site_id': siteId},
+    ),
+  );
+
+  Future<JsonMap> remove(
+    String domain,
+    String siteId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/custom/domains/${_encodePathSegment(domain)}',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.delete,
+      query: {'site_id': siteId},
+    ),
+  );
 
   Future<JsonMap> health(
     String domain, {
@@ -1665,11 +1746,21 @@ class ExportsApi {
     options: _mergeOptions(options, query: {'store_id': storeId}),
   );
 
-  Future<String> download(String id, {required String token, ApiRequestOptions? options}) async {
-    final data = await _client.request('/export/jobs/${_encodePathSegment(id)}/download',
-      options: _mergeOptions(options, query: {'token': token}));
+  Future<String> download(
+    String id, {
+    required String token,
+    ApiRequestOptions? options,
+  }) async {
+    final data = await _client.request(
+      '/export/jobs/${_encodePathSegment(id)}/download',
+      options: _mergeOptions(options, query: {'token': token}),
+    );
     if (data is! String) {
-      throw const ApiException(message: 'Export download is unavailable.', statusCode: 502, code: 'INVALID_EXPORT_DOWNLOAD');
+      throw const ApiException(
+        message: 'Export download is unavailable.',
+        statusCode: 502,
+        code: 'INVALID_EXPORT_DOWNLOAD',
+      );
     }
     return data;
   }

@@ -7,6 +7,7 @@ import 'package:letbuyy_store/app/store_context.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/cache_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
+import 'package:letbuyy_store/models/store_model.dart';
 
 Map<String, dynamic> store(String id) => {
   'id': id,
@@ -113,6 +114,31 @@ void main() {
     expect(context.selectedStoreId, 'owner-store');
     api.close();
   });
+  test('unknown store selection cannot silently switch to the first store', () async {
+    final api = StoreTransport();
+    final service = StoreService(api: api);
+    final context = StoreContext(storeService: service);
+    await context.bindActor('owner-a');
+    await context.ensureSelectedStore();
+    final before = context.requestContextKey;
+    await expectLater(context.selectStoreById('foreign-store'),
+        throwsA(isA<ApiException>().having(
+          (error) => error.code, 'code', 'STORE_ACCESS_UNAVAILABLE')));
+    await expectLater(context.selectStore(StoreModel.fromJson(store('foreign-store'))),
+        throwsA(isA<ApiException>().having(
+          (error) => error.code, 'code', 'STORE_ACCESS_UNAVAILABLE')));
+    expect(context.selectedStoreId, 'owner-store');
+    expect(service.currentStore?.id, 'owner-store');
+    expect(context.requestContextKey, before);
+    await context.selectStore(StoreModel.fromJson({
+      ...store('owner-store'), 'name': 'Forged local name',
+    }));
+    expect(context.selectedStore?.name, 'Synthetic owner-store');
+    expect(service.currentStore?.name, 'Synthetic owner-store');
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('letbuyy.selected_store_id'), 'owner-store');
+    api.close();
+  });
   test('private projection keys separate accounts and signed-out reads and writes are unavailable', () async {
     String? actor = 'owner-a';
     final cache = CacheService.memory(actorIdProvider: () => actor);
@@ -196,6 +222,47 @@ void main() {
     expect(actual.requestContextKey, isNot(key));
     await actual.bindActor('actor-b');
     expect(actual.requestContextKey, isNot(key));
+    api.close();
+  });
+  test('A to B to A cannot revive an earlier store request generation', () async {
+    final api = StoreTransport()..rows = [store('store-a'), store('store-b')];
+    final actual = StoreContext(storeService: StoreService(api: api));
+    await actual.bindActor('actor-a');
+    await actual.ensureSelectedStore();
+    final old = actual.requestContextKey;
+    final dio = Dio(), seen = Completer<void>();
+    late RequestInterceptorHandler held;
+    late RequestOptions request;
+    dio.interceptors.add(InterceptorsWrapper(onRequest: (value, handler) {
+      request = value; held = handler; seen.complete();
+    }));
+    final http = ApiClient(baseUrl: 'https://gateway.test/v1', dio: dio,
+      contextVersionProvider: () => actual.requestContextKey, maxRetries: 0);
+    final retired = expectLater(http.requestJson('/orders'), throwsA(isA<ApiException>()
+      .having((error) => error.code, 'code', 'SESSION_CONTEXT_CHANGED')));
+    await seen.future;
+    await actual.selectStoreById('store-b');
+    await actual.selectStoreById('store-a');
+    held.resolve(Response(requestOptions: request, statusCode: 200,
+      data: {'data': {'private': 'prior store-a response'}}));
+    await retired;
+    expect(actual.selectedStoreId, 'store-a');
+    expect(actual.requestContextKey, isNot(old));
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('letbuyy.selected_store_id'), 'store-a');
+    http.close();
+    api.close();
+  });
+  test('logout retires queued selection persistence before removing the saved ID', () async {
+    final api = StoreTransport()..rows = [store('store-a'), store('store-b')];
+    final actual = StoreContext(storeService: StoreService(api: api));
+    await actual.ensureSelectedStore();
+    final selection = actual.selectStoreById('store-b');
+    final cleared = actual.clearSelection();
+    await Future.wait([selection, cleared]);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('letbuyy.selected_store_id'), isNull);
+    expect(actual.selectedStoreId, isNull);
     api.close();
   });
   test('bootstrap binds and clears the old actor before selecting an existing replacement store', () async {

@@ -52,7 +52,8 @@ class _TaxesScreenState extends State<TaxesScreen> {
       final rates = await context.read<ShippingTaxService>().fetchTaxes(
         store.id,
       );
-      if (!mounted) return;
+      if (!mounted || context.read<StoreContext>().selectedStoreId != store.id)
+        return;
       setState(() {
         _store = store;
         _taxRates = rates;
@@ -68,7 +69,10 @@ class _TaxesScreenState extends State<TaxesScreen> {
 
   Future<void> _setTaxInclusive(bool value) async {
     final store = _store;
-    if (store == null || _isBusy) return;
+    if (store == null ||
+        _isBusy ||
+        context.read<StoreContext>().selectedStoreId != store.id)
+      return;
     setState(() {
       _isBusy = true;
       _taxInclusive = value;
@@ -77,7 +81,8 @@ class _TaxesScreenState extends State<TaxesScreen> {
       final updated = await context.read<StoreService>().updateStore(store.id, {
         'tax_inclusive': value,
       });
-      if (!mounted) return;
+      if (!mounted || context.read<StoreContext>().selectedStoreId != store.id)
+        return;
       setState(() {
         _store = updated;
         _taxInclusive = updated.taxInclusive;
@@ -343,7 +348,10 @@ class _TaxesScreenState extends State<TaxesScreen> {
   }
 
   Future<void> _runAction(Future<void> Function() action) async {
-    if (_isBusy) return;
+    if (_isBusy ||
+        _store == null ||
+        context.read<StoreContext>().selectedStoreId != _store!.id)
+      return;
     setState(() => _isBusy = true);
     try {
       await action();
@@ -359,9 +367,11 @@ class _TaxesScreenState extends State<TaxesScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final selectedStoreId = context.watch<StoreContext>().selectedStoreId;
+    final storeChanged = _store != null && selectedStoreId != _store!.id;
     return Scaffold(
       backgroundColor: colors.bgStart,
-      floatingActionButton: _store == null
+      floatingActionButton: _store == null || storeChanged
           ? null
           : FloatingActionButton.extended(
               onPressed: _isBusy ? null : () => _openTaxEditor(null),
@@ -437,7 +447,12 @@ class _TaxesScreenState extends State<TaxesScreen> {
         child: SwitchListTile(
           contentPadding: EdgeInsets.zero,
           value: _taxInclusive,
-          onChanged: _store == null || _isBusy ? null : _setTaxInclusive,
+          onChanged:
+              _store == null ||
+                  _isBusy ||
+                  context.read<StoreContext>().selectedStoreId != _store!.id
+              ? null
+              : _setTaxInclusive,
           title: Text(
             'All prices include tax',
             style: TextStyle(
@@ -457,6 +472,14 @@ class _TaxesScreenState extends State<TaxesScreen> {
   }
 
   Widget _buildBody(AppThemeColors colors) {
+    if (_store != null &&
+        context.read<StoreContext>().selectedStoreId != _store!.id) {
+      return _buildMessage(
+        colors,
+        'The selected store changed. Refresh taxes before editing.',
+        Icons.sync_problem_outlined,
+      );
+    }
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(

@@ -1,11 +1,16 @@
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
+import 'security_command_store.dart';
+import 'two_factor_service.dart';
 
 class MoneyService extends ChangeNotifier {
-  MoneyService({required ApiClient api}) : _api = api;
+  MoneyService({required ApiClient api, SecurityCommandStore? securityCommands})
+    : _api = api,
+      _securityCommands = securityCommands ?? SecurityCommandStore();
 
   final ApiClient _api;
+  final SecurityCommandStore _securityCommands;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -68,15 +73,41 @@ class MoneyService extends ChangeNotifier {
 
   Future<Map<String, dynamic>> settlePayout(
     String payoutId,
-    String storeId,
-  ) async {
-    final payout = await _api.payouts.settle(payoutId, {
-      'idempotency_key':
-          'mobile-payout-settle-$payoutId-${DateTime.now().microsecondsSinceEpoch}',
+    String storeId, {
+    required MerchantStepUpProof approval,
+  }) async {
+    approval.ensureCurrent(_api, forAction: 'payout.release');
+    final context = approval.context;
+    if (context.storeId != storeId || payoutId.trim().isEmpty) {
+      throw TwoFactorService.changed();
+    }
+    return _securityCommands.serialized(() async {
+      void check() => approval.ensureCurrent(_api, forAction: 'payout.release');
+      final command = await _securityCommands.prepare(
+        context,
+        'settle-payout:$payoutId',
+        {'payout_id': payoutId},
+        check: check,
+      );
+      final payout = await _api.payouts.settle(payoutId, {
+        'idempotency_key': command.key,
+      }, options: approval.options(command.key));
+      check();
+      if (payout['id'] != payoutId ||
+          payout['site_id'] != storeId ||
+          !['processing', 'released'].contains(payout['status'])) {
+        throw const FormatException(
+          'Payout release was not confirmed. Refresh and retry the original request.',
+        );
+      }
+      await fetchPayouts(storeId);
+      await fetchWallet(storeId);
+      check();
+      if (payout['status'] == 'released') {
+        await _securityCommands.complete(context, command, check: check);
+      }
+      return payout;
     });
-    await fetchPayouts(storeId);
-    await fetchWallet(storeId);
-    return payout;
   }
 
   Future<Map<String, dynamic>> fetchWallet(String storeId) async {

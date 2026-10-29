@@ -420,8 +420,7 @@ class SubscriptionService {
         if (expectedRevision != null) 'expected_revision': expectedRevision,
       }, options: ApiRequestOptions(idempotencyKey: idempotencyKey));
       return Map<String, dynamic>.from(res['data'] ?? res);
-    } catch (e) {
-      debugPrint('Error connecting Razorpay: $e');
+    } catch (_) {
       rethrow;
     }
   }
@@ -445,17 +444,12 @@ class SubscriptionService {
   // ============================================================
 
   /// Get payment config document
-  Future<PaymentConfigModel?> getPaymentConfigModel(String storeId) async {
-    try {
-      final data = await _api.stores.paymentConfig.get(storeId);
-      if (data.isEmpty) {
-        return PaymentConfigModel.unavailable(storeId);
-      }
-      return PaymentConfigModel.fromMap(data, storeId);
-    } catch (e) {
-      debugPrint('Error getting payment config model: $e');
-      return null;
+  Future<PaymentConfigModel> getPaymentConfigModel(String storeId) async {
+    final data = await _api.stores.paymentConfig.get(storeId);
+    if (data.isEmpty) {
+      return PaymentConfigModel.unavailable(storeId);
     }
+    return PaymentConfigModel.fromMap(data, storeId);
   }
 
   // ============================================================

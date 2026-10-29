@@ -4011,12 +4011,19 @@ void main() {
               'entry': (_codJson()['entries'] as List).single,
             },
             '/payouts/payout_1/settle': _payoutJson(status: 'released'),
+            '/security/step-up/challenges': {
+              'step_up_token': 'synthetic-payout-approval',
+              'verified_at': '2026-10-30T00:00:00Z',
+            },
           },
+          contextVersionProvider: () => 1,
         );
         final createApi = _FakeApiClient(
           json: {'/payouts': _payoutJson(), '/wallet': _walletJson()},
         );
-        final service = MoneyService(api: api);
+        final storage = MemoryStorage();
+        final service = MoneyService(api: api,
+          securityCommands: SecurityCommandStore(storage: storage));
         final createService = MoneyService(api: createApi);
 
         final payouts = await service.fetchPayouts('store_1');
@@ -4026,7 +4033,14 @@ void main() {
         final commission = await service.fetchCommission('store_1');
         final cod = await service.fetchCodReconciliation('store_1');
         final created = await createService.createPayoutStatement('store_1');
-        final settled = await service.settlePayout('payout_1', 'store_1');
+        final security = TwoFactorService(api: api,
+          actorIdProvider: () => 'synthetic-merchant',
+          storeIdProvider: () => 'store_1', storage: storage);
+        final proof = await security.challenge(action: 'payout.release',
+          factorId: 'synthetic-factor', code: '123456',
+          idempotencyKey: 'synthetic-challenge', expectedContext: 1);
+        final settled = await service.settlePayout('payout_1', 'store_1',
+          approval: proof);
         final reconciled = await service.reconcileCommission('store_1');
         final collected = await service.collectCodOrder(
           'store_1',
@@ -4050,6 +4064,9 @@ void main() {
         expect(cod['summary']['expected_amount_minor'], 300000);
         expect(created['id'], 'payout_1');
         expect(settled['status'], 'released');
+        expect(api.requestOptions['/payouts/payout_1/settle']!.single!.headers,
+          containsPair('X-Step-Up-Token', 'synthetic-payout-approval'));
+        expect(storage.data, isEmpty);
         expect(reconciled['created'], 1);
         expect(collected['entry']['id'], 'cod_1');
         expect(codReconciled['entry']['id'], 'cod_1');
@@ -5180,6 +5197,7 @@ void main() {
           json: {
             '/custom/domains': {
               'status': 'pending',
+              'role': 'primary',
               'records': {
                 'cname': {'value': DomainService.cnameTarget},
               },
@@ -5288,6 +5306,23 @@ void main() {
         expect(api.paths, contains('/store-access/preview-links'));
       },
     );
+
+    test('DomainService never sends an unverified live registrar purchase', () async {
+      final api = _FakeApiClient();
+      final service = DomainService(api: api);
+      final store = StoreModel.fromJson(_storeJson());
+      const quote = DomainPurchaseQuote(
+        domain: 'shop.example.in', available: true, currency: 'INR',
+        amountMinor: 79900, provider: 'resellerclub', premium: false);
+
+      await expectLater(
+        service.purchaseDomain(store, quote: quote,
+          ownerName: 'Demo Merchant', ownerEmail: 'merchant@example.com',
+          paymentReference: 'caller-invented-reference'),
+        throwsStateError,
+      );
+      expect(api.paths, isNot(contains('/domains/purchase')));
+    });
 
     test('NotificationSettingsService persists preferences', () async {
       final api = _FakeApiClient(
@@ -7935,7 +7970,7 @@ void main() {
       final copyStoreUrlData = tester
           .getSemantics(copyStoreUrl)
           .getSemanticsData();
-      expect(copyStoreUrlData.hint, 'https://demo.letbuyy.com to clipboard');
+      expect(copyStoreUrlData.hint, 'https://demo.${StoreModel.storefrontRootDomain} to clipboard');
       expect(copyStoreUrlData.hasFlag(SemanticsFlag.isButton), isTrue);
       expect(copyStoreUrlData.hasFlag(SemanticsFlag.isEnabled), isTrue);
       expect(copyStoreUrlData.hasAction(SemanticsAction.tap), isTrue);
@@ -7966,7 +8001,7 @@ void main() {
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
-      expect(copiedClipboardData?['text'], 'https://demo.letbuyy.com');
+      expect(copiedClipboardData?['text'], 'https://demo.${StoreModel.storefrontRootDomain}');
       expect(find.text('URL copied!'), findsOneWidget);
       expect(tester.takeException(), isNull);
 
@@ -9052,6 +9087,61 @@ void main() {
     expect(find.text('New tax'), findsOneWidget);
   });
 
+  testWidgets('ShippingScreen blocks edits after store context is cleared', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final api = _FakeApiClient(
+      paginated: {'/stores': [_storeJson()]},
+      json: {
+        '/shipping-tax/shipping/zones': [_shippingZoneJson()],
+        '/shipping-tax/shipping': [_shippingRateJson()],
+      },
+    );
+    await tester.pumpWidget(MultiProvider(
+      providers: [
+        ..._storeProviders(api),
+        ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
+      ],
+      child: const MaterialApp(home: ShippingScreen()),
+    ));
+    await tester.pumpAndSettle();
+    final stores = Provider.of<StoreContext>(
+      tester.element(find.byType(ShippingScreen)), listen: false);
+    await stores.clearSelection();
+    await tester.pumpAndSettle();
+    expect(find.text('The selected store changed. Refresh shipping before editing.'),
+      findsOneWidget);
+    expect(find.text('New zone'), findsNothing);
+  });
+
+  testWidgets('TaxesScreen blocks edits after store context is cleared', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final api = _FakeApiClient(
+      paginated: {'/stores': [_storeJson(taxInclusive: true)]},
+      json: {'/shipping-tax/taxes': [_taxRateJson()]},
+    );
+    await tester.pumpWidget(MultiProvider(
+      providers: [
+        ..._storeProviders(api),
+        ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
+      ],
+      child: const MaterialApp(home: TaxesScreen()),
+    ));
+    await tester.pumpAndSettle();
+    final stores = Provider.of<StoreContext>(
+      tester.element(find.byType(TaxesScreen)), listen: false);
+    await stores.clearSelection();
+    await tester.pumpAndSettle();
+    expect(find.text('The selected store changed. Refresh taxes before editing.'),
+      findsOneWidget);
+    expect(find.text('New tax'), findsNothing);
+    expect(tester.widget<SwitchListTile>(find.byType(SwitchListTile)).onChanged,
+      isNull);
+  });
+
   testWidgets('LocalizationMarketsScreen renders real market settings', (
     tester,
   ) async {
@@ -9162,6 +9252,7 @@ void main() {
   });
 
   testWidgets('DomainSettingsScreen renders DNS guidance', (tester) async {
+    SharedPreferences.setMockInitialValues({});
     final health = _domainHealthJson();
     final api = _FakeApiClient(
       paginated: {
@@ -9192,7 +9283,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Domain settings'), findsOneWidget);
-    expect(find.text('demo.letbuyy.com'), findsOneWidget);
+    expect(find.text('demo.${StoreModel.storefrontRootDomain}'), findsOneWidget);
     expect(find.text('shop.example.com'), findsWidgets);
     expect(find.text('Save domain'), findsOneWidget);
     await tester.scrollUntilVisible(
@@ -9224,6 +9315,29 @@ void main() {
     expect(find.textContaining('Seen'), findsWidgets);
     expect(find.text('Email DNS records'), findsOneWidget);
     expect(find.textContaining('email may stop working'), findsOneWidget);
+  });
+
+  testWidgets('DomainSettingsScreen blocks edits after store context is cleared', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]});
+    await tester.pumpWidget(MultiProvider(
+      providers: [
+        ..._storeProviders(api),
+        ChangeNotifierProvider(create: (_) => DomainService(api: api)),
+      ],
+      child: const MaterialApp(home: DomainSettingsScreen()),
+    ));
+    await tester.pumpAndSettle();
+    final stores = Provider.of<StoreContext>(
+      tester.element(find.byType(DomainSettingsScreen)), listen: false);
+    await stores.clearSelection();
+    await tester.pumpAndSettle();
+    expect(find.text('The selected store changed. Refresh domains before editing.'),
+      findsOneWidget);
+    expect(find.text('Save domain'), findsNothing);
+    expect(find.text('Buy and connect'), findsNothing);
   });
 
   testWidgets('SEOSettingsScreen renders and saves storefront SEO', (

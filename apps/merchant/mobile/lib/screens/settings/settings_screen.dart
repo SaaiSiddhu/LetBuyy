@@ -429,20 +429,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (mounted) await _loadStore();
                         },
                       ),
-                      if (_store?.subscriptionPlan ==
-                          SubscriptionPlan.professional)
-                        SettingsTile(
-                          icon: Icons.account_balance_outlined,
-                          title: 'Connect Your Razorpay',
-                          subtitle: _store?.isUsingOwnRazorpay == true
-                              ? 'Connected - 0% commission'
-                              : 'Get 0% platform fee',
-                          iconColor: const Color(0xFF2563EB),
-                          onTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.connectRazorpay,
-                          ),
+                      SettingsTile(
+                        icon: Icons.account_balance_outlined,
+                        title: 'Your Razorpay connection',
+                        subtitle: _store?.isUsingOwnRazorpay == true
+                            ? 'Review sandbox connection'
+                            : 'Connect a verified sandbox account',
+                        iconColor: const Color(0xFF2563EB),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.connectRazorpay,
                         ),
+                      ),
                     ],
                   ),
 
