@@ -140,7 +140,7 @@ test('owned custom-domain setup returns both records before any provider claim a
   owned.psql(`UPDATE sites SET custom_user_id='${actor}' WHERE id='${b.siteId}';`);
   const body=JSON.stringify({site_id:b.siteId,domain:custom});
   // Drive the real route with a new signed owner context on each request.
-  const connect=await gateway.request('/v1/custom/domains',{method:'POST',headers:await signedIdentityHeaders(actor,email,b.siteId),body});
+  const connect=await gateway.request('/v1/custom/domains',{method:'POST',headers:{...await signedIdentityHeaders(actor,email,b.siteId),'X-Idempotency-Key':crypto.randomUUID()},body});
   assert.equal(connect.status,201,connect.text);
   assert.equal(connect.json!.data.checkout.hostname,`checkout.${custom}`);
   assert.equal(connect.json!.data.checkout.reason,'PARENT_NOT_VERIFIED');
@@ -148,7 +148,7 @@ test('owned custom-domain setup returns both records before any provider claim a
   assert.equal(domains.has(custom),false);assert.equal(domains.has(`checkout.${custom}`),false);
   const token=connect.json!.data.records.txt.value;
   dns.set('TXT:_letbuyy-challenge.'+custom,[token]);dns.set('CNAME:'+custom,[String(env.CUSTOM_DOMAIN_CNAME_TARGET)]);
-  const verified=await gateway.request('/v1/custom/domains/verify',{method:'POST',headers:await signedIdentityHeaders(actor,email,b.siteId),body});
+  const verified=await gateway.request('/v1/custom/domains/verify',{method:'POST',headers:{...await signedIdentityHeaders(actor,email,b.siteId),'X-Idempotency-Key':crypto.randomUUID()},body});
   assert.equal(verified.status,200,verified.text);assert.equal(verified.json!.data.status,'active');
   // Provider side effects finish asynchronously; the durable row exists now.
   await gateway.settle();
