@@ -1,3 +1,4 @@
+import type { StoreBrandingInput } from '@letbuyy/checkout-core';
 import { hostedRazorpayTestCredentials } from './hosted-razorpay-credentials';
 import type { PaymentSettings } from './store-payment-config';
 import type { Context } from 'hono';
@@ -42,4 +43,39 @@ export async function loadCheckoutStorePresentation(c:Context<{Bindings:Env}>,si
  const paymentReady=row.online_payment_enabled!==false&&Boolean(await hostedRazorpayTestCredentials(c,siteId,row));
  return{themeId:release?.theme_id||row.theme_id||String(config.themeId||''),paymentMode:paymentReady?'sandbox':'unavailable',id:siteId,sellerId:row.user_id||row.custom_user_id||'',name:row.name||row.store_name||'Store',subdomain:row.subdomain||row.store_name||'',codEnabled:row.cod_enabled!==false,onlinePaymentEnabled:paymentReady,
   themeSettings:{primaryColor:t.primaryColor,secondaryColor:t.secondaryColor,accentColor:t.accentColor,backgroundColor:t.backgroundColor,textColor:t.textColor,surfaceColor:t.surfaceColor,fontFamily:t.fontFamily,headingFontFamily:t.headingFontFamily,borderRadius:t.borderRadius,enableAnimations:t.enableAnimations,enableShadows:t.enableShadows,isDark:t.isDark}};
+}
+
+export function defaultBranding(siteId: string) {
+    return {
+        site_id: siteId,
+        logo_url: null,
+        favicon_url: null,
+        primary_color: '#111827',
+        accent_color: '#2563EB',
+        checkout_theme: 'system',
+        tokens: {},
+    };
+}
+
+// T8/W2 — store_branding's real columns are only site_id/logo_url/favicon_url/primary_color/
+// accent_color/checkout_theme/tokens/metadata (no migration this phase). The 7 new
+// StoreBrandingSchema fields (secondary/background/text/surface colour, both fonts, radius,
+// is_dark) are genuinely typed and validated at the Zod layer, but physically persist inside the
+// existing schemaless `tokens` jsonb column under this reserved, unambiguous key prefix — never
+// mixed with a merchant's own arbitrary `tokens` entries, and never spread directly onto the
+// upsert payload (the table has no such columns; doing that would 500 on a real write).
+const EXTENDED_BRANDING_TOKEN_PREFIX = 'theme_override__';
+const EXTENDED_BRANDING_FIELDS = [
+    'secondary_color', 'background_color', 'text_color', 'surface_color',
+    'heading_font_family', 'body_font_family', 'border_radius', 'is_dark',
+] as const;
+
+export function packExtendedBrandingIntoTokens(body: StoreBrandingInput): Record<string, string | number | boolean> {
+    const packed: Record<string, string | number | boolean> = { ...body.tokens };
+    for (const field of EXTENDED_BRANDING_FIELDS) {
+        const value = body[field];
+        if (value === undefined || value === null) continue;
+        packed[`${EXTENDED_BRANDING_TOKEN_PREFIX}${field}`] = value;
+    }
+    return packed;
 }

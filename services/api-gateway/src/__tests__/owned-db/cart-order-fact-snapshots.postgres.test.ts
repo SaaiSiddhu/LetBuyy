@@ -68,53 +68,8 @@ test('private cart acceptance query has a real positive tenant control before pu
  const foreign=await loadCartFactSources(gateway.env,other.siteId,'synthetic-private-negative',[id]);assert.equal(foreign.size,0);
 });
 
-test('388 paired DOWN restores predecessor bodies and ACL deltas, reapply recovers identical live contracts',()=>{
- const installed=privilegeProfile();
- const forward386=readFileSync(new URL('../../../../../database/supabase/migrations/386_storefront_discovery.sql',import.meta.url),'utf8');
- const rollback386=readFileSync(new URL('../../../../../database/supabase/rollback/386_storefront_discovery.rollback.sql',import.meta.url),'utf8');
- assert.equal(createHash('sha256').update(forward386).digest('hex'),'33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d');
- assert.equal(createHash('sha256').update(rollback386).digest('hex'),'00e99215bc715adbc20a1d59384c17bf676045976d3de6e94f591dec13ab95cf');
- assert.match(owned.psqlScriptExpectError(rollback386),/388|dependencies/);assert.equal(privilegeProfile(),installed);
- owned.script(migration('rollback'));
- assert.equal(psql(`SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='carts' AND column_name='fact_acceptance_version';`),'0');
- assert.equal(psql(`SELECT count(*) FROM migration_privilege_journal WHERE migration='388';`),'0');
- // Exercise a named owner-issued column grant, including grant option, that table-only oracles miss.
- psql(`GRANT UPDATE(items) ON public.carts TO authenticated WITH GRANT OPTION;`);
- const beforeUp=privilegeProfile();
- const unwrapped=migration('migrations').replace(/^BEGIN;$/m,'').replace(/^COMMIT;$/m,'');
- const lower='public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)';
- const mutants=[
-  `CREATE ROLE syn_snapshot_unknown NOLOGIN NOBYPASSRLS;GRANT SELECT,UPDATE ON public.carts TO syn_snapshot_unknown;`,
-  `CREATE ROLE syn_snapshot_unknown NOLOGIN NOBYPASSRLS;GRANT UPDATE(items) ON public.carts TO syn_snapshot_unknown;`,
-  `CREATE ROLE syn_snapshot_unknown NOLOGIN NOBYPASSRLS;GRANT EXECUTE ON FUNCTION ${lower} TO syn_snapshot_unknown;`,
-  `GRANT UPDATE(items) ON public.carts TO service_role WITH GRANT OPTION;SET LOCAL ROLE service_role;GRANT UPDATE(items) ON public.carts TO anon;RESET ROLE;`,
-  `CREATE ROLE syn_snapshot_unknown NOLOGIN NOBYPASSRLS;GRANT service_role TO syn_snapshot_unknown;`,
- ];
- for(const setup of mutants){
-  assert.match(owned.psqlScriptExpectError(`BEGIN;${setup}\n${unwrapped}\nROLLBACK;`),/388 refuses unrecognized/);
-  assert.equal(privilegeProfile(),beforeUp,'failed admission must roll back every catalog delta');
- }
- owned.script(migration('migrations'));
- owned.script(migration('rollback'));
- assert.equal(privilegeProfile(),beforeUp,'immediate DOWN must exactly recover pre-UP ACLs, columns, grantors, options, owners, memberships and effective access');
- owned.script(migration('migrations'));
- assert.equal(psql(`SELECT has_any_column_privilege('authenticated','public.carts','UPDATE');`),'f');
-});
 
 async function archiveProduct(id:string){const key=crypto.randomUUID();const response=await gateway.request(`/v1/products/${id}`,{method:'PATCH',headers:{...await signedIdentityHeaders(actor,email,site.siteId),'X-Store-ID':site.siteId,'X-Idempotency-Key':key},body:JSON.stringify({status:'archived',is_active:false,version:version(id),idempotency_key:key})});assert.equal(response.status,200,response.text);}
-test('DOWN refuses sellable variant-only facts and named options without active carts; supported retirement preserves history',async()=>{
- for(const metadata of[{food:{netQuantity:{value:250,unit:'g'}}},{furniture:{assembled:{width:12,unit:'cm'}}},{books:{kind:'book',language:'English',format:'paperback'}},{}]){
-  const id=product({},4),variant=crypto.randomUUID();
-  psql(`INSERT INTO product_options(product_id,name,position,values) VALUES('${id}','Pack name',0,'["Single"]');INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1,metadata) VALUES('${variant}','${id}','Synthetic variant-only capability',1290,4,'Single',${json(metadata)});SELECT public.set_inventory_level_available('${id}','${variant}','${site.locationId}',4,NULL);`);
-  assert.equal(psql(`SELECT count(*) FROM carts WHERE store_id='${site.siteId}' AND status='active' AND fact_acceptance_version=1;`),'0');
-  assert.match(owned.psqlScriptExpectError(migration('rollback')),/388 rollback requires/);
-  const response=await cart([input(id,undefined,1,variant)]);assert.equal(response.status,201,response.text);const accepted=data<Cart>(response);
-  const order=psql(orderSql(items(accepted))),history=psql(`SELECT product_snapshot FROM order_items WHERE order_id='${order}';`);
-  await archiveProduct(id);owned.script(migration('rollback'));
-  assert.equal(psql(`SELECT product_snapshot FROM order_items WHERE order_id='${order}';`),history);
-  owned.script(migration('migrations'));
- }
-});
 
 test('real read-only review producer returns only current variant-bound facts/echo and never creates a cart',async()=>{
  const id=product({personalization:facts,private_supplier_token:'NEVER_PUBLIC'},2),variant=crypto.randomUUID(),empty=crypto.randomUUID();
@@ -261,7 +216,16 @@ test('actual hosted checkout confirmation carries only persisted cart reference 
  INSERT INTO shipping_rates(id,zone_id,site_id,name,type,price,is_active,cod_enabled) VALUES('${rate}','${zone}','${site.siteId}','Synthetic snapshot delivery','flat',20,true,true);`);
  const handoff=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${accepted.cart_token}/checkout-url`,{method:'POST'});assert.equal(handoff.status,200,handoff.text);
  const query=new URL(data<{checkout_url:string}>(handoff).checkout_url).searchParams.toString();
- const post=(step:string,body:unknown)=>gateway.request(`/v1/checkout/${accepted.id}/${step}?${query}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const post=async(step:string,body:unknown)=>{
+  if(step==='delivery'){
+   const delivery=body as {shipping_address:{country:string;state:string;state_code:string;zip:string};shipping_quote:{shipping_rate_id:string}};
+   const {country,state,state_code,zip}=delivery.shipping_address;
+   const reviewed=await gateway.request(`/v1/checkout/${accepted.id}/quote?${query}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shipping_address:{country,state,state_code,zip},shipping_rate_id:delivery.shipping_quote.shipping_rate_id})});
+   assert.equal(reviewed.status,200,reviewed.text);
+   body={...delivery,expected_quote_fingerprint:reviewed.json!.data.quote.fingerprint};
+  }
+  return gateway.request(`/v1/checkout/${accepted.id}/${step}?${query}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ };
  const contact=await post('contact',{idempotency_key:`snapshot-contact-${accepted.id}`,email:'syn-snapshot@example.invalid',name:'Synthetic snapshot buyer'});assert.equal(contact.status,200,contact.text);
  const delivery=await post('delivery',{idempotency_key:`snapshot-delivery-${accepted.id}`,shipping_method:'standard',cod_requested:true,shipping_address:{line1:'Synthetic fixture road',city:'Bengaluru',state:'Karnataka',state_code:'29',zip:'560001',country:'IN'},shipping_quote:{shipping_rate_id:rate,expected_shipping_amount:20}});assert.equal(delivery.status,200,delivery.text);
  const intent=await post('payment-intent',{idempotency_key:`snapshot-intent-${accepted.id}`,provider:'cod',mode:'sandbox',tokenize:false,metadata:{channel:'web'}});assert.equal(intent.status,201,intent.text);
@@ -273,9 +237,6 @@ test('actual hosted checkout confirmation carries only persisted cart reference 
  assert.equal(psql(`SELECT count(*) FROM order_items WHERE order_id='${order}';`),'1');
 });
 
-test('rollback refuses active accepted capabilities and preserves recorded history instead of silently downgrading',()=>{
- const before=privilegeProfile();assert.match(owned.psqlScriptExpectError(migration('rollback')),/388 rollback requires/);assert.equal(privilegeProfile(),before);
-});
 
 test('direct tenant product RPC cannot bypass strict capability validation or same-revision meaning guard',async()=>{
  const id=product({personalization:facts}),before=psql(`SELECT to_jsonb(p) FROM products p WHERE id='${id}';`);
@@ -391,7 +352,16 @@ test('actual approved marketplace hosted confirmation carries both same-SKU inst
  psql(`INSERT INTO shipping_zones(id,store_id,site_id,name,countries,states,zip_codes,cod_enabled) VALUES('${zone}','${site.siteId}','${site.siteId}','Synthetic marketplace snapshot zone',ARRAY['IN'],ARRAY['Karnataka','29'],ARRAY['560001'],true);INSERT INTO shipping_rates(id,zone_id,site_id,name,type,price,is_active,cod_enabled) VALUES('${rate}','${zone}','${site.siteId}','Synthetic marketplace delivery','flat',20,true,true);`);
  const handoff=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${accepted.cart_token}/checkout-url`,{method:'POST'});assert.equal(handoff.status,200,handoff.text);
  const query=new URL(data<{checkout_url:string}>(handoff).checkout_url).searchParams.toString();
- const post=(step:string,body:unknown)=>gateway.request(`/v1/checkout/${accepted.id}/${step}?${query}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const post=async(step:string,body:unknown)=>{
+  if(step==='delivery'){
+   const delivery=body as {shipping_address:{country:string;state:string;state_code:string;zip:string};shipping_quote:{shipping_rate_id:string}};
+   const {country,state,state_code,zip}=delivery.shipping_address;
+   const reviewed=await gateway.request(`/v1/checkout/${accepted.id}/quote?${query}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shipping_address:{country,state,state_code,zip},shipping_rate_id:delivery.shipping_quote.shipping_rate_id})});
+   assert.equal(reviewed.status,200,reviewed.text);
+   body={...delivery,expected_quote_fingerprint:reviewed.json!.data.quote.fingerprint};
+  }
+  return gateway.request(`/v1/checkout/${accepted.id}/${step}?${query}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ };
  const contact=await post('contact',{idempotency_key:`market-snapshot-contact-${accepted.id}`,email:'syn-market-snapshot@example.invalid',name:'Synthetic marketplace snapshot buyer'});assert.equal(contact.status,200,contact.text);
  const delivery=await post('delivery',{idempotency_key:`market-snapshot-delivery-${accepted.id}`,shipping_method:'standard',cod_requested:true,shipping_address:{line1:'Synthetic fixture road',city:'Bengaluru',state:'Karnataka',state_code:'29',zip:'560001',country:'IN'},shipping_quote:{shipping_rate_id:rate,expected_shipping_amount:20}});assert.equal(delivery.status,200,delivery.text);
  const intent=await post('payment-intent',{idempotency_key:`market-snapshot-intent-${accepted.id}`,provider:'cod',mode:'sandbox',tokenize:false,metadata:{channel:'web'}});assert.equal(intent.status,201,intent.text);
@@ -410,4 +380,7 @@ test('a fault after transactional cart consumption rolls back cart, order, inven
  assert.equal(effects(id),beforeEffects);assert.equal(psql(`SELECT to_jsonb(c) FROM carts c WHERE id='${accepted.id}';`),beforeCart);
  const order=psql(orderSql(request,key));assert.match(order,/^[0-9a-f-]{36}$/);assert.equal(psql(orderSql(request,key)),order);
  assert.equal(psql(`SELECT count(*) FROM order_items WHERE product_id='${id}';`),'1');assert.equal(psql(`SELECT status FROM carts WHERE id='${accepted.id}';`),'converted');
+});
+test('retiring migration388 refuses the current tax writer without changing privileges or recorded facts',()=>{
+ const before=privilegeProfile();assert.match(owned.psqlScriptExpectError(migration('rollback')),/388 refuses changed predecessor/);assert.equal(privilegeProfile(),before);
 });

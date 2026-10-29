@@ -30,6 +30,8 @@ const NON_COLUMN_READS = new Set([
 // rather than required of both — stated here because silently exempting it would hide the next real
 // divergence.
 const RELATIONAL_HYDRATED_READS = new Set(['items']);
+// Derived public facts must still name their persisted input in both SELECTs.
+const DERIVED_COLUMN_READS: Record<string, string> = { totals_quote: 'tax_snapshot' };
 
 function mapOrderDetailDropBody(): string {
     const start = dropSource.indexOf('function mapOrderDetailDrop(');
@@ -69,7 +71,7 @@ test('every field mapOrderDetailDrop reads is present in BOTH SELECT branches', 
         const relationalBranch = columns.has('store_id');
         for (const field of fieldsRead) {
             if (relationalBranch && RELATIONAL_HYDRATED_READS.has(field)) continue;
-            if (!columns.has(field)) missing.push(`${field} (missing from: ${select.slice(0, 60)}…)`);
+            if (!columns.has(DERIVED_COLUMN_READS[field] || field)) missing.push(`${field} (missing from: ${select.slice(0, 60)}…)`);
         }
     }
     assert.deepEqual(
@@ -78,6 +80,12 @@ test('every field mapOrderDetailDrop reads is present in BOTH SELECT branches', 
         'a read with no matching column does not throw — it renders a fallback, which is how CAP-C51 ' +
         'shipped a zero subtotal and an always-COD payment method to every customer',
     );
+});
+
+test('customer receipts project approved quote fields and remove the private supplier snapshot', () => {
+    assert.match(routeSource, /map\(\(\{ store_id: _storeId, tax_snapshot, \.\.\.rest \}\)/);
+    assert.match(routeSource, /CheckoutTotalsQuoteSchema\.safeParse\(tax_snapshot\)/);
+    assert.match(routeSource, /totals_quote: quote\.data/);
 });
 
 test('the two SELECT branches agree on the customer-visible fields', () => {

@@ -7,11 +7,15 @@ payment, issuer, cookie, CSRF, tenant or rate-limit policy change.
 
 ## Current verdict
 
-Source implementation and owned browser checks pass. Production's two missing
-hostname entries were separately approved, saved and read back in Cloudflare.
-The new application source is not yet production-activated. Final qualification,
-staging and hosted acceptance are recorded separately below as they complete.
-Do not equate a provider configuration save with deploying this source.
+Release `55975acd0` is production-active after the owner's specific TEST-R8
+decision, local qualification, staging and a real provider canary. API and BFF
+uploaded module hashes match the qualified builds; all four prepared web artifacts
+were promoted. The owner confirmed a fresh production sign-in worked in the
+current Chrome profile. See [final release and limits](RELEASE.md).
+
+The earlier observations below are retained as investigation history. They are
+not substitutes for the final release record or evidence that every production
+form, physical device or future external domain was independently exercised.
 
 ## Coverage and disposition
 
@@ -79,9 +83,9 @@ No codes, cookies, passwords, signing keys or login URLs are included in this re
   Remaining complete gates belong in the isolated qualification copy, never beside
   an active runtime/test process. The initial observation is not a final green gate.
 
-## Hosted and release gates still open
+## Original hosted and release gate requirements
 
-A new source candidate needs the current complete governance/security/build gates,
+At the initial investigation, a new source candidate needed complete governance/security/build gates,
 staging observation, then a release decision for any specifically documented hosted
 staging limitation. Earlier cart/payment/domain release approvals do not certify
 this new security candidate. Final production browser verification must distinguish

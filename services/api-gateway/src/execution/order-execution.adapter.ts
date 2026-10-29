@@ -1,3 +1,4 @@
+import { checkoutTaxAddress } from '../lib/checkout-tax-quote';
 // ============================================================
 // ORDER EXECUTION ADAPTER — Application-service-backed runtime adapter
 // ============================================================
@@ -63,6 +64,7 @@ export class OrderExecutionAdapter {
         input: CreateCheckoutOrderCommand & {
             shipping_rate_id?: string | null;
             expected_shipping_amount?: number | null;
+            expected_quote_fingerprint?: string;
             tax_amount?: number | null;
             place_of_supply_state?: string | null;
             tax_lines?: Array<{ title: string; rate: number; amount: number; jurisdiction?: Record<string, unknown> }> | null;
@@ -74,7 +76,7 @@ export class OrderExecutionAdapter {
         options: CreateOrderOptions = {},
     ) {
         await this.assertOrderQuota(tenant.siteId);
-        const shippingAddress = { ...(input.shipping_address || {}) };
+        const shippingAddress = checkoutTaxAddress(input.shipping_address || {});
         if (input.customer_gstin) shippingAddress.gstin = input.customer_gstin;
 
         const checkoutArgs = {
@@ -120,6 +122,14 @@ export class OrderExecutionAdapter {
                     p_buyer_account_id: input.buyer_account_id ?? null,
                     p_buyer_session_epoch: input.buyer_session_epoch ?? null,
                 })
+            : typeof input.expected_quote_fingerprint === 'string'
+            ? await this.db.rpc('create_storefront_checkout_order_with_quote', {
+                p_store_id: tenant.siteId,
+                p_command: { ...checkoutArgs, p_buyer_account_id: input.buyer_account_id ?? null,
+                    p_buyer_session_epoch: input.buyer_session_epoch ?? null,
+                    p_expected_shipping_amount: input.expected_shipping_amount ?? null },
+                p_expected_quote_fingerprint: input.expected_quote_fingerprint,
+            })
             : typeof input.expected_shipping_amount === 'number'
             ? await this.db.rpc('create_storefront_checkout_order_with_delivery_rate', {
                 ...checkoutArgs,
@@ -138,6 +148,12 @@ export class OrderExecutionAdapter {
 
         if (error) {
             const message = error.message || 'Order creation failed';
+            if (/CHECKOUT_(QUOTE_CHANGED|TAX_REVIEW_REQUIRED|DUPLICATE_LINE|ITEM_UNAVAILABLE|DISCOUNT_INVALID)/.test(message)) {
+                throw new AppError('The order total changed. Review checkout again before paying.', 409, 'CHECKOUT_QUOTE_CHANGED');
+            }
+            if (/GST_/.test(message)) {
+                throw new AppError('Tax setup for this order needs attention. Please contact the store before paying.', 503, 'CHECKOUT_TAX_SETUP_REQUIRED');
+            }
             if (/CART_FACT|CART_VARIANT_REQUIRED/.test(message)) {
                 throw new AppError('Product choices changed or need review. Refresh your cart and review its details before ordering.', 409, 'CHECKOUT_PRODUCT_CHANGED');
             }
@@ -162,7 +178,7 @@ export class OrderExecutionAdapter {
                     'MARKETPLACE_LISTING_UNAVAILABLE',
                 );
             }
-            if (message.includes('marketplace delivery rate quote changed') || message.includes('marketplace delivery rate is no longer available') || message.includes('marketplace delivery rate does not cover')
+            if (/CHECKOUT_(SHIPPING_|COD_UNAVAILABLE)/.test(message) || message.includes('marketplace delivery rate quote changed') || message.includes('marketplace delivery rate is no longer available') || message.includes('marketplace delivery rate does not cover')
                 || message.includes('storefront delivery rate quote changed') || message.includes('storefront delivery rate is no longer available') || message.includes('storefront delivery rate does not cover')
                 || message.includes('storefront delivery rate subtotal range changed') || message.includes('storefront delivery rate does not support COD')) {
                 throw new AppError('The delivery option changed before order creation. Review delivery options and try again.', 409, 'CHECKOUT_SHIPPING_CHANGED');

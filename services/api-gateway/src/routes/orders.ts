@@ -3,6 +3,7 @@ import {tryRestoreGiftCardForReversedOrder} from '../lib/gift-card-refund-recove
 import { stepUpErrorBody } from '../lib/security-controls';
 import { tryRestoreRedeemedLoyalty } from '../lib/loyalty-refund-recovery';
 import { Hono } from 'hono';
+import { AppError } from '../lib/errors';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { cursorPaginated, dbErrorBody, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
@@ -351,8 +352,14 @@ async function applyLogisticsLabel(
     siteId: string,
     orderId: string,
     input: FulfillOrderInput,
+    environment: Env['ENVIRONMENT'],
 ): Promise<FulfillOrderInput> {
     if (!input.create_shipping_label || !input.logistics_provider) return input;
+    // Manual fulfillment remains available; a simulated AWB cannot establish
+    // carrier acceptance or advance a real production shipment.
+    if (environment === 'production') {
+        throw new AppError('Carrier booking is not connected. Use manual fulfillment with your carrier’s tracking details.', 503, 'CARRIER_SETUP_REQUIRED');
+    }
 
     const { data, error } = await db
         .from('orders')
@@ -1187,7 +1194,7 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
 
     const service = new OrderExecutionAdapter(db);
     try {
-        const fulfillmentInput = await applyLogisticsLabel(db, tenant.siteId, orderId, body);
+        const fulfillmentInput = await applyLogisticsLabel(db, tenant.siteId, orderId, body, c.env.ENVIRONMENT);
         const data = await service.fulfillOrder(orderId, tenant, fulfillmentInput);
         await emitOrderEvent(db, {
             eventType: 'order.fulfilled',

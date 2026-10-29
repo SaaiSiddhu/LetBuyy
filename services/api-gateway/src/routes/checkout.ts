@@ -1,4 +1,7 @@
+import { defaultBranding, packExtendedBrandingIntoTokens } from '../lib/checkout-store-presentation';
 import { verifyHostedDiscountSelection } from '../lib/hosted-checkout-discount';
+import { quoteCheckoutTotals } from '../lib/checkout-tax-quote';
+import { checkoutOrderItems } from '../lib/hosted-checkout-order-command';
 import { verifyHandoffCheckoutOrigin } from '../lib/checkout-handoff-origin';
 import { hostedRazorpayTestCredentials } from '../lib/hosted-razorpay-credentials';
 import { cartLines, signedCartSubtotalMinor, stringValue, checkoutPaymentProvider, checkoutShippingMethod, buildHostedCheckoutOrderCommand, type CartRow, type HostedCheckoutPaymentProvider } from '../lib/hosted-checkout-order-command';
@@ -16,6 +19,7 @@ import {
     CheckoutStateReadSchema,
     CheckoutContactSchema,
     CheckoutDeliverySchema,
+    CheckoutQuoteSchema,
     CheckoutPaymentIntentSchema,
     StoreBrandingSchema,
     assertBrandingIsDataOnly,
@@ -491,7 +495,7 @@ checkoutRouter.get('/:cartId/delivery-options', async (c) => {
             if (subtotalMinor === null) {
                 return c.json({ success: false, error: { code: 'CHECKOUT_SUBTOTAL_UNAVAILABLE', message: 'Cart pricing could not be verified. Refresh the cart and try again.' } }, 409);
             }
-            resolvedRates = (await listStorefrontShippingRates(db, verified.handoff.siteId, address, subtotalMinor))
+            resolvedRates = (await listStorefrontShippingRates(db, verified.handoff.siteId, address, subtotalMinor, checkoutOrderItems(verified.handoff.cart)))
                 .map((rate) => ({
                     id: rate.id,
                     name: rate.name,
@@ -509,9 +513,24 @@ checkoutRouter.get('/:cartId/delivery-options', async (c) => {
             carrier_confirmed: false,
             rates: resolvedRates,
         }));
-    } catch {
+    } catch (error) {
+        if (error instanceof AppError) throw error;
         return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_UNAVAILABLE', message: 'Delivery options are temporarily unavailable. Please retry.' } }, 503);
     }
+});
+
+checkoutRouter.post('/:cartId/quote', validate('json', CheckoutQuoteSchema), async (c) => {
+    const verified = await verifyCheckoutHandoff(c, c.req.param('cartId'));
+    if (!verified.ok) return verified.response;
+    const body = c.get('validatedBody') as {
+        shipping_address: Record<string, unknown>; shipping_rate_id: string; coupon_code?: string | null; customer_email?: string | null;
+    };
+    const quote = await quoteCheckoutTotals(getSupabaseAdmin(c), {
+        siteId: verified.handoff.siteId, items: checkoutOrderItems(verified.handoff.cart),
+        shippingAddress: body.shipping_address, shippingRateId: body.shipping_rate_id,
+        couponCode: body.coupon_code, customerEmail: body.customer_email,
+    });
+    return c.json(success({ quote }));
 });
 
 checkoutRouter.post('/:cartId/contact', validate('json', CheckoutContactSchema), async (c) => {
@@ -547,7 +566,7 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
     const cartId = c.req.param('cartId');
     const verified = await verifyCheckoutHandoff(c, cartId);
     if (!verified.ok) return verified.response;
-    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord; discount_codes?: string[]; expected_discount_amount_minor?: number };
+    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord; discount_codes?: string[]; expected_discount_amount_minor?: number; expected_quote_fingerprint?: string };
 
     return runIdempotentStep(c, verified.handoff, `checkout.delivery:${cartId}`, body.idempotency_key, body, async () => {
         const observed = await loadSession(getSupabaseAdmin(c), verified.handoff);
@@ -574,7 +593,8 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
                     { country: addressCountry, state: addressState, stateCode: addressStateCode, pincode: addressPincode },
                 );
                 selectedRate = rates.find((rate) => rate.id === shippingRateId);
-            } catch {
+            } catch (error) {
+                if (error instanceof AppError) throw error;
                 return { body: { success: false, error: { code: 'CHECKOUT_SHIPPING_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, status: 503, retryable: true };
             }
             if (!selectedRate) {
@@ -613,10 +633,11 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
                     getSupabaseAdmin(c),
                     verified.handoff.siteId,
                     { country: addressCountry, state: addressState, stateCode: addressStateCode, pincode: addressPincode },
-                    subtotalMinor,
+                    subtotalMinor, checkoutOrderItems(verified.handoff.cart),
                 );
                 selectedRate = rates.find((rate) => rate.id === shippingRateId);
-            } catch {
+            } catch (error) {
+                if (error instanceof AppError) throw error;
                 return { body: { success: false, error: { code: 'CHECKOUT_SHIPPING_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, status: 503, retryable: true };
             }
             if (!selectedRate) {
@@ -654,6 +675,18 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             const stateCode = gstStateCodeFromName(stringValue(shippingAddress.state));
             if (stateCode) shippingAddress.state_code = stateCode;
         }
+
+        const totalsQuote = await quoteCheckoutTotals(getSupabaseAdmin(c), {
+            siteId: verified.handoff.siteId, items: checkoutOrderItems(verified.handoff.cart),
+            shippingAddress, shippingRateId: String(serverResolvedQuote.shipping_rate_id),
+            couponCode: discount.codes[0], customerEmail: observed?.customer_email,
+        });
+        if (body.expected_quote_fingerprint !== totalsQuote.fingerprint) {
+            return { body: { success: false, error: { code: 'CHECKOUT_QUOTE_CHANGED',
+                message: 'The order total changed. Review the current total before paying.' } }, status: 409 };
+        }
+        serverResolvedQuote = { ...serverResolvedQuote, tax_quote_fingerprint: totalsQuote.fingerprint,
+            totals_quote: totalsQuote as unknown as JsonRecord };
 
         const session = await persistCheckoutStep(c, verified.handoff, 'delivery', {
             shipping_method: body.shipping_method,
@@ -1412,41 +1445,6 @@ checkoutRouter.get('/:id', async (c) => {
     if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Checkout session not found' } }, 404);
     return c.json(success({ checkout: sessionPayload(data as CheckoutSessionRow) }));
 });
-
-function defaultBranding(siteId: string) {
-    return {
-        site_id: siteId,
-        logo_url: null,
-        favicon_url: null,
-        primary_color: '#111827',
-        accent_color: '#2563EB',
-        checkout_theme: 'system',
-        tokens: {},
-    };
-}
-
-// T8/W2 — store_branding's real columns are only site_id/logo_url/favicon_url/primary_color/
-// accent_color/checkout_theme/tokens/metadata (no migration this phase). The 7 new
-// StoreBrandingSchema fields (secondary/background/text/surface colour, both fonts, radius,
-// is_dark) are genuinely typed and validated at the Zod layer, but physically persist inside the
-// existing schemaless `tokens` jsonb column under this reserved, unambiguous key prefix — never
-// mixed with a merchant's own arbitrary `tokens` entries, and never spread directly onto the
-// upsert payload (the table has no such columns; doing that would 500 on a real write).
-const EXTENDED_BRANDING_TOKEN_PREFIX = 'theme_override__';
-const EXTENDED_BRANDING_FIELDS = [
-    'secondary_color', 'background_color', 'text_color', 'surface_color',
-    'heading_font_family', 'body_font_family', 'border_radius', 'is_dark',
-] as const;
-
-function packExtendedBrandingIntoTokens(body: StoreBrandingInput): Record<string, string | number | boolean> {
-    const packed: Record<string, string | number | boolean> = { ...body.tokens };
-    for (const field of EXTENDED_BRANDING_FIELDS) {
-        const value = body[field];
-        if (value === undefined || value === null) continue;
-        packed[`${EXTENDED_BRANDING_TOKEN_PREFIX}${field}`] = value;
-    }
-    return packed;
-}
 
 publicStoreBrandingRouter.get('/:storeId/branding', async (c) => {
     const storeId = c.req.param('storeId');

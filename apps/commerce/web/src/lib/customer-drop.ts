@@ -1,3 +1,4 @@
+import { CheckoutTotalsQuoteSchema } from '@letbuyy/shared-types';
 // ============================================================
 // CUSTOMER DROP — builds the Liquid `customer` object for the
 // authenticated shopper. Resolves the existing HS256 customer
@@ -37,6 +38,9 @@ export interface LiquidCustomerOrderDetail {
     coupon_code: string | null;
     shipping_total: number;
     tax_total: number;
+    tax_label: string;
+    tax_added: number | null;
+    tax_included: number | null;
     total: number;
     gst_invoice_number: string | null;
     payment_method: string;
@@ -213,6 +217,7 @@ function buildOrderTimeline(status: string): Array<{ label: string; reached: boo
 
 export function mapOrderDetailDrop(row: Record<string, unknown>): LiquidCustomerOrderDetail {
     const items = Array.isArray(row.items) ? row.items : [];
+    const quote = CheckoutTotalsQuoteSchema.safeParse(row.totals_quote);
     const shippingAddr = row.shipping_address && typeof row.shipping_address === 'object'
         ? row.shipping_address as Record<string, unknown>
         : null;
@@ -228,6 +233,9 @@ export function mapOrderDetailDrop(row: Record<string, unknown>): LiquidCustomer
         coupon_code: typeof row.coupon_code === 'string' ? row.coupon_code : null,
         shipping_total: liquidOrderMoney(row.shipping_cost),
         tax_total: liquidOrderMoney(row.tax),
+        tax_label: quote.success && quote.data.included_tax_minor > 0 ? 'GST (includes tax already in prices)' : 'Tax',
+        tax_added: quote.success ? quote.data.added_tax_minor : null,
+        tax_included: quote.success ? quote.data.included_tax_minor : null,
         total: liquidOrderMoney(row.total),
         gst_invoice_number: typeof row.gst_invoice_number === 'string' ? row.gst_invoice_number : null,
         payment_method: typeof row.payment_method === 'string' ? row.payment_method : 'cod',

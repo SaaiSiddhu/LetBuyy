@@ -176,3 +176,15 @@ current parent/domain authority, provider assignment, TLS proof, retry and finit
 retirement. The app never supplies a hostname, mutates DNS/database records,
 grants readiness or publishes a store. This implements the existing owner-approved
 branded checkout plan; the API inventory is registered rather than exempted.
+
+### 30 October 2026 — shipping profiles and reviewed totals
+
+Inventory228→231 adds three `gateway-proxy` transports: Commerce
+`checkout-quote`, and Merchant `stores/[store]/shipping/profiles` plus
+`shipping/profiles/[profileId]`. Merchant resolves current owned-store identity,
+forwards the profile command with its stable ID or expected revision, and enforces
+its existing mutation-origin/session guard. Commerce resolves the published store
+and forwards only actual product references and the destination. PostgreSQL in
+the Gateway remains the sole authority for prices, GST, eligibility, profile
+mutations and immutable order/invoice facts. No local database or tax writer,
+provider call, account issuer or additional runtime is introduced.

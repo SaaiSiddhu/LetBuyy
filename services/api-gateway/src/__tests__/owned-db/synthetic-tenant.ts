@@ -45,6 +45,7 @@ export function seedSyntheticTenant(psql: Psql, tenant: SyntheticTenant, options
         VALUES ('${tenant.siteId}', 'Synthetic ${tenant.tag}', 'Synthetic ${tenant.tag}', 'store', '${tenant.subdomain}', 'published', true, 'INR', 'en-IN',
                 ${gst ? "'29AAAAA0000A1Z5'" : 'NULL'}, ${gst ? "'29'" : 'NULL'}, 'Synthetic Test Tenant Pvt Ltd', now(), now());
     `);
+    if (gst) psql(`UPDATE sites SET invoice_address='{"line1":"Synthetic supplier road","city":"Bengaluru","state_code":"29","postal_code":"560001","country":"IN"}'::jsonb WHERE id='${tenant.siteId}';`);
     psql(`
         INSERT INTO inventory_locations (id, store_id, name, is_default, status, created_at)
         VALUES ('${tenant.locationId}', '${tenant.siteId}', 'Synthetic Default Warehouse', true, 'active', now());
@@ -75,7 +76,7 @@ export function seedSyntheticOrder(psql: Psql, tenant: SyntheticTenant): { produ
     const orderId = psql(`
         SELECT create_checkout_order(
             '${tenant.siteId}'::uuid, 'Synthetic Seed Buyer', 'syn-seed-buyer-${tenant.subdomain}@example.invalid', '9000000099',
-            '{"line1":"Fixture","city":"Bengaluru","state":"Karnataka","state_code":"29"}'::jsonb,
+            '{"line1":"Fixture","city":"Bengaluru","state":"Karnataka","state_code":"29","zip":"560001","country":"IN"}'::jsonb,
             '[{"product_id":"${productId}","quantity":1}]'::jsonb,
             'cod', NULL, NULL, NULL, 'standard',
             'syn-seed-order-idem-${productId}', NULL, 'syn-seed-order-req-${productId}'

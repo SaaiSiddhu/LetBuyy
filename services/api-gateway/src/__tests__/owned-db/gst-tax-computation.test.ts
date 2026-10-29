@@ -30,6 +30,7 @@ const LOCATION_ID = tenant.locationId;
 
 before(() => {
     seedSyntheticTenant(psql, tenant, { gst: true, taxRates: true });
+    psql(`UPDATE sites SET tax_inclusive=false WHERE id='${STORE_ID}';`);
 });
 
 test(

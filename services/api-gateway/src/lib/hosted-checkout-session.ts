@@ -117,7 +117,7 @@ export function releaseRejectedCodClaimPatch(row: HostedCheckoutSession, claim: 
     // unknown capture outcomes. All other failures keep their durable claim.
     if (!ownsConfirmation(row, claim) || row.payment_method !== 'cod' || row.payment_intent?.provider !== 'cod'
         || row.order_id || row.confirmed_at || row.failed_at
-        || !['CHECKOUT_PRODUCT_CHANGED', 'CHECKOUT_SHIPPING_CHANGED', 'MARKETPLACE_LISTING_UNAVAILABLE'].includes(code)) return null;
+        || !['CHECKOUT_QUOTE_CHANGED', 'CHECKOUT_TAX_REVIEW_REQUIRED', 'CHECKOUT_PRODUCT_CHANGED', 'CHECKOUT_SHIPPING_CHANGED', 'MARKETPLACE_LISTING_UNAVAILABLE'].includes(code)) return null;
     return { metadata: { ...(row.metadata || {}), [CLAIM]: null,
         hosted_last_rejection: { claim_id: claim.id, request_hash: claim.requestHash, intent_id: claim.intentId, code } } };
 }
