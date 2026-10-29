@@ -8,13 +8,17 @@ function read(path) {
 
 test('merchant control plane bounds session read retries and identifies query-cost refusals', () => {
   const session = read('apps/merchant/web/src/lib/auth/session.ts');
+  const retry = read('apps/merchant/web/src/lib/api/read-retry.ts');
 
-  assert.match(session, /QUERY_COST_RATE_LIMITED/);
-  assert.match(session, /MERCHANT_READ_RETRY_DELAYS_MS = \[200\]/);
-  assert.match(session, /export function isQueryCostRateLimited/);
-  assert.match(session, /apiErrorStatus\(error\) === 429 && apiErrorCode\(error\) === QUERY_COST_RATE_LIMITED/);
-  assert.match(session, /async function retryMerchantRead/);
-  assert.match(session, /await wait\(delay\)/);
+  assert.match(session, /import \{ apiErrorStatus, retryMerchantRead \} from '@\/lib\/api\/read-retry'/);
+  assert.match(session, /export \{ isQueryCostRateLimited \} from '@\/lib\/api\/read-retry'/);
+  assert.match(retry, /QUERY_COST_RATE_LIMITED/);
+  assert.match(retry, /MERCHANT_READ_RETRY_DELAYS_MS = \[200\]/);
+  assert.match(retry, /export function isQueryCostRateLimited/);
+  assert.match(retry, /apiErrorStatus\(error\) === 429 && apiErrorCode\(error\) === QUERY_COST_RATE_LIMITED/);
+  assert.match(retry, /async function retryMerchantRead/);
+  assert.match(retry, /await wait\(delay\)/);
+  assert.match(retry, /Date\.now\(\) - startedAt \+ delay > 1_000/);
   assert.match(session, /retryMerchantRead\(\(\) => createMerchantApiClient\(\)\.auth\.session\(\)\)/);
   assert.match(session, /retryMerchantRead\(\(\) => createMerchantApiClient\(\)\.stores\.getByHandle\(storeName\)\)/);
   assert.match(session, /retryMerchantRead\(\(\) => createMerchantApiClient\(\)\.stores\.list\(\{ limit: 50 \}\)\)/);
