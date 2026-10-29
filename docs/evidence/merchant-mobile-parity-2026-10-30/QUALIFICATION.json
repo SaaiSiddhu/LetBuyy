@@ -1,13 +1,14 @@
 {
   "date": "2026-10-30",
-  "source_commit": "496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a",
+  "source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
     "analysis": "pass",
-    "tests": 459,
-    "pass": 459,
-    "fail": 0
+    "tests": 502,
+    "pass": 502,
+    "fail": 0,
+    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -27,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a"
+    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
   },
   "owned_database_runs": [
     {
@@ -295,6 +296,67 @@
         }
       ],
       "qualification": "seven real Gateway catalog journeys including actual empty-offset recovery and failed/missing count refusal"
+    },
+    {
+      "run_id": "bf383e105a03",
+      "tests": 17,
+      "pass": 17,
+      "fail": 0,
+      "prepared_transactions": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "scope": "Existing stock audit/receipt/rollback and reservation lifecycle suites; actual Gateway/PostgREST/PostgreSQL, synthetic tenants; not native mutation or RLS certification"
+    },
+    {
+      "run_id": "08cc52ccd8a6",
+      "tests": 6,
+      "pass": 0,
+      "fail": 6,
+      "scope": "BEFORE populated defect witness; not acceptance",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "3de0a46af4e9",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "scope": "AFTER history store/permission/page/fault repairs",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "086cc05cb2e1",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "scope": "Final history read and canonical stored-row/reason conformance",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
     }
   ],
   "ios_simulator_build": {
@@ -327,7 +389,8 @@
       "catalog server search and explicit older-server filter refusal",
       "current product editor fields after successful fresh read, without saving",
       "two-decimal catalog price semantics on final APK",
-      "clear stock filter action restores actual catalog after hosted filter refusal"
+      "clear stock filter action restores actual catalog after hosted filter refusal",
+      "c732d0392 Products entry reached Inventory and loaded a hosted stock row; Android System UI ANR limited usability"
     ],
     "unverified": [
       "owner mutations",
@@ -337,12 +400,13 @@
       "provider sandbox",
       "release signing"
     ],
-    "captcha": "User authorized completion; app was already authenticated at next observation; no separate challenge click was issued or proven."
+    "captcha": "User authorized completion; app was already authenticated at next observation; no separate challenge click was issued or proven.",
+    "current_emulator_state": "Task-owned emulator restarted with 4GB RAM and auto GPU after repeated System UI ANR. Session data preserved. Latest history APK installed/hash verified; no successful latest history read claimed yet."
   },
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "a9e2ac797990f236f929f66c59a36d811b38635f",
+  "previous_source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -365,9 +429,9 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a",
-    "bytes": 148731288,
-    "sha256": "6d44501ebe971d1edbf50f365130ae89396ef396799a3d80acd7df7719b8167d",
+    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
+    "bytes": 148869275,
+    "sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
     "kind": "android-debug-apk",
     "configuration": "dart-defines/production.json",
     "packaged_native_abis": [
@@ -378,12 +442,10 @@
     "flutter_engine_abis": [
       "arm64-v8a"
     ],
-    "status": "built_installed_hash_verified",
+    "status": "installed_hash_verified",
     "serial": "emulator-5580",
-    "avd": "LetBuyy_Merchant_Parity",
-    "os": "Android 15/API 35 arm64",
-    "api_origin": "https://bff.letbuyy.com/v1",
-    "identity_origin": "https://accounts.letbuyy.com"
+    "installed_sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
+    "native_journey_status": "Latest history UI acceptance incomplete: Android System UI ANR repeated after reboot. Owned AVD restarted with 4GB RAM and auto GPU; data preserved."
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -422,5 +484,131 @@
       "explicit unsupported old-server filter outcome"
     ],
     "production_business_mutations": false
+  },
+  "shared_dart_models_tests": {
+    "pass": 12,
+    "fail": 0,
+    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
+  },
+  "inventory_scope_journal_tests": {
+    "pass": 29,
+    "fail": 0,
+    "included_in_flutter_total": true
+  },
+  "inventory_workspace_tests": {
+    "pass": 14,
+    "fail": 0,
+    "included_in_flutter_total": true,
+    "environment": "Flutter widget renderer with controlled synthetic transport"
+  },
+  "web_inventory_tests": {
+    "typecheck": "pass",
+    "component_tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
+  },
+  "inventory_continuation": "Committed history source: 502 mobile tests/analysis, shared model/API, Gateway/client/web typing, owned DB history and full 114 governance qualify. Latest Android debug APK installed/hash verified. Hosted history/complete native acceptance still open; owned emulator recovery in progress.",
+  "previous_governance": {
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "ok": true,
+    "exitCode": 0,
+    "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
+  },
+  "shared_dart_api_suite": {
+    "pass": 97,
+    "skipped": 6,
+    "fail": 0,
+    "skip_scope": "existing buyer sign-in tests require the local-stack environment; skipped cases are not acceptance evidence"
+  },
+  "history_types": {
+    "gateway_typecheck": "pass",
+    "typescript_client_typecheck": "pass after required shared-types declaration build",
+    "web_typecheck": "pass"
+  },
+  "inventory_source_contract_variance_tests": {
+    "pass": 32,
+    "fail": 0,
+    "environment": "repository-root source-contract/unit tests, not database evidence"
+  },
+  "inventory_source_checkpoints": [
+    {
+      "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a",
+      "flutter_pass": 489,
+      "analysis": "pass",
+      "governance_pass": 114
+    },
+    {
+      "source_commit": "c732d03921fc8d67c3fba714ac42b561fee90953",
+      "flutter_pass": 491,
+      "analysis": "pass",
+      "governance_pass": 114
+    }
+  ],
+  "android_inventory_checkpoints": [
+    {
+      "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a",
+      "bytes": 148754625,
+      "sha256": "2c16d349537257d1090302ca33e46304969de91beac08704abfa65cd2b7476e1",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "status": "installed_hash_verified",
+      "serial": "emulator-5580",
+      "installed_sha256": "2c16d349537257d1090302ca33e46304969de91beac08704abfa65cd2b7476e1"
+    },
+    {
+      "source_commit": "c732d03921fc8d67c3fba714ac42b561fee90953",
+      "bytes": 148750430,
+      "sha256": "e7033b7bf753b089a5c48c54c58ca634ef7a470b169781c623ff9699f2a08938",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "status": "installed_hash_verified",
+      "serial": "emulator-5580",
+      "installed_sha256": "e7033b7bf753b089a5c48c54c58ca634ef7a470b169781c623ff9699f2a08938",
+      "observed": "Products \u2192 Inventory loaded a real hosted stock row and shown-page metrics; Android System UI ANR limits usability evidence. No business mutation."
+    }
+  ],
+  "previous_android_debug_build": {
+    "source_commit": "496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a",
+    "bytes": 148731288,
+    "sha256": "6d44501ebe971d1edbf50f365130ae89396ef396799a3d80acd7df7719b8167d",
+    "kind": "android-debug-apk",
+    "configuration": "dart-defines/production.json",
+    "packaged_native_abis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86_64"
+    ],
+    "flutter_engine_abis": [
+      "arm64-v8a"
+    ],
+    "status": "built_installed_hash_verified",
+    "serial": "emulator-5580",
+    "avd": "LetBuyy_Merchant_Parity",
+    "os": "Android 15/API 35 arm64",
+    "api_origin": "https://bff.letbuyy.com/v1",
+    "identity_origin": "https://accounts.letbuyy.com"
   }
 }
