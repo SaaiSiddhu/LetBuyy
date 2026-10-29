@@ -7,6 +7,7 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
+import '../../app/routes.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' hide LoadingOverlay;
 import '../../services/store_service.dart';
 
@@ -38,6 +39,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String? _loadError;
 
   Object? _viewContext;
+  ({Object? key, String? store})? _menuView;
   int _loadGeneration = 0, _page = 1;
   bool _hasMore = false, _offline = false;
   Timer? _searchDebounce;
@@ -719,6 +721,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
             tooltip: 'Refresh',
           ),
           PopupMenuButton<String>(
+            enabled: !_isLoading && _loadError == null && _store != null,
+            onOpened: () => _menuView = (key: _viewContext, store: _store?.id),
             icon: Icon(Icons.more_vert, color: colors.textSecondary),
             color: colors.card,
             shape: RoundedRectangleBorder(
@@ -726,17 +730,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
             itemBuilder: (context) => [
               PopupMenuItem(
-                value: 'settings',
+                value: 'inventory',
                 child: Row(
                   children: [
                     Icon(
-                      Icons.settings_rounded,
+                      Icons.inventory_2_outlined,
                       size: 20,
                       color: colors.textSecondary,
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Settings',
+                      'Inventory',
                       style: TextStyle(color: colors.textPrimary),
                     ),
                   ],
@@ -744,7 +748,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
               ),
             ],
             onSelected: (value) {
-              // Handle menu selection
+              final view = _menuView;
+              _menuView = null;
+              if (view == null || !_scopeCurrent(view.key, view.store)) return;
+              if (value == 'inventory')
+                Navigator.pushNamed(context, AppRoutes.inventory);
             },
           ),
         ],

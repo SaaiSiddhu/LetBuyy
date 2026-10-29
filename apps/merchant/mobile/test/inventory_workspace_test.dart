@@ -4,11 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:letbuyy_store/app/store_context.dart';
+import 'package:letbuyy_store/app/routes.dart';
 import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/security_command_store.dart';
 import 'package:letbuyy_store/services/store_service.dart';
+import 'package:letbuyy_store/services/product_service.dart';
+import 'package:letbuyy_store/screens/products/products_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/inventory/locations_screen.dart';
 import 'package:letbuyy_store/screens/inventory/suppliers_screen.dart';
@@ -119,8 +122,12 @@ Future<StoreContext> mount(
       providers: [
         ChangeNotifierProvider.value(value: stores),
         ChangeNotifierProvider.value(value: inventory),
+        ChangeNotifierProvider(create: (_) => ProductService(api: api)),
       ],
-      child: MaterialApp(home: screen),
+      child: MaterialApp(
+        home: screen,
+        onGenerateRoute: AppRoutes.generateRoute,
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -128,6 +135,42 @@ Future<StoreContext> mount(
 }
 
 void main() {
+  for (final changeStore in [false, true]) {
+    testWidgets(
+      'Products menu reaches the registered inventory route only in its opening store ($changeStore)',
+      (tester) async {
+        var levelReads = 0;
+        final stores = await mount(tester, const ProductsScreen(), (r, h) {
+          if (r.path.endsWith('/inventory/levels')) levelReads++;
+          final site = r.queryParameters['store_id'].toString();
+          respond(r, h, [
+            {
+              ...record(site),
+              'name': 'Synthetic catalog item',
+              'price': 1.25,
+              'stock': 7,
+              'images': <String>[],
+            },
+          ]);
+        });
+        await tester.tap(find.byType(PopupMenuButton<String>));
+        await tester.pumpAndSettle();
+        if (changeStore) {
+          final change = stores.selectStore(stores.stores.last);
+          await tester.pumpAndSettle();
+          await change;
+        }
+        await tester.tap(find.text('Inventory').last);
+        await tester.pumpAndSettle();
+        expect(levelReads, changeStore ? 0 : greaterThan(0));
+        expect(
+          find.byType(InventoryScreen),
+          changeStore ? findsNothing : findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
   final surfaces = <({String name, Widget screen, String? form, String? save})>[
     (name: 'levels', screen: const InventoryScreen(), form: null, save: null),
     (
