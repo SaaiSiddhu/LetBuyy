@@ -1,6 +1,6 @@
 {
   "date": "2026-10-30",
-  "source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
+  "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
@@ -28,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
+    "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857"
   },
   "owned_database_runs": [
     {
@@ -357,6 +357,37 @@
           "volumes": []
         }
       }
+    },
+    {
+      "run_id": "35e1318027b5",
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "scope": "Real typed SDK \u2192 actual Gateway \u2192 owned PostgREST/PostgreSQL history; selected-store pages, alternate owned store and denial; no native or production mutations",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "run_id": "e9c3bee7728f",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "prepared_transactions": 2,
+      "scope": "Existing canonical supplier/warehouse metrics and receipt RPC baseline with 1,103 POs, 1,119 receipts and 52 warehouses; not new native feature acceptance",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
     }
   ],
   "ios_simulator_build": {
@@ -390,7 +421,8 @@
       "current product editor fields after successful fresh read, without saving",
       "two-decimal catalog price semantics on final APK",
       "clear stock filter action restores actual catalog after hosted filter refusal",
-      "c732d0392 Products entry reached Inventory and loaded a hosted stock row; Android System UI ANR limited usability"
+      "c732d0392 Products entry reached Inventory and loaded a hosted stock row; Android System UI ANR limited usability",
+      "753734ed5 recovered emulator retained login; Products \u2192 Inventory \u2192 Stock history and Retry rendered the unavailable-contract guard without fabricated empty history"
     ],
     "unverified": [
       "owner mutations",
@@ -401,12 +433,12 @@
       "release signing"
     ],
     "captcha": "User authorized completion; app was already authenticated at next observation; no separate challenge click was issued or proven.",
-    "current_emulator_state": "Task-owned emulator restarted with 4GB RAM and auto GPU after repeated System UI ANR. Session data preserved. Latest history APK installed/hash verified; no successful latest history read claimed yet."
+    "current_emulator_state": "Task-owned AVD running with 4GB RAM/auto GPU; retained authorized login and latest APK hash verified. Native read-only history guard and retry observed; no business writes. Earlier System UI ANRs remain a limitation; no stability certification."
   },
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a",
+  "previous_source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -445,7 +477,11 @@
     "status": "installed_hash_verified",
     "serial": "emulator-5580",
     "installed_sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
-    "native_journey_status": "Latest history UI acceptance incomplete: Android System UI ANR repeated after reboot. Owned AVD restarted with 4GB RAM and auto GPU; data preserved."
+    "native_journey_status": "After owned AVD recovery, retained login/dashboard and Products \u2192 Inventory \u2192 Stock history were observed. Initial and Retry reads showed the honest history scope/count-contract unavailable guard; successful hosted history data remains unaccepted.",
+    "safe_guard_image": {
+      "path": "android-stock-history-guard-753734.png",
+      "sha256": "51869dd698e1e583e0f395096deb97a595c4719fde2cab372218c3b637e1d383"
+    }
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -508,7 +544,7 @@
     "fail": 0,
     "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
   },
-  "inventory_continuation": "Committed history source: 502 mobile tests/analysis, shared model/API, Gateway/client/web typing, owned DB history and full 114 governance qualify. Latest Android debug APK installed/hash verified. Hosted history/complete native acceptance still open; owned emulator recovery in progress.",
+  "inventory_continuation": "History native/API/web checkpoints locally/database/governance qualified; current hosted native unavailable-contract guard and Retry observed. Next slice: native reservation and receipt readers, then operational analytics and durable warehouse lifecycle acceptance. Full 122 parity remains in progress.",
   "previous_governance": {
     "counts": {
       "PASS": 114,
@@ -519,7 +555,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
+    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
   },
   "shared_dart_api_suite": {
     "pass": 97,
@@ -610,5 +646,26 @@
     "os": "Android 15/API 35 arm64",
     "api_origin": "https://bff.letbuyy.com/v1",
     "identity_origin": "https://accounts.letbuyy.com"
+  },
+  "native_source_unchanged_from": "753734ed581da332bfb1b66def881fa6758c762a",
+  "native_source_unchanged_verification": "git diff 753734ed5..1e5740f22 -- apps/merchant/mobile packages/dart is empty",
+  "web_history_follow_up": {
+    "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857",
+    "before": {
+      "tests": 4,
+      "pass": 1,
+      "fail": 3,
+      "scope": "React reproduced malformed/uncounted success, stale actor view and lost page recovery"
+    },
+    "after": {
+      "tests": 69,
+      "pass": 69,
+      "fail": 0,
+      "scope": "web read lifecycle/error recovery suite, includes six history UI/SDK tests"
+    },
+    "typescript_client_typecheck": "pass",
+    "web_typecheck": "pass",
+    "gateway_typecheck": "pass",
+    "governance": "pass: 114, zero fail/blocked/skip; one report-only not-applicable"
   }
 }
