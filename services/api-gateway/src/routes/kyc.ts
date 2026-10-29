@@ -88,12 +88,16 @@ function hasLiveProviderEvidence(row: KycDocumentRow): boolean {
         && !row.metadata?.sandbox;
 }
 
+function effectiveDocumentStatus(row: KycDocumentRow): 'draft' | MerchantKycDocumentStatus {
+    return row.status === 'verified' && !hasLiveProviderEvidence(row) ? 'needs_review' : row.status;
+}
+
 function serializeDocument(row: KycDocumentRow) {
     return {
         id: row.id,
         site_id: row.site_id,
         document_type: row.document_type,
-        status: row.status === 'verified' && !hasLiveProviderEvidence(row) ? 'needs_review' : row.status,
+        status: effectiveDocumentStatus(row),
         provider: row.provider,
         provider_mode: row.provider_mode,
         provider_reference: row.provider_reference || null,
@@ -103,7 +107,7 @@ function serializeDocument(row: KycDocumentRow) {
         // Private object keys, provider payloads, and upload hashes are server-only.
         has_private_upload: Boolean(row.metadata?.private_object_key),
         submitted_at: row.submitted_at || null,
-        verified_at: row.verified_at || null,
+        verified_at: hasLiveProviderEvidence(row) ? row.verified_at || null : null,
         rejected_at: row.rejected_at || null,
         created_at: row.created_at || null,
         updated_at: row.updated_at || null,
@@ -112,15 +116,15 @@ function serializeDocument(row: KycDocumentRow) {
 }
 
 export function deriveKycOverallStatus(rows: KycDocumentRow[]) {
-    if (rows.some((row) => row.status === 'rejected')) return 'rejected';
+    if (rows.some((row) => effectiveDocumentStatus(row) === 'rejected')) return 'rejected';
     const byType = new Map(rows.map((row) => [row.document_type, row]));
     const required = REQUIRED_DOCUMENTS.filter((item) => item.required);
     if (required.every((item) => {
         const row = byType.get(item.document_type);
         return Boolean(row && hasLiveProviderEvidence(row));
     })) return 'verified';
-    if (rows.some((row) => row.status === 'needs_review')) return 'needs_review';
-    if (rows.some((row) => row.status === 'submitted' || row.status === 'verified')) return 'in_progress';
+    if (rows.some((row) => effectiveDocumentStatus(row) === 'needs_review')) return 'needs_review';
+    if (rows.some((row) => effectiveDocumentStatus(row) === 'submitted')) return 'in_progress';
     return 'not_started';
 }
 

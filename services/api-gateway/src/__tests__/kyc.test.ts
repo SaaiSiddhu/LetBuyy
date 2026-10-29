@@ -100,4 +100,18 @@ test('sandbox and provider-unavailable records never complete business verificat
     assert.notEqual(status(), 'verified');
     documents.forEach((row) => { row.metadata = { provider_verified: true }; });
     assert.equal(status(), 'verified');
+    // A replaced bank proof revokes the combined approval even while PAN and
+    // address evidence retain their provider decisions.
+    documents[1]!.status = 'submitted';
+    documents[1]!.provider_reference = '';
+    documents[1]!.metadata = { provider_review_required: true };
+    assert.equal(status(), 'in_progress');
+    documents[1]!.status = 'rejected';
+    assert.equal(status(), 'rejected');
+    documents[1]!.status = 'verified';
+    documents[1]!.provider_reference = 'provider-bank_proof';
+    documents[1]!.metadata = { provider_verified: true };
+    assert.equal(status(), 'verified');
+    documents[0]!.metadata = { provider_verified: true, provider_unavailable: true };
+    assert.equal(status(), 'needs_review', 'an untrusted old approval must agree with its Needs review document badge');
 });
