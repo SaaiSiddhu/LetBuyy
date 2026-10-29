@@ -45,6 +45,19 @@ test('two store editors cannot overwrite a cleared contact or cross tenant bound
     assert.equal(unauthorizedStaff.status, 403, unauthorizedStaff.text);
     assert.notEqual(owned.psql(`SELECT name FROM sites WHERE id='${first.siteId}';`), 'Forged staff name');
 
+    const versionBeforeInvalid = Number(owned.psql(`SELECT version FROM sites WHERE id='${first.siteId}';`));
+    for (const invalid of [
+        { currency: 'USD' },
+        { invoice_address: { line1: '123 Example Road', city: 'Mumbai', state: 'Maharashtra', zip: '400001', country: 'US' } },
+        { gstin: '22ABCDE1234F1Z5', gst_state_code: '27' },
+        { business_profile: { website: 'javascript:alert(1)' } },
+    ]) {
+        const rejected = await request(first.siteId, owner, { version: versionBeforeInvalid, ...invalid });
+        assert.equal(rejected.status, 400, `invalid store profile was accepted: ${JSON.stringify(invalid)}: ${rejected.text}`);
+        assert.equal(Number(owned.psql(`SELECT version FROM sites WHERE id='${first.siteId}';`)), versionBeforeInvalid,
+            'a rejected profile edit must not change the canonical row');
+    }
+
     owned.psql(`SELECT public.publish_theme_release('${first.siteId}','letbuyy-core','{}'::jsonb);`);
     const publicPath = `/v1/storefront/${first.subdomain}?projection=render-v1`;
     const privateRead = await gateway.request(publicPath);
