@@ -331,6 +331,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
         route: AppRoutes.inventoryHistory,
       ),
       _WmsShortcut(
+        label: 'Reservations',
+        icon: Icons.lock_clock_outlined,
+        route: AppRoutes.inventoryReservations,
+      ),
+      _WmsShortcut(
+        label: 'Receipts',
+        icon: Icons.receipt_long_outlined,
+        route: AppRoutes.inventoryReceipts,
+      ),
+      _WmsShortcut(
         label: 'Locations',
         icon: Icons.warehouse_outlined,
         route: AppRoutes.inventoryLocations,
@@ -593,6 +603,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   Navigator.pushNamed(
                     context,
                     AppRoutes.inventoryHistory,
+                    arguments: {
+                      'product_id': level.productId,
+                      'product_name': level.productName,
+                    },
+                  );
+                },
+              ),
+              IconButton(
+                tooltip: 'View reservations',
+                icon: const Icon(Icons.lock_clock_outlined),
+                onPressed: () {
+                  if (!merchantStoreViewCurrent(context, view) ||
+                      level.storeId != view!.storeId)
+                    return;
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.inventoryReservations,
                     arguments: {
                       'product_id': level.productId,
                       'product_name': level.productName,

@@ -8,6 +8,9 @@ export 'package:letbuyy_models/letbuyy_models.dart'
     show
         InventoryLevel,
         InventoryHistoryEntry,
+        InventoryReservationRecord,
+        InventoryReceiptRecord,
+        inventoryReservationStatuses,
         InventoryBarcodeLookup,
         InventoryLocationContract,
         InventoryLocationInput,
@@ -42,6 +45,23 @@ class InventoryService extends ChangeNotifier {
   int _generation = 0;
   List<InventoryLevel> _levels = [];
   List<InventoryHistoryEntry> _history = [];
+  List<InventoryReservationRecord> _reservations = [];
+  List<InventoryReceiptRecord> _receipts = [];
+  final Map<String, ({int total, bool more})> _recordPages = {};
+  List<InventoryReservationRecord> get reservations => List.unmodifiable(
+    _current('reservations') ? _reservations : <InventoryReservationRecord>[],
+  );
+  List<InventoryReceiptRecord> get receipts => List.unmodifiable(
+    _current('receipts') ? _receipts : <InventoryReceiptRecord>[],
+  );
+  int? get reservationTotal =>
+      _current('reservations') ? _recordPages['reservations']?.total : null;
+  int? get receiptTotal =>
+      _current('receipts') ? _recordPages['receipts']?.total : null;
+  bool get reservationsHasMore =>
+      _current('reservations') && (_recordPages['reservations']?.more ?? false);
+  bool get receiptsHasMore =>
+      _current('receipts') && (_recordPages['receipts']?.more ?? false);
   bool _historyHasMore = false;
   int? _historyTotal;
   List<InventoryHistoryEntry> get history => List.unmodifiable(
@@ -89,7 +109,12 @@ class InventoryService extends ChangeNotifier {
   }
 
   void _clear(String resource) {
+    _recordPages.remove(resource);
     switch (resource) {
+      case 'reservations':
+        _reservations = [];
+      case 'receipts':
+        _receipts = [];
       case 'history':
         _history = [];
         _historyHasMore = false;
@@ -148,6 +173,8 @@ class InventoryService extends ChangeNotifier {
       'purchase_order',
       'transfer',
       'supplier',
+      'purchase_orders',
+      'inventory_transfers',
     ]) {
       if (row[key] is Map) {
         final nested = Map<String, dynamic>.from(row[key] as Map);
@@ -317,6 +344,119 @@ class InventoryService extends ChangeNotifier {
       }
     }
   }
+
+  Future<List<T>> _readRecords<T>(
+    String resource,
+    String storeId,
+    int page,
+    int limit,
+    Future<PaginatedResponse<JsonMap>> Function(ApiRequestOptions) load,
+    T Function(JsonMap) parse,
+    void Function(List<T>) publish,
+    bool Function(T) matches,
+  ) async {
+    final view = _begin(resource, storeId);
+    try {
+      final result = await load(_options(view.version, storeId));
+      _checkRead(resource, view);
+      if (result.meta['store_id'] != storeId ||
+          result.meta['page'] != page ||
+          result.meta['per_page'] != limit ||
+          result.meta['has_next'] is! bool ||
+          result.meta['total'] is! int ||
+          result.total < 0 ||
+          result.data.length > limit ||
+          result.data.length > result.total) {
+        throw ApiException(
+          message:
+              'These inventory records are not available for the selected store yet. Try again later.',
+          statusCode: 503,
+          code: 'INVENTORY_${resource.toUpperCase()}_SCOPE_UNSUPPORTED',
+        );
+      }
+      final rows = result.data
+          .map((row) => parse(_scoped(row, storeId)))
+          .toList(growable: false);
+      if (rows.any((row) => !matches(row)))
+        throw const ApiException(
+          message: 'The inventory selection could not be confirmed.',
+          statusCode: 502,
+          code: 'INVENTORY_SCOPE_MISMATCH',
+        );
+      publish(rows);
+      _recordPages[resource] = (total: result.total, more: result.hasMore);
+      return rows;
+    } finally {
+      if (_views[resource] == view &&
+          _api.captureRequestContext() == view.version) {
+        _loading.remove(resource);
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<List<InventoryReservationRecord>> fetchReservations(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String? status,
+    String? productId,
+  }) => _readRecords(
+    'reservations',
+    storeId,
+    page,
+    limit,
+    (options) => _api.inventory.reservations(
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        if (status != null && status.isNotEmpty) 'status': status,
+        if (productId != null && productId.isNotEmpty) 'product_id': productId,
+      },
+      options: options,
+    ),
+    InventoryReservationRecord.fromJson,
+    (rows) => _reservations = rows,
+    (row) =>
+        (status == null || status.isEmpty || row.status == status) &&
+        (productId == null || productId.isEmpty || row.productId == productId),
+  );
+
+  Future<List<InventoryReceiptRecord>> fetchReceipts(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String? purchaseOrderId,
+    String? transferId,
+  }) => _readRecords(
+    'receipts',
+    storeId,
+    page,
+    limit,
+    (options) => _api.inventory.receipts(
+      query: {
+        'store_id': storeId,
+        'page': page,
+        'limit': limit,
+        if (purchaseOrderId != null && purchaseOrderId.isNotEmpty)
+          'po_id': purchaseOrderId,
+        if (transferId != null && transferId.isNotEmpty)
+          'transfer_id': transferId,
+      },
+      options: options,
+    ),
+    InventoryReceiptRecord.fromJson,
+    (rows) => _receipts = rows,
+    (row) =>
+        (purchaseOrderId == null ||
+            purchaseOrderId.isEmpty ||
+            (row.receiptType == 'purchase_order' &&
+                row.parentId == purchaseOrderId)) &&
+        (transferId == null ||
+            transferId.isEmpty ||
+            (row.receiptType == 'transfer' && row.parentId == transferId)),
+  );
 
   Future<InventoryLevel> adjustStock({
     required String storeId,

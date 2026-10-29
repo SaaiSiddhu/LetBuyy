@@ -39,6 +39,8 @@ const readPages = {
     segments: () => import('../src/app/[store]/customers/segments/page'),
     inventory: () => import('../src/app/[store]/products/inventory/page'),
     inventoryHistory: () => import('../src/app/[store]/products/inventory-history/page'),
+    inventoryReservations: () => import('../src/app/[store]/products/reservations/page'),
+    inventoryReceipts: () => import('../src/app/[store]/products/receipts/page'),
     planSettings: () => import('../src/app/[store]/settings/plan/page'),
     themeUpdate: () => import('../src/app/[store]/online-store/themes/update/UpdatePageClient'),
 
@@ -67,6 +69,99 @@ const historyRecord = (name = 'Synthetic history') => ({
 })
 const historyResponse = (rows: unknown[], page = 1, total = rows.length) => Response.json({
     data: rows, meta: { total, page, per_page: 20, has_next: page * 20 < total, store_id: historySite },
+})
+const reservationRecord = (name = 'Private reserved product') => ({
+    ...historyRecord(name), quantity: 3, status: 'hold', expires_at: '2026-11-01T00:00:00Z', updated_at: '2026-10-01T00:00:00Z',
+})
+const receiptRecord = (type: 'purchase_order' | 'transfer' = 'purchase_order') => ({
+    id: '22222222-2222-4222-8222-222222222222', receipt_type: type, quantity_received: 3, notes: 'Private receiving note',
+    received_at: '2026-10-01T00:00:00Z', created_at: '2026-10-01T00:00:00Z',
+    purchase_order_id: type === 'purchase_order' ? historyRecord().product_id : null,
+    transfer_id: type === 'transfer' ? historyRecord().product_id : null,
+    purchase_orders: type === 'purchase_order' ? { id: historyRecord().product_id, site_id: historySite } : null,
+    inventory_transfers: type === 'transfer' ? { id: historyRecord().product_id, site_id: historySite } : null,
+})
+for (const resource of ['reservations', 'receipts'] as const) {
+    const kind = resource === 'reservations' ? 'inventoryReservations' : 'inventoryReceipts'
+    const record = () => resource === 'reservations' ? reservationRecord() : receiptRecord()
+    const privateLabel = resource === 'reservations' ? /Private reserved product/ : /Private receiving note/
+    test(`${resource} refuses malformed quantities, missing counts and mismatched row scope`, async () => {
+        const missingQuantity = { ...record(), [resource === 'reservations' ? 'quantity' : 'quantity_received']: undefined }
+        const foreignRow = resource === 'reservations'
+            ? { ...reservationRecord(), store_id: historyRecord().product_id }
+            : { ...receiptRecord(), purchase_orders: { id: historyRecord().product_id, site_id: historyRecord().product_id } }
+        for (const payload of [() => historyResponse([missingQuantity]), () => json([record()]), () => historyResponse([foreignRow])]) {
+            const h = await mount(kind, async () => payload())
+            try {
+                assert.match(h.text(), new RegExp(`Failed to load ${resource}`))
+                assert.doesNotMatch(h.text(), privateLabel)
+                assert.doesNotMatch(h.text(), new RegExp(`No ${resource} found`))
+            } finally { await h.close() }
+        }
+    })
+    test(`${resource} retires visible rows and filters on an account change within the same store`, async () => {
+        let denied = false
+        const h = await mount(kind, async () => denied ? json({}, 403) : historyResponse([record()]))
+        try {
+            assert.match(h.text(), privateLabel)
+            denied = true; await h.render('alpha', 'actor-b')
+            assert.doesNotMatch(h.text(), privateLabel)
+            assert.match(h.text(), new RegExp(`Failed to load ${resource}`))
+        } finally { await h.close() }
+    })
+    test(`${resource} preserves Previous after a failed later page and rejects retired response bodies`, async () => {
+        const old = deferred<unknown>()
+        const h = await mount(kind, async url => url.includes('page=2') ? json({}, 503) : url.includes('/beta/')
+            ? { ok: true, json: () => old.promise } as Response : historyResponse([record()], 1, 21))
+        try {
+            await h.click('Next'); assert.doesNotMatch(h.text(), privateLabel)
+            await h.click('Previous'); assert.match(h.text(), privateLabel)
+            await h.render('beta'); await h.render('gamma')
+            await act(async () => old.resolve({ data: [resource === 'reservations' ? reservationRecord('Private retired response') : { ...receiptRecord(), notes: 'Private retired response' }], meta: { store_id: historySite, total: 1, page: 1, per_page: 20, has_next: false } }))
+            assert.doesNotMatch(h.text(), /Private retired response/)
+            assert.match(h.text(), privateLabel)
+        } finally { await h.close() }
+    })
+    test(`${resource} SDK validates acknowledged pages and pins the same store in query and headers`, async () => {
+        const { createLetbuyyApiClient, LetbuyyApiError } = await import('@letbuyy/api-client')
+        const meta = { total: 1, page: 1, per_page: 20, has_next: false, store_id: historySite }
+        const client = (body: unknown) => createLetbuyyApiClient({ baseUrl: 'https://api.example.invalid/v1', fetch: async (url, init) => {
+            assert.equal(new URL(String(url)).searchParams.get('store_id'), historySite)
+            assert.equal(new Headers(init?.headers).get('X-Store-ID'), historySite)
+            return Response.json(body)
+        } })
+        const result = await client({ data: [record()], meta }).inventory[resource].list({ store_id: historySite })
+        assert.equal(result.total, 1); assert.equal(result.data.length, 1)
+        for (const body of [
+            { data: [record()], meta: { ...meta, store_id: undefined } },
+            { data: [record()], meta: { ...meta, total: undefined } },
+            { data: [record()], meta: { ...meta, page: 2 } },
+            { data: [record()], meta: { ...meta, has_next: undefined } },
+            { data: [{ ...record(), [resource === 'reservations' ? 'quantity' : 'quantity_received']: 1.5 }], meta },
+        ]) await assert.rejects(() => client(body).inventory[resource].list({ store_id: historySite }),
+            error => error instanceof LetbuyyApiError && error.code === 'INVENTORY_RECORDS_UNVERIFIED')
+    })
+}
+test('web reservations preserve all seven recorded lifecycle states and both receipt families render', async () => {
+    const h = await mount('inventoryReservations', async () => historyResponse(['active','hold','committed','released','expired','fulfilled','cancelled'].map(status => ({ ...reservationRecord(status), status }))))
+    try { for (const status of ['Active','Hold','Committed','Released','Expired','Fulfilled','Cancelled']) assert.match(h.text(), new RegExp(status)) } finally { await h.close() }
+    const receipts = await mount('inventoryReceipts', async () => historyResponse([receiptRecord(), { ...receiptRecord('transfer'), id: '55555555-5555-4555-8555-555555555555' }]))
+    try { assert.match(receipts.text(), /PO Receipt/); assert.match(receipts.text(), /Transfer Receipt/) } finally { await receipts.close() }
+})
+test('web reservation pagination retains applied filters while draft inputs change', async () => {
+    const queries: URL[] = []
+    const h = await mount('inventoryReservations', async url => {
+        const query = new URL(url); queries.push(query)
+        return historyResponse([{ ...reservationRecord(), status: query.searchParams.get('status') || 'active' }], Number(query.searchParams.get('page')), 41)
+    })
+    try {
+        await h.setField('#status-filter', 'hold'); await h.click('Apply')
+        assert.equal(queries.at(-1)!.searchParams.get('status'), 'hold')
+        await h.setField('#status-filter', 'expired'); await h.click('Next')
+        assert.equal(queries.at(-1)!.searchParams.get('status'), 'hold')
+        assert.equal(queries.at(-1)!.searchParams.get('page'), '2')
+        await h.click('Clear'); assert.equal(queries.at(-1)!.searchParams.get('status'), null)
+    } finally { await h.close() }
 })
 test('stock history refuses a missing quantity or missing matching count instead of painting fabricated zero', async () => {
     const broken: Record<string, unknown> = { ...historyRecord('Private malformed history') }
@@ -222,6 +317,15 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         completions: () => completions,
         text: () => dom.window.document.body.textContent || '',
         controls: () => [...dom.window.document.querySelectorAll('input,textarea,select,[role="switch"]')].map((node: Element) => ({ value: (node as HTMLInputElement).value, checked: (node as HTMLInputElement).checked, ariaChecked: node.getAttribute('aria-checked') })),
+        async setField(selector: string, value: string) {
+            const field = dom.window.document.querySelector(selector) as HTMLInputElement | HTMLSelectElement
+            assert.ok(field, `Missing field ${selector}`)
+            await act(async () => {
+                const prototype = field.tagName === 'SELECT' ? dom.window.HTMLSelectElement.prototype : dom.window.HTMLInputElement.prototype
+                Object.getOwnPropertyDescriptor(prototype, 'value')!.set!.call(field, value)
+                field.dispatchEvent(new dom.window.Event(field.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }))
+            })
+        },
         async type(value: string) {
             const input = dom.window.document.querySelector('input[placeholder*="Search"]') as HTMLInputElement
             assert.ok(input, 'real search input')

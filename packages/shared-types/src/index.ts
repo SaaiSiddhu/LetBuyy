@@ -1638,6 +1638,47 @@ export const InventoryHistoryEntrySchema = z.object({
 });
 export type InventoryHistoryEntry = z.infer<typeof InventoryHistoryEntrySchema>;
 
+export const InventoryReservationStatusSchema = z.enum(['active', 'hold', 'committed', 'released', 'expired', 'fulfilled', 'cancelled']);
+export const InventoryReservationSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema,
+  order_id: UuidSchema.optional().nullable(),
+  quantity: z.number().int().positive(),
+  status: InventoryReservationStatusSchema,
+  expires_at: z.string().datetime({ offset: true }),
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  products: z.object({ name: z.string(), store_id: UuidSchema }),
+});
+export type InventoryReservation = z.infer<typeof InventoryReservationSchema>;
+
+const InventoryReceiptParentSchema = z.object({ id: UuidSchema, site_id: UuidSchema });
+const InventoryReceiptBaseSchema = z.object({
+  id: UuidSchema,
+  quantity_received: z.number().int().positive(),
+  notes: z.string().optional().nullable(),
+  received_at: z.string().datetime({ offset: true }),
+  created_at: z.string().datetime({ offset: true }),
+});
+export const InventoryReceiptSchema = z.discriminatedUnion('receipt_type', [
+  InventoryReceiptBaseSchema.extend({
+    receipt_type: z.literal('purchase_order'), purchase_order_id: UuidSchema,
+    transfer_id: z.null().optional(), purchase_orders: InventoryReceiptParentSchema,
+    inventory_transfers: z.null().optional(),
+  }),
+  InventoryReceiptBaseSchema.extend({
+    receipt_type: z.literal('transfer'), transfer_id: UuidSchema,
+    purchase_order_id: z.null().optional(), inventory_transfers: InventoryReceiptParentSchema,
+    purchase_orders: z.null().optional(),
+  }),
+]).refine(row => row.receipt_type === 'purchase_order'
+  ? row.purchase_order_id === row.purchase_orders.id : row.transfer_id === row.inventory_transfers.id,
+  { message: 'The receipt parent could not be confirmed' });
+export type InventoryReceipt = z.infer<typeof InventoryReceiptSchema>;
+
 export const InventoryLevelSchema = z.object({
   id: z.string().min(1),
   product_id: UuidSchema,

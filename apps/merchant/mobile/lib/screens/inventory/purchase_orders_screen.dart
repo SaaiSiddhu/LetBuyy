@@ -1,5 +1,6 @@
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
+import '../../app/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -193,6 +194,7 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
   }
 
   Widget _orderCard(PurchaseOrderContract order) {
+    final view = _view;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -221,6 +223,18 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
                 ),
               ),
               _statusChip(order.status),
+              IconButton(
+                tooltip: 'View receipts',
+                icon: const Icon(Icons.receipt_long_outlined),
+                onPressed: () {
+                  if (!_matches(view) || order.storeId != view!.storeId) return;
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.inventoryReceipts,
+                    arguments: {'po_id': order.id},
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 8),

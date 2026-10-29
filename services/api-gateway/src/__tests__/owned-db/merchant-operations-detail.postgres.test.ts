@@ -116,7 +116,9 @@ test('operational readers validate pages, deny foreign callers and report failed
         ?Promise.resolve(new Response('{"code":"XX000","message":"private-operational-detail"}',{status:500,headers:{'content-type':'application/json'}})):forward());
     try {for(const path of paths) {
         const failed=await gateway.request(`${path}?store_id=${store}`,{headers:await signedIdentityHeaders(owner,email(owner))});
-        assert.equal(failed.status,500,failed.text);
+        const receiptReader=path==='/v1/inventory/receipts';
+        assert.equal(failed.status,receiptReader?503:500,failed.text);
+        if(receiptReader) assert.equal(failed.json?.error.code,'INVENTORY_RECEIPTS_UNAVAILABLE');
         assert.doesNotMatch(failed.text,/private-operational-detail/);
         assert.equal(failed.json?.data,undefined);
     }} finally {fault.restore()}

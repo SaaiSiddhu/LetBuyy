@@ -7191,6 +7191,11 @@ void main() {
     expect(find.text('TEE-001'), findsOneWidget);
     expect(find.text('Adjust'), findsOneWidget);
     expect(find.text('Locations'), findsOneWidget);
+    await tester.drag(
+      find.byWidgetPredicate((widget) => widget is ListView && widget.scrollDirection == Axis.horizontal),
+      const Offset(-450, 0),
+    );
+    await tester.pumpAndSettle();
     expect(find.text('Purchase orders'), findsOneWidget);
   });
 

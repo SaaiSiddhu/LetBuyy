@@ -20,7 +20,7 @@ export { SportsFactsSchema, SportsVariantFactsSchema, readSportsFacts, resolveSp
 export { BooksFactsSchema, BooksVariantFactsSchema, readBooksFacts, mergeBooksVariantFacts, type BooksFacts, type BooksVariantFacts } from './marginalia-facts';
 export { ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 export { CollectionListPaginationSchema, CollectionListQuerySchema, type CollectionListPagination, type CollectionListQuery, type CollectionListQueryInput } from '@letbuyy/shared-types';
-import { CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+import { CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema, InventoryReservationStatusSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -343,6 +343,17 @@ export const InventoryHistoryQuerySchema = PaginationQuery.pick({ page: true, li
   product_id: UuidSchema.optional(),
 }).refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The history page is out of range' });
 export type InventoryHistoryQuery = z.infer<typeof InventoryHistoryQuerySchema>;
+
+export const InventoryReservationListQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({
+  store_id: UuidSchema.optional(), product_id: UuidSchema.optional(), status: InventoryReservationStatusSchema.optional(),
+}).refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The reservation page is out of range' });
+export type InventoryReservationListQuery = z.infer<typeof InventoryReservationListQuerySchema>;
+
+export const InventoryReceiptListQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({
+  store_id: UuidSchema.optional(), po_id: UuidSchema.optional(), transfer_id: UuidSchema.optional(),
+}).refine(q => !q.po_id || !q.transfer_id, { message: 'Choose a purchase order or a transfer filter' })
+  .refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The receipt page is out of range' });
+export type InventoryReceiptListQuery = z.infer<typeof InventoryReceiptListQuerySchema>;
 
 export const CreateLocationSchema = z.object({
   store_id: UuidSchema,

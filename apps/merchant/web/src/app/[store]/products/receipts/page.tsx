@@ -2,8 +2,10 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { InventoryReceiptSchema, UuidSchema, type InventoryReceipt } from '@letbuyy/shared-types'
+import { MerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import {
     Badge,
     Banner,
@@ -26,20 +28,11 @@ import { formatIndiaDate } from '@letbuyy/ui/formatting'
 // id, receipt_type, purchase_order_id, transfer_id, quantity_received,
 // notes, received_at, created_at
 
-type ReceiptType = 'purchase_order' | 'transfer'
-
-interface ReceiptRow {
-    id: string
-    receipt_type: ReceiptType
-    purchase_order_id: string | null
-    transfer_id: string | null
-    quantity_received: number
-    notes: string | null
-    received_at: string | null
-    created_at: string
-}
+type ReceiptRow = InventoryReceipt
+type ReceiptType = InventoryReceipt['receipt_type']
 
 interface PageMeta {
+    store_id: string
     total: number
     page: number
     per_page: number
@@ -56,31 +49,24 @@ function receiptLabel(type: ReceiptType): string {
     return type === 'purchase_order' ? 'PO Receipt' : 'Transfer Receipt'
 }
 
-function normalizeRow(raw: Record<string, unknown>): ReceiptRow {
-    return {
-        id: String(raw.id ?? ''),
-        receipt_type: (raw.receipt_type === 'transfer' ? 'transfer' : 'purchase_order') as ReceiptType,
-        purchase_order_id: typeof raw.purchase_order_id === 'string' ? raw.purchase_order_id : null,
-        transfer_id: typeof raw.transfer_id === 'string' ? raw.transfer_id : null,
-        quantity_received: typeof raw.quantity_received === 'number' ? raw.quantity_received : 0,
-        notes: typeof raw.notes === 'string' ? raw.notes : null,
-        received_at: typeof raw.received_at === 'string' ? raw.received_at : null,
-        created_at: typeof raw.created_at === 'string' ? raw.created_at : '',
-    }
-}
-
 // ── main component ─────────────────────────────────────────────────────────────
 
 export default function InventoryReceiptsPage() {
     const { store } = useParams<{ store: string }>()
+    const security = useContext(MerchantSecurityContext)
+    return <InventoryReceiptsWorkspace key={JSON.stringify([store, security?.actorId ?? null])} store={store} />
+}
+
+function InventoryReceiptsWorkspace({ store }: { store: string }) {
     const { notify } = useToast()
 
     const [rows, setRows] = useState<ReceiptRow[]>([])
-    const [meta, setMeta] = useState<PageMeta>({ total: 0, page: 1, per_page: 20, has_next: false })
+    const [meta, setMeta] = useState<PageMeta>({ store_id: '', total: 0, page: 1, per_page: 20, has_next: false })
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [poFilter, setPoFilter] = useState('')
     const [transferFilter, setTransferFilter] = useState('')
+    const [applied, setApplied] = useState({ po: '', transfer: '' })
     const [page, setPage] = useState(1)
 
     const beginRead = useReadRequest(store)
@@ -89,6 +75,7 @@ export default function InventoryReceiptsPage() {
             const request = beginRead()
             setLoading(true)
             setError(null)
+            setRows([])
             try {
                 const url = new URL(
                     `/api/stores/${encodeURIComponent(store)}/inventory/receipts`,
@@ -118,18 +105,16 @@ export default function InventoryReceiptsPage() {
                     throw new Error(msg)
                 }
 
-                const normalized = (json.data ?? []).map((r) =>
-                    normalizeRow(r as Record<string, unknown>)
-                )
-                setRows(normalized)
-                setMeta(
-                    json.meta ?? {
-                        total: normalized.length,
-                        page: currentPage,
-                        per_page: 20,
-                        has_next: false,
-                    }
-                )
+                const normalized = InventoryReceiptSchema.array().safeParse(json.data)
+                if (!normalized.success || !json.meta || !UuidSchema.safeParse(json.meta.store_id).success ||
+                    !Number.isSafeInteger(json.meta.total) || json.meta.total < 0 ||
+                    json.meta.page !== currentPage || json.meta.per_page !== 20 || typeof json.meta.has_next !== 'boolean' ||
+                    normalized.data.length > 20 || normalized.data.length > json.meta.total ||
+                    normalized.data.some(row => (row.receipt_type === 'purchase_order' ? row.purchase_orders.site_id : row.inventory_transfers.site_id) !== json.meta!.store_id || (currentPo.trim() && (row.receipt_type !== 'purchase_order' || row.purchase_order_id !== currentPo.trim())) || (currentTransfer.trim() && (row.receipt_type !== 'transfer' || row.transfer_id !== currentTransfer.trim())))) {
+                    throw new Error('Inventory records and counts could not be verified. Refresh to try again.')
+                }
+                setRows(normalized.data)
+                setMeta(json.meta)
             } catch (err) {
                 if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
@@ -148,11 +133,13 @@ export default function InventoryReceiptsPage() {
     }, [fetchReceipts])
 
     function handleApply() {
+        setApplied({ po: poFilter.trim(), transfer: transferFilter.trim() })
         setPage(1)
         void fetchReceipts(1, poFilter, transferFilter)
     }
 
     function handleClear() {
+        setApplied({ po: '', transfer: '' })
         setPoFilter('')
         setTransferFilter('')
         setPage(1)
@@ -160,20 +147,20 @@ export default function InventoryReceiptsPage() {
     }
 
     function handleRefresh() {
-        void fetchReceipts(page, poFilter, transferFilter)
+        void fetchReceipts(page, applied.po, applied.transfer)
     }
 
     function handlePrev() {
         const newPage = Math.max(1, page - 1)
         setPage(newPage)
-        void fetchReceipts(newPage, poFilter, transferFilter)
+        void fetchReceipts(newPage, applied.po, applied.transfer)
     }
 
     function handleNext() {
         if (!meta.has_next) return
         const newPage = page + 1
         setPage(newPage)
-        void fetchReceipts(newPage, poFilter, transferFilter)
+        void fetchReceipts(newPage, applied.po, applied.transfer)
     }
 
     const totalPages = Math.max(1, Math.ceil(meta.total / meta.per_page))
@@ -245,9 +232,10 @@ export default function InventoryReceiptsPage() {
                         variant="critical"
                         title="Failed to load receipts"
                         action={
-                            <Button variant="ghost" size="sm" onClick={handleRefresh}>
-                                Try again
-                            </Button>
+                            <div className="flex gap-[var(--lb-space-2)]">
+                                <Button variant="ghost" size="sm" onClick={handleRefresh}>Try again</Button>
+                                {page > 1 && <Button variant="ghost" size="sm" onClick={handlePrev}>Previous</Button>}
+                            </div>
                         }
                     >
                         {error}

@@ -4,8 +4,7 @@ import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 
 import { Hono } from 'hono';
-import { z } from 'zod';
-import { PaginationQuery, UuidSchema } from '@letbuyy/shared-types';
+import { InventoryReservationSchema, InventoryReceiptSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -44,11 +43,17 @@ import {
     InventoryReservationActionSchema,
     InventoryHistoryQuerySchema,
     type InventoryHistoryQuery,
+    InventoryReservationListQuerySchema,
+    InventoryReceiptListQuerySchema,
+    type InventoryReservationListQuery,
+    type InventoryReceiptListQuery,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-const ReceiptPageQuery=PaginationQuery.pick({page:true,limit:true}).extend({store_id:UuidSchema.optional(),po_id:UuidSchema.optional(),transfer_id:UuidSchema.optional()})
-    .refine(q=>!q.po_id || !q.transfer_id,{message:'Choose a purchase order or a transfer filter'});
+function scopedInventoryPage<T>(rows: T[], total: number, page: number, limit: number, storeId?: string) {
+    const body = paginated(rows, total, page, limit);
+    return { ...body, meta: { ...body.meta, store_id: storeId ?? null } };
+}
 
 type ProductOwnerRow = {
     id: string;
@@ -962,13 +967,11 @@ router.post('/bulk-adjust', validate('json', BulkAdjustSchema), async (c) => {
 });
 
 // GET /inventory/reservations — List inventory reservations (read-only, ownership-checked)
-router.get('/reservations', async (c) => {
+router.get('/reservations', validate('query', InventoryReservationListQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const statusFilter = c.req.query('status');
-    const productIdFilter = c.req.query('product_id');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+    const q = c.get('validatedQuery') as InventoryReservationListQuery;
+    const { status: statusFilter, product_id: productIdFilter, page, limit } = q;
+    const storeId = q.store_id ?? auth.user.storeId;
     const offset = (page - 1) * limit;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -986,38 +989,42 @@ router.get('/reservations', async (c) => {
     }
 
     if (ownedStoreIds.length === 0) {
-        return c.json(paginated([], 0, page, limit));
+        return c.json(scopedInventoryPage([], 0, page, limit, storeId));
     }
 
-    let query = db
-        .from('inventory_reservations')
-        .select('*, products!inner(name, store_id)', { count: 'exact' })
-        .in('store_id', ownedStoreIds)
-        .in('products.store_id', ownedStoreIds);
-
-    if (statusFilter) query = query.eq('status', statusFilter);
-    if (productIdFilter) query = query.eq('product_id', productIdFilter);
-
-    const { data, error, count } = await query
+    const unavailable = () => c.json(failureBody('INVENTORY_RESERVATIONS_UNAVAILABLE', 'Inventory reservations are unavailable. Try again.'), 503);
+    const buildQuery = (head = false) => {
+        let query = db.from('inventory_reservations')
+            .select('id,store_id,product_id,variant_id,location_id,order_id,quantity,status,expires_at,created_at,updated_at,products!inner(name,store_id)', { count: 'exact', head })
+            .in('store_id', ownedStoreIds).in('products.store_id', ownedStoreIds)
+            .is('deleted_at', null);
+        if (statusFilter) query = query.eq('status', statusFilter);
+        if (productIdFilter) query = query.eq('product_id', productIdFilter);
+        return query;
+    };
+    const { data, error, count } = await buildQuery()
         .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (isMissingTableError(error, 'inventory_reservations')) {
-        return c.json(paginated([], 0, page, limit));
+    if ((!error && !data?.length && offset > 0) || (error?.code === 'PGRST103' && offset > 0)) {
+        const recovered = await buildQuery(true);
+        if (recovered.error || recovered.count == null || !Number.isSafeInteger(recovered.count) || recovered.count < 0) return unavailable();
+        return c.json(scopedInventoryPage([], recovered.count, page, limit, storeId));
     }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(paginated(data || [], count || 0, page, limit));
+    if (error || count == null || !Number.isSafeInteger(count) || count < 0 || (data?.length ?? 0) > limit || (data?.length ?? 0) > count) return unavailable();
+    const rows = InventoryReservationSchema.array().safeParse(data ?? []);
+    if (!rows.success || rows.data.some(row => !ownedStoreIds.includes(row.store_id) || row.products.store_id !== row.store_id ||
+        (productIdFilter && row.product_id !== productIdFilter) || (statusFilter && row.status !== statusFilter))) return unavailable();
+    return c.json(scopedInventoryPage(rows.data, count, page, limit, storeId));
 });
 
 // GET /inventory/receipts — List PO receipts and transfer receipts (read-only, ownership-checked)
-router.get('/receipts', validate('query', ReceiptPageQuery), async (c) => {
+router.get('/receipts', validate('query', InventoryReceiptListQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const q=c.get('validatedQuery') as z.infer<typeof ReceiptPageQuery>;
-    const {store_id:storeId,page,limit}=q;
+    const q=c.get('validatedQuery') as InventoryReceiptListQuery;
+    const {page,limit}=q;
+    const storeId=q.store_id ?? auth.user.storeId;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -1034,14 +1041,22 @@ router.get('/receipts', validate('query', ReceiptPageQuery), async (c) => {
     }
 
     if (ownedStoreIds.length === 0) {
-        return c.json(paginated([], 0, page, limit));
+        return c.json(scopedInventoryPage([], 0, page, limit, storeId));
     }
 
     const {data,error}=await db.rpc('read_merchant_inventory_receipts',{
         p_site_ids:ownedStoreIds,p_page:page,p_limit:limit,p_po_id:q.po_id ?? null,p_transfer_id:q.transfer_id ?? null,
     });
-    if(error || !data || !Array.isArray(data.rows) || !Number.isSafeInteger(data.total)) return c.json(dbFailureBody(),500);
-    return c.json(paginated(data.rows,data.total,page,limit));
+    const unavailable = () => c.json(failureBody('INVENTORY_RECEIPTS_UNAVAILABLE', 'Inventory receipts are unavailable. Try again.'), 503);
+    if(error || !data || !Array.isArray(data.rows) || !Number.isSafeInteger(data.total) || data.total < 0 || data.rows.length > limit || data.rows.length > data.total) return unavailable();
+    const rows = InventoryReceiptSchema.array().safeParse(data.rows);
+    if (!rows.success || rows.data.some(row => {
+        const parent = row.receipt_type === 'purchase_order' ? row.purchase_orders : row.inventory_transfers;
+        return !ownedStoreIds.includes(parent.site_id) ||
+            (q.po_id && (row.receipt_type !== 'purchase_order' || row.purchase_order_id !== q.po_id)) ||
+            (q.transfer_id && (row.receipt_type !== 'transfer' || row.transfer_id !== q.transfer_id));
+    })) return unavailable();
+    return c.json(scopedInventoryPage(rows.data,data.total,page,limit,storeId));
 });
 
 // GET /inventory/analytics — Real aggregations over existing tables (no fabricated data)

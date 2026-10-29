@@ -2578,6 +2578,21 @@ class InventoryApi {
     options: _mergeOptions(options, query: query),
   );
 
+  Future<PaginatedResponse<JsonMap>> reservations({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/reservations',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<PaginatedResponse<JsonMap>> receipts({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/receipts',
+    options: _mergeOptions(options, query: query),
+  );
+
   Future<JsonMap> adjust(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/inventory/adjust',

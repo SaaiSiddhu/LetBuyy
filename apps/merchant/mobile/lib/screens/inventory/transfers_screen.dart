@@ -1,5 +1,6 @@
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
+import '../../app/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -194,6 +195,7 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
   }
 
   Widget _transferCard(InventoryTransferContract transfer) {
+    final view = _view;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -222,6 +224,19 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
                 ),
               ),
               _statusChip(transfer.status),
+              IconButton(
+                tooltip: 'View receipts',
+                icon: const Icon(Icons.receipt_long_outlined),
+                onPressed: () {
+                  if (!_matches(view) || transfer.storeId != view!.storeId)
+                    return;
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.inventoryReceipts,
+                    arguments: {'transfer_id': transfer.id},
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 8),

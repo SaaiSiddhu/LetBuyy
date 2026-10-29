@@ -1,6 +1,155 @@
 /// Dart transport mirrors for canonical inventory/warehouse contracts in
 /// @letbuyy/shared-types and @letbuyy/commerce-core. The server owns quantities,
 /// permissions, totals and lifecycle effects. No SDK or app dependency belongs here.
+const inventoryReservationStatuses = [
+  'active',
+  'hold',
+  'committed',
+  'released',
+  'expired',
+  'fulfilled',
+  'cancelled',
+];
+
+bool _recordId(Object? value) =>
+    value is String &&
+    RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    ).hasMatch(value);
+DateTime? _recordDate(Object? value) =>
+    value is String &&
+        RegExp(
+          r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$',
+        ).hasMatch(value)
+    ? DateTime.tryParse(value)
+    : null;
+
+class InventoryReservationRecord {
+  const InventoryReservationRecord({
+    required this.id,
+    required this.storeId,
+    required this.productId,
+    required this.productName,
+    required this.variantId,
+    required this.locationId,
+    required this.orderId,
+    required this.quantity,
+    required this.status,
+    required this.expiresAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  factory InventoryReservationRecord.fromJson(Map<String, dynamic> json) {
+    final product = _mapValue(json['products']);
+    final site = _stringValue(json['store_id']),
+        id = _stringValue(json['id']),
+        productId = _stringValue(json['product_id']);
+    final quantity = _inventoryQuantity(json['quantity']);
+    final expires = _recordDate(json['expires_at']),
+        created = _recordDate(json['created_at']),
+        updated = _recordDate(json['updated_at']);
+    if (!_recordId(json['store_id']) ||
+        !_recordId(json['id']) ||
+        !_recordId(json['product_id']) ||
+        !_recordId(json['location_id']) ||
+        (json['variant_id'] != null && !_recordId(json['variant_id'])) ||
+        (json['order_id'] != null && !_recordId(json['order_id'])) ||
+        product['name'] is! String ||
+        json['quantity'] is! num ||
+        product['store_id'] != site ||
+        quantity <= 0 ||
+        !inventoryReservationStatuses.contains(json['status']) ||
+        expires == null ||
+        created == null ||
+        updated == null) {
+      throw const FormatException(
+        'The reservation record could not be confirmed.',
+      );
+    }
+    return InventoryReservationRecord(
+      id: id,
+      storeId: site,
+      productId: productId,
+      productName: product['name'] as String,
+      variantId: _stringValue(json['variant_id']),
+      locationId: _stringValue(json['location_id']),
+      orderId: _stringValue(json['order_id']),
+      quantity: quantity,
+      status: json['status'] as String,
+      expiresAt: expires,
+      createdAt: created,
+      updatedAt: updated,
+    );
+  }
+  final String id,
+      storeId,
+      productId,
+      productName,
+      variantId,
+      locationId,
+      orderId,
+      status;
+  final int quantity;
+  final DateTime expiresAt, createdAt, updatedAt;
+}
+
+class InventoryReceiptRecord {
+  const InventoryReceiptRecord({
+    required this.id,
+    required this.storeId,
+    required this.parentId,
+    required this.receiptType,
+    required this.quantityReceived,
+    required this.notes,
+    required this.receivedAt,
+    required this.createdAt,
+  });
+  factory InventoryReceiptRecord.fromJson(Map<String, dynamic> json) {
+    final type = _stringValue(json['receipt_type']);
+    if (!const {'purchase_order', 'transfer'}.contains(type))
+      throw const FormatException('The receipt type could not be confirmed.');
+    final purchase = type == 'purchase_order';
+    final parent = _mapValue(
+      json[purchase ? 'purchase_orders' : 'inventory_transfers'],
+    );
+    final site = _stringValue(json['store_id'] ?? parent['site_id']),
+        id = _stringValue(json['id']);
+    final parentId = _stringValue(
+      json[purchase ? 'purchase_order_id' : 'transfer_id'],
+    );
+    final quantity = _inventoryQuantity(json['quantity_received']);
+    final received = _recordDate(json['received_at']),
+        created = _recordDate(json['created_at']);
+    if (!_recordId(site) ||
+        !_recordId(json['id']) ||
+        !_recordId(parentId) ||
+        parent['site_id'] != site ||
+        parent['id'] != parentId ||
+        json[purchase ? 'transfer_id' : 'purchase_order_id'] != null ||
+        json[purchase ? 'inventory_transfers' : 'purchase_orders'] != null ||
+        (json['notes'] != null && json['notes'] is! String) ||
+        json['quantity_received'] is! num ||
+        quantity <= 0 ||
+        received == null ||
+        created == null) {
+      throw const FormatException('The receipt record could not be confirmed.');
+    }
+    return InventoryReceiptRecord(
+      id: id,
+      storeId: site,
+      parentId: parentId,
+      receiptType: type,
+      quantityReceived: quantity,
+      notes: _stringValue(json['notes']),
+      receivedAt: received,
+      createdAt: created,
+    );
+  }
+  final String id, storeId, parentId, receiptType, notes;
+  final int quantityReceived;
+  final DateTime receivedAt, createdAt;
+}
+
 class InventoryHistoryEntry {
   const InventoryHistoryEntry({
     required this.id,

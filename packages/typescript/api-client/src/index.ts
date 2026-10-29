@@ -6,7 +6,8 @@ export type { CheckoutDomainSetup } from '@letbuyy/shared-types';
 export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
 import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, type PersonalizationReviewContext, type StorefrontDiscoveryQueryInput, type StorefrontDiscoveryMetadata } from '@letbuyy/shared-types';
 import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
-import { InventoryHistoryEntrySchema } from '@letbuyy/shared-types';
+import { InventoryHistoryEntrySchema, InventoryReservationSchema, InventoryReceiptSchema, UuidSchema,
+  type InventoryReservation as CanonicalInventoryReservation, type InventoryReceipt as CanonicalInventoryReceipt } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import { createReelReviewSdk } from './reels';
 export { createReelReviewSdk } from './reels';
@@ -2481,18 +2482,7 @@ export interface InventoryHistoryQuery extends StoreScopedQuery {
 }
 
 // ── Inventory reservations (read endpoint) ───────────────────────
-export interface InventoryReservation extends JsonRecord {
-  id: string;
-  product_id: string;
-  variant_id?: string | null;
-  location_id?: string | null;
-  quantity: number;
-  status: string;
-  expires_at?: string | null;
-  order_id?: string | null;
-  created_at: string;
-  updated_at?: string | null;
-}
+export type InventoryReservation = CanonicalInventoryReservation;
 
 export interface InventoryReservationListQuery extends StoreScopedQuery {
   status?: string;
@@ -2502,16 +2492,7 @@ export interface InventoryReservationListQuery extends StoreScopedQuery {
 }
 
 // ── Inventory receipts (read endpoint) ───────────────────────────
-export interface InventoryReceipt extends JsonRecord {
-  id: string;
-  receipt_type: 'purchase_order' | 'transfer';
-  purchase_order_id?: string | null;
-  transfer_id?: string | null;
-  quantity_received: number;
-  notes?: string | null;
-  received_at?: string | null;
-  created_at: string;
-}
+export type InventoryReceipt = CanonicalInventoryReceipt;
 
 export interface InventoryReceiptListQuery extends StoreScopedQuery {
   po_id?: string;
@@ -5074,11 +5055,16 @@ export class LetbuyyApiClient {
     },
     reservations: {
       list: (query: InventoryReservationListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestPaginated<InventoryReservation>('/inventory/reservations', { ...options, query }),
+        this.requestInventoryRecords('/inventory/reservations', query, InventoryReservationSchema.array(),
+          (row, store) => row.store_id === store && row.products.store_id === store &&
+            (!query.status || row.status === query.status) && (!query.product_id || row.product_id === query.product_id), options),
     },
     receipts: {
       list: (query: InventoryReceiptListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestPaginated<InventoryReceipt>('/inventory/receipts', { ...options, query }),
+        this.requestInventoryRecords('/inventory/receipts', query, InventoryReceiptSchema.array(),
+          (row, store) => (row.receipt_type === 'purchase_order' ? row.purchase_orders.site_id : row.inventory_transfers.site_id) === store &&
+            (!query.po_id || (row.receipt_type === 'purchase_order' && row.purchase_order_id === query.po_id)) &&
+            (!query.transfer_id || (row.receipt_type === 'transfer' && row.transfer_id === query.transfer_id)), options),
     },
     analytics: (query: InventoryAnalyticsQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<InventoryAnalyticsResult>('/inventory/analytics', { ...options, query }),
@@ -5737,6 +5723,25 @@ export class LetbuyyApiClient {
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {
     const body = await this.request<GatewayResponse<T>>(path, options);
     return unwrapData<T>(body, 200, null);
+  }
+
+  private async requestInventoryRecords<T>(path: string, query: InventoryReservationListQuery | InventoryReceiptListQuery,
+    schema: { safeParse(value: unknown): { success: true; data: T[] } | { success: false } },
+    matches: (row: T, store: string) => boolean, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>> {
+    const store = query.store_id ?? options?.storeId ?? this.defaultStoreId;
+    const body = await this.request<GatewayResponse<unknown[]>>(path, { ...options, storeId: store, query: { ...query, ...(store ? { store_id: store } : {}) } });
+    const rows = schema.safeParse(unwrapData<unknown[]>(body, 200, null));
+    const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
+    const { total, page, per_page: limit, has_next: more } = meta;
+    if (!rows.success || !UuidSchema.safeParse(meta.store_id).success ||
+      (store && meta.store_id !== store) || typeof total !== 'number' || !Number.isSafeInteger(total) || total < 0 ||
+      page !== (query.page ?? 1) || limit !== (query.limit ?? 20) || typeof more !== 'boolean' ||
+      (rows.success && (rows.data.length > Number(limit) || rows.data.length > total ||
+        rows.data.some(row => !matches(row, String(meta.store_id)))))) {
+      throw new LetbuyyApiError({ status: 503, code: 'INVENTORY_RECORDS_UNVERIFIED', message: 'These inventory records could not be verified. Try again later.' });
+    }
+    return { data: rows.data, total, page: Number(page), limit: Number(limit), has_more: more,
+      next_cursor: null, total_is_exact: Boolean(meta.total_is_exact) };
   }
 
   requestPaginated<T>(path: string, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>>;

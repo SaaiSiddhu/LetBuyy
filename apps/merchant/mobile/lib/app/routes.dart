@@ -44,6 +44,7 @@ import '../screens/content/navigation_screen.dart';
 import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
 import '../screens/inventory/history_screen.dart';
+import '../screens/inventory/records_screen.dart';
 import '../screens/inventory/locations_screen.dart';
 import '../screens/inventory/purchase_orders_screen.dart';
 import '../screens/inventory/suppliers_screen.dart';
@@ -107,6 +108,8 @@ enum AppRouteId {
   media,
   inventory,
   inventoryHistory,
+  inventoryReservations,
+  inventoryReceipts,
   inventoryLocations,
   inventorySuppliers,
   purchaseOrders,
@@ -239,6 +242,8 @@ class AppRoutes {
   static const String media = '/media';
   static const String inventory = '/inventory';
   static const String inventoryHistory = '/inventory/history';
+  static const String inventoryReservations = '/inventory/reservations';
+  static const String inventoryReceipts = '/inventory/receipts';
   static const String inventoryLocations = '/inventory/locations';
   static const String inventorySuppliers = '/inventory/suppliers';
   static const String purchaseOrders = '/inventory/purchase-orders';
@@ -540,6 +545,38 @@ class AppRoutes {
               : null,
           productName: args is Map && args['product_name'] is String
               ? args['product_name'] as String
+              : null,
+        );
+      },
+    ),
+    AppRouteSpec(
+      id: AppRouteId.inventoryReservations,
+      path: inventoryReservations,
+      builder: (settings) {
+        final args = settings.arguments;
+        return InventoryRecordsScreen(
+          kind: InventoryRecordKind.reservations,
+          productId: args is Map && args['product_id'] is String
+              ? args['product_id'] as String
+              : null,
+          productName: args is Map && args['product_name'] is String
+              ? args['product_name'] as String
+              : null,
+        );
+      },
+    ),
+    AppRouteSpec(
+      id: AppRouteId.inventoryReceipts,
+      path: inventoryReceipts,
+      builder: (settings) {
+        final args = settings.arguments;
+        return InventoryRecordsScreen(
+          kind: InventoryRecordKind.receipts,
+          purchaseOrderId: args is Map && args['po_id'] is String
+              ? args['po_id'] as String
+              : null,
+          transferId: args is Map && args['transfer_id'] is String
+              ? args['transfer_id'] as String
               : null,
         );
       },

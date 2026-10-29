@@ -2,8 +2,10 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { InventoryReservationSchema, UuidSchema, type InventoryReservation, InventoryReservationStatusSchema } from '@letbuyy/shared-types'
+import { MerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import {
     Badge,
     Banner,
@@ -28,23 +30,11 @@ import { formatIndiaDate } from '@letbuyy/ui/formatting'
 // id, product_id, variant_id, location_id, quantity, status, expires_at,
 // order_id, created_at, updated_at, products: { name, store_id }
 
-type ReservationStatus = 'active' | 'committed' | 'released' | 'expired'
-
-interface ReservationRow {
-    id: string
-    product_id: string
-    variant_id: string | null
-    location_id: string | null
-    quantity: number
-    status: ReservationStatus
-    expires_at: string | null
-    order_id: string | null
-    created_at: string
-    updated_at: string | null
-    products: { name: string; store_id: string } | null
-}
+type ReservationRow = InventoryReservation
+type ReservationStatus = InventoryReservation['status']
 
 interface PageMeta {
+    store_id: string
     total: number
     page: number
     per_page: number
@@ -55,10 +45,7 @@ interface PageMeta {
 
 const STATUS_OPTIONS: SelectOption[] = [
     { value: '', label: 'All statuses' },
-    { value: 'active', label: 'Active' },
-    { value: 'committed', label: 'Committed' },
-    { value: 'released', label: 'Released' },
-    { value: 'expired', label: 'Expired' },
+    ...InventoryReservationStatusSchema.options.map(value => ({ value, label: value[0].toUpperCase() + value.slice(1) })),
 ]
 
 function statusVariant(status: ReservationStatus): StatusVariant {
@@ -81,41 +68,24 @@ function statusLabel(status: ReservationStatus): string {
     }
 }
 
-function normalizeRow(raw: Record<string, unknown>): ReservationRow {
-    const products = raw.products
-    return {
-        id: String(raw.id ?? ''),
-        product_id: String(raw.product_id ?? ''),
-        variant_id: typeof raw.variant_id === 'string' ? raw.variant_id : null,
-        location_id: typeof raw.location_id === 'string' ? raw.location_id : null,
-        quantity: typeof raw.quantity === 'number' ? raw.quantity : 0,
-        status: (typeof raw.status === 'string' ? raw.status : 'active') as ReservationStatus,
-        expires_at: typeof raw.expires_at === 'string' ? raw.expires_at : null,
-        order_id: typeof raw.order_id === 'string' ? raw.order_id : null,
-        created_at: typeof raw.created_at === 'string' ? raw.created_at : '',
-        updated_at: typeof raw.updated_at === 'string' ? raw.updated_at : null,
-        products:
-            products && typeof products === 'object' && !Array.isArray(products)
-                ? {
-                      name: String((products as Record<string, unknown>).name ?? ''),
-                      store_id: String((products as Record<string, unknown>).store_id ?? ''),
-                  }
-                : null,
-    }
-}
-
 // ── main component ─────────────────────────────────────────────────────────────
 
 export default function InventoryReservationsPage() {
     const { store } = useParams<{ store: string }>()
+    const security = useContext(MerchantSecurityContext)
+    return <InventoryReservationsWorkspace key={JSON.stringify([store, security?.actorId ?? null])} store={store} />
+}
+
+function InventoryReservationsWorkspace({ store }: { store: string }) {
     const { notify } = useToast()
 
     const [rows, setRows] = useState<ReservationRow[]>([])
-    const [meta, setMeta] = useState<PageMeta>({ total: 0, page: 1, per_page: 20, has_next: false })
+    const [meta, setMeta] = useState<PageMeta>({ store_id: '', total: 0, page: 1, per_page: 20, has_next: false })
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [statusFilter, setStatusFilter] = useState('')
     const [productFilter, setProductFilter] = useState('')
+    const [applied, setApplied] = useState({ status: '', product: '' })
     const [page, setPage] = useState(1)
 
     const beginRead = useReadRequest(store)
@@ -124,6 +94,7 @@ export default function InventoryReservationsPage() {
             const request = beginRead()
             setLoading(true)
             setError(null)
+            setRows([])
             try {
                 const url = new URL(
                     `/api/stores/${encodeURIComponent(store)}/inventory/reservations`,
@@ -153,18 +124,16 @@ export default function InventoryReservationsPage() {
                     throw new Error(msg)
                 }
 
-                const normalized = (json.data ?? []).map((r) =>
-                    normalizeRow(r as Record<string, unknown>)
-                )
-                setRows(normalized)
-                setMeta(
-                    json.meta ?? {
-                        total: normalized.length,
-                        page: currentPage,
-                        per_page: 20,
-                        has_next: false,
-                    }
-                )
+                const normalized = InventoryReservationSchema.array().safeParse(json.data)
+                if (!normalized.success || !json.meta || !UuidSchema.safeParse(json.meta.store_id).success ||
+                    !Number.isSafeInteger(json.meta.total) || json.meta.total < 0 ||
+                    json.meta.page !== currentPage || json.meta.per_page !== 20 || typeof json.meta.has_next !== 'boolean' ||
+                    normalized.data.length > 20 || normalized.data.length > json.meta.total ||
+                    normalized.data.some(row => row.store_id !== json.meta!.store_id || row.products.store_id !== json.meta!.store_id || (currentStatus && row.status !== currentStatus) || (currentProduct.trim() && row.product_id !== currentProduct.trim()))) {
+                    throw new Error('Inventory records and counts could not be verified. Refresh to try again.')
+                }
+                setRows(normalized.data)
+                setMeta(json.meta)
             } catch (err) {
                 if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
@@ -183,11 +152,13 @@ export default function InventoryReservationsPage() {
     }, [fetchReservations])
 
     function handleApply() {
+        setApplied({ status: statusFilter, product: productFilter.trim() })
         setPage(1)
         void fetchReservations(1, statusFilter, productFilter)
     }
 
     function handleClear() {
+        setApplied({ status: '', product: '' })
         setStatusFilter('')
         setProductFilter('')
         setPage(1)
@@ -195,20 +166,20 @@ export default function InventoryReservationsPage() {
     }
 
     function handleRefresh() {
-        void fetchReservations(page, statusFilter, productFilter)
+        void fetchReservations(page, applied.status, applied.product)
     }
 
     function handlePrev() {
         const newPage = Math.max(1, page - 1)
         setPage(newPage)
-        void fetchReservations(newPage, statusFilter, productFilter)
+        void fetchReservations(newPage, applied.status, applied.product)
     }
 
     function handleNext() {
         if (!meta.has_next) return
         const newPage = page + 1
         setPage(newPage)
-        void fetchReservations(newPage, statusFilter, productFilter)
+        void fetchReservations(newPage, applied.status, applied.product)
     }
 
     const totalPages = Math.max(1, Math.ceil(meta.total / meta.per_page))
@@ -218,7 +189,7 @@ export default function InventoryReservationsPage() {
             <PageHeader identity="products"
                 recipe="index"
                 title="Inventory Reservations"
-                description="Active, committed, and expired stock reservations"
+                description="Stock reservation states recorded by the server"
             />
 
             <Section>
@@ -280,9 +251,10 @@ export default function InventoryReservationsPage() {
                         variant="critical"
                         title="Failed to load reservations"
                         action={
-                            <Button variant="ghost" size="sm" onClick={handleRefresh}>
-                                Try again
-                            </Button>
+                            <div className="flex gap-[var(--lb-space-2)]">
+                                <Button variant="ghost" size="sm" onClick={handleRefresh}>Try again</Button>
+                                {page > 1 && <Button variant="ghost" size="sm" onClick={handlePrev}>Previous</Button>}
+                            </div>
                         }
                     >
                         {error}
