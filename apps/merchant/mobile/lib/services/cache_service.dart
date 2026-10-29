@@ -113,10 +113,16 @@ class CacheService {
     int page,
     int limit, {
     String? cursor,
-  }) => 'products:$storeId:$page:$limit:${_cursorSegment(cursor)}';
+    String? search,
+    String status = 'all',
+    String sort = 'display_order',
+    String order = 'asc',
+    String? stockFilter,
+  }) =>
+      'products:$storeId:$page:$limit:${_cursorSegment(cursor)}:${Uri.encodeComponent(search?.trim() ?? '')}:$status:$sort:$order:${stockFilter ?? 'all'}';
 
-  static String productDetailKey(String productId) =>
-      'products:detail:$productId';
+  static String productDetailKey(String productId, {required String storeId}) =>
+      'products:detail:$storeId:$productId';
 
   static String ordersKey(
     String storeId, {

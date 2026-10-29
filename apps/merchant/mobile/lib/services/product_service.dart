@@ -6,9 +6,7 @@ import 'package:letbuyy_models/letbuyy_models.dart';
 import 'api_client.dart';
 import 'cache_service.dart';
 
-/// Service for managing products via the LetBuyy API.
-///
-/// Replaces direct database/storage access with REST calls.
+/// Merchant catalog transport and context-scoped presentation state.
 class ProductService extends ChangeNotifier {
   final ApiClient _api;
   final CacheService? _cache;
@@ -17,141 +15,219 @@ class ProductService extends ChangeNotifier {
     : _api = api,
       _cache = cache;
 
-  // ── Cached state ─────────────────────────────────────────
-
+  final Set<String> _cacheDeniedStores = {};
   List<ProductContract> _productContracts = [];
   String? _productsStoreId;
   Object? _productsContext;
-  List<ProductContract> get productContracts =>
-      List.unmodifiable(_productContracts);
-
+  int _productsGeneration = 0;
+  bool get _contextCurrent => _productsContext == _api.captureRequestContext();
+  List<ProductContract> get productContracts => List.unmodifiable(
+    _contextCurrent ? _productContracts : const <ProductContract>[],
+  );
   List<Map<String, dynamic>> _products = [];
-  List<Map<String, dynamic>> get products => List.unmodifiable(_products);
-
+  List<Map<String, dynamic>> get products => List.unmodifiable(
+    _contextCurrent ? _products : const <Map<String, dynamic>>[],
+  );
   List<GiftCardContract> _giftCards = [];
   List<GiftCardContract> get giftCards => List.unmodifiable(_giftCards);
-
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
+  bool get isLoading => _contextCurrent && _isLoading;
   String? _productsNextCursor;
-  String? get productsNextCursor => _productsNextCursor;
+  String? get productsNextCursor =>
+      _contextCurrent ? _productsNextCursor : null;
+  bool _productsHasMore = false, _productsOffline = false;
+  bool get productsHasMore => _contextCurrent && _productsHasMore;
+  bool get productsOffline => _contextCurrent && _productsOffline;
 
-  // ── Read ─────────────────────────────────────────────────
+  void _checkContext(Object? captured, [bool generationCurrent = true]) {
+    if (!generationCurrent || captured != _api.captureRequestContext()) {
+      throw const ApiException(
+        message: 'Catalog context changed. Reload the selected store.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+  }
 
-  /// Fetch products for a store (paginated).
+  ProductContract _product(Map<String, dynamic> row, String storeId) {
+    final product = ProductContract.fromJson(row);
+    if (product.storeId != storeId) {
+      throw const ApiException(
+        message: 'Product store could not be confirmed.',
+        statusCode: 502,
+        code: 'PRODUCT_SCOPE_MISMATCH',
+      );
+    }
+    return product;
+  }
+
+  bool _offlineAllowed(Object error, String storeId) =>
+      !_cacheDeniedStores.contains(storeId) &&
+      (error is! ApiException ||
+          (error.code != 'PRODUCT_SCOPE_MISMATCH' &&
+              error.code != 'PRODUCT_FILTER_UNSUPPORTED' &&
+              (error.statusCode == 0 || error.statusCode >= 500)));
+
+  /// Search, ordering and page membership are determined by the Gateway.
   Future<List<Map<String, dynamic>>> fetchProducts(
     String storeId, {
     int page = 1,
     int limit = 20,
     String? cursor,
+    String? search,
+    String status = 'all',
+    String sort = 'display_order',
+    String order = 'asc',
+    String? stockFilter,
   }) async {
-    final capturedContext = _api.captureRequestContext();
-    if (_productsStoreId != storeId || _productsContext != capturedContext) {
-      _products = [];
-      _productContracts = [];
-      _productsNextCursor = null;
-    }
+    final captured = _api.captureRequestContext(),
+        generation = ++_productsGeneration;
+    _productsContext = captured;
     _productsStoreId = storeId;
-    _productsContext = capturedContext;
-    bool current() =>
-        _api.captureRequestContext() == capturedContext &&
-        _productsContext == capturedContext &&
-        _productsStoreId == storeId;
+    _products = [];
+    _productContracts = [];
+    _productsNextCursor = null;
+    _productsHasMore = false;
+    _productsOffline = false;
     _isLoading = true;
-    final normalizedCursor = cursor?.trim();
     final cacheKey = CacheService.productsKey(
       storeId,
       page,
       limit,
-      cursor: normalizedCursor,
+      cursor: cursor,
+      search: search,
+      status: status,
+      sort: sort,
+      order: order,
+      stockFilter: stockFilter,
     );
-    final cachedRows = _cache?.readJsonList(cacheKey) ?? [];
-    if (cachedRows.isNotEmpty) {
-      _productContracts = cachedRows
-          .map(ProductContract.fromJson)
-          .toList(growable: false);
-      _products = _productContracts
-          .map((product) => product.toJson())
-          .toList(growable: false);
-    }
+    final cached = _cacheDeniedStores.contains(storeId)
+        ? <Map<String, dynamic>>[]
+        : (_cache?.readJsonList(cacheKey) ?? [])
+              .where((row) => row['store_id'] == storeId)
+              .toList();
+    // Do not reveal private snapshots before a fresh access check. Offline data
+    // is used only for this exact request after a transport/server failure.
     notifyListeners();
-
     try {
-      final pageResult = await _api.products.list(
+      final result = await _api.products.list(
         query: {
           'store_id': storeId,
           'page': page,
           'limit': limit,
-          if (normalizedCursor != null && normalizedCursor.isNotEmpty)
-            'cursor': normalizedCursor,
+          'status': status,
+          'sort': sort,
+          'order': order,
+          if (cursor != null && cursor.trim().isNotEmpty)
+            'cursor': cursor.trim(),
+          if (search != null && search.trim().isNotEmpty)
+            'search': search.trim(),
+          if (stockFilter != null) 'stock_filter': stockFilter,
         },
+        options: ApiRequestOptions(storeId: storeId),
       );
-      if (!current())
+      _checkContext(captured, generation == _productsGeneration);
+      if (stockFilter != null && result.meta['stock_filter'] != stockFilter) {
         throw const ApiException(
-          message: 'Store access changed. Reload products.',
-          statusCode: 409,
-          code: 'SESSION_CONTEXT_CHANGED',
+          message:
+              'Stock filters are unavailable on this server. Select All products.',
+          statusCode: 502,
+          code: 'PRODUCT_FILTER_UNSUPPORTED',
         );
-      _productsNextCursor = pageResult.nextCursor;
-      _productContracts = pageResult.data
-          .map(ProductContract.fromJson)
-          .toList(growable: false);
-      _products = _productContracts
-          .map((product) => product.toJson())
-          .toList(growable: false);
-      await _cache?.writeJson(cacheKey, _products);
-      if (!current()) throw const ApiException(message: 'Store access changed. Reload products.', statusCode: 409, code: 'SESSION_CONTEXT_CHANGED');
-      for (final product in _products) {
-        if (!current()) throw const ApiException(message: 'Store access changed. Reload products.', statusCode: 409, code: 'SESSION_CONTEXT_CHANGED');
-        final id = product['id']?.toString();
-        if (id != null && id.isNotEmpty) {
-          await _cache?.writeJson(CacheService.productDetailKey(id), product);
-        }
       }
-      return _products;
-    } catch (e) {
-      debugPrint('❌ fetchProducts error: $e');
-      if (current() &&
-          !(e is ApiException && e.statusCode >= 400 && e.statusCode < 500) &&
-          _products.isNotEmpty)
+      final contracts = result.data
+          .map((row) => _product(row, storeId))
+          .toList();
+      final rows = contracts.map((p) => p.toJson()).toList();
+      _productContracts = contracts;
+      _products = rows;
+      _productsNextCursor = result.nextCursor;
+      _productsHasMore = result.hasMore;
+      _cacheDeniedStores.remove(storeId);
+      await _cache?.writeJson(cacheKey, rows);
+      _checkContext(captured, generation == _productsGeneration);
+      // List projections never replace a full edit/detail snapshot.
+      return rows;
+    } catch (error) {
+      _checkContext(captured, generation == _productsGeneration);
+      if (_offlineAllowed(error, storeId) && cached.isNotEmpty) {
+        _productContracts = cached
+            .map((row) => _product(row, storeId))
+            .toList();
+        _products = _productContracts.map((p) => p.toJson()).toList();
+        _productsOffline = true;
+        _productsNextCursor = null;
+        _productsHasMore = false;
         return _products;
+      }
+      _products = [];
+      _productContracts = [];
+      if (error is ApiException &&
+          (error.statusCode == 401 || error.statusCode == 403)) {
+        _cacheDeniedStores.add(storeId);
+      }
+      await _cache?.remove(cacheKey);
+      _checkContext(captured, generation == _productsGeneration);
       rethrow;
     } finally {
-      if (current()) {
+      if (captured == _api.captureRequestContext() &&
+          generation == _productsGeneration) {
         _isLoading = false;
         notifyListeners();
       }
     }
   }
 
-  /// Get a single product by ID.
-  Future<Map<String, dynamic>> fetchProduct(String id) async {
-    final capturedContext = _api.captureRequestContext();
+  Future<Map<String, dynamic>> fetchProduct(
+    String id, {
+    required String storeId,
+  }) async {
+    final captured = _api.captureRequestContext();
+    final key = CacheService.productDetailKey(id, storeId: storeId);
     try {
-      final product = ProductContract.fromJson(await _api.products.get(id));
+      final product = _product(
+        await _api.products.get(
+          id,
+          options: ApiRequestOptions(storeId: storeId),
+        ),
+        storeId,
+      );
+      _checkContext(captured);
+      if (product.id != id)
+        throw const ApiException(
+          message: 'Product response could not be confirmed.',
+          statusCode: 502,
+          code: 'PRODUCT_SCOPE_MISMATCH',
+        );
       final payload = product.toJson();
-      await _cache?.writeJson(CacheService.productDetailKey(id), payload);
+      await _cache?.writeJson(key, payload);
+      _checkContext(captured);
+      _cacheDeniedStores.remove(storeId);
       return payload;
-    } catch (e) {
-      debugPrint('❌ fetchProduct error: $e');
-      if (_api.captureRequestContext() != capturedContext ||
-          (e is ApiException && e.statusCode >= 400 && e.statusCode < 500)) rethrow;
-      final cached = _cache?.readJsonMap(CacheService.productDetailKey(id));
-      if (cached != null) return cached;
+    } catch (error) {
+      _checkContext(captured);
+      final cached = _cache?.readJsonMap(key);
+      if (_offlineAllowed(error, storeId) && cached != null) {
+        return _product(cached, storeId).toJson();
+      }
+      if (error is ApiException &&
+          (error.statusCode == 401 || error.statusCode == 403)) {
+        _cacheDeniedStores.add(storeId);
+      }
+      await _cache?.remove(key);
       rethrow;
     }
   }
 
-  /// Edit/reload must use a fresh version and complete relational option/variant identity.
-  /// A cached detail remains useful for viewing, but cannot confirm conflict recovery.
+  /// Editing always obtains current version and complete relational identity.
   Future<ProductContract> fetchProductForEdit(String id, String storeId) async {
-    final product = ProductContract.fromJson(
+    final captured = _api.captureRequestContext();
+    final product = _product(
       await _api.products.get(id, options: ApiRequestOptions(storeId: storeId)),
+      storeId,
     );
-    if (product.id != id ||
-        product.storeId != storeId ||
-        product.version == null) {
+    _checkContext(captured);
+    if (product.id != id || product.version == null) {
       throw const ApiException(
         message:
             'The current product could not be loaded. Keep your draft and retry.',
@@ -189,6 +265,7 @@ class ProductService extends ChangeNotifier {
     Map<String, dynamic>? metadata,
     List<Map<String, dynamic>>? variants,
   }) async {
+    final captured = _api.captureRequestContext();
     final created = ProductContract.fromJson(
       await _api.products.create({
         'store_id': storeId,
@@ -222,19 +299,49 @@ class ProductService extends ChangeNotifier {
         if (variants != null) 'variants': variants,
       }),
     );
+    _checkContext(captured);
+    if (created.storeId != storeId)
+      throw const ApiException(
+        message: 'Product store could not be confirmed.',
+        statusCode: 502,
+        code: 'PRODUCT_SCOPE_MISMATCH',
+      );
+    if (_productsStoreId != storeId || !_contextCurrent) {
+      _products = [];
+      _productContracts = [];
+    }
+    _productsStoreId = storeId;
+    _productsContext = captured;
     final product = created.toJson();
     _productContracts = [..._productContracts, created];
     _products.add(product);
-    await _cache?.writeJson(CacheService.productDetailKey(created.id), product);
+    await _cache?.writeJson(
+      CacheService.productDetailKey(created.id, storeId: storeId),
+      product,
+    );
     notifyListeners();
     return product;
   }
 
   /// Add one clearly labeled inactive sample product to an empty store.
   Future<Map<String, dynamic>> seedSampleProduct(String storeId) async {
+    final captured = _api.captureRequestContext();
     final created = ProductContract.fromJson(
       await _api.products.sample({'store_id': storeId}),
     );
+    _checkContext(captured);
+    if (created.storeId != storeId)
+      throw const ApiException(
+        message: 'Product store could not be confirmed.',
+        statusCode: 502,
+        code: 'PRODUCT_SCOPE_MISMATCH',
+      );
+    if (_productsStoreId != storeId || !_contextCurrent) {
+      _products = [];
+      _productContracts = [];
+    }
+    _productsStoreId = storeId;
+    _productsContext = captured;
     final product = created.toJson();
     _productContracts = [
       created,
@@ -244,10 +351,9 @@ class ProductService extends ChangeNotifier {
       product,
       ..._products.where((item) => item['id'] != created.id),
     ];
-    await _cache?.writeJson(CacheService.productDetailKey(created.id), product);
     await _cache?.writeJson(
-      CacheService.productsKey(storeId, 1, 20),
-      _products,
+      CacheService.productDetailKey(created.id, storeId: storeId),
+      product,
     );
     notifyListeners();
     return product;
@@ -263,6 +369,7 @@ class ProductService extends ChangeNotifier {
     required int version,
     required String idempotencyKey,
   }) async {
+    final captured = _api.captureRequestContext();
     final contract = ProductContract.fromJson(
       await _api.products.update(
         id,
@@ -272,6 +379,7 @@ class ProductService extends ChangeNotifier {
         options: ApiRequestOptions(storeId: storeId),
       ),
     );
+    _checkContext(captured);
     if (contract.id != id ||
         contract.storeId != storeId ||
         contract.version == null) {
@@ -287,7 +395,10 @@ class ProductService extends ChangeNotifier {
     if (contractIdx != -1) _productContracts[contractIdx] = contract;
     final idx = _products.indexWhere((p) => p['id'] == id);
     if (idx != -1) _products[idx] = updated;
-    await _cache?.writeJson(CacheService.productDetailKey(id), updated);
+    await _cache?.writeJson(
+      CacheService.productDetailKey(id, storeId: storeId),
+      updated,
+    );
     notifyListeners();
     return updated;
   }
@@ -295,13 +406,21 @@ class ProductService extends ChangeNotifier {
   // ── Delete ───────────────────────────────────────────────
 
   /// Soft-delete a product.
-  Future<void> deleteProduct(String id) async {
-    await _api.products.remove(id);
+  Future<void> deleteProduct(String id, {String? storeId}) async {
+    storeId ??= _productsStoreId;
+    if (storeId == null)
+      throw ArgumentError('A selected product store is required.');
+    final captured = _api.captureRequestContext();
+    await _api.products.remove(
+      id,
+      options: ApiRequestOptions(storeId: storeId),
+    );
+    _checkContext(captured);
     _productContracts = _productContracts
         .where((product) => product.id != id)
         .toList(growable: false);
     _products = _products.where((p) => p['id'] != id).toList(growable: false);
-    await _cache?.remove(CacheService.productDetailKey(id));
+    await _cache?.remove(CacheService.productDetailKey(id, storeId: storeId));
     notifyListeners();
   }
 
@@ -313,17 +432,19 @@ class ProductService extends ChangeNotifier {
     required List<String> productIds,
     String? storeId,
   }) async {
+    if (storeId == null)
+      throw ArgumentError('A selected product store is required.');
+    final captured = _api.captureRequestContext();
     final res = await _api.products.bulk({
       'action': action,
       'product_ids': productIds,
-      if (storeId != null) 'store_id': storeId,
+      'store_id': storeId,
     });
-    final affected = res['data']?['affected'] as int? ?? 0;
+    _checkContext(captured);
+    final affected = (res['affected'] ?? res['data']?['affected']) as int? ?? 0;
 
     // Refresh the local list
-    if (storeId != null) {
-      await fetchProducts(storeId);
-    }
+    await fetchProducts(storeId);
     return affected;
   }
 

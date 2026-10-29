@@ -3216,12 +3216,12 @@ void main() {
         await ProductService(
           api: _FakeApiClient(json: {'/products/prod_1': _productJson()}),
           cache: cache,
-        ).fetchProduct('prod_1');
+        ).fetchProduct('prod_1', storeId: 'store_1');
 
         final product = await ProductService(
           api: _ThrowingApiClient(),
           cache: cache,
-        ).fetchProduct('prod_1');
+        ).fetchProduct('prod_1', storeId: 'store_1');
 
         expect(product['id'], 'prod_1');
         expect(product['name'], 'Cotton Tee');
@@ -7654,6 +7654,7 @@ void main() {
       );
       Focus.of(tester.element(chipText)).requestFocus();
       await tester.pump();
+      api._paginated['/products'] = [{..._productJson(), 'id': 'prod_2', 'name': 'Paused Tee', 'is_active': false}];
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
 
@@ -7663,6 +7664,7 @@ void main() {
       expect(activeFilterData.hasFlag(SemanticsFlag.isSelected), isTrue);
       expect(activeFilterData.hint, 'Current filter');
       expect(find.text('Paused Tee'), findsOneWidget);
+      expect(api.queries['/products']?['status'], 'inactive');
       expect(find.text('Cotton Tee'), findsNothing);
       expect(tester.takeException(), isNull);
       expect(api.paths, containsAll(['/stores', '/products']));

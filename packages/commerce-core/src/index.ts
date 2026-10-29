@@ -163,6 +163,7 @@ export const ListProductsQuery = z.object({
   store_id: UuidSchema.optional(),
   view: z.enum(['full', 'summary']).default('full'),
   status: z.enum(['active', 'draft', 'archived', 'inactive', 'all']).default('all'),
+  stock_filter: z.enum(['out_of_stock', 'low_stock']).optional(),
   category: z.string().max(100).optional(),
   search: z.string().max(200).optional(),
   page: z.coerce.number().int().min(1).default(1),
