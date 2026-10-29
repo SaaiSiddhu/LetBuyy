@@ -1,33 +1,46 @@
 # Merchant mobile parity — source handoff
 
-Date: 30 October 2026 (Asia/Kolkata). Branch `codex/merchant-mobile-parity`. Qualified source checkpoint: `75984e1efe15b476ea5d6d587b6da7103ce34699`, based on `55975acd0da3fd39bcff56168e19b05ff598bc43`. Worktree: `/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy`. The primary checkout's uncommitted Merchant web/UI work was preserved.
+30 October 2026, Asia/Kolkata. Branch `codex/merchant-mobile-parity`; base `55975acd0da3fd39bcff56168e19b05ff598bc43`. Worktree `/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy`. Primary checkout `/Volumes/Projects/LetBuyy` retains its substantial uncommitted Merchant web/UI work. No source was copied over that work.
 
-## Current source work
+## Qualified checkpoint
 
-- Merchant store selection rejects unknown and forged local stores; money, shipping, tax and domain views block actions after the selected store changes. Monotonic selection generations retire A→B→A requests; preference writes are ordered against logout.
-- Payout release uses the existing MFA action proof and a stable retry key, with readback before a released result is shown.
-- Merchant-owned Razorpay sandbox connection is reachable without a stale plan restriction; read failures remain errors. The shared Merchant fee display projects the constitutional 0% LetBuyy transaction fee.
-- A live domain registrar purchase can no longer proceed from a caller-provided payment reference. Gateway and mobile permit only the development sandbox purchase flow. Merchant web describes search and indicative pricing accurately. Live registration remains unavailable until server-owned, verified payment proof is implemented.
-- Native storefront/share/preview/settings links use a shared Dart storefront-root mirror checked against the canonical TS brand declaration. Active custom public links also require observed TLS readiness.
-- Native domain registry/setup/verify/history/primary/redirect/removal flows use the existing Gateway/BFF. Adding an alias cannot invent primary status; mutations use persisted readback. Open DNS dialogs hide private contents on context change.
-- Native secure-checkout view uses the same address/readiness/provisioning contract as web, displaying exact server DNS, current origin and fallback. Customer-verification readiness stays separate from TLS. `DOMAIN_PARITY.md` contains the exact bounded trace.
+`496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a`: 459/459 Flutter tests and analysis pass, Gateway typecheck and 19 focused Gateway checks pass. Latest catalog read run `8c8f943da31a` passes 7/7 with cleanup. The latest exact-source disposable-clone governance gate also passes 114, with zero fail/blocked/skip and one report-only not-applicable. The exact latest APK built, its installed hash matches, and read-only catalog price/filter recovery was observed. Catalog read/editor privacy and final presentation/stale-page recovery checkpoints are committed. See `CATALOG_PARITY.md` and `PRODUCT_EDITOR_PARITY.md`.
 
-## Verification actually completed
+- Customer services, list/detail/forms/exports retire old actor/store/query generations. Search and page browsing use the server. Segment create/edit/preview/readback uses canonical rules and statuses; web thresholds remain rupees and the segment PATCH BFF binds the selected store. See `CUSTOMER_PARITY.md`.
+- Native storefront URLs, QR labels, copy/share/visit and settings use the canonical storefront root and active/TLS-qualified custom URL. Dashboard unavailable metrics remain unavailable; observed money preserves two decimal places. Gateway dashboard source counts canonical nondeleted customers/products, preserves paise and refuses failed mandatory reads instead of reporting zero.
+- Domain registry/DNS/verify/history/primary/redirect/removal and checkout-address/readiness/fallback use the canonical existing owner. See `DOMAIN_PARITY.md`.
+- Store selection rejects unknown/forged local models, retires A→B→A generations and orders preference writes against logout. Shipping/tax/money/domain screens fence stale-store actions.
+- Payout release uses existing MFA proof and a stable encrypted retry key with readback. Razorpay sandbox connection is reachable without the stale plan restriction. Shared Merchant fee display is the constitutional 0%.
+- Live registrar purchase is source-blocked until the canonical server can verify payment bound to actor, store, domain, quote, amount, environment and retry identity. This guard is not a live registration implementation and has not been deployed by this chat.
 
-- Merchant Flutter analysis: pass. Current full Flutter suite: 411/411 pass. Shared Dart transport/context tests: 12/12 pass. Domain declaration/policy regressions: 12/12 pass.
-- Owned disposable Gateway/Postgres domain suites: 10/10 pass; run `18910d8675cc`, cleanup verified. Earlier payout suites: 24/24 pass; run `4500cb6bbc09`, cleanup verified. Earlier Gateway 1,848-unit and web/Gateway typecheck results remain bounded evidence for their unchanged source; they do not establish device/provider acceptance.
-- Full governance gate in an exact disposable source clone: 114 PASS, 0 FAIL/BLOCKED/SKIP, 1 report-only NOT_APPLICABLE. Cleanup ran only inside that clone.
-- Current iOS simulator debug build with `dart-defines/production.json`: pass, without production signing. Complete bundle manifest SHA-256: `0dc24f727644142a9788b6ef3541ca77a12e759937b882490487f2f1f0c33997`; Dart kernel payload: `95e376babe12a54574f21430162427e9d94217fbf5fbcd935db558e0f70a9834`. The native Runner executable alone does not identify Dart source. The first-pass `ios-simulator-login.png` predates this continuation and proves sign-in rendering only.
-- `git diff --check`: pass. Source checkpoint is committed; generated Podfile/SwiftPM churn was removed and build output excluded. No migration, push, merge, deploy, PR, paid provider or production account operation occurred. `QUALIFICATION.json` contains the compact versioned receipts.
+## Evidence
 
-## Open gates
+All receipts have bounded environments; no sum of these tests establishes production acceptance.
 
-- The 122 rows in `FEATURE_LEDGER.md` are an initial scope inventory. They need exact web/client/API/DTO/RLS/effect and acceptance evidence per item; none is marked complete.
-- Authenticated simulator interaction was unavailable to this chat. The supplied production account credentials were not used or saved. No signed-in owner/staff, revoked membership, web↔mobile readback, offline/retry, push, or accessibility device journey was observed.
-- Current ADB discovery has no attached device; CUA inventory/full-path access cannot select Simulator. Android key properties and the complete release-signing environment are absent. Broader database/RLS, actual native/physical-device, signed-release, hosted staging, real provider/bank and post-deploy readback gates remain open.
-- The primary checkout's uncommitted Merchant web changes, especially shipping/tax, must be reconciled before a parity or release claim. Do not overwrite that checkout.
-- Live domain purchase needs a canonical payment intent/capture verification bound to site, domain, quote, amount and idempotency before a registrar charge. The fail-closed guard must stay active until provider and owned-DB effect-once tests pass.
+- Customer scope 17, native segment editor 6 and product editor/media 15 and catalog scope/widget 13 are included in the current 459-test checkpoint. Web form/BFF 3 and focused Gateway customer 11 pass; web/Gateway typechecks pass.
+- Owned Gateway/PostgreSQL runs: payout `4500cb6bbc09` (24/24), domains `18910d8675cc` (10/10), customers `b545a4e97bf4` (4/4), dashboard `4998c1398392` (4/4), catalog `cc86ad39d07f` (5/5). Each runner confirmed no remaining owned containers, networks or volumes. Provider fixtures are synthetic.
+- Product owner suites: run `f4f40c591ca4` passed summary 5/5 and staff 1/1, but atomic edits 89/90 failed a mandatory prepared-slot prerequisite (default 0). The unchanged atomic edit/rollback suite reran with supported `--prepared-transactions 2`, run `037c14a5b75d`: 90/90 pass and cleanup verified. Preserve the failed prerequisite receipt as well as the successful rerun.
+- Customer-cache unsafe negative control failed as required; exact service restored and restored test passed. Receipts and source scopes are in `QUALIFICATION.json` and the domain/customer reports.
+- Earlier source `75984e1efe15b476ea5d6d587b6da7103ce34699` iOS simulator debug build succeeded without production signing. Bundle manifest SHA-256 `0dc24f727644142a9788b6ef3541ca77a12e759937b882490487f2f1f0c33997`; Dart kernel SHA-256 `95e376babe12a54574f21430162427e9d94217fbf5fbcd935db558e0f70a9834`. This is not the latest Dart source.
 
-Next dependency-ready work: complete catalog/product/media/options/collection and inventory/order/settings traces, repair evidenced differences, then prove both-direction web/native readback and concurrent/revoked-authority controls. Review the global large-text clamp and small-screen/accessibility behavior; widget success is not device acceptance.
+## Android acceptance now observed
 
-Current state: **qualified source checkpoint; full 122-item parity programme in progress; not a release candidate or production acceptance**.
+The user authorized ADB on the task-owned emulator and subsequently authorized the human-verification step. On the next observation the app was already signed in; no separate CAPTCHA click was issued or demonstrated. Authorized credentials were entered through the emulator and were not written to source, reports or command-line arguments.
+
+The API 35/Android 15 arm64 emulator is `emulator-5580`, AVD `LetBuyy_Merchant_Parity`, owned under `/private/tmp/letbuyy-merchant-emulator-b2xr88lq`. Existing Jai-Shop AVDs were untouched. CUA could not select this emulator; the approved ADB fallback supplied actual UI input and screenshots.
+
+Source `496e8d36a241ed4f3de5025b6ed6a5ca3f3cd99a` debug APK: 148,731,288 bytes; SHA-256 `6d44501ebe971d1edbf50f365130ae89396ef396799a3d80acd7df7719b8167d`. Flutter engine is arm64; plugin native libraries additionally contain armeabi-v7a and x86_64. The installed APK hash matches. Configuration is `dart-defines/production.json`, BFF `https://bff.letbuyy.com/v1`, issuer `https://accounts.letbuyy.com`.
+
+Observed read-only owner journeys: authenticated dashboard; customer list and freshly loaded detail; server customer search returning no matches; rebuilt canonical storefront label; unavailable visitor/conversion values displayed as no data; catalog server search/page labels/older-server filter refusal; an existing product editor after successful fresh read without a save. The empty search image `android-customer-search-66543.png` contains no private customer rows. Private list/detail captures remain outside the repository. No production business mutation, payment, message, theme publication or provider operation was intentionally performed.
+
+This is debug signing, not an Android release. Release key properties and the complete signing environment are absent. The current app remains signed in on the owned AVD for continuing approved read-only checks; logout and stop that exact emulator before discarding its owned directory. Do not touch other AVDs or broad-kill processes.
+
+## Still open
+
+The 122 rows remain an in-progress programme, not 122 accepted fixes. Native owner mutations, staff restrictions/revocation, web↔mobile writes/conflicts, complete catalog/media/options/collections/import, inventory/orders/settings journeys, provider sandbox, money effect-once/reconciliation, buyer checkout/GST/shipping outcomes, accessibility, signed Android/iOS, staging comparison and rollback remain open.
+
+The primary web change set and the separate active shipping/tax work in the linked **Merchant Web Backend Enhancement** chat must be reconciled through accepted source before claiming parity. Do not overwrite, silently import or message that chat without user authorization.
+
+Current continuation: advance the inventory read/model/context/pagination and durable stock-command boundaries. Native catalog server queries/private cache and product-form context ownership now have bounded local/database/emulator receipts. Real CSV import/job retry remains open. The existing mobile “Import” screen selects existing catalog records; it is not CSV import. The existing server CSV job creator allocates a new job per request, so uncertain retry needs canonical owner work before a reliable native CSV flow can be accepted.
+
+No push, merge, PR, deployment, migration or production-ready certification has occurred. Current verdict: **qualified source checkpoints and bounded authenticated emulator reads; full Merchant parity and release candidate remain in progress**.
