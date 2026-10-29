@@ -6,8 +6,8 @@
     {
       "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
       "accepted_sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
-      "current_sha256": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488",
-      "reason": "Adds explicit successor/customization selection while keeping legacy/default and 2.0.0 outputs frozen."
+      "current_sha256": "d59558f3dbb2d4613d121895c2f68fd32c648d5836799077ffbed620b7742e02",
+      "reason": "Adds explicit successor/customization selection while keeping legacy/default and 2.0.0 outputs frozen. Owner-approved Circuit-default release d8c2a53c0 subsequently re-exports DEFAULT_STOREFRONT_THEME_SLUG from shared-types; factory implementations and all original default/2.0.0 byte assertions remain unchanged."
     },
     {
       "path": "packages/theme-engine/src/marginalia-theme.ts",
