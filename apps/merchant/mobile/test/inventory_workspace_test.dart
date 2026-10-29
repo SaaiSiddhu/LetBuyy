@@ -13,6 +13,7 @@ import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/screens/products/products_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
+import 'package:letbuyy_store/screens/inventory/history_screen.dart';
 import 'package:letbuyy_store/screens/inventory/locations_screen.dart';
 import 'package:letbuyy_store/screens/inventory/suppliers_screen.dart';
 import 'package:letbuyy_store/screens/inventory/purchase_orders_screen.dart';
@@ -73,19 +74,35 @@ JsonMap record(String site, {String? name}) {
   };
 }
 
+JsonMap historyRecord(String site) => {
+  'id': 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+  'store_id': site,
+  'product_id': productId,
+  'location_id': locationId,
+  'quantity_change': -2,
+  'reason': 'damaged',
+  'note': site == siteA ? 'Private A note' : 'Private B note',
+  'created_at': '2026-10-01T00:00:00+00:00',
+  'products': {
+    'name': site == siteA ? 'Private A history' : 'Private B history',
+    'store_id': site,
+  },
+};
+
 void respond(
   RequestOptions r,
   RequestInterceptorHandler h,
   Object data, {
   int status = 200,
   bool more = false,
+  JsonMap meta = const {},
 }) => h.resolve(
   Response(
     requestOptions: r,
     statusCode: status,
     data: {
       'data': data,
-      'meta': {'has_next': more},
+      'meta': {'has_next': more, ...meta},
     },
   ),
 );
@@ -135,6 +152,98 @@ Future<StoreContext> mount(
 }
 
 void main() {
+  testWidgets(
+    'history clears private rows and expanded notes on store switch and recovers a failed later page',
+    (tester) async {
+      final stores = await mount(tester, const InventoryHistoryScreen(), (
+        r,
+        h,
+      ) {
+        final site = r.queryParameters['store_id'].toString(),
+            page = r.queryParameters['page'];
+        respond(
+          r,
+          h,
+          page == 2 ? {} : [historyRecord(site)],
+          status: page == 2 ? 503 : 200,
+          more: true,
+          meta: {'store_id': site, 'total': 2, 'page': page},
+        );
+      });
+      expect(find.text('Private A history'), findsOneWidget);
+      expect(find.textContaining('05:30 AM IST'), findsOneWidget);
+      await tester.tap(find.text('Private A history'));
+      await tester.pumpAndSettle();
+      expect(find.text('Private A note'), findsOneWidget);
+      final change = stores.selectStore(stores.stores.last);
+      await tester.pumpAndSettle();
+      await change;
+      expect(find.text('Private A history'), findsNothing);
+      expect(find.text('Private A note'), findsNothing);
+      expect(find.text('Private B history'), findsOneWidget);
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+      expect(find.text('Private B history'), findsNothing);
+      expect(find.text('Page 2'), findsOneWidget);
+      expect(find.text('2 matching stock changes'), findsNothing);
+      await tester.tap(find.text('Previous'));
+      await tester.pumpAndSettle();
+      expect(find.text('Private B history'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'stock history is reachable from a row with a server product filter and clear-filter recovery',
+    (tester) async {
+      final queries = <Map<String, dynamic>>[];
+      await mount(tester, const InventoryScreen(), (r, h) {
+        if (r.path.endsWith('/history')) {
+          queries.add(Map<String, dynamic>.from(r.queryParameters));
+          respond(
+            r,
+            h,
+            [historyRecord(siteA)],
+            meta: {'store_id': siteA, 'total': 1, 'page': 1},
+          );
+        } else {
+          respond(r, h, [record(siteA)]);
+        }
+      });
+      await tester.tap(find.byTooltip('View stock history'));
+      await tester.pumpAndSettle();
+      expect(find.byType(InventoryHistoryScreen), findsOneWidget);
+      expect(queries.single['product_id'], productId);
+      expect(find.text('Private A • all variants'), findsOneWidget);
+      await tester.tap(find.byTooltip('Show all products'));
+      await tester.pumpAndSettle();
+      expect(queries.last['product_id'], isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'older history readers without a store acknowledgement show unavailable instead of zero or private rows',
+    (tester) async {
+      await mount(
+        tester,
+        const InventoryHistoryScreen(),
+        (r, h) => respond(
+          r,
+          h,
+          [historyRecord(siteA)],
+          meta: {'total': 1, 'page': 1},
+        ),
+      );
+      expect(
+        find.text(
+          'History is not available for this store yet. Try again later.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('0 matching stock changes'), findsNothing);
+      expect(find.text('Private A history'), findsNothing);
+      expect(find.text('Retry history'), findsOneWidget);
+    },
+  );
   for (final changeStore in [false, true]) {
     testWidgets(
       'Products menu reaches the registered inventory route only in its opening store ($changeStore)',

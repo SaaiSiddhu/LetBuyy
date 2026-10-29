@@ -26,19 +26,31 @@ JsonMap level({
   'sellable': available - 2,
   if (includeScope) 'store_id': site,
 };
+JsonMap historyRow({String site = a, String name = 'Synthetic history'}) => {
+  'id': 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+  'store_id': site,
+  'product_id': 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+  'location_id': 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+  'quantity_change': -2,
+  'reason': 'damaged',
+  'note': 'Synthetic history note',
+  'created_at': '2026-10-01T00:00:00+00:00',
+  'products': {'name': name, 'store_id': site},
+};
 void respond(
   RequestOptions r,
   RequestInterceptorHandler h,
   Object value, {
   int status = 200,
   bool more = false,
+  JsonMap meta = const {},
 }) => h.resolve(
   Response(
     requestOptions: r,
     statusCode: status,
     data: {
       'data': value,
-      'meta': {'has_next': more, 'next_cursor': null},
+      'meta': {'has_next': more, 'next_cursor': null, ...meta},
     },
   ),
 );
@@ -88,6 +100,159 @@ final resources = <ReadResource>[
 ];
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'history requires the explicit server store acknowledgement and observed count',
+    () async {
+      for (final meta in <JsonMap>[
+        {},
+        {'store_id': b, 'total': 1, 'page': 1},
+        {'store_id': a, 'page': 1},
+      ]) {
+        final api = client((r, h) => respond(r, h, [historyRow()], meta: meta));
+        final service = InventoryService(api: api);
+        await expectLater(
+          service.fetchHistory(a),
+          throwsA(
+            isA<ApiException>().having(
+              (e) => e.code,
+              'scope acknowledgement',
+              'INVENTORY_HISTORY_SCOPE_UNSUPPORTED',
+            ),
+          ),
+        );
+        expect(service.history, isEmpty);
+        expect(service.historyTotal, isNull);
+      }
+    },
+  );
+  test(
+    'history preserves signed changes, joins and timestamps while retiring old actor/store context',
+    () async {
+      var epoch = 1;
+      final api = client(
+        (r, h) => respond(
+          r,
+          h,
+          [historyRow()],
+          meta: {'store_id': a, 'total': 1, 'page': 1},
+        ),
+        scope: () => epoch,
+      );
+      final service = InventoryService(api: api);
+      final row = (await service.fetchHistory(a)).single;
+      expect(row.quantityChange, -2);
+      expect(row.productName, 'Synthetic history');
+      expect(row.createdAt.toUtc(), DateTime.utc(2026, 10, 1));
+      expect(service.historyTotal, 1);
+      epoch++;
+      expect(service.history, isEmpty);
+      expect(service.historyTotal, isNull);
+    },
+  );
+  for (final status in [401, 403, 503]) {
+    test(
+      'history $status cannot retain a previously observed activity page',
+      () async {
+        var fail = false;
+        final api = client(
+          (r, h) => respond(
+            r,
+            h,
+            fail ? {} : [historyRow()],
+            status: fail ? status : 200,
+            meta: {'store_id': a, 'total': 1, 'page': 1},
+          ),
+        );
+        final service = InventoryService(api: api);
+        await service.fetchHistory(a);
+        fail = true;
+        await expectLater(
+          service.fetchHistory(a),
+          throwsA(isA<ApiException>()),
+        );
+        expect(service.history, isEmpty);
+        expect(service.historyTotal, isNull);
+      },
+    );
+  }
+  test(
+    'history refuses foreign joined product scope and a different filtered product',
+    () async {
+      for (final row in [
+        {
+          ...historyRow(),
+          'products': {'name': 'Foreign synthetic', 'store_id': b},
+        },
+        {...historyRow(), 'product_id': 'ffffffff-ffff-4fff-8fff-ffffffffffff'},
+      ]) {
+        final api = client(
+          (r, h) => respond(
+            r,
+            h,
+            [row],
+            meta: {'store_id': a, 'total': 1, 'page': 1},
+          ),
+        );
+        final service = InventoryService(api: api);
+        await expectLater(
+          service.fetchHistory(
+            a,
+            productId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+          ),
+          throwsA(isA<ApiException>()),
+        );
+        expect(service.history, isEmpty);
+      }
+    },
+  );
+  test(
+    'a delayed history page cannot replace a later filter or count',
+    () async {
+      final started = Completer<void>(), release = Completer<void>();
+      final api = client((r, h) async {
+        if (r.queryParameters['page'] == 1) {
+          started.complete();
+          await release.future;
+        }
+        respond(
+          r,
+          h,
+          [
+            historyRow(
+              name: r.queryParameters['page'] == 1
+                  ? 'Retired history'
+                  : 'Current history',
+            ),
+          ],
+          meta: {'store_id': a, 'total': 3, 'page': r.queryParameters['page']},
+        );
+      });
+      final service = InventoryService(api: api);
+      final old = service.fetchHistory(a),
+          outcome = expectLater(old, throwsA(isA<ApiException>()));
+      await started.future;
+      await service.fetchHistory(a, page: 2);
+      release.complete();
+      await outcome;
+      expect(service.history.single.productName, 'Current history');
+      expect(service.historyTotal, 3);
+    },
+  );
+  test(
+    'malformed history quantities and timestamps cannot become zero or a fabricated date',
+    () {
+      for (final row in [
+        {...historyRow()}..remove('quantity_change'),
+        {...historyRow(), 'quantity_change': 0.5},
+        {...historyRow(), 'created_at': 'not-a-date'},
+      ]) {
+        expect(
+          () => InventoryHistoryEntry.fromJson(row),
+          throwsFormatException,
+        );
+      }
+    },
+  );
   for (final envelope in ['purchase_order', 'transfer']) {
     for (final foreign in [false, true]) {
       test(

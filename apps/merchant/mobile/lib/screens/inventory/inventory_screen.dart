@@ -326,6 +326,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget _wmsShortcuts() {
     final items = [
       _WmsShortcut(
+        label: 'Stock history',
+        icon: Icons.history,
+        route: AppRoutes.inventoryHistory,
+      ),
+      _WmsShortcut(
         label: 'Locations',
         icon: Icons.warehouse_outlined,
         route: AppRoutes.inventoryLocations,
@@ -497,6 +502,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Widget _levelCard(InventoryLevel level) {
+    final view = _view;
     final tone = level.isOutOfStock
         ? colors.error
         : level.isLowStock
@@ -577,6 +583,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
               ),
               const SizedBox(width: 12),
+              IconButton(
+                tooltip: 'View stock history',
+                icon: const Icon(Icons.history),
+                onPressed: () {
+                  if (!merchantStoreViewCurrent(context, view) ||
+                      level.storeId != view!.storeId)
+                    return;
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.inventoryHistory,
+                    arguments: {
+                      'product_id': level.productId,
+                      'product_name': level.productName,
+                    },
+                  );
+                },
+              ),
               OutlinedButton.icon(
                 onPressed: _commandsBlocked ? null : () => _adjust(level),
                 icon: const Icon(Icons.add_task_rounded, size: 18),

@@ -2570,6 +2570,14 @@ class InventoryApi {
     options: _mergeOptions(options, query: query),
   );
 
+  Future<PaginatedResponse<JsonMap>> history({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/inventory/history',
+    options: _mergeOptions(options, query: query),
+  );
+
   Future<JsonMap> adjust(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/inventory/adjust',

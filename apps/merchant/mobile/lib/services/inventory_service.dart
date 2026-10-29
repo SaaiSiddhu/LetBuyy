@@ -7,6 +7,7 @@ import 'security_command_store.dart';
 export 'package:letbuyy_models/letbuyy_models.dart'
     show
         InventoryLevel,
+        InventoryHistoryEntry,
         InventoryBarcodeLookup,
         InventoryLocationContract,
         InventoryLocationInput,
@@ -40,6 +41,14 @@ class InventoryService extends ChangeNotifier {
   final Set<String> _loading = {};
   int _generation = 0;
   List<InventoryLevel> _levels = [];
+  List<InventoryHistoryEntry> _history = [];
+  bool _historyHasMore = false;
+  int? _historyTotal;
+  List<InventoryHistoryEntry> get history => List.unmodifiable(
+    _current('history') ? _history : <InventoryHistoryEntry>[],
+  );
+  bool get historyHasMore => _current('history') && _historyHasMore;
+  int? get historyTotal => _current('history') ? _historyTotal : null;
   List<InventoryLocationContract> _locations = [];
   List<InventorySupplierContract> _suppliers = [];
   List<PurchaseOrderContract> _purchaseOrders = [];
@@ -81,6 +90,10 @@ class InventoryService extends ChangeNotifier {
 
   void _clear(String resource) {
     switch (resource) {
+      case 'history':
+        _history = [];
+        _historyHasMore = false;
+        _historyTotal = null;
       case 'levels':
         _levels = [];
         _levelsHasMore = false;
@@ -129,7 +142,13 @@ class InventoryService extends ChangeNotifier {
 
     check(row);
     final scoped = {...row, 'store_id': site};
-    for (final key in ['product', 'purchase_order', 'transfer', 'supplier']) {
+    for (final key in [
+      'product',
+      'products',
+      'purchase_order',
+      'transfer',
+      'supplier',
+    ]) {
       if (row[key] is Map) {
         final nested = Map<String, dynamic>.from(row[key] as Map);
         check(nested);
@@ -241,6 +260,59 @@ class InventoryService extends ChangeNotifier {
       if (_views['levels'] == view &&
           _api.captureRequestContext() == view.version) {
         _loading.remove('levels');
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<List<InventoryHistoryEntry>> fetchHistory(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+    String? productId,
+  }) async {
+    final view = _begin('history', storeId);
+    try {
+      final result = await _api.inventory.history(
+        query: {
+          'store_id': storeId,
+          'page': page,
+          'limit': limit,
+          if (productId != null && productId.isNotEmpty)
+            'product_id': productId,
+        },
+        options: _options(view.version, storeId),
+      );
+      _checkRead('history', view);
+      if (result.meta['store_id'] != storeId ||
+          result.meta['total'] is! int ||
+          result.total < 0 ||
+          result.page != page) {
+        throw const ApiException(
+          message:
+              'History is not available for the selected store yet. Try again later.',
+          statusCode: 503,
+          code: 'INVENTORY_HISTORY_SCOPE_UNSUPPORTED',
+        );
+      }
+      final rows = result.data
+          .map((json) => InventoryHistoryEntry.fromJson(_scoped(json, storeId)))
+          .toList(growable: false);
+      if (productId != null && rows.any((row) => row.productId != productId)) {
+        throw const ApiException(
+          message: 'The history product could not be confirmed.',
+          statusCode: 502,
+          code: 'INVENTORY_SCOPE_MISMATCH',
+        );
+      }
+      _history = rows;
+      _historyHasMore = result.hasMore;
+      _historyTotal = result.total;
+      return rows;
+    } finally {
+      if (_views['history'] == view &&
+          _api.captureRequestContext() == view.version) {
+        _loading.remove('history');
         notifyListeners();
       }
     }

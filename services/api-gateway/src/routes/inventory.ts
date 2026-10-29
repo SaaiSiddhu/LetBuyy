@@ -42,6 +42,8 @@ import {
     type ShipTransferInput,
     type InventoryReservationActionInput,
     InventoryReservationActionSchema,
+    InventoryHistoryQuerySchema,
+    type InventoryHistoryQuery,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -1138,11 +1140,10 @@ router.get('/analytics', async (c) => {
 });
 
 // GET /inventory/history — Adjustment history
-router.get('/history', async (c) => {
+router.get('/history', validate('query', InventoryHistoryQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const productId = c.req.query('product_id');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+    const { store_id: requestedStore, product_id: productId, page, limit } = c.get('validatedQuery') as InventoryHistoryQuery;
+    const storeId = requestedStore ?? auth.user.storeId;
     const offset = (page - 1) * limit;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -1151,31 +1152,43 @@ router.get('/history', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const ownedStoreIds = await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
+    if (storeId) {
+        if (auth.user.storeId && auth.user.storeId !== storeId) return c.json(failureBody('FORBIDDEN', 'Not authorized'), 403);
+        const staffBlock = await assertStaffPermission(c, storeId, customUser.id, 'products:read');
+        if (staffBlock) return staffBlock;
+    }
+    const ownedStoreIds = storeId ? [storeId] : await listOwnedStoreIds(db, customUser.id);
+    const result = (rows: unknown[], total: number) => {
+        const body = paginated(rows, total, page, limit);
+        return { ...body, meta: { ...body.meta, store_id: storeId ?? null } };
+    };
+    const unavailable = () => c.json(failureBody('INVENTORY_HISTORY_UNAVAILABLE', 'Inventory history is unavailable. Try again.'), 503);
     if (ownedStoreIds.length === 0) {
-        return c.json(paginated([], 0, page, limit));
+        return c.json(result([], 0));
     }
 
-    let query = db
-        .from('inventory_adjustments')
-        .select('*, products!inner(name, store_id)', { count: 'exact' })
-        .in('store_id', ownedStoreIds);
-
-    if (productId) query = query.eq('product_id', productId);
-
-    const { data, error, count } = await query
+    const buildQuery = (head = false) => {
+        let query = db.from('inventory_adjustments')
+            .select('*, products!inner(name, store_id)', { count: 'exact', head })
+            .in('store_id', ownedStoreIds)
+            .in('products.store_id', ownedStoreIds);
+        if (productId) query = query.eq('product_id', productId);
+        return query;
+    };
+    const { data, error, count } = await buildQuery()
         .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    if (isInventorySchemaMissingError(error)) {
-        return c.json(paginated([], 0, page, limit));
+    // PostgREST may omit Content-Range for an empty far page or answer PGRST103.
+    // Confirm the same authorized population; absence of a count is not zero.
+    if ((!error && !data?.length && offset > 0) || (error?.code === 'PGRST103' && offset > 0)) {
+        const recovered = await buildQuery(true);
+        if (recovered.error || recovered.count == null) return unavailable();
+        return c.json(result([], recovered.count));
     }
-
-    if (error) {
-        return c.json(dbFailureBody(), 500);
-    }
-
-    return c.json(paginated(data || [], count || 0, page, limit));
+    if (error || count == null) return unavailable();
+    return c.json(result(data || [], count));
 });
 
 async function listOwnedStoreIds(

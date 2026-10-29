@@ -338,6 +338,12 @@ export const GiftCardStatusUpdateSchema = z.object({
   reason: z.string().max(500).trim().optional().nullable(),
 });
 
+export const InventoryHistoryQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({
+  store_id: UuidSchema.optional(),
+  product_id: UuidSchema.optional(),
+}).refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The history page is out of range' });
+export type InventoryHistoryQuery = z.infer<typeof InventoryHistoryQuerySchema>;
+
 export const CreateLocationSchema = z.object({
   store_id: UuidSchema,
   name: z.string().min(1).max(200).trim(),

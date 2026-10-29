@@ -106,6 +106,7 @@ import type {
   InstalledApp,
   InventoryAdjustmentReason,
   InventoryLevel,
+  InventoryHistoryEntry,
   InternalPermissionScope,
   JsonRecord,
   LineItem,
@@ -2530,11 +2531,8 @@ export interface InventoryAnalyticsQuery extends StoreScopedQuery {
   [key: string]: string | number | boolean | undefined | null;
 }
 
-export interface InventoryEventRecord extends JsonRecord {
-  id: string;
-  event_type: string;
-  created_at: string;
-}
+/** Compatibility name for the canonical adjustment history contract. */
+export type InventoryEventRecord = InventoryHistoryEntry;
 
 // ── Commerce Analytics types (Phase 5.10) ───────────────────
 

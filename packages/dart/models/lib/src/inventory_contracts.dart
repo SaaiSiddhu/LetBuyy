@@ -1,6 +1,69 @@
 /// Dart transport mirrors for canonical inventory/warehouse contracts in
 /// @letbuyy/shared-types and @letbuyy/commerce-core. The server owns quantities,
 /// permissions, totals and lifecycle effects. No SDK or app dependency belongs here.
+class InventoryHistoryEntry {
+  const InventoryHistoryEntry({
+    required this.id,
+    required this.storeId,
+    required this.productId,
+    required this.productName,
+    required this.variantId,
+    required this.locationId,
+    required this.quantityChange,
+    required this.reason,
+    required this.note,
+    required this.createdAt,
+  });
+  factory InventoryHistoryEntry.fromJson(Map<String, dynamic> json) {
+    final product = _mapValue(json['products']);
+    final id = _stringValue(json['id']),
+        site = _stringValue(json['store_id']),
+        productId = _stringValue(json['product_id']);
+    final at = DateTime.tryParse(_stringValue(json['created_at']));
+    if (id.isEmpty ||
+        site.isEmpty ||
+        productId.isEmpty ||
+        product['store_id'] != site ||
+        at == null ||
+        !const {
+          'sale',
+          'return',
+          'adjustment',
+          'recount',
+          'transfer',
+          'damaged',
+          'reserved',
+          'unreserved',
+        }.contains(json['reason'])) {
+      throw const FormatException(
+        'The stock history record could not be confirmed.',
+      );
+    }
+    return InventoryHistoryEntry(
+      id: id,
+      storeId: site,
+      productId: productId,
+      productName: _stringValue(product['name'], fallback: 'Product'),
+      variantId: _stringValue(json['variant_id']),
+      locationId: _stringValue(json['location_id']),
+      quantityChange: _inventoryQuantity(json['quantity_change']),
+      reason: json['reason'] as String,
+      note: _stringValue(json['note']),
+      createdAt: at,
+    );
+  }
+  final String id,
+      storeId,
+      productId,
+      productName,
+      variantId,
+      locationId,
+      reason,
+      note;
+  final int quantityChange;
+  final DateTime createdAt;
+}
+
 class InventoryLevel {
   const InventoryLevel({
     required this.id,

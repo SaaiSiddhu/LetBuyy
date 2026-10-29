@@ -1620,6 +1620,24 @@ export const ProductReviewSchema = AuditedEntitySchema.extend({
   merchant_reply_at: z.string().datetime().optional().nullable(),
 }).passthrough();
 
+// Stored audit reasons differ from the command aliases accepted by adjust.
+export const InventoryHistoryReasonSchema = z.enum(['sale', 'return', 'adjustment', 'recount', 'transfer', 'damaged', 'reserved', 'unreserved']);
+export const InventoryHistoryEntrySchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema,
+  quantity_change: z.number().int(),
+  reason: InventoryHistoryReasonSchema,
+  reference_id: UuidSchema.optional().nullable(),
+  note: z.string().optional().nullable(),
+  created_by: UuidSchema.optional().nullable(),
+  created_at: z.string().datetime({ offset: true }),
+  products: z.object({ name: z.string(), store_id: UuidSchema }),
+});
+export type InventoryHistoryEntry = z.infer<typeof InventoryHistoryEntrySchema>;
+
 export const InventoryLevelSchema = z.object({
   id: z.string().min(1),
   product_id: UuidSchema,
