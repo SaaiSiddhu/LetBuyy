@@ -75,8 +75,8 @@ before(async () => {
     const checkoutCertificate = createOwnedCheckoutTlsCertificate(owned);
     const checkoutSpki = checkoutCertificate.spki;
     checkoutTls = createHttpsServer({ key: checkoutCertificate.key, cert: checkoutCertificate.cert }, (req, res) => {
-        const checkoutHost = `checkout.localhost:${checkoutTlsPort}`;
-        if (req.headers.host !== checkoutHost) { res.writeHead(421); res.end(); return; }
+        const checkoutHost = req.headers.host || '';
+        if (!/^[a-z0-9-]+\.localhost:\d+$/.test(checkoutHost) || !checkoutHost.endsWith(':'+checkoutTlsPort)) { res.writeHead(421); res.end(); return; }
         const upstream = forwardHttpRequest({ hostname: '127.0.0.1', port: commercePort, path: req.url, method: req.method,
             headers: { ...req.headers, host: checkoutHost, 'x-forwarded-host': checkoutHost, 'x-forwarded-proto': 'https' } }, response => {
             response.on('error', () => res.destroy());
@@ -216,7 +216,7 @@ async function fixture(tag: string) {
     });
     const editorUrl = `${merchantOrigin}/${tenant.subdomain}/online-store/themes/${slug}/editor`;
     const bff = `/api/themes/${slug}/editor?store_name=${tenant.subdomain}`;
-    const publicUrl = `http://${tenant.subdomain}.localhost:${new URL(commerceOrigin).port}`;
+    const publicUrl = `https://${tenant.subdomain}.localhost:${checkoutTlsPort}`;
     const effects = () => owned.psql(`SELECT
         (SELECT coalesce(max(draft_revision),0) FROM theme_instances WHERE store_id='${tenant.siteId}'),
         (SELECT count(*) FROM theme_releases WHERE store_id='${tenant.siteId}'),
