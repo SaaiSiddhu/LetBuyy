@@ -38,8 +38,12 @@ test('custom-domain verification requires ownership TXT before active CNAME', ()
   assert.match(source, /_letbuyy-challenge/);
   assert.match(source, /txtMatches\.length < 2/);
   assert.match(source, /TXT_NOT_VERIFIED/);
-  assert.match(source, /custom_domain_status:\s*'verifying'/);
-  assert.match(source, /custom_domain_status:\s*'pending'/);
+  // The shared status writer now preserves additional aliases: only the exact
+  // primary hostname may update the site's primary-domain mirror.
+  assert.match(source, /await updateStatus\('verifying'\)/);
+  assert.match(source, /await updateStatus\('pending'\)/);
+  assert.match(source, /patchSiteDomainStatus\(db, parsed\.data\.site_id, domain, \{ status \}\)/);
+  assert.match(source, /if \(row\.role === 'primary'\) \{\s*const saved = await db\.from\('sites'\)\.update\(\{ custom_domain_status: status \}\)\.eq\('id', parsed\.data\.site_id\)\.eq\('custom_domain', domain\)/);
   assert.match(source, /attachVercelProjectDomain/);
   assert.match(source, /DOMAIN_TAKEN/);
   assert.match(source, /PUBLIC_SUFFIX_LIKE_DOMAINS/);
