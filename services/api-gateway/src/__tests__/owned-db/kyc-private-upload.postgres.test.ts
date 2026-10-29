@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import test, { after } from 'node:test';
 import { randomUUID } from 'node:crypto';
 import { requireOwnedDatabase } from './owned-db-support';
-import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from './gateway-harness';
+import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
@@ -112,6 +112,46 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(objects.has(refreshedMeta.private_object_key), true);
     assert.equal(refreshedMeta.provider_verified, false);
     assert.equal(refreshed.json?.data.overview.overall_status, 'in_progress');
+    let releaseStaleRefresh!: () => void;
+    let staleRefreshArrived!: () => void;
+    const staleRefreshHeld = new Promise<void>((resolve) => { releaseStaleRefresh = resolve; });
+    const staleRefreshWaiting = new Promise<void>((resolve) => { staleRefreshArrived = resolve; });
+    const restTap = tapRest(owned.restUrl, async (call, forward) => {
+        if (call.resource === 'merchant_kyc_documents' && call.method === 'PATCH'
+            && call.body.includes('"provider_verified"')) {
+            staleRefreshArrived();
+            await staleRefreshHeld;
+        }
+        return forward();
+    });
+    let staleRefresh: Awaited<ReturnType<Gateway['request']>> | undefined;
+    let latestUpload: Awaited<ReturnType<Gateway['request']>> | undefined;
+    try {
+        const racingHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
+        racingHeaders['X-Idempotency-Key'] = randomUUID();
+        const pendingRefresh = gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`,
+            { method: 'POST', headers: racingHeaders });
+        await Promise.race([
+            staleRefreshWaiting,
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('refresh did not reach its KYC write')), 15_000)),
+        ]);
+        // The status request has read the old row but has not reached Postgres.
+        // Replace its evidence before allowing the old provider result to write.
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        latestUpload = await upload(tenant.siteId,
+            new File([new TextEncoder().encode('%PDF-1.7\nreplacement while refresh waits')], 'new-pan.pdf', { type: 'application/pdf' }));
+        releaseStaleRefresh();
+        staleRefresh = await pendingRefresh;
+    } finally {
+        releaseStaleRefresh();
+        restTap.restore();
+    }
+    assert.equal(latestUpload?.status, 201, latestUpload?.text);
+    assert.equal(staleRefresh?.status, 409, staleRefresh?.text);
+    const newestMeta = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}';`));
+    assert.equal(newestMeta.private_object_key, [...objects.keys()][0]);
+    assert.equal(newestMeta.provider_verified, undefined);
+    assert.equal(objects.size, 1, 'the old refresh must not resurrect a deleted private object');
     const otherHeaders = await signedIdentityHeaders(other, `kyc-${other}@example.invalid`, otherTenant.siteId);
     otherHeaders['X-Idempotency-Key'] = randomUUID();
     const foreignRefresh = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${otherTenant.siteId}`, { method: 'POST', headers: otherHeaders });

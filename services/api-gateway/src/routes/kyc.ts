@@ -370,10 +370,15 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         })
         .eq('id', document.id)
         .eq('site_id', tenant.siteId)
+        // A new upload reuses this row. Never let a response for the previous
+        // evidence overwrite its object pointer, status, or provider decision.
+        .eq('updated_at', document.updated_at)
+        .is('deleted_at', null)
         .select('*')
-        .single();
+        .maybeSingle();
 
     if (error) throw new Error(`KYC document refresh failed: ${error.message}`);
+    if (!data) throw new AppError('This document changed during verification. Reload its current status.', 409, 'KYC_CONFLICT');
     const rows = await loadDocuments(db, tenant.siteId);
     return c.json(success({
         document: serializeDocument(data as unknown as KycDocumentRow),
