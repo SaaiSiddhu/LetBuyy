@@ -42,9 +42,9 @@ function localItems(cart: Receipt) {
         name: line.title, quantity: line.quantity, price: line.unit_price, images: [], currency: line.currency,
         selectedVariant: line.properties, nicheSnapshot: line.niche_snapshot, snapshotFingerprint: line.snapshot_fingerprint }));
 }
-async function harness(localQuantity = 4) {
+async function harness(localQuantity = 4, options: { url?: string; strictStore?: boolean } = {}) {
     document.body.replaceChildren(); window.localStorage.clear();
-    dom.reconfigure({ url: 'https://source.example.invalid/store/recovery/cart' });
+    dom.reconfigure({ url: options.url ?? 'https://source.example.invalid/store/recovery/cart' });
     let server = receipt();
     const requests: Request[] = [];
     let mutation: ((request: Request) => Promise<Response> | Response) | undefined;
@@ -56,6 +56,10 @@ async function harness(localQuantity = 4) {
     globalThis.fetch = (async (input, init) => {
         const request: Request = { method: init?.method || 'GET', path: String(input) };
         assert.ok(request.path.startsWith('/api/storefront/'), 'test transport must stay on the canonical browser proxy');
+        if (options.strictStore && !request.path.startsWith('/api/storefront/recovery/')) {
+            requests.push(request);
+            return json({ success: false, error: { code: 'STORE_NOT_FOUND' } }, 404);
+        }
         if (request.path.endsWith('/checkout-status')) return checkout ? checkout()
             : json({ success: true, data: { cart_status: 'active', checkout_state: null } });
         requests.push(request);
@@ -69,7 +73,7 @@ async function harness(localQuantity = 4) {
     }) as typeof fetch;
     const islands = await import('./liquid-hydration-islands');
     const { createRoot } = await import('react-dom/client');
-    document.body.innerHTML = '<main data-theme-renderer="liquid" data-editor-mode="false"><header>Cart <span data-lb-cart-count>0</span></header><lb-cart></lb-cart></main><div id="effect"></div>';
+    document.body.innerHTML = '<main data-theme-renderer="liquid" data-editor-mode="false" data-base-path="/store/recovery"><header>Cart <span data-lb-cart-count>0</span></header><lb-cart></lb-cart></main><div id="effect"></div>';
     const effect = createRoot(document.getElementById('effect')!);
     await act(async () => { effect.render(React.createElement(islands.default, { basePath: '/store/recovery', storeId: productId })); });
     await settle();
@@ -88,6 +92,23 @@ async function harness(localQuantity = 4) {
         async close() { await act(async () => effect.unmount()); document.body.replaceChildren(); window.localStorage.clear(); globalThis.fetch = originalFetch; await tick(); },
     };
 }
+
+test('a bare custom-domain cart recovers the server-resolved store after checkout and remount without replay', async () => {
+    const h = await harness(4, { url: 'https://store.brand.example.invalid/cart', strictStore: true });
+    try {
+        assert.equal(h.page().querySelector('[role="alert"]'), null);
+        assert.equal(h.quantity(), 4);
+        assert.match(h.page().textContent!, /35,600/);
+        assert.equal(h.page().querySelector('a.lb-cart__checkout')?.getAttribute('href'), '/store/recovery/checkout');
+        assert.ok(h.requests.length > 0);
+        assert.ok(h.requests.every(row => row.path.startsWith('/api/storefront/recovery/')));
+        await h.remount();
+        assert.equal(h.page().querySelector('[role="alert"]'), null);
+        assert.ok(h.page().querySelector('a.lb-cart__checkout'));
+        assert.equal(h.requests.filter(row => row.method !== 'GET').length, 0);
+        assert.equal(window.localStorage.getItem('lb_cart_token'), token);
+    } finally { await h.close(); }
+});
 
 test('synthetic 409 on native four-to-five step restores accepted row/header/totals/storage and remount, then valid three clears error', async () => {
     const h = await harness();
