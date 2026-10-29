@@ -128,7 +128,7 @@ function cartSavedFactsMarkup(item: LiquidCartItem): string {
 }
 
 function getLiquidStorefrontSubdomain(): string | null {
-    const match = window.location.pathname.match(/^\/store\/([^/?#]+)/);
+    const match = inferBasePath().match(/^\/store\/([^/?#]+)$/);
     if (match?.[1]) return decodeURIComponent(match[1]);
 
     const querySubdomain = new URLSearchParams(window.location.search).get('subdomain');
@@ -457,7 +457,13 @@ function addCartItem(item: LiquidCartItem, options: { sync?: boolean; openDrawer
 
 function inferBasePath(): string {
     const match = window.location.pathname.match(/^\/store\/[^/]+/);
-    return match?.[0] || '';
+    if (match?.[0]) return match[0];
+    // Custom hosts can serve bare /cart after returning from hosted checkout.
+    // Their first DNS label is not the store handle. The composition layer
+    // already resolved the exact store; carry that route into every island,
+    // including custom elements upgraded before the client effect runs.
+    const resolved = document.querySelector<HTMLElement>('[data-theme-renderer="liquid"][data-editor-mode]')?.dataset.basePath;
+    return resolved && /^\/store\/[^/?#]+$/.test(resolved) ? resolved : '';
 }
 
 function numericDatasetValue(value: string | undefined, fallback: number): number {

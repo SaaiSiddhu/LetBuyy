@@ -124,6 +124,7 @@ function LiquidRenderedHtml({
             <div
                 data-theme-renderer="liquid"
                 data-editor-mode={editorMode ? 'true' : 'false'}
+                data-base-path={basePath}
                 dangerouslySetInnerHTML={{ __html: html }}
             />
             {interactive && <LiquidHydrationIslands basePath={basePath} storeId={storeId} variantProductIds={variantProductIds} />}

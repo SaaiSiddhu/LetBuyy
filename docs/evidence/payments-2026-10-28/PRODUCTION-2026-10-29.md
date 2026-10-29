@@ -66,7 +66,7 @@ API and advanced a bounded batch with remaining work deferred. Full-cycle
 observation is being retained separately; `deferred=true` is not reported as a
 complete cycle.
 
-## Newly reproduced checkout return defect
+## Checkout return and integrated domain activation
 
 The branded checkout's Back to Cart link returned to the discovery origin instead
 of the originating wildcard storefront. Its cart appeared empty because browser
@@ -79,8 +79,46 @@ site's exact platform host, the configured discovery origin, or its currently
 active custom host through the existing signed resolver. It changes no signed
 cart fields, payment authority, tenant grant, cookie scope or migration. Malformed,
 wrong-site, revoked-domain and resolver-outage hints retain a safe fallback.
-Original source/browser qualification must finish before this additional repair
-is promoted.
+The owner approved qualified release `47cc24098be4dbf218746d1512ca28252c210c02`
+with its recorded hosted-staging and billing limitations. That release is now
+activated:
+
+- Develop, staging and main were fast-forwarded to the exact release, with branch
+  lag zero. Migration 410 committed and passed independent history/grant/catalog
+  readback (337 → 338 history entries). Both prior 523-table recovery rehearsals
+  were retained; no fresh export was needed for activation.
+- Production API version `1572d43a-d45c-4e9b-998e-2081ba1035b9` matches the three
+  qualified module hashes. The first attempt refused before provider dispatch
+  because the required mutation-approval marker was absent; its preserved receipt
+  is not deployment evidence. The corrected approved attempt verified the actual
+  new version and preserved bindings/secrets, including the 64-variable Free limit.
+- Merchant artifact `dpl_CsPyvtbVoWL2yM6cWHvEHqxjyjVv` and the byte-equivalent
+  Commerce artifact `dpl_HQktaoNVLqHVz6EVunmh1XcQTGsn` were promoted without
+  rebuilding. Their actual custom aliases were verified. Accounts, Marketing and
+  Queue were unchanged by this release. Sixteen bounded production HTTP controls
+  passed; they do not substitute for signed-in checkout acceptance.
+- The signed-in Merchant domain setup now shows both `store.pixlnova.com` and
+  **`checkout.store.pixlnova.com`** as HTTPS ready, with the complete DNS/check/
+  completion flow. Exact DNS ownership values remain copyable; normal product
+  copy uses LetBuyy wording. No apex/mail records or primary-store selection changed.
+- A real normal scheduled domain cycle completed across three bounded pages
+  (checked 1, 2, 1; deferred true, true, false), response 200/outcome ok. The old
+  `checkout.snaz.store.pixlnova.com` and prior platform checkout alias completed
+  their finite provider drain; retained history remains soft-deleted and the new
+  custom checkout binding remains active.
+- QA platform checkout → Back to Cart returned to the exact original store host
+  and retained one item/₹1. A fresh Snaz Check/Blue/M cart reached its correct
+  custom checkout with one item/₹3; no payment or order was submitted.
+
+The final Snaz return canary found a separate frontend issue: bare custom-domain
+`/cart` inferred its store handle from the first DNS label (`store`) instead of
+the server-resolved handle (`snaz`). The line and total stayed in origin-local
+storage, but canonical readback failed and Reload saved cart stayed blocked.
+The same saved cart loaded correctly at `/store/snaz/cart`. A targeted regression
+reproduced this (14 existing controls passed, the new custom-host control failed).
+The repair carries the server composition's base path into Liquid islands before
+custom-element upgrade. Its focused 55 checks pass; production activation and the
+repeated custom-host browser return remain pending for this additional candidate.
 
 ## Remaining boundaries
 
