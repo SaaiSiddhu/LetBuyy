@@ -554,6 +554,16 @@ checkout hosts (Recommended)”** against the prepared27October checkout-host pr
 This records that human decision; it is not a repository-scan amendment or an agent
 waiver. Hosted activation remains conditional on rehearsal/staging/QA acceptance.
 
+**Human owner revision, 2026-10-29.** The owner explicitly changed only the
+connected-domain pattern to `checkout.<connected-host>`: a store at
+`store.pixlnova.com` uses `checkout.store.pixlnova.com`, without adding the store
+handle again. Platform storefronts retain `checkout.<store-handle>.letbuyy.store`.
+The owner requested one combined storefront/checkout domain setup with both DNS
+requirements and HTTPS readiness, and automatic checkout provisioning for new
+platform-subdomain stores. This supersedes the 27October custom-host derivation;
+the exact ownership/site binding, provider proof, host-only cookies, finite
+in-flight handoff drain and central fallback requirements below remain in force.
+
 **Amends ART-14's hostname choice only.** The existing Commerce runtime may serve
 exact verified HTTPS checkout hostnames bound to their persisted site and verified
 parent domain. The canonical checkout state machine, server pricing, inventory,

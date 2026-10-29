@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test, { afterEach, before } from 'node:test';
+import { DEFAULT_STOREFRONT_DOMAIN } from '@letbuyy/shared-types';
 import {
     Gateway,
     gatewayEnv,
@@ -60,6 +61,9 @@ test('store creation replays by owner and key, rejects changed payload and isola
     assert.equal(replay.status, 201, replay.text);
     assert.equal(replay.headers.get('x-idempotent-replay'), 'true');
     assert.equal(replay.json?.data?.id, first.json?.data?.id);
+    assert.equal(first.json?.meta?.checkout_domain?.hostname, `checkout.${body.subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);
+    assert.equal(scalar(`SELECT count(*) FROM site_domains WHERE site_id='${first.json?.data?.id}' AND purpose='checkout' AND checkout_retired_at IS NULL AND deleted_at IS NULL;`), '1', 'creation and replay persist one automatic provisioning intent');
+    assert.equal(scalar(`SELECT published::text FROM sites WHERE id='${first.json?.data?.id}';`), 'false');
     assert.equal(scalar(`SELECT count(*) FROM sites WHERE custom_user_id='${owner.id}' AND store_creation_idempotency_key='${key}';`), '1');
     assert.equal(scalar(`SELECT count(*) FROM outbox_events WHERE aggregate_id='${first.json?.data?.id}' AND event_type='store.created' AND idempotency_key='store.created:${first.json?.data?.id}';`), '1');
 

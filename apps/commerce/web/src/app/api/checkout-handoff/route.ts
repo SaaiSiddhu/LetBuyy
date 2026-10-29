@@ -75,5 +75,11 @@ export async function POST(request: NextRequest) {
         || checkoutUrl.pathname !== '/checkout') {
         return NextResponse.json({ error: 'Secure checkout is temporarily unavailable.' }, { status: 503, headers: NO_STORE });
     }
+    // This is a navigation hint, not an extension of the signed cart capability.
+    // Origin already passed the same-origin gate above. The checkout page must
+    // independently bind it to the verified site before rendering return links.
+    const storefrontOrigin = normalizeCheckoutOrigin(request.headers.get('origin'));
+    checkoutUrl.searchParams.delete('storefront_return_origin');
+    if (storefrontOrigin) checkoutUrl.searchParams.set('storefront_return_origin', storefrontOrigin);
     return NextResponse.json({ checkout_url: checkoutUrl.toString() }, { headers: NO_STORE });
 }

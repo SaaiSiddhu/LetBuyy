@@ -7,7 +7,7 @@ import { canonicalCheckoutDomainProbePayload, LETBUYY_CHECKOUT_DOMAIN_PROBE_PATH
 import { getSupabaseAdmin } from './supabase';
 import { AppError } from './errors';
 import { hmacSha256Hex, timingSafeEqualHex } from './crypto';
-import { attachVercelProjectDomain, getVercelProjectDomain, readVercelDomainStatus, removeVercelProjectDomain } from './vercel-domains';
+import { attachVercelProjectDomain, getVercelProjectDomain, readVercelDomainStatus, removeVercelProjectDomain, verifyVercelProjectDomain, vercelOwnershipRecords } from './vercel-domains';
 import { getCustomDomainCnameTarget } from './custom-domain-config';
 
 type AppContext = Context<{Bindings:Env}>;
@@ -72,6 +72,20 @@ export async function checkoutDomainMatchesSite(db:Db,row:CheckoutDomainRow,site
   return !row.checkout_retired_at&&!row.deleted_at&&fresh(row)&&row.site_id===site.id&&expected.verified&&expected.host===row.domain
     &&expected.parentId===row.checkout_parent_domain_id;
 }
+function savedCheckoutAddressMatches(row:CheckoutDomainRow,hostname:string,root:string):boolean {
+  const handle=String(row.metadata.checkout_store_handle||''),base=String(row.metadata.checkout_base_host||'');
+  const expected=buildStoreCheckoutHostname({subdomain:handle,storeRootDomain:root,connectedHost:row.checkout_parent_domain_id?base:undefined});
+  if(expected===hostname)return true;
+  // Upgrade drain only: exact historical server-managed row, never new minting.
+  return !!expected&&!!row.checkout_parent_domain_id&&row.metadata.checkout_hostname_version!==2
+    &&hostname===`checkout.${handle}.${base}`;
+}
+async function savedParentVerified(db:Db,row:CheckoutDomainRow):Promise<boolean> {
+  if(!row.checkout_parent_domain_id)return true;
+  const parent=await db.from('site_domains').select('id').eq('id',row.checkout_parent_domain_id).eq('site_id',row.site_id)
+    .eq('domain',String(row.metadata.checkout_base_host||'')).eq('purpose','storefront').eq('status','active').eq('ssl_status','active').is('deleted_at',null).maybeSingle();
+  if(parent.error)throw unavailable();return !!parent.data;
+}
 /** The cart already supplied its verified site ID; do not use a cross-tenant
  * bootstrap for checkout commands. Central checkout remains the safe fallback. */
 export async function checkoutOriginBelongsToSite(db:Db,env:Env,siteId:string,origin:string):Promise<boolean> {
@@ -92,19 +106,21 @@ export async function resolveCheckoutDomainSite(db:Db,hostname:string,root:strin
   if(error)throw unavailable();
   if(!data||data.purpose!=='checkout')return null;
   const row=data as CheckoutDomainRow;
-  if(!row.checkout_retired_at){const site=await siteById(db,row.site_id);return await checkoutDomainMatchesSite(db,row,site,root)?site:null;}
+  if(!row.checkout_retired_at){
+    const site=await siteById(db,row.site_id);
+    if(await checkoutDomainMatchesSite(db,row,site,root))return site;
+    // Existing, still-leased legacy origins can redeem previously signed carts
+    // during the rolling cutover. checkoutOriginForStore never selects them.
+    return fresh(row)&&row.metadata.managed_by==='letbuyy-checkout-v1'&&row.metadata.checkout_hostname_version!==2
+      &&!!row.checkout_parent_domain_id&&savedCheckoutAddressMatches(row,hostname,root)
+      &&await savedParentVerified(db,row)?site:null;
+  }
   // A finite benign-address-change drain serves only previously signed carts.
   // Parent revocation, lease expiry and deleted stores still refuse immediately.
   if(!fresh(row)||row.metadata.managed_by!=='letbuyy-checkout-v1'||row.metadata.checkout_retire_reason!=='address_changed')return null;
   const retired=Date.parse(row.checkout_retired_at),until=Date.parse(String(row.metadata.checkout_retire_after||''));
   if(!Number.isFinite(retired)||!Number.isFinite(until)||retired>Date.now()||until<=Date.now()||until>retired+11*60_000)return null;
-  const handle=String(row.metadata.checkout_store_handle||''),base=String(row.metadata.checkout_base_host||'');
-  if(buildStoreCheckoutHostname({subdomain:handle,storeRootDomain:root,connectedHost:row.checkout_parent_domain_id?base:undefined})!==hostname)return null;
-  if(row.checkout_parent_domain_id){
-    const parent=await db.from('site_domains').select('id').eq('id',row.checkout_parent_domain_id).eq('site_id',row.site_id)
-      .eq('domain',base).eq('purpose','storefront').eq('status','active').eq('ssl_status','active').is('deleted_at',null).maybeSingle();
-    if(parent.error)throw unavailable();if(!parent.data)return null;
-  }
+  if(!savedCheckoutAddressMatches(row,hostname,root)||!await savedParentVerified(db,row))return null;
   return siteById(db,row.site_id);
 }
 function projection(env:Env,siteId:string,address:Awaited<ReturnType<typeof expectedAddress>>,row:CheckoutDomainRow|null,reason:string|null):CheckoutDomainSetup {
@@ -115,7 +131,22 @@ function projection(env:Env,siteId:string,address:Awaited<ReturnType<typeof expe
   return CheckoutDomainSetupSchema.parse({site_id:siteId,hostname:address.host,parent_hostname:address.base,
     source:address.source,status,ssl_status:active?'active':row?.ssl_status==='error'?'error':'pending',
     checkout_origin:active?`https://${address.host}`:fallback,fallback_origin:fallback,reason,
-    dns_records:address.host&&target&&address.source==='custom'?[{type:'CNAME',name:address.host,value:target}]:[]});
+    dns_records:address.host&&target&&address.source==='custom'?[{type:'CNAME',name:address.host,value:target},
+      ...vercelOwnershipRecords({verification:row?.domain===address.host?row.metadata.checkout_provider_verification:[]})]:[]});
+}
+
+/** Instructions for this exact owned parent, including before its DNS is ready.
+ * A plan does not reserve/attach a child or authorize checkout on an alias. */
+export async function connectedDomainCheckoutPlan(c:AppContext,siteId:string,domain:string):Promise<CheckoutDomainSetup> {
+  const db=getSupabaseAdmin(c),site=await siteById(db,siteId),root=normalizeStoreRootDomain(c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+  const {data,error}=await db.from('site_domains').select('id,domain,role,status,ssl_status').eq('site_id',siteId)
+    .eq('purpose','storefront').eq('domain',domain).is('deleted_at',null).maybeSingle();
+  if(error||!data)throw unavailable();
+  const primary=data.role==='primary'&&site.custom_domain===domain;
+  const verified=primary&&data.status==='active'&&data.ssl_status==='active'&&site.custom_domain_status==='active';
+  return projection(c.env,siteId,{host:buildStoreCheckoutHostname({subdomain:site.subdomain,storeRootDomain:root,connectedHost:domain}),
+    parentId:data.id,base:domain,source:'custom',verified},await readStoreCheckoutDomain(db,siteId),
+    !primary?'PRIMARY_REQUIRED':!verified?'PARENT_NOT_VERIFIED':null);
 }
 async function verifyHttpsApplication(env:Env,siteId:string,hostname:string,fetchImpl:typeof fetch):Promise<boolean> {
   const key=env.STORE_ACCESS_SIGNING_KEY;if(!key||key.length<16)return false;
@@ -156,11 +187,11 @@ async function retireDrainedCheckoutDomain(db:Db,env:Env,siteId:string,fetchImpl
   if(writeError)throw unavailable();
 }
 /** Owned setup or the current site's signed-cart POST only. Provider effects are idempotent by exact hostname. */
-export async function prepareStoreCheckoutDomain(c:AppContext,siteId:string,options:{force?:boolean;fetchImpl?:typeof fetch}={}):Promise<CheckoutDomainSetup> {
+export async function prepareStoreCheckoutDomain(c:AppContext,siteId:string,options:{force?:boolean;reserveOnly?:boolean;fetchImpl?:typeof fetch}={}):Promise<CheckoutDomainSetup> {
   const db=getSupabaseAdmin(c),site=await siteById(db,siteId),root=normalizeStoreRootDomain(c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
   const address=await expectedAddress(db,site,root);let row=await readStoreCheckoutDomain(db,siteId);
   const fetchImpl=options.fetchImpl??fetch;
-  if(providerConfigured(c.env))await retireDrainedCheckoutDomain(db,c.env,siteId,fetchImpl);
+  if(!options.reserveOnly&&providerConfigured(c.env))await retireDrainedCheckoutDomain(db,c.env,siteId,fetchImpl);
   if(!address.host||!address.verified)return projection(c.env,siteId,address,row,'PARENT_NOT_VERIFIED');
   if(row&&await checkoutDomainMatchesSite(db,row,site,root)&&!options.force
      &&Date.parse(row.last_checked_at||'')>Date.now()-2*60*60*1000)return projection(c.env,siteId,address,row,null);
@@ -174,7 +205,7 @@ export async function prepareStoreCheckoutDomain(c:AppContext,siteId:string,opti
   if(!row) {
     const id=crypto.randomUUID();const {data,error}=await db.from('site_domains').insert({id,site_id:siteId,domain:address.host,
       role:'redirect',purpose:'checkout',checkout_parent_domain_id:address.parentId,status:'pending',ssl_status:'pending',
-      metadata:{checkout_source:address.source,checkout_base_host:address.base,checkout_store_handle:site.subdomain,managed_by:'letbuyy-checkout-v1'}}).select(COLUMNS).maybeSingle();
+      metadata:{checkout_source:address.source,checkout_base_host:address.base,checkout_store_handle:site.subdomain,checkout_hostname_version:2,managed_by:'letbuyy-checkout-v1'}}).select(COLUMNS).maybeSingle();
     if(error) {
       if(error.code!=='23505')throw unavailable();
       row=await readStoreCheckoutDomain(db,siteId);
@@ -182,22 +213,28 @@ export async function prepareStoreCheckoutDomain(c:AppContext,siteId:string,opti
     }else row=data as CheckoutDomainRow;
     if(!row)throw unavailable();
   }
+  if(options.reserveOnly)return projection(c.env,siteId,address,row,null);
   if(!options.force&&Date.parse(row.last_checked_at||'')>Date.now()-30_000)return projection(c.env,siteId,address,row,'CERTIFICATE_PENDING');
   if(!providerConfigured(c.env))
     return projection(c.env,siteId,address,row,'NOT_CONFIGURED');
-  let active=false,reason='CERTIFICATE_PENDING';
+  let active=false,reason='CERTIFICATE_PENDING',verification:unknown[]=[];
   try {
     let domain=await getVercelProjectDomain(c.env,address.host,fetchImpl);
     if(!domain)domain=await attachVercelProjectDomain(c.env,address.host,fetchImpl);
     const exact=exactProviderDomain(c.env,domain,address.host);
     if(!exact)reason='PROVIDER_BINDING_INVALID';
     else {
+      if(domain?.verified!==true){
+        try{await verifyVercelProjectDomain(c.env,address.host,fetchImpl);}catch{/* DNS challenge may still be pending; read its exact instructions below. */}
+      }
       const status=await readVercelDomainStatus(c.env,address.host,fetchImpl);
-      if(status.status==='active'&&status.verified&&!status.misconfigured)active=await verifyHttpsApplication(c.env,siteId,address.host,fetchImpl);
+      verification=vercelOwnershipRecords(status.projectDomain).map(record=>({type:record.type,domain:record.name,value:record.value}));
+      if(!status.verified)reason='PROVIDER_OWNERSHIP_PENDING';
+      if(exactProviderDomain(c.env,status.projectDomain,address.host)&&status.status==='active'&&status.verified&&!status.misconfigured)active=await verifyHttpsApplication(c.env,siteId,address.host,fetchImpl);
     }
   }catch{reason='PROVIDER_UNAVAILABLE';}
   const patch={status:active?'active':'verifying',ssl_status:active?'active':'pending',last_checked_at:new Date().toISOString(),
-    updated_at:new Date().toISOString(),...(active?{connected_at:new Date().toISOString()}:{})};
+    updated_at:new Date().toISOString(),metadata:{...row.metadata,checkout_provider_verification:verification},...(active?{connected_at:new Date().toISOString()}:{})};
   const {data,error}=await db.from('site_domains').update(patch).eq('id',row.id).eq('site_id',siteId).eq('purpose','checkout')
     .eq('domain',address.host).is('checkout_retired_at',null).is('deleted_at',null).select(COLUMNS).maybeSingle();
   if(error||!data)throw unavailable();

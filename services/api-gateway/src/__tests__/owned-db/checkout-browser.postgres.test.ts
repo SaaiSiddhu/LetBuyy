@@ -219,11 +219,17 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.ok(browser);
     const context = await browser.newContext();
     context.setDefaultNavigationTimeout(coldNavigationTimeout);
-    await context.addInitScript(({ token, items }) => {
-        (globalThis as any).localStorage.setItem('lb_cart_token', token);
-        (globalThis as any).localStorage.setItem('lb_cart', JSON.stringify(items));
+    const storefrontOrigin = `http://${site.subdomain}.localhost:${appPort}`;
+    await context.addInitScript(({ token, items, origin }) => {
+        // A cart on another origin must remain empty. Seeding every origin
+        // would hide the production Back to Cart storage-loss regression.
+        const browserWindow = globalThis as unknown as { location: { origin: string }; localStorage: { setItem(key: string, value: string): void } };
+        if (browserWindow.location.origin !== origin) return;
+        browserWindow.localStorage.setItem('lb_cart_token', token);
+        browserWindow.localStorage.setItem('lb_cart', JSON.stringify(items));
     }, {
         token: cartToken,
+        origin: storefrontOrigin,
         items: [{ id: productId, name: 'Synthetic browser checkout product', price: 199, currency: 'INR', images: [], stock: 25, quantity: 1 }],
     });
     const page = await context.newPage();
@@ -242,6 +248,15 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.ok(page.url().includes('checkout.localhost'), `storefront did not hand off to hosted checkout (url=${page.url()}, cart=${await page.evaluate(() => (globalThis as any).localStorage.getItem('lb_cart_token'))}, body=${(await page.locator('body').innerText()).slice(0, 500)}, errors=${pageErrors.join(' | ')}, handoff=${handoffTrace.join(' | ')})`);
     await page.waitForLoadState('networkidle');
     assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
+    assert.equal(await page.getByRole('link', { name: 'Back to Cart', exact: true }).getAttribute('href'), `${storefrontOrigin}/cart`);
+    await page.getByRole('link', { name: 'Back to Cart', exact: true }).click();
+    await page.waitForLoadState('networkidle');
+    assert.equal(new URL(page.url()).origin, storefrontOrigin);
+    assert.equal(await page.evaluate(() => (globalThis as unknown as { localStorage: { getItem(key: string): string | null } }).localStorage.getItem('lb_cart_token')), cartToken);
+    assert.ok((await page.locator('body').innerText()).includes('Synthetic browser checkout product'), 'the returned cart retains its actual product');
+    await page.goto(`${storefrontOrigin}/checkout`, { waitUntil: 'domcontentloaded' });
+    await page.waitForURL(url => url.hostname === 'checkout.localhost', { timeout: coldNavigationTimeout });
+    await page.waitForLoadState('networkidle');
     await page.getByPlaceholder('John Doe').fill('Synthetic Browser Buyer');
     await page.getByPlaceholder('9876543210').fill('9000000099');
     await page.getByPlaceholder('john@example.com').fill('browser-buyer@example.invalid');

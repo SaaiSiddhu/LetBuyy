@@ -156,14 +156,13 @@ export function scoreFromRecord(record: SiteDomainRecord): number {
 
 // ── Connect-wizard step model ────────────────────────────────────────────────
 
-export type WizardStep = 'enter' | 'detect' | 'instructions' | 'verify' | 'activate'
+export type WizardStep = 'enter' | 'instructions' | 'verify' | 'activate'
 
 export const WIZARD_STEPS: ReadonlyArray<{ key: WizardStep; label: string }> = [
     { key: 'enter', label: 'Add domain' },
-    { key: 'detect', label: 'Provider' },
     { key: 'instructions', label: 'DNS records' },
-    { key: 'verify', label: 'Verify' },
-    { key: 'activate', label: 'Activate' },
+    { key: 'verify', label: 'DNS & HTTPS' },
+    { key: 'activate', label: 'Ready' },
 ]
 
 /** Lifecycle step a connected domain has reached (for the detail checklist). */

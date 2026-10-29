@@ -1,12 +1,13 @@
 import { buildGoogleFontsHref } from '@letbuyy/theme-engine';
 import type { CheckoutStorePresentation } from '@letbuyy/tenant-core';
-import { normalizeStoreRootDomain, buildTenantStorefrontUrl } from '@letbuyy/tenant-core';
 import type { Metadata } from 'next';
 import { LETBUYY_CHECKOUT_ORIGIN_HEADER, type StoreBrandingInput } from '@letbuyy/checkout-core';
 import { headers } from 'next/headers';
 import { checkoutRequestBinding } from '@/lib/checkout-host';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { StoreService } from '@/lib/store-service';
+import { resolveCheckoutStorefrontReturn } from '@/lib/checkout-storefront-return';
+import { resolveStorefrontAccessContext } from '@/lib/storefront-access';
 import CheckoutClient, { type CheckoutOriginCartLine } from '../../store/[subdomain]/checkout/checkout-client';
 import { sanitizeBranding, brandingCssVariables, checkoutPaymentAppearance } from '../branding';
 import CheckoutLogo from '../checkout-logo';
@@ -30,6 +31,7 @@ interface CheckoutSearchParams {
     signature?: string;
     buyer_binding?: string;
     checkout_origin?: string;
+    storefront_return_origin?: string;
 }
 
 interface VerifiedHandoffLine {
@@ -40,18 +42,6 @@ interface VerifiedHandoffLine {
     quantity?: number;
     unit_price?: number;
     properties?: Record<string, string>;
-}
-
-// T6/W2 — resolves the merchant's real storefront origin for the "back to store" links
-// CheckoutClient already renders. checkout.<root> shares no host with the storefront, so these
-// must be absolute URLs; the local-dev root domain has no real DNS for a live subdomain, so it
-// falls back to the same /store/<subdomain> path every other local verification in this
-// environment already uses. This resolver never chooses a tenant — the subdomain it receives
-// already came from a store row looked up by the handoff's own verified site_id.
-function resolveStorefrontOriginUrl(subdomain: string): string {
-    const rootDomain = normalizeStoreRootDomain(process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
-    if (rootDomain === 'localhost' && !process.env.NEXT_PUBLIC_STOREFRONT_URL) return `/store/${subdomain}`;
-    return buildTenantStorefrontUrl(subdomain, { rootDomain, baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL });
 }
 
 // T8/W1 — this page renders BEFORE a store or its branding is ever resolved (an invalid/expired
@@ -168,6 +158,15 @@ export default async function CheckoutOriginPage({
     const store = verified.presentation || legacyStore;
     if (!store) return <InvalidHandoffPage reason="This store is no longer available." />;
 
+    const storefrontBaseUrl = await resolveCheckoutStorefrontReturn({
+        siteId: verified.siteId,
+        subdomain: store.subdomain,
+        originHint: params.storefront_return_origin,
+        rootDomain: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+        baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL,
+        resolveHost: resolveStorefrontAccessContext,
+    });
+
     const brandingInput = await loadBranding(verified.siteId);
     // T8/W2 — resolved from the store's own already-computed templateConfig.themeSettings (the
     // exact same object apps/commerce/web/src/app/store/[subdomain]/layout.tsx derives the
@@ -184,7 +183,7 @@ export default async function CheckoutOriginPage({
             <header className="border-b border-line px-4 py-3">
                 <div className="mx-auto flex max-w-5xl items-center justify-between">
                     <a
-                        href={resolveStorefrontOriginUrl(store.subdomain)}
+                        href={storefrontBaseUrl}
                         className="flex items-center gap-2 text-sm font-semibold text-theme"
                     >
                         <CheckoutLogo logoUrl={branding.logoUrl} storeName={store.name} />
@@ -206,9 +205,9 @@ export default async function CheckoutOriginPage({
                 storeName={store.name}
                 codEnabled={store.codEnabled !== false}
                 onlinePaymentEnabled={store.onlinePaymentEnabled !== false}
-                paymentAppearance={checkoutPaymentAppearance(branding, resolveStorefrontOriginUrl(store.subdomain))}
+                paymentAppearance={checkoutPaymentAppearance(branding, storefrontBaseUrl)}
                 checkoutOrigin={{
-                    storefrontBaseUrl: resolveStorefrontOriginUrl(store.subdomain),
+                    storefrontBaseUrl,
                     cartLines,
                     cartId: verified.cartId,
                     handoff: verified.handoff,

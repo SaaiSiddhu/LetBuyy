@@ -23,13 +23,13 @@ test('the observed Next dev localhost normalization stays exact to local host, p
   const prior=process.env.NODE_ENV;
   const headers=new Headers({host:'checkout.localhost:4321','x-forwarded-host':'checkout.localhost:4321','x-forwarded-proto':'http'});
   try{
-    process.env.NODE_ENV='development';
+    Object.assign(process.env,{NODE_ENV:'development'});
     assert.equal(checkoutRequestOrigin(headers,'http://localhost:4321/checkout'),'http://checkout.localhost:4321');
     assert.equal(checkoutRequestOrigin(headers,'http://localhost:4322/checkout'),null);
     assert.equal(checkoutRequestOrigin(headers,'http://other.localhost:4321/checkout'),null);
     assert.equal(checkoutRequestOrigin(new Headers({host:'checkout.shops.example.invalid:4321'}),'https://localhost:4321/checkout'),null);
-    process.env.NODE_ENV='production';assert.equal(checkoutRequestOrigin(headers,'http://localhost:4321/checkout'),null);
-  }finally{if(prior===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=prior;}
+    Object.assign(process.env,{NODE_ENV:'production'});assert.equal(checkoutRequestOrigin(headers,'http://localhost:4321/checkout'),null);
+  }finally{if(prior===undefined)Reflect.deleteProperty(process.env,'NODE_ENV');else Object.assign(process.env,{NODE_ENV:prior});}
 });
 test('exact checkout bootstrap carries its purpose through the signed internal perimeter and checks the result',async()=>{
   const old=process.env.INTERNAL_API_SECRET;process.env.INTERNAL_API_SECRET='synthetic-boundary-only-secret';
