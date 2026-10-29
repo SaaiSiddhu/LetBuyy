@@ -228,7 +228,7 @@ async function fixture(tag: string) {
 }
 async function signIn(page: Page, email: string) {
     await page.goto(identityOrigin + '/login');
-    await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+    await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 30_000 });
     await page.getByLabel('Email', { exact: true }).fill(email);
     await page.getByRole('button', { name: 'Continue with email', exact: true }).click();
     await page.getByLabel('Password', { exact: true }).fill(password);
