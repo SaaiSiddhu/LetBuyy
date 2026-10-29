@@ -201,6 +201,7 @@ export default function BusinessSettingsPage() {
     const [initialData, setInitialData] = useState<BusinessForm | null>(null)
     const [rawBP, setRawBP] = useState<Record<string, unknown>>({})
     const [version, setVersion] = useState<number | null>(null)
+    const [nextInvoiceNumber, setNextInvoiceNumber] = useState<number | null>(null)
 
     const [kyc, setKyc] = useState<KycOverview | null>(null)
     const [commission, setCommission] = useState<CommissionOverview | null>(null)
@@ -257,6 +258,7 @@ export default function BusinessSettingsPage() {
         void loadOptional(signal)
         setLoading(true)
         setLoadError(null)
+        setNextInvoiceNumber(null)
         try {
             const storeRes = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: readSignal })
             const storePayload = await storeRes.json().catch(() => null) as ApiPayload | null
@@ -266,6 +268,8 @@ export default function BusinessSettingsPage() {
             if (!d) throw new Error('Business details were not returned')
             if (typeof d.version !== 'number') throw new Error('Store revision was not returned')
             setVersion(d.version)
+            const counter = Number(d.invoice_number_next)
+            setNextInvoiceNumber(Number.isSafeInteger(counter) && counter > 0 ? counter : null)
 
             const bp = isRecord(d.business_profile) ? d.business_profile : {}
             setRawBP(bp)
@@ -560,7 +564,9 @@ export default function BusinessSettingsPage() {
                             onChange={(e) => set('invoice_prefix', e.target.value.slice(0, 20))}
                             placeholder="LBY"
                             maxLength={20}
-                            helperText={`Appears before GST invoice numbers, e.g. ${data.invoice_prefix || 'LBY'}-000001. The next number is assigned when the invoice is issued.`}
+                            helperText={nextInvoiceNumber === null
+                                ? 'Format: prefix followed by a six-digit or longer sequence. Reload to see the current counter.'
+                                : `Current next format: ${data.invoice_prefix || 'LBY'}-${String(nextInvoiceNumber).padStart(6, '0')}. The number is assigned atomically when an invoice is issued and may advance before your next order.`}
                         />
 
                 </Section>

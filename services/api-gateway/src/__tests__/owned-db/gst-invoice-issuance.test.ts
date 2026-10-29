@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import test, { before } from 'node:test';
 import { requireOwnedDatabase } from './owned-db-support';
-import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+import { newSyntheticTenant, seedSyntheticOrder, seedSyntheticTenant } from './synthetic-tenant';
 
 // T14 (CAP-C48/CAP-C49): no gst_invoices row existed for any order, ever. W0 found the real
 // cause live (placed an order, read the gateway's log): generateAndPersistGstInvoice's own
@@ -44,6 +44,7 @@ test(
         // The invoice RPC needs the supplier's GSTIN; the synthetic tenant was seeded with one.
         const site = psql(`SELECT gstin, gst_state_code FROM sites WHERE id = '${STORE_ID}';`);
         assert.ok(site && site.split('|')[0] !== '', 'the synthetic tenant must carry a GSTIN (seedSyntheticTenant with gst: true)');
+        const [prefix, nextInvoice] = psql(`SELECT invoice_prefix, invoice_number_next FROM sites WHERE id='${STORE_ID}';`).split('|');
 
         const suffix = Date.now().toString(36);
         const productId = randomUUID();
@@ -69,6 +70,12 @@ test(
         ]);
         assert.notEqual(results[0], results[1], 'two orders must never receive the same invoice number');
         assert.ok(results[0] && results[1], 'both invoice numbers must be non-empty');
+        assert.deepEqual(results.slice().sort(), [0, 1].map((offset) => `${prefix}-${String(Number(nextInvoice) + offset).padStart(6, '0')}`).sort(),
+            'Business settings invoice format example must agree with real generated numbers');
+        const orderRefs = psql(`SELECT order_number FROM orders WHERE id IN ('${orderAId}','${orderBId}') ORDER BY id;`).split('\n');
+        assert.equal(orderRefs.length, 2);
+        orderRefs.forEach((reference) => assert.match(reference, /^ORD-[0-9]{8}-[0-9]+$/,
+            'General settings order reference format must match generated values'));
 
         // Reconciliation: the invoice must match its order to the paisa.
         const recon = psql(`
@@ -79,6 +86,13 @@ test(
         const [orderTax, invTax, orderTotal, invTotal] = recon.split('|');
         assert.equal(orderTax, invTax, 'invoice tax must match order tax to the paisa');
         assert.equal(orderTotal, invTotal, 'invoice total must match order total to the paisa');
+        const invoiceFacts = psql(`SELECT invoice_number||'|'||supplier::text||'|'||total_amount_minor::text
+            FROM gst_invoices WHERE order_id='${orderAId}';`);
+        psql(`UPDATE sites SET name='Synthetic renamed store',legal_name='Synthetic renamed legal entity',
+            invoice_prefix='RENAMED' WHERE id='${STORE_ID}';`);
+        assert.equal(psql(`SELECT invoice_number||'|'||supplier::text||'|'||total_amount_minor::text
+            FROM gst_invoices WHERE order_id='${orderAId}';`), invoiceFacts,
+            'later General and Business edits never rewrite issued invoice identity or amounts');
 
         // Immutability: both UPDATE and DELETE must be genuinely refused.
         const updateErr = psqlExpectError(`UPDATE gst_invoices SET tax_amount_minor = 1 WHERE order_id = '${orderAId}';`);
@@ -91,3 +105,16 @@ test(
         assert.equal(stillThere, '1');
     },
 );
+
+test('an unregistered merchant order records zero GST and does not issue a GST invoice', () => {
+    const unregistered = newSyntheticTenant('inv-unregistered');
+    seedSyntheticTenant(psql, unregistered, { gst: false, taxRates: false });
+    const { orderId } = seedSyntheticOrder(psql, unregistered);
+    const [tax, registration, supplierGstin] = psql(`SELECT tax::text, tax_snapshot->>'collection_status',
+        coalesce(tax_snapshot->'supplier'->>'gstin','') FROM orders WHERE id='${orderId}';`).split('|');
+    assert.equal(Number(tax), 0, 'unregistered sales cannot collect GST');
+    assert.equal(registration, 'not_collecting');
+    assert.equal(supplierGstin, '');
+    assert.equal(psql(`SELECT count(*) FROM gst_invoices WHERE order_id='${orderId}';`), '0');
+    assert.match(psql(`SELECT order_number FROM orders WHERE id='${orderId}';`), /^ORD-[0-9]{8}-[0-9]+$/);
+});

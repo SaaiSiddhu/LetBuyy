@@ -5,8 +5,8 @@ import test from 'node:test';
 import { requireOwnedDatabase } from './owned-db-support';
 
 const owned = requireOwnedDatabase();
-const migration = readFileSync(new URL('../../../../../database/supabase/migrations/411_kyc_provider_decision_write_guard.sql', import.meta.url), 'utf8');
-const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/411_kyc_provider_decision_write_guard.rollback.sql', import.meta.url), 'utf8');
+const migration = readFileSync(new URL('../../../../../database/supabase/migrations/414_kyc_provider_decision_write_guard.sql', import.meta.url), 'utf8');
+const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/414_kyc_provider_decision_write_guard.rollback.sql', import.meta.url), 'utf8');
 
 function apply(sql: string) {
     execFileSync('docker', [
