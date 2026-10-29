@@ -865,6 +865,15 @@ class _CustomersScreenState extends State<CustomersScreen> {
     }
 
     if (_customers.isEmpty) {
+      if (_query.trim().isNotEmpty || _selectedSegmentId != null || _page > 1) {
+        return _centerState(
+          icon: Icons.search_off_rounded,
+          title: 'No matching customers',
+          subtitle: _selectedSegmentId != null
+              ? 'No customers match this segment on the current page.'
+              : 'Try another search or return to the previous page.',
+        );
+      }
       return _centerState(
         icon: Icons.people_outline_rounded,
         title: 'No customers yet',

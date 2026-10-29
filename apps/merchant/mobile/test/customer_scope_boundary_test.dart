@@ -539,4 +539,35 @@ void main() {
       expect(find.text('Beyond the first thirty'), findsNWidgets(2));
     },
   );
+  testWidgets('an empty server search is not reported as an empty store', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final api = client(
+      (r, h) => respond(
+        r,
+        h,
+        r.path.endsWith('/segments') || r.queryParameters['search'] != null
+            ? []
+            : [customer('a')],
+      ),
+    );
+    final stores = StoreContext(storeService: FixedStores(api));
+    await stores.loadStores();
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: stores),
+          ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
+        ],
+        child: const MaterialApp(home: CustomersScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'no-match');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(find.text('No matching customers'), findsOneWidget);
+    expect(find.text('No customers yet'), findsNothing);
+  });
 }

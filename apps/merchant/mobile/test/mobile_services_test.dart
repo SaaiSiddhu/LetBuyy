@@ -1392,7 +1392,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.textContaining('https://$availableSubdomain.letbuyy.com'),
+          find.textContaining(StoreModel.generateStoreUrl(availableSubdomain)),
           findsOneWidget,
         );
         expect(
@@ -7905,6 +7905,54 @@ void main() {
     }
   });
 
+  test('dashboard composite distinguishes confirmed zero from missing summary metrics', () async {
+    for (final observed in [false, true]) {
+      final payload = observed
+          ? _mobileDashboardJson(revenueValue: 0, orderValue: 0, productCount: 0, averageOrderValue: 0)
+          : <String, dynamic>{'store_id': 'store_1', 'analytics': {'dashboard': null}, 'payout_summary': null};
+      final snapshot = await AnalyticsService(api: _FakeApiClient(json: {'/mobile/dashboard': payload})).getMobileDashboardSnapshot('store_1');
+      expect(snapshot.analytics.summaryAvailable, observed);
+      expect(snapshot.analytics.viewsAvailable, isFalse);
+    }
+  });
+
+  for (final observed in [false, true]) {
+    testWidgets('dashboard presents ${observed ? 'fractional amounts' : 'unavailable metrics'} honestly', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(AppBadgeService.defaultChannel, (_) async => null);
+      messenger.setMockMethodCallHandler(HomeWidgetService.defaultChannel, (_) async => null);
+      addTearDown(() {
+        messenger.setMockMethodCallHandler(AppBadgeService.defaultChannel, null);
+        messenger.setMockMethodCallHandler(HomeWidgetService.defaultChannel, null);
+      });
+      tester.view.physicalSize = const Size(1000, 1400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final payload = observed
+          ? {..._mobileDashboardJson(revenueValue: 1, orderValue: 3, productCount: 1, averageOrderValue: 0.33), 'payout_summary': null}
+          : <String, dynamic>{'store_id': 'store_1', 'analytics': {'dashboard': null}, 'payout_summary': null};
+      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]}, json: {'/mobile/dashboard': payload});
+      await tester.pumpWidget(MultiProvider(providers: _merchantShellProviders(api), child: const MaterialApp(home: HomeScreen())));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('Gateway'), findsNothing);
+      expect(find.text('Computed'), findsNothing);
+      expect(find.text('No data'), findsWidgets);
+      expect(find.text('Payout summary unavailable'), findsOneWidget);
+      expect(find.text('No payout scheduled'), findsNothing);
+      if (observed) {
+        expect(find.text('₹0.33'), findsOneWidget);
+      } else {
+        expect(find.text('Revenue data could not be loaded. Refresh to retry.'), findsOneWidget);
+        expect(find.text('₹0.00'), findsNothing);
+      }
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   testWidgets('dashboard period picker supports keyboard and reloads metrics', (
     tester,
   ) async {
@@ -8058,7 +8106,7 @@ void main() {
       expect(periodData.hasAction(SemanticsAction.tap), isTrue);
       expect(tester.getSize(periodPicker).height, greaterThanOrEqualTo(48));
 
-      Focus.of(tester.element(find.text('30 Days'))).requestFocus();
+      Focus.of(tester.element(find.descendant(of: periodPicker, matching: find.text('30 Days')))).requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
@@ -8068,7 +8116,7 @@ void main() {
       await tester.tap(find.text('7 Days'));
       await tester.pump();
       await tester.pump(const Duration(seconds: 1));
-      expect(find.text('7 Days'), findsOneWidget);
+      expect(find.descendant(of: periodPicker, matching: find.text('7 Days')), findsOneWidget);
       expect(
         api.paths.where((path) => path == '/mobile/dashboard'),
         hasLength(2),

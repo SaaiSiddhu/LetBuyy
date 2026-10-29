@@ -164,7 +164,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   previousLabel:
                       _analytics?.comparison.previousLabel ?? 'Previous period',
                   valueFor: (day) => day.revenue,
-                  valueLabel: (value) => '₹${value.toStringAsFixed(0)}',
+                  valueLabel: (value) => '₹${value.toStringAsFixed(2)}',
                 ),
                 const SizedBox(height: 16),
 
@@ -465,7 +465,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     _buildComparisonMetric(
                       'Revenue',
                       comparison.revenue,
-                      (value) => '₹${value.toStringAsFixed(0)}',
+                      (value) => '₹${value.toStringAsFixed(2)}',
                     ),
                     _buildComparisonMetric(
                       'Orders',
@@ -475,7 +475,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     _buildComparisonMetric(
                       'AOV',
                       comparison.averageOrderValue,
-                      (value) => '₹${value.toStringAsFixed(0)}',
+                      (value) => '₹${value.toStringAsFixed(2)}',
                     ),
                   ],
                 ),
@@ -795,7 +795,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   ),
                   title: Text(product.name),
                   subtitle: Text(
-                    '₹${product.revenue.toStringAsFixed(0)} revenue',
+                    '₹${product.revenue.toStringAsFixed(2)} revenue',
                   ),
                   trailing: Container(
                     padding: const EdgeInsets.symmetric(

@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../services/api_client.dart';
 
 import '../../app/store_context.dart';
+import '../../config/app_config.dart';
 
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
@@ -218,7 +219,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
 
-    final storeUrl = '${_store?.subdomain ?? 'your-store'}.letbuyy.com';
+    final storeUrl = _store == null
+        ? ''
+        : AppConfig.storefrontUrlFor(
+            subdomain: _store!.subdomain,
+            publicUrl: _store!.publicUrl,
+          );
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -245,7 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         child: StoreInfoCard(
                           storeName: _store!.name,
-                          storeUrl: 'https://$storeUrl',
+                          storeUrl: storeUrl,
                           logoUrl: _store!.logoUrl,
                           isPublished: _store!.isPublished,
                           onEdit: () => Navigator.pushNamed(

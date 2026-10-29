@@ -99,11 +99,16 @@ class _HeroStoreCardState extends State<HeroStoreCard>
     HapticFeedback.mediumImpact();
     try {
       await Share.share(
-      '🏪 Check out ${widget.store.name} on LetBuyy!\n\n$_publicUrl',
-      subject: '${widget.store.name} - LetBuyy Store',
+        '🏪 Check out ${widget.store.name} on LetBuyy!\n\n$_publicUrl',
+        subject: '${widget.store.name} - LetBuyy Store',
       );
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open share options. Try again.')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open share options. Try again.'),
+          ),
+        );
     }
   }
 
@@ -368,7 +373,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
-                          '${widget.store.subdomain}.letbuyy.com',
+                          _publicUrl.replaceFirst(RegExp(r'^https?://'), ''),
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
@@ -871,7 +876,12 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
         subject: '${widget.storeName} - QR Code',
       );
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not share the QR image. Try again.')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not share the QR image. Try again.'),
+          ),
+        );
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }
@@ -990,7 +1000,10 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '${widget.subdomain}.letbuyy.com',
+                          widget.storeUrl.replaceFirst(
+                            RegExp(r'^https?://'),
+                            '',
+                          ),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,

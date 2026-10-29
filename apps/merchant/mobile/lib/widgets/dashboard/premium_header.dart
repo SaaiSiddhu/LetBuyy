@@ -17,7 +17,7 @@ import '../shared/accessible_tap_region.dart';
 
 // ─── Brand colors (match identity-platform globals.css) ───────────────────────
 const _kPrimary = Color(0xFF8B5CF6);
-const _kDarkBg  = Color(0xFF0A0912);
+const _kDarkBg = Color(0xFF0A0912);
 const _kLightBg = Color(0xFFFAF9FF);
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,10 +38,10 @@ class PremiumHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth        = context.watch<StoreAuthService>();
-    final storeCtx    = context.watch<StoreContext>();
-    final colors      = AppThemeColors.of(context);
-    final store       = storeCtx.selectedStore;
+    final auth = context.watch<StoreAuthService>();
+    final storeCtx = context.watch<StoreContext>();
+    final colors = AppThemeColors.of(context);
+    final store = storeCtx.selectedStore;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
@@ -205,7 +205,7 @@ class _StorePillState extends State<_StorePill> {
   /// Generate a unique, stable color from the store name
   static Color _storeColor(String name) {
     final hash = name.codeUnits.fold(0, (prev, c) => prev + c * 31);
-    final hue  = (hash % 360).abs().toDouble();
+    final hue = (hash % 360).abs().toDouble();
     return HSLColor.fromAHSL(1.0, hue, 0.65, 0.48).toColor();
   }
 
@@ -233,7 +233,7 @@ class _StorePillState extends State<_StorePill> {
   @override
   Widget build(BuildContext context) {
     final store = widget.store;
-    final name  = store?.name ?? 'Select Store';
+    final name = store?.name ?? 'Select Store';
     final color = store != null ? _storeColor(name) : _kPrimary;
 
     return AccessibleTapRegion(
@@ -410,10 +410,9 @@ class _AccountSheet extends StatelessWidget {
   final bool isDark;
   final AppThemeColors colors;
 
-  String get _fullName =>
-      auth.currentUser?.fullName?.isNotEmpty == true
-          ? auth.currentUser!.fullName!
-          : auth.currentUser?.email?.split('@').first ?? 'Merchant';
+  String get _fullName => auth.currentUser?.fullName?.isNotEmpty == true
+      ? auth.currentUser!.fullName!
+      : auth.currentUser?.email?.split('@').first ?? 'Merchant';
 
   String get _email => auth.currentUser?.email ?? '';
 
@@ -576,7 +575,7 @@ class _StorePickerSheet extends StatelessWidget {
 
   static Color _storeColor(String name) {
     final hash = name.codeUnits.fold(0, (prev, c) => prev + c * 31);
-    final hue  = (hash % 360).abs().toDouble();
+    final hue = (hash % 360).abs().toDouble();
     return HSLColor.fromAHSL(1.0, hue, 0.65, 0.48).toColor();
   }
 
@@ -589,10 +588,10 @@ class _StorePickerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeCtx = context.watch<StoreContext>();
-    final stores   = storeCtx.stores;
+    final stores = storeCtx.stores;
     final selected = storeCtx.selectedStore;
-    final sheetBg  = isDark ? const Color(0xFF13111F) : Colors.white;
-    final divider  = isDark
+    final sheetBg = isDark ? const Color(0xFF13111F) : Colors.white;
+    final divider = isDark
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.black.withValues(alpha: 0.06);
 
@@ -724,7 +723,9 @@ class _StoreRowState extends State<_StoreRow> {
   Widget build(BuildContext context) {
     return AccessibleTapRegion(
       label: widget.store.name,
-      hint: widget.isActive ? 'Current store' : 'Switch to ${widget.store.name}',
+      hint: widget.isActive
+          ? 'Current store'
+          : 'Switch to ${widget.store.name}',
       onTap: widget.onTap,
       selected: widget.isActive,
       excludeChildSemantics: true,
@@ -744,13 +745,13 @@ class _StoreRowState extends State<_StoreRow> {
           decoration: BoxDecoration(
             color: _pressed
                 ? (widget.isDark
-                    ? Colors.white.withValues(alpha: 0.07)
-                    : Colors.black.withValues(alpha: 0.04))
+                      ? Colors.white.withValues(alpha: 0.07)
+                      : Colors.black.withValues(alpha: 0.04))
                 : (widget.isActive
-                    ? (widget.isDark
-                        ? Colors.white.withValues(alpha: 0.05)
-                        : Colors.black.withValues(alpha: 0.03))
-                    : Colors.transparent),
+                      ? (widget.isDark
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : Colors.black.withValues(alpha: 0.03))
+                      : Colors.transparent),
             borderRadius: BorderRadius.circular(14),
             border: widget.isActive
                 ? Border.all(
@@ -798,7 +799,10 @@ class _StoreRowState extends State<_StoreRow> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${widget.store.subdomain}.letbuyy.com',
+                      widget.store.publicUrl.replaceFirst(
+                        RegExp(r'^https?://'),
+                        '',
+                      ),
                       style: TextStyle(
                         color: widget.colors.textSecondary,
                         fontSize: 12,
@@ -877,18 +881,14 @@ class _SheetActionState extends State<_SheetAction> {
           decoration: BoxDecoration(
             color: _pressed
                 ? (widget.isDark
-                    ? Colors.white.withValues(alpha: 0.06)
-                    : Colors.black.withValues(alpha: 0.04))
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.black.withValues(alpha: 0.04))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              Icon(
-                widget.icon,
-                size: 22,
-                color: widget.colors.textPrimary,
-              ),
+              Icon(widget.icon, size: 22, color: widget.colors.textPrimary),
               const SizedBox(width: 14),
               Text(
                 widget.label,

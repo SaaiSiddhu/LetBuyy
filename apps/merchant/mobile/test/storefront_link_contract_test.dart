@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/services/custom_domains.dart';
+import 'package:letbuyy_store/widgets/dashboard/hero_store_card.dart';
 
 void main() {
   const defaultUrl = 'https://demo.${StoreModel.storefrontRootDomain}';
@@ -18,12 +20,12 @@ void main() {
     'platform, preview and settings links share the governed storefront root',
     () {
       final value = store();
-    expect(StoreModel.generateStoreUrl('demo'), defaultUrl);
-    expect(value.publicUrl, defaultUrl);
+      expect(StoreModel.generateStoreUrl('demo'), defaultUrl);
+      expect(value.publicUrl, defaultUrl);
       expect(value.previewUrl, value.publicUrl);
       expect(
         DomainSettingsSnapshot.fromStore(value).defaultDomain,
-      'demo.${StoreModel.storefrontRootDomain}',
+        'demo.${StoreModel.storefrontRootDomain}',
       );
     },
   );
@@ -39,7 +41,7 @@ void main() {
         store(custom: 'shop.example.in', status: 'active'),
         store(custom: 'shop.example.in', status: 'verifying', ssl: true),
       ]) {
-      expect(value.publicUrl, defaultUrl);
+        expect(value.publicUrl, defaultUrl);
       }
       expect(
         store(
@@ -47,8 +49,39 @@ void main() {
           status: 'active',
           ssl: true,
         ).previewUrl,
-      defaultUrl,
+        defaultUrl,
       );
+    },
+  );
+  testWidgets(
+    'dashboard address label follows the exact platform, custom or local visit URL',
+    (tester) async {
+      for (final url in [
+        defaultUrl,
+        'https://shop.example.in',
+        'http://127.0.0.1:3000/store/demo',
+      ]) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: HeroStoreCard(
+                  store: store(),
+                  storefrontUrl: url,
+                  onPublishToggle: () {},
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.text(url.replaceFirst(RegExp(r'^https?://'), '')),
+          findsOneWidget,
+        );
+        expect(find.text('demo.letbuyy.com'), findsNothing);
+      }
+      await tester.pumpWidget(const SizedBox.shrink());
     },
   );
 }

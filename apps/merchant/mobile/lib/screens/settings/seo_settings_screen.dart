@@ -206,9 +206,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     final description = _descriptionController.text.trim().isEmpty
         ? (_store?.tagline ?? 'Store description')
         : _descriptionController.text.trim();
-    final url = _store?.customDomain?.isNotEmpty == true
-        ? _store!.customDomain!
-        : '${_store?.subdomain ?? 'store'}.letbuyy.com';
+    final url = _store?.publicUrl.replaceFirst(RegExp(r'^https?://'), '') ?? '';
 
     return Container(
       padding: const EdgeInsets.all(16),
