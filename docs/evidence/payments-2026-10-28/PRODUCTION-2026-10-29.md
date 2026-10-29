@@ -117,8 +117,28 @@ storage, but canonical readback failed and Reload saved cart stayed blocked.
 The same saved cart loaded correctly at `/store/snaz/cart`. A targeted regression
 reproduced this (14 existing controls passed, the new custom-host control failed).
 The repair carries the server composition's base path into Liquid islands before
-custom-element upgrade. Its focused 55 checks pass; production activation and the
-repeated custom-host browser return remain pending for this additional candidate.
+custom-element upgrade. Source `8e8c0e1a8` is integrated into develop and staging as
+`9dc428b8fb9f4f0350ff60c74aea53135b29b64e`. Its focused 55 controls and the full
+Commerce command (2,191 checks across five command groups) pass, with typecheck,
+build and 114 governance validators. ESLint reports zero errors and 25 unchanged
+warnings outside the repair. These counts overlap; they are not added together.
+
+Hosted staging initially returned HTTP 200 with an unavailable catalog, then a
+Liquid `esm_interop` refusal. Neither attempt counts as acceptance. Staging lacked
+branch-specific API URLs and the Node compatibility option already used by
+production/develop. Only its Commerce preview/staging branch received the public
+staging API URLs, environment label and `--experimental-require-module` option;
+no secrets were copied and no production settings changed. The final staging
+artifact `dpl_ERmxiYVJBW3TmV6tH71qi8xoc5ZW` passed eight bounded controls,
+including actual Circuit rendering with the resolved store context and preserved
+internal-route/buyer-session refusals.
+
+Production-configured artifact `dpl_GXMYgDQibiBcisQCaqUwkS5Yw8Wt` is READY but
+unpromoted. Main and the actual production Commerce alias remain on the approved
+domain release. The new candidate's CI jobs again stopped before all steps because
+of billing; full hosted staging custom-domain/cart sign-in remains unconfigured.
+The exact Commerce-only TEST-R8 gap acceptance is pending. Production activation
+and repeated Snaz checkout → bare custom-host cart acceptance are not yet passed.
 
 ## Remaining boundaries
 
