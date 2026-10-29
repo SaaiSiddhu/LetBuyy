@@ -62,6 +62,7 @@ try {
     }
     const env = JSON.parse(input);
     if (!env || Array.isArray(env) || typeof env !== 'object' || Object.values(env).some(v => typeof v !== 'string')) throw new Error('invalid explicit client environment');
+    if (Object.keys(env).some(name => name.startsWith('__NEXT_PRIVATE_'))) throw new Error('owned client runtime refuses private framework configuration overrides');
     const fixture = await verifyOwnedFixture();
     if (closing || !alive(parentPid)) throw new Error('client owner stopped before launch');
     // Never permit a real app .env file to supply an undeclared credential/fallback.

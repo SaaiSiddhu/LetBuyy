@@ -178,8 +178,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   // new-store default. Grant only a labelled synthetic upload entitlement and
   // install the real bundle through the normal file input; no store/theme SQL seed.
   owned.psql(`INSERT INTO subscriptions(user_id,store_id,plan,status) VALUES((SELECT id FROM users_custom WHERE email='${email}'),'${siteId}','enterprise','active');`);
-  const coreBundle=new URL('../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url).pathname;
-  const [coreImport]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/install'&&r.request().method()==='POST'),page.locator('input[type="file"][accept*="json"]').setInputFiles(coreBundle)]);
+  const coreBundle=owned.psql(`SELECT (default_template->'liquidBundle')::text FROM themes WHERE slug='letbuyy-core';`);
+  const [coreImport]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/install'&&r.request().method()==='POST'),page.locator('input[type="file"][accept*="json"]').setInputFiles({name:'owned-core-compatibility.json',mimeType:'application/json',buffer:Buffer.from(coreBundle)})]);
   assert.equal(coreImport.status(),200);const coreSlug=(await coreImport.json()).uploaded.theme.slug as string;
   assert.ok(coreSlug.startsWith('private-'+siteId+'-'));
   assert.equal(owned.psql(`SELECT theme_id FROM sites WHERE id='${siteId}';`),'letbuyy-forge','import cannot replace the live design');

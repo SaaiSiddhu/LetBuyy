@@ -51,3 +51,18 @@ Observed repaired runs:
 The remaining browser controls must run against updated source with owned
 production builds before source qualification can close. Provider registration,
 staging and final production proof remain separately open.
+
+Follow-up browser qualification passed privacy, public signup and buyer support
+recovery. Core compatibility now proves the approved Circuit default before
+explicitly importing the real current Core bundle through the normal file input,
+with a labelled synthetic upload entitlement. An older generated Core JSON has
+different presets and must not stand in for the current catalog.
+
+The production-built local Commerce fixture uses a bounded platform-ingress
+adapter for its loopback TLS proxy. Next16's custom router ignores the public
+`conf` option during prepare, so the fixture supplies Next's own built-config
+transport derived from its owned build. Only localhost or the already-approved
+canonical fixture root, exact local ports, and matching forwarding headers reach
+the application. Caller-supplied private Next configuration is refused. This is
+not a deploy configuration change or a waiver of production origin binding;
+actual hosted provider checks remain a separate required gate.

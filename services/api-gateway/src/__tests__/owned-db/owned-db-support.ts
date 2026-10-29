@@ -317,7 +317,7 @@ export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, op
     if (!CLIENT_KINDS.has(kind)) throw new Error('unapproved owned client runtime kind');
     if (owned !== requireOwnedDatabase() || !clientFixtureEnv) throw new Error('owned client runtime requires the verified database handle');
     if ((kind.endsWith('-next') || kind.endsWith('-next-production')) && (!Number.isInteger(options.port) || options.port! < 1024 || options.port! > 65535)) throw new Error('invalid local Next port');
-    if (Object.keys(options.env).some(name => /^(NODE_OPTIONS|NODE_PATH|BASH_ENV|ENV|PATH|HOME|PNPM_HOME|FLUTTER_ROOT|PUB_CACHE|PLAYWRIGHT_BROWSERS_PATH|LD_PRELOAD|DYLD_.*)$/.test(name))) {
+    if (Object.keys(options.env).some(name => /^(NODE_OPTIONS|NODE_PATH|BASH_ENV|ENV|PATH|HOME|PNPM_HOME|FLUTTER_ROOT|PUB_CACHE|PLAYWRIGHT_BROWSERS_PATH|LD_PRELOAD|DYLD_.*|__NEXT_PRIVATE_.*)$/.test(name))) {
         throw new Error('owned client runtime refuses executable or loader overrides');
     }
     // Only OS/tool paths cross implicitly. Provider/database credentials and

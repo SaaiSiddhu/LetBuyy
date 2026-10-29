@@ -42,8 +42,13 @@ if (app.kind === 'commerce-next-production' && process.env.CHECKOUT_ORIGIN?.star
     // Model the platform's trusted TLS ingress only after the owned-fixture guard
     // and an exact loopback-host check. This config never enters a deploy artifact.
     const config = JSON.parse(readFileSync(join(app.root, process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR, 'required-server-files.json'), 'utf8')).config;
+    const ingressConfig = { ...config, experimental: { ...config.experimental, trustHostHeader: true } };
+    // Pinned Next16's custom-server prepare reloads config for its router and
+    // ignores the public conf option there. Use its own built-config transport,
+    // derived here rather than accepting a caller-supplied configuration.
+    process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(ingressConfig);
     const nextApp = createRequire(join(app.root, 'package.json'))('next')({
-        dev: false, dir: app.root, conf: { ...config, experimental: { ...config.experimental, trustHostHeader: true } },
+        dev: false, dir: app.root, conf: ingressConfig,
         hostname: 'localhost', port,
     });
     await nextApp.prepare();
