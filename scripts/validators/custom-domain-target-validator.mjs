@@ -13,7 +13,7 @@ const nextTemplate = readFile("config/env/templates/next-app.env.example");
 const dns = readFile("infrastructure/dns/dns.tf");
 const gateway = readFile("services/api-gateway/src/routes/custom-domains.ts");
 const config = readFile("services/api-gateway/src/lib/custom-domain-config.ts");
-const merchant = readFile("apps/merchant/web/src/app/[store]/settings/domains/page.tsx");
+const wizard = readFile("apps/merchant/web/src/components/domains/ConnectDomainWizard.tsx");
 const mobile = readFile("apps/merchant/mobile/lib/services/custom_domains.dart");
 
 for (const fragment of [
@@ -32,7 +32,12 @@ reporter.assert(
 );
 reporter.assert(gateway.includes("getCustomDomainCnameTarget"), "custom-domain route must resolve target from env");
 reporter.assert(config.includes("CUSTOM_DOMAIN_CNAME_TARGET"), "target helper must require custom-domain target env");
-reporter.assert(merchant.includes("NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET"), "merchant UI must read public target env");
+// The integrated wizard consumes the current server/env-derived DNS plan.
+// An unused browser env fallback could differ from the provider target and used
+// to satisfy this gate without affecting any displayed record.
+reporter.assert(wizard.includes("connected.records.cname.value") && wizard.includes("checkout?.dns_records.map")
+  && gateway.includes("connectedDomainCheckoutPlan"), "merchant UI must display both gateway-derived DNS targets");
+reporter.assert(!/NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET\s*\|\|/.test(wizard), "merchant wizard must not guess a fallback DNS target");
 reporter.assert(mobile.includes("NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET"), "mobile UI must read public target env");
 
 for (const root of [
