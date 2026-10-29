@@ -7093,7 +7093,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
 
-    expect(find.text('Anu Buyer'), findsOneWidget);
+    // The list reload is authoritative; this fixed fixture has not added Anu.
+    expect(find.text('Meera Merchant'), findsOneWidget);
+    expect(find.text('Customer added.'), findsOneWidget);
     expect(api.bodies['/customers'], {
       'store_id': 'store_1',
       'email': 'anu@example.com',
@@ -7108,6 +7110,7 @@ void main() {
   testWidgets('CustomerDetailScreen renders addresses and recent orders', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
     final api = _FakeApiClient(
       json: {
         '/customers/meera%40example.com': _customerJson(),
@@ -7117,14 +7120,18 @@ void main() {
         '/whatsapp/timeline': [_whatsAppMessageJson()],
       },
       paginated: {
+        '/stores': [_storeJson()],
         '/orders': [_orderJson()],
       },
     );
+    final stores = StoreContext(storeService: StoreService(api: api));
+    await stores.loadStores();
     final customer = CustomerContract.fromJson(_customerJson());
 
     await tester.pumpWidget(
       MultiProvider(
         providers: [
+          ChangeNotifierProvider.value(value: stores),
           ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
           ChangeNotifierProvider(create: (_) => WhatsAppService(api: api)),
           ChangeNotifierProvider(create: (_) => OrderService(api: api)),
@@ -7140,7 +7147,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Meera Merchant'), findsWidgets);
-    expect(api.paths, isNot(contains('/customers/meera%40example.com')));
+    expect(api.paths, contains('/customers/meera%40example.com'));
     expect(find.byTooltip('Edit customer'), findsOneWidget);
     expect(find.byTooltip('Email customer'), findsOneWidget);
     expect(find.byTooltip('WhatsApp customer'), findsOneWidget);

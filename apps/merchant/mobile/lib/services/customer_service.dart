@@ -11,18 +11,64 @@ class CustomerService extends ChangeNotifier {
 
   final ApiClient _api;
   final CacheService? _cache;
+  final Set<String> _cacheDeniedStores = {};
 
   List<CustomerContract> _customers = [];
-  List<CustomerContract> get customers => List.unmodifiable(_customers);
+  Object? _customersContext;
+  String? _customersStoreId;
+  int _customersGeneration = 0;
+  List<CustomerContract> get customers => List.unmodifiable(
+    _customersContext == _api.captureRequestContext()
+        ? _customers
+        : const <CustomerContract>[],
+  );
 
   List<CustomerSegmentContract> _segments = [];
-  List<CustomerSegmentContract> get segments => List.unmodifiable(_segments);
+  Object? _segmentsContext;
+  String? _segmentsStoreId;
+  int _segmentsGeneration = 0;
+  List<CustomerSegmentContract> get segments => List.unmodifiable(
+    _segmentsContext == _api.captureRequestContext()
+        ? _segments
+        : const <CustomerSegmentContract>[],
+  );
+
+  void _checkReadContext(Object? captured, bool currentGeneration) {
+    if (!currentGeneration || captured != _api.captureRequestContext()) {
+      throw const ApiException(
+        message: 'Customer view changed. Reload the selected store.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+  }
+
+  bool _canUseOfflineCache(Object error) =>
+      error is! ApiException ||
+      (error.code != 'CUSTOMER_SCOPE_MISMATCH' &&
+          (error.statusCode == 0 || error.statusCode >= 500));
+
+  CustomerContract _customer(Map<String, dynamic> row, String? storeId) {
+    final customer = CustomerContract.fromJson(row);
+    if (storeId != null && customer.storeId != storeId) {
+      throw const ApiException(
+        message: 'Customer scope could not be confirmed.',
+        statusCode: 502,
+        code: 'CUSTOMER_SCOPE_MISMATCH',
+      );
+    }
+    return customer;
+  }
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   String? _customersNextCursor;
   String? get customersNextCursor => _customersNextCursor;
+  bool _customersHasMore = false;
+  bool get customersHasMore => _customersHasMore;
+  bool _customersOffline = false;
+  bool get customersOffline => _customersOffline;
 
   Future<List<CustomerContract>> fetchCustomers(
     String storeId, {
@@ -31,6 +77,14 @@ class CustomerService extends ChangeNotifier {
     int limit = 30,
     String? cursor,
   }) async {
+    final captured = _api.captureRequestContext(),
+        generation = ++_customersGeneration;
+    _customersContext = captured;
+    _customersStoreId = storeId;
+    _customers = [];
+    _customersNextCursor = null;
+    _customersHasMore = false;
+    _customersOffline = false;
     _isLoading = true;
     final normalizedCursor = cursor?.trim();
     final cacheKey = CacheService.customersKey(
@@ -40,9 +94,12 @@ class CustomerService extends ChangeNotifier {
       page: page,
       limit: limit,
     );
-    final cachedRows = _cache?.readJsonList(cacheKey) ?? [];
+    final cachedRows = _cacheDeniedStores.contains(storeId)
+        ? <Map<String, dynamic>>[]
+        : (_cache?.readJsonList(cacheKey) ?? []);
     if (cachedRows.isNotEmpty) {
       _customers = cachedRows
+          .where((row) => row['store_id'] == storeId)
           .map(CustomerContract.fromJson)
           .toList(growable: false);
     }
@@ -60,14 +117,18 @@ class CustomerService extends ChangeNotifier {
             'search': search.trim(),
         },
       );
+      _checkReadContext(captured, generation == _customersGeneration);
       _customersNextCursor = pageResult.nextCursor;
+      _customersHasMore = pageResult.hasMore;
       _customers = pageResult.data
-          .map(CustomerContract.fromJson)
+          .map((row) => _customer(row, storeId))
           .toList(growable: false);
+      _cacheDeniedStores.remove(storeId);
       await _cache?.writeJson(
         cacheKey,
         _customers.map((customer) => customer.toJson()).toList(growable: false),
       );
+      _checkReadContext(captured, generation == _customersGeneration);
       for (final customer in _customers) {
         final email = customer.email;
         if (email != null && email.trim().isNotEmpty) {
@@ -75,16 +136,32 @@ class CustomerService extends ChangeNotifier {
             CacheService.customerDetailKey(storeId, email),
             customer.toJson(),
           );
+          _checkReadContext(captured, generation == _customersGeneration);
         }
       }
       return _customers;
     } catch (e) {
-      debugPrint('❌ fetchCustomers error: $e');
-      if (_customers.isNotEmpty) return _customers;
+      _checkReadContext(captured, generation == _customersGeneration);
+      if (_canUseOfflineCache(e) && cachedRows.isNotEmpty) {
+        _customers = cachedRows
+            .where((row) => row['store_id'] == storeId)
+            .map(CustomerContract.fromJson)
+            .toList(growable: false);
+        _customersOffline = true;
+        return _customers;
+      }
+      _customers = [];
+      if (e is ApiException && (e.statusCode == 401 || e.statusCode == 403))
+        _cacheDeniedStores.add(storeId);
+      await _cache?.remove(cacheKey);
+      _checkReadContext(captured, generation == _customersGeneration);
       rethrow;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (generation == _customersGeneration &&
+          captured == _api.captureRequestContext()) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
@@ -106,8 +183,9 @@ class CustomerService extends ChangeNotifier {
     List<String> tags = const [],
     bool acceptsMarketing = false,
   }) async {
+    final captured = _api.captureRequestContext();
     final normalizedEmail = email.trim().toLowerCase();
-    final customer = CustomerContract.fromJson(
+    final customer = _customer(
       await _api.customers.create({
         'store_id': storeId,
         'email': normalizedEmail,
@@ -122,17 +200,21 @@ class CustomerService extends ChangeNotifier {
             .toList(growable: false),
         'accepts_marketing': acceptsMarketing,
       }),
+      storeId,
     );
-    _customers = [
-      customer,
-      ..._customers.where(
-        (row) => row.email?.trim().toLowerCase() != normalizedEmail,
-      ),
-    ];
+    _checkReadContext(captured, true);
+    if (_customersContext == captured && _customersStoreId == storeId)
+      _customers = [
+        customer,
+        ..._customers.where(
+          (row) => row.email?.trim().toLowerCase() != normalizedEmail,
+        ),
+      ];
     await _cache?.writeJson(
       CacheService.customerDetailKey(storeId, normalizedEmail),
       customer.toJson(),
     );
+    _checkReadContext(captured, true);
     notifyListeners();
     return customer;
   }
@@ -141,35 +223,55 @@ class CustomerService extends ChangeNotifier {
     String email, {
     String? storeId,
   }) async {
+    final captured = _api.captureRequestContext();
     try {
-      final customer = CustomerContract.fromJson(
+      final customer = _customer(
         await _api.customers.getByEmail(email, storeId: storeId),
+        storeId,
       );
+      _checkReadContext(captured, true);
+      if (storeId != null) _cacheDeniedStores.remove(storeId);
       if (storeId != null && storeId.trim().isNotEmpty) {
         await _cache?.writeJson(
           CacheService.customerDetailKey(storeId, email),
           customer.toJson(),
         );
+        _checkReadContext(captured, true);
       }
       return customer;
     } catch (e) {
-      debugPrint('❌ fetchCustomerByEmail error: $e');
-      if (storeId != null && storeId.trim().isNotEmpty) {
+      _checkReadContext(captured, true);
+      if (!_cacheDeniedStores.contains(storeId) &&
+          _canUseOfflineCache(e) &&
+          storeId != null &&
+          storeId.trim().isNotEmpty) {
         final cached = _cache?.readJsonMap(
           CacheService.customerDetailKey(storeId, email),
         );
-        if (cached != null) return CustomerContract.fromJson(cached);
+        if (cached != null && cached['store_id'] == storeId)
+          return CustomerContract.fromJson(cached);
+      } else if (storeId != null) {
+        if (e is ApiException && (e.statusCode == 401 || e.statusCode == 403))
+          _cacheDeniedStores.add(storeId);
+        _customers = [];
+        await _cache?.remove(CacheService.customerDetailKey(storeId, email));
+        _checkReadContext(captured, true);
+        notifyListeners();
       }
       rethrow;
     }
   }
 
   CustomerContract? cachedCustomerByEmail(String email, {String? storeId}) {
+    if (_cacheDeniedStores.contains(storeId)) return null;
     final normalizedEmail = email.trim().toLowerCase();
     if (normalizedEmail.isEmpty) return null;
 
-    for (final customer in _customers) {
-      if (customer.email?.trim().toLowerCase() == normalizedEmail) {
+    for (final customer in customers) {
+      if (storeId != null &&
+          _customersStoreId == storeId &&
+          customer.storeId == storeId &&
+          customer.email?.trim().toLowerCase() == normalizedEmail) {
         return customer;
       }
     }
@@ -180,7 +282,7 @@ class CustomerService extends ChangeNotifier {
     final cached = _cache?.readJsonMap(
       CacheService.customerDetailKey(normalizedStoreId, normalizedEmail),
     );
-    if (cached == null) return null;
+    if (cached == null || cached['store_id'] != normalizedStoreId) return null;
     return CustomerContract.fromJson(cached);
   }
 
@@ -189,11 +291,16 @@ class CustomerService extends ChangeNotifier {
     Map<String, dynamic> input, {
     String? storeId,
   }) async {
-    final customer = CustomerContract.fromJson(
+    final captured = _api.captureRequestContext();
+    final customer = _customer(
       await _api.customers.update(email, input, storeId: storeId),
+      storeId,
     );
+    _checkReadContext(captured, true);
     final index = _customers.indexWhere(
-      (row) => row.email?.toLowerCase() == email.toLowerCase(),
+      (row) =>
+          row.storeId == customer.storeId &&
+          row.email?.toLowerCase() == email.toLowerCase(),
     );
     if (index >= 0) {
       _customers = [
@@ -208,6 +315,7 @@ class CustomerService extends ChangeNotifier {
         CacheService.customerDetailKey(storeId, email),
         customer.toJson(),
       );
+      _checkReadContext(captured, true);
     }
     return customer;
   }
@@ -235,16 +343,20 @@ class CustomerService extends ChangeNotifier {
     required String storeId,
     required List<String> tags,
   }) async {
-    final customer = CustomerContract.fromJson(
+    final captured = _api.captureRequestContext();
+    final customer = _customer(
       await _api.customers.updateTags(email, {
         'store_id': storeId,
         'tags': tags,
       }),
+      storeId,
     );
+    _checkReadContext(captured, true);
     await _cache?.writeJson(
       CacheService.customerDetailKey(storeId, email),
       customer.toJson(),
     );
+    _checkReadContext(captured, true);
     notifyListeners();
     return customer;
   }
@@ -267,43 +379,57 @@ class CustomerService extends ChangeNotifier {
     required String storeId,
     required String targetEmail,
   }) async {
+    final captured = _api.captureRequestContext();
     final payload = await _api.customers.merge(sourceEmail, {
       'store_id': storeId,
       'target_email': targetEmail,
     });
-    final customer = CustomerContract.fromJson(
+    _checkReadContext(captured, true);
+    final customer = _customer(
       Map<String, dynamic>.from(payload['customer'] as Map),
+      storeId,
     );
-    _customers = _customers
-        .where((row) => row.email?.toLowerCase() != sourceEmail.toLowerCase())
-        .toList(growable: false);
-    final existingIndex = _customers.indexWhere(
-      (row) => row.email?.toLowerCase() == targetEmail.toLowerCase(),
-    );
-    if (existingIndex >= 0) {
-      _customers = [
-        ..._customers.take(existingIndex),
-        customer,
-        ..._customers.skip(existingIndex + 1),
-      ];
-    } else {
-      _customers = [customer, ..._customers];
+    if (_customersContext == captured && _customersStoreId == storeId) {
+      _customers = _customers
+          .where((row) => row.email?.toLowerCase() != sourceEmail.toLowerCase())
+          .toList(growable: false);
+      final existingIndex = _customers.indexWhere(
+        (row) => row.email?.toLowerCase() == targetEmail.toLowerCase(),
+      );
+      if (existingIndex >= 0) {
+        _customers = [
+          ..._customers.take(existingIndex),
+          customer,
+          ..._customers.skip(existingIndex + 1),
+        ];
+      } else {
+        _customers = [customer, ..._customers];
+      }
     }
     await _cache?.remove(CacheService.customerDetailKey(storeId, sourceEmail));
+    _checkReadContext(captured, true);
     await _cache?.writeJson(
       CacheService.customerDetailKey(storeId, targetEmail),
       customer.toJson(),
     );
+    _checkReadContext(captured, true);
     notifyListeners();
     return customer;
   }
 
   Future<void> deleteCustomer(String email, {required String storeId}) async {
+    final captured = _api.captureRequestContext();
     await _api.customers.remove(email, storeId: storeId);
+    _checkReadContext(captured, true);
     _customers = _customers
-        .where((row) => row.email?.toLowerCase() != email.toLowerCase())
+        .where(
+          (row) =>
+              row.storeId != storeId ||
+              row.email?.toLowerCase() != email.toLowerCase(),
+        )
         .toList(growable: false);
     await _cache?.remove(CacheService.customerDetailKey(storeId, email));
+    _checkReadContext(captured, true);
     notifyListeners();
   }
 
@@ -311,13 +437,28 @@ class CustomerService extends ChangeNotifier {
     String storeId, {
     String? search,
   }) async {
+    final captured = _api.captureRequestContext(),
+        generation = ++_segmentsGeneration;
+    if (_segmentsContext != captured || _segmentsStoreId != storeId)
+      _segments = [];
+    _segmentsContext = captured;
+    _segmentsStoreId = storeId;
     final rows = await _api.customers.segments.list(
       storeId: storeId,
       search: search,
     );
+    _checkReadContext(captured, generation == _segmentsGeneration);
     _segments = rows
         .map(CustomerSegmentContract.fromJson)
         .toList(growable: false);
+    if (_segments.any((segment) => segment.storeId != storeId)) {
+      _segments = [];
+      throw const ApiException(
+        message: 'Customer segment scope could not be confirmed.',
+        statusCode: 502,
+        code: 'CUSTOMER_SCOPE_MISMATCH',
+      );
+    }
     notifyListeners();
     return _segments;
   }
@@ -327,7 +468,9 @@ class CustomerService extends ChangeNotifier {
     required String name,
     String? description,
     required Map<String, dynamic> rules,
+    ApiRequestOptions? options,
   }) async {
+    final captured = _api.captureRequestContext();
     final segment = CustomerSegmentContract.fromJson(
       await _api.customers.segments.create({
         'store_id': storeId,
@@ -335,9 +478,47 @@ class CustomerService extends ChangeNotifier {
         if (description != null && description.trim().isNotEmpty)
           'description': description.trim(),
         'rules': rules,
-      }),
+      }, options: options),
     );
-    _segments = [segment, ..._segments.where((row) => row.id != segment.id)];
+    _checkReadContext(captured, true);
+    if (segment.storeId != storeId)
+      throw const ApiException(
+        message: 'Customer segment scope could not be confirmed.',
+        statusCode: 502,
+        code: 'CUSTOMER_SCOPE_MISMATCH',
+      );
+    if (_segmentsContext == captured && _segmentsStoreId == storeId)
+      _segments = [segment, ..._segments.where((row) => row.id != segment.id)];
+    notifyListeners();
+    return segment;
+  }
+
+  Future<CustomerSegmentContract> updateSegment(
+    CustomerSegmentContract existing, {
+    required String name,
+    String? description,
+    required Map<String, dynamic> rules,
+    ApiRequestOptions? options,
+  }) async {
+    final captured = _api.captureRequestContext();
+    final segment = CustomerSegmentContract.fromJson(
+      await _api.customers.segments.update(existing.id, {
+        'name': name,
+        'description': description,
+        'rules': rules,
+      }, options: options),
+    );
+    _checkReadContext(captured, true);
+    if (segment.id != existing.id || segment.storeId != existing.storeId) {
+      throw const ApiException(
+        message: 'Customer segment scope could not be confirmed.',
+        statusCode: 502,
+        code: 'CUSTOMER_SCOPE_MISMATCH',
+      );
+    }
+    if (_segmentsContext == captured && _segmentsStoreId == existing.storeId) {
+      _segments = [segment, ..._segments.where((row) => row.id != segment.id)];
+    }
     notifyListeners();
     return segment;
   }
@@ -358,15 +539,26 @@ class CustomerService extends ChangeNotifier {
     int page = 1,
     int limit = 30,
   }) async {
+    final captured = _api.captureRequestContext(),
+        generation = ++_customersGeneration;
+    _customersContext = captured;
+    _customersStoreId = storeId;
+    _customers = [];
+    _customersNextCursor = null;
+    _customersHasMore = false;
+    _customersOffline = false;
     final pageResult = await _api.customers.segments.customers(
       segmentId,
       storeId: storeId,
       page: page,
       limit: limit,
     );
+    _checkReadContext(captured, generation == _customersGeneration);
     _customers = pageResult.data
-        .map(CustomerContract.fromJson)
+        .map((row) => _customer(row, storeId))
         .toList(growable: false);
+    _customersHasMore = pageResult.hasMore;
+    _customersNextCursor = pageResult.nextCursor;
     notifyListeners();
     return _customers;
   }
