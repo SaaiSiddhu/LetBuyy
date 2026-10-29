@@ -4,8 +4,11 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
+import { createRequire } from 'node:module';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
+const authCoreRequire = createRequire(new URL('../../packages/auth-core/package.json', import.meta.url));
+const realZod = authCoreRequire('zod');
 
 function loadAuthCore() {
   const source = readFileSync(AUTH_CORE_SOURCE, 'utf8');
@@ -18,16 +21,12 @@ function loadAuthCore() {
   }).outputText;
 
   const module = { exports: {} };
-  const zChain = new Proxy(function zChain() {}, {
-    get: () => zChain,
-    apply: () => zChain,
-  });
   const sandbox = {
     module,
     exports: module.exports,
     require(specifier) {
-      if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
-      if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
+      if (specifier === 'zod') return realZod;
+      if (specifier === '@letbuyy/shared-types') return { EmailSchema: realZod.z.string().email() };
       if (specifier === './customer-session') return {};
       if (specifier === './storefront-access') return {};
       throw new Error(`Unexpected test require: ${specifier}`);
