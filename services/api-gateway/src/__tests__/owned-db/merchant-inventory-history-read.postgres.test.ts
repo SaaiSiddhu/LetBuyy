@@ -4,6 +4,7 @@ import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import { InventoryHistoryEntrySchema } from '@letbuyy/shared-types';
+import { createLetbuyyApiClient, LetbuyyApiError } from '@letbuyy/api-client';
 
 const owned = requireOwnedDatabase();
 const site = newSyntheticTenant('history-a'), other = newSyntheticTenant('history-b'), foreign = newSyntheticTenant('history-foreign');
@@ -47,6 +48,25 @@ test('a selected-store history query observes its own nonzero population and ack
     assert.equal(second.status, 200, second.text);
     assert.equal(second.json?.data.length, 1);
     assert.equal(second.json?.data[0].product_id, otherProduct);
+});
+test('the real typed SDK reads the actual scoped worker pages and preserves authorization refusals', async () => {
+    const api = createLetbuyyApiClient({
+        baseUrl: 'https://owned-gateway.example.invalid/v1',
+        getHeaders: () => signedIdentityHeaders(actor, email),
+        fetch: async (input, init) => {
+            const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
+            assert.equal(url.hostname, 'owned-gateway.example.invalid');
+            const response = await gateway.request(url.pathname + url.search, init);
+            return new Response(response.text, { status: response.status, headers: response.headers });
+        },
+    });
+    const first = await api.inventory.history({ store_id: site.siteId, limit: 2 });
+    const second = await api.inventory.history({ store_id: site.siteId, limit: 2, page: 2 });
+    assert.deepEqual([...first.data, ...second.data].map(row => row.id), ids);
+    assert.equal(first.total, 3); assert.equal(second.total, 3);
+    const alternate = await api.inventory.history({ store_id: other.siteId, limit: 2 });
+    assert.equal(alternate.data.length, 1); assert.equal(alternate.data[0].store_id, other.siteId);
+    await assert.rejects(() => api.inventory.history({ store_id: foreign.siteId, limit: 2 }), error => error instanceof LetbuyyApiError && [403,404].includes(error.status));
 });
 test('a store-bound identity cannot replace its explicit query with another owned or foreign store', async () => {
     const positive = await history({}, { bound: site.siteId });

@@ -38,6 +38,7 @@ const readPages = {
     storefrontPages: () => import('../src/app/[store]/online-store/pages/page'),
     segments: () => import('../src/app/[store]/customers/segments/page'),
     inventory: () => import('../src/app/[store]/products/inventory/page'),
+    inventoryHistory: () => import('../src/app/[store]/products/inventory-history/page'),
     planSettings: () => import('../src/app/[store]/settings/plan/page'),
     themeUpdate: () => import('../src/app/[store]/online-store/themes/update/UpdatePageClient'),
 
@@ -55,6 +56,94 @@ test('AI Studio renders the authoritative balance, all credit sources and canoni
         assert.match(h.text(),/custom17/);
     } finally {await h.close()}
 });
+
+const historySite = '11111111-1111-4111-8111-111111111111'
+const historyRecord = (name = 'Synthetic history') => ({
+    id: '22222222-2222-4222-8222-222222222222', store_id: historySite,
+    product_id: '33333333-3333-4333-8333-333333333333',
+    location_id: '44444444-4444-4444-8444-444444444444',
+    quantity_change: -2, reason: 'damaged', note: 'Synthetic history note',
+    created_at: '2026-10-01T00:00:00Z', products: { name, store_id: historySite },
+})
+const historyResponse = (rows: unknown[], page = 1, total = rows.length) => Response.json({
+    data: rows, meta: { total, page, per_page: 20, has_next: page * 20 < total, store_id: historySite },
+})
+test('stock history refuses a missing quantity or missing matching count instead of painting fabricated zero', async () => {
+    const broken: Record<string, unknown> = { ...historyRecord('Private malformed history') }
+    delete broken.quantity_change
+    for (const payload of [() => historyResponse([broken]), () => json([historyRecord('Private missing count')])]) {
+        const h = await mount('inventoryHistory', async url => url.endsWith('/analytics') ? json({}) : payload())
+        try {
+            assert.match(h.text(), /Failed to load inventory history/)
+            assert.doesNotMatch(h.text(), /Private malformed history|Private missing count|No history yet/)
+        } finally { await h.close() }
+    }
+})
+test('stock history retires visible rows and optional analytics when the account changes in the same store', async () => {
+    let denied = false
+    const h = await mount('inventoryHistory', async url => url.endsWith('/analytics')
+        ? (denied ? json({}, 503) : json({ total_skus: 37 }))
+        : (denied ? json({}, 403) : historyResponse([historyRecord('Private old actor history')])))
+    try {
+        assert.match(h.text(), /Private old actor history/)
+        denied = true
+        await h.render('alpha', 'actor-b')
+        assert.doesNotMatch(h.text(), /Private old actor history|Total SKUs37/)
+        assert.match(h.text(), /Failed to load inventory history/)
+    } finally { await h.close() }
+})
+test('stock history keeps Previous recovery after an unavailable later page', async () => {
+    const h = await mount('inventoryHistory', async url => url.endsWith('/analytics') ? json({})
+        : new URL(url).searchParams.get('page') === '2' ? json({}, 503)
+        : historyResponse([historyRecord('Current valid history')], 1, 21))
+    try {
+        await h.click('Next')
+        assert.match(h.text(), /Failed to load inventory history/)
+        assert.doesNotMatch(h.text(), /Current valid history/)
+        await h.click('Previous')
+        assert.match(h.text(), /Current valid history/)
+    } finally { await h.close() }
+})
+test('stock history rejects an old-store response body after a newer store is visible', async () => {
+    const old = deferred<unknown>()
+    const h = await mount('inventoryHistory', async url => {
+        if (url.endsWith('/analytics')) return json({})
+        if (url.includes('/alpha/')) { const r = new Response(''); r.json = () => old.promise; return r }
+        return historyResponse([historyRecord('Current beta history')])
+    })
+    try {
+        await h.render('beta')
+        await act(async () => old.resolve({ data: [historyRecord('Private retired history')], meta: { total: 1, page: 1, per_page: 20, has_next: false } }))
+        assert.doesNotMatch(h.text(), /Private retired history/)
+        assert.match(h.text(), /Current beta history/)
+    } finally { await h.close() }
+})
+test('stock history preserves a real zero quantity and genuine empty activity', async () => {
+    const h = await mount('inventoryHistory', async url => url.endsWith('/analytics') ? json({})
+        : historyResponse([{ ...historyRecord('Observed zero change'), quantity_change: 0 }]))
+    try {
+        assert.match(h.text(), /Observed zero change/)
+        assert.doesNotMatch(h.text(), /Failed to load inventory history/)
+    } finally { await h.close() }
+    const empty = await mount('inventoryHistory', async url => url.endsWith('/analytics') ? json({}) : historyResponse([]))
+    try { assert.doesNotMatch(empty.text(), /Failed to load inventory history/) } finally { await empty.close() }
+})
+test('stock history SDK refuses unacknowledged, malformed and foreign scope while preserving valid data', async () => {
+    const { createLetbuyyApiClient, LetbuyyApiError } = await import('@letbuyy/api-client')
+    const meta = { total: 1, page: 1, per_page: 20, has_next: false, store_id: historySite }
+    const client = (body: unknown) => createLetbuyyApiClient({ baseUrl: 'https://api.example.invalid/v1', fetch: async () => Response.json(body) })
+    const valid = await client({ data: [historyRecord()], meta }).inventory.history({ store_id: historySite })
+    assert.equal(valid.data[0].quantity_change, -2); assert.equal(valid.total, 1)
+    for (const body of [
+        { data: [historyRecord()], meta: { ...meta, store_id: undefined } },
+        { data: [historyRecord()], meta: { ...meta, total: undefined } },
+        { data: [{ ...historyRecord(), quantity_change: undefined }], meta },
+        { data: [{ ...historyRecord(), store_id: '55555555-5555-4555-8555-555555555555' }], meta },
+    ]) {
+        await assert.rejects(() => client(body).inventory.history({ store_id: historySite }),
+            error => error instanceof LetbuyyApiError && error.code === 'INVENTORY_HISTORY_UNVERIFIED')
+    }
+})
 
 test('AI Studio treats missing credit authority as unavailable instead of a zero-credit success', async () => {
     const h=await mount('aiStudio',async()=>json({usage:[]}));

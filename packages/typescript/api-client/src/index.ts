@@ -6,6 +6,7 @@ export type { CheckoutDomainSetup } from '@letbuyy/shared-types';
 export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
 import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, type PersonalizationReviewContext, type StorefrontDiscoveryQueryInput, type StorefrontDiscoveryMetadata } from '@letbuyy/shared-types';
 import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
+import { InventoryHistoryEntrySchema } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import { createReelReviewSdk } from './reels';
 export { createReelReviewSdk } from './reels';
@@ -5038,8 +5039,23 @@ export class LetbuyyApiClient {
       create: (input: CreateInventoryLocationInput, options?: LetbuyyRequestOptions) =>
         this.requestData<InventoryLocation>('/inventory/locations', { ...options, method: 'POST', body: input }),
     },
-    history: (query?: InventoryHistoryQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<InventoryEventRecord>('/inventory/history', { ...options, query }),
+    history: async (query?: InventoryHistoryQuery, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<InventoryHistoryEntry>> => {
+      const body = await this.request<GatewayResponse<unknown[]>>('/inventory/history', { ...options, storeId: query?.store_id ?? options?.storeId, query });
+      const data = InventoryHistoryEntrySchema.array().safeParse(unwrapData<unknown[]>(body, 200, null));
+      const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
+      const { total, page, per_page: limit, has_next: more } = meta;
+      if (!data.success || typeof total !== 'number' || !Number.isSafeInteger(total) || total < 0 ||
+          typeof page !== 'number' || page !== (query?.page ?? 1) ||
+          typeof limit !== 'number' || limit !== (query?.limit ?? 20) || typeof more !== 'boolean' ||
+          (query?.store_id && meta.store_id !== query.store_id) ||
+          (data.success && data.data.some(row =>
+            row.products.store_id !== row.store_id ||
+            (query?.store_id && row.store_id !== query.store_id) ||
+            (query?.product_id && row.product_id !== query.product_id)))) {
+        throw new LetbuyyApiError({ status: 503, code: 'INVENTORY_HISTORY_UNVERIFIED', message: 'Inventory history could not be verified. Try again later.' });
+      }
+      return { data: data.data, total, page, limit, has_more: more, next_cursor: null, total_is_exact: Boolean(meta.total_is_exact) };
+    },
     reserve: (input: ReserveInventoryInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>('/inventory/reserve', { ...options, method: 'POST', body: input }),
     commit: (input: InventoryReservationActionInput, options?: LetbuyyRequestOptions) =>
