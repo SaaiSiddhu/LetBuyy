@@ -645,7 +645,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               children: [
                 _buildHeader(),
                 _buildActionToolbar(),
-                if (_loadError == null) _buildStatsRow(),
+                if (_loadError == null && !_isLoading) _buildStatsRow(),
                 _buildFilterSortBar(),
                 if (_offline)
                   const Padding(
@@ -655,7 +655,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     ),
                   ),
                 Expanded(child: _buildProductGrid()),
-                if (_loadError == null && (_page > 1 || _hasMore))
+                if (_page > 1 || _hasMore)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1091,15 +1091,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget _buildProductGrid() {
     if (_loadError != null) {
       return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(_loadError!),
-            FilledButton(
-              onPressed: _loadData,
-              child: const Text('Retry products'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(_loadError!, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: _loadData,
+                child: const Text('Retry products'),
+              ),
+              if (['out_of_stock', 'low_stock'].contains(_statusFilter))
+                TextButton(
+                  onPressed: () => _queryChanged(status: 'all'),
+                  child: const Text('Clear stock filter'),
+                ),
+            ],
+          ),
         ),
       );
     }
@@ -1204,8 +1213,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
       'Product $name',
       statusText,
       'Stock $stock',
-      'Price INR ${salePrice.toStringAsFixed(0)}',
-      if (hasDiscount) 'was INR ${originalPrice!.toStringAsFixed(0)}',
+      'Price INR ${salePrice.toStringAsFixed(2)}',
+      if (hasDiscount) 'was INR ${originalPrice!.toStringAsFixed(2)}',
     ].join(', ');
 
     return Semantics(
@@ -1348,34 +1357,42 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           ),
                           const Spacer(),
                           // Price
-                          Row(
-                            children: [
-                              Text(
-                                '₹${salePrice.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  color: mobile_tokens
-                                      .LetbuyyColorTokens
-                                      .brandPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              if (hasDiscount) ...[
-                                const SizedBox(width: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
                                 Text(
-                                  '₹${originalPrice!.toStringAsFixed(0)}',
-                                  style: TextStyle(
-                                    color: colors.textTertiary,
-                                    fontSize: 10,
-                                    decoration: TextDecoration.lineThrough,
+                                  '₹${salePrice.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    color: mobile_tokens
+                                        .LetbuyyColorTokens
+                                        .brandPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
                                   ),
                                 ),
+                                if (hasDiscount) ...[
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '₹${originalPrice!.toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                      color: colors.textTertiary,
+                                      fontSize: 10,
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                           const SizedBox(height: 4),
                           // Status + Stock
-                          Row(
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -1395,7 +1412,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   ),
                                 ),
                               ),
-                              const Spacer(),
                               Text(
                                 'Stock: $stock',
                                 style: TextStyle(

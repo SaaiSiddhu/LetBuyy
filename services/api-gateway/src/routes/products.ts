@@ -492,10 +492,10 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     }
 
     const omittedColumns = new Set<string>();
-    const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
+    const buildProductsQuery = (includeDeletedAtFilter: boolean, head = false) => {
         let dbQuery = db
             .from('products')
-            .select(productListColumns(c.env, omittedColumns, query.view === 'summary'), query.withCount ? { count: 'exact' } : undefined)
+            .select(productListColumns(c.env, omittedColumns, query.view === 'summary'), query.withCount || head ? { count: 'exact', head } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -518,6 +518,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
             .order(query.sort, { ascending: query.order === 'asc' })
             .order('id', { ascending: query.order === 'asc' });
 
+        if (head) return dbQuery;
         if (query.cursor || query.page === 1) return dbQuery.limit(query.limit + 1);
         return dbQuery.range(offset, offset + query.limit);
     };
@@ -542,7 +543,15 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         break;
     }
 
+    const emptyOffset = !error && Array.isArray(data) && data.length === 0;
+    if ((error?.code === 'PGRST103' || emptyOffset) && offset > 0 && !query.cursor) {
+        const recovered = await buildProductsQuery(includeDeletedAtFilter, true);
+        if (recovered.error || typeof recovered.count !== 'number') throw new AppError('Products could not be loaded. Please retry.', 503, 'PRODUCTS_UNAVAILABLE');
+        const empty = cursorPaginated([], { page: query.page, limit: query.limit, total: recovered.count, nextCursor: null });
+        return c.json({ ...empty, meta: { ...empty.meta, stock_filter: query.stock_filter ?? null } });
+    }
     if (error) throw new AppError('Products could not be loaded. Please retry.', 503, 'PRODUCTS_UNAVAILABLE');
+    if (!Array.isArray(data)) throw new AppError('Products could not be loaded. Please retry.', 503, 'PRODUCTS_UNAVAILABLE');
 
     const rows = (data || []) as unknown as Array<Record<string, unknown>>;
     const pageRows = rows.slice(0, query.limit) as Array<Record<string, unknown>>;

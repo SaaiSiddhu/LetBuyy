@@ -383,4 +383,104 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets(
+    'stock filter refusal has direct recovery and catalog money retains paise',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      tester.view.physicalSize = const Size(411, 891);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final calls = <Map<String, dynamic>>[];
+      final api = client((r, h) {
+        if (r.uri.path.endsWith('/stores'))
+          return respond(r, h, [
+            {'id': 'a', 'name': 'Synthetic store', 'site_type': 'store'},
+          ]);
+        calls.add(Map<String, dynamic>.from(r.queryParameters));
+        respond(r, h, [
+          {...product('a', 'Precise price'), 'compare_price': 150.25},
+        ]);
+      });
+      final stores = StoreContext(storeService: StoreService(api: api)),
+          service = ProductService(api: api);
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<StoreContext>.value(value: stores),
+            ChangeNotifierProvider<ProductService>.value(value: service),
+          ],
+          child: const MaterialApp(home: ProductsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('₹129.75'), findsOneWidget);
+      expect(find.text('₹150.25'), findsOneWidget);
+      final filter = find.byKey(const ValueKey('product-filter-out_of_stock'));
+      await tester.scrollUntilVisible(
+        filter,
+        150,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      await tester.tap(filter);
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Stock filters are unavailable on this server. Select All products.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Precise price'), findsNothing);
+      await tester.tap(find.text('Clear stock filter'));
+      await tester.pumpAndSettle();
+      expect(calls.last.containsKey('stock_filter'), isFalse);
+      expect(calls.last['status'], 'all');
+      expect(find.text('Precise price'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets('a failed later page keeps a working Previous recovery', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final api = client((r, h) {
+      if (r.uri.path.endsWith('/stores'))
+        return respond(r, h, [
+          {'id': 'a', 'name': 'Synthetic store', 'site_type': 'store'},
+        ]);
+      final second = r.queryParameters['page'] == 2;
+      respond(
+        r,
+        h,
+        second ? {} : [product('a', 'First page')],
+        status: second ? 503 : 200,
+        more: !second,
+      );
+    });
+    final stores = StoreContext(storeService: StoreService(api: api)),
+        service = ProductService(api: api);
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<StoreContext>.value(value: stores),
+          ChangeNotifierProvider<ProductService>.value(value: service),
+        ],
+        child: const MaterialApp(home: ProductsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    expect(find.text('Retry products'), findsOneWidget);
+    expect(find.text('First page'), findsNothing);
+    await tester.tap(find.text('Previous'));
+    await tester.pumpAndSettle();
+    expect(find.text('First page'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

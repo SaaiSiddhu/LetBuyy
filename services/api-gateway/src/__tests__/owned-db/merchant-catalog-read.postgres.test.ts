@@ -102,3 +102,31 @@ test('cursor quoting preserves literal commas, quotes and parentheses in product
     assert.notEqual(first.json?.data[0].id,second.json?.data[0].id);
     assert.equal(first.json?.data[0].name,second.json?.data[0].name);
 });
+
+test('a stale offset is an observed empty page with the matching population count', async () => {
+    const positive = await list({ limit: '20' }); assert.equal(positive.status, 200, positive.text);
+    assert.equal(positive.json?.data.length,4);
+    for (const [status,total] of [['all',4],['draft',1]] as const) {
+        const past = await list({ page: '99', status });
+        assert.equal(past.status,200,past.text);assert.deepEqual(past.json?.data,[]);
+        assert.equal(past.json?.meta.total,total);assert.equal(past.json?.meta.has_next,false);
+    }
+});
+
+test('failed or missing stale-offset count recovery never becomes a successful empty population', async () => {
+    for (const mode of ['failed','missing'] as const) {
+        const tap = tapRest(owned.restUrl, async (call,forward) => {
+            if (call.resource !== 'products') return forward();
+            if (call.method === 'GET') return Response.json({code:'PGRST103',message:'Synthetic range no longer exists'},{status:416});
+            if (call.method === 'HEAD') return mode === 'failed'
+                ? Response.json({code:'XX000',message:'Synthetic private recovery fault'},{status:500})
+                : new Response(null,{status:200});
+            return forward();
+        });
+        try {
+            const response=await list({page:'99'});assert.equal(response.status,503,`${mode}: ${response.text}`);
+            assert.equal(response.json?.error.code,'PRODUCTS_UNAVAILABLE');assert.equal(response.json?.data,undefined);
+            assert.doesNotMatch(response.text,/XX000|private recovery fault/);
+        } finally {tap.restore();}
+    }
+});
