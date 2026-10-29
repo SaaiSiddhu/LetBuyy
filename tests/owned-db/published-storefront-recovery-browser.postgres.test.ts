@@ -27,6 +27,7 @@ let bridge: Server | undefined, browser: Browser | undefined;
 let checkoutTls: HttpsServer | undefined, checkoutTlsPort: number;
 const clients: OwnedClientProcess[] = [];
 const contexts: BrowserContext[] = [];
+const privateKycObjects = new Map<string, Uint8Array>();
 
 // Diagnostic observations only: no HTML, query, token, cookie or raw runtime log retained.
 function previewDiagnostic(text: string) {
@@ -95,7 +96,11 @@ before(async () => {
     checkoutTlsPort = (checkoutTls.address() as { port: number }).port;
     gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'local',
         LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
-        CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID() }));
+        CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID(),
+        KYC_PRIVATE_BUCKET: {
+            put: async (key: string, bytes: Uint8Array) => { privateKycObjects.set(key, bytes); },
+            delete: async (key: string) => { privateKycObjects.delete(key); },
+        } }));
     bridge = createServer(async (req, res) => {
         try {
             const chunks: Buffer[] = []; for await (const chunk of req) chunks.push(Buffer.from(chunk));
@@ -433,6 +438,41 @@ test('two Merchant settings tabs report stale saves and preserve a cleared conta
     assert.notEqual(owned.psql(`SELECT name FROM sites WHERE id='${f.tenant.siteId}';`), 'Stale tab attempted rename');
     await staleTab.reload();
     await expect(staleTab.getByLabel('Contact email', { exact: true })).toHaveValue('');
+});
+
+test('mobile-width dark Merchant Business uploads private KYC proof and leaves provider review pending', { timeout: 180_000 }, async t => {
+    const f = await fixture('business-mobile'); t.after(() => f.context.close());
+    await f.page.setViewportSize({ width: 390, height: 844 });
+    await f.page.emulateMedia({ colorScheme: 'dark' });
+    await signIn(f.page, f.email);
+    await f.page.evaluate(() => localStorage.setItem('letbuyy-theme', 'dark'));
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    assert.equal(await f.page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches), true);
+    await expect.poll(() => f.page.locator('html').getAttribute('data-theme')).toBe('dark');
+    await expect(f.page.getByLabel('Legal business name', { exact: true })).toBeVisible();
+    const nextInvoiceExample = owned.psql(`SELECT coalesce(invoice_prefix,'LBY')||'-'||lpad(invoice_number_next::text,6,'0')
+        FROM sites WHERE id='${f.tenant.siteId}';`);
+    await expect(f.page.getByText(`Current next format: ${nextInvoiceExample}`, { exact: false })).toBeVisible();
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    await expect(pan).toBeVisible();
+    await pan.getByLabel('Last 4 of PAN', { exact: true }).fill('1234');
+    await f.page.keyboard.press('Tab');
+    await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'synthetic-pan.pdf', mimeType: 'application/pdf',
+        buffer: Buffer.from('%PDF-1.7\nsynthetic private KYC proof') });
+    const [response] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload`
+            && item.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Upload document' }).click(),
+    ]);
+    assert.equal(response.status(), 201, 'normal mobile-width Merchant upload reaches private Gateway evidence route');
+    await expect(pan.getByText('Under review')).toBeVisible();
+    const key = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    assert.ok(key.startsWith(`kyc/${f.tenant.siteId}/`) && privateKycObjects.has(key));
+    assert.equal(owned.psql(`SELECT status||'|'||provider_mode FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`), 'submitted|sandbox');
+    assert.doesNotMatch(await f.page.locator('body').innerText(), /private_object_key|kyc\/.*business_pan/);
 });
 
 for (const operation of ['save', 'publish'] as const) {
