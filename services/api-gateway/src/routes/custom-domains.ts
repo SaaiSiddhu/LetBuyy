@@ -335,7 +335,7 @@ customDomainsRouter.post('/domains/verify', async (c) => {
         return c.json({
             error: {
                 code: error instanceof VercelDomainConfigError ? error.code : 'VERCEL_DOMAIN_ATTACH_FAILED',
-                message: 'Custom-domain automation could not attach this domain. Check gateway Vercel configuration and retry.',
+                message: 'LetBuyy could not finish connecting this domain. Please retry. If this continues, contact LetBuyy support.',
             },
         }, status as 400 | 401 | 403 | 409 | 429 | 500 | 503);
     }
