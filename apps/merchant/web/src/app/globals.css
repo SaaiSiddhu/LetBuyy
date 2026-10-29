@@ -10322,7 +10322,5 @@ body {
 .domains-address { display: flex; flex-direction: column; min-width: 0; gap: var(--lb-space-3); padding: var(--lb-space-4); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface-subdued); }
 .domains-address .domains-row-top { flex-wrap: wrap; }
 .domains-address code, .domains-address-host { min-width: 0; overflow-wrap: anywhere; color: var(--lb-color-text); }
-.domains-primary-choice { display: flex; gap: var(--lb-space-2); align-items: flex-start; color: var(--lb-color-text); }
-.domains-primary-choice input { accent-color: var(--lb-color-primary); margin-block-start: var(--lb-space-1); }
 .domains-wizard .domains-record + .domains-record { margin-block-start: var(--lb-space-3); }
 .domains-record-valrow > button { flex-shrink: 0; }

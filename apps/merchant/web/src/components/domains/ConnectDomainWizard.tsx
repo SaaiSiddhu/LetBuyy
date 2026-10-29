@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, Badge, Banner, Button, CheckCircle2, ExternalLink, Globe, Input, Section, ShieldCheck, useToast } from '@letbuyy/ui'
+import { ArrowLeft, ArrowRight, Badge, Banner, Button, Checkbox, CheckCircle2, ExternalLink, Globe, Input, Section, ShieldCheck, useToast } from '@letbuyy/ui'
 import type { CheckoutDomainSetup, DomainConnectResult, DomainVerifyResult } from '@letbuyy/api-client'
 import { domainsClient } from '@/lib/domains/client'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
@@ -93,7 +93,7 @@ function DomainWizard({ store, actorId, initialDomain = '', onClose, onConnected
                     <Address title="Secure checkout" hostname={checkout?.hostname || 'Waiting for setup details'} ready={checkoutReady} />
                 </div>
                 <p className="settings-general-hint">HTTPS certificates are requested automatically after the records are verified. Your existing secure checkout remains available while setup completes. Store visibility stays under your control.</p>
-                {connected?.role === 'redirect' && <label className="domains-primary-choice"><input type="checkbox" checked={makePrimary} disabled={busy || complete} onChange={event => setMakePrimary(event.target.checked)} /><span>Use this as the primary domain after verification. Checkout will follow this address.</span></label>}
+                {connected?.role === 'redirect' && <Checkbox label="Use this as the primary domain after verification" description="Checkout will follow this address." checked={makePrimary} disabled={busy || complete} onCheckedChange={setMakePrimary} />}
             </Section>
             {step !== 'activate' && <Section variant="grouped" title="DNS records for storefront and checkout">
                 <div className="domains-provider-banner"><Globe className="letbuyy-icon" aria-hidden="true" /><div className="domains-provider-copy"><strong>{provider || 'Your DNS provider'}</strong><span>Add these records in your domain’s DNS settings.</span></div>{providerLink && <a className="domains-provider-cta" href={providerLink} target="_blank" rel="noopener noreferrer">Open DNS<ExternalLink className="letbuyy-icon" aria-hidden="true" /></a>}</div>
