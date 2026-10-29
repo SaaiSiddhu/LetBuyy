@@ -1,5 +1,7 @@
 import { evaluateLeakyBucket } from '../middleware/rateLimit';
 import type { Env } from '../index';
+import { authorizeTurnstileHostname, readTurnstileCoverage } from '@letbuyy/infrastructure/cloudflare-adapter';
+import { TurnstileDomainRequestSchema, turnstileDomainManagement } from '../lib/turnstile-domain-config';
 
 type CoordinatorState = {
     environment: string;
@@ -19,6 +21,38 @@ export class LetbuyyRuntimeDurableObject {
 
     async fetch(request: Request): Promise<Response> {
         const url = new URL(request.url);
+
+        if (request.method === 'POST' && ['/turnstile-hostnames/ensure', '/turnstile-hostnames/status'].includes(url.pathname)) {
+            const parsed = TurnstileDomainRequestSchema.safeParse(await request.json().catch(() => null));
+            if (!parsed.success) return Response.json({ error: { code: 'INVALID_DOMAIN' } }, { status: 400 });
+            const config = turnstileDomainManagement(this.env);
+            if (!config) return Response.json({ status: 'configuration_required' });
+            const host = parsed.data.hostname;
+            if (url.pathname.endsWith('/status')) return Response.json(await readTurnstileCoverage(config, host));
+            // One existing coordinator instance per configured account/widget. A
+            // provider PUT cannot race another LetBuyy domain registration.
+            return this.state.blockConcurrencyWhile(async () => {
+                if (await this.state.storage.get('turnstile-operation-in-flight')) {
+                    // A lost PUT reply is not permission for another blind overwrite.
+                    // Readback may prove this host ready, but further writes stay held
+                    // until an operator reconciles and versions the management config.
+                    const observed = await readTurnstileCoverage(config, host);
+                    return Response.json(observed.status === 'ready' ? observed : { status: 'unavailable' });
+                }
+                // Persist intent before any possible provider mutation. A crash or
+                // failed acknowledgement cannot silently erase its uncertainty.
+                await this.state.storage.put('turnstile-operation-in-flight', {
+                    site_id: parsed.data.site_id, hostname: host, started_at: new Date().toISOString(),
+                });
+                const result = await authorizeTurnstileHostname(config, host);
+                await this.state.storage.put('turnstile-last-operation', {
+                    site_id: parsed.data.site_id, hostname: host, status: result.status,
+                    uncertain: result.uncertain === true, checked_at: new Date().toISOString(),
+                });
+                if (!result.uncertain) await this.state.storage.delete('turnstile-operation-in-flight');
+                return Response.json({ status: result.status });
+            });
+        }
 
         if (request.method === 'GET' && url.pathname.endsWith('/health')) {
             return Response.json(await this.readState());

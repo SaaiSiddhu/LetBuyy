@@ -10,6 +10,8 @@ import { AppError } from '../lib/errors';
 import { buildDomainEventEnvelope } from '@letbuyy/event-core';
 import { readVercelDomainStatus } from '../lib/vercel-domains';
 import { timingSafeEqualText } from '../lib/crypto';
+import { customDomainCustomerVerification } from '../lib/turnstile-domain';
+import type { DomainCustomerVerification } from '@letbuyy/shared-types';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -22,6 +24,7 @@ interface ReconcileResult {
     status: ReconciledStatus | null;
     changed: boolean;
     reason: string;
+    customer_verification?: DomainCustomerVerification;
 }
 // At most2 domains in total, including the more expensive checkout HTTPS proof.
 // Shared site-ID pagination prevents either kind from starving on Free50.
@@ -130,12 +133,17 @@ async function reconcileDomain(
         if (!data) return { domain, previous_status: row.custom_domain_status, status: null, changed: false, reason: 'STATE_CHANGED' };
     }
 
+    const customerVerification = await customDomainCustomerVerification(c.env, row.id, domain, {
+        txt_verified: Boolean(row.custom_domain_verification_token) && txtVerified,
+        cname_verified: cnameVerified, ssl_active: nextStatus === 'active',
+    });
     return {
         domain,
         previous_status: row.custom_domain_status,
         status: nextStatus,
         changed,
         reason,
+        customer_verification: customerVerification,
     };
 }
 

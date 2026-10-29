@@ -10,3 +10,6 @@ export interface CloudflareBindingManifest {
 export interface CloudflareExecutionContextPort {
   waitUntil(promise: Promise<unknown>): void;
 }
+
+export { authorizeTurnstileHostname, readTurnstileCoverage, isTurnstileHostname } from './turnstile';
+export type { TurnstileManagementConfig, TurnstileCoverage } from './turnstile';

@@ -16,6 +16,7 @@ import type { Env } from '../index';
 import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custom-domain-config';
 import { screenCustomDomainClaim } from '../lib/custom-domain-abuse';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
+import { customDomainCustomerVerification } from '../lib/turnstile-domain';
 import { resolveDoh, resolveMxOrNsSnapshot } from '../lib/dns';
 import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
 import { requireOwnedSite } from '../lib/tenant-context';
@@ -354,6 +355,9 @@ customDomainsRouter.post('/domains/verify', async (c) => {
         ssl_status: status === 'active' ? 'active' : vercel.misconfigured ? 'error' : 'pending',
         provider: verifyProvider,
     });
+    const customerVerification = await customDomainCustomerVerification(c.env, parsed.data.site_id, domain, {
+        txt_verified: true, cname_verified: cnameActive, ssl_active: status === 'active',
+    });
     await recordDomainVerification(db, {
         siteId: parsed.data.site_id,
         siteDomainId: verifiedRow?.id ?? null,
@@ -363,7 +367,7 @@ customDomainsRouter.post('/domains/verify', async (c) => {
         txtVerified: true,
         cnameVerified: cnameActive,
         sslActive: status === 'active',
-        result: { vercel: { status: vercel.status, misconfigured: vercel.misconfigured } },
+        result: { vercel: { status: vercel.status, misconfigured: vercel.misconfigured }, customer_verification: customerVerification },
     });
 
     if (status === 'active' && row.role === 'primary') {
@@ -375,6 +379,7 @@ customDomainsRouter.post('/domains/verify', async (c) => {
         domain,
         status,
         txt_verified: true,
+        customer_verification: customerVerification,
         cname_verified: cnameActive,
         cname_target: cnameTarget,
         provider_dns_records: vercelOwnershipRecords(vercel.projectDomain),
@@ -396,12 +401,13 @@ customDomainsRouter.get('/domains/:domain/status', async (c) => {
         return c.json({ error: { code: 'DOMAIN_NOT_FOUND', message: 'Domain is not connected to this store' } }, 404);
     }
 
-    const health = await readCustomDomainHealth(c.env, {
+    const [health, customerVerification] = await Promise.all([readCustomDomainHealth(c.env, {
         siteId,
         domain,
         status: ownedDomain.status,
         verificationToken: ownedDomain.verification_token,
-    });
+    }), customDomainCustomerVerification(c.env, siteId, domain)]);
+    health.customer_verification = customerVerification;
     if (ownedDomain.role === 'primary') await db.from('sites').update({ custom_domain_status: health.status }).eq('id', siteId).eq('custom_domain', domain);
 
     // Multi-domain mirror (best-effort) — provider re-detected live from the apex

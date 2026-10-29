@@ -117,8 +117,8 @@ test('WhatsApp timeline migration is tenant-scoped with RLS and approved trigger
 test('WhatsApp config is sandbox-first and production human-gated', () => {
     assert.match(wranglerSource, /WHATSAPP_PROVIDER_MODE = "sandbox"/);
     assert.match(wranglerSource, /WHATSAPP_PROVIDER = "letbuyy_sandbox"/);
-    assert.match(wranglerSource, /TWILIO_ACCOUNT_SID = "SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID"/);
     const production = wranglerSource.split('[env.production.vars]')[1].split('\n[')[0];
+    assert.doesNotMatch(production, /^TWILIO_ACCOUNT_SID\s*=/m, 'disabled sandbox must not reserve an invalid live-credential placeholder');
     assert.doesNotMatch(production, /^TWILIO_WHATSAPP_FROM\s*=/m);
     assert.doesNotMatch(wranglerSource, /WHATSAPP_PROVIDER_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID/);
 });

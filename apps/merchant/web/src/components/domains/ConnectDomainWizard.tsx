@@ -8,7 +8,7 @@ import { useMerchantSecurityContext } from '@/components/security/MerchantSecuri
 import { useReadRequest } from '@/lib/api/use-read-request'
 import { WIZARD_STEPS, type WizardStep } from '@/lib/domains/domain-model'
 import { providerDnsUrl } from '@/lib/domains/providers'
-import { DnsRecordRow, StepDots } from './parts'
+import { CustomerVerificationNotice, DnsRecordRow, StepDots } from './parts'
 
 interface Props { store: string; initialDomain?: string; onClose: () => void; onConnected: () => void }
 const DOMAIN_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i
@@ -35,7 +35,8 @@ function DomainWizard({ store, actorId, initialDomain = '', onClose, onConnected
     const providerLink = providerDnsUrl(provider, cleaned)
     const storefrontReady = verified?.status === 'active'
     const checkoutReady = checkout?.status === 'active' && checkout.parent_hostname === cleaned
-    const complete = storefrontReady && checkoutReady
+    const verificationReady = verified?.customer_verification?.status === 'ready'
+    const complete = storefrontReady && checkoutReady && verificationReady
 
     async function connect() {
         if (!valid || inFlight.current) return
@@ -67,9 +68,9 @@ function DomainWizard({ store, actorId, initialDomain = '', onClose, onConnected
             const next = await domainsClient.prepareCheckout(store)
             if (!request.isCurrent()) return
             setCheckout(next)
-            if (next.status === 'active' && next.parent_hostname === cleaned) {
+            if (next.status === 'active' && next.parent_hostname === cleaned && result.customer_verification?.status === 'ready') {
                 setStep('activate'); onConnected()
-                notify({ title: 'Domain setup complete', description: 'Your storefront and checkout have verified HTTPS addresses.', variant: 'success' })
+                notify({ title: 'Domain setup complete', description: 'Your storefront, secure checkout and customer verification are ready.', variant: 'success' })
             }
         } catch (failure) {
             if (request.isCurrent()) setError(failure instanceof Error ? failure.message : 'We could not confirm setup. Check the current status before retrying.')
@@ -105,10 +106,11 @@ function DomainWizard({ store, actorId, initialDomain = '', onClose, onConnected
                 {checkout?.dns_records.map(record => <DnsRecordRow key={record.name + record.value} type={record.type} host={record.name} value={record.value} state={checkoutReady ? 'verified' : 'pending'} message={record.type === 'TXT' ? 'Secure checkout verification. Copy the name and value exactly.' : 'Secure checkout routing'} />)}
                 {!checkout?.hostname && <Banner variant="warning" title="Checkout instructions unavailable">Retry setup before changing DNS. We have not confirmed the checkout address.</Banner>}
             </Section>}
-            {step === 'verify' && <Banner variant={complete ? 'success' : 'info'} title={busy ? 'Checking DNS and HTTPS…' : storefrontReady ? 'Storefront ready · checkout pending' : 'Verification in progress'}>
+            {verified && <CustomerVerificationNotice verification={verified.customer_verification} />}
+            {step === 'verify' && <Banner variant={complete ? 'success' : 'info'} title={busy ? 'Checking setup…' : storefrontReady && checkoutReady ? 'Customer verification pending' : storefrontReady ? 'Storefront ready · checkout pending' : 'Verification in progress'}>
                 {checkout?.reason === 'PRIMARY_REQUIRED' && !makePrimary ? 'This is an additional domain. Select the primary-domain option to finish its matching checkout setup.' : storefrontReady ? 'Keep the displayed checkout records in place. LetBuyy will verify the address and its HTTPS certificate before using it.' : 'Add all displayed records, then check again. DNS and certificate updates can take time.'}
             </Banner>}
-            {step === 'activate' ? <Section variant="grouped" title="Storefront and checkout are ready"><div className="domains-success"><CheckCircle2 className="letbuyy-icon" aria-hidden="true" /><p>Both addresses have verified HTTPS. Your saved store visibility and theme are unchanged.</p><Button onClick={onClose}>Done</Button></div></Section> : <div className="domains-wizard-actions"><Button variant="secondary" onClick={onClose}>Finish later</Button><Button loading={busy} disabled={!checkout?.hostname} onClick={() => void verify()}>Check DNS and HTTPS</Button></div>}
+            {step === 'activate' ? <Section variant="grouped" title="Your domain setup is ready"><div className="domains-success"><CheckCircle2 className="letbuyy-icon" aria-hidden="true" /><p>Storefront HTTPS, secure checkout and customer verification are ready. Your saved store visibility and theme are unchanged.</p><Button onClick={onClose}>Done</Button></div></Section> : <div className="domains-wizard-actions"><Button variant="secondary" onClick={onClose}>Finish later</Button><Button loading={busy} disabled={!checkout?.hostname} onClick={() => void verify()}>Check setup</Button></div>}
         </>}
     </div>
 }

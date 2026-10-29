@@ -40,7 +40,7 @@ import {
 } from '@/lib/domains/domain-model'
 import { diagnoseDomain, domainConfidence, type IssueSeverity } from '@/lib/domains/troubleshooting'
 import { providerDnsUrl } from '@/lib/domains/providers'
-import { DnsRecordRow, SslBadge, DomainStatusBadge, type RecordState } from './parts'
+import { CustomerVerificationNotice, DnsRecordRow, SslBadge, DomainStatusBadge, type RecordState } from './parts'
 
 interface DomainDetailViewProps {
     store: string
@@ -325,6 +325,8 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
             </Section>
 
             {/* Traffic / redirect behavior */}
+            {health.customer_verification && <Section variant="grouped" title="Customer verification"><CustomerVerificationNotice verification={health.customer_verification} /></Section>}
+
             <Section variant="grouped" title="Traffic" >
 
                     {isPrimary ? (

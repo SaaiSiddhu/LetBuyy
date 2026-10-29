@@ -170,11 +170,21 @@ export function lifecycleSteps(health: CustomDomainHealth): Array<{ label: strin
     const ownership = health.txt_verified
     const dns = health.cname_verified
     const ssl = health.ssl_active
-    const live = health.status === 'active'
+    const verification = health.customer_verification?.status
+    const live = health.status === 'active' && (!verification || verification === 'ready')
     return [
         { label: 'Ownership verified', done: ownership, active: !ownership },
         { label: 'DNS routed', done: dns, active: ownership && !dns },
         { label: 'SSL issued', done: ssl, active: dns && !ssl },
+        ...(verification ? [{ label: 'Customer verification', done: verification === 'ready', active: ssl && verification !== 'ready' }] : []),
         { label: 'Live & secure', done: live, active: ssl && !live },
     ]
+}
+
+export function customerVerificationSummary(status: NonNullable<CustomDomainHealth['customer_verification']>['status']) {
+    if (status === 'ready') return { tone: 'success' as const, title: 'Customer verification ready', description: 'Protected customer forms are ready on this domain and its secure checkout address.' }
+    if (status === 'capacity_reached') return { tone: 'warning' as const, title: 'Customer verification needs attention', description: 'Your domain is secure, but verification capacity is full. Contact LetBuyy support to finish protected customer forms. No DNS changes are needed.' }
+    if (status === 'configuration_required') return { tone: 'warning' as const, title: 'Customer verification setup required', description: 'LetBuyy needs to finish its verification configuration. Contact support; do not change your domain records.' }
+    if (status === 'unavailable') return { tone: 'warning' as const, title: 'Customer verification could not be confirmed', description: 'Your saved domain settings are preserved. Check setup again; contact LetBuyy support if this continues.' }
+    return { tone: 'info' as const, title: 'Preparing customer verification', description: 'After ownership, routing and HTTPS are verified, LetBuyy prepares protected customer forms automatically.' }
 }

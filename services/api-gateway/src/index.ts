@@ -225,6 +225,8 @@ export interface Env {
     REGISTRAR_SANDBOX_ENABLED?: string;
     CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
     TURNSTILE_SECRET_KEY?: string;
+    /** Account-scoped management credential; separate from the Siteverify secret. */
+    TURNSTILE_DOMAIN_MANAGEMENT?: string;
     LETBUYY_KMS_MODE?: 'sandbox' | 'live';
     LETBUYY_KMS_SANDBOX_SECRET?: string;
     LETBUYY_KMS_KEY_ID?: string;

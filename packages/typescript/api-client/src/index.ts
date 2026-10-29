@@ -553,6 +553,7 @@ export interface DomainConnectResult {
 export interface DomainVerifyResult {
   domain: string;
   status: string;
+  customer_verification?: CustomDomainHealth['customer_verification'];
   txt_verified?: boolean;
   cname_verified?: boolean;
   cname_target?: string;

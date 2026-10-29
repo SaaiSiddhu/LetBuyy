@@ -1221,6 +1221,11 @@ export const DomainHealthRecordSchema = z.object({
   message: z.string().max(500).optional().nullable(),
 });
 
+export const DomainCustomerVerificationSchema = z.object({
+  status: z.enum(['ready', 'pending', 'unavailable', 'capacity_reached', 'configuration_required']),
+});
+export type DomainCustomerVerification = z.infer<typeof DomainCustomerVerificationSchema>;
+
 export const CustomDomainHealthSchema = z.object({
   site_id: UuidSchema,
   domain: z.string().min(3).max(255),
@@ -1228,6 +1233,7 @@ export const CustomDomainHealthSchema = z.object({
   txt_verified: z.boolean(),
   cname_verified: z.boolean(),
   ssl_active: z.boolean(),
+  customer_verification: DomainCustomerVerificationSchema.optional(),
   // DNS host detected live from the apex nameservers (e.g. "Cloudflare", "GoDaddy").
   // Re-detected on every health check so a registrar/NS change is reflected, not stale.
   provider: z.string().max(120).nullable().optional(),

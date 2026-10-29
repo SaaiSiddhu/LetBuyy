@@ -665,7 +665,7 @@ test('domain wizard supplies both DNS addresses and cannot complete on storefron
     const h = await mount('connectDomain', async (url, init) => {
         assert.equal(init?.method, 'POST')
         if (url.endsWith('/domains')) return json(connectedDomain(), 201)
-        if (url.endsWith('/verify')) return json({ domain: 'shop.example.invalid', status: 'active', txt_verified: true, cname_verified: true, checkout: customCheckout() })
+        if (url.endsWith('/verify')) return json({ domain: 'shop.example.invalid', status: 'active', txt_verified: true, cname_verified: true, customer_verification: { status: 'ready' }, checkout: customCheckout() })
         assert.ok(url.endsWith('/checkout'))
         return json(customCheckout(++checks > 1), checks > 1 ? 200 : 202)
     })
@@ -674,12 +674,12 @@ test('domain wizard supplies both DNS addresses and cannot complete on storefron
         assert.match(h.text(), /checkout.shop.example.invalid/)
         assert.match(h.text(), /exact-provider.example.invalid/)
         assert.doesNotMatch(h.text(), /ALIAS.*Unknown|checkout.alpha.shop/)
-        await h.click('Check DNS and HTTPS')
+        await h.click('Check setup')
         assert.equal(h.completions(), 0)
         assert.match(h.text(), /Storefront ready · checkout pending/)
-        await h.click('Check DNS and HTTPS')
+        await h.click('Check setup')
         assert.equal(h.completions(), 1)
-        assert.match(h.text(), /Storefront and checkout are ready/)
+        assert.match(h.text(), /Your domain setup is ready/)
     } finally { await h.close() }
 })
 
@@ -690,9 +690,26 @@ test('domain wizard retains DNS instructions after an uncertain provider respons
         return old.promise
     })
     try {
-        await h.click('Continue'); await h.click('Check DNS and HTTPS')
+        await h.click('Continue'); await h.click('Check setup')
         await h.render('beta')
         await act(async () => old.resolve(json({ domain: 'shop.example.invalid', status: 'active', checkout: customCheckout(true) })))
         assert.equal(h.completions(), 0)
     } finally { await h.close() }
+})
+
+test('domain wizard cannot declare completion when HTTPS works but customer verification is unavailable or at capacity', async () => {
+    for (const status of ['capacity_reached', 'unavailable', 'configuration_required', 'pending']) {
+        const h = await mount('connectDomain', async url => {
+            if (url.endsWith('/domains')) return json(connectedDomain(), 201)
+            if (url.endsWith('/verify')) return json({ domain: 'shop.example.invalid', status: 'active', customer_verification: { status }, checkout: customCheckout(true) })
+            return json(customCheckout(true))
+        })
+        try {
+            await h.click('Continue'); await h.click('Check setup')
+            assert.equal(h.completions(), 0)
+            assert.match(h.text(), /Customer verification pending/)
+            assert.doesNotMatch(h.text(), /Your domain setup is ready|Domain setup complete/)
+            if (status === 'capacity_reached') assert.match(h.text(), /verification capacity is full/)
+        } finally { await h.close() }
+    }
 })

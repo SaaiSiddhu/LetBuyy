@@ -4,7 +4,8 @@
 // the domain-model single source of truth; this file only renders them.
 
 import { useCallback } from 'react'
-import { Badge, Button, Check, Copy, ProgressBar, useToast } from '@letbuyy/ui'
+import { Badge, Banner, Button, Check, Copy, ProgressBar, useToast } from '@letbuyy/ui'
+import type { CustomDomainHealth } from '@letbuyy/api-client'
 import {
     type DomainStatus,
     type SslState,
@@ -13,7 +14,13 @@ import {
     sslVariant,
     statusLabel,
     statusVariant,
+    customerVerificationSummary,
 } from '@/lib/domains/domain-model'
+
+export function CustomerVerificationNotice({ verification }: { verification: CustomDomainHealth['customer_verification'] }) {
+    const summary = customerVerificationSummary(verification?.status || 'pending')
+    return <Banner variant={summary.tone} title={summary.title}>{summary.description}</Banner>
+}
 
 export function DomainStatusBadge({ status }: { status: DomainStatus }) {
     return <Badge label={statusLabel(status)} variant={statusVariant(status)} />
