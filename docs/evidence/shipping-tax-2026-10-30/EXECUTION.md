@@ -109,6 +109,46 @@ completed the staging Worker dry-run bundle. None activates hosted traffic.
 `gateway-db-final-03` is the complete rerun on the final repaired source snapshot;
 its terminal result is still pending. Earlier red broad-run results stay recorded.
 
+The full earlier snapshot (`gateway-db-full-02`) terminated red: 205 suites,
+11 failed suites, 77 failed assertions, no skipped/cancelled tests. It remains
+failure lineage, not final acceptance. Its newly observed native storefront test
+still tried to edit the now fixed India field. The current test verifies that
+field's value/read-only state, the existing successful BFF response and the real
+persisted zone. `native-core-final-02` subsequently passed the full production-built
+three-app journey: fresh normal signup/onboarding, shipping setup, Liquid theme
+publication, buyer sign-in/order/readback, address/account isolation and password
+storefront access. Its database and child processes were owned and disposable.
+
+`native-final-01` passed all 63 native PostgreSQL suites: 320 checks, no failures,
+skips or cancellations, and verified empty owned-resource cleanup. This is separate
+from the 206-suite gateway/cross-runtime run. `shared-security-final-01.log` passed
+50 shared checkout/payment and session-verification checks.
+
+The current broad run caught an exact historical theme source pin for the lockfile.
+The only new lockfile delta is the Merchant's checkout-core workspace link; no
+registry resolution or theme package changed. The active compatibility record now
+retains its prior hash and records that exact successor. `niche-final-01` passed
+all five native qualification stages with no skips and verified owned cleanup,
+including all nine theme install/save/reload/retry/publish flows and the unchanged
+admission/frozen package assertions. No old admission or frozen payload was replaced.
+
+Fresh encrypted staging and production backups each passed the exact managed-role
+UP/DOWN/UP rehearsal for migrations 411-413. All 523 original public/auth/storage
+tables and rows were hash-preserved, including migration aliases, catalog/defaults,
+orders and authentication records. History moved 338 -> 341, rolled back exactly,
+then reapplied. Both rehearsals ran in owned network-isolated containers without
+installing the old privileged helper. Their private result files live under
+`/private/tmp/letbuyy-production-release-20261025/fresh-recovery-20261026/shipping411-{staging,production}/`.
+
+The clean local source checkpoint is `d0afb90600b2c60c296220cdd8e53e757bdb2bf1`.
+Exact journaled staging/production migration artifacts and both Worker dry-run
+bundles have been prepared; none was uploaded or executed. The small follow-up
+above changes only test/evidence files, not application, SQL, dependencies or
+deployment tooling. Staging readiness inspection found no purchasable products
+or delivery rates. A labelled, temporary public-read canary is prepared to prove
+actual delivery/GST responses and then take its synthetic site offline; it does
+not substitute for normal hosted Merchant sign-in or a real carrier operation.
+
 Typechecks and standalone production builds are recorded separately. Browser
 screenshots are synthetic-fixture UI evidence, not production activation.
 
