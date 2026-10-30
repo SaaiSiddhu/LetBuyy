@@ -733,7 +733,7 @@ export default function BusinessSettingsPage() {
                     {commission && commission.summary.gross_amount_minor > 0 && (
                         <div className="settings-business-settlement">
                             <div className="settings-business-settlement-item">
-                                <span className="settings-business-settlement-label">Gross sales</span>
+                                <span className="settings-business-settlement-label">Paid orders in recent fee records</span>
                                 <span className="settings-business-settlement-value">{formatInr(commission.summary.gross_amount_minor, currency)}</span>
                             </div>
                             <div className="settings-business-settlement-item">
@@ -741,7 +741,7 @@ export default function BusinessSettingsPage() {
                                 <span className="settings-business-settlement-value">− {formatInr(commission.summary.commission_amount_minor, currency)}</span>
                             </div>
                             <div className="settings-business-settlement-item settings-business-settlement-item--total">
-                                <span className="settings-business-settlement-label">Net payable to you</span>
+                                <span className="settings-business-settlement-label">After LetBuyy fees</span>
                                 <span className="settings-business-settlement-value">{formatInr(commission.summary.net_payable_minor, currency)}</span>
                             </div>
                         </div>
@@ -750,9 +750,9 @@ export default function BusinessSettingsPage() {
                     <div className="settings-business-fee-foot">
                         <Lock className="letbuyy-icon" aria-hidden="true" />
                         <span>
-                            Track every payout under{' '}
-                            <Link href={`/${store}/payouts`} className="settings-business-link">Payouts</Link>.
-                            LetBuyy&apos;s 0% commission is permanent.
+                            This fee summary does not confirm a bank settlement. Check{' '}
+                            <Link href={`/${store}/payouts`} className="settings-business-link">Payouts</Link>{' '}
+                            and your provider statement for fees, refunds, and holds. LetBuyy&apos;s 0% commission is permanent.
                         </span>
                     </div>
 

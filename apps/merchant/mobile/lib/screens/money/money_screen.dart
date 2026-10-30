@@ -479,10 +479,10 @@ class _CommissionTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SummaryCard(
-          title: 'Reconciled net payable',
+          title: 'Recent paid orders after LetBuyy fees',
           value: _formatMinor(summaryMap['net_payable_minor']),
           subtitle:
-              'Fees ${_formatMinor(summaryMap['commission_amount_minor'])} · GST ${_formatMinor(summaryMap['gst_amount_minor'])}',
+              'LetBuyy fees ${_formatMinor(summaryMap['commission_amount_minor'])} · GST ${_formatMinor(summaryMap['gst_amount_minor'])}. This is not bank settlement; check your provider statement for fees, refunds and holds.',
         ),
         const SizedBox(height: 16),
         if (entries.isEmpty)
