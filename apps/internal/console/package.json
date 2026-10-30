@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --tsconfig tsconfig.json --test src/lib/console-mfa.test.ts src/lib/console-magic-link-delivery.test.ts src/lib/marketplace-review-workbench.test.ts src/proxy.test.ts src/app/api/founding/action/route.test.ts src/app/api/founding/export/route.test.ts && cd ../../.. && node --test tests/federation/admin-web-thin-client.test.mjs tests/auth/session-verifier.test.mjs"
+    "test": "tsx --tsconfig tsconfig.json --test src/lib/console-mfa.test.ts src/lib/console-magic-link-delivery.test.ts src/lib/marketplace-review-workbench.test.ts src/proxy.test.ts src/app/api/founding/action/route.test.ts src/app/api/founding/export/route.test.ts 'src/app/api/kyc-evidence/[siteId]/[documentId]/route.test.ts' && cd ../../.. && node --test tests/federation/admin-web-thin-client.test.mjs tests/auth/session-verifier.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

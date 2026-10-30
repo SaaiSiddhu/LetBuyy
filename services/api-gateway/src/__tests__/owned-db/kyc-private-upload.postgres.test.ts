@@ -94,6 +94,7 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(conflictingRetry.status, 409, conflictingRetry.text);
     assert.equal(objects.size, 1);
     const saved = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}';`));
+    assert.equal(saved.malware_scan_status, 'pending', 'new uploads remain quarantined until a trusted scanner marks them clean');
     assert.match(saved.private_object_key, new RegExp(`^kyc/${tenant.siteId}/business_pan/`));
     const priorKey = saved.private_object_key;
     const replaced = await upload(tenant.siteId, pdf());

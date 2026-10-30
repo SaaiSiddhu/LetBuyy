@@ -6,6 +6,7 @@ import { AppError } from '../lib/errors';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
+import { effectiveKycDocumentStatus, hasLiveProviderEvidence } from '../lib/kyc-evidence-status';
 import { validate } from '../middleware/validation';
 import {
     createKycVerificationAdapter,
@@ -81,24 +82,12 @@ function providerName(env: Env): MerchantKycProvider {
     return value === 'hyperverge' || value === 'manual' || value === 'signzy' ? value : 'manual';
 }
 
-function hasLiveProviderEvidence(row: KycDocumentRow): boolean {
-    return row.status === 'verified' && row.provider_mode === 'live'
-        && (row.provider === 'signzy' || row.provider === 'hyperverge')
-        && Boolean(row.provider_reference) && row.metadata?.provider_verified === true
-        && !row.metadata?.provider_unavailable
-        && !row.metadata?.sandbox;
-}
-
-function effectiveDocumentStatus(row: KycDocumentRow): 'draft' | MerchantKycDocumentStatus {
-    return row.status === 'verified' && !hasLiveProviderEvidence(row) ? 'needs_review' : row.status;
-}
-
 function serializeDocument(row: KycDocumentRow) {
     return {
         id: row.id,
         site_id: row.site_id,
         document_type: row.document_type,
-        status: effectiveDocumentStatus(row),
+        status: effectiveKycDocumentStatus(row),
         provider: row.provider,
         provider_mode: row.provider_mode,
         provider_reference: row.provider_reference || null,
@@ -117,15 +106,15 @@ function serializeDocument(row: KycDocumentRow) {
 }
 
 export function deriveKycOverallStatus(rows: KycDocumentRow[]) {
-    if (rows.some((row) => effectiveDocumentStatus(row) === 'rejected')) return 'rejected';
+    if (rows.some((row) => effectiveKycDocumentStatus(row) === 'rejected')) return 'rejected';
     const byType = new Map(rows.map((row) => [row.document_type, row]));
     const required = REQUIRED_DOCUMENTS.filter((item) => item.required);
     if (required.every((item) => {
         const row = byType.get(item.document_type);
         return Boolean(row && hasLiveProviderEvidence(row));
     })) return 'verified';
-    if (rows.some((row) => effectiveDocumentStatus(row) === 'needs_review')) return 'needs_review';
-    if (rows.some((row) => effectiveDocumentStatus(row) === 'submitted')) return 'in_progress';
+    if (rows.some((row) => effectiveKycDocumentStatus(row) === 'needs_review')) return 'needs_review';
+    if (rows.some((row) => effectiveKycDocumentStatus(row) === 'submitted')) return 'in_progress';
     return 'not_started';
 }
 
@@ -326,7 +315,8 @@ router.post('/documents/upload', bodyLimit({ maxSize: 6 * 1024 * 1024 }), async 
             file_url: null,
             file_name: null,
             rejection_reason: null,
-            metadata: { private_object_key: key, sha256: digest, content_type: contentType, byte_size: bytes.length, provider_review_required: true, idempotency_key: idempotencyKey },
+            metadata: { private_object_key: key, sha256: digest, content_type: contentType, byte_size: bytes.length,
+                malware_scan_status: 'pending', provider_review_required: true, idempotency_key: idempotencyKey },
             submitted_by: tenant.userId,
             submitted_at: now,
             verified_at: null,

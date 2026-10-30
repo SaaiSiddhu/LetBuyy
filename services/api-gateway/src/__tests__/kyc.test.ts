@@ -98,7 +98,9 @@ test('sandbox and provider-unavailable records never complete business verificat
     assert.notEqual(status(), 'verified');
     documents.forEach((row) => { row.provider_reference = `provider-${row.document_type}`; });
     assert.notEqual(status(), 'verified');
-    documents.forEach((row) => { row.metadata = { provider_verified: true }; });
+    documents.forEach((row) => { row.metadata = { provider_verified: true, private_object_key: `kyc/site/${row.document_type}/file`, malware_scan_status: 'pending' }; });
+    assert.notEqual(status(), 'verified', 'provider approval cannot bypass a pending safety scan');
+    documents.forEach((row) => { row.metadata.malware_scan_status = 'clean'; });
     assert.equal(status(), 'verified');
     // A replaced bank proof revokes the combined approval even while PAN and
     // address evidence retain their provider decisions.
@@ -110,8 +112,8 @@ test('sandbox and provider-unavailable records never complete business verificat
     assert.equal(status(), 'rejected');
     documents[1]!.status = 'verified';
     documents[1]!.provider_reference = 'provider-bank_proof';
-    documents[1]!.metadata = { provider_verified: true };
+    documents[1]!.metadata = { provider_verified: true, private_object_key: 'kyc/site/bank_proof/file', malware_scan_status: 'clean' };
     assert.equal(status(), 'verified');
-    documents[0]!.metadata = { provider_verified: true, provider_unavailable: true };
+    documents[0]!.metadata = { provider_verified: true, private_object_key: 'kyc/site/business_pan/file', malware_scan_status: 'clean', provider_unavailable: true };
     assert.equal(status(), 'needs_review', 'an untrusted old approval must agree with its Needs review document badge');
 });

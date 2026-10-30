@@ -154,6 +154,10 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                                 <Field label="Domain status" value={site.custom_domain_status || '-'} />
                                 <Field label="Created" value={formatDateTime(site.created_at)} />
                             </dl>
+                            <Link href={`/merchants/${encodeURIComponent(site.id)}/kyc`}
+                                className="mt-[var(--lb-space-4)] inline-block text-sm font-medium text-[var(--lb-color-primary)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">
+                                Review KYC evidence
+                            </Link>
                             <div className="mt-[var(--lb-space-5)] divide-y divide-[var(--lb-color-border)]">
                                 {overview.owners.length === 0 ? (
                                     <EmptyDataState message="No owner record was returned for this merchant." />

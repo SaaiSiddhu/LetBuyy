@@ -9,6 +9,7 @@ const protectedPrefixes = [
     '/operations',
     '/users',
     '/stores',
+    '/merchants',
     '/revenue',
     '/subscriptions',
     '/marketplace-governance',
