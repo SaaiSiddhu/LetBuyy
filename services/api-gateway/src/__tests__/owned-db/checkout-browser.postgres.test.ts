@@ -12,13 +12,15 @@ import { chromium, type Browser } from '@playwright/test';
 import worker from '../../index';
 import { encryptPaymentSecret } from '../../lib/store-payment-config';
 import { PAYMENT_KEYRING_PREFIX } from '../../lib/payment-encryption-keyring';
-import { INTERNAL_SECRET, gatewayEnv, newIdentityKeys } from './gateway-harness';
+import { INTERNAL_SECRET, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from './gateway-harness';
 import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import type { PaymentCreateIntentInput, PaymentIntentResult } from '@letbuyy/payments';
 
 const owned = requireOwnedDatabase();
 const site = newSyntheticTenant('browser-checkout');
+const merchantOwnerId = crypto.randomUUID();
+const merchantOwnerEmail = `syn-browser-merchant-${merchantOwnerId}@example.invalid`;
 const signingSecret = 'synthetic-browser-checkout-signing-secret';
 const razorpayKeySecret = 'synthetic-browser-razorpay-secret';
 const paymentEncryptionKey = crypto.randomUUID();
@@ -84,6 +86,7 @@ let server: ReturnType<typeof createServer>;
 let app: OwnedClientProcess | undefined;
 let browser: Browser | undefined;
 let appPort = 0;
+let gatewayPort = 0;
 let background: Promise<unknown>[] = [];
 const notificationJobs: Array<Record<string, unknown>> = [];
 
@@ -111,6 +114,9 @@ async function waitForApp(origin: string): Promise<void> {
 
 before(async () => {
     seedSyntheticTenant(owned.psql, site, { gst: true, taxRates: true });
+    owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name)
+        VALUES('${merchantOwnerId}','${merchantOwnerEmail}',true,'Synthetic browser merchant');
+        UPDATE sites SET custom_user_id='${merchantOwnerId}' WHERE id='${site.siteId}';`);
     owned.psql(`
       INSERT INTO products (id,store_id,name,price,sku,is_active,created_at,updated_at)
       VALUES ('${productId}','${site.siteId}','Synthetic browser checkout product',199.00,'SYN-BROWSER-${productId}',true,now(),now());
@@ -182,7 +188,7 @@ before(async () => {
     });
     server.listen(0, '127.0.0.1');
     await once(server, 'listening');
-    const gatewayPort = (server.address() as { port: number }).port;
+    gatewayPort = (server.address() as { port: number }).port;
     const portProbe = createServer();
     portProbe.listen(0, '127.0.0.1');
     await once(portProbe, 'listening');
@@ -217,6 +223,8 @@ after(async () => {
 
 test('buyer selects actual saved storefront rate and completes normal hosted COD checkout', async () => {
     assert.ok(browser);
+    const [invoicePrefix, nextInvoice] = owned.psql(`SELECT invoice_prefix, invoice_number_next
+        FROM sites WHERE id='${site.siteId}';`).split('|');
     const context = await browser.newContext();
     context.setDefaultNavigationTimeout(coldNavigationTimeout);
     const storefrontOrigin = `http://${site.subdomain}.localhost:${appPort}`;
@@ -292,11 +300,38 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
 
     const rows = JSON.parse(owned.psql(`
-      SELECT COALESCE(json_agg(json_build_object('order_id',o.id,'rate_id',osl.metadata->>'shipping_rate_id','amount',osl.amount::numeric,'payment_method',o.payment_method)), '[]'::json)
+      SELECT COALESCE(json_agg(json_build_object('order_id',o.id,'order_number',o.order_number,
+        'gst_invoice_number',o.gst_invoice_number,'rate_id',osl.metadata->>'shipping_rate_id',
+        'amount',osl.amount::numeric,'payment_method',o.payment_method)), '[]'::json)
       FROM orders o JOIN order_shipping_lines osl ON osl.order_id=o.id
       WHERE o.site_id='${site.siteId}' AND o.customer_email='browser-buyer@example.invalid';
-    `)) as Array<{ order_id: string; rate_id: string; amount: number; payment_method: string }>;
+    `)) as Array<{ order_id: string; order_number: string; gst_invoice_number: string | null; rate_id: string; amount: number; payment_method: string }>;
     assert.equal(rows.length, 1, 'the browser journey creates exactly one order');
+    assert.match(rows[0].order_number, /^ORD-[0-9]{8}-[0-9]+$/,
+        'General settings order format matches the generated hosted order');
+    await page.getByText(rows[0].order_number, { exact: true }).waitFor();
+    const invoiceNumber = owned.psql(`SELECT invoice_number FROM gst_invoices
+        WHERE site_id='${site.siteId}' AND order_id='${rows[0].order_id}';`);
+    assert.equal(invoiceNumber, `${invoicePrefix}-${String(Number(nextInvoice)).padStart(6, '0')}`,
+        'Business settings next invoice example matches the first issued hosted order invoice');
+    assert.equal(rows[0].gst_invoice_number, invoiceNumber,
+        'the canonical order stores the same issued invoice number');
+    const merchantHeaders = await signedIdentityHeaders(merchantOwnerId, merchantOwnerEmail, site.siteId);
+    const merchantOrderResponse = await fetch(`http://127.0.0.1:${gatewayPort}/v1/orders/${rows[0].order_id}`, {
+        headers: merchantHeaders,
+    });
+    const merchantOrderText = await merchantOrderResponse.text();
+    assert.equal(merchantOrderResponse.status, 200, merchantOrderText);
+    const merchantOrder = JSON.parse(merchantOrderText) as { data: { order_number: string; gst_invoice_number: string } };
+    assert.equal(merchantOrder.data.order_number, rows[0].order_number);
+    assert.equal(merchantOrder.data.gst_invoice_number, invoiceNumber);
+    const invoiceResponse = await fetch(`http://127.0.0.1:${gatewayPort}/v1/tax/invoice/${rows[0].order_id}`, {
+        headers: await signedIdentityHeaders(merchantOwnerId, merchantOwnerEmail, site.siteId),
+    });
+    const invoiceText = await invoiceResponse.text();
+    assert.equal(invoiceResponse.status, 200, invoiceText);
+    const merchantInvoice = JSON.parse(invoiceText) as { data: { invoice_number: string } };
+    assert.equal(merchantInvoice.data.invoice_number, invoiceNumber);
     assert.equal(rows[0].rate_id, codRateId, 'persisted order is bound to the reviewed COD rate');
     assert.equal(Number(rows[0].amount), 20);
     assert.equal(rows[0].payment_method, 'cod');
