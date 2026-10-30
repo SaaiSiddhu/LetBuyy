@@ -446,6 +446,83 @@ class ApiClient {
     return requestPaginated(path, options: options, decoder: asJsonMap);
   }
 
+  /// Compose the same finite complete settings view as the TypeScript client.
+  /// Never publish a first page as the whole configuration or cross contexts.
+  Future<List<JsonMap>> _settingsList(
+    String path,
+    String storeId, {
+    ApiRequestOptions? options,
+  }) async {
+    final version = options?.expectedContextVersion ?? captureRequestContext(),
+        rows = <JsonMap>[],
+        ids = <String>{};
+    int? observedTotal;
+    for (var number = 1; number <= 10; number++) {
+      final page = await requestPaginatedJson(
+        path,
+        options: (options ?? const ApiRequestOptions()).copyWith(
+          storeId: storeId,
+          expectedContextVersion: version,
+          query: {'store_id': storeId, 'page': number, 'limit': 100},
+        ),
+      );
+      final meta = page.meta, total = meta['total'];
+      if (captureRequestContext() != version)
+        throw const ApiException(
+          message: 'Store access changed. Reload settings.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      if (meta['store_id'] != storeId ||
+          meta['page'] != number ||
+          meta['per_page'] != 100 ||
+          total is! int ||
+          total < 0 ||
+          meta['has_next'] is! bool ||
+          meta['has_prev'] != (number > 1) ||
+          meta['total_pages'] != (total / 100).ceil() ||
+          meta['has_next'] != (number * 100 < total) ||
+          page.data.length != (total - (number - 1) * 100).clamp(0, 100) ||
+          observedTotal != null && observedTotal != total) {
+        throw const ApiException(
+          message:
+              'The complete settings view could not be verified. Reload settings.',
+          statusCode: 503,
+          code: 'SETTINGS_PAGE_UNVERIFIED',
+        );
+      }
+      if (total > 1000)
+        throw const ApiException(
+          message: 'This settings collection needs a paginated view.',
+          statusCode: 409,
+          code: 'SETTINGS_LIMIT_REACHED',
+        );
+      observedTotal = total;
+      for (final row in page.data) {
+        if (row['id'] is! String ||
+            row['id'].toString().isEmpty ||
+            !ids.add(row['id'] as String) ||
+            row['store_id'] != null && row['store_id'] != storeId ||
+            row['site_id'] != null && row['site_id'] != storeId ||
+            row['shipping_zones'] is Map &&
+                (row['shipping_zones'] as Map)['store_id'] != storeId) {
+          throw const ApiException(
+            message: 'The selected store settings could not be confirmed.',
+            statusCode: 503,
+            code: 'SETTINGS_SCOPE_UNVERIFIED',
+          );
+        }
+        rows.add(row);
+      }
+      if (meta['has_next'] == false) return rows;
+    }
+    throw const ApiException(
+      message: 'This settings collection needs a paginated view.',
+      statusCode: 409,
+      code: 'SETTINGS_LIMIT_REACHED',
+    );
+  }
+
   Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
     final contextVersion =
         options?.expectedContextVersion ?? _contextVersionProvider?.call();
@@ -2868,10 +2945,48 @@ class UploadApi {
 class ShippingApi {
   ShippingApi(ApiClient client)
     : zones = ShippingZonesApi(client),
-      rates = ShippingRatesApi(client);
+      rates = ShippingRatesApi(client),
+      profiles = ShippingProfilesApi(client);
 
   final ShippingZonesApi zones;
   final ShippingRatesApi rates;
+  final ShippingProfilesApi profiles;
+}
+
+class ShippingProfilesApi {
+  const ShippingProfilesApi(this._client);
+  final ApiClient _client;
+  Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
+      _client._settingsList(
+        '/shipping-tax/shipping/profiles',
+        storeId,
+        options: options,
+      );
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/shipping/profiles',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
+  Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/shipping-tax/shipping/profiles',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/shipping-tax/shipping/profiles/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
 }
 
 class ShippingZonesApi {
@@ -2880,12 +2995,24 @@ class ShippingZonesApi {
   final ApiClient _client;
 
   Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
-      _client.requestData(
+      _client._settingsList(
         '/shipping-tax/shipping/zones',
-        options: _mergeOptions(options, query: {'store_id': storeId}),
-        decoder: (value) =>
-            asJsonList(value).map(asJsonMap).toList(growable: false),
+        storeId,
+        options: options,
       );
+
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/shipping/zones',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
 
   Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
@@ -2915,12 +3042,24 @@ class ShippingRatesApi {
   final ApiClient _client;
 
   Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
-      _client.requestData(
+      _client._settingsList(
         '/shipping-tax/shipping',
-        options: _mergeOptions(options, query: {'store_id': storeId}),
-        decoder: (value) =>
-            asJsonList(value).map(asJsonMap).toList(growable: false),
+        storeId,
+        options: options,
       );
+
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/shipping',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
 
   Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
@@ -2950,12 +3089,20 @@ class TaxesApi {
   final ApiClient _client;
 
   Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
-      _client.requestData(
-        '/shipping-tax/taxes',
-        options: _mergeOptions(options, query: {'store_id': storeId}),
-        decoder: (value) =>
-            asJsonList(value).map(asJsonMap).toList(growable: false),
-      );
+      _client._settingsList('/shipping-tax/taxes', storeId, options: options);
+
+  Future<PaginatedResponse<JsonMap>> listPage(
+    String storeId, {
+    int page = 1,
+    int limit = 100,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/shipping-tax/taxes',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+    ).copyWith(storeId: storeId),
+  );
 
   Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(

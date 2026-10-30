@@ -111,6 +111,26 @@ class StoreService extends ChangeNotifier {
   }
 
   /// Get a single store by ID.
+  /// Settings editors must use a fresh authorized response without offline fallback.
+  Future<StoreModel> fetchAuthorizedStore(String id) async {
+    final version = _api.captureRequestContext();
+    final raw = await _api.stores.get(
+      id,
+      options: ApiRequestOptions(storeId: id, expectedContextVersion: version),
+    );
+    if (_api.captureRequestContext() != version ||
+        raw['id'] != id ||
+        raw['tax_inclusive'] is! bool) {
+      throw const ApiException(
+        message: 'Store settings could not be confirmed. Reload settings.',
+        statusCode: 503,
+        code: 'STORE_SETTINGS_UNVERIFIED',
+      );
+    }
+    return StoreModel.fromJson(raw);
+  }
+
+  /// Get a single store by ID, allowing the existing read-only offline projection.
   Future<StoreModel> fetchStore(String id) async {
     final epoch = _sessionEpoch;
     await _cacheReset;
@@ -429,15 +449,15 @@ class StoreLocalizationSummary {
       defaultLocale: json['default_locale']?.toString() ?? 'en-IN',
       currency: json['currency']?.toString() ?? 'INR',
       timezone: json['timezone']?.toString() ?? 'Asia/Kolkata',
-      markets: _jsonList(json['markets'])
-          .map(StoreMarket.fromJson)
-          .toList(growable: false),
-      locales: _jsonList(json['locales'])
-          .map(StorefrontLocale.fromJson)
-          .toList(growable: false),
-      translations: _jsonList(json['translations'])
-          .map(StorefrontTranslation.fromJson)
-          .toList(growable: false),
+      markets: _jsonList(
+        json['markets'],
+      ).map(StoreMarket.fromJson).toList(growable: false),
+      locales: _jsonList(
+        json['locales'],
+      ).map(StorefrontLocale.fromJson).toList(growable: false),
+      translations: _jsonList(
+        json['translations'],
+      ).map(StorefrontTranslation.fromJson).toList(growable: false),
       schemaReady: json['schema_ready'] != false,
     );
   }

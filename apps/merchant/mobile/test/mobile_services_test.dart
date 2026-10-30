@@ -9126,6 +9126,7 @@ void main() {
         '/stores': [_storeJson(taxInclusive: true)],
       },
       json: {
+        '/stores/store_1': _storeJson(taxInclusive: true),
         '/shipping-tax/taxes': [_taxRateJson()],
       },
     );
@@ -9154,27 +9155,36 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({});
     final api = _FakeApiClient(
-      paginated: {'/stores': [_storeJson()]},
+      paginated: {
+        '/stores': [_storeJson()],
+      },
       json: {
         '/shipping-tax/shipping/zones': [_shippingZoneJson()],
         '/shipping-tax/shipping': [_shippingRateJson()],
       },
     );
-    await tester.pumpWidget(MultiProvider(
-      providers: [
-        ..._storeProviders(api),
-        ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
-      ],
-      child: const MaterialApp(home: ShippingScreen()),
-    ));
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ..._storeProviders(api),
+          ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
+        ],
+        child: const MaterialApp(home: ShippingScreen()),
+      ),
+    );
     await tester.pumpAndSettle();
     final stores = Provider.of<StoreContext>(
-      tester.element(find.byType(ShippingScreen)), listen: false);
+      tester.element(find.byType(ShippingScreen)),
+      listen: false,
+    );
     await stores.clearSelection();
     await tester.pumpAndSettle();
-    expect(find.text('The selected store changed. Refresh shipping before editing.'),
-      findsOneWidget);
+    expect(
+      find.text('Create or select a store before configuring shipping.'),
+      findsOneWidget,
+    );
     expect(find.text('New zone'), findsNothing);
+    expect(find.text('India'), findsNothing);
   });
 
   testWidgets('TaxesScreen blocks edits after store context is cleared', (
@@ -9182,26 +9192,37 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({});
     final api = _FakeApiClient(
-      paginated: {'/stores': [_storeJson(taxInclusive: true)]},
-      json: {'/shipping-tax/taxes': [_taxRateJson()]},
+      paginated: {
+        '/stores': [_storeJson(taxInclusive: true)],
+      },
+      json: {
+        '/stores/store_1': _storeJson(taxInclusive: true),
+        '/shipping-tax/taxes': [_taxRateJson()],
+      },
     );
-    await tester.pumpWidget(MultiProvider(
-      providers: [
-        ..._storeProviders(api),
-        ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
-      ],
-      child: const MaterialApp(home: TaxesScreen()),
-    ));
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ..._storeProviders(api),
+          ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
+        ],
+        child: const MaterialApp(home: TaxesScreen()),
+      ),
+    );
     await tester.pumpAndSettle();
     final stores = Provider.of<StoreContext>(
-      tester.element(find.byType(TaxesScreen)), listen: false);
+      tester.element(find.byType(TaxesScreen)),
+      listen: false,
+    );
     await stores.clearSelection();
     await tester.pumpAndSettle();
-    expect(find.text('The selected store changed. Refresh taxes before editing.'),
-      findsOneWidget);
+    expect(
+      find.text('Create or select a store before configuring taxes.'),
+      findsOneWidget,
+    );
     expect(find.text('New tax'), findsNothing);
-    expect(tester.widget<SwitchListTile>(find.byType(SwitchListTile)).onChanged,
-      isNull);
+    expect(find.byType(SwitchListTile), findsNothing);
+    expect(find.text('GST'), findsNothing);
   });
 
   testWidgets('LocalizationMarketsScreen renders real market settings', (
@@ -9272,8 +9293,9 @@ void main() {
       },
       json: {
         '/shipping-tax/taxes': [],
-        '/stores/store_1': _storeJson(taxInclusive: true),
+        '/stores/store_1': _storeJson(taxInclusive: false),
       },
+      methodJson: {'PATCH /stores/store_1': _storeJson(taxInclusive: true)},
     );
 
     await tester.pumpWidget(
@@ -9988,6 +10010,7 @@ void _expectContractApproval(
 class _FakeApiClient extends ApiClient {
   _FakeApiClient({
     Map<String, dynamic> json = const {},
+    Map<String, dynamic> methodJson = const {},
     Map<String, dynamic> raw = const {},
     Map<String, List<Map<String, dynamic>>> paginated = const {},
     Map<String, Map<String, dynamic>> paginatedMeta = const {},
@@ -9995,17 +10018,16 @@ class _FakeApiClient extends ApiClient {
     Duration delay = Duration.zero,
     super.contextVersionProvider,
   }) : _json = json,
+       _methodJson = methodJson,
        _raw = raw,
        _paginated = paginated,
        _paginatedMeta = paginatedMeta,
        _errors = errors,
        _delay = delay,
-       super(
-         baseUrl: 'https://gateway.test/v1',
-         maxRetries: 0,
-       );
+       super(baseUrl: 'https://gateway.test/v1', maxRetries: 0);
 
   final Map<String, dynamic> _json;
+  final Map<String, dynamic> _methodJson;
   final Map<String, dynamic> _raw;
   final Map<String, List<Map<String, dynamic>>> _paginated;
   final Map<String, Map<String, dynamic>> _paginatedMeta;
@@ -10031,7 +10053,13 @@ class _FakeApiClient extends ApiClient {
     paths.add(path);
     _captureBody(path, options);
     _throwIfConfigured(path);
-    final value = _json[path] ?? {};
+    if (path.startsWith('/shipping-tax/') &&
+        options?.method == HttpMethod.delete)
+      return {'deleted': true};
+    final value =
+        _methodJson['${options?.method?.value ?? 'GET'} $path'] ??
+        _json[path] ??
+        {};
     if (value is List && value.isNotEmpty) {
       return Map<String, dynamic>.from(value.first as Map);
     }
@@ -10060,8 +10088,24 @@ class _FakeApiClient extends ApiClient {
     paths.add(path);
     _captureBody(path, options);
     _throwIfConfigured(path);
-    final rows = _paginated[path] ?? const <Map<String, dynamic>>[];
-    final meta = _paginatedMeta[path] ?? const <String, dynamic>{};
+    final settings = path.startsWith('/shipping-tax/');
+    final rows =
+        _paginated[path] ??
+        (settings && _json[path] is List
+            ? asJsonList(_json[path]).map(asJsonMap).toList()
+            : const <Map<String, dynamic>>[]);
+    final meta = <String, dynamic>{
+      if (settings) ...{
+        'store_id': options?.query?['store_id'],
+        'total': rows.length,
+        'page': options?.query?['page'] ?? 1,
+        'per_page': options?.query?['limit'] ?? 100,
+        'total_pages': rows.isEmpty ? 0 : 1,
+        'has_next': false,
+        'has_prev': false,
+      },
+      ...?_paginatedMeta[path],
+    };
     final hasNext = meta['has_next'] is bool ? meta['has_next'] as bool : null;
     return PaginatedResponse<JsonMap>(
       data: rows,

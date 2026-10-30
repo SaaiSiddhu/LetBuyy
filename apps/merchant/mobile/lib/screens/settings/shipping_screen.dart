@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
+import '../../widgets/shared/merchant_store_view.dart';
 
 import '../../models/store_model.dart';
 import '../../services/shipping_tax_service.dart';
@@ -9,15 +10,41 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class ShippingScreen extends StatefulWidget {
   const ShippingScreen({super.key});
-
   @override
-  State<ShippingScreen> createState() => _ShippingScreenState();
+  State<ShippingScreen> createState() => _ShippingShellState();
 }
 
-class _ShippingScreenState extends State<ShippingScreen> {
+class _ShippingShellState extends State<ShippingScreen> {
+  bool _hadSelection = false;
+  @override
+  Widget build(BuildContext context) {
+    final stores = context.watch<StoreContext>();
+    _hadSelection = _hadSelection || stores.selectedStoreId != null;
+    return _ShippingWorkspace(
+      key: ValueKey(stores.requestContextKey),
+      discoverStore: !_hadSelection,
+    );
+  }
+}
+
+class _ShippingWorkspace extends StatefulWidget {
+  const _ShippingWorkspace({super.key, required this.discoverStore});
+  final bool discoverStore;
+
+  @override
+  State<_ShippingWorkspace> createState() => _ShippingScreenState();
+}
+
+class _ShippingScreenState extends State<_ShippingWorkspace> {
   static const _rateTypes = ['flat', 'free', 'price_based', 'weight_based'];
 
   StoreModel? _store;
+  late final Object? _openedKey;
+  int _readGeneration = 0;
+  Widget _guard(Widget child) => guardMerchantStoreView(
+    _store == null ? null : (key: _openedKey, storeId: _store!.id),
+    child,
+  );
   List<ShippingZoneContract> _zones = const [];
   List<ShippingRateContract> _rates = const [];
   bool _showRates = false;
@@ -28,19 +55,28 @@ class _ShippingScreenState extends State<ShippingScreen> {
   @override
   void initState() {
     super.initState();
-    _loadShipping();
+    _openedKey = context.read<StoreContext>().requestContextKey;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadShipping());
   }
 
   Future<void> _loadShipping() async {
+    if (!mounted) return;
+    final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
+      _store = null;
+      _zones = [];
+      _rates = [];
     });
 
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final stores = context.read<StoreContext>();
+      final store = widget.discoverStore
+          ? await stores.ensureSelectedStore()
+          : stores.selectedStore;
       if (store == null) {
-        if (!mounted) return;
+        if (!mounted || generation != _readGeneration) return;
         setState(() {
           _store = null;
           _zones = const [];
@@ -52,7 +88,9 @@ class _ShippingScreenState extends State<ShippingScreen> {
       final summary = await context.read<ShippingTaxService>().fetchShipping(
         store.id,
       );
-      if (!mounted || context.read<StoreContext>().selectedStoreId != store.id)
+      if (!mounted ||
+          generation != _readGeneration ||
+          context.read<StoreContext>().selectedStoreId != store.id)
         return;
       setState(() {
         _store = store;
@@ -60,10 +98,14 @@ class _ShippingScreenState extends State<ShippingScreen> {
         _rates = summary.rates;
       });
     } catch (error) {
-      if (!mounted) return;
-      setState(() => _error = 'Unable to load shipping: $error');
+      if (!mounted || generation != _readGeneration) return;
+      setState(
+        () => _error =
+            'Shipping settings could not load. Check your connection and store access, then retry.',
+      );
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && generation == _readGeneration)
+        setState(() => _isLoading = false);
     }
   }
 
@@ -71,7 +113,7 @@ class _ShippingScreenState extends State<ShippingScreen> {
     final store = _store;
     if (store == null || _isBusy) return;
     final result = await _showZoneEditor(store.id, zone);
-    if (result == null) return;
+    if (result == null || !mounted) return;
 
     await _runAction(() async {
       if (zone == null) {
@@ -104,90 +146,92 @@ class _ShippingScreenState extends State<ShippingScreen> {
 
     final result = await showDialog<ShippingZoneInput>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: colors.card,
-          title: Text(
-            zone == null ? 'New shipping zone' : 'Edit shipping zone',
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Zone name'),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: countriesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Countries',
-                    hintText: 'IN, US',
+      builder: (dialogContext) => _guard(
+        StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: colors.card,
+            title: Text(
+              zone == null ? 'New shipping zone' : 'Edit shipping zone',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Zone name'),
+                    textInputAction: TextInputAction.next,
                   ),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: statesController,
-                  decoration: const InputDecoration(
-                    labelText: 'States',
-                    hintText: 'Karnataka, Maharashtra',
-                  ),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: zipController,
-                  decoration: const InputDecoration(
-                    labelText: 'PIN/ZIP codes',
-                    hintText: '560001, 110001',
-                  ),
-                  textInputAction: TextInputAction.done,
-                ),
-                if (dialogError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      dialogError!,
-                      style: TextStyle(color: colors.error, fontSize: 12),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: countriesController,
+                    decoration: const InputDecoration(
+                      labelText: 'Countries',
+                      hintText: 'IN, US',
                     ),
+                    textInputAction: TextInputAction.next,
                   ),
-              ],
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: statesController,
+                    decoration: const InputDecoration(
+                      labelText: 'States',
+                      hintText: 'Karnataka, Maharashtra',
+                    ),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: zipController,
+                    decoration: const InputDecoration(
+                      labelText: 'PIN/ZIP codes',
+                      hintText: '560001, 110001',
+                    ),
+                    textInputAction: TextInputAction.done,
+                  ),
+                  if (dialogError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        dialogError!,
+                        style: TextStyle(color: colors.error, fontSize: 12),
+                      ),
+                    ),
+                ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  final name = nameController.text.trim();
+                  final countries = _splitList(countriesController.text);
+                  if (name.isEmpty || countries.isEmpty) {
+                    setDialogState(() {
+                      dialogError =
+                          'Zone name and at least one country are required';
+                    });
+                    return;
+                  }
+                  Navigator.pop(
+                    dialogContext,
+                    ShippingZoneInput(
+                      storeId: storeId,
+                      name: name,
+                      countries: countries,
+                      states: _splitList(statesController.text),
+                      zipCodes: _splitList(zipController.text),
+                    ),
+                  );
+                },
+                child: Text(zone == null ? 'Create' : 'Save'),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                final name = nameController.text.trim();
-                final countries = _splitList(countriesController.text);
-                if (name.isEmpty || countries.isEmpty) {
-                  setDialogState(() {
-                    dialogError =
-                        'Zone name and at least one country are required';
-                  });
-                  return;
-                }
-                Navigator.pop(
-                  dialogContext,
-                  ShippingZoneInput(
-                    storeId: storeId,
-                    name: name,
-                    countries: countries,
-                    states: _splitList(statesController.text),
-                    zipCodes: _splitList(zipController.text),
-                  ),
-                );
-              },
-              child: Text(zone == null ? 'Create' : 'Save'),
-            ),
-          ],
         ),
       ),
     );
@@ -205,7 +249,7 @@ class _ShippingScreenState extends State<ShippingScreen> {
       message: 'Delete "${zone.name}" and its shipping rates.',
       action: 'Delete',
     );
-    if (confirmed != true) return;
+    if (confirmed != true || !mounted) return;
 
     await _runAction(() async {
       await context.read<ShippingTaxService>().deleteZone(zone.id);
@@ -217,7 +261,7 @@ class _ShippingScreenState extends State<ShippingScreen> {
   Future<void> _openRateEditor(ShippingRateContract? rate) async {
     if (_zones.isEmpty || _isBusy) return;
     final result = await _showRateEditor(rate);
-    if (result == null) return;
+    if (result == null || !mounted) return;
 
     await _runAction(() async {
       if (rate == null) {
@@ -260,171 +304,173 @@ class _ShippingScreenState extends State<ShippingScreen> {
 
     final result = await showDialog<ShippingRateInput>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: colors.card,
-          title: Text(
-            rate == null ? 'New shipping rate' : 'Edit shipping rate',
-            style: TextStyle(color: colors.textPrimary),
+      builder: (dialogContext) => _guard(
+        StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: colors.card,
+            title: Text(
+              rate == null ? 'New shipping rate' : 'Edit shipping rate',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: zoneId,
+                    decoration: const InputDecoration(labelText: 'Zone'),
+                    items: _zones
+                        .map(
+                          (zone) => DropdownMenuItem(
+                            value: zone.id,
+                            child: Text(zone.name),
+                          ),
+                        )
+                        .toList(growable: false),
+                    onChanged: (value) {
+                      setDialogState(() => zoneId = value ?? zoneId);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Rate name'),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: _rateTypes.contains(type) ? type : 'flat',
+                    decoration: const InputDecoration(labelText: 'Type'),
+                    items: _rateTypes
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(_sentenceCase(item)),
+                          ),
+                        )
+                        .toList(growable: false),
+                    onChanged: (value) {
+                      setDialogState(() => type = value ?? 'flat');
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: priceController,
+                    decoration: const InputDecoration(labelText: 'Price'),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: minOrderController,
+                          decoration: const InputDecoration(
+                            labelText: 'Min order',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: maxOrderController,
+                          decoration: const InputDecoration(
+                            labelText: 'Max order',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: etaMinController,
+                          decoration: const InputDecoration(
+                            labelText: 'ETA min days',
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: etaMaxController,
+                          decoration: const InputDecoration(
+                            labelText: 'ETA max days',
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: isActive,
+                    title: Text(
+                      'Active',
+                      style: TextStyle(color: colors.textPrimary),
+                    ),
+                    onChanged: (value) {
+                      setDialogState(() => isActive = value);
+                    },
+                  ),
+                  if (dialogError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        dialogError!,
+                        style: TextStyle(color: colors.error, fontSize: 12),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  final name = nameController.text.trim();
+                  final price = double.tryParse(priceController.text.trim());
+                  if (name.isEmpty || price == null) {
+                    setDialogState(() {
+                      dialogError = 'Rate name and numeric price are required';
+                    });
+                    return;
+                  }
+                  Navigator.pop(
+                    dialogContext,
+                    ShippingRateInput(
+                      zoneId: zoneId,
+                      name: name,
+                      type: type,
+                      price: price,
+                      minOrderAmount: _optionalDouble(minOrderController.text),
+                      maxOrderAmount: _optionalDouble(maxOrderController.text),
+                      estimatedDaysMin: _optionalInt(etaMinController.text),
+                      estimatedDaysMax: _optionalInt(etaMaxController.text),
+                      isActive: isActive,
+                    ),
+                  );
+                },
+                child: Text(rate == null ? 'Create' : 'Save'),
+              ),
+            ],
           ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<String>(
-                  value: zoneId,
-                  decoration: const InputDecoration(labelText: 'Zone'),
-                  items: _zones
-                      .map(
-                        (zone) => DropdownMenuItem(
-                          value: zone.id,
-                          child: Text(zone.name),
-                        ),
-                      )
-                      .toList(growable: false),
-                  onChanged: (value) {
-                    setDialogState(() => zoneId = value ?? zoneId);
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Rate name'),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: _rateTypes.contains(type) ? type : 'flat',
-                  decoration: const InputDecoration(labelText: 'Type'),
-                  items: _rateTypes
-                      .map(
-                        (item) => DropdownMenuItem(
-                          value: item,
-                          child: Text(_sentenceCase(item)),
-                        ),
-                      )
-                      .toList(growable: false),
-                  onChanged: (value) {
-                    setDialogState(() => type = value ?? 'flat');
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: priceController,
-                  decoration: const InputDecoration(labelText: 'Price'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: minOrderController,
-                        decoration: const InputDecoration(
-                          labelText: 'Min order',
-                        ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        controller: maxOrderController,
-                        decoration: const InputDecoration(
-                          labelText: 'Max order',
-                        ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: etaMinController,
-                        decoration: const InputDecoration(
-                          labelText: 'ETA min days',
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        controller: etaMaxController,
-                        decoration: const InputDecoration(
-                          labelText: 'ETA max days',
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: isActive,
-                  title: Text(
-                    'Active',
-                    style: TextStyle(color: colors.textPrimary),
-                  ),
-                  onChanged: (value) {
-                    setDialogState(() => isActive = value);
-                  },
-                ),
-                if (dialogError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      dialogError!,
-                      style: TextStyle(color: colors.error, fontSize: 12),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                final name = nameController.text.trim();
-                final price = double.tryParse(priceController.text.trim());
-                if (name.isEmpty || price == null) {
-                  setDialogState(() {
-                    dialogError = 'Rate name and numeric price are required';
-                  });
-                  return;
-                }
-                Navigator.pop(
-                  dialogContext,
-                  ShippingRateInput(
-                    zoneId: zoneId,
-                    name: name,
-                    type: type,
-                    price: price,
-                    minOrderAmount: _optionalDouble(minOrderController.text),
-                    maxOrderAmount: _optionalDouble(maxOrderController.text),
-                    estimatedDaysMin: _optionalInt(etaMinController.text),
-                    estimatedDaysMax: _optionalInt(etaMaxController.text),
-                    isActive: isActive,
-                  ),
-                );
-              },
-              child: Text(rate == null ? 'Create' : 'Save'),
-            ),
-          ],
         ),
       ),
     );
@@ -444,7 +490,7 @@ class _ShippingScreenState extends State<ShippingScreen> {
       message: 'Delete "${rate.name}" from this zone.',
       action: 'Delete',
     );
-    if (confirmed != true) return;
+    if (confirmed != true || !mounted) return;
 
     await _runAction(() async {
       await context.read<ShippingTaxService>().deleteRate(rate.id);
@@ -461,26 +507,29 @@ class _ShippingScreenState extends State<ShippingScreen> {
     final colors = AppThemeColors.of(context);
     return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: colors.card,
-        title: Text(title, style: TextStyle(color: colors.textPrimary)),
-        content: Text(message, style: TextStyle(color: colors.textSecondary)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(action),
-          ),
-        ],
+      builder: (dialogContext) => _guard(
+        AlertDialog(
+          backgroundColor: colors.card,
+          title: Text(title, style: TextStyle(color: colors.textPrimary)),
+          content: Text(message, style: TextStyle(color: colors.textSecondary)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(action),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _runAction(Future<void> Function() action) async {
-    if (_isBusy ||
+    if (!mounted ||
+        _isBusy ||
         _store == null ||
         context.read<StoreContext>().selectedStoreId != _store!.id)
       return;
@@ -488,7 +537,11 @@ class _ShippingScreenState extends State<ShippingScreen> {
     try {
       await action();
     } catch (error) {
-      if (mounted) _showMessage('$error', isError: true);
+      if (mounted)
+        _showMessage(
+          'The shipping change could not be confirmed. Reload settings before retrying.',
+          isError: true,
+        );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -567,7 +620,10 @@ class _ShippingScreenState extends State<ShippingScreen> {
   }
 
   Widget _buildModeSwitch(AppThemeColors colors) {
-    return Row(
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         ChoiceChip(
           label: const Text('Zones'),
@@ -583,7 +639,6 @@ class _ShippingScreenState extends State<ShippingScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(width: 8),
         ChoiceChip(
           label: const Text('Rates'),
           selected: _showRates,
@@ -598,7 +653,6 @@ class _ShippingScreenState extends State<ShippingScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        const Spacer(),
         Text(
           '${_zones.length} zones • ${_rates.length} rates',
           style: TextStyle(color: colors.textSecondary, fontSize: 12),

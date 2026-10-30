@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
+import '../../widgets/shared/merchant_store_view.dart';
 
 import '../../models/store_model.dart';
 import '../../services/shipping_tax_service.dart';
@@ -10,15 +11,41 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class TaxesScreen extends StatefulWidget {
   const TaxesScreen({super.key});
-
   @override
-  State<TaxesScreen> createState() => _TaxesScreenState();
+  State<TaxesScreen> createState() => _TaxesShellState();
 }
 
-class _TaxesScreenState extends State<TaxesScreen> {
+class _TaxesShellState extends State<TaxesScreen> {
+  bool _hadSelection = false;
+  @override
+  Widget build(BuildContext context) {
+    final stores = context.watch<StoreContext>();
+    _hadSelection = _hadSelection || stores.selectedStoreId != null;
+    return _TaxesWorkspace(
+      key: ValueKey(stores.requestContextKey),
+      discoverStore: !_hadSelection,
+    );
+  }
+}
+
+class _TaxesWorkspace extends StatefulWidget {
+  const _TaxesWorkspace({super.key, required this.discoverStore});
+  final bool discoverStore;
+
+  @override
+  State<_TaxesWorkspace> createState() => _TaxesScreenState();
+}
+
+class _TaxesScreenState extends State<_TaxesWorkspace> {
   static const _appliesToOptions = ['all', 'products', 'shipping'];
 
   StoreModel? _store;
+  late final Object? _openedKey;
+  int _readGeneration = 0;
+  Widget _guard(Widget child) => guardMerchantStoreView(
+    _store == null ? null : (key: _openedKey, storeId: _store!.id),
+    child,
+  );
   List<TaxRateContract> _taxRates = const [];
   bool _taxInclusive = false;
   bool _isLoading = true;
@@ -28,19 +55,27 @@ class _TaxesScreenState extends State<TaxesScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTaxes();
+    _openedKey = context.read<StoreContext>().requestContextKey;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadTaxes());
   }
 
   Future<void> _loadTaxes() async {
+    if (!mounted) return;
+    final generation = ++_readGeneration;
     setState(() {
       _isLoading = true;
       _error = null;
+      _store = null;
+      _taxRates = [];
     });
 
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final stores = context.read<StoreContext>();
+      final store = widget.discoverStore
+          ? await stores.ensureSelectedStore()
+          : stores.selectedStore;
       if (store == null) {
-        if (!mounted) return;
+        if (!mounted || generation != _readGeneration) return;
         setState(() {
           _store = null;
           _taxRates = const [];
@@ -49,21 +84,28 @@ class _TaxesScreenState extends State<TaxesScreen> {
         return;
       }
 
+      final freshStore = await context
+          .read<StoreService>()
+          .fetchAuthorizedStore(store.id);
+      if (!mounted || generation != _readGeneration) return;
       final rates = await context.read<ShippingTaxService>().fetchTaxes(
         store.id,
       );
-      if (!mounted || context.read<StoreContext>().selectedStoreId != store.id)
+      if (!mounted ||
+          generation != _readGeneration ||
+          context.read<StoreContext>().selectedStoreId != store.id)
         return;
       setState(() {
-        _store = store;
+        _store = freshStore;
         _taxRates = rates;
-        _taxInclusive = store.taxInclusive;
+        _taxInclusive = freshStore.taxInclusive;
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _readGeneration) return;
       setState(() => _error = 'Tax settings could not load.');
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && generation == _readGeneration)
+        setState(() => _isLoading = false);
     }
   }
 
@@ -101,7 +143,7 @@ class _TaxesScreenState extends State<TaxesScreen> {
     final store = _store;
     if (store == null || _isBusy) return;
     final result = await _showTaxEditor(store.id, rate);
-    if (result == null) return;
+    if (result == null || !mounted) return;
 
     await _runAction(() async {
       if (rate == null) {
@@ -140,161 +182,169 @@ class _TaxesScreenState extends State<TaxesScreen> {
 
     final result = await showDialog<TaxRateInput>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: colors.card,
-          title: Text(
-            rate == null ? 'New tax rate' : 'Edit tax rate',
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Tax name'),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: rateController,
-                  decoration: const InputDecoration(labelText: 'Rate %'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+      builder: (dialogContext) => _guard(
+        StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: colors.card,
+            title: Text(
+              rate == null ? 'New tax rate' : 'Edit tax rate',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Tax name'),
+                    textInputAction: TextInputAction.next,
                   ),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: countryController,
-                        decoration: const InputDecoration(labelText: 'Country'),
-                        textCapitalization: TextCapitalization.characters,
-                      ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: rateController,
+                    decoration: const InputDecoration(labelText: 'Rate %'),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        controller: stateController,
-                        decoration: const InputDecoration(labelText: 'State'),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: hsnController,
-                  decoration: const InputDecoration(labelText: 'HSN code'),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: _appliesToOptions.contains(appliesTo)
-                      ? appliesTo
-                      : 'all',
-                  decoration: const InputDecoration(labelText: 'Applies to'),
-                  items: _appliesToOptions
-                      .map(
-                        (item) => DropdownMenuItem(
-                          value: item,
-                          child: Text(_sentenceCase(item)),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: countryController,
+                          decoration: const InputDecoration(
+                            labelText: 'Country',
+                          ),
+                          textCapitalization: TextCapitalization.characters,
                         ),
-                      )
-                      .toList(growable: false),
-                  onChanged: (value) {
-                    setDialogState(() => appliesTo = value ?? 'all');
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: priorityController,
-                  decoration: const InputDecoration(labelText: 'Priority'),
-                  keyboardType: TextInputType.number,
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: isActive,
-                  title: Text(
-                    'Active',
-                    style: TextStyle(color: colors.textPrimary),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: stateController,
+                          decoration: const InputDecoration(labelText: 'State'),
+                        ),
+                      ),
+                    ],
                   ),
-                  onChanged: (value) {
-                    setDialogState(() => isActive = value);
-                  },
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: isShipping,
-                  title: Text(
-                    'Applies to shipping',
-                    style: TextStyle(color: colors.textPrimary),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: hsnController,
+                    decoration: const InputDecoration(labelText: 'HSN code'),
+                    textInputAction: TextInputAction.next,
                   ),
-                  onChanged: (value) {
-                    setDialogState(() => isShipping = value);
-                  },
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: isCompound,
-                  title: Text(
-                    'Compound tax',
-                    style: TextStyle(color: colors.textPrimary),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: _appliesToOptions.contains(appliesTo)
+                        ? appliesTo
+                        : 'all',
+                    decoration: const InputDecoration(labelText: 'Applies to'),
+                    items: _appliesToOptions
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(_sentenceCase(item)),
+                          ),
+                        )
+                        .toList(growable: false),
+                    onChanged: (value) {
+                      setDialogState(() => appliesTo = value ?? 'all');
+                    },
                   ),
-                  onChanged: (value) {
-                    setDialogState(() => isCompound = value);
-                  },
-                ),
-                if (dialogError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      dialogError!,
-                      style: TextStyle(color: colors.error, fontSize: 12),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: priorityController,
+                    decoration: const InputDecoration(labelText: 'Priority'),
+                    keyboardType: TextInputType.number,
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: isActive,
+                    title: Text(
+                      'Active',
+                      style: TextStyle(color: colors.textPrimary),
                     ),
+                    onChanged: (value) {
+                      setDialogState(() => isActive = value);
+                    },
                   ),
-              ],
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: isShipping,
+                    title: Text(
+                      'Applies to shipping',
+                      style: TextStyle(color: colors.textPrimary),
+                    ),
+                    onChanged: (value) {
+                      setDialogState(() => isShipping = value);
+                    },
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: isCompound,
+                    title: Text(
+                      'Compound tax',
+                      style: TextStyle(color: colors.textPrimary),
+                    ),
+                    onChanged: (value) {
+                      setDialogState(() => isCompound = value);
+                    },
+                  ),
+                  if (dialogError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        dialogError!,
+                        style: TextStyle(color: colors.error, fontSize: 12),
+                      ),
+                    ),
+                ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  final name = nameController.text.trim();
+                  final parsedRate = double.tryParse(
+                    rateController.text.trim(),
+                  );
+                  final country = countryController.text.trim().toUpperCase();
+                  if (name.isEmpty ||
+                      parsedRate == null ||
+                      country.length != 2) {
+                    setDialogState(() {
+                      dialogError =
+                          'Tax name, numeric rate, and 2-letter country are required';
+                    });
+                    return;
+                  }
+                  Navigator.pop(
+                    dialogContext,
+                    TaxRateInput(
+                      storeId: storeId,
+                      name: name,
+                      rate: parsedRate,
+                      country: country,
+                      state: stateController.text,
+                      hsnCode: hsnController.text,
+                      appliesTo: appliesTo,
+                      isCompound: isCompound,
+                      isShipping: isShipping,
+                      priority: int.tryParse(priorityController.text) ?? 0,
+                      isActive: isActive,
+                    ),
+                  );
+                },
+                child: Text(rate == null ? 'Create' : 'Save'),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                final name = nameController.text.trim();
-                final parsedRate = double.tryParse(rateController.text.trim());
-                final country = countryController.text.trim().toUpperCase();
-                if (name.isEmpty || parsedRate == null || country.length != 2) {
-                  setDialogState(() {
-                    dialogError =
-                        'Tax name, numeric rate, and 2-letter country are required';
-                  });
-                  return;
-                }
-                Navigator.pop(
-                  dialogContext,
-                  TaxRateInput(
-                    storeId: storeId,
-                    name: name,
-                    rate: parsedRate,
-                    country: country,
-                    state: stateController.text,
-                    hsnCode: hsnController.text,
-                    appliesTo: appliesTo,
-                    isCompound: isCompound,
-                    isShipping: isShipping,
-                    priority: int.tryParse(priorityController.text) ?? 0,
-                    isActive: isActive,
-                  ),
-                );
-              },
-              child: Text(rate == null ? 'Create' : 'Save'),
-            ),
-          ],
         ),
       ),
     );
@@ -310,7 +360,7 @@ class _TaxesScreenState extends State<TaxesScreen> {
 
   Future<void> _deleteTaxRate(TaxRateContract rate) async {
     final confirmed = await _confirmDelete(rate);
-    if (confirmed != true) return;
+    if (confirmed != true || !mounted) return;
 
     await _runAction(() async {
       await context.read<ShippingTaxService>().deleteTaxRate(rate.id);
@@ -323,32 +373,35 @@ class _TaxesScreenState extends State<TaxesScreen> {
     final colors = AppThemeColors.of(context);
     return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: colors.card,
-        title: Text(
-          'Delete tax rate?',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: Text(
-          'Delete "${rate.name}" from tax calculations.',
-          style: TextStyle(color: colors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+      builder: (dialogContext) => _guard(
+        AlertDialog(
+          backgroundColor: colors.card,
+          title: Text(
+            'Delete tax rate?',
+            style: TextStyle(color: colors.textPrimary),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete'),
+          content: Text(
+            'Delete "${rate.name}" from tax calculations.',
+            style: TextStyle(color: colors.textSecondary),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Delete'),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _runAction(Future<void> Function() action) async {
-    if (_isBusy ||
+    if (!mounted ||
+        _isBusy ||
         _store == null ||
         context.read<StoreContext>().selectedStoreId != _store!.id)
       return;
@@ -390,7 +443,8 @@ class _TaxesScreenState extends State<TaxesScreen> {
               children: [
                 _buildHeader(colors),
                 const SizedBox(height: 14),
-                _buildInclusiveCard(colors),
+                if (!_isLoading && _error == null && _store != null)
+                  _buildInclusiveCard(colors),
                 const SizedBox(height: 14),
                 Expanded(child: _buildBody(colors)),
               ],

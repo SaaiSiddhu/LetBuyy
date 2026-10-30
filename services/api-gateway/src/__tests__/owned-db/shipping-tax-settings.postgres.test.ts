@@ -1,7 +1,9 @@
 // Synthetic owned settings and buyer checkout; no external provider transaction.
+// Exact count/scope regressions below exercise the real PostgREST response boundary.
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import test from 'node:test';
+import { createLetbuyyApiClient, LetbuyyApiError } from '@letbuyy/api-client';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest} from './gateway-harness';
 import {requireOwnedDatabase} from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
@@ -88,4 +90,57 @@ test('missing settings schema is unavailable rather than empty and the same read
   for(const path of ['/shipping','/taxes'])assert.equal((await f.request(path+'?store_id='+f.sites[0].siteId)).status,503);
   missing=false;const recovered=await f.request('/shipping?store_id='+f.sites[0].siteId);assert.equal(recovered.status,200,recovered.text);assert.equal(recovered.json!.data.length,1);
  } finally {tap.restore();}
+});
+
+test('all settings lists acknowledge their store and fail closed when exact counts disappear', async t => {
+ const f=await fixture(t); f.seedRate();
+ const paths=['/shipping/profiles','/shipping/zones','/shipping','/taxes'];
+ for(const path of paths) {
+  const positive=await f.request(path+'?store_id='+f.sites[0].siteId);
+  assert.equal(positive.status,200,positive.text);
+  const meta=positive.json?.meta as Record<string,unknown>;
+  assert.equal(meta.store_id,f.sites[0].siteId);
+  assert.equal(meta.page,1); assert.equal(meta.per_page,20);
+  assert.equal(typeof meta.total,'number');
+ }
+ const resources=['shipping_profiles','shipping_zones','shipping_rates','tax_rates'];
+ const tap=tapRest(owned.restUrl,async(call,forward)=>{
+  const response=await forward();
+  if(call.method!=='GET'||!resources.includes(call.resource))return response;
+  const headers=new Headers(response.headers);headers.delete('content-range');
+  return new Response(await response.text(),{status:response.status,headers});
+ });
+ try {
+  for(const path of paths) {
+   const unavailable=await f.request(path+'?store_id='+f.sites[0].siteId);
+   assert.equal(unavailable.status,503,unavailable.text);
+   assert.equal(unavailable.json?.error.code,'SETTINGS_UNAVAILABLE');
+  }
+ } finally {tap.restore();}
+ const recovered=await f.request('/shipping?store_id='+f.sites[0].siteId);
+ assert.equal(recovered.status,200,recovered.text);
+ assert.equal(recovered.json?.meta.total,1);
+});
+
+test('settings SDK composes actual scoped PostgREST pages and preserves foreign-store denials', async t => {
+ const f=await fixture(t),site=f.sites[0].siteId;
+ owned.psql(`INSERT INTO shipping_zones(id,store_id,site_id,name,countries) SELECT gen_random_uuid(),'${site}','${site}','Synthetic page '||n,ARRAY['IN'] FROM generate_series(1,101) n;`);
+ const requests:number[]=[];
+ const api=createLetbuyyApiClient({
+  baseUrl:'https://owned-settings.example.invalid/v1',
+  getHeaders:()=>signedIdentityHeaders(f.actors[0],`syn-config-${f.actors[0]}@example.invalid`),
+  fetch:async(input,init)=>{
+   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
+   assert.equal(url.hostname,'owned-settings.example.invalid');
+   assert.equal(new Headers(init?.headers).get('X-Store-ID'),url.searchParams.get('store_id'));
+   requests.push(Number(url.searchParams.get('page')));
+   const result=await f.gateway.request(url.pathname+url.search,init);
+   return new Response(result.text,{status:result.status,headers:result.headers});
+  },
+ });
+ const zones=await api.shipping.zones.list({store_id:site});
+ assert.equal(zones.length,101);assert.equal(new Set(zones.map(z=>z.id)).size,101);
+ assert.deepEqual(requests,[1,2]);
+ await assert.rejects(()=>api.shipping.zones.list({store_id:f.sites[1].siteId}),
+  error=>error instanceof LetbuyyApiError&&error.status===403);
 });

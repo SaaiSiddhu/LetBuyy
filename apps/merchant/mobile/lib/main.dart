@@ -284,7 +284,10 @@ void main() {
               create: (_) => MetafieldService(api: apiClient),
             ),
             ChangeNotifierProvider<ShippingTaxService>(
-              create: (_) => ShippingTaxService(api: apiClient),
+              create: (_) => ShippingTaxService(
+                api: apiClient,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<StaffService>.value(value: staffService),
             ChangeNotifierProvider<ReviewService>(

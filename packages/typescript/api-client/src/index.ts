@@ -5700,14 +5700,39 @@ export class LetbuyyApiClient {
   /** Settings screens need the complete bounded configuration, never a hidden first page.
    * Explicit page requests remain paged; the default composes at most 1,000 records. */
   private async requestSettingsList<T>(path: string, query: ShippingTaxListQuery, options?: LetbuyyRequestOptions): Promise<T[]> {
-    if (query.page !== undefined) return (await this.requestPaginated<T>(path, { ...options, query })).data;
+    const store = query.store_id ?? options?.storeId ?? this.defaultStoreId;
+    if (!store) throw new LetbuyyApiError({ status:400, code:'STORE_REQUIRED', message:'Select a store before loading settings.' });
+    const limit = query.page === undefined ? 100 : (query.limit ?? 20);
     const rows: T[] = [];
-    for (let page=1; page<=10; page++) {
-      const result = await this.requestPaginated<T>(path, { ...options, query: { ...query, page, limit: 100 } });
-      rows.push(...result.data);
-      if (!result.has_more) return rows;
+    const ids = new Set<string>();
+    let observedTotal: number | undefined;
+    for (let index=0; index<(query.page === undefined ? 10 : 1); index++) {
+      const page = query.page ?? index+1;
+      const body: GatewayResponse<unknown[]> = await this.request<GatewayResponse<unknown[]>>(path, { ...options, storeId:store, query: { ...query, store_id:store, page, limit } });
+      const data: unknown[] = unwrapData<unknown[]>(body,200,null);
+      const meta: Record<string, unknown> = isRecord(body) && isRecord(body.meta) ? body.meta : {};
+      const total = meta.total;
+      if (!Array.isArray(data) || meta.store_id!==store || meta.page!==page || meta.per_page!==limit ||
+        typeof total!=='number' || !Number.isSafeInteger(total) || total<0 ||
+        meta.has_prev!==(page>1) || meta.total_pages!==Math.ceil(total/limit) ||
+        meta.has_next!==(page*limit<total) || data.length!==Math.max(0,Math.min(limit,total-(page-1)*limit)) ||
+        (observedTotal!==undefined && observedTotal!==total)) {
+        throw new LetbuyyApiError({status:503,code:'SETTINGS_PAGE_UNVERIFIED',message:'The complete settings view could not be verified. Reload settings.'});
+      }
+      if (query.page===undefined && total>1000) throw new LetbuyyApiError({status:409,code:'SETTINGS_LIMIT_REACHED',message:'This settings collection needs a paginated view.'});
+      observedTotal=total;
+      for (const row of data) {
+        if (!isRecord(row) || typeof row.id!=='string' || !row.id || ids.has(row.id) ||
+          (row.store_id!==undefined && row.store_id!==store) || (row.site_id!==undefined && row.site_id!==store) ||
+          (isRecord(row.shipping_zones) && row.shipping_zones.store_id!==store)) {
+          throw new LetbuyyApiError({status:503,code:'SETTINGS_SCOPE_UNVERIFIED',message:'The selected store settings could not be confirmed.'});
+        }
+        ids.add(row.id);
+        rows.push(row as T);
+      }
+      if (query.page!==undefined || !meta.has_next) return rows;
     }
-    throw new Error('Settings exceed the complete-view limit. Use the paginated settings API.');
+    throw new LetbuyyApiError({status:409,code:'SETTINGS_LIMIT_REACHED',message:'This settings collection needs a paginated view.'});
   }
 
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {
