@@ -154,3 +154,49 @@ test('opaque acknowledgements deny raw reads, updates and deletes and retained e
  assert.equal(owned.psql("SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY id),'[]')::text FROM warehouse_command_receipts t;"),before);
  const replay=await f.request('/purchase-orders',f.create(key),key);assert.equal(replay.status,201,replay.text);assert.deepEqual(replay.json?.data,positive.json?.data);
 });
+
+test('tenant SQL context and temporary-shadow attacks fail after a populated positive control',async t=>{
+ const f=await fixture(t),control=randomUUID(),made=await f.request('/purchase-orders',f.create(control),control);assert.equal(made.status,201,made.text);
+ const key=randomUUID(),command={supplier_id:null,location_id:f.site.locationId,expected_at:null,notes:null,lines:[{product_id:f.product,variant_id:null,quantity:1,unit_cost:12.25}]};
+ const invoke="SELECT public.apply_warehouse_command_v1("+quote(f.site.siteId)+"::uuid,"+quote(f.actor)+"::uuid,"+quote(key)+",'purchase_order.create',NULL,"+quote(JSON.stringify(command))+"::jsonb,'synthetic-tenant-probe');";
+ const gucs=(site:string,actor:string)=>"SELECT set_config('app.site_id',"+quote(site)+",true),set_config('app.actor_id',"+quote(actor)+",true);";
+ const before=stock(f.site.siteId);
+ for(const setup of [
+  'SET LOCAL ROLE app_tenant;',
+  'SET LOCAL ROLE app_tenant;'+gucs(randomUUID(),f.actor),
+  'SET LOCAL ROLE app_tenant;'+gucs(f.site.siteId,randomUUID()),
+ ]) assert.match(owned.psqlExpectError('BEGIN;'+setup+invoke+'ROLLBACK;'),/PRODUCT_EDIT_FORBIDDEN|WAREHOUSE_FORBIDDEN/);
+ assert.match(owned.psqlExpectError('BEGIN;SET LOCAL ROLE service_role;'+gucs(f.site.siteId,f.actor)+invoke+'ROLLBACK;'),/permission denied for function|WAREHOUSE_FORBIDDEN/);
+ assert.match(owned.psqlExpectError('BEGIN;SET LOCAL ROLE app_tenant;'+gucs(f.site.siteId,f.actor)+'CREATE TEMP TABLE inventory_levels(id uuid);'+invoke+'ROLLBACK;'),/WAREHOUSE_FORBIDDEN|permission denied/);
+ assert.deepEqual(stock(f.site.siteId),before);
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),'0');
+});
+test('product-write staff still cannot acquire owner-only warehouse mutation or replay authority',async t=>{
+ const f=await fixture(t),key=randomUUID(),positive=await f.request('/purchase-orders',f.create(key),key);assert.equal(positive.status,201,positive.text);
+ const staff=randomUUID(),email='syn-wms-'+staff+'@example.invalid';
+ owned.psql("INSERT INTO users_custom(id,email,email_verified)VALUES("+quote(staff)+","+quote(email)+",true);INSERT INTO employees(user_id,email,store_id,role,status,is_active,permissions)VALUES("+quote(staff)+","+quote(email)+","+quote(f.site.siteId)+",'editor','active',true,'{\"granted\":[\"products:write\"]}');");
+ const before=stock(f.site.siteId),fresh=randomUUID();
+ const denied=await f.requestAs(staff,f.site.siteId,'/purchase-orders',f.create(fresh),fresh);
+ assert.ok([403,404].includes(denied.status),denied.text);
+ const replay=await f.requestAs(staff,f.site.siteId,'/purchase-orders',f.create(key),key);
+ assert.ok([403,404].includes(replay.status),replay.text);
+ assert.deepEqual(stock(f.site.siteId),before);
+});
+test('an actual legacy committed PO is quarantined rather than reissued under an uncertain old key',async t=>{
+ const f=await fixture(t),key=randomUUID();
+ const lines=[{product_id:f.product,quantity:3,unit_cost:12.25}];
+ owned.psql("SELECT public.create_purchase_order_with_lines("+quote(f.site.siteId)+"::uuid,NULL,"+quote(f.site.locationId)+"::uuid,"+quote(JSON.stringify(lines))+"::jsonb,NULL,NULL,"+quote(f.actor)+"::uuid,'synthetic-legacy-witness',"+quote(key)+");");
+ const before=stock(f.site.siteId),retry=await f.request('/purchase-orders',f.create(key),key);
+ assert.equal(retry.status,409,retry.text);assert.equal(retry.json?.error.code,'WAREHOUSE_LEGACY_KEY');
+ assert.deepEqual(stock(f.site.siteId),before);
+ assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+" AND idempotency_key="+quote(key)+";"),'1');
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),'0');
+});
+test('a receive key cannot be moved to a second owned parent',async t=>{
+ const f=await fixture(t),a=randomUUID(),b=randomUUID(),one=await f.request('/purchase-orders',f.create(a),a),two=await f.request('/purchase-orders',f.create(b),b);
+ assert.equal(one.status,201,one.text);assert.equal(two.status,201,two.text);
+ const key=randomUUID(),first=await f.request('/purchase-orders/'+one.json?.data.purchase_order.id+'/receive',{idempotency_key:key,lines:[{purchase_order_line_id:one.json?.data.lines[0].id,quantity:1}]},key);
+ assert.equal(first.status,200,first.text);const before=stock(f.site.siteId);
+ const other=await f.request('/purchase-orders/'+two.json?.data.purchase_order.id+'/receive',{idempotency_key:key,lines:[{purchase_order_line_id:two.json?.data.lines[0].id,quantity:1}]},key);
+ assert.equal(other.status,409,other.text);assert.equal(other.json?.error.code,'WAREHOUSE_KEY_CONFLICT');assert.deepEqual(stock(f.site.siteId),before);
+});

@@ -25,7 +25,8 @@ export const WarehouseCommandResultSchema = z.object({
   const opposite=po?value.transfer:value.purchase_order;
   const integer=(n:unknown,min:number,max:number)=>typeof n==='number'&&Number.isSafeInteger(n)&&n>=min&&n<=max;
   const invalid=()=>ctx.addIssue({code:z.ZodIssueCode.custom,message:'The warehouse acknowledgement scope or quantities are invalid.'});
-  if(!header||opposite||header.id!==receipt.target_id||header.site_id!==receipt.site_id) invalid();
+  const states=po?['draft','ordered','partially_received','received','cancelled','closed']:['reserved','shipped','partially_received','received','cancelled'];
+  if(!header||opposite||header.id!==receipt.target_id||header.site_id!==receipt.site_id||!states.includes(String(header.status))) invalid();
   const ids=new Set<string>();
   for(const line of value.lines) {
     const ordered=po?line.quantity_ordered:line.quantity_requested;
@@ -34,7 +35,7 @@ export const WarehouseCommandResultSchema = z.object({
       (line.variant_id!==null&&line.variant_id!==undefined&&!z.string().uuid().safeParse(line.variant_id).success)||
       line.site_id!==receipt.site_id||line[po?'purchase_order_id':'transfer_id']!==receipt.target_id||
       !integer(ordered,1,999999)||!integer(line.quantity_received,0,Number(ordered))||
-      (!po&&!integer(line.quantity_shipped,0,Number(ordered)))) invalid();
+      (!po&&(!integer(line.quantity_shipped,0,Number(ordered))||Number(line.quantity_received)>Number(line.quantity_shipped)))) invalid();
     ids.add(String(line.id));
   }
 });
