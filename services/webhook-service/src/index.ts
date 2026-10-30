@@ -382,7 +382,7 @@ async function markOrderPaid(
         eventType?: string;
     }
 ): Promise<void> {
-    await confirmGatewayOrderPayment(env, {
+    const confirmation = await confirmGatewayOrderPayment(env, {
         orderId: order.id,
         provider: params.provider,
         paymentId: params.paymentId,
@@ -390,6 +390,10 @@ async function markOrderPaid(
         providerEventId: params.providerEventId,
         idempotencyKey: `payment-webhook:${params.provider}:${params.providerEventId}:paid`,
     });
+
+    // The Gateway can book a real but unfulfillable late capture and queue its
+    // refund. Its reply explicitly forbids a buyer-facing paid announcement.
+    if (asObject(asObject(confirmation).data).fulfillable === false) return;
 
     await emitPaymentDomainEvent(env, {
         provider: params.provider,
@@ -808,10 +812,25 @@ app.post("/razorpay", async (c) => {
                 });
 
                 if (order) {
+                    const providerOrderId = textValue(paymentRecord.order_id);
+                    const providerAmountMinor = paymentRecord.amount;
+                    const orderTotal = numberValue(order.total);
+                    const expectedAmountMinor = orderTotal === undefined ? NaN : Math.round(orderTotal * 100);
+                    // The signed event authenticates Razorpay's payload, not its
+                    // relationship to this checkout. A mismatched capture must
+                    // remain unreconciled instead of posting the order total.
+                    if (!paymentId || !providerOrderId || !order.payment_id
+                        || (order.payment_id !== providerOrderId && order.payment_id !== paymentId)
+                        || paymentRecord.status !== 'captured' || paymentRecord.currency !== 'INR'
+                        || !Number.isSafeInteger(providerAmountMinor) || Number(providerAmountMinor) <= 0
+                        || !Number.isSafeInteger(expectedAmountMinor) || expectedAmountMinor <= 0
+                        || providerAmountMinor !== expectedAmountMinor) {
+                        throw new Error('Captured payment facts require reconciliation');
+                    }
                     await markOrderPaid(c.env, order, {
                         provider: "razorpay",
                         paymentId: paymentId || providerEventId,
-                        providerOrderId: textValue(paymentRecord.order_id),
+                        providerOrderId,
                         providerEventId,
                         eventType,
                     });

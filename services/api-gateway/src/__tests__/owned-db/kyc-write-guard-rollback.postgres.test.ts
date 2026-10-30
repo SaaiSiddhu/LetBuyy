@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { requireOwnedDatabase } from './owned-db-support';
@@ -11,10 +10,7 @@ const privateMetadataMigration = readFileSync(new URL('../../../../../database/s
 const privateMetadataRollback = readFileSync(new URL('../../../../../database/supabase/rollback/415_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
 
 function apply(sql: string) {
-    execFileSync('docker', [
-        'exec', owned.container, 'psql', '-U', 'postgres', '-d', owned.database,
-        '-v', 'ON_ERROR_STOP=1', '-q', '-c', sql,
-    ], { encoding: 'utf8', timeout: 15_000 });
+    owned.script(sql);
 }
 
 function guardShape() {

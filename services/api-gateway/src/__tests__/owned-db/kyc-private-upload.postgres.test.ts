@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import test, { after } from 'node:test';
 import { randomUUID } from 'node:crypto';
@@ -64,10 +63,8 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.ok(!first.text.includes('private_object_key'));
     assert.ok(!first.text.includes('kyc/'));
     assert.equal(objects.size, 1);
-    const asAuthenticatedOwner = (sql: string) => execFileSync('docker', [
-        'exec', owned.container, 'psql', '-U', 'postgres', '-d', owned.database, '-v', 'ON_ERROR_STOP=1',
-        '-qAt', '-c', `SET ROLE authenticated; SET request.jwt.claim.sub = '${owner}'; ${sql}`,
-    ], { encoding: 'utf8', timeout: 15_000 }).trim();
+    const asAuthenticatedOwner = (sql: string) => owned.script(
+        `SET ROLE authenticated; SET request.jwt.claim.sub = '${owner}'; ${sql}`);
     const ownerOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
         method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
     });
