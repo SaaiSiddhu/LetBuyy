@@ -342,6 +342,22 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.equal(receipt.quote.added_tax_minor,0,'included GST is not charged a second time');
     assert.equal(Math.round(Number(receipt.total)*100),19910,'199 - 19.90 coupon + 20 delivery = 199.10');
     assert.equal(Math.round(Number(receipt.total)*100),receipt.quote.total_minor);
+    const invoiceFacts = JSON.parse(owned.psql(`SELECT json_build_object(
+        'order_supplier',o.tax_snapshot->'supplier','invoice_supplier',gi.supplier,
+        'order_tax_minor',round(o.tax*100)::bigint,'invoice_tax_minor',gi.tax_amount_minor,
+        'order_total_minor',round(o.total*100)::bigint,'invoice_total_minor',gi.total_amount_minor)
+        FROM orders o JOIN gst_invoices gi ON gi.order_id=o.id AND gi.site_id=o.site_id
+        WHERE o.id='${rows[0].order_id}' AND o.site_id='${site.siteId}';`)) as {
+        order_supplier: Record<string, unknown>; invoice_supplier: Record<string, unknown>;
+        order_tax_minor: number; invoice_tax_minor: number;
+        order_total_minor: number; invoice_total_minor: number;
+    };
+    assert.deepEqual(invoiceFacts.invoice_supplier, invoiceFacts.order_supplier,
+        'the hosted order invoice uses the supplier captured at order creation');
+    assert.equal(invoiceFacts.invoice_tax_minor, invoiceFacts.order_tax_minor,
+        'the issued invoice GST equals the hosted order GST to the paisa');
+    assert.equal(invoiceFacts.invoice_total_minor, invoiceFacts.order_total_minor,
+        'the issued invoice total equals the hosted buyer order total to the paisa');
 
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${rows[0].order_id}' AND event_type='order.paid';`), '0', 'an unpaid COD order is not announced as paid');
     assert.equal(notificationJobs.length, 0, 'an unpaid COD order does not queue a paid-order email');
