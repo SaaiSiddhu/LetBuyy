@@ -5,6 +5,7 @@ import '../../widgets/shared/merchant_store_view.dart';
 
 import '../../models/store_model.dart';
 import '../../services/shipping_tax_service.dart';
+import '../../services/api_client.dart' show ApiException;
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
@@ -144,7 +145,7 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
     );
     String? dialogError;
 
-    final result = await showDialog<ShippingZoneInput>(
+    final route = DialogRoute<ShippingZoneInput>(
       context: context,
       builder: (dialogContext) => _guard(
         StatefulBuilder(
@@ -236,6 +237,9 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
       ),
     );
 
+    final result = await Navigator.of(context, rootNavigator: true).push(route);
+    // The popped future precedes the exit transition; keep controllers alive until removal.
+    await route.completed;
     nameController.dispose();
     countriesController.dispose();
     statesController.dispose();
@@ -302,7 +306,7 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
     );
     String? dialogError;
 
-    final result = await showDialog<ShippingRateInput>(
+    final route = DialogRoute<ShippingRateInput>(
       context: context,
       builder: (dialogContext) => _guard(
         StatefulBuilder(
@@ -475,6 +479,9 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
       ),
     );
 
+    final result = await Navigator.of(context, rootNavigator: true).push(route);
+    // The popped future precedes the exit transition; keep controllers alive until removal.
+    await route.completed;
     nameController.dispose();
     priceController.dispose();
     minOrderController.dispose();
@@ -537,11 +544,22 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
     try {
       await action();
     } catch (error) {
-      if (mounted)
+      if (mounted) {
+        if (error is ApiException &&
+            [401, 403, 404].contains(error.statusCode)) {
+          setState(() {
+            _store = null;
+            _zones = [];
+            _rates = [];
+            _error =
+                'Shipping settings are unavailable for this account. Reload settings.';
+          });
+        }
         _showMessage(
           'The shipping change could not be confirmed. Reload settings before retrying.',
           isError: true,
         );
+      }
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -653,10 +671,11 @@ class _ShippingScreenState extends State<_ShippingWorkspace> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        Text(
-          '${_zones.length} zones • ${_rates.length} rates',
-          style: TextStyle(color: colors.textSecondary, fontSize: 12),
-        ),
+        if (!_isLoading && _error == null && _store != null)
+          Text(
+            '${_zones.length} zones • ${_rates.length} rates',
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          ),
       ],
     );
   }

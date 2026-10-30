@@ -5,6 +5,7 @@ import '../../widgets/shared/merchant_store_view.dart';
 
 import '../../models/store_model.dart';
 import '../../services/shipping_tax_service.dart';
+import '../../services/api_client.dart' show ApiException;
 import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
@@ -132,7 +133,8 @@ class _TaxesScreenState extends State<_TaxesWorkspace> {
       _showMessage('Tax-inclusive setting saved', isSuccess: true);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _taxInclusive = store.taxInclusive);
+      if (!_retireDeniedAccess(error))
+        setState(() => _taxInclusive = store.taxInclusive);
       _showMessage('Tax settings could not be saved.', isError: true);
     } finally {
       if (mounted) setState(() => _isBusy = false);
@@ -180,7 +182,7 @@ class _TaxesScreenState extends State<_TaxesWorkspace> {
     var isActive = rate?.isActive ?? true;
     String? dialogError;
 
-    final result = await showDialog<TaxRateInput>(
+    final route = DialogRoute<TaxRateInput>(
       context: context,
       builder: (dialogContext) => _guard(
         StatefulBuilder(
@@ -349,6 +351,9 @@ class _TaxesScreenState extends State<_TaxesWorkspace> {
       ),
     );
 
+    final result = await Navigator.of(context, rootNavigator: true).push(route);
+    // The popped future precedes the exit transition; keep controllers alive until removal.
+    await route.completed;
     nameController.dispose();
     rateController.dispose();
     countryController.dispose();
@@ -410,11 +415,25 @@ class _TaxesScreenState extends State<_TaxesWorkspace> {
       await action();
     } catch (error) {
       if (mounted) {
+        _retireDeniedAccess(error);
         _showMessage('Tax update could not be completed.', isError: true);
       }
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
+  }
+
+  bool _retireDeniedAccess(Object error) {
+    if (error is! ApiException || ![401, 403, 404].contains(error.statusCode))
+      return false;
+    setState(() {
+      _store = null;
+      _taxRates = [];
+      _taxInclusive = false;
+      _error =
+          'Tax settings are unavailable for this account. Reload settings.';
+    });
+    return true;
   }
 
   @override

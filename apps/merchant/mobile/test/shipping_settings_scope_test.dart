@@ -100,6 +100,34 @@ List<Object> visible(ShippingTaxService s, String resource) =>
     };
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'tax-inclusive editing requires a fresh owned boolean rather than a cached or missing default',
+    () async {
+      var body = <String, dynamic>{
+        'id': siteA,
+        'name': 'Current store',
+        'tax_inclusive': false,
+      };
+      final api = apiFor((r, h) {
+        expect(r.headers['X-Store-ID'], siteA);
+        reply(r, h, body);
+      }, () => 1);
+      final stores = StoreService(api: api);
+      expect((await stores.fetchAuthorizedStore(siteA)).taxInclusive, false);
+      for (final invalid in [
+        <String, dynamic>{'id': siteA},
+        <String, dynamic>{'id': siteB, 'tax_inclusive': true},
+      ]) {
+        body = invalid;
+        await expectLater(
+          stores.fetchAuthorizedStore(siteA),
+          throwsA(isA<ApiException>()),
+        );
+      }
+      expect(stores.currentStore, isNull);
+      stores.dispose();
+    },
+  );
   for (final resource in paths.keys) {
     test(
       '$resource composes 101 rows and pins both header and query to the store',
@@ -274,9 +302,9 @@ void main() {
     expect(s.rates, isEmpty);
   });
   for (final shipping in [true, false]) {
-    for (final changeActor in [true, false]) {
+    for (final change in ['actor', 'store', 'denial']) {
       testWidgets(
-        '${shipping ? 'shipping' : 'tax'} private dialog retires on ${changeActor ? 'actor' : 'store'} switch',
+        '${shipping ? 'shipping' : 'tax'} private dialog retires on $change',
         (tester) async {
           SharedPreferences.setMockInitialValues({});
           tester.view.physicalSize = const Size(390, 844);
@@ -316,24 +344,39 @@ void main() {
                     (shipping ? 'Zone name' : 'Tax name'),
           );
           await tester.enterText(field, 'Private unsaved draft');
-          if (changeActor) {
-            await stores.bindActor('actor-b');
-          } else {
-            await stores.selectStoreById(siteB);
-          }
-          await tester.pumpAndSettle();
-          expect(find.text('Private unsaved draft'), findsNothing);
-          expect(find.text('Store access changed'), findsOneWidget);
-          expect(find.text('Create'), findsNothing);
-          expect(find.text('Save'), findsNothing);
-          expect(api.mutations, 0);
-          await tester.tap(find.text('Close'));
-          await tester.pumpAndSettle();
-          if (changeActor) {
-            expect(find.text(shipping ? 'New zone' : 'New tax'), findsNothing);
-          } else {
-            expect(find.text('Private $siteB 1'), findsOneWidget);
+          if (change == 'denial') {
+            api.denyMutations = true;
+            tester.testTextInput.hide();
+            await tester.pumpAndSettle();
+            await tester.tap(find.text('Create'));
+            await tester.pumpAndSettle();
             expect(find.text('Private $siteA 1'), findsNothing);
+            expect(find.text(shipping ? 'New zone' : 'New tax'), findsNothing);
+            expect(find.byType(SwitchListTile), findsNothing);
+            expect(api.mutations, 1);
+          } else {
+            if (change == 'actor') {
+              await stores.bindActor('actor-b');
+            } else {
+              await stores.selectStoreById(siteB);
+            }
+            await tester.pumpAndSettle();
+            expect(find.text('Private unsaved draft'), findsNothing);
+            expect(find.text('Store access changed'), findsOneWidget);
+            expect(find.text('Create'), findsNothing);
+            expect(find.text('Save'), findsNothing);
+            expect(api.mutations, 0);
+            await tester.tap(find.text('Close'));
+            await tester.pumpAndSettle();
+            if (change == 'actor') {
+              expect(
+                find.text(shipping ? 'New zone' : 'New tax'),
+                findsNothing,
+              );
+            } else {
+              expect(find.text('Private $siteB 1'), findsOneWidget);
+              expect(find.text('Private $siteA 1'), findsNothing);
+            }
           }
           await tester.pumpWidget(const SizedBox.shrink());
           settings.dispose();
@@ -353,6 +396,7 @@ class _WidgetApi extends ApiClient {
         contextVersionProvider: scope,
       );
   int mutations = 0;
+  bool denyMutations = false;
   @override
   Future<PaginatedResponse<JsonMap>> requestPaginatedJson(
     String path, {
@@ -391,8 +435,15 @@ class _WidgetApi extends ApiClient {
 
   @override
   Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
-    if (options?.method != null && options!.method != HttpMethod.get)
+    if (options?.method != null && options!.method != HttpMethod.get) {
       mutations++;
+      if (denyMutations)
+        throw const ApiException(
+          message: 'Unavailable',
+          statusCode: 403,
+          code: 'FORBIDDEN',
+        );
+    }
     if (path.startsWith('/stores/'))
       return {
         'id': path.split('/').last,
