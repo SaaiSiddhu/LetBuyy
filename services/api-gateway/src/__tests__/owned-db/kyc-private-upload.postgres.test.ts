@@ -219,3 +219,71 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     const unavailable = await gateway.request('/v1/kyc/documents/upload', { method: 'POST', headers, body: form }, noBucket);
     assert.equal(unavailable.status, 503, unavailable.text);
 });
+
+test('live-mode provider outage stays pending after clean private evidence and exposes only redacted status', async () => {
+    const tenant = newSyntheticTenant('kyc-live-outage');
+    seedSyntheticTenant(owned.psql, tenant);
+    const owner = randomUUID(), email = `kyc-live-${owner}@example.invalid`;
+    owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name) VALUES
+      ('${owner}','${email}',true,'Synthetic live KYC owner');
+      UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';`);
+    const objects = new Map<string, Uint8Array>();
+    const liveGateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
+        KYC_PROVIDER_MODE: 'live', KYC_PROVIDER: 'signzy', KYC_PROVIDER_API_KEY: 'synthetic-unapproved-key',
+        KYC_PRIVATE_BUCKET: {
+            put: async (key: string, bytes: Uint8Array) => { objects.set(key, bytes); },
+            delete: async (key: string) => { objects.delete(key); },
+        },
+    }));
+    try {
+        for (const documentType of ['business_pan', 'bank_proof', 'address_proof']) {
+            const headers = await signedIdentityHeaders(owner, email, tenant.siteId);
+            delete headers['Content-Type'];
+            const form = new FormData();
+            form.set('store_id', tenant.siteId);
+            form.set('document_type', documentType);
+            form.set('document_number_last4', '1234');
+            form.set('file', new File([new TextEncoder().encode('%PDF-1.7\nsynthetic private evidence')],
+                `${documentType}.pdf`, { type: 'application/pdf' }));
+            const uploaded = await liveGateway.request('/v1/kyc/documents/upload', {
+                method: 'POST', headers: { ...headers, 'X-Idempotency-Key': randomUUID() }, body: form,
+            });
+            assert.equal(uploaded.status, 201, uploaded.text);
+            assert.equal(uploaded.json?.data.document.status, 'submitted');
+            assert.equal(uploaded.json?.data.document.evidence_scan_status, 'pending');
+        }
+        assert.equal(objects.size, 3);
+        // The fixture stands in for a trusted scanner. Clean evidence alone
+        // still cannot make an unavailable provider approve a merchant.
+        owned.psql(`UPDATE merchant_kyc_documents SET metadata=jsonb_set(metadata,'{malware_scan_status}','"clean"'::jsonb)
+            WHERE site_id='${tenant.siteId}';`);
+        const panId = owned.psql(`SELECT id FROM merchant_kyc_documents
+            WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`);
+        const refreshed = await liveGateway.request(`/v1/kyc/documents/${panId}/refresh?store_id=${tenant.siteId}`, {
+            method: 'POST', headers: { ...await signedIdentityHeaders(owner, email, tenant.siteId),
+                'X-Idempotency-Key': randomUUID() },
+        });
+        assert.equal(refreshed.status, 200, refreshed.text);
+        assert.equal(refreshed.json?.data.document.status, 'submitted');
+        assert.equal(refreshed.json?.data.document.provider_unavailable, true);
+        assert.equal(refreshed.json?.data.document.verified_at, null);
+        assert.equal(refreshed.json?.data.overview.provider_mode, 'live');
+        assert.equal(refreshed.json?.data.overview.overall_status, 'in_progress');
+        assert.match(refreshed.json?.data.overview.next_action || '', /provider is unavailable/i);
+        const stored = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents WHERE id='${panId}';`));
+        assert.equal(stored.provider_verified, false);
+        assert.equal(stored.provider_unavailable, true);
+        assert.equal(stored.malware_scan_status, 'clean');
+        assert.equal(objects.has(stored.private_object_key), true);
+        const readback = await liveGateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+            method: 'GET', headers: await signedIdentityHeaders(owner, email, tenant.siteId),
+        });
+        assert.equal(readback.status, 200, readback.text);
+        assert.equal(readback.json?.data.overall_status, 'in_progress');
+        assert.equal(readback.json?.data.documents.find((document: { document_type: string }) =>
+            document.document_type === 'business_pan')?.provider_unavailable, true);
+        assert.doesNotMatch(readback.text, /private_object_key|sha256|kyc\/[0-9a-f-]{36}\//);
+    } finally {
+        await liveGateway.settle();
+    }
+});
