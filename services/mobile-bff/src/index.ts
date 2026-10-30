@@ -24,6 +24,12 @@ const SESSION_COOKIE_NAME = 'lb_session';
 const PLACEHOLDER_PREFIX = 'SKIP_NEEDS_HUMAN_';
 const MOBILE_TURNSTILE_PROOF_PREFIX = 'lb-mobile-turnstile-v1';
 const MOBILE_TURNSTILE_PROOF_TTL_SECONDS = 2 * 60;
+const OPERATIONS_READ_PATHS = new Set([
+  '/v1/commerce-analytics/supplier-metrics',
+  '/v1/commerce-analytics/warehouse-metrics',
+  '/v1/commerce-analytics/transfer-metrics',
+  '/v1/commerce-analytics/operations-summary',
+]);
 const ALLOWED_PREFIXES = [
   '/v1/auth',
   '/v1/mobile',
@@ -223,11 +229,12 @@ export function extractMobileSessionToken(request: Request): string | null {
   return parseCookie(request.headers.get('Cookie'), SESSION_COOKIE_NAME);
 }
 
-function isAllowedPath(pathname: string): boolean {
+function isAllowedPath(pathname: string, method: string): boolean {
   return pathname === '/v1/health'
     || pathname === '/health'
     || pathname === '/v1/loyalty/program'
     || pathname === '/v1/security/step-up/challenges'
+    || (method === 'GET' && OPERATIONS_READ_PATHS.has(pathname))
     || ALLOWED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
@@ -433,7 +440,7 @@ async function proxyToGateway(request: Request, env: Env): Promise<Response> {
   const sourceUrl = new URL(request.url);
   const pathname = sourceUrl.pathname === '/health' ? '/v1/health' : sourceUrl.pathname;
 
-  if (!isAllowedPath(pathname)) {
+  if (!isAllowedPath(pathname, request.method)) {
     return jsonResponse({
       error: {
         code: 'MOBILE_BFF_ROUTE_NOT_ALLOWED',
