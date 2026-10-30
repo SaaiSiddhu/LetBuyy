@@ -440,6 +440,51 @@ test('two Merchant settings tabs report stale saves and preserve a cleared conta
     await expect(staleTab.getByLabel('Contact email', { exact: true })).toHaveValue('');
 });
 
+test('General and Business expose keyboard labels and recover an optional status read in light and dark themes', { timeout: 180_000 }, async t => {
+    const f = await fixture('settings-a11y'); t.after(() => f.context.close());
+    await signIn(f.page, f.email);
+    await f.page.evaluate(() => localStorage.setItem('letbuyy-theme', 'light'));
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/general`);
+    await expect.poll(() => f.page.locator('html').getAttribute('data-theme')).toBe('light');
+    const storeName = f.page.getByRole('textbox', { name: 'Store name', exact: true });
+    await expect(storeName).toBeVisible();
+    const generalTree = await f.page.locator('form.settings-general-stack').ariaSnapshot();
+    assert.match(generalTree, /textbox "Store name"/);
+    assert.match(generalTree, /textbox "Tagline"/);
+    await storeName.focus();
+    await f.page.keyboard.press('Tab');
+    await expect(f.page.getByRole('textbox', { name: 'Tagline', exact: true })).toBeFocused();
+
+    let failOnce = true;
+    await f.page.route(`**/api/stores/${f.tenant.subdomain}/kyc`, async route => {
+        if (failOnce) {
+            failOnce = false;
+            await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { message: 'Synthetic status outage' } }) });
+            return;
+        }
+        await route.continue();
+    });
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    const warning = f.page.getByRole('status').filter({ hasText: 'Some business information is unavailable' });
+    await expect(warning).toBeVisible();
+    const retry = warning.getByRole('button', { name: 'Retry status' });
+    await retry.focus();
+    await f.page.keyboard.press('Enter');
+    await expect(f.page.getByRole('status').filter({ hasText: 'Sandbox verification' })).toBeVisible();
+    await expect(warning).toHaveCount(0);
+
+    await f.page.evaluate(() => localStorage.setItem('letbuyy-theme', 'dark'));
+    await f.page.reload();
+    await expect.poll(() => f.page.locator('html').getAttribute('data-theme')).toBe('dark');
+    const pan = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Business PAN' }).first();
+    const businessTree = await pan.ariaSnapshot();
+    assert.match(businessTree, /textbox "Last 4 of PAN"/);
+    assert.match(businessTree, /button "Upload document"/);
+    await pan.getByRole('textbox', { name: 'Last 4 of PAN' }).focus();
+    await f.page.keyboard.press('Tab');
+    await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
+});
+
 test('mobile-width dark Merchant Business shows private KYC scan rejection and resubmission', { timeout: 180_000 }, async t => {
     const f = await fixture('business-mobile'); t.after(() => f.context.close());
     await f.page.setViewportSize({ width: 390, height: 844 });
