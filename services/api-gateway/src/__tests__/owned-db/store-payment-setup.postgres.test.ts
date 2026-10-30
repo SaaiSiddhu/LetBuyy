@@ -22,7 +22,8 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         ('${actor}','${email}',true,'Synthetic payment owner'),
         ('${successor}','pay-${successor}@example.invalid',true,'Synthetic successor');
         UPDATE sites SET custom_user_id='${actor}',online_payment_enabled=false,cod_enabled=true WHERE id='${tenant.siteId}';`);
-    gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { PAYMENT_CONFIG_ENCRYPTION_KEY: randomUUID() }));
+    gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { PAYMENT_CONFIG_ENCRYPTION_KEY: randomUUID(),
+        MERCHANT_RAZORPAY_WEBHOOK_ORIGIN: 'https://webhooks.staging.letbuyy.com' }));
     const path = `/v1/stores/${tenant.siteId}/payment-config`;
     const request = async (method: string, body?: Record<string, unknown>, key = randomUUID(), selected = tenant.siteId) =>
         gateway.request(path, { method, headers: { ...await signedIdentityHeaders(actor, email, selected), 'X-Idempotency-Key': key },
@@ -48,6 +49,7 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
     await t.test('positive read: known owner sees unavailable configuration without fabricated environment or approval', async () => {
         const response = await request('GET'); assert.equal(response.status, 200, response.text);
         assert.equal(response.json?.data.provider_mode, null);
+        assert.equal(response.json?.data.webhook_callback_url, null);
         assert.equal(response.json?.data.setup.can_enable_online, false);
         assert.equal(response.json?.data.setup.bank_verification, 'not_confirmed');
         assert.equal(response.json?.data.cod_enabled, true);
@@ -67,6 +69,11 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         assert.equal(response.json?.data.setup.can_enable_online, true); assert.equal(response.json?.data.setup.status, 'disabled');
         assert.equal(response.json?.data.setup.business_verification, 'not_confirmed');
         assert.equal(response.json?.data.payment_settings.razorpay.webhook_secret_configured, true);
+        const credentialId = owned.psql(`SELECT payment_settings->'razorpay'->>'credential_id' FROM sites WHERE id='${tenant.siteId}';`);
+        const expectedWebhookUrl = `https://webhooks.staging.letbuyy.com/razorpay/merchant/${tenant.siteId}/${credentialId}`;
+        assert.equal(response.json?.data.webhook_callback_url, expectedWebhookUrl);
+        const readback = await request('GET'); assert.equal(readback.status, 200, readback.text);
+        assert.equal(readback.json?.data.webhook_callback_url, expectedWebhookUrl);
         assert.ok(!response.text.includes(credentials.key_secret)); assert.ok(!response.text.includes(credentials.webhook_secret));
         assert.ok(!response.text.includes('key_secret_ciphertext'));
         const stored = owned.psql(`SELECT c.encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials c JOIN sites s ON s.id=c.site_id AND s.payment_settings->'razorpay'->>'credential_id'=c.id::text WHERE s.id='${tenant.siteId}';`);
