@@ -10,6 +10,7 @@ export type PaymentSettings = {
         credential_id?: string;
         key_id?: string;
         key_secret_ciphertext?: string;
+        webhook_secret_ciphertext?: string;
         test_mode?: boolean;
         verified?: boolean;
         connected_at?: string;
@@ -40,13 +41,13 @@ async function importPaymentEncryptionKey(secret: string): Promise<CryptoKey> {
 
 export type PaymentSecretContext = { siteId: string; keyId: string; environment: 'sandbox' | 'live'; credentialId?: string };
 
-function paymentSecretContext(context: PaymentSecretContext, keyVersion: string): Uint8Array {
+function paymentSecretContext(context: PaymentSecretContext, keyVersion: string, purpose: 'api' | 'webhook' = 'api'): Uint8Array {
     if (!/^[0-9a-f-]{36}$/i.test(context.siteId) || !/^rzp_(test|live)_[A-Za-z0-9]+$/.test(context.keyId)
         || context.keyId.startsWith('rzp_test_') !== (context.environment === 'sandbox')) {
         throw new Error('Invalid payment credential context');
     }
     if (context.credentialId && !/^[0-9a-f-]{36}$/i.test(context.credentialId)) throw new Error('Invalid credential version');
-    const fields = ['letbuyy:store-payment-secret', context.credentialId ? 3 : 2, keyVersion,
+    const fields = [purpose === 'webhook' ? 'letbuyy:store-payment-webhook-secret' : 'letbuyy:store-payment-secret', context.credentialId ? 3 : 2, keyVersion,
         context.siteId.toLowerCase(), 'razorpay', 'ownAccount', context.keyId, context.environment];
     if (context.credentialId) fields.push(context.credentialId.toLowerCase());
     return new TextEncoder().encode(JSON.stringify(fields));
@@ -68,6 +69,22 @@ export async function encryptPaymentSecret(secret: string, encryptionKey: string
     return `${prefix}:${base64EncodeBytes(iv)}:${base64EncodeBytes(new Uint8Array(ciphertext))}`;
 }
 
+/** The Razorpay dashboard webhook secret is separate from its API secret. Keep
+ * their authenticated encryption purposes disjoint even under one keyring. */
+export async function encryptPaymentWebhookSecret(secret: string, encryptionKey: string, context: PaymentSecretContext): Promise<string> {
+    if (!context.credentialId || secret.length < 16 || secret.length > 256 || /[\s\u0000-\u001f]/.test(secret)) {
+        throw new Error('Invalid payment webhook secret');
+    }
+    const selected = (await paymentEncryptionKeyring(encryptionKey)).active;
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await importPaymentEncryptionKey(selected.secret);
+    const ciphertext = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv, additionalData: paymentSecretContext(context, selected.version, 'webhook') },
+        key, new TextEncoder().encode(secret)
+    );
+    return `v3:${selected.version}:${context.credentialId.toLowerCase()}:${base64EncodeBytes(iv)}:${base64EncodeBytes(new Uint8Array(ciphertext))}`;
+}
+
 export async function verifyRazorpayCredentials(keyId: string, keySecret: string): Promise<boolean> {
     return verifyRazorpayCredentialsWithAdapter({ keyId, keySecret });
 }
@@ -86,9 +103,37 @@ export function sanitizePaymentSettings(settings: PaymentSettings | null | undef
                 connected_at: razorpay.connected_at || null,
                 updated_at: razorpay.updated_at || null,
                 secret_configured: Boolean(razorpay.key_secret_ciphertext),
+                webhook_secret_configured: Boolean(razorpay.webhook_secret_ciphertext),
             }
             : null,
     };
+}
+
+/** Only an exact, tenant- and credential-version-bound webhook secret can be read.
+ * Legacy unbound ciphertext is intentionally unsupported for this purpose. */
+export async function readStoreRazorpayWebhookSecret(settings: PaymentSettings | null | undefined,
+    encryptionKey: string | undefined, siteId: string): Promise<string | null> {
+    const configured = settings?.razorpay;
+    const cipher = configured?.webhook_secret_ciphertext;
+    if (settings?.mode !== 'ownAccount' || !configured?.verified || configured.test_mode !== true
+        || !configured.key_id?.startsWith('rzp_test_') || !configured.credential_id || !cipher
+        || !encryptionKey || encryptionKey.length < 16 || cipher.length > 4096) return null;
+    try {
+        const parts = cipher.split(':');
+        if (parts.length !== 5 || parts[0] !== 'v3' || parts[2] !== configured.credential_id.toLowerCase()) return null;
+        const keyring = await paymentEncryptionKeyring(encryptionKey);
+        const selected = keyring.byVersion.get(parts[1]);
+        if (!selected) return null;
+        const decode = (value: string) => Uint8Array.from(atob(value), character => character.charCodeAt(0));
+        const iv = decode(parts[3]);
+        if (iv.length !== 12) return null;
+        const key = await importPaymentEncryptionKey(selected.secret);
+        const bytes = await crypto.subtle.decrypt({ name: 'AES-GCM', iv,
+            additionalData: paymentSecretContext({ siteId, keyId: configured.key_id,
+                environment: 'sandbox', credentialId: configured.credential_id }, parts[1], 'webhook') }, key, decode(parts[4]));
+        const secret = new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(bytes);
+        return secret.length >= 16 && secret.length <= 256 && !/[\s\u0000-\u001f]/.test(secret) ? secret : null;
+    } catch { return null; }
 }
 
 export function paymentConfigProviderMode(input: {

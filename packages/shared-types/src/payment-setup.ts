@@ -23,6 +23,7 @@ export const StorePaymentSetupSchema = z.object({
 export const SaveStorePaymentConfigSchema = z.object({
   key_id: z.string().min(12).max(128).regex(/^rzp_(test|live)_[A-Za-z0-9]+$/),
   key_secret: z.string().min(16).max(256).regex(/^[^\s\u0000-\u001f]+$/),
+  webhook_secret: z.string().min(16).max(256).regex(/^[^\s\u0000-\u001f]+$/).optional(),
   test_mode: z.boolean().default(true),
   expected_revision: z.string().datetime({ offset: true }).optional(),
 }).strict().superRefine((value, context) => {

@@ -37,13 +37,14 @@ export default function PaymentsSettingsPage() {
     const [saving, setSaving] = useState(false)
     const [keyId, setKeyId] = useState('')
     const [keySecret, setKeySecret] = useState('')
-    const hasUnsavedChanges = useMemo(() => Boolean(keyId || keySecret), [keyId, keySecret])
+    const [webhookSecret, setWebhookSecret] = useState('')
+    const hasUnsavedChanges = useMemo(() => Boolean(keyId || keySecret || webhookSecret), [keyId, keySecret, webhookSecret])
 
     useLayoutEffect(() => {
         const scope = { store, active: true, busy: false }
         scopeRef.current = scope
         pendingRef.current = null
-        setKeyId(''); setKeySecret(''); setSaving(false); setFormError(null)
+        setKeyId(''); setKeySecret(''); setWebhookSecret(''); setSaving(false); setFormError(null)
         return () => { scope.active = false }
     }, [store])
 
@@ -95,16 +96,17 @@ export default function PaymentsSettingsPage() {
     const handleSave = useCallback(async () => {
         if (!keyId.trim() || !keySecret.trim()) { setFormError('Enter both your Razorpay test key ID and key secret.'); return }
         const scope = scopeRef.current
-        const saved = await mutate('POST', { key_id: keyId.trim(), key_secret: keySecret.trim(), test_mode: true,
+        const saved = await mutate('POST', { key_id: keyId.trim(), key_secret: keySecret.trim(),
+            ...(webhookSecret.trim() ? { webhook_secret: webhookSecret.trim() } : {}), test_mode: true,
             ...(config?.revision ? { expected_revision: config.revision } : {}) })
-        if (saved && scope.active && scopeRef.current === scope) { setKeyId(''); setKeySecret('') }
-    }, [config?.revision, keyId, keySecret, mutate])
+        if (saved && scope.active && scopeRef.current === scope) { setKeyId(''); setKeySecret(''); setWebhookSecret('') }
+    }, [config?.revision, keyId, keySecret, webhookSecret, mutate])
 
     const handleToggle = useCallback((field: 'online_payment_enabled' | 'cod_enabled', value: boolean) => {
         void mutate('PATCH', { [field]: value, ...(config?.revision ? { expected_revision: config.revision } : {}) })
     }, [config?.revision, mutate])
 
-    const discard = () => { if (saving) return; setKeyId(''); setKeySecret(''); setFormError(null); pendingRef.current = null }
+    const discard = () => { if (saving) return; setKeyId(''); setKeySecret(''); setWebhookSecret(''); setFormError(null); pendingRef.current = null }
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); void handleSave() }
     const current = loadedStore === store ? config : null
     const controlsUnavailable = saving || loading || Boolean(loadError) || !current?.schema_ready
@@ -138,6 +140,9 @@ export default function PaymentsSettingsPage() {
                             <Input label="Razorpay test key ID" value={keyId} onChange={event => setKeyId(event.target.value)} disabled={controlsUnavailable} placeholder="rzp_test_..." autoComplete="off" />
                             <Input label="Razorpay test key secret" value={keySecret} onChange={event => setKeySecret(event.target.value)} disabled={controlsUnavailable} type="password" autoComplete="new-password" helperText="Stored securely and never shown after saving." leftIcon={<ShieldCheck aria-hidden="true" className="letbuyy-icon" />} />
                         </div>
+                        <Input label="Razorpay test webhook secret" value={webhookSecret} onChange={event => setWebhookSecret(event.target.value)}
+                            disabled={controlsUnavailable} type="password" autoComplete="new-password"
+                            helperText="Use the separate secret you set for this store's Razorpay test webhook. It is stored privately and never shown again." />
                         <Input label="Import Razorpay test-key CSV" type="file" accept=".csv,text/csv" disabled={controlsUnavailable} onChange={async event => {
                             const input = event.currentTarget; const scope = scopeRef.current; const file = input.files?.[0]
                             if (!file) return

@@ -2180,6 +2180,7 @@ export const StorePaymentSettingsSchema = z.object({
     connected_at: z.string().datetime({ offset: true }).optional().nullable(),
     updated_at: z.string().datetime({ offset: true }).optional().nullable(),
     secret_configured: z.boolean().default(false),
+    webhook_secret_configured: z.boolean().default(false),
   }).nullable().default(null),
 }).passthrough();
 

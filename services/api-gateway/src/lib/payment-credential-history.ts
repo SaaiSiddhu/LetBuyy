@@ -29,6 +29,7 @@ export async function hydratePaymentCredential(db: SupabaseClient, row: StorePay
     const settings: PaymentSettings = {mode:'ownAccount',gateways:['razorpay'],razorpay:{
         credential_id:data.id,key_id:data.provider_key_id,
         key_secret_ciphertext:typeof encrypted.key_secret_ciphertext === 'string' ? encrypted.key_secret_ciphertext : undefined,
+        webhook_secret_ciphertext:typeof encrypted.webhook_secret_ciphertext === 'string' ? encrypted.webhook_secret_ciphertext : undefined,
         test_mode:true,verified:true,connected_at:data.created_at,updated_at:data.created_at,
     }};
     return {...row,payment_settings:settings};

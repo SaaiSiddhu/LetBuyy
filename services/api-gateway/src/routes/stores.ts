@@ -16,6 +16,7 @@ import { healthPillar, type StoreHealthPillar } from '../lib/store-health';
 import {
     defaultPaymentConfig,
     encryptPaymentSecret,
+    encryptPaymentWebhookSecret,
     isMissingSitesPaymentColumnError,
     projectStorePaymentConfig,
     verifyRazorpayCredentials,
@@ -410,6 +411,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     const body = c.get('validatedBody') as {
         key_id: string;
         key_secret: string;
+        webhook_secret?: string;
         test_mode: boolean;
         expected_revision?: string;
     };
@@ -472,10 +474,15 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     }
     const credentialId = crypto.randomUUID();
     let keySecretCiphertext: string;
+    let webhookSecretCiphertext: string | undefined;
     try {
         keySecretCiphertext = await encryptPaymentSecret(body.key_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
             siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
         });
+        webhookSecretCiphertext = body.webhook_secret
+            ? await encryptPaymentWebhookSecret(body.webhook_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
+                siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
+            }) : undefined;
     } catch {
         throw new AppError('Payment credential encryption is temporarily unavailable. Your saved connection is unchanged.',503,'PAYMENT_CONFIG_UNAVAILABLE');
     }
@@ -491,11 +498,13 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     const now = new Date().toISOString();
     const paymentSettings: PaymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: {
         credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
+        ...(webhookSecretCiphertext ? { webhook_secret_ciphertext: webhookSecretCiphertext } : {}),
         test_mode: true, verified: true, connected_at: now, updated_at: now,
     } };
     return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: store,
         proposed: { ...store, payment_settings: paymentSettings, online_payment_enabled: false },
-        operation: 'save', payload: { credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext },
+        operation: 'save', payload: { credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
+            ...(webhookSecretCiphertext ? { webhook_secret_ciphertext: webhookSecretCiphertext } : {}) },
         credentialsUsable: true,
     }));
 });
