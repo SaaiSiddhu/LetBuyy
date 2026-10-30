@@ -514,7 +514,16 @@ export function createRazorpayPaymentProvider(
       const refund = asRecord(asRecord(asRecord(payload.payload).refund).entity);
       const order = asRecord(asRecord(asRecord(payload.payload).order).entity);
       const eventType = textValue(payload.event) || 'unknown';
-      const eventId = textValue(payload.id) || `${eventType}:${textValue(refund.id) || textValue(payment.id) || textValue(order.id) || input.receivedAt}`;
+      // Razorpay's delivery ID is the retry identity. Older/fixture events may
+      // omit it; keep that fallback stable across retries and distinct across
+      // event types. Receipt time is not an event identity.
+      const deliveryId = headerValue(input.headers, 'x-razorpay-event-id');
+      const signedBodyDigest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input.rawBody));
+      const digestHex = Array.from(new Uint8Array(signedBodyDigest))
+        .map((byte) => byte.toString(16).padStart(2, '0')).join('');
+      const eventId = (deliveryId && /^[A-Za-z0-9_-]{1,128}$/.test(deliveryId) ? deliveryId : undefined)
+        || textValue(payload.id)
+        || `${eventType}:${textValue(refund.id) || textValue(payment.id) || textValue(order.id) || digestHex}`;
 
       return {
         provider: 'razorpay',

@@ -1,6 +1,26 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund } from './index';
+import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund, hmacSha256Hex } from './index';
+
+test('Razorpay webhook receipt uses delivery identity and a stable signed-body fallback', async () => {
+  const secret = 'synthetic-webhook-secret';
+  const provider = createRazorpayPaymentProvider({ keyId: 'rzp_test_fixture', keySecret: 'synthetic-secret' });
+  const verify = async (eventType: string, receivedAt: string, eventId?: string) => {
+    const rawBody = JSON.stringify({ event: eventType, payload: { payment: { entity: { id: 'pay_fixture' } } } });
+    return provider.webhookVerify({ provider: 'razorpay', rawBody,
+      headers: { 'x-razorpay-signature': await hmacSha256Hex(secret, rawBody),
+        ...(eventId ? { 'x-razorpay-event-id': eventId } : {}) },
+      secret, receivedAt });
+  };
+  const delivered = await verify('payment.captured', '2026-10-30T00:00:00.000Z', 'evt_fixture_1');
+  assert.equal(delivered.verified, true);
+  assert.equal(delivered.event?.id, 'evt_fixture_1');
+  const retry = await verify('payment.captured', '2026-10-31T00:00:00.000Z');
+  const laterRetry = await verify('payment.captured', '2026-11-01T00:00:00.000Z');
+  assert.equal(retry.event?.id, laterRetry.event?.id);
+  const failed = await verify('payment.failed', '2026-10-31T00:00:00.000Z');
+  assert.notEqual(retry.event?.id, failed.event?.id);
+});
 
 test('refund lookup uses the given historical account, encodes the reference and preserves provider facts',async()=>{
  const result=await fetchRazorpayRefund({keyId:'synthetic-key-id',keySecret:'synthetic-key-secret'},'rfnd_a/b',{
