@@ -1,14 +1,14 @@
 {
   "date": "2026-10-30",
-  "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857",
+  "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
     "analysis": "pass",
-    "tests": 502,
-    "pass": 502,
+    "tests": 532,
+    "pass": 532,
     "fail": 0,
-    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
+    "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -28,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857"
+    "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd"
   },
   "owned_database_runs": [
     {
@@ -388,6 +388,40 @@
           "volumes": []
         }
       }
+    },
+    {
+      "run_id": "6682bde0a1ca",
+      "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-inventory-records-read.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-operations-detail.postgres.test.ts",
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "scope": "Actual SDK \u2192 Gateway/auth \u2192 owned PostgREST/Postgres; reservation and receipt reads plus existing large-population operations, fault and rollback tests. Synthetic data; no hosted/native mutation acceptance."
     }
   ],
   "ios_simulator_build": {
@@ -433,12 +467,12 @@
       "release signing"
     ],
     "captcha": "User authorized completion; app was already authenticated at next observation; no separate challenge click was issued or proven.",
-    "current_emulator_state": "Task-owned AVD running with 4GB RAM/auto GPU; retained authorized login and latest APK hash verified. Native read-only history guard and retry observed; no business writes. Earlier System UI ANRs remain a limitation; no stability certification."
+    "current_emulator_state": "Exact df1901537 debug APK, retained authorized login, Reservations unavailable-contract guard. Owned emulator-5580 remains running for continuing read-only work; logout/stop this exact AVD before discarding it."
   },
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
+  "previous_source_commit": "1e5740f223d1098fd727102b9c647b367dca7857",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -461,11 +495,12 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
-    "bytes": 148869275,
-    "sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
+    "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+    "bytes": 148891962,
+    "sha256": "81e5cccaa3fdb332088fe2441cd1c0a9ec09b4eecda7a9dd70bbde5302b0773e",
     "kind": "android-debug-apk",
     "configuration": "dart-defines/production.json",
+    "serial": "emulator-5580",
     "packaged_native_abis": [
       "arm64-v8a",
       "armeabi-v7a",
@@ -474,13 +509,29 @@
     "flutter_engine_abis": [
       "arm64-v8a"
     ],
+    "installed_sha256": "81e5cccaa3fdb332088fe2441cd1c0a9ec09b4eecda7a9dd70bbde5302b0773e",
     "status": "installed_hash_verified",
-    "serial": "emulator-5580",
-    "installed_sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
-    "native_journey_status": "After owned AVD recovery, retained login/dashboard and Products \u2192 Inventory \u2192 Stock history were observed. Initial and Retry reads showed the honest history scope/count-contract unavailable guard; successful hosted history data remains unaccepted.",
-    "safe_guard_image": {
-      "path": "android-stock-history-guard-753734.png",
-      "sha256": "51869dd698e1e583e0f395096deb97a595c4719fde2cab372218c3b637e1d383"
+    "native_journey_status": "Products \u2192 Inventory \u2192 Reservations and Receipts, initial and actual Retry returned unavailable-contract guard; no fabricated zero. Does not prove compatible hosted data.",
+    "safe_guard_images": [
+      "android-reservations-guard-df190153.png",
+      "android-receipts-guard-df190153.png"
+    ],
+    "observations": {
+      "receipts": {
+        "screen": "Receipts",
+        "retry_unavailable_guard_observed": true,
+        "false_zero_visible": false,
+        "seconds": 4.4,
+        "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+        "intentional_business_mutations": false
+      },
+      "reservations": {
+        "screen": "Reservations",
+        "retry_unavailable_guard_observed": true,
+        "false_zero_visible": false,
+        "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+        "intentional_business_mutations": false
+      }
     }
   },
   "production_business_mutations_performed": false,
@@ -524,18 +575,18 @@
   "shared_dart_models_tests": {
     "pass": 12,
     "fail": 0,
-    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
+    "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd"
   },
   "inventory_scope_journal_tests": {
-    "pass": 29,
+    "pass": 49,
     "fail": 0,
     "included_in_flutter_total": true
   },
   "inventory_workspace_tests": {
-    "pass": 14,
+    "pass": 24,
     "fail": 0,
     "included_in_flutter_total": true,
-    "environment": "Flutter widget renderer with controlled synthetic transport"
+    "environment": "rendered Flutter tests, including actual named routes, phone layout, private workspace retirement and Previous recovery"
   },
   "web_inventory_tests": {
     "typecheck": "pass",
@@ -544,7 +595,7 @@
     "fail": 0,
     "source_commit": "fff025100c2ced7bcbc2fa0c18b99f0cfc7e800a"
   },
-  "inventory_continuation": "History native/API/web checkpoints locally/database/governance qualified; current hosted native unavailable-contract guard and Retry observed. Next slice: native reservation and receipt readers, then operational analytics and durable warehouse lifecycle acceptance. Full 122 parity remains in progress.",
+  "inventory_continuation": "Reservation/receipt native/API/SDK/web read checkpoint qualified locally, with populated owned DB and governance proof. Next: operational analytics, durable warehouse command recovery, compatible hosted/native readback and mutation acceptance. Full 122 parity remains in progress.",
   "previous_governance": {
     "counts": {
       "PASS": 114,
@@ -555,7 +606,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "753734ed581da332bfb1b66def881fa6758c762a"
+    "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857"
   },
   "shared_dart_api_suite": {
     "pass": 97,
@@ -624,6 +675,29 @@
       "serial": "emulator-5580",
       "installed_sha256": "e7033b7bf753b089a5c48c54c58ca634ef7a470b169781c623ff9699f2a08938",
       "observed": "Products \u2192 Inventory loaded a real hosted stock row and shown-page metrics; Android System UI ANR limits usability evidence. No business mutation."
+    },
+    {
+      "source_commit": "753734ed581da332bfb1b66def881fa6758c762a",
+      "bytes": 148869275,
+      "sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "status": "installed_hash_verified",
+      "serial": "emulator-5580",
+      "installed_sha256": "00be028035c9888a8b8c75babafa9f7d83e4ae086bcd075ab083a95a0455c5a0",
+      "native_journey_status": "After owned AVD recovery, retained login/dashboard and Products \u2192 Inventory \u2192 Stock history were observed. Initial and Retry reads showed the honest history scope/count-contract unavailable guard; successful hosted history data remains unaccepted.",
+      "safe_guard_image": {
+        "path": "android-stock-history-guard-753734.png",
+        "sha256": "51869dd698e1e583e0f395096deb97a595c4719fde2cab372218c3b637e1d383"
+      }
     }
   ],
   "previous_android_debug_build": {
@@ -647,8 +721,6 @@
     "api_origin": "https://bff.letbuyy.com/v1",
     "identity_origin": "https://accounts.letbuyy.com"
   },
-  "native_source_unchanged_from": "753734ed581da332bfb1b66def881fa6758c762a",
-  "native_source_unchanged_verification": "git diff 753734ed5..1e5740f22 -- apps/merchant/mobile packages/dart is empty",
   "web_history_follow_up": {
     "source_commit": "1e5740f223d1098fd727102b9c647b367dca7857",
     "before": {
@@ -667,5 +739,43 @@
     "web_typecheck": "pass",
     "gateway_typecheck": "pass",
     "governance": "pass: 114, zero fail/blocked/skip; one report-only not-applicable"
+  },
+  "inventory_records_checkpoint": {
+    "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+    "report": "INVENTORY_RECORDS_PARITY.md",
+    "new_service_model_tests": 20,
+    "new_rendered_navigation_tests": 10,
+    "web_read_lifecycle_sdk_error_recovery_tests": {
+      "pass": 79,
+      "fail": 0
+    },
+    "gateway_typecheck": "pass",
+    "typescript_client_typecheck": "pass",
+    "web_typecheck": "pass",
+    "before_run": "1b7a87428fa0: 1 pass, 5 fail; populated owner-denial control passes",
+    "first_after": "28857a624a8e: new reads 6/6; operations 4/5 until exact receipt 503 assertion was corrected",
+    "intermediate_run": "c6e444923536: 11/11",
+    "final_run": "6682bde0a1ca",
+    "initial_flutter_regression": "531 pass, 1 fail: Purchase orders shortcut moved beyond the visible horizontal row; assertion now scrolls to it, final 532/532",
+    "governance": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "ok": true,
+      "exitCode": 0,
+      "source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd"
+    },
+    "permission_scope": "existing owner-only reservation/receipt readers preserved; products:read staff remains denied",
+    "deployment_order": "Gateway compatible contract before clients requiring store/count acknowledgement",
+    "native_hosted_acceptance": "Exact debug APK installed/hash verified; initial and Retry unavailable-contract guards observed for reservations and receipts. Hosted data acceptance remains open.",
+    "receiving_command_acceptance": "open"
+  },
+  "history_native_unchanged_checkpoint": {
+    "native_source_unchanged_from": "753734ed581da332bfb1b66def881fa6758c762a",
+    "native_source_unchanged_verification": "git diff 753734ed5..1e5740f22 -- apps/merchant/mobile packages/dart is empty"
   }
 }
