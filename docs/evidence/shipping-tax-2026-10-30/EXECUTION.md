@@ -85,10 +85,13 @@ Observed logs are under
 - `settings-final-07.json`: 8 owned DB/browser checks passed, including real
   normal Merchant password login, tax/profile/zone/rate create/edit/reload/delete,
   and 24 missing/foreign-Origin refusals across all 12 settings mutation verbs.
-- `checkout-final-04.json`: four production-built buyer browser journeys passed:
+- The `checkout-browser.postgres` result in `checkout-final-04.json`: four
+  production-built buyer browser journeys passed:
   COD, changed-price refusal/review, controlled Razorpay capture recovery and
   inventory refusal. Provider responses are controlled in that fixture; no real
-  PSP sandbox acceptance is claimed.
+  PSP sandbox acceptance is claimed. That older aggregate also retains two red
+  sibling suites; it is not an all-green report. Current marketplace-cart and
+  shipping-settings reruns subsequently passed 16/16 and 6/6 respectively.
 - `order-discovery-final-02.json`: all 9 buyer-order scope/receipt checks passed;
   collection browsing still returned an intermittent metadata-unavailable 503.
   A diagnostic rerun passed 4/4, but that alone does not close the intermittency.
@@ -100,14 +103,29 @@ Observed logs are under
   snapshot. Its red results are not final-source acceptance; each repair must
   retain lineage and execute the affected current checks.
 
-`governance-03.log` passed all 114 executed validators (one declared not-applicable
+`governance-05.log` passed all 114 executed validators (one declared not-applicable
 validator); it ran only in a disposable source copy. `typecheck-full-final-02.log`
 passed all 81 tasks without cache. `merchant-build-final-01.log` and
 `commerce-build-final-01.log` completed production builds; `worker-bundle-final-01.log`
 completed the staging Worker dry-run bundle. None activates hosted traffic.
 
-`gateway-db-final-03` is the complete rerun on the final repaired source snapshot;
-its terminal result is still pending. Earlier red broad-run results stay recorded.
+`gateway-db-final-03` completed all 206 suites with 1,853 passing checks and three
+failed suites, no skips/cancellations and empty owned-resource cleanup. Two failures
+are the exact older native-browser/theme acceptance inputs whose full corrected
+runs passed below. The third is buyer support reply recovery: intermittent
+development-client runs return a 404 before the reply reaches the Gateway. Both
+isolated and concurrent development reruns also passed, so its underlying cause
+is not claimed fixed. A separate production-built Identity/Commerce control
+passed the complete unchanged recovery journey. The canonical release test now
+uses those production client kinds, keeps every original recovery/isolation
+assertion and emits safe numeric assertion diagnostics. Both concurrent canonical
+production-client runs passed (`support-production-final-01` and `-02`), including
+committed-response loss, changed-intent refusal, reload/browser restart recovery,
+conversation/actor fences, public-history pagination and private-RPC denial. The
+accepted 206-suite coverage uses these three exact full replacement executions
+for the three retained red entries; runtime/SQL/dependencies/tooling are identical.
+The raw aggregate remains red, and the
+development observation remains recorded rather than being hidden by retries.
 
 The full earlier snapshot (`gateway-db-full-02`) terminated red: 205 suites,
 11 failed suites, 77 failed assertions, no skipped/cancelled tests. It remains
@@ -142,23 +160,55 @@ installing the old privileged helper. Their private result files live under
 
 The clean local source checkpoint is `d0afb90600b2c60c296220cdd8e53e757bdb2bf1`.
 Exact journaled staging/production migration artifacts and both Worker dry-run
-bundles have been prepared; none was uploaded or executed. The small follow-up
+bundles have been prepared. The small follow-up
 above changes only test/evidence files, not application, SQL, dependencies or
-deployment tooling. Staging readiness inspection found no purchasable products
-or delivery rates. A labelled, temporary public-read canary is prepared to prove
-actual delivery/GST responses and then take its synthetic site offline; it does
-not substitute for normal hosted Merchant sign-in or a real carrier operation.
+deployment tooling. The integration revision is
+`a2f05798fae5bea3b803586a157489adfd2b1ae6`; its tree matches the initial successor source,
+and its runtime/SQL/tooling trees match the qualified checkpoint exactly.
+
+Hosted `develop` and `staging` now point to that integration revision. Staging
+migrations 411-413 committed and verified with history 338 -> 341, original
+history aliases retained, old order/invoice/catalog/domain hashes preserved and
+private command ACLs denied to public tenant roles. Staging API version
+`87c604fe-6ee4-43a2-8b56-f156dc911a24` matches all three qualified module hashes;
+existing bindings and secret names are preserved.
+
+Staging had no purchasable products or delivery rates. A labelled temporary
+synthetic site passed nine hosted backend checks: the actual saved delivery rate,
+exclusive and inclusive GST, intra-state components, inter-state IGST, weight-band
+and PIN refusal, missing taxable setup refusal and absence of order/invoice side
+effects. It is offline/draft again. No email, order, payment or carrier booking
+was created. This is not normal hosted Merchant sign-in or real carrier evidence.
+The first request was refused before application acceptance; its failure receipt
+is retained. The successful run reused the verified offline fixture and supplied
+the normal Origin/anonymous CSRF request headers; no security setting was changed.
+
+Both production-target web artifacts are READY for the exact integration revision
+with automatic live-domain assignment disabled. Current production aliases are
+preserved. Four existing-credential HTTP checks passed: Merchant root and both
+settings routes preserve signed-out Accounts redirects; Commerce discovery
+renders. These are not authenticated Merchant journeys. Public preview requests
+instead redirected to provider sign-in, which was not counted as app acceptance.
+The inspection CLI unexpectedly created an empty project; it was verified to have
+no deployment, alias or Git link, removed, and the disposable local project link
+corrected. No existing project was removed.
 
 Typechecks and standalone production builds are recorded separately. Browser
 screenshots are synthetic-fixture UI evidence, not production activation.
 
 ## Release state and remaining work
 
-No push, branch promotion, hosted migration, Worker deployment, web alias
-promotion, DNS change or carrier charge has occurred in this phase. The intended
-release order remains develop -> staging -> main. Earlier releases' CI/hosted
-staging exceptions do not transfer to this candidate. A qualified release must
-identify its finite scope and any exact unmet provider/staging gates first.
+Staging promotion, schema deployment and byte-verified API activation are complete
+as recorded above. Production `main` remains
+`55975acd0da3fd39bcff56168e19b05ff598bc43`. No production migration, Worker
+activation, web alias promotion, DNS change or carrier charge has occurred.
+Release order remains develop -> staging -> main. GitHub run 40973153523 did not
+start its jobs because account billing/spending is blocked; this is not CI
+acceptance. Full hosted staging sign-in is unconfigured. Earlier releases'
+CI/hosted staging exceptions do not transfer to this candidate. The final support
+test follow-up changes only the test and this evidence, not the qualified runtime.
+The pending review
+must identify this finite scope and the exact unmet smoke gates first.
 
 The three-mode owner decision is preserved. The current source does not yet
 implement the first-party connector or LetBuyy carrier execution. Their missing
