@@ -11,7 +11,7 @@ import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
-import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { executeWarehouseCommand } from '../execution/warehouse-command.adapter';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import {
     AdjustInventorySchema,
@@ -429,36 +429,13 @@ router.post('/purchase-orders', validate('json', CreatePurchaseOrderSchema), asy
     const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId: body.store_id,
-        key: body.idempotency_key,
-        scope: 'inventory.purchase_orders.create',
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('create_purchase_order_with_lines', {
-            p_site_id: body.store_id,
-            p_supplier_id: body.supplier_id || null,
-            p_location_id: body.location_id,
-            p_lines: body.lines,
-            p_expected_at: body.expected_at?.toISOString() || null,
-            p_notes: body.notes || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 201, resourceType: 'purchase_order' });
-        return c.json(responseBody, 201);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, body.store_id, customUser.id, body.idempotency_key,
+        'purchase_order.create', null, {
+            supplier_id: body.supplier_id ?? null, location_id: body.location_id,
+            expected_at: body.expected_at?.toISOString() ?? null, notes: body.notes ?? null,
+            lines: body.lines.map(line => ({ ...line, variant_id: line.variant_id ?? null })),
+        }, requestId(c));
+    return c.json(success(data), 201);
 });
 
 // POST /inventory/purchase-orders/:id/receive — Receive PO inventory
@@ -477,32 +454,9 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
     const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId,
-        key: body.idempotency_key,
-        scope: `inventory.purchase_orders.receive:${purchaseOrderId}`,
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('receive_purchase_order', {
-            p_purchase_order_id: purchaseOrderId,
-            p_lines: body.lines || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 200, resourceType: 'purchase_order', resourceId: purchaseOrderId });
-        return c.json(responseBody);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
+        'purchase_order.receive', purchaseOrderId, { lines: body.lines ?? null }, requestId(c));
+    return c.json(success(data));
 });
 
 // GET /inventory/transfers — List transfers
@@ -547,35 +501,13 @@ router.post('/transfers', validate('json', CreateTransferSchema), async (c) => {
     const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId: body.store_id,
-        key: body.idempotency_key,
-        scope: 'inventory.transfers.create',
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('create_inventory_transfer_with_lines', {
-            p_site_id: body.store_id,
-            p_source_location_id: body.source_location_id,
-            p_destination_location_id: body.destination_location_id,
-            p_lines: body.lines,
-            p_notes: body.notes || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 201, resourceType: 'inventory_transfer' });
-        return c.json(responseBody, 201);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, body.store_id, customUser.id, body.idempotency_key,
+        'transfer.create', null, {
+            source_location_id: body.source_location_id, destination_location_id: body.destination_location_id,
+            notes: body.notes ?? null,
+            lines: body.lines.map(line => ({ ...line, variant_id: line.variant_id ?? null })),
+        }, requestId(c));
+    return c.json(success(data), 201);
 });
 
 router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (c) => {
@@ -593,13 +525,8 @@ router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (
     const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const { data, error } = await db.rpc('ship_inventory_transfer', {
-        p_transfer_id: transferId,
-        p_actor_id: customUser.id,
-        p_request_id: requestId(c),
-        p_idempotency_key: body.idempotency_key,
-    });
-    if (error) return c.json(failureBody('TRANSFER_SHIP_FAILED', 'Unable to ship inventory transfer'), 400);
+    const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
+        'transfer.ship', transferId, {}, requestId(c));
     return c.json(success(data));
 });
 
@@ -618,32 +545,9 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
     const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId,
-        key: body.idempotency_key,
-        scope: `inventory.transfers.receive:${transferId}`,
-        requestBody: body,
-        requestId: requestId(c),
-    });
-    if (claim.kind === 'replay') return c.json(claim.responseBody as any, claim.statusCode as any);
-
-    try {
-        const { data, error } = await db.rpc('receive_inventory_transfer', {
-            p_transfer_id: transferId,
-            p_lines: body.lines || null,
-            p_actor_id: customUser.id,
-            p_request_id: requestId(c),
-            p_idempotency_key: body.idempotency_key,
-        });
-        if (error) throw new Error(error.message);
-        const responseBody = success(data);
-        await idempotency.complete({ id: claim.id, responseBody, statusCode: 200, resourceType: 'inventory_transfer', resourceId: transferId });
-        return c.json(responseBody);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const data = await executeWarehouseCommand(c.env, siteId, customUser.id, body.idempotency_key,
+        'transfer.receive', transferId, { lines: body.lines ?? null }, requestId(c));
+    return c.json(success(data));
 });
 
 // POST /inventory/reserve - Reserve available stock with optimistic concurrency.

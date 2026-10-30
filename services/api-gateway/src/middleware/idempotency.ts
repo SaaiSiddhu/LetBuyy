@@ -200,11 +200,15 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         && ['/payments/subscription/order', '/payments/subscription/recover', '/payments/subscription/verify'].includes(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
+    // These exact five warehouse commands own stock and immutable receipts in one transaction.
+    const routeOwnedWarehouseCommand = method === 'POST' && (/^\/inventory\/(?:purchase-orders|transfers)$/.test(orderPath)
+        || /^\/inventory\/purchase-orders\/[^/]+\/receive$/.test(orderPath)
+        || /^\/inventory\/transfers\/[^/]+\/(?:ship|receive)$/.test(orderPath));
     // Membership commands own live-owner/version/payload-bound SQL receipts.
     const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
-    if (routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    if (routeOwnedCollectionMembership || routeOwnedWarehouseCommand || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

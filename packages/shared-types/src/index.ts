@@ -5270,3 +5270,5 @@ export { calculateGstAmounts } from './gst-amounts';
 export * from './personalization-contracts';
 export * from './storefront-discovery-contracts';
 export * from './checkout-totals-quote';
+
+export * from './warehouse-command';
