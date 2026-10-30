@@ -16,8 +16,9 @@ import { FIXED_PUBLIC_ERROR_MESSAGES } from '../../lib/public-errors';
 import { IdempotencyExecutionAdapter } from '../../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../../lib/tenant-context';
-import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createRazorpayPaymentProvider, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
 import { assertProviderPaymentNotReplayed } from '../../lib/payment-route-support';
+import { hostedRazorpayTestCredentials } from '../../lib/hosted-razorpay-credentials';
 import type {
     CreateCheckoutOrderCommand,
     // The wire contracts these handlers receive. They are `z.infer` of the very schemas that parse
@@ -383,9 +384,10 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 );
             }
 
-            if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
+            const razorpayCredentials = await hostedRazorpayTestCredentials(c, store.id);
+            if (!razorpayCredentials) {
                 return c.json(
-                    { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } },
+                    { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Store payment setup is unavailable' } },
                     503
                 );
             }
@@ -425,8 +427,8 @@ export function registerStorefrontCheckoutPaymentRoutes(
 
             try {
                 const provider = createRazorpayPaymentProvider({
-                    keyId: c.env.RAZORPAY_KEY_ID,
-                    keySecret: c.env.RAZORPAY_KEY_SECRET,
+                    keyId: razorpayCredentials.keyId,
+                    keySecret: razorpayCredentials.keySecret,
                 });
                 const intent = await provider.createIntent({
                     storeId: store.id,
@@ -463,8 +465,8 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 });
 
                 const responseBody = success({
-                    keyId: c.env.RAZORPAY_KEY_ID,
-                    key_id: c.env.RAZORPAY_KEY_ID,
+                    keyId: razorpayCredentials.keyId,
+                    key_id: razorpayCredentials.keyId,
                     razorpayOrderId: providerOrderId,
                     razorpay_order_id: providerOrderId,
                     amount: intent.amount.amountMinor,
@@ -503,9 +505,10 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 );
             }
 
-            if (!c.env.RAZORPAY_KEY_SECRET) {
+            const razorpayCredentials = await hostedRazorpayTestCredentials(c, store.id);
+            if (!razorpayCredentials) {
                 return c.json(
-                    { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } },
+                    { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Store payment setup is unavailable' } },
                     503
                 );
             }
@@ -562,8 +565,8 @@ export function registerStorefrontCheckoutPaymentRoutes(
             });
 
             const provider = createRazorpayPaymentProvider({
-                keyId: c.env.RAZORPAY_KEY_ID || 'storefront',
-                keySecret: c.env.RAZORPAY_KEY_SECRET,
+                keyId: razorpayCredentials.keyId,
+                keySecret: razorpayCredentials.keySecret,
             });
             const verification = await provider.verify({
                 storeId: store.id,
@@ -587,6 +590,36 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     },
                     400
                 );
+            }
+
+            // A checkout signature authenticates the provider order/payment pair only. It does
+            // not attest capture or amount. Read the payment using this merchant's own key before
+            // the canonical money writer receives a capture claim.
+            let providerPayment: Awaited<ReturnType<typeof fetchRazorpayPayment>>;
+            try {
+                providerPayment = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
+                    ? await c.env.HOSTED_RAZORPAY_TEST_ADAPTER.fetchPayment(body.razorpay_payment_id)
+                    : await fetchRazorpayPayment(razorpayCredentials, body.razorpay_payment_id);
+            } catch {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_VERIFICATION_UNAVAILABLE',
+                    message: 'Payment status is temporarily unavailable. Retry verification.' } }, 503);
+            }
+            if (providerPayment.error) {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_VERIFICATION_UNAVAILABLE',
+                    message: 'Payment status is temporarily unavailable. Retry verification.' } }, 503);
+            }
+            if (providerPayment.status !== 'captured' || providerPayment.captured !== true) {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_NOT_CAPTURED',
+                    message: 'The provider has not confirmed capture. Retry verification shortly.' } }, 409);
+            }
+            if (providerPayment.id !== body.razorpay_payment_id || providerPayment.order_id !== body.razorpay_order_id
+                || providerPayment.amount !== amount.amountMinor || providerPayment.currency?.toUpperCase() !== amount.currency) {
+                await idempotency.fail(claim.id);
+                return c.json({ success: false, error: { code: 'PAYMENT_PROOF_MISMATCH',
+                    message: 'The provider payment does not match this order.' } }, 409);
             }
 
             try {
