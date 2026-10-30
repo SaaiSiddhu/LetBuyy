@@ -36,6 +36,7 @@
 
 ## Local evidence, 2026-10-30
 
+- KYC refresh now writes `verified` and `verified_at` only when the same live provider result has an accepted provider name, nonempty reference, explicit approval flag, current private object, and a clean trusted scan. A status-only or otherwise incomplete approval is stored as `needs_review` with no verified time. The focused KYC suite passed 6/6; Gateway typecheck passed. Final owned PostgreSQL/PostgREST/Gateway run `71aa67cc0d02` passed 2/2 with full resource cleanup, including canonical database readback that sandbox refresh and live-provider outage leave `verified_at` null. This does not prove a real provider approval or scanner verdict.
 - `node --import tsx --test services/api-gateway/src/__tests__/kyc.test.ts services/api-gateway/src/__tests__/store-publish.test.ts services/api-gateway/src/__tests__/store-profile-input.test.ts`: 13 passed, 0 failed (before the final provider-evidence guard; KYC rerun 5 passed, 0 failed after it).
 - `pnpm --filter @letbuyy/merchant-web exec tsc --noEmit --incremental false`: passed.
 - `pnpm --filter @letbuyy/api-gateway typecheck`: passed after the KYC evidence guard and upload changes.

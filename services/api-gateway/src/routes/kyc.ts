@@ -6,7 +6,7 @@ import { AppError } from '../lib/errors';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
-import { effectiveKycDocumentStatus, hasLiveProviderEvidence } from '../lib/kyc-evidence-status';
+import { acceptsLiveKycApproval, effectiveKycDocumentStatus, hasLiveProviderEvidence } from '../lib/kyc-evidence-status';
 import { validate } from '../middleware/validation';
 import {
     createKycVerificationAdapter,
@@ -385,8 +385,10 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
         fileUrl: document.file_url || null,
     });
     const now = new Date().toISOString();
-    const status = verification.status;
     const providerMetadata: Record<string, unknown> = verification.metadata;
+    const providerApproved = acceptsLiveKycApproval(document, verification);
+    const status = verification.status === 'verified' && !providerApproved
+        ? 'needs_review' : verification.status;
     const { data, error } = await db
         .from('merchant_kyc_documents')
         .update({
@@ -401,14 +403,13 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
                 // file digest, or trusted scanner verdict. Store only reviewed flags.
                 provider_unavailable: providerMetadata.provider_unavailable === true,
                 sandbox: verification.providerMode === 'sandbox',
-                manual_review_required: providerMetadata.manual_review_required === true,
+                manual_review_required: providerMetadata.manual_review_required === true
+                    || (verification.status === 'verified' && !providerApproved),
                 provider_checked_at: now,
                 // A pending/outage result revokes any previous provider approval.
-                provider_verified: status === 'verified'
-                    && verification.providerMode === 'live'
-                    && providerMetadata.provider_verified === true,
+                provider_verified: providerApproved,
             },
-            verified_at: status === 'verified' ? now : null,
+            verified_at: providerApproved ? now : null,
             rejected_at: status === 'rejected' ? now : null,
             updated_by: tenant.userId,
         })

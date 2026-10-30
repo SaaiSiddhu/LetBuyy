@@ -6,6 +6,7 @@ import {
     KycProviderUnavailableError,
 } from '@letbuyy/infrastructure/kyc-verification-adapter';
 import { deriveKycOverallStatus } from '../routes/kyc';
+import { acceptsLiveKycApproval } from '../lib/kyc-evidence-status';
 
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const kycSource = readFileSync(new URL('../routes/kyc.ts', import.meta.url), 'utf8');
@@ -116,4 +117,32 @@ test('sandbox and provider-unavailable records never complete business verificat
     assert.equal(status(), 'verified');
     documents[0]!.metadata = { provider_verified: true, private_object_key: 'kyc/site/business_pan/file', malware_scan_status: 'clean', provider_unavailable: true };
     assert.equal(status(), 'needs_review', 'an untrusted old approval must agree with its Needs review document badge');
+});
+
+test('a provider status alone cannot authorize a stored KYC verified timestamp', () => {
+    const evidence = {
+        status: 'submitted' as const,
+        provider: 'signzy',
+        provider_mode: 'live' as const,
+        metadata: { private_object_key: 'kyc/site/business_pan/object', malware_scan_status: 'clean' },
+    };
+    const result = {
+        status: 'verified' as const,
+        provider: 'signzy' as const,
+        providerMode: 'live' as const,
+        providerReference: 'provider-lookup-reference',
+        metadata: { provider_verified: true },
+    };
+    assert.equal(acceptsLiveKycApproval(evidence, result), true);
+    assert.equal(acceptsLiveKycApproval(evidence, { ...result, providerReference: '' }), false);
+    assert.equal(acceptsLiveKycApproval(evidence, { ...result, providerMode: 'sandbox' }), false);
+    assert.equal(acceptsLiveKycApproval(evidence, { ...result, provider: 'manual' }), false);
+    assert.equal(acceptsLiveKycApproval(evidence, { ...result, status: 'submitted' }), false);
+    assert.equal(acceptsLiveKycApproval(evidence, { ...result, metadata: {} }), false);
+    assert.equal(acceptsLiveKycApproval(evidence, { ...result, metadata: { provider_verified: true, provider_unavailable: true } }), false);
+    assert.equal(acceptsLiveKycApproval({ ...evidence, metadata: { ...evidence.metadata, malware_scan_status: 'pending' } }, result), false);
+    assert.equal(acceptsLiveKycApproval({ ...evidence, metadata: { malware_scan_status: 'clean' } }, result), false);
+    assert.equal(acceptsLiveKycApproval({ ...evidence, metadata: { malware_scan_status: 'pending' } }, {
+        ...result, metadata: { provider_verified: true, private_object_key: 'provider-claimed-object', malware_scan_status: 'clean' },
+    }), false, 'provider metadata cannot forge the trusted upload pointer or scanner verdict');
 });

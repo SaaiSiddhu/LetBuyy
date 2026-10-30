@@ -156,6 +156,9 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(refreshedMeta.provider_unavailable, false, 'a later provider response clears a stale outage flag');
     assert.equal(refreshedMeta.sandbox, true);
     assert.equal(refreshedMeta.malware_scan_status, 'pending', 'provider refresh cannot bypass the trusted scanner');
+    assert.equal(owned.psql(`SELECT status || ':' || (verified_at IS NULL)::text FROM merchant_kyc_documents
+        WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`), 'submitted:true',
+    'sandbox refresh cannot stamp a verified time in the canonical database');
     assert.equal(refreshed.json?.data.overview.overall_status, 'in_progress');
     let releaseStaleRefresh!: () => void;
     let staleRefreshArrived!: () => void;
@@ -272,6 +275,9 @@ test('live-mode provider outage stays pending after clean private evidence and e
         assert.equal(stored.provider_unavailable, true);
         assert.equal(stored.malware_scan_status, 'clean');
         assert.equal(objects.has(stored.private_object_key), true);
+        assert.equal(owned.psql(`SELECT status || ':' || (verified_at IS NULL)::text FROM merchant_kyc_documents
+            WHERE id='${panId}';`), 'submitted:true',
+        'a provider outage cannot stamp a verified time in the canonical database');
         const readback = await liveGateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
             method: 'GET', headers: await signedIdentityHeaders(owner, email, tenant.siteId),
         });
