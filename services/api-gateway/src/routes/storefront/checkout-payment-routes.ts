@@ -16,7 +16,7 @@ import { FIXED_PUBLIC_ERROR_MESSAGES } from '../../lib/public-errors';
 import { IdempotencyExecutionAdapter } from '../../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../../lib/tenant-context';
-import { createRazorpayPaymentProvider, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createRazorpayPaymentProvider, fetchRazorpayPayment, RazorpayOrderMismatchError } from '@letbuyy/infrastructure/razorpay-adapter';
 import { assertProviderPaymentNotReplayed } from '../../lib/payment-route-support';
 import { hostedRazorpayTestCredentials } from '../../lib/hosted-razorpay-credentials';
 import type {
@@ -430,16 +430,25 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     keyId: razorpayCredentials.keyId,
                     keySecret: razorpayCredentials.keySecret,
                 });
-                const intent = await provider.createIntent({
-                    storeId: store.id,
-                    orderId: body.orderId,
-                    amount,
-                    idempotencyKey: body.idempotencyKey,
-                    receipt: body.orderId,
-                    metadata: {
-                        source: 'storefront',
-                    },
-                });
+                let intent: Awaited<ReturnType<typeof provider.createIntent>>;
+                try {
+                    intent = await provider.createIntent({
+                        storeId: store.id,
+                        orderId: body.orderId,
+                        amount,
+                        idempotencyKey: body.idempotencyKey,
+                        receipt: body.orderId,
+                        metadata: {
+                            source: 'storefront',
+                        },
+                    });
+                } catch (providerError) {
+                    await idempotency.fail(claim.id);
+                    return c.json({ success: false, error: {
+                        code: providerError instanceof RazorpayOrderMismatchError ? 'PAYMENT_PROVIDER_MISMATCH' : 'PAYMENT_PROVIDER_ERROR',
+                        message: 'Payment setup could not be matched to this order. Please retry later.',
+                    } }, 502);
+                }
                 const providerOrderId = intent.references.providerOrderId;
 
                 if (!providerOrderId) {
@@ -454,6 +463,12 @@ export function registerStorefrontCheckoutPaymentRoutes(
                         },
                         502
                     );
+                }
+
+                if (intent.amount.amountMinor !== amountMinorUnits || intent.amount.currency !== amount.currency) {
+                    await idempotency.fail(claim.id);
+                    return c.json({ success: false, error: { code: 'PAYMENT_PROVIDER_MISMATCH',
+                        message: 'Payment setup could not be matched to this order. Please retry later.' } }, 502);
                 }
 
                 await paymentService.attachPaymentReference({

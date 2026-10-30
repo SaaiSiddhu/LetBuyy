@@ -36,6 +36,13 @@ export interface RazorpayOrderCreateResult {
   error?: { description?: string };
 }
 
+export class RazorpayOrderMismatchError extends Error {
+  constructor() {
+    super('Razorpay order amount or currency did not match the requested payment');
+    this.name = 'RazorpayOrderMismatchError';
+  }
+}
+
 export interface RazorpayOrderRecord {
   id?: string;
   entity?: string;
@@ -370,6 +377,9 @@ export function createRazorpayPaymentProvider(
 
       if (!providerOrder.id) {
         throw new Error(providerOrder.error?.description || 'Razorpay order creation failed');
+      }
+      if (providerOrder.amount !== amount.amountMinor || providerOrder.currency !== amount.currency) {
+        throw new RazorpayOrderMismatchError();
       }
 
       return {

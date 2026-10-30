@@ -63,7 +63,8 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 // A fake PostgREST that serves exactly what these routes read and records every write.
-function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json; onlinePaymentEnabled?: boolean }) {
+function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json; onlinePaymentEnabled?: boolean;
+    providerOrderAmount?: number; providerOrderCurrency?: string }) {
     const originalFetch = globalThis.fetch;
     const requests: Captured[] = [];
     const razorpayRequests: Captured[] = [];
@@ -75,7 +76,8 @@ function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json; onlineP
                 `Basic ${Buffer.from(`${STORE_KEY_ID}:${KEY_SECRET}`).toString('base64')}`,
                 'the provider request must use this store’s saved account');
             razorpayRequests.push({ method: init?.method || 'GET', path: url.pathname, body: init?.body });
-            if (url.pathname === '/v1/orders') return jsonResponse({ id: 'order_RZP_route', amount: 50000, currency: 'INR' });
+            if (url.pathname === '/v1/orders') return jsonResponse({ id: 'order_RZP_route',
+                amount: fixture.providerOrderAmount ?? 50000, currency: fixture.providerOrderCurrency ?? 'INR' });
             throw new Error(`unexpected provider request ${url.pathname}`);
         }
         assert.equal(url.origin, POSTGREST_ORIGIN, 'the route must only talk to the fake PostgREST');
@@ -256,6 +258,23 @@ test('storefront order creation uses the merchant-owned test account and returns
     assert.equal(payload.data.razorpayOrderId, 'order_RZP_route');
     assert.deepEqual(postgrest.razorpayRequests.map(request => request.path), ['/v1/orders']);
 });
+
+for (const scenario of [
+    { name: 'lower amount', fixture: { providerOrderAmount: 100 } },
+    { name: 'foreign currency', fixture: { providerOrderCurrency: 'USD' } },
+]) {
+    test(`storefront order creation refuses a provider order with ${scenario.name} before binding`, async (t) => {
+        const postgrest = installFakePostgrest({ order: PENDING_ORDER, ...scenario.fixture });
+        t.after(() => postgrest.restore());
+        const response = await storefrontApp([]).request('/late-capture/payments/razorpay/order', {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ orderId: ORDER, idempotencyKey: `razorpay-order-${scenario.name.replaceAll(' ', '-')}` }),
+        });
+        assert.equal(response.status, 502);
+        assert.equal((await response.json() as { error: { code: string } }).error.code, 'PAYMENT_PROVIDER_MISMATCH');
+        assert.equal(postgrest.requests.filter(request => request.path === 'rpc/attach_order_payment_reference_with_ledger').length, 0);
+    });
+}
 
 test('verify: disabled merchant payment setup refuses a signed capture before ledger writes', async (t) => {
     const postgrest = installFakePostgrest({ order: PENDING_ORDER, rpcResult: CONFIRMED, onlinePaymentEnabled: false });
