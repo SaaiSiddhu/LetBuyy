@@ -73,6 +73,9 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     });
     assert.equal(ownerOverview.status, 200, 'positive control: the site owner reads sanitized KYC status through the Gateway');
     assert.equal(ownerOverview.json?.data.documents[0]?.status, 'submitted');
+    assert.equal(ownerOverview.json?.data.documents[0]?.evidence_scan_status, 'pending');
+    assert.equal(ownerOverview.json?.data.documents[0]?.provider_unavailable, false);
+    assert.match(ownerOverview.json?.data.next_action || '', /not provider reviewed/);
     assert.ok(!ownerOverview.text.includes('private_object_key'));
     assert.equal(asAuthenticatedOwner(`SELECT count(*) FROM public.merchant_kyc_documents
         WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`), '0',
@@ -145,12 +148,17 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(objects.has(winnerKey), true);
     const refreshHeaders = await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId);
     refreshHeaders['X-Idempotency-Key'] = randomUUID();
+    owned.psql(`UPDATE merchant_kyc_documents SET metadata = metadata || '{"provider_unavailable":true,"sandbox":false}'::jsonb
+        WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`);
     const refreshed = await gateway.request(`/v1/kyc/documents/${replaced.json!.data.document.id}/refresh?store_id=${tenant.siteId}`, { method: 'POST', headers: refreshHeaders });
     assert.equal(refreshed.status, 200, refreshed.text);
     assert.equal(refreshed.json?.data.document.has_private_upload, true);
     const refreshedMeta = JSON.parse(owned.psql(`SELECT metadata::text FROM merchant_kyc_documents WHERE site_id='${tenant.siteId}';`));
     assert.equal(objects.has(refreshedMeta.private_object_key), true);
     assert.equal(refreshedMeta.provider_verified, false);
+    assert.equal(refreshedMeta.provider_unavailable, false, 'a later provider response clears a stale outage flag');
+    assert.equal(refreshedMeta.sandbox, true);
+    assert.equal(refreshedMeta.malware_scan_status, 'pending', 'provider refresh cannot bypass the trusted scanner');
     assert.equal(refreshed.json?.data.overview.overall_status, 'in_progress');
     let releaseStaleRefresh!: () => void;
     let staleRefreshArrived!: () => void;

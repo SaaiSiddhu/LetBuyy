@@ -240,7 +240,7 @@ class _KycScreenState extends State<KycScreen> {
         setState(() => _overview = service.overview);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Private document received. Provider review pending.'),
+            content: Text('Private document received. Security scan pending.'),
           ),
         );
       }
@@ -282,7 +282,7 @@ class _KycScreenState extends State<KycScreen> {
             leading: Icon(Icons.lock_outline),
             title: Text('Private document upload'),
             subtitle: Text(
-              'Upload verification documents here. A private upload stays pending until our verification provider reviews it.',
+              'Upload verification documents here. A private upload awaits a security scan before provider review.',
             ),
           ),
           Expanded(
@@ -428,9 +428,10 @@ class _StatusPanel extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   hasReference
-                      ? 'Reference recorded. Provider verification is still required.'
+                      ? 'Reference digits are not verification evidence. Upload a private document.'
                       : overview['provider_mode'] == 'sandbox'
-                      ? 'Sandbox status only. This does not approve live selling.'
+                      ? overview['next_action']?.toString() ??
+                            'Sandbox uploads are not provider reviewed and do not approve live payouts.'
                       : overview['next_action']?.toString() ??
                             'Submit the required documents for provider review.',
                   style: TextStyle(color: colors.textSecondary),
@@ -466,7 +467,7 @@ class _RequirementTile extends StatelessWidget {
       title: Text(item['title']?.toString() ?? 'Document'),
       subtitle: Text(
         referenceRecorded
-            ? 'Reference recorded · Verification pending'
+            ? 'Reference recorded · Upload required'
             : _statusTitle(status),
       ),
       trailing: TextButton(
@@ -504,8 +505,8 @@ class _DocumentTile extends StatelessWidget {
       ),
       subtitle: Text(
         referenceOnly
-            ? 'Reference recorded · Verification pending'
-            : '${_statusTitle(status)} · ${document['file_name'] ?? 'document saved'}',
+            ? 'Reference recorded · Upload required'
+            : '${_documentProgressTitle(document, status)} · ${document['file_name'] ?? 'document saved'}',
       ),
       trailing: IconButton(
         onPressed: onRefresh,
@@ -587,6 +588,18 @@ String _statusTitle(String status) {
     default:
       return 'Not started';
   }
+}
+
+String _documentProgressTitle(Map<String, dynamic> document, String status) {
+  if (document['evidence_scan_status'] == 'rejected') return 'Security scan failed';
+  if (status != 'submitted') return _statusTitle(status);
+  switch (document['evidence_scan_status']) {
+    case 'pending':
+      return 'Security scan pending';
+  }
+  if (document['provider_unavailable'] == true) return 'Provider unavailable';
+  if (document['provider_mode'] == 'sandbox') return 'Sandbox received';
+  return 'Awaiting provider review';
 }
 
 IconData _statusIcon(String status) {

@@ -440,7 +440,7 @@ test('two Merchant settings tabs report stale saves and preserve a cleared conta
     await expect(staleTab.getByLabel('Contact email', { exact: true })).toHaveValue('');
 });
 
-test('mobile-width dark Merchant Business uploads private KYC proof and leaves provider review pending', { timeout: 180_000 }, async t => {
+test('mobile-width dark Merchant Business shows private KYC scan rejection and resubmission', { timeout: 180_000 }, async t => {
     const f = await fixture('business-mobile'); t.after(() => f.context.close());
     await f.page.setViewportSize({ width: 390, height: 844 });
     await f.page.emulateMedia({ colorScheme: 'dark' });
@@ -466,13 +466,60 @@ test('mobile-width dark Merchant Business uploads private KYC proof and leaves p
         pan.getByRole('button', { name: 'Upload document' }).click(),
     ]);
     assert.equal(response.status(), 201, 'normal mobile-width Merchant upload reaches private Gateway evidence route');
-    await expect(pan.getByText('Under review')).toBeVisible();
+    await expect(pan.getByText('Security scan pending')).toBeVisible();
     const key = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
         WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
     assert.ok(key.startsWith(`kyc/${f.tenant.siteId}/`) && privateKycObjects.has(key));
     assert.equal(owned.psql(`SELECT status||'|'||provider_mode FROM merchant_kyc_documents
         WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`), 'submitted|sandbox');
     assert.doesNotMatch(await f.page.locator('body').innerText(), /private_object_key|kyc\/.*business_pan/);
+
+    // A synthetic trusted scanner verdict exercises the merchant recovery UI;
+    // this fixture does not represent a production malware scan.
+    owned.psql(`UPDATE merchant_kyc_documents SET metadata=jsonb_set(metadata,'{malware_scan_status}','"rejected"'::jsonb)
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    await f.page.reload();
+    await expect(pan.getByText('Security scan failed')).toBeVisible();
+    await expect(f.page.getByText('A document failed its security scan. Replace that file to continue verification.')).toBeVisible();
+    await pan.getByLabel('Last 4 of PAN', { exact: true }).fill('1234');
+    await pan.getByLabel('Upload Business PAN').setInputFiles({ name: 'replacement-pan.pdf', mimeType: 'application/pdf',
+        buffer: Buffer.from('%PDF-1.7\nsynthetic replacement proof') });
+    const [replacement] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/kyc/upload`
+            && item.request().method() === 'POST'),
+        pan.getByRole('button', { name: 'Resubmit document' }).click(),
+    ]);
+    assert.equal(replacement.status(), 201);
+    await expect(pan.getByText('Security scan pending')).toBeVisible();
+    const newKey = owned.psql(`SELECT metadata->>'private_object_key' FROM merchant_kyc_documents
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    assert.notEqual(newKey, key);
+    assert.equal(privateKycObjects.has(key), false, 'replaced evidence is removed from the private fixture');
+    assert.equal(privateKycObjects.has(newKey), true);
+
+    // A historical reference-only row cannot be presented as provider review.
+    privateKycObjects.delete(newKey);
+    owned.psql(`UPDATE merchant_kyc_documents SET metadata=metadata-'private_object_key'
+        WHERE site_id='${f.tenant.siteId}' AND document_type='business_pan';`);
+    await f.page.reload();
+    await expect(pan.getByText('Upload required')).toBeVisible();
+    await expect(f.page.getByText('Upload the remaining required documents privately.', { exact: false })).toBeVisible();
+
+    // The production KYC provider is not connected. This projection checks only
+    // that a merchant can start replacing bank proof after a provider approval.
+    await f.page.route(`**/api/stores/${f.tenant.subdomain}/kyc`, async route => {
+        const upstream = await route.fetch();
+        const payload = await upstream.json() as { data: { provider_mode: string; documents: Array<Record<string, unknown>> } };
+        payload.data.provider_mode = 'live';
+        payload.data.documents.push({ id: crypto.randomUUID(), document_type: 'bank_proof', status: 'verified',
+            document_number_last4: '4321', has_private_upload: true, evidence_scan_status: 'clean',
+            rejection_reason: null, submitted_at: new Date().toISOString(), verified_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+        await route.fulfill({ response: upstream, json: payload });
+    });
+    await f.page.reload();
+    const bank = f.page.locator('.settings-business-kyc-item').filter({ hasText: 'Settlement bank account' }).first();
+    await expect(bank.getByRole('button', { name: 'Replace verified document' })).toBeVisible();
+    await expect(bank.getByText('bank changes must also be approved by your payment provider.', { exact: false })).toBeVisible();
 });
 
 for (const operation of ['save', 'publish'] as const) {

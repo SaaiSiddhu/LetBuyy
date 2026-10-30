@@ -83,6 +83,11 @@ function providerName(env: Env): MerchantKycProvider {
 }
 
 function serializeDocument(row: KycDocumentRow) {
+    const scan = row.metadata?.malware_scan_status;
+    const evidenceScanStatus = row.metadata?.private_object_key
+        ? scan === 'clean' || scan === 'rejected'
+            ? scan : 'pending'
+        : null;
     return {
         id: row.id,
         site_id: row.site_id,
@@ -96,6 +101,8 @@ function serializeDocument(row: KycDocumentRow) {
         rejection_reason: row.rejection_reason || null,
         // Private object keys, provider payloads, and upload hashes are server-only.
         has_private_upload: Boolean(row.metadata?.private_object_key),
+        evidence_scan_status: evidenceScanStatus,
+        provider_unavailable: row.metadata?.provider_unavailable === true,
         submitted_at: row.submitted_at || null,
         verified_at: hasLiveProviderEvidence(row) ? row.verified_at || null : null,
         rejected_at: row.rejected_at || null,
@@ -121,10 +128,22 @@ export function deriveKycOverallStatus(rows: KycDocumentRow[]) {
 function nextAction(status: string, rows: KycDocumentRow[], mode: MerchantKycProviderMode): string {
     if (status === 'verified') return 'Business verification is complete.';
     if (status === 'rejected') return 'Review the rejected document and submit an updated proof.';
-    if (mode === 'sandbox' && rows.length > 0) return 'Sandbox submissions do not authorize live payouts.';
+    if (rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status === 'rejected'))
+        return 'A document failed its security scan. Replace that file to continue verification.';
+    if (rows.length === 0) return 'Upload business PAN, bank proof, and address proof privately.';
+    const byType = new Map(rows.map((row) => [row.document_type, row]));
+    if (REQUIRED_DOCUMENTS.some((item) => item.required && !byType.get(item.document_type)?.metadata?.private_object_key))
+        return mode === 'sandbox'
+            ? 'Upload the remaining required documents privately. Sandbox uploads are not provider reviewed and cannot enable live payouts.'
+            : 'Upload the remaining required documents privately. Reference digits alone are not verification evidence.';
+    if (mode === 'sandbox' && rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status !== 'clean'))
+        return 'Sandbox upload received. Security scan pending. It is not provider reviewed and cannot enable live payouts.';
+    if (mode === 'sandbox' && rows.length > 0) return 'Sandbox uploads are stored for testing only. They are not provider reviewed and cannot enable live payouts.';
+    if (rows.some((row) => row.metadata?.private_object_key && row.metadata.malware_scan_status !== 'clean'))
+        return 'A security scan is pending before provider review can begin.';
     if (rows.some((row) => row.metadata?.provider_unavailable)) return 'Verification provider is unavailable. Your submission remains pending; retry later.';
     if (status === 'needs_review') return 'A submitted document needs review.';
-    if (status === 'in_progress') return 'Submit the remaining required documents.';
+    if (status === 'in_progress') return 'Your submitted documents are awaiting provider review.';
     return 'Submit business PAN, bank proof, and address proof.';
 }
 
@@ -367,6 +386,7 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
     });
     const now = new Date().toISOString();
     const status = verification.status;
+    const providerMetadata: Record<string, unknown> = verification.metadata;
     const { data, error } = await db
         .from('merchant_kyc_documents')
         .update({
@@ -377,12 +397,16 @@ router.post('/documents/:id/refresh', validate('query', StoreQuerySchema), async
             rejection_reason: verification.rejectionReason || null,
             metadata: {
                 ...(document.metadata || {}),
-                ...verification.metadata,
-                // Refresh must retain the private object pointer for review,
-                // while a pending/outage result revokes the prior approval.
+                // Provider output must not overwrite the private object pointer,
+                // file digest, or trusted scanner verdict. Store only reviewed flags.
+                provider_unavailable: providerMetadata.provider_unavailable === true,
+                sandbox: verification.providerMode === 'sandbox',
+                manual_review_required: providerMetadata.manual_review_required === true,
+                provider_checked_at: now,
+                // A pending/outage result revokes any previous provider approval.
                 provider_verified: status === 'verified'
                     && verification.providerMode === 'live'
-                    && verification.metadata.provider_verified === true,
+                    && providerMetadata.provider_verified === true,
             },
             verified_at: status === 'verified' ? now : null,
             rejected_at: status === 'rejected' ? now : null,

@@ -45,6 +45,8 @@ interface KycDocument {
     status: KycDocumentStatus
     document_number_last4: string | null
     has_private_upload?: boolean
+    evidence_scan_status?: 'pending' | 'clean' | 'rejected' | null
+    provider_unavailable?: boolean
     rejection_reason: string | null
     submitted_at: string | null
     verified_at: string | null
@@ -151,10 +153,22 @@ const DOC_META: Record<KycDocumentType, { title: string; Icon: LucideIcon; hint:
 
 const STATUS_META: Record<KycDocumentStatus, { label: string; Icon: LucideIcon; tone: string }> = {
     verified: { label: 'Verified', Icon: CheckCircle2, tone: 'verified' },
-    submitted: { label: 'Under review', Icon: Clock, tone: 'submitted' },
+    submitted: { label: 'Awaiting provider review', Icon: Clock, tone: 'submitted' },
     needs_review: { label: 'Needs review', Icon: AlertTriangle, tone: 'review' },
     rejected: { label: 'Rejected', Icon: AlertCircle, tone: 'rejected' },
     draft: { label: 'Not submitted', Icon: Circle, tone: 'draft' },
+}
+
+function displayDocumentStatus(status: KycDocumentStatus, document: KycDocument | undefined, mode: KycOverview['provider_mode'] | undefined) {
+    if (document?.evidence_scan_status === 'rejected') return { label: 'Security scan failed', Icon: AlertCircle, tone: 'rejected' }
+    if (document && !document.has_private_upload && status !== 'draft' && status !== 'rejected')
+        return { label: 'Upload required', Icon: AlertTriangle, tone: 'review' }
+    if (mode === 'sandbox' && status === 'verified') return { label: 'Sandbox reference', Icon: Info, tone: 'submitted' }
+    if (status !== 'submitted') return STATUS_META[status]
+    if (document?.evidence_scan_status === 'pending') return { label: 'Security scan pending', Icon: Clock, tone: 'submitted' }
+    if (document?.provider_unavailable) return { label: 'Provider unavailable', Icon: AlertTriangle, tone: 'review' }
+    if (mode === 'sandbox') return { label: 'Sandbox received', Icon: Info, tone: 'submitted' }
+    return STATUS_META.submitted
 }
 
 const OVERALL_META: Record<KycOverallStatus, { title: string; variant: 'info' | 'success' | 'warning' | 'critical' }> = {
@@ -491,7 +505,7 @@ export default function BusinessSettingsPage() {
                 <Banner variant={kyc.provider_mode === 'sandbox' ? 'info' : overall.variant}
                     title={kyc.provider_mode === 'sandbox' ? 'Sandbox verification' : overall.title}>
                     {kyc.provider_mode === 'sandbox'
-                        ? 'Uploaded documents and reference digits remain pending provider review. Sandbox results cannot enable live payouts.'
+                        ? kyc.next_action || 'Sandbox uploads are not provider reviewed and cannot enable live payouts.'
                         : kyc.next_action || 'Complete the required documents below to verify your business.'}
                 </Banner>
             )}
@@ -585,9 +599,7 @@ export default function BusinessSettingsPage() {
                             const DocIcon = meta.Icon
                             const existing = docByType.get(req.document_type)
                             const status: KycDocumentStatus = existing?.status || 'draft'
-                            const sMeta = kyc?.provider_mode === 'sandbox' && status === 'verified'
-                                ? { label: 'Sandbox reference', Icon: Info, tone: 'submitted' }
-                                : STATUS_META[status]
+                            const sMeta = displayDocumentStatus(status, existing, kyc?.provider_mode)
                             const SIcon = sMeta.Icon
                             const input = docInput(req.document_type)
                             const busy = !!docBusy[req.document_type]
@@ -619,8 +631,12 @@ export default function BusinessSettingsPage() {
                                         </div>
                                     )}
 
-                                    {!isVerified && (
-                                        <div className="settings-business-kyc-form">
+                                    <div className="settings-business-kyc-form">
+                                            {isVerified && (
+                                                <div className="settings-general-hint">
+                                                    Replacing this document resets its LetBuyy verification. Provider review is required again; bank changes must also be approved by your payment provider.
+                                                </div>
+                                            )}
                                             <Input
                                                 label={meta.last4Label}
                                                 value={input.last4}
@@ -638,11 +654,10 @@ export default function BusinessSettingsPage() {
                                             </label>
                                             <div className="settings-business-kyc-actions">
                                                 <Button variant="primary" onClick={() => void submitDocument(req.document_type)} loading={busy}>
-                                                    {existing ? 'Resubmit document' : 'Upload document'}
+                                                    {isVerified ? 'Replace verified document' : existing ? 'Resubmit document' : 'Upload document'}
                                                 </Button>
                                             </div>
-                                        </div>
-                                    )}
+                                    </div>
 
                                     {existing && (status === 'submitted' || status === 'needs_review') && (
                                         <div className="settings-business-kyc-actions settings-business-kyc-actions--inline">

@@ -509,7 +509,7 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(
-        find.text('Private document received. Provider review pending.'),
+        find.text('Private document received. Security scan pending.'),
         findsOneWidget,
       );
       expect(find.text('Verification pending'), findsOneWidget);
@@ -541,7 +541,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text('Private document received. Provider review pending.'),
+        find.text('Private document received. Security scan pending.'),
         findsNothing,
       );
     },
@@ -596,7 +596,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(f.service.overview, isNull);
       expect(
-        find.text('Private document received. Provider review pending.'),
+        find.text('Private document received. Security scan pending.'),
         findsNothing,
       );
     },
@@ -681,7 +681,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Store access changed'), findsOneWidget);
       expect(
-        find.text('Private document received. Provider review pending.'),
+        find.text('Private document received. Security scan pending.'),
         findsNothing,
       );
       expect(f.service.overview, isNull);
@@ -880,6 +880,28 @@ void main() {
   );
 
   testWidgets(
+    'private upload shows security-scan state before provider review',
+    (tester) async {
+      final f = Fixture();
+      final pending = overview('store-a', status: 'in_progress');
+      final document = (pending['documents'] as List).first as Map<String, dynamic>;
+      document['status'] = 'submitted';
+      document['provider_mode'] = 'sandbox';
+      document['evidence_scan_status'] = 'pending';
+      ((pending['required_documents'] as List).first as Map<String, dynamic>)['status'] = 'submitted';
+      pending['next_action'] =
+          'Sandbox uploads are stored for testing only. They are not provider reviewed and cannot enable live payouts.';
+      await tester.pumpWidget(f.screen());
+      await tester.pump();
+      await replyWidget(tester, f, pending);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Security scan pending'), findsOneWidget);
+      expect(find.textContaining('not provider reviewed'), findsOneWidget);
+      expect(find.text('Verified'), findsNothing);
+    },
+  );
+
+  testWidgets(
     'private upload screen keeps status loading, denial and retry usable',
     (tester) async {
       final f = Fixture();
@@ -903,7 +925,7 @@ void main() {
       expect(find.text('retained-proof.png'), findsNothing);
       expect(find.textContaining('retained-proof.png'), findsOneWidget);
       expect(
-        find.text('Sandbox status only. This does not approve live selling.'),
+        find.text('Sandbox uploads are not provider reviewed and do not approve live payouts.'),
         findsOneWidget,
       );
       expect(
