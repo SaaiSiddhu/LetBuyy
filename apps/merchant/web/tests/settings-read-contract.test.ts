@@ -5,7 +5,7 @@ const site='00000000-0000-4000-8000-000000000001';
 const foreign='00000000-0000-4000-8000-000000000002';
 for(const resource of ['zones','rates','profiles','taxes'] as const) {
  function client(fetcher: typeof fetch) {
-  const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',storeId:foreign,fetch:fetcher,maxRetries:0});
+  const api=createLetbuyyApiClient({baseUrl:'https://gateway.test',storeId:foreign,fetch:fetcher});
   return resource==='taxes'?()=>api.taxes.list({store_id:site}):()=>api.shipping[resource].list({store_id:site});
  }
  test(resource+' settings compose pages with one pinned store and reject unverified counts', async()=>{
