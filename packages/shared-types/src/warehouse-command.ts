@@ -44,6 +44,17 @@ export const WarehouseCommandResultSchema = z.object({
       (!po&&(!integer(line.quantity_shipped,0,Number(ordered))||Number(line.quantity_received)>Number(line.quantity_shipped)))) invalid();
     ids.add(String(line.id));
   }
+  if(receipt.operation.endsWith('.receive')) {
+    const seen=new Set<string>(),idKey=po?'purchase_order_line_id':'transfer_line_id';
+    if(!receipt.effective_lines?.length) invalid();
+    for(const effective of receipt.effective_lines??[]) {
+      const id=effective[idKey],line=value.lines.find(row=>row.id===id);
+      if(Object.keys(effective).length!==2||!Object.prototype.hasOwnProperty.call(effective,idKey)||
+        !Object.prototype.hasOwnProperty.call(effective,'quantity')||typeof id!=='string'||seen.has(id)||
+        !line||!integer(effective.quantity,1,Number(line.quantity_received))) invalid();
+      if(typeof id==='string')seen.add(id);
+    }
+  } else if(receipt.effective_lines!==null) invalid();
 });
 export type WarehouseCommandResult = z.infer<typeof WarehouseCommandResultSchema>;
 

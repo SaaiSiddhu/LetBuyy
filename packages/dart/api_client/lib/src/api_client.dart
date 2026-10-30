@@ -2582,6 +2582,14 @@ class InventoryApi {
 
   final ApiClient _client;
 
+  Future<JsonMap> stopWarehouseCommand(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/commands/stop',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
   Future<List<JsonMap>> locations({
     required String storeId,
     ApiRequestOptions? options,

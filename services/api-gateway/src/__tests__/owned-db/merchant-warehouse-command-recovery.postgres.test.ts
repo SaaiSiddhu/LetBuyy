@@ -262,3 +262,34 @@ test('stop validates the complete original normalized intent before writing any 
   assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),'0');
  }
 });
+
+test('stop preserves live owner authority and cannot convert legacy evidence into a false cancellation',async t=>{
+ const f=await fixture(t),key=randomUUID(),made=await f.request('/purchase-orders',f.create(key),key);assert.equal(made.status,201,made.text);
+ const stranger=randomUUID();owned.psql("INSERT INTO users_custom(id,email,email_verified)VALUES("+quote(stranger)+","+quote('syn-wms-'+stranger+'@example.invalid')+",true);");
+ const foreign=await f.requestAs(stranger,f.site.siteId,'/commands/stop',stopCreate(f,key),key);assert.ok([403,404].includes(foreign.status),foreign.text);
+ owned.psql("UPDATE sites SET custom_user_id="+quote(stranger)+" WHERE id="+quote(f.site.siteId)+";");
+ const revoked=await f.request('/commands/stop',stopCreate(f,key),key);assert.equal(revoked.status,403,revoked.text);
+ const replacement=await f.requestAs(stranger,f.site.siteId,'/commands/stop',stopCreate(f,key),key);assert.equal(replacement.status,409,replacement.text);assert.equal(replacement.json?.error.code,'WAREHOUSE_KEY_CONFLICT');
+ owned.psql("UPDATE sites SET custom_user_id="+quote(f.actor)+" WHERE id="+quote(f.site.siteId)+";");
+ const legacy=randomUUID(),lines=[{product_id:f.product,quantity:3,unit_cost:12.25}];
+ owned.psql("SELECT public.create_purchase_order_with_lines("+quote(f.site.siteId)+"::uuid,NULL,"+quote(f.site.locationId)+"::uuid,"+quote(JSON.stringify(lines))+"::jsonb,NULL,NULL,"+quote(f.actor)+"::uuid,"+quote(randomUUID())+","+quote(legacy)+");");
+ const before=stock(f.site.siteId),denied=await f.request('/commands/stop',stopCreate(f,legacy),legacy);
+ assert.equal(denied.status,409,denied.text);assert.equal(denied.json?.error.code,'WAREHOUSE_LEGACY_KEY');assert.deepEqual(stock(f.site.siteId),before);
+ assert.equal(owned.psql("SELECT count(*)FROM warehouse_command_receipts WHERE idempotency_key="+quote(legacy)+";"),'0');
+});
+
+test('purchase costs preserve whole paise and reject rounding drift before any stock effect',async t=>{
+ const f=await fixture(t),key=randomUUID(),body=f.create(key);
+ body.lines[0].unit_cost=0.005;
+ const rejected=await f.request('/purchase-orders',body,key);assert.equal(rejected.status,400,rejected.text);
+ assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+";"),'0');
+ const normalized={supplier_id:null,location_id:f.site.locationId,expected_at:null,notes:null,lines:[{...body.lines[0],variant_id:null}]};
+ assert.match(owned.psqlExpectError("BEGIN;SET LOCAL ROLE app_tenant;SELECT set_config('app.site_id',"+quote(f.site.siteId)+",true),set_config('app.actor_id',"+quote(f.actor)+",true);SELECT public.apply_warehouse_command_v1("+
+  quote(f.site.siteId)+"::uuid,"+quote(f.actor)+"::uuid,"+quote(key)+",'purchase_order.create',NULL,"+quote(JSON.stringify(normalized))+"::jsonb,"+quote(randomUUID())+");COMMIT;"),/WAREHOUSE_INVALID/);
+ for(const cost of [0.29,12.25]) {
+  const acceptedKey=randomUUID(),valid=f.create(acceptedKey,3);valid.lines[0].unit_cost=cost;
+  const accepted=await f.request('/purchase-orders',valid,acceptedKey);assert.equal(accepted.status,201,accepted.text);
+  const id=accepted.json?.data.purchase_order.id;
+  assert.equal(owned.psql("SELECT (p.subtotal=sum(l.quantity_ordered*l.unit_cost))::text FROM purchase_orders p JOIN purchase_order_lines l ON l.purchase_order_id=p.id WHERE p.id="+quote(id)+" GROUP BY p.id;"),'true');
+ }
+});

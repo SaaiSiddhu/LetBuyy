@@ -141,6 +141,7 @@ class SecurityCommandStore {
     String command,
     JsonMap intent, {
     required void Function() check,
+    String? proposedKey,
   }) async {
     final captured = captureIntent(intent);
     final old = await read(c, command, check: check);
@@ -154,11 +155,15 @@ class SecurityCommandStore {
         );
       return old;
     }
+    if (proposedKey != null &&
+        !RegExp(r'^[a-zA-Z0-9-]{8,200}$').hasMatch(proposedKey)) {
+      throw const FormatException('The request key could not be confirmed.');
+    }
     final pending = PendingSecurityCommand(
       c.actorId,
       c.storeId,
       command,
-      const Uuid().v4(),
+      proposedKey ?? const Uuid().v4(),
       captured,
     );
     check();

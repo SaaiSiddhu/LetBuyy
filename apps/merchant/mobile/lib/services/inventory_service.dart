@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
+import 'package:uuid/uuid.dart';
 import 'api_client.dart';
 import 'security_command_store.dart';
 
@@ -30,6 +31,9 @@ export 'package:letbuyy_models/letbuyy_models.dart'
         InventoryTransferContract,
         InventoryTransferInput;
 
+export 'package:letbuyy_models/letbuyy_models.dart'
+    show WarehouseCommandIntent, WarehouseCommandAcknowledgement;
+
 typedef _InventoryView = ({Object? version, String site, int generation});
 
 class InventoryService extends ChangeNotifier {
@@ -46,6 +50,16 @@ class InventoryService extends ChangeNotifier {
   final String? Function() _actor, _store;
   final SecurityCommandStore _commands;
   static const _adjustmentCommand = 'inventory-adjustment';
+  static const _warehouseCommand = 'inventory-warehouse';
+  final Map<
+    String,
+    ({
+      Object? version,
+      WarehouseCommandIntent intent,
+      Future<WarehouseCommandAcknowledgement> result,
+    })
+  >
+  _warehouseFlights = {};
   final Map<String, _InventoryView> _views = {};
   final Set<String> _loading = {};
   int _generation = 0;
@@ -604,6 +618,208 @@ class InventoryService extends ChangeNotifier {
     );
   }
 
+  /// One unresolved warehouse intent per actor/store, persisted before transport.
+  Future<PendingSecurityCommand?> pendingWarehouseCommand(String site) {
+    final c = _commandContext(site);
+    return _commands.serialized(() async {
+      final pending = await _commands.read(
+        c,
+        _warehouseCommand,
+        check: () => _checkCommand(c),
+      );
+      if (pending != null) WarehouseCommandIntent.fromJson(pending.intent);
+      return pending;
+    });
+  }
+
+  Future<WarehouseCommandAcknowledgement> submitWarehouseCommand(
+    String site,
+    WarehouseCommandIntent intent, {
+    String? proposedKey,
+  }) {
+    final c = _commandContext(site);
+    final scope = '${c.actorId}:${c.storeId}';
+    final flight = _warehouseFlights[scope];
+    if (flight != null) {
+      if (flight.version != c.version) throw changed();
+      if (!flight.intent.sameAs(intent)) {
+        throw const ApiException(
+          message:
+              'Confirm the original warehouse request before changing its details.',
+          statusCode: 409,
+          code: 'PENDING_SECURITY_COMMAND',
+        );
+      }
+      return flight.result;
+    }
+    late Future<WarehouseCommandAcknowledgement> result;
+    result = _commands
+        .serialized(() async {
+          final pending = await _commands.prepare(
+            c,
+            _warehouseCommand,
+            intent.toJson(),
+            proposedKey: proposedKey,
+            check: () => _checkCommand(c),
+          );
+          notifyListeners();
+          try {
+            return await _sendPendingWarehouse(c, pending);
+          } finally {
+            notifyListeners();
+          }
+        })
+        .whenComplete(() {
+          if (identical(_warehouseFlights[scope]?.result, result))
+            _warehouseFlights.remove(scope);
+        });
+    _warehouseFlights[scope] = (
+      version: c.version,
+      intent: intent,
+      result: result,
+    );
+    return result;
+  }
+
+  Future<WarehouseCommandAcknowledgement> retryWarehouseCommand(String site) =>
+      _recoverWarehouse(site, stop: false);
+  Future<WarehouseCommandAcknowledgement> stopWarehouseCommand(String site) =>
+      _recoverWarehouse(site, stop: true);
+  Future<WarehouseCommandAcknowledgement> _recoverWarehouse(
+    String site, {
+    required bool stop,
+  }) {
+    final c = _commandContext(site);
+    return _commands.serialized(() async {
+      final pending = await _commands.read(
+        c,
+        _warehouseCommand,
+        check: () => _checkCommand(c),
+      );
+      if (pending == null) {
+        throw const ApiException(
+          message: 'No warehouse request is awaiting confirmation.',
+          statusCode: 409,
+          code: 'NO_PENDING_COMMAND',
+        );
+      }
+      return _sendPendingWarehouse(c, pending, stop: stop);
+    });
+  }
+
+  Future<WarehouseCommandAcknowledgement> _sendPendingWarehouse(
+    MerchantSecurityContext c,
+    PendingSecurityCommand pending, {
+    bool stop = false,
+  }) async {
+    _checkCommand(c);
+    final intent = WarehouseCommandIntent.fromJson(pending.intent);
+    final options = _options(c.version, c.storeId, key: pending.key);
+    final body = <String, dynamic>{
+      ...intent.command,
+      'idempotency_key': pending.key,
+    };
+    if (intent.operation.endsWith('.create')) {
+      body['store_id'] = c.storeId;
+      // Create endpoints normalize absent optional values to these frozen nulls.
+      for (final key in ['notes', 'expected_at']) {
+        if (body[key] == null) body.remove(key);
+      }
+    } else if (body['lines'] == null) {
+      body.remove('lines');
+    }
+    Future<JsonMap> sendStop() => _api.inventory.stopWarehouseCommand({
+      ...intent.toJson(),
+      'store_id': c.storeId,
+      'idempotency_key': pending.key,
+    }, options: options);
+    JsonMap raw;
+    try {
+      raw = stop
+          ? await sendStop()
+          : await switch (intent.operation) {
+              'purchase_order.create' => _api.inventory.createPurchaseOrder(
+                body,
+                options: options,
+              ),
+              'purchase_order.receive' => _api.inventory.receivePurchaseOrder(
+                intent.targetId!,
+                body,
+                options: options,
+              ),
+              'transfer.create' => _api.inventory.createTransfer(
+                body,
+                options: options,
+              ),
+              'transfer.ship' => _api.inventory.shipTransfer(
+                intent.targetId!,
+                body,
+                options: options,
+              ),
+              'transfer.receive' => _api.inventory.receiveTransfer(
+                intent.targetId!,
+                body,
+                options: options,
+              ),
+              _ => throw const FormatException(
+                'The saved warehouse request needs review.',
+              ),
+            };
+    } on ApiException catch (error) {
+      _checkCommand(c);
+      if (stop || error.code != 'WAREHOUSE_REQUEST_STOPPED') rethrow;
+      raw = await sendStop();
+    }
+    _checkCommand(c);
+    final WarehouseCommandAcknowledgement ack;
+    try {
+      ack = WarehouseCommandAcknowledgement.fromJson(raw);
+    } on FormatException {
+      throw const ApiException(
+        message: 'The warehouse acknowledgement could not be confirmed.',
+        statusCode: 502,
+        code: 'WAREHOUSE_RECEIPT_INVALID',
+      );
+    }
+    if (ack.actorId != c.actorId ||
+        ack.storeId != c.storeId ||
+        ack.key != pending.key ||
+        !intent.matches(ack)) {
+      throw const ApiException(
+        message: 'The warehouse acknowledgement could not be confirmed.',
+        statusCode: 502,
+        code: 'WAREHOUSE_RECEIPT_MISMATCH',
+      );
+    }
+    await _commands.complete(c, pending, check: () => _checkCommand(c));
+    _checkCommand(c);
+    // A replay is a historical acknowledgement. Reload current server reads.
+    for (final resource in [
+      'orders',
+      'transfers',
+      'levels',
+      'history',
+      'receipts',
+    ]) {
+      _views.remove(resource);
+      _loading.remove(resource);
+      _clear(resource);
+    }
+    notifyListeners();
+    return ack;
+  }
+
+  T _appliedWarehouse<T>(WarehouseCommandAcknowledgement ack, T? row) {
+    if (!ack.applied || row == null) {
+      throw const ApiException(
+        message: 'The warehouse request was stopped before it applied.',
+        statusCode: 409,
+        code: 'WAREHOUSE_REQUEST_STOPPED',
+      );
+    }
+    return row;
+  }
+
   /// A retry replays the original frozen product/location/delta, never a newly
   /// inferred quantity. Only the Gateway's durable receipt confirms the effect.
   Future<InventoryLevel> submitAdjustment({
@@ -802,34 +1018,33 @@ class InventoryService extends ChangeNotifier {
         PurchaseOrderContract.fromJson,
         (rows) => _purchaseOrders = rows,
       );
-  Future<PurchaseOrderContract> createPurchaseOrder(PurchaseOrderInput input) =>
-      _command(
-        'orders',
-        input.storeId,
-        (options) => _api.inventory.createPurchaseOrder(
-          input.toJson(),
-          options: options,
-        ),
-        PurchaseOrderContract.fromJson,
-        (row) => _purchaseOrders = [
-          row,
-          ..._purchaseOrders.where((item) => item.id != row.id),
-        ],
-        key: input.idempotencyKey,
-      );
+  Future<PurchaseOrderContract> createPurchaseOrder(
+    PurchaseOrderInput input,
+  ) async {
+    final ack = await submitWarehouseCommand(
+      input.storeId,
+      WarehouseCommandIntent.purchaseOrder(input),
+      proposedKey: input.idempotencyKey,
+    );
+    return _appliedWarehouse(ack, ack.purchaseOrder);
+  }
+
   Future<PurchaseOrderContract> receivePurchaseOrder(
     PurchaseOrderContract purchaseOrder, {
     required String idempotencyKey,
-  }) => _command(
-    'orders',
-    purchaseOrder.storeId,
-    (options) => _api.inventory.receivePurchaseOrder(purchaseOrder.id, {
-      'idempotency_key': idempotencyKey,
-    }, options: options),
-    PurchaseOrderContract.fromJson,
-    (row) => _purchaseOrders = _replaceById(_purchaseOrders, row),
-    key: idempotencyKey,
-  );
+    Map<String, int>? quantities,
+  }) async {
+    final ack = await submitWarehouseCommand(
+      purchaseOrder.storeId,
+      WarehouseCommandIntent.receivePurchaseOrder(
+        purchaseOrder,
+        quantities: quantities,
+      ),
+      proposedKey: idempotencyKey,
+    );
+    return _appliedWarehouse(ack, ack.purchaseOrder);
+  }
+
   Future<List<InventoryTransferContract>> fetchTransfers(String storeId) =>
       _read(
         'transfers',
@@ -841,58 +1056,39 @@ class InventoryService extends ChangeNotifier {
       );
   Future<InventoryTransferContract> createTransfer(
     InventoryTransferInput input,
-  ) => _command(
-    'transfers',
-    input.storeId,
-    (options) =>
-        _api.inventory.createTransfer(input.toJson(), options: options),
-    InventoryTransferContract.fromJson,
-    (row) =>
-        _transfers = [row, ..._transfers.where((item) => item.id != row.id)],
-    key: input.idempotencyKey,
-  );
+  ) async {
+    final ack = await submitWarehouseCommand(
+      input.storeId,
+      WarehouseCommandIntent.transfer(input),
+      proposedKey: input.idempotencyKey,
+    );
+    return _appliedWarehouse(ack, ack.transfer);
+  }
+
   Future<InventoryTransferContract> shipTransfer(
     InventoryTransferContract transfer, {
     required String idempotencyKey,
-  }) => _command(
-    'transfers',
-    transfer.storeId,
-    (options) => _api.inventory.shipTransfer(transfer.id, {
-      'idempotency_key': idempotencyKey,
-    }, options: options),
-    InventoryTransferContract.fromJson,
-    (row) => _transfers = _replaceById(_transfers, row),
-    key: idempotencyKey,
-  );
+  }) async {
+    final ack = await submitWarehouseCommand(
+      transfer.storeId,
+      WarehouseCommandIntent.ship(transfer.id),
+      proposedKey: idempotencyKey,
+    );
+    return _appliedWarehouse(ack, ack.transfer);
+  }
+
   Future<InventoryTransferContract> receiveTransfer(
     InventoryTransferContract transfer, {
     required String idempotencyKey,
-  }) => _command(
-    'transfers',
-    transfer.storeId,
-    (options) => _api.inventory.receiveTransfer(transfer.id, {
-      'idempotency_key': idempotencyKey,
-    }, options: options),
-    InventoryTransferContract.fromJson,
-    (row) => _transfers = _replaceById(_transfers, row),
-    key: idempotencyKey,
-  );
-  String makeIdempotencyKey(String scope) =>
-      'mobile-$scope-${DateTime.now().microsecondsSinceEpoch}';
-  List<T> _replaceById<T>(List<T> items, T replacement) {
-    final id = switch (replacement) {
-      PurchaseOrderContract item => item.id,
-      InventoryTransferContract item => item.id,
-      _ => '',
-    };
-    return items
-        .map(
-          (item) => switch (item) {
-            PurchaseOrderContract value when value.id == id => replacement,
-            InventoryTransferContract value when value.id == id => replacement,
-            _ => item,
-          },
-        )
-        .toList(growable: false);
+    Map<String, int>? quantities,
+  }) async {
+    final ack = await submitWarehouseCommand(
+      transfer.storeId,
+      WarehouseCommandIntent.receiveTransfer(transfer, quantities: quantities),
+      proposedKey: idempotencyKey,
+    );
+    return _appliedWarehouse(ack, ack.transfer);
   }
+
+  String makeIdempotencyKey(String scope) => const Uuid().v4();
 }

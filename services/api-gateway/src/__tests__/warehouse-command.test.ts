@@ -14,7 +14,7 @@ for(const transfer of [true,false]) {
  test((transfer?'transfer':'PO')+' acknowledgement accepts a populated scoped partial receipt',()=>{
   assert.equal(WarehouseCommandResultSchema.safeParse(result(transfer)).success,true);
  });
- for(const fault of ['foreign-line','foreign-parent','target','duplicate','fraction','missing-count','over-received','state']) {
+ for(const fault of ['foreign-line','foreign-parent','target','duplicate','fraction','missing-count','over-received','state','effective-empty','effective-unknown','effective-duplicate','effective-over','effective-extra']) {
   test((transfer?'transfer':'PO')+' acknowledgement rejects '+fault,()=>{
    const body=result(transfer),line=body.lines[0];
    if(fault==='foreign-line')line.site_id=uuid(9);
@@ -25,6 +25,11 @@ for(const transfer of [true,false]) {
    if(fault==='missing-count')delete line.quantity_received;
    if(fault==='over-received')line.quantity_received=6;
    if(fault==='state')(body[transfer?'transfer':'purchase_order'] as Record<string,unknown>).status='invented';
+   if(fault==='effective-empty')body.command_receipt.effective_lines=[];
+   if(fault==='effective-unknown')body.command_receipt.effective_lines[0][transfer?'transfer_line_id':'purchase_order_line_id']=uuid(9);
+   if(fault==='effective-duplicate')body.command_receipt.effective_lines.push({...body.command_receipt.effective_lines[0]});
+   if(fault==='effective-over')body.command_receipt.effective_lines[0].quantity=3;
+   if(fault==='effective-extra')body.command_receipt.effective_lines[0].extra=1;
    assert.equal(WarehouseCommandResultSchema.safeParse(body).success,false);
   });
  }

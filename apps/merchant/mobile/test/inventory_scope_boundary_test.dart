@@ -5,6 +5,7 @@ import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/security_command_store.dart';
 import 'support/loyalty_fixture.dart' show MemoryStorage;
+import 'support/warehouse_fixture.dart' as w;
 
 const a = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
     b = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -258,31 +259,39 @@ void main() {
       test(
         '$envelope command validates nested receipt scope ($foreign)',
         () async {
-          final api = client(
-            (r, h) => respond(r, h, {
-              envelope: {
-                'id': 'synthetic-operation',
-                'site_id': foreign ? b : a,
-              },
-              'lines': [],
-            }),
+          final po = envelope == 'purchase_order',
+              key = 'synthetic-command-key';
+          final base = WarehouseCommandAcknowledgement.fromJson(
+            w.warehouseAck(
+              po
+                  ? WarehouseCommandIntent.purchaseOrder(w.warehousePo())
+                  : WarehouseCommandIntent.transfer(w.warehouseTransfer()),
+              key,
+            ),
           );
-          final service = InventoryService(api: api);
+          final intent = po
+              ? WarehouseCommandIntent.receivePurchaseOrder(base.purchaseOrder!)
+              : WarehouseCommandIntent.ship(base.transfer!.id);
+          final ack = w.warehouseAck(
+            intent,
+            key,
+            received: po ? 4 : 0,
+            shipped: po ? 0 : 4,
+          );
+          if (foreign) (ack[envelope] as Map)['site_id'] = b;
+          final api = client((r, h) => respond(r, h, ack));
+          final service = InventoryService(
+            api: api,
+            actorIdProvider: () => w.warehouseActor,
+            storeIdProvider: () => w.warehouseSite,
+            commands: SecurityCommandStore(storage: MemoryStorage()),
+          );
           final result = envelope == 'purchase_order'
               ? service.receivePurchaseOrder(
-                  PurchaseOrderContract.fromJson({
-                    'id': 'synthetic-operation',
-                    'site_id': a,
-                  }),
-                  idempotencyKey: 'synthetic-command-key',
+                  base.purchaseOrder!,
+                  idempotencyKey: key,
                 )
-              : service.shipTransfer(
-                  InventoryTransferContract.fromJson({
-                    'id': 'synthetic-operation',
-                    'site_id': a,
-                  }),
-                  idempotencyKey: 'synthetic-command-key',
-                );
+              : service.shipTransfer(base.transfer!, idempotencyKey: key);
           if (foreign) {
             await expectLater(
               result,
@@ -290,7 +299,7 @@ void main() {
                 isA<ApiException>().having(
                   (e) => e.code,
                   'scope',
-                  'INVENTORY_SCOPE_MISMATCH',
+                  'WAREHOUSE_RECEIPT_INVALID',
                 ),
               ),
             );
@@ -300,7 +309,7 @@ void main() {
               value is PurchaseOrderContract
                   ? value.storeId
                   : (value as InventoryTransferContract).storeId,
-              a,
+              w.warehouseSite,
             );
           }
         },

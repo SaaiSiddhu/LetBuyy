@@ -19,6 +19,7 @@ import 'package:letbuyy_store/screens/inventory/suppliers_screen.dart';
 import 'package:letbuyy_store/screens/inventory/purchase_orders_screen.dart';
 import 'package:letbuyy_store/screens/inventory/transfers_screen.dart';
 import 'support/loyalty_fixture.dart' show MemoryStorage;
+import 'support/warehouse_fixture.dart' as w;
 
 const siteA = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const siteB = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -115,6 +116,8 @@ Future<StoreContext> mount(
   Widget screen,
   void Function(RequestOptions, RequestInterceptorHandler) handler, {
   bool settle = true,
+  MemoryStorage? storage,
+  String actor = 'synthetic-owner',
 }) async {
   SharedPreferences.setMockInitialValues({});
   tester.view.physicalSize = const Size(390, 844);
@@ -134,9 +137,9 @@ Future<StoreContext> mount(
   stores = StoreContext(storeService: _FixedStores(api));
   final inventory = InventoryService(
     api: api,
-    actorIdProvider: () => 'synthetic-owner',
+    actorIdProvider: () => actor,
     storeIdProvider: () => stores.selectedStoreId,
-    commands: SecurityCommandStore(storage: MemoryStorage()),
+    commands: SecurityCommandStore(storage: storage ?? MemoryStorage()),
   );
   await tester.pumpWidget(
     MultiProvider(
@@ -160,6 +163,114 @@ Future<StoreContext> mount(
 }
 
 void main() {
+  for (final surface in [
+    const PurchaseOrdersScreen(),
+    const InventoryTransfersScreen(),
+  ]) {
+    testWidgets(
+      '${surface.runtimeType} keeps recovery available when the list is unavailable and confirms stop',
+      (tester) async {
+        final storage = MemoryStorage(),
+            journal = SecurityCommandStore(storage: storage),
+            intent = WarehouseCommandIntent.ship(w.warehouseTarget);
+        final pending = await journal.prepare(
+          (actorId: w.warehouseActor, storeId: siteA, version: null),
+          'inventory-warehouse',
+          intent.toJson(),
+          check: () {},
+          proposedKey: 'pending-ship-original',
+        );
+        final writes = <RequestOptions>[];
+        await mount(
+          tester,
+          surface,
+          (r, h) {
+            if (r.method == 'GET') {
+              respond(r, h, {}, status: 503);
+              return;
+            }
+            writes.add(r);
+            expect(r.path, endsWith('/inventory/commands/stop'));
+            expect((r.data as Map)['idempotency_key'], pending.key);
+            expect((r.data as Map)['command'], intent.command);
+            respond(
+              r,
+              h,
+              w.warehouseAck(intent, pending.key, site: siteA, applied: false),
+            );
+          },
+          storage: storage,
+          actor: w.warehouseActor,
+        );
+        expect(
+          find.text('Warehouse request awaiting confirmation'),
+          findsOneWidget,
+        );
+        expect(find.textContaining('Could not load'), findsOneWidget);
+        await tester.tap(find.text('Stop original'));
+        await tester.pumpAndSettle();
+        expect(find.text('Stop the original request?'), findsOneWidget);
+        await tester.tap(find.text('Confirm stop'));
+        await tester.pumpAndSettle();
+        expect(writes.length, 1);
+        expect(
+          find.text('Warehouse request awaiting confirmation'),
+          findsNothing,
+        );
+        expect(
+          find.text('Original warehouse request stopped before it applied.'),
+          findsOneWidget,
+        );
+        expect(
+          await journal.read(
+            (actorId: w.warehouseActor, storeId: siteA, version: null),
+            'inventory-warehouse',
+            check: () {},
+          ),
+          isNull,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+    testWidgets(
+      '${surface.runtimeType} retires pending details and an open stop dialog on A-B-A',
+      (tester) async {
+        final storage = MemoryStorage(),
+            journal = SecurityCommandStore(storage: storage);
+        await journal.prepare(
+          (actorId: w.warehouseActor, storeId: siteA, version: null),
+          'inventory-warehouse',
+          WarehouseCommandIntent.ship(w.warehouseTarget).toJson(),
+          check: () {},
+        );
+        final writes = <RequestOptions>[];
+        final stores = await mount(
+          tester,
+          surface,
+          (r, h) {
+            if (r.method != 'GET') writes.add(r);
+            respond(r, h, []);
+          },
+          storage: storage,
+          actor: w.warehouseActor,
+        );
+        await tester.tap(find.text('Stop original'));
+        await tester.pumpAndSettle();
+        await stores.selectStore(
+          stores.stores.firstWhere((store) => store.id == siteB),
+        );
+        await tester.pumpAndSettle();
+        await stores.selectStore(
+          stores.stores.firstWhere((store) => store.id == siteA),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Confirm stop'), findsNothing);
+        expect(find.text('Store access changed'), findsOneWidget);
+        expect(writes, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
   testWidgets(
     'history clears private rows and expanded notes on store switch and recovers a failed later page',
     (tester) async {

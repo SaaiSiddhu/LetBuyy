@@ -1,5 +1,6 @@
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
+import '../../widgets/shared/warehouse_command_recovery.dart';
 import '../../app/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ class PurchaseOrdersScreen extends StatefulWidget {
 class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
   List<PurchaseOrderContract> _orders = const [];
   bool _isLoading = true;
+  bool _warehouseReady = false, _warehouseBusy = false;
   String? _storeId;
   String? _error;
   Object? _viewKey;
@@ -96,6 +98,8 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
       _viewKey = stores.requestContextKey;
       ++_readGeneration;
       _storeId = null;
+      _warehouseReady = false;
+      _warehouseBusy = false;
       _orders = [];
       _error = null;
       _isLoading = true;
@@ -106,7 +110,12 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
     return Scaffold(
       backgroundColor: colors.bgStart,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null || _isLoading || _error != null
+        onPressed:
+            !_warehouseReady ||
+                _warehouseBusy ||
+                _storeId == null ||
+                _isLoading ||
+                _error != null
             ? null
             : _createPurchaseOrder,
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
@@ -120,6 +129,15 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
           child: Column(
             children: [
               _header(),
+              if (_view != null)
+                WarehouseCommandRecovery(
+                  view: _view!,
+                  onReady: (ready) {
+                    if (mounted && _warehouseReady != ready)
+                      setState(() => _warehouseReady = ready);
+                  },
+                  onResolved: _load,
+                ),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
           ),
@@ -255,7 +273,10 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
           Align(
             alignment: Alignment.centerRight,
             child: OutlinedButton.icon(
-              onPressed: order.remainingQuantity == 0
+              onPressed:
+                  !_warehouseReady ||
+                      _warehouseBusy ||
+                      order.remainingQuantity == 0
                   ? null
                   : () => _receive(order),
               icon: const Icon(Icons.move_to_inbox_outlined, size: 18),
@@ -304,7 +325,7 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
 
   Future<void> _createPurchaseOrder() async {
     final view = _view;
-    if (!_matches(view)) return;
+    if (!_matches(view) || !_warehouseReady || _warehouseBusy) return;
     final service = context.read<InventoryService>();
     final input = await showModalBottomSheet<PurchaseOrderInput>(
       context: context,
@@ -325,6 +346,8 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
     if (input == null || !_matches(view) || input.storeId != view!.storeId)
       return;
 
+    if (!_warehouseReady || _warehouseBusy) return;
+    setState(() => _warehouseBusy = true);
     try {
       await service.createPurchaseOrder(input);
       if (_matches(view)) {
@@ -334,15 +357,22 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The inventory change could not be confirmed. Refresh before retrying.',
+          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
           isError: true,
         );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 
   Future<void> _receive(PurchaseOrderContract order) async {
     final view = _view;
-    if (!_matches(view) || order.storeId != view!.storeId) return;
+    if (!_matches(view) ||
+        order.storeId != view!.storeId ||
+        !_warehouseReady ||
+        _warehouseBusy)
+      return;
+    setState(() => _warehouseBusy = true);
     try {
       final service = context.read<InventoryService>();
       await service.receivePurchaseOrder(
@@ -356,9 +386,11 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The inventory change could not be confirmed. Refresh before retrying.',
+          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
           isError: true,
         );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 

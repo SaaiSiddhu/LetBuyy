@@ -409,7 +409,8 @@ export const PurchaseOrderLineSchema = z.object({
   product_id: UuidSchema,
   variant_id: UuidSchema.optional().nullable(),
   quantity: z.number().int().min(1).max(999999),
-  unit_cost: z.number().min(0).max(999999).default(0),
+  unit_cost: z.number().min(0).max(999999)
+    .refine(value=>Math.round(value*100)/100===value,'Unit cost must use whole paise.').default(0),
 });
 
 export const CreatePurchaseOrderSchema = z.object({

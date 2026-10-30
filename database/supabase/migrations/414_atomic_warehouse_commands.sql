@@ -119,7 +119,8 @@ BEGIN
     OR jsonb_typeof(line->'quantity') IS DISTINCT FROM 'number' OR line->>'quantity' !~ '^[0-9]+$'
     OR (line->>'quantity')::numeric NOT BETWEEN 1 AND 999999
     OR(operation='purchase_order.create' AND(jsonb_typeof(line->'unit_cost') IS DISTINCT FROM 'number'
-      OR (line->>'unit_cost')::numeric NOT BETWEEN 0 AND 999999)) THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
+      OR (line->>'unit_cost')::numeric NOT BETWEEN 0 AND 999999
+      OR trunc((line->>'unit_cost')::numeric,2)<>(line->>'unit_cost')::numeric)) THEN RAISE EXCEPTION 'WAREHOUSE_INVALID';END IF;
    product:=(line->>'product_id')::uuid;variant:=(line->>'variant_id')::uuid;
    PERFORM id FROM public.products WHERE id=product AND store_id=p_site_id AND deleted_at IS NULL FOR SHARE;
    IF NOT FOUND THEN RAISE EXCEPTION 'WAREHOUSE_NOT_FOUND';END IF;

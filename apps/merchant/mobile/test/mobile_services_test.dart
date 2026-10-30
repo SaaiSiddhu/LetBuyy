@@ -119,6 +119,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'support/loyalty_fixture.dart' show MemoryStorage;
+import 'support/warehouse_fixture.dart' as w;
 
 void main() {
   test('blog form omits absent SEO fields and sends strings when blank', () {
@@ -4750,92 +4751,53 @@ void main() {
     });
 
     test('InventoryService creates and advances purchase orders', () async {
-      final api = _FakeApiClient(
-        json: {
-          '/inventory/purchase-orders': [_purchaseOrderJson()],
-          '/inventory/purchase-orders/po_1/receive': _purchaseOrderJson(
-            status: 'received',
-            receivedQuantity: 4,
-          ),
-        },
-      );
-      final service = InventoryService(api: api);
-
-      final orders = await service.fetchPurchaseOrders('store_1');
-      final created = await service.createPurchaseOrder(
-        const PurchaseOrderInput(
-          storeId: 'store_1',
-          supplierId: 'supplier_1',
-          locationId: 'loc_1',
-          idempotencyKey: 'po-create-123',
-          lines: [
-            InventoryLineInput(
-              productId: 'prod_1',
-              variantId: 'variant_1',
-              quantity: 4,
-              unitCost: 299,
-            ),
-          ],
-        ),
-      );
-      final received = await service.receivePurchaseOrder(
-        created,
-        idempotencyKey: 'po-receive-123',
-      );
-
-      expect(orders.single.totalQuantity, 4);
-      expect(created.supplierName, 'Acme Textiles');
-      expect(received.status, 'received');
-      expect(received.remainingQuantity, 0);
-      expect(api.paths, contains('/inventory/purchase-orders'));
-      expect(api.paths, contains('/inventory/purchase-orders/po_1/receive'));
-      expect(
-        api.bodies['/inventory/purchase-orders'],
-        containsPair('idempotency_key', 'po-create-123'),
-      );
+      final input=w.warehousePo(), intent=WarehouseCommandIntent.purchaseOrder(w.warehousePo());
+      final createdAck=w.warehouseAck(intent,input.idempotencyKey);
+      final createdRow=WarehouseCommandAcknowledgement.fromJson(createdAck).purchaseOrder!;
+      final receiveIntent=WarehouseCommandIntent.receivePurchaseOrder(createdRow);
+      final receivedAck=w.warehouseAck(receiveIntent,'po-receive-123',received:4);
+      final api=_FakeApiClient(json:{'/inventory/purchase-orders':[{
+        ...createdAck['purchase_order'] as Map<String,dynamic>,'lines':createdAck['lines']}],
+        '/inventory/purchase-orders/${w.warehouseTarget}/receive':receivedAck},
+        methodJson:{'POST /inventory/purchase-orders':createdAck});
+      final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
+        storeIdProvider:()=>w.warehouseSite,commands:SecurityCommandStore(storage:MemoryStorage()));
+      final orders=await service.fetchPurchaseOrders(w.warehouseSite);
+      final created=await service.createPurchaseOrder(input);
+      final received=await service.receivePurchaseOrder(created,idempotencyKey:'po-receive-123');
+      expect(orders.single.totalQuantity,4);expect(created.id,w.warehouseTarget);
+      expect(received.status,'received');expect(received.remainingQuantity,0);
+      expect(api.bodies['/inventory/purchase-orders'],containsPair('idempotency_key',input.idempotencyKey));
+      expect(api.bodies['/inventory/purchase-orders/${w.warehouseTarget}/receive'],containsPair('lines',[
+        {'purchase_order_line_id':w.warehouseLine,'quantity':4}]));
+      expect(await service.pendingWarehouseCommand(w.warehouseSite),isNull);
     });
 
     test('InventoryService creates, ships, and receives transfers', () async {
-      final api = _FakeApiClient(
-        json: {
-          '/inventory/transfers': [_transferJson()],
-          '/inventory/transfers/transfer_1/ship': _transferJson(
-            status: 'shipped',
-          ),
-          '/inventory/transfers/transfer_1/receive': _transferJson(
-            status: 'received',
-            receivedQuantity: 3,
-          ),
-        },
-      );
-      final service = InventoryService(api: api);
-
-      final transfers = await service.fetchTransfers('store_1');
-      final created = await service.createTransfer(
-        const InventoryTransferInput(
-          storeId: 'store_1',
-          sourceLocationId: 'loc_1',
-          destinationLocationId: 'loc_2',
-          idempotencyKey: 'transfer-create-123',
-          lines: [InventoryLineInput(productId: 'prod_1', quantity: 3)],
-        ),
-      );
-      final shipped = await service.shipTransfer(
-        created,
-        idempotencyKey: 'transfer-ship-123',
-      );
-      final received = await service.receiveTransfer(
-        created,
-        idempotencyKey: 'transfer-receive-123',
-      );
-
-      expect(transfers.single.totalQuantity, 3);
-      expect(shipped.status, 'shipped');
-      expect(received.status, 'received');
-      expect(received.remainingQuantity, 0);
-      expect(api.paths, contains('/inventory/transfers'));
-      expect(api.paths, contains('/inventory/transfers/transfer_1/ship'));
-      expect(api.paths, contains('/inventory/transfers/transfer_1/receive'));
+      final input=w.warehouseTransfer(),intent=WarehouseCommandIntent.transfer(w.warehouseTransfer());
+      final createdAck=w.warehouseAck(intent,input.idempotencyKey);
+      final createdRow=WarehouseCommandAcknowledgement.fromJson(createdAck).transfer!;
+      final shipIntent=WarehouseCommandIntent.ship(createdRow.id);
+      final shippedAck=w.warehouseAck(shipIntent,'transfer-ship-123',shipped:4);
+      final shippedRow=WarehouseCommandAcknowledgement.fromJson(shippedAck).transfer!;
+      final receiveIntent=WarehouseCommandIntent.receiveTransfer(shippedRow);
+      final receivedAck=w.warehouseAck(receiveIntent,'transfer-receive-123',received:4,shipped:4);
+      final api=_FakeApiClient(json:{'/inventory/transfers':[{
+        ...createdAck['transfer'] as Map<String,dynamic>,'lines':createdAck['lines']}],
+        '/inventory/transfers/${w.warehouseTarget}/ship':shippedAck,
+        '/inventory/transfers/${w.warehouseTarget}/receive':receivedAck},
+        methodJson:{'POST /inventory/transfers':createdAck});
+      final service=InventoryService(api:api,actorIdProvider:()=>w.warehouseActor,
+        storeIdProvider:()=>w.warehouseSite,commands:SecurityCommandStore(storage:MemoryStorage()));
+      final transfers=await service.fetchTransfers(w.warehouseSite);
+      final created=await service.createTransfer(input);
+      final shipped=await service.shipTransfer(created,idempotencyKey:'transfer-ship-123');
+      final received=await service.receiveTransfer(shipped,idempotencyKey:'transfer-receive-123');
+      expect(transfers.single.totalQuantity,4);expect(shipped.status,'shipped');
+      expect(received.status,'received');expect(received.remainingQuantity,0);
+      expect(api.paths,contains('/inventory/transfers/${w.warehouseTarget}/ship'));
+      expect(api.paths,contains('/inventory/transfers/${w.warehouseTarget}/receive'));
+      expect(await service.pendingWarehouseCommand(w.warehouseSite),isNull);
     });
 
     test('Inventory scanner source is wired to mobile_scanner', () {

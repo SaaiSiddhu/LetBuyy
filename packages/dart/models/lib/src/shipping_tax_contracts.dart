@@ -1,4 +1,4 @@
-/// Dart mirrors of the canonical shipping/tax contracts. Business rules remain server-owned.
+// Dart mirrors of the canonical shipping/tax contracts. Business rules remain server-owned.
 import 'shared_contracts.dart';
 
 /// Exact mirror of checkout-core's handling-charge parser (no sub-paise rounding).

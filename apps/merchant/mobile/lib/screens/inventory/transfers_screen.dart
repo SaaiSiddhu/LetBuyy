@@ -1,5 +1,6 @@
 import '../../services/api_client.dart' show ApiException;
 import '../../widgets/shared/merchant_store_view.dart';
+import '../../widgets/shared/warehouse_command_recovery.dart';
 import '../../app/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ class InventoryTransfersScreen extends StatefulWidget {
 class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
   List<InventoryTransferContract> _transfers = const [];
   bool _isLoading = true;
+  bool _warehouseReady = false, _warehouseBusy = false;
   String? _storeId;
   String? _error;
   Object? _viewKey;
@@ -97,6 +99,8 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
       _viewKey = stores.requestContextKey;
       ++_readGeneration;
       _storeId = null;
+      _warehouseReady = false;
+      _warehouseBusy = false;
       _transfers = [];
       _error = null;
       _isLoading = true;
@@ -107,7 +111,12 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     return Scaffold(
       backgroundColor: colors.bgStart,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null || _isLoading || _error != null
+        onPressed:
+            !_warehouseReady ||
+                _warehouseBusy ||
+                _storeId == null ||
+                _isLoading ||
+                _error != null
             ? null
             : _createTransfer,
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
@@ -121,6 +130,15 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
           child: Column(
             children: [
               _header(),
+              if (_view != null)
+                WarehouseCommandRecovery(
+                  view: _view!,
+                  onReady: (ready) {
+                    if (mounted && _warehouseReady != ready)
+                      setState(() => _warehouseReady = ready);
+                  },
+                  onResolved: _load,
+                ),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
           ),
@@ -258,7 +276,9 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton.icon(
-                onPressed: () => _ship(transfer),
+                onPressed: !_warehouseReady || _warehouseBusy
+                    ? null
+                    : () => _ship(transfer),
                 icon: const Icon(Icons.local_shipping_outlined, size: 18),
                 label: const Text('Ship'),
                 style: OutlinedButton.styleFrom(
@@ -268,7 +288,10 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
               ),
               const SizedBox(width: 8),
               FilledButton.icon(
-                onPressed: transfer.remainingQuantity == 0
+                onPressed:
+                    !_warehouseReady ||
+                        _warehouseBusy ||
+                        transfer.remainingQuantity == 0
                     ? null
                     : () => _receive(transfer),
                 icon: const Icon(Icons.move_to_inbox_outlined, size: 18),
@@ -315,7 +338,7 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
 
   Future<void> _createTransfer() async {
     final view = _view;
-    if (!_matches(view)) return;
+    if (!_matches(view) || !_warehouseReady || _warehouseBusy) return;
     final service = context.read<InventoryService>();
     final input = await showModalBottomSheet<InventoryTransferInput>(
       context: context,
@@ -332,6 +355,8 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     if (input == null || !_matches(view) || input.storeId != view!.storeId)
       return;
 
+    if (!_warehouseReady || _warehouseBusy) return;
+    setState(() => _warehouseBusy = true);
     try {
       await service.createTransfer(input);
       if (_matches(view)) {
@@ -341,15 +366,22 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The inventory change could not be confirmed. Refresh before retrying.',
+          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
           isError: true,
         );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 
   Future<void> _ship(InventoryTransferContract transfer) async {
     final view = _view;
-    if (!_matches(view) || transfer.storeId != view!.storeId) return;
+    if (!_matches(view) ||
+        transfer.storeId != view!.storeId ||
+        !_warehouseReady ||
+        _warehouseBusy)
+      return;
+    setState(() => _warehouseBusy = true);
     try {
       final service = context.read<InventoryService>();
       await service.shipTransfer(
@@ -363,15 +395,22 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The inventory change could not be confirmed. Refresh before retrying.',
+          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
           isError: true,
         );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 
   Future<void> _receive(InventoryTransferContract transfer) async {
     final view = _view;
-    if (!_matches(view) || transfer.storeId != view!.storeId) return;
+    if (!_matches(view) ||
+        transfer.storeId != view!.storeId ||
+        !_warehouseReady ||
+        _warehouseBusy)
+      return;
+    setState(() => _warehouseBusy = true);
     try {
       final service = context.read<InventoryService>();
       await service.receiveTransfer(
@@ -385,9 +424,11 @@ class _InventoryTransfersScreenState extends State<InventoryTransfersScreen> {
     } catch (error) {
       if (_matches(view))
         _showSnackBar(
-          'The inventory change could not be confirmed. Refresh before retrying.',
+          'The outcome could not be confirmed. Check the saved warehouse request before trying again.',
           isError: true,
         );
+    } finally {
+      if (_matches(view)) setState(() => _warehouseBusy = false);
     }
   }
 
