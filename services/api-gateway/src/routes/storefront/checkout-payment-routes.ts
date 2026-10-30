@@ -391,6 +391,14 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     503
                 );
             }
+            // New merchant-owned payments must use the hosted checkout session,
+            // which pins the immutable credential before a provider order exists.
+            // Keep the verify route below only for draining an earlier direct
+            // storefront attempt; it must not create another unpinned payment.
+            if (razorpayCredentials.credentialId) {
+                return c.json({ success: false, error: { code: 'HOSTED_CHECKOUT_REQUIRED',
+                    message: 'Start a new secure checkout from the store cart.' } }, 410);
+            }
 
             const db = getSupabaseAdmin(c);
             const paymentService = new PaymentExecutionAdapter(db);

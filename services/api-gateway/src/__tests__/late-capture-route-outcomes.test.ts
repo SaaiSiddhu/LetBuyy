@@ -30,6 +30,7 @@ const ORDER = 'bbbbbbbb-0000-4000-8000-0000000000b1';
 const KEY_SECRET = 'rzp-test-secret-for-route-tests-only';
 const SHARED_SECRET = 'different-shared-secret-must-not-verify';
 const STORE_KEY_ID = 'rzp_test_ownaccountroute';
+const STORE_CREDENTIAL_ID = 'cccccccc-0000-4000-8000-0000000000c1';
 const ENCRYPTION_KEY = 'owned-route-test-encryption-key-2026';
 const INTERNAL_SECRET = 'internal-secret-for-route-tests-only';
 const STORE_PAYMENT_SETTINGS = encryptPaymentSecret(KEY_SECRET, ENCRYPTION_KEY,
@@ -38,6 +39,8 @@ const STORE_PAYMENT_SETTINGS = encryptPaymentSecret(KEY_SECRET, ENCRYPTION_KEY,
         key_id: STORE_KEY_ID, key_secret_ciphertext: ciphertext, verified: true, test_mode: true,
     },
 }));
+const PINNED_STORE_CREDENTIAL = encryptPaymentSecret(KEY_SECRET, ENCRYPTION_KEY,
+    { siteId: STORE, keyId: STORE_KEY_ID, environment: 'sandbox', credentialId: STORE_CREDENTIAL_ID });
 
 type Json = Record<string, unknown>;
 type Captured = { method: string; path: string; body: unknown };
@@ -64,7 +67,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 // A fake PostgREST that serves exactly what these routes read and records every write.
 function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json; onlinePaymentEnabled?: boolean;
-    providerOrderAmount?: number; providerOrderCurrency?: string }) {
+    providerOrderAmount?: number; providerOrderCurrency?: string; pinnedMerchantAccount?: boolean }) {
     const originalFetch = globalThis.fetch;
     const requests: Captured[] = [];
     const razorpayRequests: Captured[] = [];
@@ -98,7 +101,17 @@ function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json; onlineP
         }
         if (path === 'sites' && method === 'GET') {
             return jsonResponse({ id: STORE, online_payment_enabled: fixture.onlinePaymentEnabled !== false,
-                payment_settings: await STORE_PAYMENT_SETTINGS });
+                payment_settings: fixture.pinnedMerchantAccount ? { mode: 'ownAccount', razorpay: {
+                    credential_id: STORE_CREDENTIAL_ID, key_id: STORE_KEY_ID, verified: true, test_mode: true,
+                } } : await STORE_PAYMENT_SETTINGS });
+        }
+        if (path === 'payment_credentials' && method === 'GET' && fixture.pinnedMerchantAccount) {
+            assert.equal(url.searchParams.get('id'), `eq.${STORE_CREDENTIAL_ID}`);
+            assert.equal(url.searchParams.get('site_id'), `eq.${STORE}`);
+            assert.equal(url.searchParams.get('selected_for_checkout'), 'eq.true');
+            return jsonResponse({ id: STORE_CREDENTIAL_ID, site_id: STORE, provider: 'razorpay', mode: 'sandbox',
+                status: 'active', provider_key_id: STORE_KEY_ID, last_verified_at: new Date().toISOString(),
+                encrypted_credentials: { key_secret_ciphertext: await PINNED_STORE_CREDENTIAL } });
         }
         if (path === 'idempotency_keys' && method === 'POST') {
             return jsonResponse({ id: 'idem-claim-1', request_hash: 'h', status: 'processing', response_body: null, status_code: null, locked_until: null }, 201);
@@ -253,7 +266,7 @@ test('verify: a confirmed capture announces order.paid once, keyed on the provid
         'the same key the webhook path uses, so the pair produces one event');
 });
 
-test('storefront order creation uses the merchant-owned test account and returns its public key', async (t) => {
+test('legacy unversioned test fixture keeps its provider order and public key contract for drain', async (t) => {
     const postgrest = installFakePostgrest({ order: PENDING_ORDER });
     t.after(() => postgrest.restore());
     const response = await storefrontApp([]).request('/late-capture/payments/razorpay/order', {
@@ -265,6 +278,20 @@ test('storefront order creation uses the merchant-owned test account and returns
     assert.equal(payload.data.keyId, STORE_KEY_ID);
     assert.equal(payload.data.razorpayOrderId, 'order_RZP_route');
     assert.deepEqual(postgrest.razorpayRequests.map(request => request.path), ['/v1/orders']);
+});
+
+test('a saved merchant account cannot start an unpinned direct storefront payment', async t => {
+    const postgrest = installFakePostgrest({ order: PENDING_ORDER, pinnedMerchantAccount: true });
+    t.after(() => postgrest.restore());
+    const response = await storefrontApp([]).request('/late-capture/payments/razorpay/order', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ orderId: ORDER, idempotencyKey: 'retired-direct-merchant-start' }),
+    });
+    assert.equal(response.status, 410);
+    assert.equal((await response.json() as { error: { code: string } }).error.code, 'HOSTED_CHECKOUT_REQUIRED');
+    assert.equal(postgrest.razorpayRequests.length, 0, 'no provider order can be opened');
+    assert.equal(postgrest.requests.filter(request => request.path === 'orders' || request.path.startsWith('rpc/')).length, 0,
+        'no order or payment reference is touched');
 });
 
 for (const scenario of [

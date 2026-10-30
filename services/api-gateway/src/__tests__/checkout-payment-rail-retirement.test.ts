@@ -69,7 +69,7 @@ test('none of the retired provider paths appear anywhere in the mounted storefro
     }
 });
 
-// ─── B. Razorpay + COD (order creation) remain live and reachable ─────────────
+// ─── B. Retained order and legacy Razorpay drain routes remain mounted ────────
 // These POST an intentionally incomplete body. If the route were gone, Hono's
 // router would 404 before any validation middleware runs; getting a 400
 // (schema-validation rejection) instead proves the route matched and its
@@ -83,7 +83,7 @@ const SURVIVING_ROUTES = [
 ];
 
 for (const path of SURVIVING_ROUTES) {
-    test(`canonical route remains reachable and validates its body: POST ${path}`, async () => {
+    test(`retained route remains reachable and validates its body: POST ${path}`, async () => {
         const response = await storefrontApp().request(
             path,
             { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' },
