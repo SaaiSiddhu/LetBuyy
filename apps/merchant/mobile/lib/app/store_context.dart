@@ -142,6 +142,41 @@ class StoreContext extends ChangeNotifier {
     return _selectedStore;
   }
 
+  Future<StoreModel> reloadSelectedStore(String expectedStoreId) async {
+    await _reset;
+    final epoch = _sessionEpoch;
+    if (_selectedStore?.id != expectedStoreId) {
+      throw const ApiException(
+        message: 'The selected store changed. Open its settings again.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+    late final StoreModel fresh;
+    try {
+      fresh = await _storeService.fetchStoreFresh(expectedStoreId);
+    } catch (error) {
+      _checkEpoch(epoch);
+      if (error is ApiException &&
+          error.statusCode >= 400 &&
+          error.statusCode < 500) {
+        await clearSelection();
+      }
+      rethrow;
+    }
+    _checkEpoch(epoch);
+    if (_selectedStore?.id != expectedStoreId) {
+      throw const ApiException(
+        message: 'The selected store changed. Open its settings again.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    }
+    _stores = [..._stores.where((item) => item.id != expectedStoreId), fresh];
+    await selectStore(fresh);
+    return fresh;
+  }
+
   Future<void> selectStore(StoreModel store) async {
     _selectedStore = store;
     _storeService.setCurrentStore(store);

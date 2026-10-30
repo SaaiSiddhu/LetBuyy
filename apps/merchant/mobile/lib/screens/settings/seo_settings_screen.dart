@@ -33,14 +33,17 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     _loadStore();
   }
 
-  Future<void> _loadStore() async {
+  Future<void> _loadStore({bool forceFresh = false}) async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final storeContext = context.read<StoreContext>();
+      final store = forceFresh && _store != null
+          ? await storeContext.reloadSelectedStore(_store!.id)
+          : await storeContext.ensureSelectedStore();
       if (mounted) {
         setState(() {
           _store = store;
@@ -52,18 +55,65 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
       }
     } catch (error) {
       if (mounted) {
+        final accessLost =
+            error is ApiException &&
+            (error.statusCode == 401 ||
+                error.statusCode == 403 ||
+                error.statusCode == 404 ||
+                error.code == 'SESSION_CONTEXT_CHANGED');
         setState(() {
-          _error = error.toString();
+          if (accessLost) {
+            _store = null;
+            _titleController.clear();
+            _descriptionController.clear();
+            _hasChanges = false;
+          }
+          _error = accessLost
+              ? 'Store access changed. Open settings again.'
+              : forceFresh
+              ? null
+              : error.toString();
           _isLoading = false;
         });
+        if (forceFresh && !accessLost)
+          _showSnack(
+            'Could not reload current SEO settings. Your edits are still here.',
+          );
       }
     }
+  }
+
+  Future<void> _confirmReload() async {
+    if (_hasChanges) {
+      final discard = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Discard SEO edits?'),
+          content: const Text(
+            'Reload the current store SEO from the server and discard your unsaved changes.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Keep editing'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Discard and reload'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || discard != true) return;
+    }
+    await _loadStore(forceFresh: true);
   }
 
   Future<void> _save() async {
     final store = _store;
     if (store == null || _isSaving) return;
 
+    FocusScope.of(context).unfocus();
     setState(() => _isSaving = true);
     try {
       final updated = await context.read<StoreService>().updateStore(store.id, {
@@ -79,9 +129,19 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
         _showSnack('SEO settings saved.');
       }
     } on ApiException catch (error) {
-      _showSnack(error.statusCode == 409
-          ? 'Store SEO changed elsewhere. Reload before saving again.'
-          : 'Could not save SEO settings: ${error.message}');
+      final stale =
+          error.statusCode == 409 && error.code != 'SESSION_CONTEXT_CHANGED';
+      _showSnack(
+        stale
+            ? 'Store SEO changed elsewhere. Reload to discard these edits.'
+            : 'Could not save SEO settings: ${error.message}',
+        action: stale
+            ? SnackBarAction(
+                label: 'Reload',
+                onPressed: () => _loadStore(forceFresh: true),
+              )
+            : null,
+      );
     } catch (error) {
       _showSnack('Could not save SEO settings: $error');
     } finally {
@@ -147,7 +207,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
           IconButton(
             tooltip: 'Refresh SEO settings',
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _loadStore,
+            onPressed: _confirmReload,
           ),
         ],
       ),
@@ -342,11 +402,12 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     );
   }
 
-  void _showSnack(String message) {
+  void _showSnack(String message, {SnackBarAction? action}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
+        action: action,
         backgroundColor: colors.snackbarBackground,
       ),
     );

@@ -144,6 +144,23 @@ class StoreService extends ChangeNotifier {
     }
   }
 
+  /// Conflict recovery must read the current server revision. Cached store
+  /// details are useful offline, but cannot resolve a versioned save conflict.
+  Future<StoreModel> fetchStoreFresh(String id) async {
+    final epoch = _sessionEpoch;
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
+    try {
+      final store = StoreModel.fromJson(await _api.stores.get(id));
+      _checkSessionEpoch(epoch);
+      return store;
+    } catch (error) {
+      _checkSessionEpoch(epoch);
+      if (!_allowCachedStore(error)) await clearSessionStores();
+      rethrow;
+    }
+  }
+
   Map<String, dynamic> _storeCachePayload(StoreModel store) => {
     'id': store.id,
     ...store.toJson(),
@@ -429,15 +446,15 @@ class StoreLocalizationSummary {
       defaultLocale: json['default_locale']?.toString() ?? 'en-IN',
       currency: json['currency']?.toString() ?? 'INR',
       timezone: json['timezone']?.toString() ?? 'Asia/Kolkata',
-      markets: _jsonList(json['markets'])
-          .map(StoreMarket.fromJson)
-          .toList(growable: false),
-      locales: _jsonList(json['locales'])
-          .map(StorefrontLocale.fromJson)
-          .toList(growable: false),
-      translations: _jsonList(json['translations'])
-          .map(StorefrontTranslation.fromJson)
-          .toList(growable: false),
+      markets: _jsonList(
+        json['markets'],
+      ).map(StoreMarket.fromJson).toList(growable: false),
+      locales: _jsonList(
+        json['locales'],
+      ).map(StorefrontLocale.fromJson).toList(growable: false),
+      translations: _jsonList(
+        json['translations'],
+      ).map(StorefrontTranslation.fromJson).toList(growable: false),
       schemaReady: json['schema_ready'] != false,
     );
   }

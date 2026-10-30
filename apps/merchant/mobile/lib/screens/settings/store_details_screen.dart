@@ -35,9 +35,12 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   final _formKey = GlobalKey<FormState>();
   StoreModel? _store;
   bool _isLoading = true;
+  bool _isReloading = false;
   bool _isSaving = false;
   bool _hasChanges = false;
+  bool _hasConflict = false;
   bool _showValidationErrors = false;
+  String? _loadError;
 
   final _nameController = TextEditingController();
   final _taglineController = TextEditingController();
@@ -60,18 +63,66 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     _loadStore();
   }
 
-  Future<void> _loadStore() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadStore({bool forceFresh = false}) async {
+    setState(() {
+      if (forceFresh) {
+        _isReloading = true;
+      } else {
+        _isLoading = true;
+      }
+    });
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final storeContext = context.read<StoreContext>();
+      final store = forceFresh && _store != null
+          ? await storeContext.reloadSelectedStore(_store!.id)
+          : await storeContext.ensureSelectedStore();
+      if (!mounted) return;
       setState(() {
         _store = store;
         _populateControllers(store);
+        _hasChanges = false;
+        _hasConflict = false;
+        _showValidationErrors = false;
+        _loadError = null;
       });
     } catch (e) {
       debugPrint('Error loading store: $e');
+      if (mounted) {
+        final accessLost =
+            e is ApiException &&
+            (e.statusCode == 401 ||
+                e.statusCode == 403 ||
+                e.statusCode == 404 ||
+                e.code == 'SESSION_CONTEXT_CHANGED');
+        if (accessLost || _store == null) {
+          setState(() {
+            _store = null;
+            _populateControllers(null);
+            _hasChanges = false;
+            _hasConflict = false;
+            _loadError = accessLost
+                ? 'Store access changed. Open settings again.'
+                : 'Could not load store details. Try again.';
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Could not reload current store details. Your edits are still here.',
+              ),
+            ),
+          );
+        }
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted)
+        setState(() {
+          if (forceFresh) {
+            _isReloading = false;
+          } else {
+            _isLoading = false;
+          }
+        });
     }
   }
 
@@ -99,6 +150,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
       setState(() {
         _store = updatedStore;
         _hasChanges = false;
+        _hasConflict = false;
         _showValidationErrors = false;
       });
 
@@ -109,11 +161,23 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
       }
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.statusCode == 409
-            ? 'Store details changed elsewhere. Reload before saving again.'
-            : 'Could not save store details: ${e.message}'),
-      ));
+      final stale = e.statusCode == 409 && e.code != 'SESSION_CONTEXT_CHANGED';
+      if (stale) setState(() => _hasConflict = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            stale
+                ? 'Store details changed elsewhere. Reload to discard these edits.'
+                : 'Could not save store details: ${e.message}',
+          ),
+          action: stale
+              ? SnackBarAction(
+                  label: 'Reload',
+                  onPressed: () => _loadStore(forceFresh: true),
+                )
+              : null,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +213,13 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    if (_loadError != null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Store Details')),
+        body: Center(child: Text(_loadError!)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -156,9 +227,23 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
         backgroundColor: AppColors.background,
         surfaceTintColor: AppColors.background,
         actions: [
+          if (_hasConflict)
+            IconButton(
+              tooltip: 'Reload current details',
+              onPressed: _isReloading
+                  ? null
+                  : () => _loadStore(forceFresh: true),
+              icon: _isReloading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh_rounded),
+            ),
           if (_hasChanges)
             TextButton.icon(
-              onPressed: _isSaving ? null : _save,
+              onPressed: _isSaving || _hasConflict ? null : _save,
               icon: _isSaving
                   ? const SizedBox(
                       width: 16,
@@ -212,6 +297,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
               hint: 'Registered business name',
               controller: _legalNameController,
               icon: Icons.business_center_rounded,
+              fieldKey: const ValueKey('store-details-legal-name-field'),
               textCapitalization: TextCapitalization.words,
               validator: (value) =>
                   _validateOptionalLength(value, label: 'Legal name', max: 200),
@@ -501,6 +587,16 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   Future<void> _pickLogo() async {
     final store = _store;
     if (store == null || _isSaving) return;
+    if (_hasConflict || _hasChanges) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Save or reload your store details before changing the logo.',
+          ),
+        ),
+      );
+      return;
+    }
 
     final picker = ImagePicker();
     final source = await showImageSourceSheet(context, title: 'Logo source');

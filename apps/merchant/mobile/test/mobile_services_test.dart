@@ -2331,6 +2331,46 @@ void main() {
       expect(service.currentStore?.id, 'store_1');
     });
 
+    test('fresh conflict reload revokes cached store access on 403', () async {
+      SharedPreferences.setMockInitialValues({});
+      final errors = <String, ApiException>{};
+      final cache = CacheService.memory();
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+        json: {'/stores/store_1': _storeJson()},
+        errors: errors,
+      );
+      final service = StoreService(api: api, cache: cache);
+      final context = StoreContext(storeService: service);
+      await context.loadStores();
+      expect(context.selectedStoreId, 'store_1');
+      expect(
+        cache.readJsonMap(CacheService.storeDetailKey('store_1')),
+        isNotNull,
+      );
+
+      errors['/stores/store_1'] = const ApiException(
+        message: 'Store access revoked',
+        statusCode: 403,
+        code: 'FORBIDDEN',
+      );
+      await expectLater(
+        context.reloadSelectedStore('store_1'),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.statusCode,
+            'statusCode',
+            403,
+          ),
+        ),
+      );
+      expect(context.selectedStore, isNull);
+      expect(service.currentStore, isNull);
+      expect(cache.readJsonMap(CacheService.storeDetailKey('store_1')), isNull);
+    });
+
     test('StoreService fetches Store Health signals', () async {
       final api = _FakeApiClient(
         json: {'/stores/store_1/health': _storeHealthJson()},
@@ -3017,6 +3057,156 @@ void main() {
       expect(invoiceAddress['zip'], '560001');
       expect(invoiceAddress['phone'], '+919876543210');
     });
+
+    testWidgets(
+      'StoreDetailsScreen reloads the server revision after a stale business save',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final initial = <String, dynamic>{
+          ..._storeJson(legalName: 'Old legal name'),
+          'version': 1,
+        };
+        final responses = <String, dynamic>{'/stores/store_1': initial};
+        final errors = <String, ApiException>{};
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [initial],
+          },
+          json: responses,
+          errors: errors,
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _storeProviders(api),
+            child: const MaterialApp(home: StoreDetailsScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final legalField = find.byKey(
+          const ValueKey('store-details-legal-name-field'),
+        );
+        await tester.ensureVisible(legalField);
+        await tester.enterText(legalField, 'Local unsaved legal name');
+        await tester.pump();
+        errors['/stores/store_1'] = const ApiException(
+          message: 'Store settings changed. Reload before saving.',
+          statusCode: 409,
+          code: 'STORE_UPDATE_CONFLICT',
+        );
+        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.pumpAndSettle();
+        expect(api.bodies['/stores/store_1'], containsPair('version', 1));
+        expect(
+          tester.widget<TextFormField>(legalField).controller!.text,
+          'Local unsaved legal name',
+        );
+        expect(
+          find.text(
+            'Store details changed elsewhere. Reload to discard these edits.',
+          ),
+          findsOneWidget,
+        );
+
+        errors['/stores/store_1'] = const ApiException(
+          message: 'Network unavailable',
+          statusCode: 503,
+          code: 'UNAVAILABLE',
+        );
+        await tester.tap(find.text('Reload'));
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<TextFormField>(legalField).controller!.text,
+          'Local unsaved legal name',
+        );
+        expect(
+          find.byTooltip('Reload current details'),
+          findsOneWidget,
+          reason: 'a failed fresh read must leave a persistent recovery action',
+        );
+
+        errors.remove('/stores/store_1');
+        responses['/stores/store_1'] = <String, dynamic>{
+          ..._storeJson(),
+          'version': 2,
+        };
+        await tester.tap(find.byTooltip('Reload current details'));
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<TextFormField>(legalField).controller!.text,
+          isEmpty,
+          reason:
+              'the remote clear must replace the stale local draft only after the explicit reload',
+        );
+        await tester.ensureVisible(legalField);
+        await tester.enterText(legalField, 'New legal name');
+        await tester.pump();
+        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.pumpAndSettle();
+        expect(api.bodies['/stores/store_1'], containsPair('version', 2));
+      },
+    );
+
+    testWidgets(
+      'StoreDetailsScreen hides private fields after access revocation',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final initial = <String, dynamic>{
+          ..._storeJson(legalName: 'Private legal name'),
+          'version': 1,
+        };
+        final errors = <String, ApiException>{};
+        final api = _FakeApiClient(
+          paginated: {
+            '/stores': [initial],
+          },
+          json: {'/stores/store_1': initial},
+          errors: errors,
+        );
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _storeProviders(api),
+            child: const MaterialApp(home: StoreDetailsScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final legalField = find.byKey(
+          const ValueKey('store-details-legal-name-field'),
+        );
+        await tester.ensureVisible(legalField);
+        expect(
+          tester.widget<TextFormField>(legalField).controller!.text,
+          'Private legal name',
+        );
+
+        await tester.enterText(legalField, 'Edited legal name');
+        await tester.pump();
+        errors['/stores/store_1'] = const ApiException(
+          message: 'Store settings changed',
+          statusCode: 409,
+          code: 'STORE_UPDATE_CONFLICT',
+        );
+        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.pumpAndSettle();
+        errors['/stores/store_1'] = const ApiException(
+          message: 'Store access revoked',
+          statusCode: 403,
+          code: 'FORBIDDEN',
+        );
+        await tester.tap(find.byTooltip('Reload current details'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Store access changed. Open settings again.'),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('store-details-legal-name-field')),
+          findsNothing,
+        );
+        expect(find.text('Private legal name'), findsNothing);
+        expect(find.text('Edited legal name'), findsNothing);
+      },
+    );
 
     test('Taxes feature routes to the real tax settings screen', () {
       final routesFile = [
@@ -9261,6 +9451,82 @@ void main() {
       containsPair('seo_title', 'Updated Store Title'),
     );
   });
+
+  testWidgets(
+    'SEOSettingsScreen resolves a stale save from a fresh server revision',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final initial = <String, dynamic>{
+        ..._storeJson(seoTitle: 'Old SEO title'),
+        'version': 1,
+      };
+      final responses = <String, dynamic>{'/stores/store_1': initial};
+      final errors = <String, ApiException>{};
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [initial],
+        },
+        json: responses,
+        errors: errors,
+      );
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _storeProviders(api),
+          child: const MaterialApp(home: SEOSettingsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField).first, 'Local unsaved SEO');
+      await tester.pump();
+      errors['/stores/store_1'] = const ApiException(
+        message: 'Store settings changed. Reload before saving.',
+        statusCode: 409,
+        code: 'STORE_UPDATE_CONFLICT',
+      );
+      await tester.tap(find.text('Save SEO'));
+      await tester.pumpAndSettle();
+      expect(api.bodies['/stores/store_1'], containsPair('version', 1));
+      expect(
+        find.text(
+          'Store SEO changed elsewhere. Reload to discard these edits.',
+        ),
+        findsOneWidget,
+      );
+
+      errors['/stores/store_1'] = const ApiException(
+        message: 'Network unavailable',
+        statusCode: 503,
+        code: 'UNAVAILABLE',
+      );
+      await tester.tap(find.text('Reload'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+        'Local unsaved SEO',
+      );
+      expect(find.byTooltip('Refresh SEO settings'), findsOneWidget);
+
+      errors.remove('/stores/store_1');
+      responses['/stores/store_1'] = <String, dynamic>{
+        ..._storeJson(seoTitle: 'Remote SEO title'),
+        'version': 2,
+      };
+      await tester.tap(find.byTooltip('Refresh SEO settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Discard SEO edits?'), findsOneWidget);
+      await tester.tap(find.text('Discard and reload'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+        'Remote SEO title',
+      );
+      await tester.enterText(find.byType(TextField).first, 'New SEO title');
+      await tester.pump();
+      await tester.tap(find.text('Save SEO'));
+      await tester.pumpAndSettle();
+      expect(api.bodies['/stores/store_1'], containsPair('version', 2));
+    },
+  );
 
   testWidgets('AppsScreen renders marketplace apps and installed state', (
     tester,
