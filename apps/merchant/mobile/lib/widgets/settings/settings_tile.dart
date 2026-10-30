@@ -53,7 +53,7 @@ class SettingsTile extends StatelessWidget {
                         : colors.textPrimary,
                   ),
                 ),
-                if (trailing != null && subtitle != null)
+                if (subtitle != null && (trailing != null || onTap != null))
                   Text(
                     subtitle!,
                     style: TextStyle(fontSize: 13, color: colors.textTertiary),
@@ -63,7 +63,7 @@ class SettingsTile extends StatelessWidget {
           ),
           if (trailing != null)
             trailing!
-          else if (subtitle != null)
+          else if (subtitle != null && onTap == null)
             Text(
               subtitle!,
               style: TextStyle(fontSize: 13, color: colors.textTertiary),

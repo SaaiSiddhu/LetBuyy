@@ -8584,6 +8584,39 @@ void main() {
     });
   }
 
+  for (final shipping in [true, false]) {
+    testWidgets('normal settings opens the actual ${shipping ? 'shipping' : 'tax'} workspace at phone size', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      FlutterSecureStorage.setMockInitialValues({});
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final api = _FakeApiClient(paginated: {'/stores': [_storeJson()]}, json: {
+        '/stores/store_1': _storeJson(),
+        '/shipping-tax/shipping/zones': [_shippingZoneJson()],
+        '/shipping-tax/shipping': [_shippingRateJson()],
+        '/shipping-tax/taxes': [_taxRateJson()],
+      });
+      await tester.pumpWidget(MultiProvider(providers: [
+        ..._merchantShellProviders(api),
+        ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
+      ], child: MaterialApp(home: const SettingsScreen(), onGenerateRoute: AppRoutes.generateRoute)));
+      await tester.pumpAndSettle();
+      final entry = find.text(shipping ? 'Shipping' : 'Taxes / GST');
+      await tester.scrollUntilVisible(entry, 250, scrollable: find.byType(Scrollable).first);
+      await tester.ensureVisible(entry);
+      await tester.pumpAndSettle();
+      await tester.tap(entry.hitTestable());
+      await tester.pumpAndSettle();
+      expect(shipping ? find.byType(ShippingScreen) : find.byType(TaxesScreen), findsOneWidget);
+      expect(find.text(shipping ? 'New zone' : 'New tax'), findsOneWidget);
+      expect(api.paths, contains(shipping ? '/shipping-tax/shipping/zones' : '/shipping-tax/taxes'));
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   testWidgets('normal settings opens canonical invoices and exposes current plan and usage', (tester) async {
     SharedPreferences.setMockInitialValues({});FlutterSecureStorage.setMockInitialValues({});
     tester.view.physicalSize=const Size(900,1200);tester.view.devicePixelRatio=1;

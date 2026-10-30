@@ -320,6 +320,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Navigator.pushNamed(context, AppRoutes.loyalty),
                       ),
                       SettingsTile(
+                        icon: Icons.local_shipping_outlined,
+                        title: 'Shipping',
+                        subtitle: 'Delivery zones and rates',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.shipping),
+                      ),
+                      SettingsTile(
+                        icon: Icons.receipt_long_outlined,
+                        title: 'Taxes / GST',
+                        subtitle: 'Tax rates and inclusive prices',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.taxes),
+                      ),
+                      SettingsTile(
                         icon: Icons.group_outlined,
                         title: 'Users & Permissions',
                         onTap: () =>
@@ -520,8 +532,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: colors.textPrimary,
             ),
           ),
-          const Spacer(),
-          StoreSwitcherButton(onChanged: _loadStore),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: StoreSwitcherButton(onChanged: _loadStore),
+            ),
+          ),
         ],
       ),
     );
