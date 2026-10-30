@@ -50,6 +50,12 @@ test('merchant webhook secret is independently encrypted, version bound, and abs
  assert.equal(await readStoreRazorpayWebhookSecret({...configured,razorpay:{...configured.razorpay,credential_id:crypto.randomUUID()}},wrappingKey,context.siteId),null);
  const projected=await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},wrappingKey);
  assert.equal(projected.payment_settings.razorpay?.webhook_secret_configured,true);
+ assert.equal(projected.webhook_callback_url,null,'local work must not advertise a reachable callback');
+ const staging=await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},wrappingKey,'https://webhooks.staging.letbuyy.com');
+ assert.equal(staging.webhook_callback_url,`https://webhooks.staging.letbuyy.com/razorpay/merchant/${context.siteId}/${context.credentialId}`);
+ const wrongKey=await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},crypto.randomUUID(),'https://webhooks.staging.letbuyy.com');
+ assert.equal(wrongKey.webhook_callback_url,null,'unusable credentials cannot advertise callback readiness');
+ assert.equal((await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},wrappingKey,'https://untrusted.example')).webhook_callback_url,null);
  for(const secret of [apiSecret,webhookSecret,apiCipher,webhookCipher])assert.equal(JSON.stringify(projected).includes(secret),false);
 });
 

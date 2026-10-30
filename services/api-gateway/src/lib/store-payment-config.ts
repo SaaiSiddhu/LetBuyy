@@ -162,6 +162,7 @@ export function defaultPaymentConfig(storeId: string) {
         online_payment_enabled: false,
         cod_enabled: false,
         provider_mode: null,
+        webhook_callback_url: null,
         payment_settings: sanitizePaymentSettings(null),
         schema_ready: false,
         revision: null,
@@ -179,15 +180,23 @@ export type StorePaymentRow = {
 };
 
 /** Public projection shares the actual hosted test-credential gate; never returns encrypted material. */
-export async function projectStorePaymentConfig(row: StorePaymentRow, encryptionKey?: string): Promise<StorePaymentConfig> {
+export async function projectStorePaymentConfig(row: StorePaymentRow, encryptionKey?: string,
+    webhookOrigin?: string): Promise<StorePaymentConfig> {
     const settings = row.payment_settings;
     const environment = paymentConfigProviderMode({ settings });
     const credentialsUsable = Boolean(await readStoreRazorpayTestCredentials(settings, encryptionKey, row.id));
+    const credentialId = settings?.razorpay?.credential_id;
+    const approvedOrigin = webhookOrigin === 'https://webhooks.letbuyy.com'
+        || webhookOrigin === 'https://webhooks.staging.letbuyy.com' ? webhookOrigin : null;
+    const webhookCallbackUrl = approvedOrigin && environment === 'sandbox' && credentialsUsable
+        && credentialId && settings?.razorpay?.webhook_secret_ciphertext
+        ? `${approvedOrigin}/razorpay/merchant/${encodeURIComponent(row.id)}/${encodeURIComponent(credentialId)}` : null;
     return {
         store_id: row.id,
         online_payment_enabled: row.online_payment_enabled === true,
         cod_enabled: row.cod_enabled === true,
         provider_mode: environment,
+        webhook_callback_url: webhookCallbackUrl,
         payment_settings: sanitizePaymentSettings(settings),
         revision: row.updated_at || null,
         schema_ready: true,

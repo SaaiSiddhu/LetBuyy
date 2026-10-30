@@ -201,7 +201,8 @@ router.get('/:id/payment-config', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
 
-    return c.json(success(await projectStorePaymentConfig(await hydratePaymentCredential(db, data), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)));
+    return c.json(success(await projectStorePaymentConfig(await hydratePaymentCredential(db, data),
+        c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, c.env.MERCHANT_RAZORPAY_WEBHOOK_ORIGIN)));
 });
 
 // GET /stores/:id/health — Mobile Store Health score from real operational signals

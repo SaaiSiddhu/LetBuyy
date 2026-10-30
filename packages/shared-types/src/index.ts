@@ -2189,6 +2189,7 @@ export const StorePaymentConfigSchema = z.object({
   online_payment_enabled: z.boolean().default(false),
   cod_enabled: z.boolean().default(false),
   provider_mode: z.enum(['sandbox', 'live']).nullable().default(null),
+  webhook_callback_url: z.string().url().nullable().optional(),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
   setup: StorePaymentSetupSchema.optional(),

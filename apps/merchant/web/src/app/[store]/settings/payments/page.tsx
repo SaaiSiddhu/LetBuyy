@@ -159,6 +159,12 @@ export default function PaymentsSettingsPage() {
                         <div><Button type="submit" loading={saving} disabled={!hasUnsavedChanges || controlsUnavailable}>Verify and save test credentials</Button></div>
                     </form>
                 </details>
+                {current.webhook_callback_url && <div className="grid gap-[var(--lb-space-3)] pt-[var(--lb-space-4)]">
+                    <Input label="This store's test webhook URL" value={current.webhook_callback_url} readOnly
+                        helperText="Add this URL in your Razorpay test dashboard with the separate webhook secret you saved above. Select payment.captured, payment.failed, refund.created, refund.processed, and refund.failed. Delivery is unverified until a signed event arrives." />
+                </div>}
+                {current.payment_settings.razorpay?.webhook_secret_configured && !current.webhook_callback_url &&
+                    <p className="pt-[var(--lb-space-4)] text-[var(--lb-color-text-subdued)]">The webhook URL is available after this connection is deployed to staging or production. Local test connections cannot receive Razorpay callbacks.</p>}
             </Section></Card>
             <Banner variant="warning" title="Live payments require provider qualification">
                 Business and bank approval are separate from API-key verification. Live collection and bank settlement remain unavailable until the provider integration is qualified.

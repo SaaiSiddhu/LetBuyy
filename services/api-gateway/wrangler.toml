@@ -123,6 +123,7 @@ crons = []
 
 [env.staging.vars]
 STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
+MERCHANT_RAZORPAY_WEBHOOK_ORIGIN = "https://webhooks.staging.letbuyy.com"
 ENVIRONMENT = "staging"
 APP_ENV = "staging"
 NODE_ENV = "production"
@@ -244,6 +245,7 @@ crons = ["*/15 * * * *"]
 
 [env.production.vars]
 STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
+MERCHANT_RAZORPAY_WEBHOOK_ORIGIN = "https://webhooks.letbuyy.com"
 ENVIRONMENT = "production"
 APP_ENV = "production"
 NODE_ENV = "production"

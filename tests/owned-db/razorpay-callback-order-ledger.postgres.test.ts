@@ -5,6 +5,7 @@ import webhookWorker from '../../services/webhook-service/src/index';
 import { Gateway, gatewayEnv, INTERNAL_SECRET, newIdentityKeys } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import { requireOwnedDatabase } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticOrder, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+import { encryptPaymentSecret, encryptPaymentWebhookSecret } from '../../services/api-gateway/src/lib/store-payment-config';
 
 const owned = requireOwnedDatabase();
 const webhookSecret = 'synthetic-owned-razorpay-callback-secret';
@@ -178,4 +179,103 @@ test('platform-signed callback cannot capture a merchant-credential-bound order'
     assert.equal(owned.psql(`SELECT payment_status FROM orders WHERE id='${orderId}';`), 'pending');
     assert.equal(owned.psql(`SELECT status FROM payments WHERE id='${paymentId}';`), 'requires_action');
     assert.equal(owned.psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${tenant.siteId}' AND source_type='payment_capture';`), '0');
+});
+
+test('merchant callback verifies its exact secret and provider account before one ledger capture', async t => {
+    const tenant = newSyntheticTenant('rzp-own-signed'); seedSyntheticTenant(owned.psql, tenant);
+    const { orderId } = seedSyntheticOrder(owned.psql, tenant);
+    const credentialId = randomUUID(), wrappingKey = randomUUID(), apiSecret = randomUUID(), ownWebhookSecret = randomUUID();
+    const keyId = `rzp_test_${randomUUID().replaceAll('-', '')}`;
+    const providerOrderId = `order_syn_${randomUUID().replaceAll('-', '')}`;
+    const providerPaymentId = `pay_syn_${randomUUID().replaceAll('-', '')}`;
+    const providerEventId = `evt_syn_${randomUUID().replaceAll('-', '')}`;
+    const context = { siteId: tenant.siteId, keyId, environment: 'sandbox' as const, credentialId };
+    const encrypted = {
+        key_secret_ciphertext: await encryptPaymentSecret(apiSecret, wrappingKey, context),
+        webhook_secret_ciphertext: await encryptPaymentWebhookSecret(ownWebhookSecret, wrappingKey, context),
+    };
+    owned.psql(`INSERT INTO payment_credentials(id,site_id,provider,mode,status,provider_key_id,last_verified_at,encrypted_credentials)
+        VALUES('${credentialId}','${tenant.siteId}','razorpay','sandbox','active','${keyId}',now(),'${JSON.stringify(encrypted)}'::jsonb);
+        UPDATE orders SET payment_id='${providerOrderId}',payment_method='razorpay',payment_gateway='razorpay'
+        WHERE id='${orderId}' AND store_id='${tenant.siteId}';`);
+    const cartId = randomUUID(), checkoutId = randomUUID();
+    const intent = { credential_id: credentialId, key_id: keyId, provider: 'razorpay', mode: 'sandbox',
+        status: 'requires_action', payment_intent_id: randomUUID(), order_id: orderId,
+        provider_order_id: providerOrderId, amount_minor: 19900, currency: 'INR' };
+    owned.psql(`UPDATE payment_credentials SET selected_for_checkout=true WHERE id='${credentialId}';
+        UPDATE sites SET online_payment_enabled=true,
+            payment_settings='${JSON.stringify({mode:'ownAccount',gateways:['razorpay'],razorpay:{credential_id:credentialId,key_id:keyId,test_mode:true,verified:true}})}'::jsonb
+            WHERE id='${tenant.siteId}';
+        INSERT INTO carts(id,store_id,session_id,items,status) VALUES('${cartId}','${tenant.siteId}','syn-${cartId}','[]','active');
+        INSERT INTO checkout_sessions(id,site_id,cart_id,order_id,idempotency_key,status,checkout_state,payment_intent)
+            VALUES('${checkoutId}','${tenant.siteId}','${cartId}','${orderId}','syn-${checkoutId}',
+                'payment_intent','payment_intent','${JSON.stringify(intent)}'::jsonb);`);
+    gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { PAYMENT_CONFIG_ENCRYPTION_KEY: wrappingKey }));
+    const failedOrder = seedSyntheticOrder(owned.psql, tenant).orderId;
+    const failedProviderOrderId = `order_syn_${randomUUID().replaceAll('-', '')}`;
+    const failedProviderPaymentId = `pay_syn_${randomUUID().replaceAll('-', '')}`;
+    const failedCartId = randomUUID(), failedCheckoutId = randomUUID();
+    const failedIntent = { ...intent, payment_intent_id: randomUUID(), order_id: failedOrder,
+        provider_order_id: failedProviderOrderId };
+    owned.psql(`UPDATE orders SET payment_id='${failedProviderOrderId}',payment_method='razorpay',payment_gateway='razorpay'
+        WHERE id='${failedOrder}' AND store_id='${tenant.siteId}';
+        INSERT INTO carts(id,store_id,session_id,items,status) VALUES('${failedCartId}','${tenant.siteId}','syn-${failedCartId}','[]','active');
+        INSERT INTO checkout_sessions(id,site_id,cart_id,order_id,idempotency_key,status,checkout_state,payment_intent)
+            VALUES('${failedCheckoutId}','${tenant.siteId}','${failedCartId}','${failedOrder}','syn-${failedCheckoutId}',
+                'payment_intent','payment_intent','${JSON.stringify(failedIntent)}'::jsonb);`);
+    const originalFetch = globalThis.fetch;
+    t.mock.method(globalThis, 'fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = new URL(input instanceof Request ? input.url : String(input));
+        if (url.hostname === 'api.razorpay.com') {
+            assert.equal(init?.headers && new Headers(init.headers).get('Authorization'), `Basic ${btoa(`${keyId}:${apiSecret}`)}`);
+            if (url.pathname === `/v1/payments/${providerPaymentId}`) return Response.json({ id: providerPaymentId,
+                order_id: providerOrderId, status: 'captured', captured: true, amount: 19900, currency: 'INR' });
+            if (url.pathname === `/v1/payments/${failedProviderPaymentId}`) return Response.json({ id: failedProviderPaymentId,
+                order_id: failedProviderOrderId, status: 'failed', captured: false, amount: 19900, currency: 'INR' });
+            assert.fail(`Unexpected synthetic payment read ${url.pathname}`);
+        }
+        return originalFetch(input, init);
+    });
+    const serviceEnv = { ...owned.restEnv(), ENVIRONMENT: 'test', RAZORPAY_WEBHOOK_SECRET: webhookSecret,
+        INTERNAL_API_SECRET: INTERNAL_SECRET,
+        API_GATEWAY_SERVICE: { async fetch(input: string | Request, init?: RequestInit) {
+            const target = new URL(typeof input === 'string' ? input : input.url);
+            const response = await gateway.request(target.pathname + target.search, init);
+            return new Response(response.text, { status: response.status, headers: response.headers });
+        } },
+    };
+    const body = JSON.stringify({ id: providerEventId, event: 'payment.captured', payload: { payment: { entity: {
+        id: providerPaymentId, order_id: providerOrderId, status: 'captured', captured: true,
+        amount: 19900, currency: 'INR', notes: { store_id: tenant.siteId, order_id: orderId },
+    } } } });
+    const path = `http://127.0.0.1/razorpay/merchant/${tenant.siteId}/${credentialId}`;
+    const deliver = async (secret: string, url = path, payload = body) => {
+        const response = await webhookWorker.fetch(new Request(url, { method: 'POST', body: payload,
+            headers: { 'Content-Type': 'application/json', 'X-Razorpay-Signature': createHmac('sha256', secret).update(payload).digest('hex'),
+                'X-Razorpay-Event-Id': providerEventId } }), serviceEnv);
+        return { status: response.status, text: await response.text() };
+    };
+    const journalCount = () => owned.psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${tenant.siteId}'
+        AND source_type='payment_capture' AND source_id='razorpay:${providerPaymentId}';`);
+    const wrong = await deliver(webhookSecret); assert.equal(wrong.status, 400, wrong.text);
+    const forged = await deliver(ownWebhookSecret, `http://127.0.0.1/razorpay/merchant/${randomUUID()}/${credentialId}`);
+    assert.notEqual(forged.status, 200); assert.equal(journalCount(), '0');
+    const first = await deliver(ownWebhookSecret); assert.equal(first.status, 200, first.text);
+    const retry = await deliver(ownWebhookSecret); assert.equal(retry.status, 200, retry.text);
+    assert.equal(journalCount(), '1');
+    assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE aggregate_id='${orderId}' AND event_type='order.paid';`), '1');
+    assert.equal(owned.psql(`SELECT payment_status||'|'||payment_id FROM orders WHERE id='${orderId}';`), `paid|${providerPaymentId}`);
+    assert.equal(owned.psql(`SELECT count(*) FROM idempotency_keys WHERE site_id='${tenant.siteId}'
+        AND scope='razorpay:merchant-webhook:${credentialId}' AND status='completed';`), '1');
+    const failedBody = JSON.stringify({ id: `evt_syn_${randomUUID().replaceAll('-', '')}`, event: 'payment.failed',
+        payload: { payment: { entity: { id: failedProviderPaymentId, order_id: failedProviderOrderId,
+            amount: 19900, currency: 'INR', status: 'failed', captured: false, error_reason: 'synthetic_declined',
+        } } } });
+    const failed = await deliver(ownWebhookSecret, path, failedBody);
+    assert.equal(failed.status, 200, failed.text);
+    const failedRetry = await deliver(ownWebhookSecret, path, failedBody);
+    assert.equal(failedRetry.status, 200, failedRetry.text);
+    assert.equal(owned.psql(`SELECT payment_status FROM orders WHERE id='${failedOrder}';`), 'failed');
+    assert.equal(owned.psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${tenant.siteId}'
+        AND source_type='payment_capture' AND source_id='razorpay:${failedProviderPaymentId}';`), '0');
 });

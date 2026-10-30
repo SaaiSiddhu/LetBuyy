@@ -43,7 +43,7 @@ export async function commitPaymentConfiguration(c: Context<{Bindings:Env}>, inp
 }) {
     const claim=c.get('paymentConfigurationClaim');
     if (!claim || claim.siteId!==input.current.id) throw new AppError('Payment acknowledgement is unavailable.',503,'PAYMENT_CONFIG_UNAVAILABLE');
-    const projection=success(await projectStorePaymentConfig(input.proposed,c.env.PAYMENT_CONFIG_ENCRYPTION_KEY));
+    const projection=success(await projectStorePaymentConfig(input.proposed,c.env.PAYMENT_CONFIG_ENCRYPTION_KEY,c.env.MERCHANT_RAZORPAY_WEBHOOK_ORIGIN));
     const {data,error}=await getSupabaseAdmin(c).rpc('commit_store_payment_configuration_v1',{
         p_site_id:input.current.id,p_actor_id:input.actorId,p_expected_revision:input.current.updated_at??null,
         p_claim_id:claim.id,p_request_hash:claim.requestHash,p_operation:input.operation,p_payload:input.payload,

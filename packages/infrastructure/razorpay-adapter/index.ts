@@ -22,6 +22,20 @@ export interface RazorpayCredentials {
   keySecret: string;
 }
 
+export type RazorpayRefundEventType = 'refund.created' | 'refund.processed' | 'refund.failed';
+export type RazorpayRefundStatus = 'created' | 'processed' | 'failed';
+
+/** The event name, not the entity's possibly advanced status, determines the
+ * lifecycle transition. A created event must never post a refund reversal. */
+export function normalizeRazorpayRefundLifecycle(eventType: string, entityStatus: string | null | undefined):
+  { eventType: RazorpayRefundEventType; status: RazorpayRefundStatus } | null {
+  if (eventType === 'refund.created') return ['created', 'pending', 'processed'].includes(entityStatus ?? '')
+    ? { eventType, status: 'created' } : null;
+  if (eventType === 'refund.processed' && entityStatus === 'processed') return { eventType, status: 'processed' };
+  if (eventType === 'refund.failed' && entityStatus === 'failed') return { eventType, status: 'failed' };
+  return null;
+}
+
 export interface RazorpayOrderCreateInput {
   amount: number;
   currency: string;

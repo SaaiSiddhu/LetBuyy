@@ -731,6 +731,30 @@ app.post("/webhook-deliveries/dispatch", async (c) => {
 // Razorpay sends: x-razorpay-signature header = HMAC-SHA256(body, secret)
 // Docs: https://razorpay.com/docs/webhooks/validate-test/
 
+// Each merchant registers this exact URL in their own Razorpay test account.
+// The Gateway reads the immutable credential version and verifies its distinct
+// webhook secret before parsing the event or touching an order/ledger. This
+// ingress never has access to the merchant's API or webhook secrets.
+app.post('/razorpay/merchant/:siteId/:credentialId', async (c) => {
+    const siteId = c.req.param('siteId'), credentialId = c.req.param('credentialId');
+    if (!isUuid(siteId) || !isUuid(credentialId)) return c.json({ error: 'Invalid callback scope' }, 400);
+    if (!c.env.API_GATEWAY_SERVICE || !c.env.INTERNAL_API_SECRET) {
+        return c.json({ error: 'Merchant callback service unavailable' }, 503);
+    }
+    const body = await c.req.text();
+    if (body.length > 256 * 1024) return c.json({ error: 'Callback too large' }, 413);
+    const response = await c.env.API_GATEWAY_SERVICE.fetch(
+        `https://api-gateway/v1/storefront/internal/payments/merchant-razorpay/${siteId}/${credentialId}`,
+        { method: 'POST', body, headers: {
+            'Content-Type': 'application/json',
+            'X-Internal-API-Secret': c.env.INTERNAL_API_SECRET,
+            'X-Razorpay-Signature': c.req.header('x-razorpay-signature') || '',
+            'X-Razorpay-Event-Id': c.req.header('x-razorpay-event-id') || '',
+        } },
+    );
+    return new Response(response.body, { status: response.status, headers: { 'Content-Type': 'application/json' } });
+});
+
 app.post("/razorpay", async (c) => {
     const body = await c.req.text();
     const signature = c.req.header("x-razorpay-signature");

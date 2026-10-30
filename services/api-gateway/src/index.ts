@@ -174,6 +174,7 @@ export interface Env {
     TWILIO_AUTH_TOKEN?: string;
     TWILIO_WHATSAPP_FROM?: string;
     PAYMENT_CONFIG_ENCRYPTION_KEY?: string;
+    MERCHANT_RAZORPAY_WEBHOOK_ORIGIN?: string;
     TOTP_ENCRYPTION_KEY?: string;
     STRIPE_SECRET_KEY: string;
     PAYPAL_CLIENT_ID?: string;
