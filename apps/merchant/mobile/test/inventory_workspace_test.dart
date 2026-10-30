@@ -67,8 +67,11 @@ JsonMap record(String site, {String? name}) {
         'id': 'synthetic-line',
         'product_id': productId,
         'product_name': label,
-        'quantity': 7,
-        'received_quantity': 0,
+        'quantity_ordered': 7,
+        'quantity_requested': 7,
+        'quantity_shipped': 0,
+        'quantity_received': 0,
+        'unit_cost': 0,
       },
     ],
   };

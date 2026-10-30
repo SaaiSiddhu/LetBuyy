@@ -156,7 +156,7 @@ void main() {
   });
 
   test('inventory commands preserve purchase/transfer identity and address readbacks', () {
-    final po = PurchaseOrderContract.fromJson({'purchase_order': {'id': 'po_1', 'site_id': 'store_1', 'status': 'received'}, 'lines': [{'id': 'line_1', 'quantity': 2, 'received_quantity': 2}]});
+    final po = PurchaseOrderContract.fromJson({'purchase_order': {'id': 'po_1', 'site_id': 'store_1', 'status': 'received'}, 'lines': [{'id': 'line_1', 'quantity_ordered': 2, 'quantity_received': 2, 'unit_cost': 0}]});
     expect(po.id, 'po_1'); expect(po.status, 'received'); expect(po.lines.single.remainingQuantity, 0);
     final transfer = InventoryTransferContract.fromJson({'transfer': {'id': 'transfer_1', 'site_id': 'store_1', 'status': 'shipped'}, 'lines': []});
     expect(transfer.id, 'transfer_1'); expect(transfer.status, 'shipped');
@@ -10780,8 +10780,8 @@ Map<String, dynamic> _purchaseOrderJson({
       'variant_id': 'variant_1',
       'sku': 'TEE-001',
       'product_name': 'Cotton Tee',
-      'quantity': 4,
-      'received_quantity': receivedQuantity,
+      'quantity_ordered': 4,
+      'quantity_received': receivedQuantity,
       'unit_cost': 299,
     },
   ],
@@ -10804,8 +10804,9 @@ Map<String, dynamic> _transferJson({
       'variant_id': 'variant_1',
       'sku': 'TEE-001',
       'product_name': 'Cotton Tee',
-      'quantity': 3,
-      'received_quantity': receivedQuantity,
+      'quantity_requested': 3,
+      'quantity_shipped': status == 'reserved' ? 0 : 3,
+      'quantity_received': receivedQuantity,
     },
   ],
 };

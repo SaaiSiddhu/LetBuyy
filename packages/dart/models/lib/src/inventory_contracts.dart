@@ -505,6 +505,19 @@ class InventoryLineInput {
   };
 }
 
+int _warehouseCount(Object? value, {int minimum = 0, int maximum = 999999}) {
+  if (value is! num ||
+      !value.isFinite ||
+      value != value.roundToDouble() ||
+      value < minimum ||
+      value > maximum) {
+    throw const FormatException(
+      'The warehouse quantities could not be confirmed.',
+    );
+  }
+  return value.toInt();
+}
+
 class PurchaseOrderLineContract {
   const PurchaseOrderLineContract({
     required this.id,
@@ -519,6 +532,14 @@ class PurchaseOrderLineContract {
 
   factory PurchaseOrderLineContract.fromJson(Map<String, dynamic> json) {
     final product = json['product'];
+    final quantity = _warehouseCount(json['quantity_ordered'], minimum: 1);
+    final received = _warehouseCount(
+      json['quantity_received'],
+      maximum: quantity,
+    );
+    final cost = json['unit_cost'];
+    if (cost is! num || !cost.isFinite || cost < 0)
+      throw const FormatException('The purchase cost could not be confirmed.');
     return PurchaseOrderLineContract(
       id: _stringValue(json['id']),
       productId: _stringValue(json['product_id']),
@@ -530,11 +551,9 @@ class PurchaseOrderLineContract {
         json['product_name'] ?? (product is Map ? product['name'] : null),
         fallback: 'Product',
       ),
-      quantity: _intValue(json['quantity']),
-      receivedQuantity: _intValue(
-        json['received_quantity'] ?? json['received'],
-      ),
-      unitCost: _numValue(json['unit_cost']),
+      quantity: quantity,
+      receivedQuantity: received,
+      unitCost: cost,
     );
   }
 
@@ -654,10 +673,20 @@ class InventoryTransferLineContract {
     required this.productName,
     required this.quantity,
     required this.receivedQuantity,
+    this.shippedQuantity = 0,
   });
 
   factory InventoryTransferLineContract.fromJson(Map<String, dynamic> json) {
     final product = json['product'];
+    final quantity = _warehouseCount(json['quantity_requested'], minimum: 1);
+    final shipped = _warehouseCount(
+      json['quantity_shipped'],
+      maximum: quantity,
+    );
+    final received = _warehouseCount(
+      json['quantity_received'],
+      maximum: shipped,
+    );
     return InventoryTransferLineContract(
       id: _stringValue(json['id']),
       productId: _stringValue(json['product_id']),
@@ -669,10 +698,9 @@ class InventoryTransferLineContract {
         json['product_name'] ?? (product is Map ? product['name'] : null),
         fallback: 'Product',
       ),
-      quantity: _intValue(json['quantity']),
-      receivedQuantity: _intValue(
-        json['received_quantity'] ?? json['received'],
-      ),
+      quantity: quantity,
+      receivedQuantity: received,
+      shippedQuantity: shipped,
     );
   }
 
@@ -683,6 +711,7 @@ class InventoryTransferLineContract {
   final String productName;
   final int quantity;
   final int receivedQuantity;
+  final int shippedQuantity;
 
   int get remainingQuantity => (quantity - receivedQuantity).clamp(0, quantity);
 }
