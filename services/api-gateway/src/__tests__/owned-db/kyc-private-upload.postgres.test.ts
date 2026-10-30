@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import test, { after } from 'node:test';
 import { randomUUID } from 'node:crypto';
 import { requireOwnedDatabase } from './owned-db-support';
@@ -55,6 +56,9 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
     assert.equal(first.json?.data.document.status, 'submitted');
     assert.equal(first.json?.data.document.has_private_upload, true);
     assert.equal(first.json?.data.overview.overall_status, 'in_progress');
+    const unsafeRollback = readFileSync(new URL('../../../../../database/supabase/rollback/415_kyc_private_metadata_gateway_only.rollback.sql', import.meta.url), 'utf8');
+    assert.match(owned.psqlExpectError(unsafeRollback), /KYC evidence exists; retain Gateway-only private metadata access/,
+        'the rollback cannot reopen direct metadata reads after evidence has been recorded');
     assert.equal(owned.psql(`SELECT status FROM idempotency_keys WHERE site_id='${tenant.siteId}'
         AND scope='kyc:document-upload:business_pan' AND key='${firstKey}';`), 'completed');
     assert.ok(!first.text.includes('private_object_key'));
@@ -64,9 +68,15 @@ test('KYC file upload remains private, tenant-owned and pending provider evidenc
         'exec', owned.container, 'psql', '-U', 'postgres', '-d', owned.database, '-v', 'ON_ERROR_STOP=1',
         '-qAt', '-c', `SET ROLE authenticated; SET request.jwt.claim.sub = '${owner}'; ${sql}`,
     ], { encoding: 'utf8', timeout: 15_000 }).trim();
-    assert.equal(asAuthenticatedOwner(`SELECT auth.uid()::text || '|' || count(*)::text FROM public.merchant_kyc_documents
-        WHERE site_id='${tenant.siteId}' AND document_type='business_pan' GROUP BY auth.uid();`), `${owner}|1`,
-        'positive control: the authenticated site owner can read its own KYC status');
+    const ownerOverview = await gateway.request(`/v1/kyc?store_id=${tenant.siteId}`, {
+        method: 'GET', headers: await signedIdentityHeaders(owner, `kyc-${owner}@example.invalid`, tenant.siteId),
+    });
+    assert.equal(ownerOverview.status, 200, 'positive control: the site owner reads sanitized KYC status through the Gateway');
+    assert.equal(ownerOverview.json?.data.documents[0]?.status, 'submitted');
+    assert.ok(!ownerOverview.text.includes('private_object_key'));
+    assert.equal(asAuthenticatedOwner(`SELECT count(*) FROM public.merchant_kyc_documents
+        WHERE site_id='${tenant.siteId}' AND document_type='business_pan';`), '0',
+        'the authenticated site owner cannot read private evidence metadata directly');
     const forgeSql = `UPDATE public.merchant_kyc_documents SET status='verified', provider='signzy', provider_mode='live',
         provider_reference='forged', metadata='{"provider_verified":true}'::jsonb
         WHERE site_id='${tenant.siteId}' AND document_type='business_pan' RETURNING id;`;
