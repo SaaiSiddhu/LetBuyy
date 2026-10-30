@@ -245,15 +245,72 @@ test('AI Studio treats missing credit authority as unavailable instead of a zero
     try {assert.match(h.text(),/AI credit information is unavailable/)} finally {await h.close()}
 });
 
+const operationPayload=(resource:string):Record<string,unknown>=>({store_id:historySite,...(
+    resource==='supplierMetrics'?{suppliers:[{supplier_id:historyRecord().product_id,supplier_name:'Private supplier metrics',po_count:3,on_time_rate:null,avg_lead_time_days:null}],meta:{page:1,per_page:20,total:1,total_pages:1,has_next:false,has_prev:false}}:
+    resource==='warehouseMetrics'?{warehouses:[{location_id:historyRecord().location_id,location_name:'Private warehouse metrics',is_default:true,sku_count:3,total_units:9}],meta:{page:1,per_page:20,total:1,total_pages:1,has_next:false,has_prev:false}}:
+    resource==='transferMetrics'?{by_status:{shipped:1},in_transit_count:1,total_count:1}:
+    {order_count:3,open_order_count:0})})
+for(const resource of ['supplierMetrics','warehouseMetrics','transferMetrics','operationsSummary'] as const) {
+    test(`${resource} SDK refuses missing scope and malformed metrics without inventing values`,async()=>{
+        const {createLetbuyyApiClient,LetbuyyApiError}=await import('@letbuyy/api-client')
+        const client=(body:unknown)=>createLetbuyyApiClient({baseUrl:'https://api.example.invalid/v1',fetch:async(url,init)=>{
+            assert.equal(new URL(String(url)).searchParams.get('store_id'),historySite)
+            assert.equal(new Headers(init?.headers).get('X-Store-ID'),historySite)
+            return json(body)
+        }})
+        const valid=operationPayload(resource)
+        const result=await client(valid).commerceAnalytics[resource]({store_id:historySite})
+        assert.equal(result.store_id,historySite)
+        const broken=operationPayload(resource)
+        if(resource==='supplierMetrics') (broken.suppliers as Array<Record<string,unknown>>)[0].po_count=undefined
+        if(resource==='warehouseMetrics') (broken.warehouses as Array<Record<string,unknown>>)[0].total_units=undefined
+        if(resource==='transferMetrics') broken.total_count=0
+        if(resource==='operationsSummary') delete broken.order_count
+        for(const body of [{...valid,store_id:undefined},{...valid,store_id:historyRecord().product_id},broken]) await assert.rejects(()=>client(body).commerceAnalytics[resource]({store_id:historySite}),error=>error instanceof LetbuyyApiError&&error.code==='OPERATIONS_METRICS_UNVERIFIED')
+    })
+}
+test('operations web rejects malformed required counts while other panels remain available',async()=>{
+    const h=await mount('operationsDashboard',async url=>{
+        const name=url.includes('supplier-metrics')?'supplierMetrics':url.includes('warehouse-metrics')?'warehouseMetrics':url.includes('transfer-metrics')?'transferMetrics':'operationsSummary'
+        return json(name==='operationsSummary'?{store_id:historySite}:operationPayload(name))
+    })
+    try {assert.match(h.text(),/Unable to load snapshot/);assert.match(h.text(),/Private supplier metrics/);assert.match(h.text(),/Private warehouse metrics/);assert.doesNotMatch(h.text(),/Catalog products0/)} finally {await h.close()}
+})
+test('operations web retires private metrics on same-store account changes and ignores old body completion',async()=>{
+    let retired=false;const old=deferred<unknown>()
+    const h=await mount('operationsDashboard',async url=>{
+        if(retired)return json({},403)
+        if(url.includes('supplier-metrics'))return {ok:true,json:()=>old.promise} as Response
+        return json(operationPayload(url.includes('warehouse-metrics')?'warehouseMetrics':url.includes('transfer-metrics')?'transferMetrics':'operationsSummary'))
+    })
+    try {
+        assert.match(h.text(),/Private warehouse metrics/);retired=true;await h.render('alpha','actor-b')
+        await act(async()=>old.resolve({data:operationPayload('supplierMetrics')}))
+        assert.doesNotMatch(h.text(),/Private warehouse metrics|Private supplier metrics/)
+        assert.match(h.text(),/Unable to load supplier metrics/)
+    }finally{await h.close()}
+})
+test('operations warehouse page failure removes old rows and preserves Previous recovery',async()=>{
+    const h=await mount('operationsDashboard',async url=>{
+        if(!url.includes('warehouse-metrics'))return json(operationPayload(url.includes('supplier-metrics')?'supplierMetrics':url.includes('transfer-metrics')?'transferMetrics':'operationsSummary'))
+        if(url.includes('page=2'))return json({},503)
+        return json({store_id:historySite,warehouses:Array.from({length:20},(_,i)=>({location_id:`10000000-0000-4000-8000-${String(i).padStart(12,'0')}`,location_name:`Private warehouse page ${i}`,is_default:false,sku_count:1,total_units:3})),meta:{page:1,per_page:20,total:21,total_pages:2,has_next:true,has_prev:false}})
+    })
+    try{
+        assert.match(h.text(),/Private warehouse page 0/);await h.click('Next locations')
+        assert.doesNotMatch(h.text(),/Private warehouse page 0/);assert.match(h.text(),/Unable to load warehouse metrics/)
+        await h.click('Previous locations');assert.match(h.text(),/Private warehouse page 0/)
+    }finally{await h.close()}
+})
 test('operations panels settle independently and page only the requested identity-bound collection', async () => {
     const calls:string[]=[];
     const pendingSupplier=deferred<Response>();
     const h=await mount('operationsDashboard',async url=>{
         calls.push(url);
         if(url.includes('supplier-metrics')) return pendingSupplier.promise;
-        if(url.includes('warehouse-metrics')) return json({warehouses:[{location_id:'location-a',location_name:url.includes('page=2')?'Second location':'First location',is_default:false,sku_count:1100,total_units:9900}],meta:{page:url.includes('page=2')?2:1,per_page:20,total:21,total_pages:2,has_next:!url.includes('page=2'),has_prev:url.includes('page=2')}});
-        if(url.includes('transfer-metrics')) return json({by_status:{shipped:1100,received:3},in_transit_count:1100,total_count:1103});
-        return json({order_count:3});
+        if(url.includes('warehouse-metrics')) return json({store_id:historySite,warehouses:Array.from({length:url.includes('page=2')?1:20},(_,i)=>({location_id:`10000000-0000-4000-8000-${String(i).padStart(12,'0')}`,location_name:(url.includes('page=2')?'Second location':'First location')+i,is_default:false,sku_count:1100,total_units:9900})),meta:{page:url.includes('page=2')?2:1,per_page:20,total:21,total_pages:2,has_next:!url.includes('page=2'),has_prev:url.includes('page=2')}});
+        if(url.includes('transfer-metrics')) return json({store_id:historySite,by_status:{shipped:1100,received:3},in_transit_count:1100,total_count:1103});
+        return json({store_id:historySite,order_count:3});
     });
     try {
         assert.match(h.text(),/1103/);
@@ -265,7 +322,7 @@ test('operations panels settle independently and page only the requested identit
         assert.match(h.text(),/Second location/);
         await h.render('beta');
         assert.match(calls.filter(url=>url.includes('/beta/')&&url.includes('warehouse-metrics'))[0],/page=1/);
-        pendingSupplier.resolve(json({suppliers:[],meta:{page:1,per_page:20,total:0,total_pages:0,has_next:false,has_prev:false}}));
+        pendingSupplier.resolve(json({store_id:historySite,suppliers:[],meta:{page:1,per_page:20,total:0,total_pages:0,has_next:false,has_prev:false}}));
         await h.pause(0);
     } finally {await h.close()}
 });

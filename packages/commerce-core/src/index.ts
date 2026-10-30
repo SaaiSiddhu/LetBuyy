@@ -355,6 +355,12 @@ export const InventoryReceiptListQuerySchema = PaginationQuery.pick({ page: true
   .refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The receipt page is out of range' });
 export type InventoryReceiptListQuery = z.infer<typeof InventoryReceiptListQuerySchema>;
 
+export const CommerceMetricStoreQuerySchema = z.object({ store_id: UuidSchema });
+export const CommerceMetricPageQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({ store_id: UuidSchema })
+  .refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The metric page is out of range' });
+export type CommerceMetricStoreQuery = z.infer<typeof CommerceMetricStoreQuerySchema>;
+export type CommerceMetricPageQuery = z.infer<typeof CommerceMetricPageQuerySchema>;
+
 export const CreateLocationSchema = z.object({
   store_id: UuidSchema,
   name: z.string().min(1).max(200).trim(),

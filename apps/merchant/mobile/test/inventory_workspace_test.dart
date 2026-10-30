@@ -110,8 +110,9 @@ void respond(
 Future<StoreContext> mount(
   WidgetTester tester,
   Widget screen,
-  void Function(RequestOptions, RequestInterceptorHandler) handler,
-) async {
+  void Function(RequestOptions, RequestInterceptorHandler) handler, {
+  bool settle = true,
+}) async {
   SharedPreferences.setMockInitialValues({});
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
@@ -147,7 +148,11 @@ Future<StoreContext> mount(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+  }
   return stores;
 }
 

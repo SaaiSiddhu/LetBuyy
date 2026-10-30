@@ -8,6 +8,8 @@ import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, t
 import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 import { InventoryHistoryEntrySchema, InventoryReservationSchema, InventoryReceiptSchema, UuidSchema,
   type InventoryReservation as CanonicalInventoryReservation, type InventoryReceipt as CanonicalInventoryReceipt } from '@letbuyy/shared-types';
+import { SupplierMetricsResultSchema, WarehouseMetricsResultSchema, TransferMetricsResultSchema, OperationsSummaryResultSchema } from '@letbuyy/shared-types';
+import type { SupplierMetricsRow as CanonicalSupplierMetricsRow, SupplierMetricsResult as CanonicalSupplierMetricsResult, WarehouseMetricsRow as CanonicalWarehouseMetricsRow, WarehouseMetricsResult as CanonicalWarehouseMetricsResult, TransferMetricsResult as CanonicalTransferMetricsResult, OperationsSummaryResult as CanonicalOperationsSummaryResult } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import { createReelReviewSdk } from './reels';
 export { createReelReviewSdk } from './reels';
@@ -2520,54 +2522,17 @@ export type InventoryEventRecord = InventoryHistoryEntry;
 
 export interface CommerceAnalyticsQuery {
   store_id: string;
+  page?: number;
+  limit?: number;
   [key: string]: string | number | boolean | undefined | null;
 }
 
-export interface SupplierMetricsRow extends JsonRecord {
-  supplier_id: string | null;
-  supplier_name: string;
-  po_count: number;
-  on_time_rate: number | null;
-  avg_lead_time_days: number | null;
-}
-
-export interface SupplierMetricsResult extends JsonRecord {
-  meta?: GatewayPaginationMeta;
-  suppliers: SupplierMetricsRow[];
-  schema_missing?: boolean;
-}
-
-export interface WarehouseMetricsRow extends JsonRecord {
-  location_id: string;
-  location_name: string;
-  is_default: boolean;
-  sku_count: number;
-  total_units: number;
-}
-
-export interface WarehouseMetricsResult extends JsonRecord {
-  meta?: GatewayPaginationMeta;
-  warehouses: WarehouseMetricsRow[];
-  schema_missing?: boolean | string;
-}
-
-export interface TransferMetricsResult extends JsonRecord {
-  by_status: Record<string, number>;
-  in_transit_count: number;
-  total_count: number;
-  schema_missing?: boolean;
-}
-
-export interface OperationsSummaryResult extends JsonRecord {
-  order_count?: number;
-  open_order_count?: number;
-  po_count?: number;
-  open_po_count?: number;
-  transfer_count?: number;
-  in_transit_transfer_count?: number;
-  low_stock_sku_count?: number;
-  total_sku_count?: number;
-}
+export type SupplierMetricsRow = CanonicalSupplierMetricsRow;
+export type SupplierMetricsResult = CanonicalSupplierMetricsResult;
+export type WarehouseMetricsRow = CanonicalWarehouseMetricsRow;
+export type WarehouseMetricsResult = CanonicalWarehouseMetricsResult;
+export type TransferMetricsResult = CanonicalTransferMetricsResult;
+export type OperationsSummaryResult = CanonicalOperationsSummaryResult;
 
 export interface OrderListQuery extends StoreScopedQuery {
   status?: string;
@@ -5073,13 +5038,13 @@ export class LetbuyyApiClient {
   // ── Commerce Analytics (Phase 5.10) ─────────────────────────
   readonly commerceAnalytics = {
     supplierMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<SupplierMetricsResult>('/commerce-analytics/supplier-metrics', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/supplier-metrics', query, SupplierMetricsResultSchema, true, options),
     warehouseMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<WarehouseMetricsResult>('/commerce-analytics/warehouse-metrics', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/warehouse-metrics', query, WarehouseMetricsResultSchema, true, options),
     transferMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<TransferMetricsResult>('/commerce-analytics/transfer-metrics', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/transfer-metrics', query, TransferMetricsResultSchema, false, options),
     operationsSummary: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<OperationsSummaryResult>('/commerce-analytics/operations-summary', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/operations-summary', query, OperationsSummaryResultSchema, false, options),
   };
 
   readonly orders = {
@@ -5723,6 +5688,18 @@ export class LetbuyyApiClient {
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {
     const body = await this.request<GatewayResponse<T>>(path, options);
     return unwrapData<T>(body, 200, null);
+  }
+
+  private async requestCommerceMetric<T extends { store_id: string; meta?: { page: number; per_page: number } }>(path: string,
+    query: CommerceAnalyticsQuery, schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } },
+    paged: boolean, options?: LetbuyyRequestOptions): Promise<T> {
+    const body=await this.requestData<unknown>(path,{...options,storeId:query.store_id,query});
+    const parsed=schema.safeParse(body);
+    if(!parsed.success || parsed.data.store_id!==query.store_id ||
+      (paged && (parsed.data.meta?.page!==(query.page ?? 1) || parsed.data.meta?.per_page!==(query.limit ?? 20)))) {
+      throw new LetbuyyApiError({status:503,code:'OPERATIONS_METRICS_UNVERIFIED',message:'These operations metrics could not be verified. Try again later.'});
+    }
+    return parsed.data;
   }
 
   private async requestInventoryRecords<T>(path: string, query: InventoryReservationListQuery | InventoryReceiptListQuery,

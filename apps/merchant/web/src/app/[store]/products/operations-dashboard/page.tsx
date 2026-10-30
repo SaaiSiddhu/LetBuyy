@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { useReadRequest } from '@/lib/api/use-read-request'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
+import { SupplierMetricsResultSchema, WarehouseMetricsResultSchema, TransferMetricsResultSchema, OperationsSummaryResultSchema } from '@letbuyy/shared-types'
 import {
     Badge,
     Button,
@@ -87,7 +88,8 @@ type FetchState<T> =
     | { status: 'error'; message: string }
     | { status: 'success'; data: T }
 
-function useFetch<T>(url: string | null, scope: string): FetchState<T> {
+function useFetch<T extends { store_id: string; meta?: { page: number } }>(url: string | null, scope: string,
+    schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } }, expectedPage?: number): FetchState<T> {
     const identity = `${scope}:${url || ''}`
     const beginRead = useReadRequest(identity)
     const [result, setResult] = useState<{ identity: string; state: FetchState<T> } | null>(null)
@@ -102,13 +104,18 @@ function useFetch<T>(url: string | null, scope: string): FetchState<T> {
                 if (!response.ok || body.data === undefined) {
                     const message = typeof body.error === 'string' ? body.error : body.error?.message || `HTTP ${response.status}`
                     setResult({ identity, state: { status:'error', message } })
-                } else setResult({ identity, state: { status:'success', data:body.data } })
+                } else {
+                    const parsed=schema.safeParse(body.data)
+                    if (!parsed.success || (expectedPage !== undefined && parsed.data.meta?.page !== expectedPage)) {
+                        setResult({identity,state:{status:'error',message:'These operations metrics could not be verified. Refresh to try again.'}})
+                    } else setResult({ identity, state: { status:'success', data:parsed.data } })
+                }
             })
             .catch((error:unknown) => {
                 if (!cancelled && request.isCurrent()) setResult({ identity, state: { status:'error', message:error instanceof Error ? error.message : 'Network error' } })
             })
         return () => { cancelled = true }
-    }, [url, identity, beginRead])
+    }, [url, identity, beginRead, schema, expectedPage])
     if (!url) return { status:'idle' }
     return result?.identity === identity ? result.state : { status:'loading' }
 }
@@ -139,10 +146,10 @@ export default function OperationsDashboardPage() {
     const warehouseUrl = base ? `${base}/warehouse-metrics?page=${warehousePage}&limit=20&_r=${refreshKey}` : null
     const transferUrl = base ? `${base}/transfer-metrics?_r=${refreshKey}` : null
 
-    const summaryState = useFetch<OperationsSummaryResult>(summaryUrl, scope)
-    const supplierState = useFetch<SupplierMetricsResult>(supplierUrl, scope)
-    const warehouseState = useFetch<WarehouseMetricsResult>(warehouseUrl, scope)
-    const transferState = useFetch<TransferMetricsResult>(transferUrl, scope)
+    const summaryState = useFetch<OperationsSummaryResult>(summaryUrl, scope, OperationsSummaryResultSchema)
+    const supplierState = useFetch<SupplierMetricsResult>(supplierUrl, scope, SupplierMetricsResultSchema, supplierPage)
+    const warehouseState = useFetch<WarehouseMetricsResult>(warehouseUrl, scope, WarehouseMetricsResultSchema, warehousePage)
+    const transferState = useFetch<TransferMetricsResult>(transferUrl, scope, TransferMetricsResultSchema)
 
     const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
 
@@ -164,7 +171,7 @@ export default function OperationsDashboardPage() {
             <PageHeader identity="products"
                 recipe="index"
                 title="Operations dashboard"
-                description="Real-time view of inventory, suppliers, warehouses, and transfers."
+                description="Current operational metrics for inventory, suppliers, warehouses, and transfers."
                 breadcrumbs={[{ label: 'Inventory' }, { label: 'Operations dashboard' }]}
                 primaryAction={{
                     label: 'Refresh',
@@ -214,7 +221,7 @@ export default function OperationsDashboardPage() {
                                 subtext="pending / processing"
                             />
                             <KpiCard
-                                label="Total SKUs"
+                                label="Catalog products"
                                 value={summary.total_sku_count}
                                 subtext={summary.low_stock_sku_count !== undefined ? `${summary.low_stock_sku_count} low stock` : undefined}
                                 variant={
@@ -224,7 +231,7 @@ export default function OperationsDashboardPage() {
                                 }
                             />
                             <KpiCard
-                                label="Low-stock SKUs"
+                                label="Low-stock entries"
                                 value={summary.low_stock_sku_count}
                                 subtext="available ≤ 10 units"
                                 variant={

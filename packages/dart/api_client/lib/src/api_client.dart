@@ -95,6 +95,9 @@ class ApiClient {
   late final AiApi ai = AiApi(this);
   late final CatalogApi categories = CatalogApi(this, '/categories');
   late final InventoryApi inventory = InventoryApi(this);
+  late final CommerceAnalyticsApi commerceAnalytics = CommerceAnalyticsApi(
+    this,
+  );
   late final PagesApi pages = PagesApi(this);
   late final BlogApi blog = BlogApi(this);
   late final MediaApi media = MediaApi(this);
@@ -2462,6 +2465,39 @@ class CatalogApi {
         '$_basePath/${_encodePathSegment(id)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
+}
+
+class CommerceAnalyticsApi {
+  const CommerceAnalyticsApi(this._client);
+  final ApiClient _client;
+  Future<JsonMap> supplierMetrics({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/supplier-metrics',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<JsonMap> warehouseMetrics({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/warehouse-metrics',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<JsonMap> transferMetrics({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/transfer-metrics',
+    options: _mergeOptions(options, query: query),
+  );
+  Future<JsonMap> operationsSummary({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/commerce-analytics/operations-summary',
+    options: _mergeOptions(options, query: query),
+  );
 }
 
 class InventoryApi {

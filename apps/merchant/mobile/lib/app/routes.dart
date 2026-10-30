@@ -45,6 +45,7 @@ import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
 import '../screens/inventory/history_screen.dart';
 import '../screens/inventory/records_screen.dart';
+import '../screens/inventory/operations_screen.dart';
 import '../screens/inventory/locations_screen.dart';
 import '../screens/inventory/purchase_orders_screen.dart';
 import '../screens/inventory/suppliers_screen.dart';
@@ -110,6 +111,7 @@ enum AppRouteId {
   inventoryHistory,
   inventoryReservations,
   inventoryReceipts,
+  inventoryOperations,
   inventoryLocations,
   inventorySuppliers,
   purchaseOrders,
@@ -244,6 +246,7 @@ class AppRoutes {
   static const String inventoryHistory = '/inventory/history';
   static const String inventoryReservations = '/inventory/reservations';
   static const String inventoryReceipts = '/inventory/receipts';
+  static const String inventoryOperations = '/inventory/operations';
   static const String inventoryLocations = '/inventory/locations';
   static const String inventorySuppliers = '/inventory/suppliers';
   static const String purchaseOrders = '/inventory/purchase-orders';
@@ -564,6 +567,11 @@ class AppRoutes {
               : null,
         );
       },
+    ),
+    AppRouteSpec(
+      id: AppRouteId.inventoryOperations,
+      path: inventoryOperations,
+      builder: (_) => const InventoryOperationsScreen(),
     ),
     AppRouteSpec(
       id: AppRouteId.inventoryReceipts,

@@ -360,6 +360,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
         icon: Icons.swap_horiz_outlined,
         route: AppRoutes.inventoryTransfers,
       ),
+      _WmsShortcut(
+        label: 'Operations dashboard',
+        icon: Icons.analytics_outlined,
+        route: AppRoutes.inventoryOperations,
+      ),
     ];
 
     return SizedBox(

@@ -10,6 +10,12 @@ export 'package:letbuyy_models/letbuyy_models.dart'
         InventoryHistoryEntry,
         InventoryReservationRecord,
         InventoryReceiptRecord,
+        InventoryMetricPage,
+        SupplierMetricPage,
+        WarehouseMetricPage,
+        TransferMetrics,
+        OperationsSnapshot,
+        operationsMetricKeys,
         inventoryReservationStatuses,
         InventoryBarcodeLookup,
         InventoryLocationContract,
@@ -344,6 +350,93 @@ class InventoryService extends ChangeNotifier {
       }
     }
   }
+
+  Future<T> _readMetric<T>(
+    String resource,
+    String storeId,
+    Future<JsonMap> Function(ApiRequestOptions) load,
+    T Function(JsonMap) parse, {
+    InventoryMetricPage Function(T)? metadata,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final view = _begin(resource, storeId);
+    try {
+      final raw = await load(_options(view.version, storeId));
+      _checkRead(resource, view);
+      if (raw['store_id'] != storeId)
+        throw const ApiException(
+          message:
+              'These operations metrics are not available for the selected store yet. Try again later.',
+          statusCode: 503,
+          code: 'OPERATIONS_METRICS_SCOPE_UNSUPPORTED',
+        );
+      final result = parse(raw), meta = metadata?.call(result);
+      if (meta != null && (meta.page != page || meta.limit != limit))
+        throw const FormatException(
+          'The operations page could not be confirmed.',
+        );
+      return result;
+    } finally {
+      if (_views[resource] == view &&
+          _api.captureRequestContext() == view.version) {
+        _loading.remove(resource);
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<SupplierMetricPage> fetchSupplierMetrics(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+  }) => _readMetric(
+    'supplier-metrics',
+    storeId,
+    (options) => _api.commerceAnalytics.supplierMetrics(
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+      options: options,
+    ),
+    SupplierMetricPage.fromJson,
+    metadata: (data) => data.meta,
+    page: page,
+    limit: limit,
+  );
+  Future<WarehouseMetricPage> fetchWarehouseMetrics(
+    String storeId, {
+    int page = 1,
+    int limit = 20,
+  }) => _readMetric(
+    'warehouse-metrics',
+    storeId,
+    (options) => _api.commerceAnalytics.warehouseMetrics(
+      query: {'store_id': storeId, 'page': page, 'limit': limit},
+      options: options,
+    ),
+    WarehouseMetricPage.fromJson,
+    metadata: (data) => data.meta,
+    page: page,
+    limit: limit,
+  );
+  Future<TransferMetrics> fetchTransferMetrics(String storeId) => _readMetric(
+    'transfer-metrics',
+    storeId,
+    (options) => _api.commerceAnalytics.transferMetrics(
+      query: {'store_id': storeId},
+      options: options,
+    ),
+    TransferMetrics.fromJson,
+  );
+  Future<OperationsSnapshot> fetchOperationsSummary(String storeId) =>
+      _readMetric(
+        'operations-summary',
+        storeId,
+        (options) => _api.commerceAnalytics.operationsSummary(
+          query: {'store_id': storeId},
+          options: options,
+        ),
+        OperationsSnapshot.fromJson,
+      );
 
   Future<List<T>> _readRecords<T>(
     String resource,
