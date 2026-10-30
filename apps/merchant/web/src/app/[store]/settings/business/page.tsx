@@ -31,6 +31,7 @@ import {
     useToast,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
+import { businessProfileForStorePatch } from '@/lib/store-profile-business'
 import { deriveGstStateCode, gstStateName, gstStateOptions } from '@/lib/india/gst-states'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -288,12 +289,12 @@ export default function BusinessSettingsPage() {
             const bp = isRecord(d.business_profile) ? d.business_profile : {}
             setRawBP(bp)
             const next: BusinessForm = {
-                legal_name: rs(d, 'legal_name') || rs(bp, 'legal_name'),
+                legal_name: rs(d, 'legal_name'),
                 trade_name: rs(bp, 'trade_name'),
                 entity_type: rs(bp, 'entity_type'),
                 pan_last4: rs(bp, 'pan_last4'),
-                gstin: rs(d, 'gstin') || rs(bp, 'gstin'),
-                gst_state_code: rs(d, 'gst_state_code') || rs(bp, 'gst_state_code'),
+                gstin: rs(d, 'gstin'),
+                gst_state_code: rs(d, 'gst_state_code'),
                 invoice_prefix: rs(d, 'invoice_prefix', 'LBY'),
             }
             setData(next)
@@ -339,7 +340,7 @@ export default function BusinessSettingsPage() {
         }
         setSaveState('saving')
         try {
-            const business_profile: Record<string, unknown> = { ...rawBP }
+            const business_profile = businessProfileForStorePatch(rawBP)
             if (data.trade_name.trim()) business_profile.trade_name = data.trade_name.trim()
             else delete business_profile.trade_name
             if (data.entity_type) business_profile.entity_type = data.entity_type

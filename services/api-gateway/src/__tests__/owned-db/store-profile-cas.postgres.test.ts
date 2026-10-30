@@ -53,6 +53,8 @@ test('two store editors cannot overwrite a cleared contact or cross tenant bound
         { business_profile: { website: 'javascript:alert(1)' } },
         { business_profile: { full_pan: 'ABCDE1234F' } },
         { business_profile: { bank_account_number: '123456789012' } },
+        { business_profile: { legal_name: 'Stale legal copy' } },
+        { business_profile: { gstin: '27ABCDE1234F1Z5' } },
         { invoice_address: { country: 'IN', zip: '400001', full_pan: 'ABCDE1234F' } },
     ]) {
         const rejected = await request(first.siteId, owner, { version: versionBeforeInvalid, ...invalid });
@@ -78,9 +80,9 @@ test('two store editors cannot overwrite a cleared contact or cross tenant bound
         name: 'New public merchant name', tagline: 'Fresh merchant tagline',
         seo_title: 'New public merchant SEO title', seo_description: 'A revised public search description.',
         business_profile: {
-        email: 'merchant@example.invalid', phone: '+919876543210', legal_name: 'Private Legal Name',
+        email: 'merchant@example.invalid', phone: '+919876543210',
         pan_last4: '1234', public_contact_enabled: true,
-    } });
+    }, legal_name: 'Private Legal Name' });
     assert.equal(optIn.status, 200, optIn.text);
     const persisted = JSON.parse(owned.psql(`SELECT json_build_object('name',name,'tagline',tagline,'meta_title',meta_title,'meta_description',meta_description) FROM sites WHERE id='${first.siteId}';`));
     assert.deepEqual(persisted, { name: 'New public merchant name', tagline: 'Fresh merchant tagline',

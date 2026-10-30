@@ -27,6 +27,7 @@ import {
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 import { gstStateCodeFromName } from '@/lib/india/gst-states'
+import { businessProfileForStorePatch } from '@/lib/store-profile-business'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -280,7 +281,7 @@ export default function GeneralSettingsPage() {
         }
         setSaveState('saving')
         try {
-            const businessProfile: Record<string, unknown> = { ...rawBP }
+            const businessProfile = businessProfileForStorePatch(rawBP)
             for (const [key, value] of [
                 ['email', data.contact_email], ['phone', data.contact_phone], ['website', data.contact_website],
             ] as const) {

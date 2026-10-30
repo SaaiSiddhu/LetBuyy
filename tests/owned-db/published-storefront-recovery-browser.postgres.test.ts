@@ -485,6 +485,33 @@ test('General and Business expose keyboard labels and recover an optional status
     await expect(pan.getByLabel('Upload Business PAN')).toBeFocused();
 });
 
+test('Merchant Business ignores legacy nested legal and GST copies after canonical fields are cleared', { timeout: 180_000 }, async t => {
+    const f = await fixture('business-clear'); t.after(() => f.context.close());
+    owned.psql(`UPDATE sites SET legal_name=NULL, gstin=NULL, gst_state_code=NULL,
+        business_profile='{"legal_name":"Stale legal copy","gstin":"27ABCDE1234F1Z5","gst_state_code":"27","trade_name":"Existing trade"}'::jsonb
+        WHERE id='${f.tenant.siteId}';`);
+    await signIn(f.page, f.email);
+    await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/settings/business`);
+    await expect(f.page.getByLabel('Legal business name', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GSTIN', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GST state', { exact: true })).toHaveValue('');
+    await f.page.getByLabel('Trade name', { exact: true }).fill('Updated trade');
+    const [response] = await Promise.all([
+        f.page.waitForResponse(item => new URL(item.url()).pathname === `/api/stores/${f.tenant.subdomain}/settings`
+            && item.request().method() === 'PATCH'),
+        f.page.getByRole('button', { name: 'Save', exact: true }).first().click(),
+    ]);
+    assert.equal(response.status(), 200, 'normal Business save accepts the canonical cleared fields');
+    assert.equal(owned.psql(`SELECT coalesce(legal_name,'')||'|'||coalesce(gstin,'')||'|'||coalesce(gst_state_code,'')||'|'
+        ||coalesce(business_profile->>'trade_name','')||'|'||coalesce(business_profile->>'legal_name','')||'|'
+        ||coalesce(business_profile->>'gstin','')||'|'||coalesce(business_profile->>'gst_state_code','')
+        FROM sites WHERE id='${f.tenant.siteId}';`), '|||Updated trade|||');
+    await f.page.reload();
+    await expect(f.page.getByLabel('Legal business name', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GSTIN', { exact: true })).toHaveValue('');
+    await expect(f.page.getByLabel('GST state', { exact: true })).toHaveValue('');
+});
+
 test('mobile-width dark Merchant Business shows private KYC scan rejection and resubmission', { timeout: 180_000 }, async t => {
     const f = await fixture('business-mobile'); t.after(() => f.context.close());
     await f.page.setViewportSize({ width: 390, height: 844 });

@@ -640,16 +640,12 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   }
 
   void _populateControllers(StoreModel? store) {
-    final businessProfile = store?.businessProfile ?? const {};
     final invoiceAddress = store?.invoiceAddress ?? const {};
     _nameController.text = store?.name ?? '';
     _taglineController.text = store?.tagline ?? '';
-    _legalNameController.text =
-        store?.legalName ?? _stringValue(businessProfile['legal_name']);
-    _gstinController.text =
-        store?.gstin ?? _stringValue(businessProfile['gstin']);
-    _gstStateCodeController.text =
-        store?.gstStateCode ?? _stringValue(businessProfile['gst_state_code']);
+    _legalNameController.text = store?.legalName ?? '';
+    _gstinController.text = store?.gstin ?? '';
+    _gstStateCodeController.text = store?.gstStateCode ?? '';
     _invoicePrefixController.text = store?.invoicePrefix ?? '';
     _invoiceFooterController.text = store?.invoiceFooter ?? '';
     _invoiceLine1Controller.text = _stringValue(invoiceAddress['line1']);
@@ -690,14 +686,18 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
         'phone': _normalizedPhone(_invoicePhoneController),
     };
     final businessProfile = <String, dynamic>{
-      ..._store!.businessProfile,
-      if (legalName != null) 'legal_name': legalName,
-      if (gstin != null) 'gstin': gstin,
-      if (gstStateCode != null) 'gst_state_code': gstStateCode,
+      for (final key in const [
+        'trade_name',
+        'entity_type',
+        'pan_last4',
+        'email',
+        'phone',
+        'website',
+        'public_contact_enabled',
+      ])
+        if (_store!.businessProfile.containsKey(key))
+          key: _store!.businessProfile[key],
     };
-    if (legalName == null) businessProfile.remove('legal_name');
-    if (gstin == null) businessProfile.remove('gstin');
-    if (gstStateCode == null) businessProfile.remove('gst_state_code');
     if (_nullableText(_invoiceLine1Controller) == null)
       invoiceAddress.remove('line1');
     if (_nullableText(_invoiceLine2Controller) == null)

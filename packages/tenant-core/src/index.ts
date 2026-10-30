@@ -338,7 +338,9 @@ export const UpdateStoreSchema = z.object({
   invoice_prefix: z.string().min(1).max(20).optional().nullable(),
   // Keep private identity/bank documents in the governed KYC flow. Unknown
   // nested profile keys must not become a second store for full identifiers.
-  business_profile: BusinessProfileSchema.strict().optional().nullable(),
+  business_profile: BusinessProfileSchema.omit({
+    legal_name: true, gstin: true, gst_state_code: true,
+  }).strict().optional().nullable(),
   invoice_address: AddressSchema.partial().strict().refine(
     address => (!address.country || address.country === 'IN')
       && (!address.zip || /^[1-9][0-9]{5}$/.test(address.zip)),

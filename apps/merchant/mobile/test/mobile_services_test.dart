@@ -3053,7 +3053,9 @@ void main() {
       expect(body['gstin'], '27ABCDE1234F1Z5');
       expect(body['invoice_prefix'], 'LBY-26');
       expect(body.containsKey('invoice_number_next'), isFalse);
-      expect(businessProfile['gst_state_code'], '27');
+      expect(businessProfile.containsKey('legal_name'), isFalse);
+      expect(businessProfile.containsKey('gstin'), isFalse);
+      expect(businessProfile.containsKey('gst_state_code'), isFalse);
       expect(invoiceAddress['zip'], '560001');
       expect(invoiceAddress['phone'], '+919876543210');
     });
@@ -3129,6 +3131,11 @@ void main() {
         responses['/stores/store_1'] = <String, dynamic>{
           ..._storeJson(),
           'version': 2,
+          'business_profile': const {
+            'legal_name': 'Stale nested legal name',
+            'gstin': '27ABCDE1234F1Z5',
+            'gst_state_code': '27',
+          },
         };
         await tester.tap(find.byTooltip('Reload current details'));
         await tester.pumpAndSettle();
@@ -3144,6 +3151,12 @@ void main() {
         await tester.tap(find.widgetWithText(TextButton, 'Save'));
         await tester.pumpAndSettle();
         expect(api.bodies['/stores/store_1'], containsPair('version', 2));
+        final savedBusinessProfile = Map<String, dynamic>.from(
+          (api.bodies['/stores/store_1'] as Map)['business_profile'] as Map,
+        );
+        expect(savedBusinessProfile.containsKey('legal_name'), isFalse);
+        expect(savedBusinessProfile.containsKey('gstin'), isFalse);
+        expect(savedBusinessProfile.containsKey('gst_state_code'), isFalse);
       },
     );
 
