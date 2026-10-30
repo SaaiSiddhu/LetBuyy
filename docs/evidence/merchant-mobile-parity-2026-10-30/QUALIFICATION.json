@@ -1,14 +1,14 @@
 {
   "date": "2026-10-30",
-  "source_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f",
+  "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
+    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
     "analysis": "pass",
-    "tests": 560,
-    "pass": 560,
-    "fail": 0,
-    "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3"
+    "tests": 592,
+    "pass": 592,
+    "fail": 0
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -28,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f"
+    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a"
   },
   "owned_database_runs": [
     {
@@ -448,6 +448,138 @@
         }
       ],
       "scope": "Actual SDK \u2192 Gateway/auth \u2192 owned PostgREST/Postgres; complete operational histories and malformed/missing metric faults. BFF transport is separately tested; hosted metrics remain unavailable."
+    },
+    {
+      "run_id": "5621a376aadb",
+      "source_commit": "4197b81fc0cf25eea918b0be9fc556013d9689e3",
+      "tests": 67,
+      "pass": 67,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/checkout-tax-authority.postgres.test.ts",
+          "tests": 12,
+          "pass": 12,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/gst-invoice-issuance.test.ts",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-inventory-history-read.postgres.test.ts",
+          "tests": 7,
+          "pass": 7,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-inventory-records-read.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-money-approval.postgres.test.ts",
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-operations-detail.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/payout-complete-read.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-profiles.postgres.test.ts",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings.postgres.test.ts",
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixtures only; no provider acceptance"
+    },
+    {
+      "run_id": "9944d6b8ead6",
+      "source_commit": "622e709c7",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/checkout-tax-authority.postgres.test.ts",
+          "tests": 12,
+          "pass": 12,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-profiles.postgres.test.ts",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings.postgres.test.ts",
+          "tests": 8,
+          "pass": 8,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixtures only; no provider acceptance"
     }
   ],
   "ios_simulator_build": {
@@ -498,7 +630,7 @@
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "df19015379aa92472046a7d8f86ed491337ae7bd",
+  "previous_source_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -521,34 +653,14 @@
     "restored_service_sha256": "8331a55932bbca8dcf8f950fcb3294b153f5fee57037be9842d55b4ebf3aa657"
   },
   "android_debug_build": {
-    "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
-    "bytes": 148916554,
-    "sha256": "c230a2fa30bb6bc5dda9b9a6961799f2bd067401855366df5eb0e39eeba2ee68",
-    "kind": "android-debug-apk",
-    "configuration": "dart-defines/production.json",
+    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
+    "bytes": 148929907,
+    "sha256": "f1921aba760b4dbe346c1d1c09ae373407356ad4717830381afd20625a7bcf39",
+    "installed_hash_matches": true,
     "serial": "emulator-5580",
-    "packaged_native_abis": [
-      "arm64-v8a",
-      "armeabi-v7a",
-      "x86_64"
-    ],
-    "flutter_engine_abis": [
-      "arm64-v8a"
-    ],
-    "installed_sha256": "c230a2fa30bb6bc5dda9b9a6961799f2bd067401855366df5eb0e39eeba2ee68",
-    "status": "installed_hash_verified",
-    "native_journey_status": "Products \u2192 Inventory \u2192 horizontal shortcut scrolling \u2192 Operations dashboard observed. Four generic unavailable reads; warehouse Retry returned unavailable with no visible zero. Cause not established by UI.",
-    "safe_unavailable_image": "android-operations-unavailable-ffdc3f47.png",
-    "observations": {
-      "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
-      "screen": "Operations dashboard",
-      "initial_generic_error_nodes": 4,
-      "after_warehouse_retry_error_nodes": 4,
-      "retry_control_restored": true,
-      "zero_values_visible": false,
-      "root_cause": "not determined by native UI; source BFF lacks the finite read routes before repair",
-      "intentional_business_mutations": false
-    }
+    "avd": "LetBuyy_Merchant_Parity",
+    "signing": "debug",
+    "configuration": "dart-defines/production.json"
   },
   "production_business_mutations_performed": false,
   "catalog_continuation": "committed and local/database/governance qualified; final hash-verified Android read/recovery observed; full web/mobile feature acceptance remains in progress",
@@ -622,7 +734,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3"
+    "source_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f"
   },
   "shared_dart_api_suite": {
     "pass": 97,
@@ -925,6 +1037,78 @@
     },
     "receiving_command_acceptance": "open"
   },
-  "native_source_unchanged_from": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
-  "native_source_unchanged_verification": "git diff ffdc3f47b..228ccdcef -- apps/merchant/mobile packages/dart is empty"
+  "operations_native_source_comparison": {
+    "native_source_unchanged_from": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+    "native_source_unchanged_verification": "git diff ffdc3f47b..228ccdcef -- apps/merchant/mobile packages/dart is empty"
+  },
+  "android_previous_artifacts": [
+    {
+      "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+      "bytes": 148916554,
+      "sha256": "c230a2fa30bb6bc5dda9b9a6961799f2bd067401855366df5eb0e39eeba2ee68",
+      "kind": "android-debug-apk",
+      "configuration": "dart-defines/production.json",
+      "serial": "emulator-5580",
+      "packaged_native_abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "flutter_engine_abis": [
+        "arm64-v8a"
+      ],
+      "installed_sha256": "c230a2fa30bb6bc5dda9b9a6961799f2bd067401855366df5eb0e39eeba2ee68",
+      "status": "installed_hash_verified",
+      "native_journey_status": "Products \u2192 Inventory \u2192 horizontal shortcut scrolling \u2192 Operations dashboard observed. Four generic unavailable reads; warehouse Retry returned unavailable with no visible zero. Cause not established by UI.",
+      "safe_unavailable_image": "android-operations-unavailable-ffdc3f47.png",
+      "observations": {
+        "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3",
+        "screen": "Operations dashboard",
+        "initial_generic_error_nodes": 4,
+        "after_warehouse_retry_error_nodes": 4,
+        "retry_control_restored": true,
+        "zero_values_visible": false,
+        "root_cause": "not determined by native UI; source BFF lacks the finite read routes before repair",
+        "intentional_business_mutations": false
+      }
+    }
+  ],
+  "source_reconciliation": {
+    "accepted_remote_develop_and_staging": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+    "local_merge": "4197b81fc0cf25eea918b0be9fc556013d9689e3",
+    "hosted_deployment": false,
+    "primary_untouched_head": "a72196c6ea9cd86b07d6d8414da2b8176c41046a",
+    "primary_dirty_paths_observed": 139
+  },
+  "shipping_tax_checkpoint": {
+    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
+    "focused_native_scope_and_editor_tests": 29,
+    "settings_navigation_tests": 2,
+    "shared_model_contract_tests": 4,
+    "web_read_recovery_settings_tests": 94,
+    "gateway_unit_contract_tests": 1848,
+    "typechecks": [
+      "Gateway",
+      "web",
+      "TypeScript SDK"
+    ],
+    "owned_run": "9944d6b8ead6",
+    "backend_and_sdk_unchanged_since_owned_source": "622e709c7",
+    "evidence": "SHIPPING_TAX_PARITY.md",
+    "android": {
+      "shipping_initial_and_refresh": "unavailable, no mutation control or zero summary",
+      "tax_initial": "unavailable, no mutation control or inclusive switch",
+      "tax_refresh": "unavailable, no mutation control or inclusive switch",
+      "full_hosted_acceptance": false
+    },
+    "fully_accepted_ledger_rows": []
+  },
+  "warehouse_migration_decision": {
+    "owner_decision": "Use current sequence after 413 (Recommended)",
+    "scope": "source/local qualification only, paired rollback required",
+    "next_number_if_unused": 414,
+    "accepted_refs_rechecked": true,
+    "implementation": "not yet implemented",
+    "evidence": "WAREHOUSE_ATOMICITY.md"
+  }
 }
