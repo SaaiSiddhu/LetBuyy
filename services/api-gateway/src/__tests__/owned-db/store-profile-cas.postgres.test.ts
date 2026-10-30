@@ -51,6 +51,9 @@ test('two store editors cannot overwrite a cleared contact or cross tenant bound
         { invoice_address: { line1: '123 Example Road', city: 'Mumbai', state: 'Maharashtra', zip: '400001', country: 'US' } },
         { gstin: '22ABCDE1234F1Z5', gst_state_code: '27' },
         { business_profile: { website: 'javascript:alert(1)' } },
+        { business_profile: { full_pan: 'ABCDE1234F' } },
+        { business_profile: { bank_account_number: '123456789012' } },
+        { invoice_address: { country: 'IN', zip: '400001', full_pan: 'ABCDE1234F' } },
     ]) {
         const rejected = await request(first.siteId, owner, { version: versionBeforeInvalid, ...invalid });
         assert.equal(rejected.status, 400, `invalid store profile was accepted: ${JSON.stringify(invalid)}: ${rejected.text}`);

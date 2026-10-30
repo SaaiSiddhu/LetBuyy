@@ -23,6 +23,9 @@ test('store profile rejects unsupported currency, country, PIN and mismatched GS
         { gstin: '27ABCDE1234F1Z5', gst_state_code: '29' },
         { gstin: null, gst_state_code: '27' },
         { business_profile: { website: 'javascript:alert(1)', public_contact_enabled: true } },
+        { business_profile: { full_pan: 'ABCDE1234F' } },
+        { business_profile: { bank_account_number: '123456789012' } },
+        { invoice_address: { country: 'IN', zip: '400001', full_pan: 'ABCDE1234F' } },
     ]) {
         const result = UpdateStoreSchema.safeParse(change);
         assert.equal(result.success, false, JSON.stringify(change));

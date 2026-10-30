@@ -336,8 +336,10 @@ export const UpdateStoreSchema = z.object({
   gstin: GstinSchema.optional().nullable(),
   gst_state_code: IndianStateCodeSchema.optional().nullable(),
   invoice_prefix: z.string().min(1).max(20).optional().nullable(),
-  business_profile: BusinessProfileSchema.optional().nullable(),
-  invoice_address: AddressSchema.partial().passthrough().refine(
+  // Keep private identity/bank documents in the governed KYC flow. Unknown
+  // nested profile keys must not become a second store for full identifiers.
+  business_profile: BusinessProfileSchema.strict().optional().nullable(),
+  invoice_address: AddressSchema.partial().strict().refine(
     address => (!address.country || address.country === 'IN')
       && (!address.zip || /^[1-9][0-9]{5}$/.test(address.zip)),
     'Store address must be in India with a valid six-digit PIN',
