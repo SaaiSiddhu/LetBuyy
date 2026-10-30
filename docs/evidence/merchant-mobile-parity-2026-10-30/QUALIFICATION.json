@@ -1,14 +1,14 @@
 {
   "date": "2026-10-30",
-  "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
+  "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
   "branch": "codex/merchant-mobile-parity",
   "scope": "source checkpoint; full 122-item acceptance remains in progress",
   "flutter": {
-    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
-    "analysis": "pass",
+    "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
     "tests": 592,
     "pass": 592,
-    "fail": 0
+    "fail": 0,
+    "analysis": "pass"
   },
   "shared_dart_transport_context_tests": {
     "pass": 12,
@@ -28,7 +28,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a"
+    "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6"
   },
   "owned_database_runs": [
     {
@@ -580,6 +580,219 @@
         }
       ],
       "provider_evidence": "synthetic owned fixtures only; no provider acceptance"
+    },
+    {
+      "run_id": "b3986b37d9bf",
+      "source_commit": "863f556b1",
+      "purpose": "before: one real atomicity failure plus one fixture-name collision",
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "skipped": 0,
+          "code": 1
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "59d8aedc77e0",
+      "source_commit": "863f556b1",
+      "purpose": "corrected before: split commit and raw app_tenant bypass reproduced",
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "skipped": 0,
+          "code": 1
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "8ef6a510021a",
+      "source_commit": "253b84676",
+      "purpose": "fixture missing pooled SQL; no positive runtime proof",
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "skipped": 0,
+          "code": 1
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "32ab79fcae2b",
+      "source_commit": "0feafcba9",
+      "purpose": "initial after: actual tenant SQL and atomic receipt fault",
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "89e9646503f1",
+      "source_commit": "4aec068f1",
+      "purpose": "expanded warehouse lifecycle and rollback",
+      "tests": 12,
+      "pass": 12,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 9,
+          "pass": 9,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "441313f95296",
+      "source_commit": "4445e6fa5",
+      "purpose": "tenant red-team and exact opaque/raw-access invariant",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "tests/executable/service-role-fresh-db-grants-postgres.test.mjs",
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
+    },
+    {
+      "run_id": "dc5b4c3be74d",
+      "source_commit": "125bcd1d3",
+      "purpose": "final warehouse lifecycle, actor/scope/context and rollback",
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "suites": [
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-recovery.postgres.test.ts",
+          "tests": 13,
+          "pass": 13,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        },
+        {
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-warehouse-command-rollback.postgres.test.ts",
+          "tests": 3,
+          "pass": 3,
+          "fail": 0,
+          "skipped": 0,
+          "code": 0
+        }
+      ],
+      "provider_evidence": "synthetic owned fixture only"
     }
   ],
   "ios_simulator_build": {
@@ -630,7 +843,7 @@
   "production_account_used": true,
   "deployment_performed": false,
   "full_122_acceptance": "in_progress",
-  "previous_source_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f",
+  "previous_source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a",
   "customer_scope_tests": {
     "pass": 17,
     "fail": 0
@@ -701,9 +914,17 @@
     "production_business_mutations": false
   },
   "shared_dart_models_tests": {
-    "pass": 12,
+    "source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
+    "pass": 20,
     "fail": 0,
-    "source_commit": "ffdc3f47b349af9ef6bcaaa59903d5fc2aaddbf3"
+    "focused_warehouse_before": {
+      "pass": 0,
+      "fail": 4
+    },
+    "focused_warehouse_after": {
+      "pass": 4,
+      "fail": 0
+    }
   },
   "inventory_scope_journal_tests": {
     "pass": 49,
@@ -734,7 +955,7 @@
     },
     "ok": true,
     "exitCode": 0,
-    "source_commit": "228ccdcefd5b450ebe34fd913f3b1decaee7be0f"
+    "source_commit": "863f556b131db3f945f3489d3023a6b14ed3bb1a"
   },
   "shared_dart_api_suite": {
     "pass": 97,
@@ -1108,7 +1329,34 @@
     "scope": "source/local qualification only, paired rollback required",
     "next_number_if_unused": 414,
     "accepted_refs_rechecked": true,
-    "implementation": "not yet implemented",
+    "implementation": "414 paired guarded owner implemented and locally tested; native/web durable recovery still open",
     "evidence": "WAREHOUSE_ATOMICITY.md"
+  },
+  "warehouse_checkpoint": {
+    "backend_source_commit": "125bcd1d3",
+    "native_model_source_commit": "f44bc93af6fbaab3034aca30567d29fd3e2883a6",
+    "migration": 414,
+    "owner_authorized_source_and_local_only": true,
+    "owned_final_run": "dc5b4c3be74d",
+    "owned_final_pass": 16,
+    "owned_final_fail": 0,
+    "raw_access_and_tenant_run": "441313f95296",
+    "raw_access_and_tenant_pass": 8,
+    "gateway_units_and_contracts": 1867,
+    "gateway_typecheck": "pass",
+    "web_typecheck": "pass",
+    "sdk_typecheck": "pass",
+    "native_client_recovery": "not implemented",
+    "safe_abandon_of_unapplied_pending_request": "not implemented",
+    "hosted_migration": false,
+    "deployed": false,
+    "evidence": "WAREHOUSE_ATOMICITY.md",
+    "native_model_fields": [
+      "quantity_ordered",
+      "quantity_requested",
+      "quantity_shipped",
+      "quantity_received"
+    ],
+    "installed_android_source": "863f556b1"
   }
 }
