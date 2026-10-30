@@ -5,6 +5,7 @@ import { getSupabaseAdmin, success } from '../../lib/supabase';
 import { PaymentExecutionAdapter, readCaptureResult } from '../../execution/payment-execution.adapter';
 import { isInternalApiSecretRequest } from '../../lib/internal-secret';
 import { emitPaymentEvent } from '../../lib/payment-route-support';
+import { AppError } from '../../lib/errors';
 
 type AppContext = Context<{ Bindings: Env }>;
 type StorefrontRouter = Hono<{ Bindings: Env }>;
@@ -35,6 +36,7 @@ type InternalPaymentReferenceBody = {
 
 type InternalPaymentConfirmBody = {
     orderId?: string;
+    storeId?: string;
     provider?: CapturedPaymentProvider;
     paymentId?: string;
     providerOrderId?: string | null;
@@ -44,6 +46,7 @@ type InternalPaymentConfirmBody = {
 
 type InternalPaymentFailureBody = {
     orderId?: string;
+    storeId?: string;
     provider?: CapturedPaymentProvider;
     providerEventId?: string;
     paymentStatus?: 'failed' | 'refunded';
@@ -55,6 +58,7 @@ type InternalPaymentFailureBody = {
 
 type InternalPaymentEventBody = {
     orderId?: string;
+    storeId?: string;
     provider?: CapturedPaymentProvider;
     providerEventId?: string;
     eventType?: string;
@@ -82,6 +86,11 @@ function isInternalRequest(c: AppContext): boolean {
 
 function assertProvider(value: unknown): value is CapturedPaymentProvider {
     return value === 'razorpay';
+}
+
+function isUuid(value: unknown): value is string {
+    return typeof value === 'string'
+        && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
 // These four routes take their body as `await c.req.json() as <Type>` — a cast, not a parse — so the
@@ -127,6 +136,35 @@ async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?
     if (!Number.isFinite(total) || total <= 0) throw new Error('Order has no payable total');
 
     return { ...order, total, currency: order.currency || 'INR' };
+}
+
+/** The legacy platform callback secret cannot authorize a payment created with
+ * a merchant's own credential. Its signed callback needs an exact merchant
+ * credential and webhook-secret proof before reaching these money writers. */
+async function hasMerchantBoundPayment(db: GatewayDb, orderId: string, storeId: string): Promise<boolean> {
+    const { data: order, error: orderError } = await db.from('orders').select('id')
+        .eq('id', orderId).eq('store_id', storeId).is('deleted_at', null).maybeSingle();
+    if (orderError) throw new AppError('Payment account binding is temporarily unavailable.', 503, 'PAYMENT_ACCOUNT_UNAVAILABLE');
+    if (!order) throw new AppError('Order was not found for this store.', 404, 'PAYMENT_ORDER_NOT_FOUND');
+    const { data, error } = await db.from('payments').select('id')
+        .eq('site_id', storeId).eq('order_id', orderId).eq('provider', 'razorpay')
+        .not('credential_id', 'is', null).is('deleted_at', null).limit(1);
+    if (error) throw new AppError('Payment account binding is temporarily unavailable.', 503, 'PAYMENT_ACCOUNT_UNAVAILABLE');
+    if (data?.length) return true;
+    // Hosted checkout pins its credential on the checkout session, even when
+    // no canonical payments row was created by that path.
+    const { data: sessions, error: sessionError } = await db.from('checkout_sessions').select('id')
+        .eq('site_id', storeId).eq('order_id', orderId)
+        .not('payment_credential_id', 'is', null).is('deleted_at', null).limit(1);
+    if (sessionError) throw new AppError('Payment account binding is temporarily unavailable.', 503, 'PAYMENT_ACCOUNT_UNAVAILABLE');
+    return Boolean(sessions?.length);
+}
+
+function merchantCallbackBindingRequired(c: AppContext) {
+    return c.json({ success: false, error: {
+        code: 'PAYMENT_ACCOUNT_CALLBACK_UNBOUND',
+        message: 'This merchant payment requires an account-bound provider callback.',
+    } }, 409);
 }
 
 export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter, deps: InternalPaymentRouteDeps) {
@@ -182,11 +220,12 @@ export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter
         }
 
         const body = await c.req.json() as InternalPaymentConfirmBody;
-        if (!body.orderId || !assertProvider(body.provider) || !body.paymentId) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, provider and paymentId are required' } }, 400);
+        if (!isUuid(body.orderId) || !isUuid(body.storeId) || !assertProvider(body.provider) || !body.paymentId) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, storeId, provider and paymentId are required' } }, 400);
         }
 
         const db = getSupabaseAdmin(c);
+        if (await hasMerchantBoundPayment(db, body.orderId, body.storeId)) return merchantCallbackBindingRequired(c);
         const order = await new PaymentExecutionAdapter(db).confirmPayment({
             orderId: body.orderId,
             provider: body.provider,
@@ -231,12 +270,13 @@ export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter
         }
 
         const body = await c.req.json() as InternalPaymentFailureBody;
-        if (!body.orderId || !assertProvider(body.provider) || !body.providerEventId
+        if (!isUuid(body.orderId) || !isUuid(body.storeId) || !assertProvider(body.provider) || !body.providerEventId
             || !assertPaymentFailureStatus(body.paymentStatus) || !assertFailureOrderStatus(body.orderStatus)) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: `orderId, provider, providerEventId, paymentStatus (${FAILURE_PAYMENT_STATUSES.join(' | ')}) and orderStatus (${FAILURE_ORDER_STATUSES.join(' | ')}) are required` } }, 400);
+            return c.json({ success: false, error: { code: 'VALIDATION', message: `orderId, storeId, provider, providerEventId, paymentStatus (${FAILURE_PAYMENT_STATUSES.join(' | ')}) and orderStatus (${FAILURE_ORDER_STATUSES.join(' | ')}) are required` } }, 400);
         }
 
         const db = getSupabaseAdmin(c);
+        if (await hasMerchantBoundPayment(db, body.orderId, body.storeId)) return merchantCallbackBindingRequired(c);
         const order = await new PaymentExecutionAdapter(db).recordPaymentFailure({
             orderId: body.orderId,
             provider: body.provider,
@@ -259,11 +299,12 @@ export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter
         }
 
         const body = await c.req.json() as InternalPaymentEventBody;
-        if (!body.orderId || !assertProvider(body.provider) || !body.providerEventId || !body.eventType) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, provider, providerEventId and eventType are required' } }, 400);
+        if (!isUuid(body.orderId) || !isUuid(body.storeId) || !assertProvider(body.provider) || !body.providerEventId || !body.eventType) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, storeId, provider, providerEventId and eventType are required' } }, 400);
         }
 
         const db = getSupabaseAdmin(c);
+        if (await hasMerchantBoundPayment(db, body.orderId, body.storeId)) return merchantCallbackBindingRequired(c);
         const result = await new PaymentExecutionAdapter(db).recordPaymentEvent({
             orderId: body.orderId,
             provider: body.provider,

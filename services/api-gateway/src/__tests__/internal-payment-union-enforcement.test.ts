@@ -55,6 +55,7 @@ function failure(body: Record<string, unknown>, secret: string | null = SECRET) 
 
 const VALID = {
     orderId: ORDER,
+    storeId: '00000000-0000-4000-8000-000000000003',
     provider: 'razorpay',
     providerEventId: 'evt_1',
     paymentStatus: 'failed',

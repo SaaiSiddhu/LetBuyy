@@ -384,6 +384,7 @@ async function markOrderPaid(
 ): Promise<void> {
     const confirmation = await confirmGatewayOrderPayment(env, {
         orderId: order.id,
+        storeId: order.store_id,
         provider: params.provider,
         paymentId: params.paymentId,
         providerOrderId: params.providerOrderId || order.payment_id || null,
@@ -426,6 +427,7 @@ async function markOrderFailed(
     const provider = params.provider || "razorpay";
     await recordGatewayOrderPaymentFailure(env, {
         orderId: order.id,
+        storeId: order.store_id,
         provider,
         providerEventId: params.providerEventId,
         paymentStatus: "failed",
@@ -481,6 +483,7 @@ async function markOrderRefunded(
 
     await recordGatewayOrderPaymentFailure(env, {
         orderId: order.id,
+        storeId: order.store_id,
         provider,
         providerEventId,
         paymentStatus: "refunded",
@@ -994,6 +997,7 @@ app.post("/razorpay", async (c) => {
                     // unexpected-status events must not post a full-order refund reversal.
                     await recordGatewayOrderPaymentEvent(c.env, {
                         orderId: order.id,
+                        storeId: order.store_id,
                         provider: "razorpay",
                         providerEventId,
                         eventType,

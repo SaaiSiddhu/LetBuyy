@@ -87,7 +87,14 @@ function installFakePostgrest(fixture: { order?: Json; rpcResult?: Json; onlineP
         requests.push({ method, path, body });
 
         if (path === 'orders' && method === 'GET') {
+            if (url.searchParams.get('select') === 'id') return jsonResponse({ id: ORDER });
             return fixture.order ? jsonResponse(fixture.order) : jsonResponse({ code: 'PGRST116', message: 'no rows' }, 406);
+        }
+        if (path === 'payments' && method === 'GET') {
+            return jsonResponse([]); // legacy callback fixture has no merchant-bound canonical payment
+        }
+        if (path === 'checkout_sessions' && method === 'GET') {
+            return jsonResponse([]); // legacy callback fixture has no pinned merchant checkout credential
         }
         if (path === 'sites' && method === 'GET') {
             return jsonResponse({ id: STORE, online_payment_enabled: fixture.onlinePaymentEnabled !== false,
@@ -180,6 +187,7 @@ function webhookConfirm(app: Hono<{ Bindings: Env }>) {
         headers: { 'content-type': 'application/json', 'X-Internal-API-Secret': INTERNAL_SECRET },
         body: JSON.stringify({
             orderId: ORDER,
+            storeId: STORE,
             provider: 'razorpay',
             paymentId: 'pay_route',
             providerOrderId: 'order_RZP_route',
