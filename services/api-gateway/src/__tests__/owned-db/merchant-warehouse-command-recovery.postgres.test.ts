@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {randomUUID} from 'node:crypto';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest} from './gateway-harness';
-import {requireOwnedDatabase} from './owned-db-support';
+import {requireOwnedDatabase,startOwnedPooledSqlProxy} from './owned-db-support';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 const owned=requireOwnedDatabase();
 let fixtureOrdinal=0;
@@ -15,7 +16,9 @@ async function fixture(t:{after(fn:()=>Promise<void>):void}) {
  INSERT INTO products(id,store_id,site_id,name,price,stock,is_active,status)VALUES('${product}','${site.siteId}','${site.siteId}','Synthetic WMS product',129.75,20,true,'active');
  INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,available_quantity,reserved_quantity,on_hand_quantity)VALUES(gen_random_uuid(),'${site.siteId}','${product}','${site.locationId}',20,0,20,0,20);
  INSERT INTO inventory_locations(id,store_id,name,status)VALUES('${destination}','${site.siteId}','Synthetic destination','active');`);
- const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));t.after(()=>gateway.settle());
+ const proxy=await startOwnedPooledSqlProxy(owned);
+ const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),proxy.env()));
+ t.after(async()=>{await gateway.settle();await closePooledSqlClients();await proxy.stop();});
  const request=async(path:string,body:unknown,key:string)=>gateway.request('/v1/inventory'+path,{
   method:'POST',headers:{...await signedIdentityHeaders(actor,`syn-wms-${actor}@example.invalid`,site.siteId),'Idempotency-Key':key},body:JSON.stringify(body),
  });
