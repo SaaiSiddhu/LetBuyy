@@ -122,7 +122,7 @@ const DOC_META: Record<KycDocumentType, { title: string; Icon: LucideIcon; hint:
     bank_proof: {
         title: 'Settlement bank account',
         Icon: CreditCard,
-        hint: 'The bank account that receives your payouts. We verify it before releasing settlements.',
+        hint: 'Upload proof of your intended settlement bank. Your payment provider must separately verify and approve the actual payout destination.',
         last4Label: 'Last 4 of account number',
         last4Hint: 'Only the last 4 digits are stored',
     },

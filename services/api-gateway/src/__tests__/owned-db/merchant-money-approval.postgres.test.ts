@@ -45,6 +45,33 @@ test('disabled factor payout proof is refused before provider configuration is c
  const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor,crypto.randomUUID(),'payout.release'),id=await statement(f);assert.equal(proof.status,201,explain(proof));await disable(f,factor);
  const result=await f.call('POST','/payouts/'+id+'/settle',{idempotency_key:crypto.randomUUID()},proofHeaders(proof));assert.equal(result.status,428,explain(result));assert.equal(owned.psql(`SELECT status FROM payout_statements WHERE id='${id}';`),'pending');
 });
+test('global live Route credentials and approval reference cannot release a merchant payout',async()=>{
+ const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor,crypto.randomUUID(),'payout.release'),id=await statement(f);
+ assert.equal(proof.status,201,explain(proof));
+ owned.psql(`UPDATE payout_statements SET provider_mode='live' WHERE id='${id}';`);
+ Object.assign(f.gateway.env,{
+  RAZORPAY_KEY_ID:'synthetic-route-key-id',
+  RAZORPAY_ROUTE_KEY_SECRET:'synthetic-never-contacted-route-secret',
+  RAZORPAY_ROUTE_ACCOUNT_ID:'acc_global_not_site_bound',
+  RAZORPAY_ROUTE_MODE:'live',
+  RAZORPAY_ROUTE_PROVIDER_ENABLED:'true',
+  RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE:'synthetic-global-reference',
+ });
+ const result=await f.call('POST','/payouts/'+id+'/settle',{idempotency_key:crypto.randomUUID()},proofHeaders(proof));
+ assert.equal(result.status,503,explain(result));
+ assert.equal(owned.psql(`SELECT status FROM payout_statements WHERE id='${id}';`),'pending');
+ assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE resource_id='${id}' AND action='merchant.payout_release.authorized';`),'0');
+});
+test('a live payout statement cannot be released through sandbox Route credentials',async()=>{
+ const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor,crypto.randomUUID(),'payout.release'),id=await statement(f);
+ assert.equal(proof.status,201,explain(proof));
+ owned.psql(`UPDATE payout_statements SET provider_mode='live' WHERE id='${id}';`);
+ configured(f);
+ const result=await f.call('POST','/payouts/'+id+'/settle',{idempotency_key:crypto.randomUUID()},proofHeaders(proof));
+ assert.equal(result.status,503,explain(result));
+ assert.equal(owned.psql(`SELECT status FROM payout_statements WHERE id='${id}';`),'pending');
+ assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE resource_id='${id}' AND action='merchant.payout_release.authorized';`),'0');
+});
 test('payment refund checks current approval again when disable wins before the reserve transaction',async()=>{
  const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor),id=await payment(f);assert.equal(proof.status,201,explain(proof));let disabled=false;
  const tap=tapRest(owned.restUrl,async(c,forward)=>{if(!disabled&&['rpc/reserve_payment_refund_attempt','rpc/reserve_owned_payment_refund_v1'].includes(c.resource)){disabled=true;await disable(f,factor);}return forward();});

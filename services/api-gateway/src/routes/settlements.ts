@@ -7,7 +7,6 @@ import {
     type SettlementLedgerLine,
 } from '@letbuyy/billing-core';
 import type { Env } from '../index';
-import { isLivePASplitProviderReady } from '@letbuyy/payments';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { HumanRequiredError } from '../lib/errors';
 import { getSupabaseAdmin, success } from '../lib/supabase';
@@ -49,10 +48,6 @@ interface SettlementRow extends JsonRecord {
 
 class SettlementPayoutConflict extends Error {}
 
-function configured(value: string | undefined): boolean {
-    return Boolean(value && !value.startsWith('SKIP_NEEDS_HUMAN_') && !value.includes('replace-with'));
-}
-
 function stableJson(value: unknown): string {
     if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
     if (value && typeof value === 'object') {
@@ -62,7 +57,7 @@ function stableJson(value: unknown): string {
     return JSON.stringify(value) ?? 'null';
 }
 
-export function assertLiveSettlementReady(env: Env, input: SettlementIngestInput) {
+export function assertLiveSettlementReady(_env: Env, input: SettlementIngestInput) {
     if (input.provider_mode !== 'live') return;
 
     if (input.rail === 'cod_remittance') {
@@ -77,19 +72,16 @@ export function assertLiveSettlementReady(env: Env, input: SettlementIngestInput
         throw new HumanRequiredError('Cashfree Easy Split live settlement is unavailable until its provider-specific execution and reconciliation adapter is implemented.');
     }
 
-    if (input.rail === 'pa_split'
-        && input.provider === 'razorpay_route'
-        && isLivePASplitProviderReady('razorpay_route', {
-            razorpay_route: env.RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE,
-        }, configured(env.RAZORPAY_ROUTE_ACCOUNT_ID)
-            && configured(env.RAZORPAY_KEY_ID)
-            && configured(env.RAZORPAY_ROUTE_KEY_SECRET || env.RAZORPAY_KEY_SECRET))) {
-        return;
+    if (input.rail === 'pa_split' && input.provider === 'razorpay_route') {
+        // A global approval reference does not bind this merchant to a provider linked
+        // account and its current verified bank. Live PA ingest must remain closed until
+        // that site-specific evidence can be checked before creating a payout row.
+        throw new HumanRequiredError('Live PA settlement requires site-bound provider approval and a verified current bank destination.');
     }
 
     // [HUMAN-REQUIRED] HR-PA-SPLIT-LIVE: the provider-specific evidence reference represents
     // separately reviewed provider onboarding and legal acceptance; its presence is not itself proof.
-    throw new HumanRequiredError('Live PA settlement eligibility, contract review, and provider setup are required before live settlement ingest can be enabled.');
+    throw new HumanRequiredError('Live PA settlement provider setup is unavailable.');
 }
 
 function settlementSetupError(c: import('hono').Context<{ Bindings: Env }>) {
