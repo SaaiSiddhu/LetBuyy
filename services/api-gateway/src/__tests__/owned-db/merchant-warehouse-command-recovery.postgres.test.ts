@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest} from './gateway-harness';
 import {requireOwnedDatabase,startOwnedPooledSqlProxy} from './owned-db-support';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
@@ -19,11 +20,12 @@ async function fixture(t:{after(fn:()=>Promise<void>):void}) {
  const proxy=await startOwnedPooledSqlProxy(owned);
  const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),proxy.env()));
  t.after(async()=>{await gateway.settle();await closePooledSqlClients();await proxy.stop();});
- const request=async(path:string,body:unknown,key:string)=>gateway.request('/v1/inventory'+path,{
-  method:'POST',headers:{...await signedIdentityHeaders(actor,`syn-wms-${actor}@example.invalid`,site.siteId),'Idempotency-Key':key},body:JSON.stringify(body),
+ const requestAs=async(who:string,selected:string,path:string,body:unknown,key:string)=>gateway.request('/v1/inventory'+path,{
+  method:'POST',headers:{...await signedIdentityHeaders(who,`syn-wms-${who}@example.invalid`,selected),'Idempotency-Key':key},body:JSON.stringify(body),
  });
+ const request=(path:string,body:unknown,key:string)=>requestAs(actor,site.siteId,path,body,key);
  const create=(key:string,quantity=3)=>({store_id:site.siteId,location_id:site.locationId,lines:[{product_id:product,quantity,unit_cost:12.25}],idempotency_key:key});
- return{site,actor,product,destination,gateway,request,create};
+ return{site,actor,product,destination,gateway,request,requestAs,create};
 }
 test('warehouse receipt failure rolls back stock, document, audit and outbox together and same intent recovers',async t=>{
  const f=await fixture(t),control=randomUUID();
@@ -70,3 +72,85 @@ test('the guarded warehouse owner replaces raw Data API execution of every stock
  assert.equal(owned.psql("SELECT has_function_privilege('app_tenant','public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)','EXECUTE');"),'t');
 });
 
+
+const quote=(value:string)=>"'"+value.replace(/'/g,"''")+"'";
+function stock(site:string) {return JSON.parse(owned.psql(
+ "SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY location_id,id),'[]')::text FROM inventory_levels t WHERE store_id="+quote(site)+";")) as Array<Record<string,unknown>>;}
+test('concurrent same-key creates return one durable response and changed intent cannot add incoming stock',async t=>{
+ const f=await fixture(t),key=randomUUID(),body=f.create(key,5);
+ const replies=await Promise.all([f.request('/purchase-orders',body,key),f.request('/purchase-orders',body,key)]);
+ for(const r of replies)assert.equal(r.status,201,r.text);
+ assert.deepEqual(replies[0].json?.data,replies[1].json?.data);
+ assert.equal(owned.psql("SELECT incoming FROM inventory_levels WHERE product_id="+quote(f.product)+";"),'5');
+ assert.equal(owned.psql("SELECT count(*)FROM purchase_orders WHERE site_id="+quote(f.site.siteId)+";"),'1');
+ const conflict=await f.request('/purchase-orders',f.create(key,6),key);assert.equal(conflict.status,409,conflict.text);
+ assert.equal(conflict.json?.error.code,'WAREHOUSE_KEY_CONFLICT');
+ assert.equal(owned.psql("SELECT incoming FROM inventory_levels WHERE product_id="+quote(f.product)+";"),'5');
+});
+test('partial and terminal PO receipts replay exactly without receiving units again',async t=>{
+ const f=await fixture(t),key=randomUUID(),created=await f.request('/purchase-orders',f.create(key,5),key);assert.equal(created.status,201,created.text);
+ const id=created.json?.data.purchase_order.id as string,line=created.json?.data.lines[0].id as string;
+ const receive=async(quantity:number,k:string)=>f.request('/purchase-orders/'+id+'/receive',{lines:[{purchase_order_line_id:line,quantity}],idempotency_key:k},k);
+ const partialKey=randomUUID(),partial=await receive(2,partialKey);assert.equal(partial.status,200,partial.text);assert.equal(partial.json?.data.lines[0].quantity_received,2);
+ const before=stock(f.site.siteId),replay=await receive(2,partialKey);assert.equal(replay.status,200,replay.text);assert.deepEqual(replay.json?.data,partial.json?.data);assert.deepEqual(stock(f.site.siteId),before);
+ const finalKey=randomUUID(),final=await receive(3,finalKey);assert.equal(final.status,200,final.text);assert.equal(final.json?.data.purchase_order.status,'received');assert.equal(final.json?.data.lines[0].quantity_received,5);
+ assert.equal(owned.psql("SELECT available||'|'||incoming FROM inventory_levels WHERE product_id="+quote(f.product)+";"),'25|0');
+ const oldReplay=await receive(2,partialKey);assert.equal(oldReplay.status,200,oldReplay.text);assert.deepEqual(oldReplay.json?.data,partial.json?.data);
+ const tooLate=await receive(1,randomUUID());assert.equal(tooLate.status,409,tooLate.text);
+ assert.equal(owned.psql("SELECT available||'|'||incoming FROM inventory_levels WHERE product_id="+quote(f.product)+";"),'25|0');
+});
+test('transfer create ship and partial receipts keep stock conserved and every replay includes full lines',async t=>{
+ const f=await fixture(t),key=randomUUID(),body={store_id:f.site.siteId,source_location_id:f.site.locationId,destination_location_id:f.destination,lines:[{product_id:f.product,quantity:4}],idempotency_key:key};
+ const create=await f.request('/transfers',body,key);assert.equal(create.status,201,create.text);
+ const id=create.json?.data.transfer.id as string,line=create.json?.data.lines[0].id as string;
+ const shipKey=randomUUID(),shipBody={idempotency_key:shipKey},ship=await f.request('/transfers/'+id+'/ship',shipBody,shipKey);
+ assert.equal(ship.status,200,ship.text);assert.equal(ship.json?.data.lines.length,1);assert.equal(ship.json?.data.lines[0].quantity_shipped,4);
+ const before=stock(f.site.siteId),shipAgain=await f.request('/transfers/'+id+'/ship',shipBody,shipKey);assert.equal(shipAgain.status,200,shipAgain.text);assert.deepEqual(shipAgain.json?.data,ship.json?.data);assert.deepEqual(stock(f.site.siteId),before);
+ for(let n=0;n<2;n++){const k=randomUUID(),body={lines:[{transfer_line_id:line,quantity:2}],idempotency_key:k};const first=await f.request('/transfers/'+id+'/receive',body,k);assert.equal(first.status,200,first.text);const after=stock(f.site.siteId),again=await f.request('/transfers/'+id+'/receive',body,k);assert.equal(again.status,200,again.text);assert.deepEqual(again.json?.data,first.json?.data);assert.deepEqual(stock(f.site.siteId),after);}
+ assert.equal(owned.psql("SELECT available||'|'||reserved FROM inventory_levels WHERE product_id="+quote(f.product)+" AND location_id="+quote(f.site.locationId)+";"),'16|0');
+ assert.equal(owned.psql("SELECT available FROM inventory_levels WHERE product_id="+quote(f.product)+" AND location_id="+quote(f.destination)+";"),'4');
+ const historical=await f.request('/transfers/'+id+'/ship',shipBody,shipKey);assert.equal(historical.status,200,historical.text);assert.deepEqual(historical.json?.data,ship.json?.data);
+ const newKey=randomUUID(),late=await f.request('/transfers/'+id+'/ship',{idempotency_key:newKey},newKey);assert.equal(late.status,409,late.text);
+});
+test('receive-all freezes its first accepted quantities and concurrent explicit receivers cannot over-receive',async t=>{
+ const f=await fixture(t),key=randomUUID(),created=await f.request('/purchase-orders',f.create(key,5),key);assert.equal(created.status,201,created.text);
+ const id=created.json?.data.purchase_order.id as string,line=created.json?.data.lines[0].id as string;
+ const requests=[randomUUID(),randomUUID()].map(k=>f.request('/purchase-orders/'+id+'/receive',{lines:[{purchase_order_line_id:line,quantity:3}],idempotency_key:k},k));
+ const replies=await Promise.all(requests);assert.deepEqual(replies.map(r=>r.status).sort(),[200,409]);
+ const allKey=randomUUID(),body={idempotency_key:allKey},all=await f.request('/purchase-orders/'+id+'/receive',body,allKey);
+ assert.equal(all.status,200,all.text);assert.equal(all.json?.data.command_receipt.command.lines,null);assert.equal(all.json?.data.command_receipt.effective_lines[0].quantity,2);
+ const again=await f.request('/purchase-orders/'+id+'/receive',body,allKey);assert.equal(again.status,200,again.text);assert.deepEqual(again.json?.data,all.json?.data);
+ assert.equal(owned.psql("SELECT available||'|'||incoming FROM inventory_levels WHERE product_id="+quote(f.product)+";"),'25|0');
+});
+test('revoked owners and a replacement owner cannot replay another actor acknowledgement',async t=>{
+ const f=await fixture(t),key=randomUUID(),body=f.create(key),first=await f.request('/purchase-orders',body,key);assert.equal(first.status,201,first.text);
+ const next=randomUUID();owned.psql("INSERT INTO users_custom(id,email,email_verified)VALUES("+quote(next)+","+quote('syn-wms-'+next+'@example.invalid')+",true);UPDATE sites SET custom_user_id="+quote(next)+" WHERE id="+quote(f.site.siteId)+";");
+ const denied=await f.request('/purchase-orders',body,key);assert.equal(denied.status,403,denied.text);
+ const changed=await f.requestAs(next,f.site.siteId,'/purchase-orders',body,key);assert.equal(changed.status,409,changed.text);assert.equal(changed.json?.error.code,'WAREHOUSE_KEY_CONFLICT');
+ const control=randomUUID(),allowed=await f.requestAs(next,f.site.siteId,'/purchase-orders',f.create(control),control);assert.equal(allowed.status,201,allowed.text);
+});
+test('foreign locations products and receiving lines cannot change either populated tenant',async t=>{
+ const a=await fixture(t),b=await fixture(t),positive=randomUUID();assert.equal((await a.request('/purchase-orders',a.create(positive),positive)).status,201);
+ const bkey=randomUUID(),bpo=await b.request('/purchase-orders',b.create(bkey),bkey);assert.equal(bpo.status,201,bpo.text);
+ const beforeA=stock(a.site.siteId),beforeB=stock(b.site.siteId);
+ for(const target of ['product','location']) {
+  const key=randomUUID(),body=target==='product'?{...a.create(key),lines:[{product_id:b.product,quantity:1,unit_cost:1}]}:{...a.create(key),location_id:b.site.locationId};
+  const denied=await a.request('/purchase-orders',body,key);assert.equal(denied.status,404,denied.text);
+ }
+ const id=owned.psql("SELECT id FROM purchase_orders WHERE site_id="+quote(a.site.siteId)+" LIMIT 1;"),key=randomUUID();
+ const denied=await a.request('/purchase-orders/'+id+'/receive',{lines:[{purchase_order_line_id:bpo.json?.data.lines[0].id,quantity:1}],idempotency_key:key},key);
+ assert.equal(denied.status,404,denied.text);assert.deepEqual(stock(a.site.siteId),beforeA);assert.deepEqual(stock(b.site.siteId),beforeB);
+});
+test('opaque acknowledgements deny raw reads, updates and deletes and retained evidence blocks rollback',async t=>{
+ const f=await fixture(t),key=randomUUID(),positive=await f.request('/purchase-orders',f.create(key),key);assert.equal(positive.status,201,positive.text);
+ assert.equal(owned.psql("SELECT relrowsecurity AND relforcerowsecurity FROM pg_class WHERE oid='public.warehouse_command_receipts'::regclass;"),'t');
+ for(const role of ['anon','authenticated','app_tenant','service_role'])assert.match(owned.psqlExpectError("BEGIN;SET LOCAL ROLE "+role+";SELECT *FROM warehouse_command_receipts;ROLLBACK;"),/permission denied/);
+ assert.match(owned.psqlExpectError("UPDATE warehouse_command_receipts SET request_id='changed'WHERE idempotency_key="+quote(key)+";"),/immutable/);
+ assert.match(owned.psqlExpectError("DELETE FROM warehouse_command_receipts WHERE idempotency_key="+quote(key)+";"),/immutable/);
+ await f.gateway.settle();
+ const before=owned.psql("SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY id),'[]')::text FROM warehouse_command_receipts t;");
+ const down=readFileSync(new URL('../../../../../database/supabase/rollback/414_atomic_warehouse_commands.rollback.sql',import.meta.url),'utf8');
+ assert.match(owned.psqlScriptExpectError(down),/rollback414 refuses retained warehouse command receipts/);
+ assert.equal(owned.psql("SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY id),'[]')::text FROM warehouse_command_receipts t;"),before);
+ const replay=await f.request('/purchase-orders',f.create(key),key);assert.equal(replay.status,201,replay.text);assert.deepEqual(replay.json?.data,positive.json?.data);
+});

@@ -147,6 +147,9 @@ BEGIN
   IF row_transfer.status<>'reserved' THEN RAISE EXCEPTION 'WAREHOUSE_STATE_CONFLICT';END IF;
   result:=public.ship_inventory_transfer(target,p_actor_id,p_request_id,p_key);
  ELSE
+  IF(p_operation='purchase_order.receive' AND row_po.status IN('received','cancelled','closed'))
+   OR(p_operation='transfer.receive' AND row_transfer.status NOT IN('reserved','shipped','partially_received')) THEN
+   RAISE EXCEPTION 'WAREHOUSE_STATE_CONFLICT';END IF;
   -- Legacy receive-all remains compatible but its exact line quantities are
   -- frozen inside this first accepted transaction and retained in the receipt.
   effective_lines:='[]'::jsonb;
